@@ -54,9 +54,9 @@ export function UserGroupAssignmentsPage(): ReactElement {
   }));
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 crm-page">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
-      <div className="flex flex-col gap-2 pt-2">
+      <div className="crm-toolbar flex flex-col gap-2 pt-2">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
           {t('userGroupAssignments.title')}
         </h1>
@@ -69,7 +69,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </p>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 space-y-4">
+      <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
         <div>
           <label className="text-sm font-medium mb-2 flex items-center gap-1">
             {t('userGroupAssignments.selectUser')}

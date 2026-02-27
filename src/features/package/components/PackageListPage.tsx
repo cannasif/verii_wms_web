@@ -27,17 +27,17 @@ import type { PagedFilter } from '@/types/api';
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case 'Draft':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
     case 'Packing':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-500/25 dark:text-blue-200';
     case 'Packed':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800 dark:bg-green-500/25 dark:text-green-200';
     case 'Shipped':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/25 dark:text-indigo-200';
     case 'Cancelled':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800 dark:bg-red-500/25 dark:text-red-200';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
   }
 };
 
@@ -293,7 +293,7 @@ export function PackageListPage(): ReactElement {
           <div className="md:hidden space-y-4 pb-1">
             {data?.data && data.data.length > 0 ? (
               data.data.map((item: PHeaderDto) => (
-                <Card key={item.id} className="border">
+                <Card key={item.id} className="border border-slate-200/70 bg-white/85 dark:border-white/10 dark:bg-white/[0.04]">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex flex-col gap-1">
@@ -391,7 +391,7 @@ export function PackageListPage(): ReactElement {
           </div>
 
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
+            <div className="mt-4 flex items-center justify-between border-t border-slate-200/80 pt-4 dark:border-white/10">
               <div className="text-sm text-muted-foreground">
                 {t('package.list.pageInfo', 'Sayfa {{current}} / {{total}}', {
                   current: data.pageNumber,
@@ -445,4 +445,3 @@ export function PackageListPage(): ReactElement {
     </div>
   );
 }
-

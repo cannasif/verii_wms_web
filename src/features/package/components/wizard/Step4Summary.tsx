@@ -23,17 +23,17 @@ interface Step4SummaryProps {
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case 'Draft':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
     case 'Packing':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-500/25 dark:text-blue-200';
     case 'Packed':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800 dark:bg-green-500/25 dark:text-green-200';
     case 'Shipped':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/25 dark:text-indigo-200';
     case 'Cancelled':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800 dark:bg-red-500/25 dark:text-red-200';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
   }
 };
 
@@ -88,7 +88,7 @@ export function Step4Summary({
     <div className="space-y-6 crm-page">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="crm-toolbar flex items-center justify-between">
             <CardTitle>{t('package.wizard.step4.title', '4. Özet & Tamamla')}</CardTitle>
             <Button variant="outline" size="sm" onClick={onEditHeader}>
               <Edit className="size-4 mr-2" />
@@ -175,7 +175,7 @@ export function Step4Summary({
             {isLoadingPackages ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading', 'Yükleniyor...')}</p>
             ) : packages.length > 0 ? (
-              <div className="rounded-md border">
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -225,7 +225,7 @@ export function Step4Summary({
             {isLoadingLines ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading', 'Yükleniyor...')}</p>
             ) : lines.length > 0 ? (
-              <div className="rounded-md border">
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -284,4 +284,3 @@ export function Step4Summary({
     </div>
   );
 }
-

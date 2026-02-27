@@ -122,7 +122,7 @@ export function ParameterFormPage(): ReactElement {
                   name="allowLessQuantityBasedOnOrder"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-start space-x-4 rounded-lg border p-4 hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
                             {t('parameters.form.allowLessQuantity', 'Emre İstinaden Az Miktar')}
@@ -160,7 +160,7 @@ export function ParameterFormPage(): ReactElement {
                   name="allowMoreQuantityBasedOnOrder"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-start space-x-4 rounded-lg border p-4 hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
                             {t('parameters.form.allowMoreQuantity', 'Emre İstinaden Fazla Miktar')}
@@ -198,7 +198,7 @@ export function ParameterFormPage(): ReactElement {
                   name="requireApprovalBeforeErp"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-start space-x-4 rounded-lg border p-4 hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
                             {t('parameters.form.requireApproval', 'ERP Öncesi Onay')}
@@ -236,7 +236,7 @@ export function ParameterFormPage(): ReactElement {
                   name="requireAllOrderItemsCollected"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-start space-x-4 rounded-lg border p-4 hover:bg-accent/50 transition-colors">
+                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
                             {t('parameters.form.requireAllOrderItemsCollected', 'Emirdeki Tüm Kalemlere Toplama Yapılmış Olmalı')}

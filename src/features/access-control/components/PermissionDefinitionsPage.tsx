@@ -134,9 +134,9 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 crm-page">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionDefinitions'), isActive: true }]} />
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pt-2">
+      <div className="crm-toolbar flex flex-col gap-5 pt-2 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
             {t('permissionDefinitions.title')}
@@ -151,7 +151,7 @@ export function PermissionDefinitionsPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="bg-white/70 dark:bg-[#1a1025]/60 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-sm rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-5">
+      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] flex flex-col md:flex-row items-center justify-between gap-5">
         <div className="relative group w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
@@ -184,7 +184,7 @@ export function PermissionDefinitionsPage(): ReactElement {
       </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b0713] shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20 min-h-[300px]">
             <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
@@ -252,7 +252,7 @@ export function PermissionDefinitionsPage(): ReactElement {
               </TableBody>
             </Table>
             {totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t">
+              <div className="flex items-center justify-between border-t border-slate-200/80 p-4 dark:border-white/10">
                 <span className="text-sm text-slate-500">
                   {t('permissionDefinitions.table.showing', {
                     from: (pageNumber - 1) * pageSize + 1,

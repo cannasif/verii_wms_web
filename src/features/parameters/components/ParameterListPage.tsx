@@ -203,7 +203,7 @@ export function ParameterListPage(): ReactElement {
           <div className="md:hidden space-y-4 pb-1">
             {filteredData && filteredData.length > 0 ? (
               filteredData.map((item) => (
-                <Card key={item.id} className="border">
+                <Card key={item.id} className="border border-slate-200/70 bg-white/85 dark:border-white/10 dark:bg-white/[0.04]">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div>
@@ -314,4 +314,3 @@ export function ParameterListPage(): ReactElement {
     </div>
   );
 }
-
