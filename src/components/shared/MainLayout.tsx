@@ -498,28 +498,28 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   useNotificationConnection();
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-[#f8f9fc] transition-colors duration-300 dark:bg-[#0c0516]">
+    <div className="relative flex h-screen flex-col overflow-hidden bg-[#f8f9fc] transition-colors duration-300 dark:bg-[#090114]">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -left-[14%] -top-[14%] h-[720px] w-[720px] rounded-full bg-pink-300/25 blur-[120px] dark:bg-pink-600/5" />
         <div className="absolute -bottom-[14%] -right-[14%] h-[620px] w-[620px] rounded-full bg-orange-300/25 blur-[110px] dark:bg-orange-600/5" />
       </div>
 
-      <div className="relative z-10 flex h-full flex-col overflow-hidden">
-        <Navbar />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar items={items} />
-          <main
-            className={cn(
-              'custom-scrollbar crm-skin flex-1 overflow-y-auto pb-16 transition-all duration-300',
-              isSidebarOpen ? 'lg:ml-64' : 'lg:ml-16',
-            )}
-          >
-            <div className="w-full px-4 py-4">
+      <div className="relative z-10 flex h-full overflow-hidden">
+        <Sidebar items={items} />
+        <div
+          className={cn(
+            'flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300',
+            isSidebarOpen ? 'lg:ml-72' : 'lg:ml-20'
+          )}
+        >
+          <Navbar />
+          <main className="custom-scrollbar crm-skin flex-1 overflow-y-auto pb-20 md:pb-16">
+            <div className="w-full px-3 py-3 sm:px-4 sm:py-4">
               <RoutePermissionGuard />
             </div>
           </main>
+          <Footer />
         </div>
-        <Footer />
       </div>
     </div>
   );

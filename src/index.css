@@ -127,10 +127,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
     font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
   }
 }
 
@@ -240,6 +242,20 @@ input:-webkit-autofill:active {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  [data-slot="table"] {
+    min-width: 680px;
+  }
+}
+
+@media (max-width: 768px) {
+  [data-slot="dialog-content"] {
+    max-width: calc(100vw - 1rem);
+    border-radius: 1rem;
+  }
 }
 
 .crm-skin {
