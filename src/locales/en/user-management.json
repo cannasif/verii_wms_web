@@ -1,0 +1,79 @@
+{
+  "userManagement": {
+    "menu": "User Management",
+    "description": "Manage and edit users",
+    "addButton": "Add New User",
+    "table": {
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "fullName": "Full Name",
+      "role": "Role",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "active": "Active",
+      "inactive": "Inactive",
+      "confirmed": "Confirmed",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "actions": "Actions",
+      "noData": "No data",
+      "loading": "Loading...",
+      "previous": "Previous",
+      "next": "Next",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "editUser": "Edit User",
+      "addUser": "Add New User",
+      "editDescription": "Edit user information",
+      "addDescription": "Enter new user information",
+      "username": "Username",
+      "usernamePlaceholder": "Enter username",
+      "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "password": "Password",
+      "passwordPlaceholder": "Leave blank to generate temporary password",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter last name",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter phone number",
+      "role": "Role",
+      "rolePlaceholder": "Select role",
+      "isActive": "Active",
+      "isActiveDescription": "User active status",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "roleRequired": "Role selection is required",
+      "permissionGroups": "Permission Groups",
+      "permissionGroupsPlaceholder": "Select permission groups",
+      "permissionGroupsHelp": "Permission groups to assign to the user",
+      "permissionGroupsNoData": "No permission groups found",
+      "generatedPasswordInfo": "Leave blank to generate temporary password",
+      "selectAll": "Select all"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newThisMonth": "New This Month",
+      "confirmedUsers": "Confirmed Users",
+      "loading": "Loading..."
+    },
+    "delete": {
+      "confirmTitle": "Delete User",
+      "confirmMessage": "Are you sure you want to delete user {{username}}?"
+    },
+    "messages": {
+      "createSuccess": "User created successfully",
+      "createError": "User could not be created",
+      "updateSuccess": "User updated successfully",
+      "updateError": "User could not be updated",
+      "deleteSuccess": "User deleted successfully",
+      "deleteError": "User could not be deleted"
+    }
+  }
+}

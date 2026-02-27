@@ -1,0 +1,79 @@
+{
+  "userManagement": {
+    "menu": "Gestion des utilisateurs",
+    "description": "Gérer et modifier les utilisateurs",
+    "addButton": "Ajouter un utilisateur",
+    "table": {
+      "id": "ID",
+      "username": "Nom d'utilisateur",
+      "email": "E-mail",
+      "fullName": "Nom complet",
+      "role": "Rôle",
+      "status": "Statut",
+      "createdDate": "Date de création",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "confirmed": "Confirmé",
+      "showing": "{{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "actions": "Actions",
+      "noData": "Aucune donnée",
+      "loading": "Chargement...",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "form": {
+      "editUser": "Modifier l'utilisateur",
+      "addUser": "Ajouter un utilisateur",
+      "editDescription": "Modifier les informations de l'utilisateur",
+      "addDescription": "Saisir les informations du nouvel utilisateur",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Saisir le nom d'utilisateur",
+      "email": "E-mail",
+      "emailPlaceholder": "Saisir l'adresse e-mail",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Laisser vide pour générer un mot de passe temporaire",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Saisir le prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Saisir le nom",
+      "phoneNumber": "Téléphone",
+      "phoneNumberPlaceholder": "Saisir le numéro de téléphone",
+      "role": "Rôle",
+      "rolePlaceholder": "Sélectionner un rôle",
+      "isActive": "Actif",
+      "isActiveDescription": "Statut actif de l'utilisateur",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "cancel": "Annuler",
+      "roleRequired": "La sélection du rôle est obligatoire",
+      "permissionGroups": "Groupes d'autorisations",
+      "permissionGroupsPlaceholder": "Sélectionner les groupes d'autorisations",
+      "permissionGroupsHelp": "Groupes d'autorisations à attribuer à l'utilisateur",
+      "permissionGroupsNoData": "Aucun groupe d'autorisations trouvé",
+      "generatedPasswordInfo": "Laisser vide pour générer un mot de passe temporaire",
+      "selectAll": "Tout sélectionner"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs totaux",
+      "activeUsers": "Utilisateurs actifs",
+      "newThisMonth": "Nouveaux ce mois",
+      "confirmedUsers": "Utilisateurs confirmés",
+      "loading": "Chargement..."
+    },
+    "delete": {
+      "confirmTitle": "Supprimer l'utilisateur",
+      "confirmMessage": "Voulez-vous vraiment supprimer l'utilisateur {{username}} ?"
+    },
+    "messages": {
+      "createSuccess": "Utilisateur créé avec succès",
+      "createError": "L'utilisateur n'a pas pu être créé",
+      "updateSuccess": "Utilisateur mis à jour avec succès",
+      "updateError": "L'utilisateur n'a pas pu être mis à jour",
+      "deleteSuccess": "Utilisateur supprimé avec succès",
+      "deleteError": "L'utilisateur n'a pas pu être supprimé"
+    }
+  }
+}

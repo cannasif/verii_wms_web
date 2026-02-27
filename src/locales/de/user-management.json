@@ -1,0 +1,79 @@
+{
+  "userManagement": {
+    "menu": "Benutzerverwaltung",
+    "description": "Benutzer verwalten und bearbeiten",
+    "addButton": "Neuen Benutzer hinzufügen",
+    "table": {
+      "id": "ID",
+      "username": "Benutzername",
+      "email": "E-Mail",
+      "fullName": "Vollständiger Name",
+      "role": "Rolle",
+      "status": "Status",
+      "createdDate": "Erstellungsdatum",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "confirmed": "Bestätigt",
+      "showing": "{{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}",
+      "actions": "Aktionen",
+      "noData": "Keine Daten",
+      "loading": "Wird geladen...",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "form": {
+      "editUser": "Benutzer bearbeiten",
+      "addUser": "Neuen Benutzer hinzufügen",
+      "editDescription": "Benutzerinformationen bearbeiten",
+      "addDescription": "Neue Benutzerinformationen eingeben",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Benutzernamen eingeben",
+      "email": "E-Mail",
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "password": "Passwort",
+      "passwordPlaceholder": "Leer lassen, um ein temporäres Passwort zu erzeugen",
+      "firstName": "Vorname",
+      "firstNamePlaceholder": "Vornamen eingeben",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Nachnamen eingeben",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Telefonnummer eingeben",
+      "role": "Rolle",
+      "rolePlaceholder": "Rolle auswählen",
+      "isActive": "Aktiv",
+      "isActiveDescription": "Aktivstatus des Benutzers",
+      "save": "Speichern",
+      "saving": "Wird gespeichert...",
+      "cancel": "Abbrechen",
+      "roleRequired": "Rolle ist erforderlich",
+      "permissionGroups": "Berechtigungsgruppen",
+      "permissionGroupsPlaceholder": "Berechtigungsgruppen auswählen",
+      "permissionGroupsHelp": "Berechtigungsgruppen für diesen Benutzer",
+      "permissionGroupsNoData": "Keine Berechtigungsgruppen gefunden",
+      "generatedPasswordInfo": "Leer lassen, um ein temporäres Passwort zu erzeugen",
+      "selectAll": "Alle auswählen"
+    },
+    "stats": {
+      "totalUsers": "Benutzer gesamt",
+      "activeUsers": "Aktive Benutzer",
+      "newThisMonth": "Neu in diesem Monat",
+      "confirmedUsers": "Bestätigte Benutzer",
+      "loading": "Wird geladen..."
+    },
+    "delete": {
+      "confirmTitle": "Benutzer löschen",
+      "confirmMessage": "Möchten Sie den Benutzer {{username}} wirklich löschen?"
+    },
+    "messages": {
+      "createSuccess": "Benutzer erfolgreich erstellt",
+      "createError": "Benutzer konnte nicht erstellt werden",
+      "updateSuccess": "Benutzer erfolgreich aktualisiert",
+      "updateError": "Benutzer konnte nicht aktualisiert werden",
+      "deleteSuccess": "Benutzer erfolgreich gelöscht",
+      "deleteError": "Benutzer konnte nicht gelöscht werden"
+    }
+  }
+}

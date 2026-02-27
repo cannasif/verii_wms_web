@@ -1,0 +1,79 @@
+{
+  "userManagement": {
+    "menu": "Kullanıcı Yönetimi",
+    "description": "Kullanıcıları yönetin ve düzenleyin",
+    "addButton": "Yeni Kullanıcı Ekle",
+    "table": {
+      "id": "ID",
+      "username": "Kullanıcı Adı",
+      "email": "E-posta",
+      "fullName": "Ad Soyad",
+      "role": "Rol",
+      "status": "Durum",
+      "createdDate": "Oluşturulma Tarihi",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "confirmed": "Onaylı",
+      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}",
+      "actions": "İşlemler",
+      "noData": "Veri yok",
+      "loading": "Yükleniyor...",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "edit": "Düzenle",
+      "delete": "Sil"
+    },
+    "form": {
+      "editUser": "Kullanıcı Düzenle",
+      "addUser": "Yeni Kullanıcı Ekle",
+      "editDescription": "Kullanıcı bilgilerini düzenleyin",
+      "addDescription": "Yeni kullanıcı bilgilerini girin",
+      "username": "Kullanıcı Adı",
+      "usernamePlaceholder": "Kullanıcı adını girin",
+      "email": "E-posta",
+      "emailPlaceholder": "E-posta adresini girin",
+      "password": "Şifre",
+      "passwordPlaceholder": "Boş bırakılırsa geçici şifre oluşturulur",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Adı girin",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Soyadı girin",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Telefon numarasını girin",
+      "role": "Rol",
+      "rolePlaceholder": "Rol seçin",
+      "isActive": "Aktif",
+      "isActiveDescription": "Kullanıcının aktif durumu",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "cancel": "İptal",
+      "roleRequired": "Rol seçimi zorunludur",
+      "permissionGroups": "İzin Grupları",
+      "permissionGroupsPlaceholder": "İzin gruplarını seçin",
+      "permissionGroupsHelp": "Kullanıcının atanacağı izin grupları",
+      "permissionGroupsNoData": "İzin grubu bulunamadı",
+      "generatedPasswordInfo": "Şifre boş bırakılırsa geçici şifre oluşturulur",
+      "selectAll": "Tümünü seç"
+    },
+    "stats": {
+      "totalUsers": "Toplam Kullanıcı",
+      "activeUsers": "Aktif Kullanıcı",
+      "newThisMonth": "Bu Ay Yeni",
+      "confirmedUsers": "Onaylı Kullanıcı",
+      "loading": "Yükleniyor..."
+    },
+    "delete": {
+      "confirmTitle": "Kullanıcıyı Sil",
+      "confirmMessage": "{{username}} kullanıcısını silmek istediğinizden emin misiniz?"
+    },
+    "messages": {
+      "createSuccess": "Kullanıcı başarıyla oluşturuldu",
+      "createError": "Kullanıcı oluşturulamadı",
+      "updateSuccess": "Kullanıcı başarıyla güncellendi",
+      "updateError": "Kullanıcı güncellenemedi",
+      "deleteSuccess": "Kullanıcı başarıyla silindi",
+      "deleteError": "Kullanıcı silinemedi"
+    }
+  }
+}

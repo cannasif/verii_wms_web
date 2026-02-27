@@ -1,0 +1,32 @@
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { authApi } from '../api/auth-api';
+import { useAuthStore } from '@/stores/auth-store';
+import { getUserFromToken } from '@/utils/jwt';
+import type { LoginRequest, Branch } from '../types/auth';
+
+export const useLogin = (branches?: Branch[]) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  return useMutation({
+    mutationFn: (data: LoginRequest) => authApi.login(data),
+    onSuccess: (response, variables) => {
+      if (response.success && response.data) {
+        const user = getUserFromToken(response.data);
+        if (user) {
+          const selectedBranch = branches?.find((b) => b.id === variables.branchId) || null;
+          setAuth(user, response.data, selectedBranch);
+          navigate('/');
+        }
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('auth.login.loginError'));
+    },
+  });
+};
+

@@ -1,0 +1,247 @@
+import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useFormContext } from 'react-hook-form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useCustomers } from '@/features/goods-receipt/hooks/useCustomers';
+import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
+import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
+import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
+import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableMultiSelect } from './components/SearchableMultiSelect';
+import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { UserDto } from '@/features/auth/types/auth';
+import type { TransferFormData } from '../../types/transfer';
+
+interface Step1TransferBasicInfoProps {
+  isFreeTransfer?: boolean;
+}
+
+export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1TransferBasicInfoProps): ReactElement {
+  const { t } = useTranslation();
+  const form = useFormContext<TransferFormData>();
+
+  const { data: customers, isLoading: isLoadingCustomers } = useCustomers();
+  const { data: projects, isLoading: isLoadingProjects } = useProjects();
+  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
+  const { data: activeUsers, isLoading: isLoadingUsers } = useActiveUsers();
+
+  return (
+    <div className="space-y-6 crm-page">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="transferDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('transfer.step1.transferDate')}</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="documentNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('transfer.step1.documentNo')}</FormLabel>
+              <FormControl>
+                <Input placeholder={t('transfer.step1.documentNoPlaceholder')} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {!isFreeTransfer && (
+        <FormField
+          control={form.control}
+          name="customerId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('transfer.step1.customer')}</FormLabel>
+              <FormControl>
+                <SearchableSelect<Customer>
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={customers || []}
+                  getOptionValue={(opt) => opt.cariKod}
+                  getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                  placeholder={t('transfer.step1.selectCustomer')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
+                  isLoading={isLoadingCustomers}
+                  itemLimit={100}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {isFreeTransfer && (
+          <FormField
+            control={form.control}
+            name="sourceWarehouse"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('transfer.step1.sourceWarehouse')}</FormLabel>
+                <FormControl>
+                  <SearchableSelect<Warehouse>
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    options={warehouses || []}
+                    getOptionValue={(opt) => String(opt.depoKodu)}
+                    getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                    placeholder={t('transfer.step1.selectSourceWarehouse')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    isLoading={isLoadingWarehouses}
+                    itemLimit={100}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <FormField
+          control={form.control}
+          name="targetWarehouse"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('transfer.step1.targetWarehouse')}</FormLabel>
+              <FormControl>
+                <SearchableSelect<Warehouse>
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={warehouses || []}
+                  getOptionValue={(opt) => String(opt.depoKodu)}
+                  getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                  placeholder={t('transfer.step1.selectTargetWarehouse')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
+                  isLoading={isLoadingWarehouses}
+                  itemLimit={100}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {!isFreeTransfer && (
+          <FormField
+            control={form.control}
+            name="projectCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('transfer.step1.projectCode')}</FormLabel>
+                <FormControl>
+                  <SearchableSelect<Project>
+                    value={field.value || ''}
+                    onValueChange={(value) => {
+                      field.onChange(value || '');
+                    }}
+                    options={projects || []}
+                    getOptionValue={(opt) => opt.projeKod}
+                    getOptionLabel={(opt) => `${opt.projeAciklama} (${opt.projeKod})`}
+                    placeholder={t('transfer.step1.selectProjectCode')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('transfer.step1.noProject')}
+                    isLoading={isLoadingProjects}
+                    itemLimit={100}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+      </div>
+
+      {isFreeTransfer && (
+        <div className="grid grid-cols-1 gap-6">
+          <FormField
+            control={form.control}
+            name="projectCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('transfer.step1.projectCode')}</FormLabel>
+                <FormControl>
+                  <SearchableSelect<Project>
+                    value={field.value || ''}
+                    onValueChange={(value) => {
+                      field.onChange(value || '');
+                    }}
+                    options={projects || []}
+                    getOptionValue={(opt) => opt.projeKod}
+                    getOptionLabel={(opt) => `${opt.projeAciklama} (${opt.projeKod})`}
+                    placeholder={t('transfer.step1.selectProjectCode')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('transfer.step1.noProject')}
+                    isLoading={isLoadingProjects}
+                    itemLimit={100}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      <FormField
+        control={form.control}
+        name="userIds"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('transfer.step1.operationUsers', 'İşlem Yapacak Kullanıcılar')}</FormLabel>
+            <FormControl>
+              <SearchableMultiSelect<UserDto>
+                value={field.value || []}
+                onValueChange={(values) => field.onChange(values)}
+                options={activeUsers || []}
+                getOptionValue={(opt) => String(opt.id)}
+                getOptionLabel={(opt) => {
+                  const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
+                  return opt.email ? `${name} (${opt.email})` : name;
+                }}
+                placeholder={t('transfer.step1.selectOperationUsers', 'İşlem yapacak kullanıcıları seçiniz')}
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.notFound')}
+                isLoading={isLoadingUsers}
+                itemLimit={100}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="notes"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('transfer.step1.notes')}</FormLabel>
+            <FormControl>
+              <Textarea placeholder={t('transfer.step1.notesPlaceholder')} {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}
+

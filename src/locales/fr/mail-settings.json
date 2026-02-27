@@ -1,0 +1,23 @@
+{
+  "PageTitle": "Paramètres e-mail",
+  "PageDescription": "Configurez les paramètres du serveur SMTP",
+  "Save": "Enregistrer",
+  "SavedSuccessfully": "Les paramètres e-mail ont été enregistrés avec succès",
+  "SaveFailed": "Impossible d’enregistrer les paramètres e-mail",
+  "Fields": {
+    "Host": "Hôte",
+    "Port": "Port de connexion",
+    "EnableSsl": "Utiliser SSL",
+    "Username": "Nom d’utilisateur",
+    "Password": "Mot de passe",
+    "PasswordPlaceholder": "Saisissez un nouveau mot de passe pour modifier",
+    "FromEmail": "E‑mail expéditeur",
+    "FromName": "Nom de l’expéditeur",
+    "Timeout": "Délai d’expiration (s)"
+  },
+  "TestMail": {
+    "Send": "Envoyer un e-mail de test",
+    "Sending": "Le test est en cours d'envoi...",
+    "Success": "E-mail de test envoyé"
+  }
+}

@@ -1,0 +1,158 @@
+---
+alwaysApply: true
+---
+
+
+# 📘 WMS Frontend - Developer & Contribution Guidelines
+
+Bu belge, WMS (Warehouse Management System) projesinde kod standartlarını, mimari kararları ve geliştirme süreçlerini tanımlar. Projeye katkıda bulunan tüm geliştiricilerin bu kurallara uyması beklenir.
+
+---
+
+
+## TEMEL KURAL
+Asla yorum satırı kullanmayın. Mümkün olduğunca shadcn componentlerini kullanmalısın. Folder structure ve proje yapısına aykırı geliştirme yapmayın. İstekleri tanstack query ile atın. Her isteğe özel staletime ekleyin ve lütfen global olanı kullanmamaya özen gösterin.
+
+## Component Kutuphanesi
+
+Bu projede shadcn kutuphenesi kullanılmaktadır. Lütfen geliştirmeleri bu kurala uygun yapınız.
+
+## 🏗️ 1. Mimari ve Klasör Yapısı (Feature-First)
+
+Bu projede **Feature-Based (Özellik Bazlı)** mimari kullanılmaktadır. Kodları teknik türlerine göre (tüm componentler bir yere, tüm servisler bir yere) **değil**, işlevlerine (domain) göre grupluyoruz.
+
+### Altın Kural: `Co-location`
+Bir özellik (Feature) ile ilgili her şey (API, Hook, Type, Component) aynı klasörde yaşamalıdır.
+
+src/
+├── features/
+│   ├── inventory/          # Domain: Envanter Yönetimi
+│   │   ├── api/            # Sadece inventory API istekleri
+│   │   ├── components/     # Sadece inventory'ye özel bileşenler
+│   │   ├── hooks/          # useStockList, useStockUpdate vb.
+│   │   ├── types/          # Inventory arayüzleri (interface)
+│   │   └── index.ts        # Public API (Dışarıya açılan kapı)
+
+* **`components/ui`:** Sadece projede *her yerde* kullanılan, iş mantığı içermeyen (dumb) bileşenler (Button, Input, Modal).
+* **`lib/`:** 3. parti kütüphane konfigürasyonları (Axios instance, QueryClient config).
+* **`services/`:** Sadece *hiçbir feature'a ait olmayan* genel servisler (FileUpload, CityLookup).
+
+---
+
+## 📝 2. İsimlendirme Kuralları (Naming Conventions)
+
+| Tür | Kural | Örnek |
+| :--- | :--- | :--- |
+| **Klasörler** | `kebab-case` | `features/user-profile`, `components/date-picker` |
+| **Component Dosyaları** | `PascalCase` | `StockTable.tsx`, `ConfirmModal.tsx` |
+| **Hook Dosyaları** | `camelCase` (use ile başlar) | `useDebounce.ts`, `useInventory.ts` |
+| **Utility/Helper** | `camelCase` | `formatCurrency.ts`, `dateUtils.ts` |
+| **Interface/Type** | `PascalCase` | `StockItem`, `UserResponse` |
+| **Sabitler (Constants)** | `UPPER_SNAKE_CASE` | `MAX_FILE_SIZE`, `DEFAULT_PAGE_LIMIT` |
+
+---
+
+## 💻 3. Kodlama Standartları ve TypeScript
+
+### 3.1. `any` Kullanımı Yasaktır 🚫
+TypeScript'in gücünü kullanın. Eğer bir veri tipini bilmiyorsanız `unknown` kullanın veya `Generic` yapı kurun. `any` kullanımı PR (Pull Request) reddi sebebidir.
+
+### 3.2. Explicit Return Types
+Fonksiyonların ne döndürdüğü açıkça belirtilmelidir.
+
+// ✅ DOĞRU
+const calculateTotal = (price: number, tax: number): number => {
+  return price + tax;
+};
+
+// ❌ YANLIŞ
+const calculateTotal = (price: number, tax: number) => {
+  return price + tax;
+};
+
+### 3.3. Barrel Export Kullanımı
+Feature modüllerinde kapsülleme (encapsulation) sağlamak için `index.ts` kullanın. Dışarıya sadece gerekli parçaları açın.
+
+// features/inventory/index.ts
+export * from './types';
+export { StockTable } from './components/StockTable';
+// api veya internal hookları dışarı açmaya gerek yoksa export etmeyin.
+
+---
+
+## ⚡ 4. State Management Stratejisi
+
+State yönetimi 3 kategoriye ayrılmıştır. Yanlış aracı yanlış yerde kullanmayın.
+
+### A. Server State (Veri Çekme) -> `TanStack Query`
+Backend'den gelen veriler (Stok listesi, Sipariş detayları) için **asla** Redux veya Zustand kullanmayın.
+* Cache, Loading, Error state'leri otomatik yönetilir.
+* Custom hook içinde encapsulate edin: `useStockListQuery()`.
+
+### B. Client/UI State (Global) -> `Zustand`
+Sadece uygulama genelini ilgilendiren UI durumları için kullanın.
+* Örn: Sidebar açık/kapalı, Aktif Tema, Kullanıcı Oturum Bilgisi.
+
+### C. Form State -> `React Hook Form` + `Zod`
+Form verilerini state veya context'te tutmayın. Performans için React Hook Form kullanın. Validasyon şemaları `zod` ile yazılmalıdır.
+
+---
+
+## 🌐 5. API ve Servis Kullanımı
+
+### 5.1. Axios Instance
+Asla saf `import axios from 'axios'` kullanmayın. `src/lib/axios.ts` içinde yapılandırılmış instance'ı kullanın. Bu instance, Token yönetimini ve hata yakalamayı otomatik yapar.
+
+### 5.2. Servis Yapısı
+API çağrılarını Component içinde yapmayın. Servis dosyasına taşıyın.
+
+// ✅ DOĞRU: Component temiz kalır
+const { data } = useQuery({ 
+  queryKey: ['stock'], 
+  queryFn: inventoryService.getAll 
+});
+
+// ❌ YANLIŞ: Component içinde fetch
+useEffect(() => {
+  axios.get('/stock').then(...)
+}, []);
+
+---
+
+## 🔄 6. Git Workflow ve Commit Mesajları
+
+### 6.1. Branch İsimlendirme
+* `feature/feature-name` (Örn: `feature/stock-transfer`)
+* `fix/bug-name` (Örn: `fix/login-error`)
+* `refactor/component-name`
+
+### 6.2. Commit Mesajları (Conventional Commits)
+Commit mesajları standart bir yapıda olmalıdır:
+
+* `feat`: Yeni bir özellik (feat: add barcode scanner)
+* `fix`: Hata düzeltmesi (fix: inventory count calculation)
+* `docs`: Dokümantasyon değişikliği
+* `style`: Formatlama, noktalı virgül vb. (kod mantığı değişmez)
+* `refactor`: Ne hata düzelten ne de özellik ekleyen kod değişikliği
+
+---
+
+## 🎨 7. Component Yazım Kuralları
+
+### 7.1. Logic ve UI Ayrımı
+Mümkünse, karmaşık mantığı (veri çekme, hesaplama) Component içinden çıkarıp bir **Custom Hook**'a (`useStockLogic.ts`) taşıyın. Component sadece UI render etmelidir (View).
+
+### 7.2. Props Destructuring
+Props her zaman destructure edilmelidir.
+
+// ✅ DOĞRU
+const UserCard = ({ name, role }: UserCardProps) => { ... }
+
+// ❌ YANLIŞ
+const UserCard = (props: UserCardProps) => { 
+  return <div>{props.name}</div> 
+}
+
+---
+
+*WMS Frontend Ekibi*
