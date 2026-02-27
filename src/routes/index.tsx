@@ -43,6 +43,7 @@ import {
 import { ShipmentCreatePage, ShipmentListPage, AssignedShipmentListPage, ShipmentCollectionPage, ShipmentApprovalPage } from '@/features/shipment';
 import { Warehouse3dPage } from '@/features/inventory/3d-warehouse';
 import { ParameterFormPage } from '@/features/parameters';
+import { ProfilePage } from '@/features/user-detail';
 import {
   PackageListPage,
   PackageCreatePage,
@@ -325,6 +326,10 @@ export const router = createBrowserRouter([
       {
         path: 'hangfire-monitoring',
         element: <HangfireMonitoringPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
       },
     ],
   },
