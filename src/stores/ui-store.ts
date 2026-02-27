@@ -7,6 +7,8 @@ interface UIState {
   setSidebarOpen: (open: boolean) => void;
   pageTitle: string | null;
   setPageTitle: (title: string | null) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -17,6 +19,8 @@ export const useUIStore = create<UIState>()(
       setSidebarOpen: (open) => set({ isSidebarOpen: open }),
       pageTitle: null,
       setPageTitle: (title) => set({ pageTitle: title }),
+      searchQuery: '',
+      setSearchQuery: (query) => set({ searchQuery: query }),
     }),
     {
       name: 'ui-storage',
@@ -24,4 +28,3 @@ export const useUIStore = create<UIState>()(
     }
   )
 );
-

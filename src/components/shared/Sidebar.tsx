@@ -1,10 +1,8 @@
 import { type ReactElement, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Search, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -16,6 +14,59 @@ interface NavItem {
 interface SidebarProps {
   items: NavItem[];
 }
+
+const iconTones = [
+  'blue',
+  'orange',
+  'emerald',
+  'pink',
+  'amber',
+  'cyan',
+  'indigo',
+  'violet',
+] as const;
+
+type IconTone = (typeof iconTones)[number];
+
+const getToneByTitle = (title: string): IconTone => {
+  const hash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return iconTones[hash % iconTones.length];
+};
+
+const toneClassMap: Record<IconTone, { idle: string; active: string }> = {
+  blue: {
+    idle: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300',
+    active: 'bg-blue-200 text-blue-800 dark:bg-blue-500/30 dark:text-blue-200',
+  },
+  orange: {
+    idle: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300',
+    active: 'bg-orange-200 text-orange-800 dark:bg-orange-500/30 dark:text-orange-200',
+  },
+  emerald: {
+    idle: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
+    active: 'bg-emerald-200 text-emerald-800 dark:bg-emerald-500/30 dark:text-emerald-200',
+  },
+  pink: {
+    idle: 'bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300',
+    active: 'bg-pink-200 text-pink-800 dark:bg-pink-500/30 dark:text-pink-200',
+  },
+  amber: {
+    idle: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
+    active: 'bg-amber-200 text-amber-800 dark:bg-amber-500/30 dark:text-amber-200',
+  },
+  cyan: {
+    idle: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300',
+    active: 'bg-cyan-200 text-cyan-800 dark:bg-cyan-500/30 dark:text-cyan-200',
+  },
+  indigo: {
+    idle: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300',
+    active: 'bg-indigo-200 text-indigo-800 dark:bg-indigo-500/30 dark:text-indigo-200',
+  },
+  violet: {
+    idle: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+    active: 'bg-violet-200 text-violet-800 dark:bg-violet-500/30 dark:text-violet-200',
+  },
+};
 
 function NavItemComponent({
   item,
@@ -39,6 +90,8 @@ function NavItemComponent({
   );
   const itemKey = item.href || item.title;
   const isExpanded = expandedItemKey === itemKey;
+  const iconTone = getToneByTitle(item.title);
+  const toneClasses = toneClassMap[iconTone];
   const onToggleRef = useRef(onToggle);
   const lastActiveRef = useRef(false);
   const lastSearchRef = useRef('');
@@ -169,7 +222,11 @@ function NavItemComponent({
         >
           {item.icon && (
             <span
-              className={cn('flex-shrink-0', !isSidebarOpen && 'mx-auto')}
+              className={cn(
+                'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
+                isChildActive ? toneClasses.active : toneClasses.idle,
+                !isSidebarOpen && 'mx-auto'
+              )}
               onClick={handleIconClick}
             >
               {item.icon}
@@ -265,7 +322,11 @@ function NavItemComponent({
     >
       {item.icon && (
         <span
-          className={cn('flex-shrink-0', !isSidebarOpen && 'mx-auto')}
+          className={cn(
+            'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
+            isActive ? toneClasses.active : toneClasses.idle,
+            !isSidebarOpen && 'mx-auto'
+          )}
           onClick={handleIconClick}
         >
           {item.icon}
@@ -284,9 +345,7 @@ function NavItemComponent({
 }
 
 export function Sidebar({ items }: SidebarProps): ReactElement {
-  const { t } = useTranslation();
-  const { isSidebarOpen } = useUIStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { isSidebarOpen, searchQuery } = useUIStore();
   const [expandedItemKey, setExpandedItemKey] = useState<string | null>(null);
   const [isManualClick, setIsManualClick] = useState(false);
 
@@ -322,36 +381,38 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
 
       <aside
         className={cn(
-          'custom-scrollbar fixed left-0 top-16 bottom-16 z-40 w-64 overflow-y-auto border-r border-slate-200/70 bg-white/80 backdrop-blur-xl transition-transform duration-300 ease-in-out dark:border-white/10 dark:bg-[#0c0516]/80 lg:translate-x-0',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-16'
+          'custom-scrollbar fixed left-0 top-0 bottom-0 z-50 flex w-[86vw] max-w-[320px] flex-col overflow-y-auto border-r border-slate-200/70 bg-white/80 backdrop-blur-xl transition-transform duration-300 ease-in-out dark:border-white/10 dark:bg-[#130822]/95 lg:w-72 lg:max-w-none lg:translate-x-0',
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-20'
         )}
       >
+        <div className="h-24 shrink-0 border-b border-slate-200/70 dark:border-white/5">
+          <div className={cn("flex h-full items-center px-4", isSidebarOpen ? "justify-between" : "justify-center")}>
+            {isSidebarOpen ? (
+              <>
+                <div className="text-left">
+                  <p className="text-3xl font-bold tracking-tight text-slate-900 dark:bg-gradient-to-r dark:from-pink-500 dark:to-orange-400 dark:bg-clip-text dark:text-transparent">
+                    V3RII
+                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-pink-300/80">
+                    WMS
+                  </p>
+                </div>
+                <button
+                  onClick={() => useUIStore.getState().setSidebarOpen(false)}
+                  className="rounded-lg p-2 text-slate-500 transition-colors hover:text-red-500 lg:hidden"
+                >
+                  <X size={20} />
+                </button>
+              </>
+            ) : (
+              <p className="text-lg font-bold text-slate-900 dark:text-pink-400">V3</p>
+            )}
+          </div>
+        </div>
         <nav className="flex h-full flex-col gap-1 p-4">
-          {isSidebarOpen && (
-            <div className="mb-3">
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-                <Input
-                  type="text"
-                  placeholder={t('sidebar.search', 'Ara...')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={cn(
-                    'h-9 rounded-xl border-slate-200 bg-white/80 text-slate-700 placeholder:text-slate-400 focus-visible:ring-pink-500/30 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:placeholder:text-slate-500',
-                    searchQuery ? 'pl-8 pr-8' : 'pl-8',
-                  )}
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors hover:text-pink-500 dark:text-slate-500 dark:hover:text-pink-400"
-                    aria-label="Temizle"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+          {isSidebarOpen && searchQuery.trim().length > 0 && (
+            <div className="mb-1 rounded-xl border border-pink-200/40 bg-pink-50/70 px-3 py-2 text-xs text-pink-700 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
+              Filtre: {searchQuery}
             </div>
           )}
           {items.map((item, index) => (
