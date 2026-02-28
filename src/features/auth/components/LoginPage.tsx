@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
 import loginImage from '@/assets/login.jpg';
-import { Building2, Eye, EyeOff, Lock, Mail, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
 export function LoginPage(): React.JSX.Element {
@@ -29,6 +29,7 @@ export function LoginPage(): React.JSX.Element {
   const { token, isAuthenticated, logout } = useAuthStore();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
+  const [isBgAnimationPaused, setIsBgAnimationPaused] = useState(false);
 
   const form = useForm<LoginRequest>({
     resolver: zodResolver(loginRequestSchema),
@@ -77,9 +78,18 @@ export function LoginPage(): React.JSX.Element {
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#070d1f]/60 to-[#070d1f]" />
       </div>
 
-      <AuthBackground isActive />
+      <AuthBackground isActive isPaused={isBgAnimationPaused} />
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <button
+          type="button"
+          onClick={() => setIsBgAnimationPaused((p) => !p)}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-[#0b1228]/80 text-slate-300 transition hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-300"
+          title={isBgAnimationPaused ? 'Animasyonu baslat' : 'Animasyonu durdur'}
+          aria-label={isBgAnimationPaused ? 'Animasyonu baslat' : 'Animasyonu durdur'}
+        >
+          {isBgAnimationPaused ? <Play size={18} /> : <Pause size={18} />}
+        </button>
         <LanguageSwitcher variant="pill" />
       </div>
 
@@ -98,7 +108,7 @@ export function LoginPage(): React.JSX.Element {
           </div>
 
           <div className="relative overflow-hidden p-8 sm:p-10">
-            <WmsBackgroundAnimation />
+            <WmsBackgroundAnimation isPaused={isBgAnimationPaused} />
             <div className="relative z-10 mb-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
                 <ShieldCheck size={26} />
