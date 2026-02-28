@@ -512,7 +512,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             isSidebarOpen ? 'lg:ml-72' : 'lg:ml-20'
           )}
         >
-          <Navbar />
+          <Navbar navItems={items} />
           <main className="custom-scrollbar crm-skin flex-1 overflow-y-auto pb-20 md:pb-16">
             <div className="w-full px-3 py-3 sm:px-4 sm:py-4">
               <RoutePermissionGuard />

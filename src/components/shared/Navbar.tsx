@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Search, X, Mic } from 'lucide-react';
@@ -10,22 +10,81 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 
-export function Navbar(): ReactElement {
+interface NavItem {
+  title: string;
+  href?: string;
+  children?: NavItem[];
+}
+
+interface SearchTarget {
+  title: string;
+  subtitle: string;
+  href: string;
+}
+
+interface NavbarProps {
+  navItems?: NavItem[];
+}
+
+const normalizeText = (text: string): string =>
+  text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ı/g, 'i')
+    .replace(/ş/g, 's')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c');
+
+const flattenSearchTargets = (items: NavItem[]): SearchTarget[] => {
+  const targets: SearchTarget[] = [];
+  for (const item of items) {
+    if (item.href) {
+      targets.push({ title: item.title, subtitle: item.title, href: item.href });
+    }
+    if (item.children?.length) {
+      for (const child of item.children) {
+        if (!child.href) continue;
+        targets.push({
+          title: child.title,
+          subtitle: `${item.title} / ${child.title}`,
+          href: child.href,
+        });
+      }
+    }
+  }
+  return targets;
+};
+
+export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, branch } = useAuthStore();
   const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
+  const [isSearchFocus, setIsSearchFocus] = useState(false);
 
   const { isListening, isSupported, startListening } = useVoiceSearch({
     onResult: (text) => {
       setSearchQuery(text);
       if (text.trim().length > 0) {
         setSidebarOpen(true);
+        setIsSearchFocus(true);
       }
     },
   });
+
+  const searchTargets = useMemo(() => flattenSearchTargets(navItems), [navItems]);
+  const quickResults = useMemo(() => {
+    const q = normalizeText(searchQuery.trim());
+    if (!q) return [] as SearchTarget[];
+    return searchTargets
+      .filter((item) => normalizeText(item.subtitle).includes(q))
+      .slice(0, 5);
+  }, [searchQuery, searchTargets]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -47,6 +106,20 @@ export function Navbar(): ReactElement {
     setSearchQuery(val);
     if (val.trim().length > 0) {
       setSidebarOpen(true);
+    }
+  };
+
+  const handleSearchNavigate = (target: SearchTarget): void => {
+    setSearchQuery(target.title);
+    setSidebarOpen(true);
+    setIsSearchFocus(false);
+    navigate(target.href);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && quickResults.length > 0) {
+      e.preventDefault();
+      handleSearchNavigate(quickResults[0]);
     }
   };
 
@@ -72,6 +145,9 @@ export function Navbar(): ReactElement {
                 type="text"
                 value={searchQuery}
                 onChange={handleSearch}
+                onKeyDown={handleSearchKeyDown}
+                onFocus={() => setIsSearchFocus(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocus(false), 120)}
                 placeholder={t('navbar.search_placeholder', 'Hizli arama yap...')}
                 className={cn(
                   'w-full rounded-2xl border py-3 pl-12 pr-24 text-sm font-medium outline-none transition-all duration-300',
@@ -84,6 +160,7 @@ export function Navbar(): ReactElement {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
+                      setIsSearchFocus(true);
                       startListening();
                     }}
                     className={cn(
@@ -106,6 +183,29 @@ export function Navbar(): ReactElement {
                   </button>
                 )}
               </div>
+
+              {isSearchFocus && searchQuery.trim().length > 0 && (
+                <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#130822]/95">
+                  {quickResults.length > 0 ? (
+                    quickResults.map((item) => (
+                      <button
+                        key={item.href}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSearchNavigate(item)}
+                        className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-white/10"
+                      >
+                        <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">{item.title}</span>
+                        <span className="ml-3 truncate text-xs text-slate-400">{item.subtitle}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
+                      {t('common.notFound', 'Sonuc bulunamadi')}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -146,9 +246,24 @@ export function Navbar(): ReactElement {
             type="text"
             value={searchQuery}
             onChange={handleSearch}
+            onKeyDown={handleSearchKeyDown}
             placeholder={t('navbar.search_placeholder', 'Hizli arama yap...')}
-            className="w-full rounded-xl border border-slate-200 bg-slate-100/70 py-2.5 pl-10 pr-11 text-sm text-slate-900 outline-none focus:border-pink-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
+            className="w-full rounded-xl border border-slate-200 bg-slate-100/70 py-2.5 pl-10 pr-20 text-sm text-slate-900 outline-none focus:border-pink-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
           />
+          <button
+            type="button"
+            onClick={() => startListening()}
+            className={cn(
+              'absolute right-9 top-1/2 -translate-y-1/2 rounded-lg p-1 transition-colors',
+              isListening
+                ? 'bg-pink-500/20 text-pink-500'
+                : 'text-slate-400 hover:bg-slate-200 hover:text-pink-500 dark:hover:bg-white/20',
+              !isSupported && 'cursor-not-allowed opacity-40'
+            )}
+            disabled={!isSupported}
+          >
+            <Mic size={14} />
+          </button>
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}

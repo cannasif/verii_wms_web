@@ -21,7 +21,7 @@ import enHangfireMonitoring from '../locales/en/hangfire-monitoring.json';
 import deHangfireMonitoring from '../locales/de/hangfire-monitoring.json';
 import frHangfireMonitoring from '../locales/fr/hangfire-monitoring.json';
 
-const savedLanguage = localStorage.getItem('i18nextLng') || 'tr';
+const defaultLanguage = 'tr';
 
 i18n
   .use(initReactI18next)
@@ -62,7 +62,7 @@ i18n
     },
     ns: ['translation', 'common', 'access-control', 'user-management', 'mail-settings', 'hangfire-monitoring'],
     defaultNS: 'translation',
-    lng: savedLanguage,
+    lng: defaultLanguage,
     fallbackLng: 'tr',
     interpolation: {
       escapeValue: false,

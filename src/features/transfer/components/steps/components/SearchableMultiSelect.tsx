@@ -46,7 +46,7 @@ export function SearchableMultiSelect<T>({
   isLoading = false,
   disabled = false,
   className,
-  maxHeight = '300px',
+  maxHeight = '220px',
   itemLimit = 100,
 }: SearchableMultiSelectProps<T>): ReactElement {
   const [open, setOpen] = useState(false);
@@ -195,4 +195,3 @@ export function SearchableMultiSelect<T>({
     </Popover>
   );
 }
-

@@ -2,6 +2,7 @@ import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { VoiceSearchButton } from "@/components/ui/voice-search-button"
 import {
   Command,
   CommandEmpty,
@@ -90,12 +91,22 @@ export function Combobox({
         container={portalContainer}
       >
         <Command>
-          <CommandInput 
-            placeholder={searchPlaceholder} 
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-          />
-          <CommandList>
+          <div className="relative [&_[data-slot=command-input-wrapper]]:pr-10">
+            <CommandInput
+              placeholder={searchPlaceholder}
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+            <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+              <VoiceSearchButton
+                onResult={(text) => setSearchQuery(text)}
+                size="sm"
+                variant="ghost"
+                className="h-5 w-5"
+              />
+            </div>
+          </div>
+          <CommandList className="max-h-[220px]">
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (

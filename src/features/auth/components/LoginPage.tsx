@@ -80,7 +80,7 @@ export function LoginPage(): React.JSX.Element {
       <AuthBackground isActive={showAnimation} />
 
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        <LanguageSwitcher />
+        <LanguageSwitcher variant="pill" />
         <button
           onClick={() => setShowAnimation((prev) => !prev)}
           className={`
@@ -133,7 +133,7 @@ export function LoginPage(): React.JSX.Element {
                           />
                           <Select onValueChange={field.onChange} value={field.value}>
                             <SelectTrigger
-                              className={`h-auto rounded-xl py-6 pl-12 pr-4 text-sm text-white transition-all focus:ring-0 ${
+                              className={`h-14 w-full rounded-xl px-12 pr-4 text-sm text-white transition-all focus:ring-0 ${
                                 fieldState.invalid
                                   ? 'border-red-500/80 bg-red-950/20'
                                   : 'border-white/15 bg-black/25 focus:border-cyan-500'
@@ -177,7 +177,7 @@ export function LoginPage(): React.JSX.Element {
                             {...field}
                             type="email"
                             placeholder={t('auth.login.emailPlaceholder')}
-                            className={`rounded-xl border py-6 pl-12 pr-4 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
+                            className={`h-14 rounded-xl border px-12 pr-4 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
                               fieldState.invalid
                                 ? 'border-red-500/80 bg-red-950/20'
                                 : 'border-white/15 bg-black/25 focus-visible:border-cyan-500'
@@ -205,7 +205,7 @@ export function LoginPage(): React.JSX.Element {
                             {...field}
                             type={isPasswordVisible ? 'text' : 'password'}
                             placeholder={t('auth.login.passwordPlaceholder')}
-                            className={`rounded-xl border py-6 pl-12 pr-11 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
+                            className={`h-14 rounded-xl border px-12 pr-11 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
                               fieldState.invalid
                                 ? 'border-red-500/80 bg-red-950/20'
                                 : 'border-white/15 bg-black/25 focus-visible:border-cyan-500'
@@ -261,4 +261,3 @@ export function LoginPage(): React.JSX.Element {
     </div>
   );
 }
-

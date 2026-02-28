@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Languages } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const languages = [
   { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
@@ -16,31 +17,48 @@ const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ];
 
-export function LanguageSwitcher(): ReactElement {
+interface LanguageSwitcherProps {
+  variant?: 'default' | 'pill';
+}
+
+export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps): ReactElement {
   const { i18n } = useTranslation();
 
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
+  const normalizedLanguage = i18n.language?.split('-')[0] || 'tr';
+  const currentLanguage = languages.find((lang) => lang.code === normalizedLanguage) || languages[0];
 
   const handleLanguageChange = (value: string): void => {
     i18n.changeLanguage(value);
   };
 
   return (
-    <Select value={i18n.language} onValueChange={handleLanguageChange}>
-      <SelectTrigger className="w-[140px] h-10 bg-background border shadow-lg hover:bg-accent">
+    <Select value={normalizedLanguage} onValueChange={handleLanguageChange}>
+      <SelectTrigger
+        className={cn(
+          'h-10 w-[140px] border bg-background shadow-lg hover:bg-accent',
+          variant === 'pill' &&
+            'h-11 w-[176px] rounded-full border-white/20 bg-slate-900/80 px-4 text-slate-100 shadow-[0_10px_30px_rgba(2,6,23,0.45)] backdrop-blur-xl hover:border-cyan-400/40 hover:bg-slate-900'
+        )}
+      >
         <div className="flex items-center gap-2 flex-1">
-          <Languages className="h-4 w-4 shrink-0" />
+          <Languages className={cn('h-4 w-4 shrink-0', variant === 'pill' && 'text-cyan-300')} />
           <SelectValue>
             <span className="flex items-center gap-1.5">
               <span className="text-base">{currentLanguage.flag}</span>
-              <span className="hidden sm:inline text-sm">{currentLanguage.name}</span>
+              <span className={cn('hidden text-sm sm:inline', variant === 'pill' && 'font-medium text-slate-100')}>
+                {currentLanguage.name}
+              </span>
             </span>
           </SelectValue>
         </div>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className={cn(variant === 'pill' && 'border-white/10 bg-[#0b1228] text-white')}>
         {languages.map((language) => (
-          <SelectItem key={language.code} value={language.code}>
+          <SelectItem
+            key={language.code}
+            value={language.code}
+            className={cn(variant === 'pill' && 'focus:bg-cyan-500/20 focus:text-white')}
+          >
             <div className="flex items-center gap-2">
               <span className="text-base">{language.flag}</span>
               <span>{language.name}</span>
@@ -51,4 +69,3 @@ export function LanguageSwitcher(): ReactElement {
     </Select>
   );
 }
-

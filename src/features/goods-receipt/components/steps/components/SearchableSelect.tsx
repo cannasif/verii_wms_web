@@ -45,7 +45,7 @@ export function SearchableSelect<T>({
   isLoading = false,
   disabled = false,
   className,
-  maxHeight = '300px',
+  maxHeight = '220px',
   itemLimit = 100,
 }: SearchableSelectProps<T>): ReactElement {
   const [open, setOpen] = useState(false);
