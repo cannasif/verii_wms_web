@@ -321,3 +321,212 @@ input:-webkit-autofill:active {
     transform: translateY(0);
   }
 }
+
+.wms-bg-noise {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.1) 0.6px, transparent 0.6px);
+  background-size: 3px 3px;
+  opacity: 0.12;
+}
+
+.wms-bg-aisles {
+  background-image:
+    linear-gradient(to right, rgba(14, 165, 233, 0.12) 1px, transparent 1px),
+    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+  background-size: 96px 100%, 24px 100%;
+  opacity: 0.24;
+}
+
+.wms-bg-grid-perspective {
+  background-image:
+    linear-gradient(87deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+    linear-gradient(-87deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+    linear-gradient(3deg, rgba(14, 165, 233, 0.06) 1px, transparent 1px);
+  background-size: 64px 48px, 64px 48px, 100% 32px;
+  opacity: 0.6;
+  animation: wms-grid-drift 25s linear infinite;
+}
+
+.wms-bg-conveyor::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 12px,
+    rgba(34, 211, 238, 0.35) 12px,
+    rgba(34, 211, 238, 0.35) 14px
+  );
+  animation: wms-conveyor-move 8s linear infinite;
+}
+
+.wms-bg-data-lines {
+  background-image:
+    linear-gradient(105deg, transparent 48%, rgba(56, 189, 248, 0.12) 49%, rgba(56, 189, 248, 0.12) 51%, transparent 52%),
+    linear-gradient(75deg, transparent 52%, rgba(34, 211, 238, 0.08) 53%, rgba(34, 211, 238, 0.08) 55%, transparent 56%);
+  background-size: 200% 100%, 180% 100%;
+  animation: wms-data-flow 20s ease-in-out infinite;
+}
+
+.wms-bg-floating-icons {
+  overflow: hidden;
+}
+
+.wms-float-icon {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  animation: wms-float 18s ease-in-out infinite;
+}
+
+.wms-float-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.wms-float-1 { left: 8%; top: 22%; animation-delay: 0s; animation-duration: 20s; }
+.wms-float-2 { left: 78%; top: 15%; animation-delay: -4s; animation-duration: 22s; }
+.wms-float-3 { left: 15%; top: 68%; animation-delay: -8s; animation-duration: 19s; }
+.wms-float-4 { left: 82%; top: 72%; animation-delay: -2s; animation-duration: 24s; }
+.wms-float-5 { left: 45%; top: 35%; animation-delay: -6s; animation-duration: 21s; }
+
+@keyframes wms-grid-drift {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 64px 0, -64px 0, 0 32px; }
+}
+
+@keyframes wms-conveyor-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(28px); }
+}
+
+@keyframes wms-data-flow {
+  0%, 100% { background-position: 0% 0%, 10% 0%; }
+  50% { background-position: 100% 0%, 90% 0%; }
+}
+
+@keyframes wms-float {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  25% { transform: translate(6px, -8px) scale(1.05); opacity: 0.9; }
+  50% { transform: translate(-4px, 4px) scale(0.98); opacity: 0.7; }
+  75% { transform: translate(-6px, -4px) scale(1.02); opacity: 0.85; }
+}
+
+.wms-bg-scan::before {
+  content: '';
+  position: absolute;
+  inset: -30% -25% auto auto;
+  width: 70%;
+  height: 180%;
+  background: linear-gradient(120deg, rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.14), rgba(56, 189, 248, 0));
+  transform: rotate(8deg);
+  animation: wms-scan-sweep 11s ease-in-out infinite;
+}
+
+.wms-bg-vignette {
+  background: radial-gradient(circle at center, rgba(2, 6, 23, 0) 42%, rgba(2, 6, 23, 0.58) 100%);
+}
+
+@keyframes wms-scan-sweep {
+  0%,
+  100% {
+    transform: translateX(12%) rotate(8deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateX(-32%) rotate(8deg);
+    opacity: 0.75;
+  }
+}
+
+.wms-micro-wrap {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1rem;
+  width: 210px;
+  height: 140px;
+  opacity: 0.42;
+  z-index: 0;
+}
+
+.wms-rack-frame {
+  fill: rgba(2, 6, 23, 0.12);
+  stroke: url(#wmsMicroStroke);
+  stroke-width: 1.4;
+}
+
+.wms-rack-line {
+  stroke: rgba(125, 211, 252, 0.34);
+  stroke-width: 1;
+}
+
+.wms-rack-box {
+  fill: rgba(56, 189, 248, 0.2);
+  stroke: rgba(56, 189, 248, 0.52);
+  stroke-width: 1;
+}
+
+.wms-scan-line {
+  fill: url(#wmsMicroScan);
+  animation: wms-micro-scan 2.6s ease-in-out infinite;
+}
+
+.wms-glow-frame {
+  fill: none;
+  stroke: rgba(56, 189, 248, 0.28);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.2));
+  animation: wms-micro-pulse 3s ease-in-out infinite;
+}
+
+@keyframes wms-micro-scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0.15;
+  }
+  45% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(92px);
+    opacity: 0.2;
+  }
+}
+
+@keyframes wms-micro-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 1024px) {
+  .wms-micro-wrap {
+    width: 170px;
+    height: 112px;
+    opacity: 0.34;
+  }
+}
+
+@media (max-width: 768px) {
+  .wms-micro-wrap {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wms-scan-line,
+  .wms-glow-frame,
+  .wms-bg-grid-perspective,
+  .wms-bg-conveyor::after,
+  .wms-bg-data-lines,
+  .wms-float-icon {
+    animation: none !important;
+  }
+}

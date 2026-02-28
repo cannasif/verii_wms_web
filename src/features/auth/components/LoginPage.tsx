@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
 import loginImage from '@/assets/login.jpg';
-import { Building2, Eye, EyeOff, Lock, Mail, Sparkles, ShieldCheck, TriangleAlert, Waves } from 'lucide-react';
+import { Building2, Eye, EyeOff, Lock, Mail, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
 export function LoginPage(): React.JSX.Element {
   const { t } = useTranslation();
@@ -28,7 +29,6 @@ export function LoginPage(): React.JSX.Element {
   const { token, isAuthenticated, logout } = useAuthStore();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(true);
 
   const form = useForm<LoginRequest>({
     resolver: zodResolver(loginRequestSchema),
@@ -71,28 +71,16 @@ export function LoginPage(): React.JSX.Element {
         }
       `}</style>
 
-      <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${showAnimation ? 'opacity-0' : 'opacity-100'}`}>
+      <div className="absolute inset-0 z-0 transition-opacity duration-1000 opacity-100">
         <div className="absolute left-[-12%] top-[-12%] h-[58vw] w-[58vw] rounded-full bg-cyan-900/20 blur-[120px] mix-blend-screen" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[58vw] w-[58vw] rounded-full bg-blue-900/20 blur-[120px] mix-blend-screen" />
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#070d1f]/60 to-[#070d1f]" />
       </div>
 
-      <AuthBackground isActive={showAnimation} />
+      <AuthBackground isActive />
 
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         <LanguageSwitcher variant="pill" />
-        <button
-          onClick={() => setShowAnimation((prev) => !prev)}
-          className={`
-            flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95
-            ${showAnimation
-              ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.35)]'
-              : 'border-white/20 bg-slate-900/80 text-slate-200 hover:border-cyan-400/40 hover:text-cyan-300'}
-          `}
-          title={showAnimation ? t('auth.login.animationOff', 'Animasyonu kapat') : t('auth.login.animationOn', 'Animasyonu ac')}
-        >
-          {showAnimation ? <Waves size={18} /> : <Sparkles size={18} />}
-        </button>
       </div>
 
       <div className="relative z-10 flex h-full w-full items-center justify-center px-4 py-8">
@@ -109,8 +97,9 @@ export function LoginPage(): React.JSX.Element {
             </div>
           </div>
 
-          <div className="p-8 sm:p-10">
-            <div className="mb-8 text-center">
+          <div className="relative overflow-hidden p-8 sm:p-10">
+            <WmsBackgroundAnimation />
+            <div className="relative z-10 mb-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
                 <ShieldCheck size={26} />
               </div>
