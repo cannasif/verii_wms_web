@@ -1,13 +1,14 @@
 interface AuthBackgroundProps {
   isActive: boolean;
+  isPaused?: boolean;
 }
 
-export const AuthBackground = ({ isActive }: AuthBackgroundProps) => {
+export const AuthBackground = ({ isActive, isPaused = false }: AuthBackgroundProps) => {
   return (
     <div
       className={`pointer-events-none fixed inset-0 z-0 transition-opacity duration-700 ${
         isActive ? 'opacity-100' : 'opacity-0'
-      }`}
+      } ${isPaused ? 'wms-bg-paused' : ''}`}
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(34,211,238,0.2),transparent_42%),radial-gradient(circle_at_82%_76%,rgba(59,130,246,0.15),transparent_46%),linear-gradient(180deg,#050d22_0%,#070f27_55%,#030916_100%)]" />
