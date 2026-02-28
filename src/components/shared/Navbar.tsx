@@ -6,7 +6,6 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
 import { UserProfileModal } from '@/features/user-detail';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 
@@ -211,7 +210,6 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <NotificationIcon />
-            <ThemeToggle />
 
             {user && <div className="hidden h-6 w-px bg-slate-200 dark:bg-white/10 sm:block" />}
 
