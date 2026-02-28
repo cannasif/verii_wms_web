@@ -1,8 +1,12 @@
-export function WmsBackgroundAnimation() {
+interface WmsBackgroundAnimationProps {
+  isPaused?: boolean;
+}
+
+export function WmsBackgroundAnimation({ isPaused = false }: WmsBackgroundAnimationProps) {
   return (
     <div
       aria-hidden="true"
-      className="wms-micro-wrap pointer-events-none select-none"
+      className={`wms-micro-wrap pointer-events-none select-none ${isPaused ? 'wms-micro-paused' : ''}`}
     >
       <svg viewBox="0 0 240 160" className="h-full w-full" role="presentation">
         <defs>
