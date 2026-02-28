@@ -520,6 +520,19 @@ input:-webkit-autofill:active {
   }
 }
 
+.wms-bg-paused .wms-bg-grid-perspective,
+.wms-bg-paused .wms-bg-scan::before,
+.wms-bg-paused .wms-bg-conveyor::after,
+.wms-bg-paused .wms-bg-data-lines,
+.wms-bg-paused .wms-float-icon {
+  animation-play-state: paused !important;
+}
+
+.wms-micro-paused .wms-scan-line,
+.wms-micro-paused .wms-glow-frame {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wms-scan-line,
   .wms-glow-frame,
