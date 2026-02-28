@@ -6,34 +6,36 @@ export function WmsBackgroundAnimation({ isPaused = false }: WmsBackgroundAnimat
   return (
     <div
       aria-hidden="true"
-      className={`wms-micro-wrap pointer-events-none select-none ${isPaused ? 'wms-micro-paused' : ''}`}
+      className={`wms-forklift-wrap pointer-events-none select-none ${isPaused ? 'wms-forklift-paused' : ''}`}
     >
-      <svg viewBox="0 0 240 160" className="h-full w-full" role="presentation">
+      <svg viewBox="0 0 160 100" className="h-full w-full" role="presentation">
         <defs>
-          <linearGradient id="wmsMicroStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(34,211,238,0.85)" />
-            <stop offset="100%" stopColor="rgba(59,130,246,0.75)" />
+          <linearGradient id="wmsForkliftStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(34,211,238,0.6)" />
+            <stop offset="100%" stopColor="rgba(59,130,246,0.5)" />
           </linearGradient>
-          <linearGradient id="wmsMicroScan" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(34,211,238,0)" />
-            <stop offset="50%" stopColor="rgba(34,211,238,0.22)" />
-            <stop offset="100%" stopColor="rgba(34,211,238,0)" />
-          </linearGradient>
+          <filter id="wmsForkliftGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
-
-        <rect x="24" y="24" width="176" height="112" rx="12" className="wms-rack-frame" />
-        <line x1="24" y1="60" x2="200" y2="60" className="wms-rack-line" />
-        <line x1="24" y1="92" x2="200" y2="92" className="wms-rack-line" />
-        <line x1="24" y1="124" x2="200" y2="124" className="wms-rack-line" />
-
-        <rect x="40" y="36" width="28" height="18" rx="4" className="wms-rack-box" />
-        <rect x="110" y="68" width="34" height="20" rx="4" className="wms-rack-box" />
-        <rect x="154" y="100" width="30" height="20" rx="4" className="wms-rack-box" />
-
-        <rect x="24" y="26" width="176" height="18" rx="8" className="wms-scan-line" />
-        <rect x="20" y="20" width="184" height="120" rx="14" className="wms-glow-frame" />
+        <g className="wms-forklift-pallet">
+          <rect x="18" y="72" width="44" height="14" rx="2" className="wms-pallet-base" />
+          <rect x="22" y="56" width="36" height="18" rx="2" className="wms-pallet-crate" />
+        </g>
+        <g className="wms-forklift-chassis">
+          <rect x="88" y="48" width="52" height="42" rx="4" className="wms-forklift-body" />
+          <rect x="92" y="50" width="24" height="16" rx="2" className="wms-forklift-cab" />
+          <circle cx="98" cy="92" r="6" className="wms-forklift-wheel" />
+          <circle cx="130" cy="92" r="6" className="wms-forklift-wheel" />
+          <rect x="96" y="38" width="5" height="22" rx="1" className="wms-forklift-mast" />
+          <rect x="126" y="38" width="5" height="22" rx="1" className="wms-forklift-mast" />
+          <rect x="78" y="54" width="28" height="4" rx="1" className="wms-forklift-forks" />
+        </g>
       </svg>
     </div>
   );
 }
-

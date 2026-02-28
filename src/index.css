@@ -442,80 +442,94 @@ input:-webkit-autofill:active {
   }
 }
 
-.wms-micro-wrap {
+.wms-forklift-wrap {
   position: absolute;
   right: 1.2rem;
   bottom: 1rem;
-  width: 210px;
-  height: 140px;
-  opacity: 0.42;
+  width: 160px;
+  height: 100px;
+  opacity: 0.72;
   z-index: 0;
 }
 
-.wms-rack-frame {
-  fill: rgba(2, 6, 23, 0.12);
-  stroke: url(#wmsMicroStroke);
-  stroke-width: 1.4;
+.wms-forklift-chassis {
+  animation: wms-forklift-move 3.5s ease-in-out infinite;
 }
 
-.wms-rack-line {
-  stroke: rgba(125, 211, 252, 0.34);
+.wms-forklift-pallet {
+  animation: wms-pallet-lift 3.5s ease-in-out infinite;
+}
+
+.wms-pallet-base,
+.wms-pallet-crate {
+  fill: rgba(2, 6, 23, 0.4);
+  stroke: url(#wmsForkliftStroke);
+  stroke-width: 1.2;
+}
+
+.wms-forklift-body,
+.wms-forklift-cab {
+  fill: rgba(2, 6, 23, 0.5);
+  stroke: url(#wmsForkliftStroke);
+  stroke-width: 1.2;
+}
+
+.wms-forklift-wheel {
+  fill: rgba(15, 23, 42, 0.8);
+  stroke: rgba(56, 189, 248, 0.5);
   stroke-width: 1;
 }
 
-.wms-rack-box {
-  fill: rgba(56, 189, 248, 0.2);
-  stroke: rgba(56, 189, 248, 0.52);
-  stroke-width: 1;
+.wms-forklift-mast,
+.wms-forklift-forks {
+  fill: rgba(34, 211, 238, 0.15);
+  stroke: rgba(34, 211, 238, 0.55);
+  stroke-width: 1.2;
 }
 
-.wms-scan-line {
-  fill: url(#wmsMicroScan);
-  animation: wms-micro-scan 2.6s ease-in-out infinite;
+.wms-forklift-forks {
+  filter: url(#wmsForkliftGlow);
 }
 
-.wms-glow-frame {
-  fill: none;
-  stroke: rgba(56, 189, 248, 0.28);
-  stroke-width: 1;
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.2));
-  animation: wms-micro-pulse 3s ease-in-out infinite;
-}
-
-@keyframes wms-micro-scan {
-  0% {
-    transform: translateY(0);
-    opacity: 0.15;
-  }
-  45% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(92px);
-    opacity: 0.2;
-  }
-}
-
-@keyframes wms-micro-pulse {
+@keyframes wms-forklift-move {
   0%,
   100% {
-    opacity: 0.35;
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(6px);
   }
   50% {
-    opacity: 0.7;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wms-pallet-lift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-6px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  75% {
+    transform: translateY(0);
   }
 }
 
 @media (max-width: 1024px) {
-  .wms-micro-wrap {
-    width: 170px;
-    height: 112px;
-    opacity: 0.34;
+  .wms-forklift-wrap {
+    width: 140px;
+    height: 88px;
+    opacity: 0.65;
   }
 }
 
 @media (max-width: 768px) {
-  .wms-micro-wrap {
+  .wms-forklift-wrap {
     display: none;
   }
 }
@@ -528,14 +542,14 @@ input:-webkit-autofill:active {
   animation-play-state: paused !important;
 }
 
-.wms-micro-paused .wms-scan-line,
-.wms-micro-paused .wms-glow-frame {
+.wms-forklift-paused .wms-forklift-chassis,
+.wms-forklift-paused .wms-forklift-pallet {
   animation-play-state: paused !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wms-scan-line,
-  .wms-glow-frame,
+  .wms-forklift-chassis,
+  .wms-forklift-pallet,
   .wms-bg-grid-perspective,
   .wms-bg-conveyor::after,
   .wms-bg-data-lines,
