@@ -28,7 +28,13 @@
     "no": "Nein",
     "add": "Hinzufügen",
     "start": "Starten",
-    "actions": "Aktionen"
+    "actions": "Aktionen",
+    "paginationInfo": "{{current}} - {{total}} of {{totalCount}}",
+    "page": "Sayfa",
+    "details": "Detaylar",
+    "selected": "Seçili",
+    "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "update": "Güncelle"
   },
   "auth": {
     "login": {
@@ -47,7 +53,10 @@
       "wrongPassword": "E-Mail oder Passwort ist falsch",
       "loginError": "Beim Anmelden ist ein Fehler aufgetreten",
       "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
-      "copyright": "© 2025 VERII. Alle Rechte vorbehalten."
+      "copyright": "© 2025 VERII. Alle Rechte vorbehalten.",
+      "animationOff": "Animasyonu kapat",
+      "animationOn": "Animasyonu ac",
+      "capsLockOn": "Caps Lock acik"
     },
     "forgotPassword": {
       "title": "Passwort vergessen",
@@ -87,7 +96,8 @@
     "logout": "Abmelden"
   },
   "navbar": {
-    "VERII WMS": "VERII WMS"
+    "VERII WMS": "VERII WMS",
+    "search_placeholder": "Hizli arama yap..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -138,7 +148,18 @@
     "permissionGroups": "Berechtigungsgruppen",
     "userGroupAssignments": "Benutzergruppen-Zuweisungen",
     "mailSettings": "E-Mail-Einstellungen",
-    "hangfireMonitoring": "Hangfire Uberwachung"
+    "hangfireMonitoring": "Hangfire Uberwachung",
+    "settings": "Ayarlar",
+    "subcontracting": "Fason İşlemleri",
+    "subcontractingIssueCreate": "Fason Çıkış Emri",
+    "subcontractingIssueList": "Fason Çıkış Listesi",
+    "subcontractingReceiptCreate": "Fason Giriş Emri",
+    "subcontractingReceiptList": "Fason Giriş Listesi",
+    "warehouse": "Ambar İşlemleri",
+    "warehouseInboundCreate": "Ambar Giriş Emri",
+    "warehouseInboundList": "Ambar Giriş Listesi",
+    "warehouseOutboundCreate": "Ambar Çıkış Emri",
+    "warehouseOutboundList": "Ambar Çıkış Listesi"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -163,7 +184,8 @@
     "goodsReceiptNumber": "Wareneingang #{{number}}",
     "shipmentNumber": "Sendung #{{number}}",
     "inventoryUpdate": "Inventaraktualisierung",
-    "hoursAgo": "vor {{hours}} Stunden"
+    "hoursAgo": "vor {{hours}} Stunden",
+    "user": "Kullanici"
   },
   "goodsReceipt": {
     "create": {
@@ -171,11 +193,16 @@
       "subtitle": "Geben Sie Wareneingangsinformationen ein und wählen Sie Bestellpositionen aus",
       "steps": {
         "basicInfo": "Grundinformationen",
-        "orderSelection": "Bestellung und Positionsauswahl"
+        "orderSelection": "Bestellung und Positionsauswahl",
+        "stockSelection": "Stok Seçimi"
       },
       "unknownStep": "Unbekannter Schritt",
       "success": "Wareneingang erfolgreich erstellt",
-      "error": "Beim Erstellen des Wareneingangs ist ein Fehler aufgetreten"
+      "error": "Beim Erstellen des Wareneingangs ist ein Fehler aufgetreten",
+      "mode": {
+        "order": "Sipariş Bazlı",
+        "stock": "Stok Bazlı"
+      }
     },
     "list": {
       "title": "Wareneingangsliste"
@@ -213,7 +240,10 @@
       "noOrders": "Keine Bestellungen für diesen Kunden gefunden",
       "selectedItems": "Ausgewählte Positionen",
       "selectedItemsCount": "{{count}} Positionen",
-      "noItemsSelected": "Noch keine Positionen ausgewählt"
+      "noItemsSelected": "Noch keine Positionen ausgewählt",
+      "customerPrompt": "Stokları görüntülemek için lütfen önceki adımdan bir müşteri seçin.",
+      "searchStocks": "Stok kodu veya adı ile ara...",
+      "noSelectedItems": "Seçili stok bulunmamaktadır"
     },
     "orderDetails": {
       "title": "Bestelldetails",
@@ -300,7 +330,25 @@
       "audit": "Prüfung",
       "createdBy": "Erstellt von",
       "updatedBy": "Aktualisiert von",
-      "updatedDate": "Aktualisierungsdatum"
+      "updatedDate": "Aktualisierungsdatum",
+      "description": "Açıklama",
+      "importLineDetail": "İçerik Satır Detayı",
+      "orderInfo": "Sipariş Bilgisi",
+      "importInfo": "İçerik Bilgisi",
+      "stockCode": "Stok Kodu",
+      "quantity": "Miktar",
+      "unit": "Ölçü Birimi",
+      "erpOrderNo": "ERP Sipariş No",
+      "erpOrderId": "ERP Sipariş ID",
+      "noOrderInfo": "Sipariş bilgisi bulunamadı",
+      "stockName": "Stok Adı",
+      "totalImportQuantity": "Toplam İçerik Miktarı",
+      "targetWarehouse": "Hedef Depo",
+      "info": "Bilgiler",
+      "content": "Mal Kabul İçeriği",
+      "searchContent": "Stok kodu veya adı ile ara...",
+      "noSearchResults": "Arama sonucu bulunamadı",
+      "noImportLines": "İçerik satırı bulunamadı"
     },
     "assignedList": {
       "title": "Zugewiesene Wareneingangsaufträge",
@@ -390,7 +438,9 @@
       "sourceWarehouse": "Ausgangslager",
       "selectSourceWarehouse": "Ausgangslager auswählen",
       "notes": "Notizen",
-      "notesPlaceholder": "Geben Sie Ihre Notizen ein"
+      "notesPlaceholder": "Geben Sie Ihre Notizen ein",
+      "operationUsers": "İşlem Yapacak Kullanıcılar",
+      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz"
     },
     "step2": {
       "selectCustomerFirst": "Zuerst Kunde auswählen",
@@ -455,6 +505,28 @@
       "scanBarcode": "Barcode scannen",
       "scanBarcodeDescription": "Barcode zur Kamera ausrichten",
       "yapKod": "Struktur"
+    },
+    "approval": {
+      "title": "Onay Bekleyen Sevkiyat Emirleri",
+      "approveSuccess": "Emir başarıyla onaylandı",
+      "approveError": "Onay işlemi sırasında bir hata oluştu",
+      "rejectSuccess": "Emir başarıyla reddedildi",
+      "rejectError": "Red işlemi sırasında bir hata oluştu",
+      "error": "Veri yüklenirken bir hata oluştu",
+      "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+      "id": "ID",
+      "documentNo": "Belge No",
+      "documentDate": "Belge Tarihi",
+      "customerCode": "Cari Kodu",
+      "customerName": "Cari Adı",
+      "sourceWarehouse": "Çıkış Deposu",
+      "targetWarehouse": "Varış Deposu",
+      "completionDate": "Tamamlanma Tarihi",
+      "actions": "İşlemler",
+      "viewDetails": "Detay",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "noData": "Onay bekleyen emir bulunamadı"
     }
   },
   "transfer": {
@@ -508,7 +580,10 @@
       "serialNo4": "Seriennummer 4",
       "sourceCellCode": "Ausgangszelle",
       "targetCellCode": "Zielzelle",
-      "detailDescription": "Detaillierte Informationen zum Transferauftrag"
+      "detailDescription": "Detaillierte Informationen zum Transferauftrag",
+      "documentInfo": "Belge Bilgileri",
+      "customerInfo": "Cari Bilgileri",
+      "warehouseInfo": "Depo Bilgileri"
     },
     "assignedList": {
       "title": "Zugewiesene Transferaufträge",
@@ -530,7 +605,9 @@
       "targetWarehouse": "Ziellager",
       "selectTargetWarehouse": "Ziellager auswählen",
       "notes": "Notizen",
-      "notesPlaceholder": "Notizen (optional)"
+      "notesPlaceholder": "Notizen (optional)",
+      "operationUsers": "İşlem Yapacak Kullanıcılar",
+      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz"
     },
     "step2": {
       "selectCustomerFirst": "Bitte wählen Sie zuerst einen Kunden aus",
@@ -622,6 +699,28 @@
       "deleteConfirmTitle": "Produkt löschen",
       "deleteConfirmWithPackage": "Das ausgewählte Produkt wird sowohl aus dem Paket als auch aus dem Prozess entfernt. Sind Sie sicher, dass Sie fortfahren möchten?",
       "deleteConfirmWithoutPackage": "Das Produkt wird aus der Sammlung entfernt. Sind Sie sicher, dass Sie fortfahren möchten?"
+    },
+    "approval": {
+      "title": "Onay Bekleyen Transfer Emirleri",
+      "approveSuccess": "Emir başarıyla onaylandı",
+      "approveError": "Onay işlemi sırasında bir hata oluştu",
+      "rejectSuccess": "Emir başarıyla reddedildi",
+      "rejectError": "Red işlemi sırasında bir hata oluştu",
+      "error": "Veri yüklenirken bir hata oluştu",
+      "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+      "id": "ID",
+      "documentNo": "Belge No",
+      "documentDate": "Belge Tarihi",
+      "customerCode": "Cari Kodu",
+      "customerName": "Cari Adı",
+      "sourceWarehouse": "Çıkış Deposu",
+      "targetWarehouse": "Varış Deposu",
+      "completionDate": "Tamamlanma Tarihi",
+      "actions": "İşlemler",
+      "viewDetails": "Detay",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "noData": "Onay bekleyen emir bulunamadı"
     }
   },
   "inventory": {
@@ -741,6 +840,187 @@
         "scanBarcodeDescription": "Barcode zur Kamera ausrichten",
         "yapKod": "Struktur"
       }
+    },
+    "validation": {
+      "transferDateRequired": "Tarih zorunludur",
+      "documentNoRequired": "Belge No zorunludur",
+      "customerRequired": "Cari seçimi zorunludur",
+      "sourceWarehouseRequired": "Çıkış deposu zorunludur",
+      "targetWarehouseRequired": "Varış deposu zorunludur"
+    },
+    "issue": {
+      "create": {
+        "title": "Yeni Fason Çıkış Emri",
+        "success": "Fason çıkış emri başarıyla oluşturuldu",
+        "error": "Fason çıkış emri oluşturulurken bir hata oluştu"
+      },
+      "list": {
+        "title": "Fason Çıkış Emri Listesi",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Çıkış Deposu",
+        "targetWarehouse": "Varış Deposu",
+        "documentType": "Belge Tipi",
+        "status": "Durum",
+        "createdDate": "Oluşturulma Tarihi",
+        "actions": "İşlemler",
+        "completed": "Tamamlandı",
+        "pendingApproval": "Onay Bekliyor",
+        "inProgress": "Devam Ediyor",
+        "viewDetails": "Detay",
+        "noData": "Veri bulunamadı"
+      },
+      "approval": {
+        "title": "Onay Bekleyen Fason Çıkış Emirleri",
+        "approveSuccess": "Emir başarıyla onaylandı",
+        "approveError": "Onay işlemi sırasında bir hata oluştu",
+        "rejectSuccess": "Emir başarıyla reddedildi",
+        "rejectError": "Red işlemi sırasında bir hata oluştu",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "id": "ID",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Çıkış Deposu",
+        "targetWarehouse": "Varış Deposu",
+        "completionDate": "Tamamlanma Tarihi",
+        "actions": "İşlemler",
+        "viewDetails": "Detay",
+        "approve": "Onayla",
+        "reject": "Reddet",
+        "noData": "Onay bekleyen emir bulunamadı"
+      }
+    },
+    "create": {
+      "steps": {
+        "basicInfo": "Temel Bilgiler",
+        "orderSelection": "Sipariş Seçimi"
+      },
+      "unknownStep": "Bilinmeyen adım"
+    },
+    "receipt": {
+      "approval": {
+        "title": "Onay Bekleyen Fason Giriş Emirleri",
+        "approveSuccess": "Emir başarıyla onaylandı",
+        "approveError": "Onay işlemi sırasında bir hata oluştu",
+        "rejectSuccess": "Emir başarıyla reddedildi",
+        "rejectError": "Red işlemi sırasında bir hata oluştu",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "id": "ID",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Çıkış Deposu",
+        "targetWarehouse": "Varış Deposu",
+        "completionDate": "Tamamlanma Tarihi",
+        "actions": "İşlemler",
+        "viewDetails": "Detay",
+        "approve": "Onayla",
+        "reject": "Reddet",
+        "noData": "Onay bekleyen emir bulunamadı"
+      },
+      "create": {
+        "title": "Yeni Fason Giriş Emri",
+        "success": "Fason giriş emri başarıyla oluşturuldu",
+        "error": "Fason giriş emri oluşturulurken bir hata oluştu"
+      },
+      "list": {
+        "title": "Fason Giriş Emri Listesi",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Çıkış Deposu",
+        "targetWarehouse": "Varış Deposu",
+        "documentType": "Belge Tipi",
+        "status": "Durum",
+        "createdDate": "Oluşturulma Tarihi",
+        "actions": "İşlemler",
+        "completed": "Tamamlandı",
+        "pendingApproval": "Onay Bekliyor",
+        "inProgress": "Devam Ediyor",
+        "viewDetails": "Detay",
+        "noData": "Veri bulunamadı"
+      }
+    },
+    "list": {
+      "detailTitle": "Fason Transfer Emri Detayı",
+      "detailDescription": "Fason transfer emrinin detaylı bilgileri",
+      "documentInfo": "Belge Bilgileri",
+      "id": "ID",
+      "documentNo": "Belge No",
+      "documentDate": "Belge Tarihi",
+      "documentType": "Belge Tipi",
+      "createdDate": "Oluşturulma Tarihi",
+      "customerInfo": "Cari Bilgileri",
+      "customerCode": "Cari Kodu",
+      "customerName": "Cari Adı",
+      "status": "Durum",
+      "completed": "Tamamlandı",
+      "pendingApproval": "Onay Bekliyor",
+      "inProgress": "Devam Ediyor",
+      "warehouseInfo": "Depo Bilgileri",
+      "sourceWarehouse": "Çıkış Deposu",
+      "targetWarehouse": "Varış Deposu",
+      "lines": "Kalemler",
+      "noData": "Veri bulunamadı",
+      "stockCode": "Stok Kodu",
+      "stockName": "Stok Adı",
+      "serialNo": "Seri No"
+    },
+    "step1": {
+      "notes": "Notlar",
+      "transferDate": "Transfer Tarihi",
+      "documentNo": "Belge No",
+      "documentNoPlaceholder": "Belge No giriniz",
+      "customer": "Cari",
+      "selectCustomer": "Cari seçiniz",
+      "projectCode": "Proje Kodu",
+      "selectProjectCode": "Proje kodu seçiniz",
+      "noProject": "Proje yok",
+      "sourceWarehouse": "Çıkış Deposu",
+      "selectSourceWarehouse": "Çıkış deposu seçiniz",
+      "targetWarehouse": "Varış Deposu",
+      "selectTargetWarehouse": "Varış deposu seçiniz",
+      "operationUsers": "İşlem Yapacak Kullanıcılar",
+      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz",
+      "notesPlaceholder": "Notlarınızı giriniz"
+    },
+    "step2": {
+      "searchItems": "Stok kodu veya adı ile ara...",
+      "selectCustomerFirst": "Önce Cari Seçiniz",
+      "customerPrompt": "Siparişleri görüntülemek için lütfen önceki adımdan bir cari seçin.",
+      "orders": "Siparişler",
+      "orderContent": "Sipariş İçeriği",
+      "noOrderSelected": "Sipariş Seçimi",
+      "selectOrderPrompt": "İşlem yapmak için siparişler sekmesinden bir sipariş seçiniz.",
+      "noItemsFound": "Bu siparişte ürün bulunamadı.",
+      "itemsCount": "{{count}} kalem ürün",
+      "started": "Başlanan",
+      "ordered": "Sipariş",
+      "pending": "Beklemede",
+      "completed": "Tamamlandı",
+      "remaining": "Kalan"
+    },
+    "details": {
+      "configCode": "Yapılandırma Kodu",
+      "lotNo": "Parti No",
+      "batchNo": "Batch No",
+      "serialNo": "Seri No",
+      "serialNoPlaceholder": "Seri No giriniz",
+      "lotNoPlaceholder": "Parti No giriniz",
+      "batchNoPlaceholder": "Batch No giriniz",
+      "configCodePlaceholder": "Yapılandırma Kodu giriniz"
     }
   },
   "footer": {
@@ -776,7 +1056,11 @@
       "requireApproval": "Genehmigung vor ERP erforderlich",
       "requireApprovalDescription": "Genehmigung vor dem Senden an ERP erforderlich",
       "requireAllOrderItemsCollected": "Alle Bestellpositionen müssen gesammelt werden",
-      "requireAllOrderItemsCollectedDescription": "Wenn dieser Parameter aktiv ist, müssen alle Positionen in der Bestellung gesammelt werden."
+      "requireAllOrderItemsCollectedDescription": "Wenn dieser Parameter aktiv ist, müssen alle Positionen in der Bestellung gesammelt werden.",
+      "editDescription": "Mevcut parametre ayarlarını düzenleyebilirsiniz",
+      "createDescription": "Yeni parametre ayarlarını oluşturabilirsiniz",
+      "updateButton": "Güncelle",
+      "createButton": "Kaydet"
     },
     "create": {
       "success": "Parameter erfolgreich erstellt",
@@ -875,7 +1159,11 @@
       "deleteConfirm": "Verpackung löschen",
       "deleteConfirmMessage": "Sind Sie sicher, dass Sie diese Verpackung löschen möchten?",
       "deleteSuccess": "Verpackung erfolgreich gelöscht",
-      "deleteError": "Fehler beim Löschen der Verpackung"
+      "deleteError": "Fehler beim Löschen der Verpackung",
+      "id": "Kayıt No",
+      "sourceType": "Kaynak Tipi",
+      "matchedSource": "Eşleşen Kaynak",
+      "customerName": "Cari Adı"
     },
     "wizard": {
       "step1": {
@@ -898,7 +1186,14 @@
         "addLineDescription": "Neue Zeile hinzufügen",
         "noPackages": "Sie müssen zuerst Pakete hinzufügen",
         "noPackagesMessage": "Sie müssen zuerst Pakete hinzufügen",
-        "noLines": "Noch keine Zeilen hinzugefügt"
+        "noLines": "Noch keine Zeilen hinzugefügt",
+        "stockNotFound": "Stok bulunamadı",
+        "enterBarcode": "Lütfen barkod giriniz",
+        "cameraError": "Kamera açılamadı",
+        "barcodeScanned": "Barkod okundu",
+        "barcodePlaceholder": "Barkod okutun veya yazın",
+        "scanBarcode": "Barkod Okut",
+        "scanBarcodeDescription": "Barkodu kameraya hizalayın"
       },
       "step4": {
         "title": "4. Zusammenfassung & Abschluss",
@@ -1002,7 +1297,27 @@
       "unmatch": "Verbindung trennen",
       "matchSuccess": "Abgleich erfolgreich durchgeführt",
       "unmatchSuccess": "Verbindung erfolgreich getrennt",
-      "matchError": "Fehler beim Abgleichen"
+      "matchError": "Fehler beim Abgleichen",
+      "basicInfo": "Temel Bilgiler",
+      "summary": "Özet Bilgiler",
+      "totalVolume": "Toplam Hacim",
+      "shippingInfo": "Kargo Bilgileri",
+      "stockName": "Stok Adı",
+      "yapAcik": "Yap Açıklama",
+      "stockNotFound": "Stok bulunamadı",
+      "enterBarcode": "Lütfen barkod giriniz",
+      "cameraError": "Kamera açılamadı",
+      "barcodeScanned": "Barkod okundu",
+      "noStockSelected": "Lütfen önce stok bilgisi getirin",
+      "invalidQuantity": "Geçersiz miktar",
+      "customerName": "Cari Adı",
+      "actions": "İşlemler",
+      "viewDetails": "Detay",
+      "barcodePlaceholder": "Barkod okutun veya yazın",
+      "add": "Ekle",
+      "scanBarcode": "Barkod Okut",
+      "scanBarcodeDescription": "Kamerayı barkoda doğrultun",
+      "totalNetWeight": "Toplam Net Ağırlık"
     },
     "packageDetail": {
       "title": "Paketdetails",
@@ -1032,12 +1347,74 @@
       "addLineDescription": "Neue Zeile hinzufügen",
       "lineFormComingSoon": "Zeilenformular wird bald hinzugefügt",
       "lineAddSuccess": "Zeile erfolgreich hinzugefügt",
-      "lineAddError": "Fehler beim Hinzufügen der Zeile"
+      "lineAddError": "Fehler beim Hinzufügen der Zeile",
+      "lineDeleteSuccess": "Satır başarıyla silindi",
+      "lineDeleteError": "Satır silinirken bir hata oluştu",
+      "stockNotFound": "Stok bulunamadı",
+      "enterBarcode": "Lütfen barkod giriniz",
+      "cameraError": "Kamera açılamadı",
+      "barcodeScanned": "Barkod okundu",
+      "noStockSelected": "Lütfen önce stok bilgisi getirin",
+      "invalidQuantity": "Geçersiz miktar",
+      "packageNotFound": "Paket bulunamadı",
+      "dimensions": "Boyutlar",
+      "stockName": "Stok Adı",
+      "yapAcik": "Yap Açıklama",
+      "barcodePlaceholder": "Barkod okutun veya yazın",
+      "add": "Ekle",
+      "scanBarcode": "Barkod Okut",
+      "scanBarcodeDescription": "Kamerayı barkoda doğrultun"
     },
     "form": {
       "selectWarehouse": "Lager auswählen",
       "selectCustomer": "Kunde auswählen",
-      "selectCarrier": "Spediteur auswählen"
+      "selectCarrier": "Spediteur auswählen",
+      "packingNoRequired": "Paketleme No zorunludur",
+      "packingHeaderIdRequired": "Paketleme Başlık ID zorunludur",
+      "packageNoRequired": "Paket No zorunludur",
+      "packageIdRequired": "Paket ID zorunludur",
+      "stockCodeRequired": "Stok Kodu zorunludur",
+      "quantityRequired": "Miktar zorunludur",
+      "packingNo": "Paketleme No",
+      "packingDate": "Paketleme Tarihi",
+      "warehouseCode": "Depo Kodu",
+      "customerCode": "Cari Kodu",
+      "status": "Durum",
+      "trackingNo": "Takip No",
+      "carrierServiceType": "Kargo Servis Tipi",
+      "packageNo": "Paket No",
+      "packageType": "Paket Tipi",
+      "dimensions": "Boyutlar",
+      "length": "Uzunluk",
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "weights": "Ağırlık Bilgileri",
+      "netWeight": "Net Ağırlık",
+      "tareWeight": "Dara Ağırlık",
+      "grossWeight": "Brüt Ağırlık",
+      "volume": "Hacim",
+      "package": "Paket",
+      "selectPackage": "Paket Seçin",
+      "yapKod": "Yap Kodu",
+      "yapAcik": "Yap Açıklama",
+      "serialNo": "Seri No",
+      "sourceType": "Kaynak Tipi",
+      "selectSourceType": "Kaynak Tipi Seçin",
+      "noSourceType": "Kaynak tipi bulunamadı",
+      "sourceHeaderId": "Eşlenecek Header",
+      "selectSourceHeader": "Eşlenecek Header Seçin",
+      "noAvailableHeaders": "Eşlenecek header bulunamadı",
+      "selectSourceTypeFirst": "Önce kaynak tipi seçiniz",
+      "carrierId": "Kargo Firması",
+      "noCarrier": "Kargo firması bulunamadı",
+      "customerAddress": "Cari Adresi",
+      "barcode": "Barkod",
+      "stockCode": "Stok Kodu",
+      "quantity": "Miktar",
+      "sourceRouteId": "Kaynak Rota ID",
+      "serialNo2": "Seri No 2",
+      "serialNo3": "Seri No 3",
+      "serialNo4": "Seri No 4"
     },
     "status": {
       "draft": "Entwurf",
@@ -1066,7 +1443,16 @@
       "srt": "Fremdarbeitseingang",
       "wi": "Lagerzugang",
       "wo": "Lagerabgang",
-      "sh": "Versand"
+      "sh": "Versand",
+      "GR": "Mal Kabul",
+      "WT": "Depo Transferi",
+      "SH": "Sevkiyat",
+      "PR": "Üretim",
+      "PT": "Üretim Transferi",
+      "SIT": "Yarı Mamul Çıkış Transferi",
+      "SRT": "Yarı Mamul Giriş Transferi",
+      "WI": "Ambar Girişi",
+      "WO": "Ambar Çıkışı"
     },
     "cargoCompany": {
       "None": "Keine",
@@ -1101,7 +1487,8 @@
     "viewAll": "Alle Benachrichtigungen anzeigen",
     "loading": "Wird geladen...",
     "disconnected": "Verbindung getrennt",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "connectionDisconnected": "connectionDisconnected"
   },
   "userDetail": {
     "title": "Benutzerdetails",
@@ -1113,7 +1500,12 @@
     "uploading": "Wird hochgeladen...",
     "height": "Größe (cm)",
     "weight": "Gewicht (kg)",
-    "gender": "Geschlecht",
+    "gender": {
+      "notSpecified": "Belirtilmemiş",
+      "male": "Erkek",
+      "female": "Kadın",
+      "other": "Diğer"
+    },
     "selectGender": "Geschlecht auswählen",
     "gender.notSpecified": "Nicht angegeben",
     "gender.male": "Männlich",
@@ -1151,6 +1543,208 @@
     "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
     "newPasswordMinLength": "Das neue Passwort muss mindestens 6 Zeichen lang sein",
     "newPasswordMaxLength": "Das neue Passwort darf höchstens 100 Zeichen lang sein",
-    "newPasswordSameAsCurrent": "Das neue Passwort darf nicht mit dem aktuellen übereinstimmen"
+    "newPasswordSameAsCurrent": "Das neue Passwort darf nicht mit dem aktuellen übereinstimmen",
+    "invalidGender": "Geçersiz cinsiyet değeri"
+  },
+  "roles": {
+    "admin": "Yonetici"
+  },
+  "profile": {
+    "title": "Profil"
+  },
+  "language_choice": "Dil",
+  "appearance": "Gorunum",
+  "warehouse": {
+    "validation": {
+      "operationTypeRequired": "İşlem tipi zorunludur",
+      "transferDateRequired": "Tarih zorunludur",
+      "documentNoRequired": "Belge No zorunludur",
+      "customerRequired": "Cari seçimi zorunludur",
+      "sourceWarehouseRequired": "Çıkış deposu zorunludur",
+      "targetWarehouseRequired": "Giriş deposu zorunludur"
+    },
+    "outbound": {
+      "create": {
+        "title": "Yeni Ambar Çıkış Emri",
+        "success": "Ambar çıkış emri başarıyla oluşturuldu",
+        "error": "Ambar çıkış emri oluşturulurken bir hata oluştu"
+      },
+      "approval": {
+        "title": "Onay Bekleyen Ambar Çıkış Emirleri",
+        "approveSuccess": "Emir başarıyla onaylandı",
+        "approveError": "Onay işlemi sırasında bir hata oluştu",
+        "rejectSuccess": "Emir başarıyla reddedildi",
+        "rejectError": "Red işlemi sırasında bir hata oluştu",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "id": "ID",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Depo",
+        "completionDate": "Tamamlanma Tarihi",
+        "actions": "İşlemler",
+        "viewDetails": "Detay",
+        "approve": "Onayla",
+        "reject": "Reddet",
+        "noData": "Onay bekleyen emir bulunamadı"
+      },
+      "assignedList": {
+        "title": "Atanmış Ambar Çıkış Emirleri",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "noData": "Atanmış ambar çıkış emri bulunamadı"
+      },
+      "list": {
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "sourceWarehouse": "Çıkış Deposu",
+        "documentType": "Belge Tipi",
+        "status": "Durum",
+        "createdDate": "Oluşturulma Tarihi",
+        "actions": "İşlemler",
+        "completed": "Tamamlandı",
+        "pendingApproval": "Onay Bekliyor",
+        "inProgress": "Devam Ediyor",
+        "viewDetails": "Detay",
+        "title": "Ambar Çıkış Emri Listesi",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "noData": "Veri bulunamadı"
+      }
+    },
+    "create": {
+      "steps": {
+        "basicInfo": "Temel Bilgiler",
+        "orderSelection": "Sipariş Seçimi"
+      },
+      "unknownStep": "Bilinmeyen adım"
+    },
+    "inbound": {
+      "approval": {
+        "title": "Onay Bekleyen Ambar Giriş Emirleri",
+        "approveSuccess": "Emir başarıyla onaylandı",
+        "approveError": "Onay işlemi sırasında bir hata oluştu",
+        "rejectSuccess": "Emir başarıyla reddedildi",
+        "rejectError": "Red işlemi sırasında bir hata oluştu",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "id": "ID",
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "targetWarehouse": "Depo",
+        "completionDate": "Tamamlanma Tarihi",
+        "actions": "İşlemler",
+        "viewDetails": "Detay",
+        "approve": "Onayla",
+        "reject": "Reddet",
+        "noData": "Onay bekleyen emir bulunamadı"
+      },
+      "create": {
+        "title": "Yeni Ambar Giriş Emri",
+        "success": "Ambar giriş emri başarıyla oluşturuldu",
+        "error": "Ambar giriş emri oluşturulurken bir hata oluştu"
+      },
+      "assignedList": {
+        "title": "Atanmış Ambar Giriş Emirleri",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "noData": "Atanmış ambar giriş emri bulunamadı"
+      },
+      "list": {
+        "documentNo": "Belge No",
+        "documentDate": "Belge Tarihi",
+        "customerCode": "Cari Kodu",
+        "customerName": "Cari Adı",
+        "targetWarehouse": "Giriş Deposu",
+        "documentType": "Belge Tipi",
+        "status": "Durum",
+        "createdDate": "Oluşturulma Tarihi",
+        "actions": "İşlemler",
+        "completed": "Tamamlandı",
+        "pendingApproval": "Onay Bekliyor",
+        "inProgress": "Devam Ediyor",
+        "viewDetails": "Detay",
+        "title": "Ambar Giriş Emri Listesi",
+        "error": "Veri yüklenirken bir hata oluştu",
+        "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
+        "noData": "Veri bulunamadı"
+      }
+    },
+    "list": {
+      "detailTitle": "Ambar Transfer Emri Detayı",
+      "detailDescription": "Ambar transfer emrinin detaylı bilgileri",
+      "documentInfo": "Belge Bilgileri",
+      "documentNo": "Belge No",
+      "documentDate": "Belge Tarihi",
+      "documentType": "Belge Tipi",
+      "createdDate": "Oluşturulma Tarihi",
+      "customerInfo": "Cari Bilgileri",
+      "customerCode": "Cari Kodu",
+      "customerName": "Cari Adı",
+      "status": "Durum",
+      "completed": "Tamamlandı",
+      "pendingApproval": "Onay Bekliyor",
+      "inProgress": "Devam Ediyor",
+      "warehouseInfo": "Depo Bilgileri",
+      "targetWarehouse": "Giriş Deposu",
+      "sourceWarehouse": "Çıkış Deposu",
+      "lines": "Kalemler",
+      "noData": "Veri bulunamadı",
+      "stockCode": "Stok Kodu",
+      "stockName": "Stok Adı",
+      "serialNo": "Seri No"
+    },
+    "step1": {
+      "notes": "Notlar",
+      "operationType": "İşlem Tipi",
+      "selectOperationType": "İşlem tipi seçiniz",
+      "entryWarehouse": "Giriş Deposu",
+      "selectEntryWarehouse": "Giriş deposu seçiniz",
+      "sourceWarehouse": "Çıkış Deposu",
+      "selectSourceWarehouse": "Çıkış deposu seçiniz",
+      "transferDate": "Transfer Tarihi",
+      "documentNo": "Belge No",
+      "documentNoPlaceholder": "Belge No giriniz",
+      "customer": "Cari",
+      "selectCustomer": "Cari seçiniz",
+      "projectCode": "Proje Kodu",
+      "selectProjectCode": "Proje kodu seçiniz",
+      "noProject": "Proje yok",
+      "operationUsers": "İşlem Yapacak Kullanıcılar",
+      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz",
+      "notesPlaceholder": "Notlarınızı giriniz"
+    },
+    "step2": {
+      "searchItems": "Stok kodu veya adı ile ara...",
+      "selectCustomerFirst": "Önce Cari Seçiniz",
+      "customerPrompt": "Siparişleri görüntülemek için lütfen önceki adımdan bir cari seçin.",
+      "orders": "Siparişler",
+      "orderContent": "Sipariş İçeriği",
+      "noOrderSelected": "Sipariş Seçimi",
+      "selectOrderPrompt": "İşlem yapmak için siparişler sekmesinden bir sipariş seçiniz.",
+      "noItemsFound": "Bu siparişte ürün bulunamadı.",
+      "itemsCount": "{{count}} kalem ürün",
+      "started": "Başlanan",
+      "ordered": "Sipariş",
+      "pending": "Beklemede",
+      "completed": "Tamamlandı",
+      "remaining": "Kalan"
+    },
+    "details": {
+      "configCode": "Yapılandırma Kodu",
+      "lotNo": "Parti No",
+      "batchNo": "Batch No",
+      "serialNo": "Seri No",
+      "serialNoPlaceholder": "Seri No giriniz",
+      "lotNoPlaceholder": "Parti No giriniz",
+      "batchNoPlaceholder": "Batch No giriniz",
+      "configCodePlaceholder": "Yapılandırma Kodu giriniz"
+    }
   }
 }
