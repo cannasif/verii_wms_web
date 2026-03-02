@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useRef, useLayoutEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +58,15 @@ export function PermissionGroupForm({
     },
   });
   const isFormValid = form.formState.isValid;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollTopRef = useRef(0);
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(() => firstInputRef.current?.focus({ preventScroll: true }), 0);
+    return () => clearTimeout(timer);
+  }, [open]);
 
   useEffect(() => {
     if (item) {
@@ -79,6 +88,15 @@ export function PermissionGroupForm({
     }
   }, [item, form, open]);
 
+  useLayoutEffect(() => {
+    if (!open) return;
+    const el = scrollContainerRef.current;
+    const saved = scrollTopRef.current;
+    if (el && saved > 0 && el.scrollTop === 0) {
+      el.scrollTop = saved;
+    }
+  });
+
   const handleSubmit = async (data: CreatePermissionGroupSchema): Promise<void> => {
     await onSubmit(data);
     if (!isLoading) {
@@ -89,27 +107,38 @@ export function PermissionGroupForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <DialogTitle className="text-xl font-bold">
-            {item
-              ? t('permissionGroups.form.editTitle')
-              : t('permissionGroups.form.addTitle')}
-          </DialogTitle>
-          <DialogDescription>
-            {item
-              ? t('permissionGroups.form.editDescription')
-              : t('permissionGroups.form.addDescription')}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className="gap-0 p-0 max-h-[80vh] bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl overflow-hidden"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className="flex flex-col h-[78vh] max-h-[78vh] min-h-0 overflow-hidden">
+          <DialogHeader className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
+            <DialogTitle className="text-xl font-bold">
+              {item
+                ? t('permissionGroups.form.editTitle')
+                : t('permissionGroups.form.addTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {item
+                ? t('permissionGroups.form.editDescription')
+                : t('permissionGroups.form.addDescription')}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
-          <Form {...form}>
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-6 sm:p-8 custom-scrollbar"
+            onScroll={(e) => { scrollTopRef.current = e.currentTarget.scrollTop; }}
+          >
+            <Form {...form}>
             <form id="permission-group-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 crm-page">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
+                  (() => {
+                    const { ref, ...fieldProps } = field;
+                    return (
                   <FormItem>
                     <FormLabel className="inline-flex items-center">
                       {t('permissionGroups.form.name')}
@@ -117,10 +146,20 @@ export function PermissionGroupForm({
                       <FieldHelpTooltip text={t('help.permissionGroup.name')} />
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('permissionGroups.form.namePlaceholder')} maxLength={100} />
+                      <Input
+                        ref={(el) => {
+                          ref(el);
+                          firstInputRef.current = el;
+                        }}
+                        {...fieldProps}
+                        placeholder={t('permissionGroups.form.namePlaceholder')}
+                        maxLength={100}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
+                    );
+                  })()
                 )}
               />
               <FormField
@@ -131,22 +170,6 @@ export function PermissionGroupForm({
                     <FormLabel>{t('permissionGroups.form.description')}</FormLabel>
                     <FormControl>
                       <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionGroups.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="isSystemAdmin"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <FormLabel className="inline-flex items-center">
-                      {t('permissionGroups.form.isSystemAdmin')}
-                      <FieldHelpTooltip text={t('help.permissionGroup.isSystemAdmin')} />
-                    </FormLabel>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -185,20 +208,21 @@ export function PermissionGroupForm({
                 )}
               />
             </form>
-          </Form>
-        </div>
+            </Form>
+          </div>
 
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel')}
-          </Button>
-          <span className="inline-flex items-center gap-1">
-            <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-            <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid}>
-              {isLoading ? t('common.saving') : t('common.save')}
+          <DialogFooter className="shrink-0 px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+              {t('common.cancel')}
             </Button>
-          </span>
-        </DialogFooter>
+            <span className="inline-flex items-center gap-1">
+              <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
+              <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid}>
+                {isLoading ? t('common.saving') : t('common.save')}
+              </Button>
+            </span>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
