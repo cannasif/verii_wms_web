@@ -107,7 +107,7 @@
   "common": {
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Save and Apply",
+    "save": "Enregistrer et appliquer",
     "loading": "Chargement...",
     "search": "Rechercher...",
     "noData": "Aucune donnée",
@@ -116,14 +116,14 @@
     "no": "Non",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "previous": "Ancien",
+    "previous": "Précédent",
     "next": "Suivant",
     "processing": "Traitement..."
   },
   "sidebar": {
     "accessControl": "Contrôle d'accès",
-    "permissionDefinitions": "Permission Definitions",
-    "permissionGroups": "Permission Groups",
-    "userGroupAssignments": "User Group Assignments"
+    "permissionDefinitions": "Définitions des permissions",
+    "permissionGroups": "Groupes de permissions",
+    "userGroupAssignments": "Affectations de groupes utilisateurs"
   }
 }

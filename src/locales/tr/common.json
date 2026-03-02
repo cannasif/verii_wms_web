@@ -55,8 +55,8 @@
       "sessionExpired": "Oturum süreniz doldu. Lütfen tekrar giriş yapın.",
       "copyright": "© 2025 VERII. Tüm hakları saklıdır.",
       "animationOff": "Animasyonu kapat",
-      "animationOn": "Animasyonu ac",
-      "capsLockOn": "Caps Lock acik"
+      "animationOn": "Animasyonu aç",
+      "capsLockOn": "Caps Lock açık"
     },
     "forgotPassword": {
       "title": "Şifremi Unuttum",
@@ -97,7 +97,7 @@
   },
   "navbar": {
     "VERII WMS": "VERII WMS",
-    "search_placeholder": "Hizli arama yap..."
+    "search_placeholder": "Hızlı arama yap..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -185,7 +185,7 @@
     "shipmentNumber": "Sevkiyat #{{number}}",
     "inventoryUpdate": "Envanter Güncelleme",
     "hoursAgo": "{{hours}} saat önce",
-    "user": "Kullanici"
+    "user": "Kullanıcı"
   },
   "goodsReceipt": {
     "create": {
@@ -1555,13 +1555,13 @@
     "invalidGender": "Geçersiz cinsiyet değeri"
   },
   "roles": {
-    "admin": "Yonetici"
+    "admin": "Yönetici"
   },
   "profile": {
     "title": "Profil"
   },
   "language_choice": "Dil",
-  "appearance": "Gorunum",
+  "appearance": "Görünüm",
   "warehouse": {
     "validation": {
       "operationTypeRequired": "İşlem tipi zorunludur",

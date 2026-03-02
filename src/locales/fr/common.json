@@ -30,11 +30,11 @@
     "start": "Démarrer",
     "actions": "Actions",
     "paginationInfo": "{{current}} - {{total}} of {{totalCount}}",
-    "page": "Sayfa",
-    "details": "Detaylar",
-    "selected": "Seçili",
-    "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
-    "update": "Güncelle"
+    "page": "Page",
+    "details": "Détails",
+    "selected": "Sélectionné",
+    "generalError": "Une erreur s'est produite. Veuillez réessayer.",
+    "update": "Mettre à jour"
   },
   "auth": {
     "login": {
@@ -54,9 +54,9 @@
       "loginError": "Une erreur s'est produite lors de la connexion",
       "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
       "copyright": "© 2025 VERII. Tous droits réservés.",
-      "animationOff": "Animasyonu kapat",
-      "animationOn": "Animasyonu ac",
-      "capsLockOn": "Caps Lock acik"
+      "animationOff": "Désactiver l'animation",
+      "animationOn": "Activer l'animation",
+      "capsLockOn": "Verr. Maj. activé"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
@@ -97,7 +97,7 @@
   },
   "navbar": {
     "VERII WMS": "VERII WMS",
-    "search_placeholder": "Hizli arama yap..."
+    "search_placeholder": "Recherche rapide..."
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -149,17 +149,17 @@
     "userGroupAssignments": "Affectations de groupes utilisateurs",
     "mailSettings": "Paramètres e-mail",
     "hangfireMonitoring": "Surveillance Hangfire",
-    "settings": "Ayarlar",
-    "subcontracting": "Fason İşlemleri",
-    "subcontractingIssueCreate": "Fason Çıkış Emri",
-    "subcontractingIssueList": "Fason Çıkış Listesi",
-    "subcontractingReceiptCreate": "Fason Giriş Emri",
-    "subcontractingReceiptList": "Fason Giriş Listesi",
-    "warehouse": "Ambar İşlemleri",
-    "warehouseInboundCreate": "Ambar Giriş Emri",
-    "warehouseInboundList": "Ambar Giriş Listesi",
-    "warehouseOutboundCreate": "Ambar Çıkış Emri",
-    "warehouseOutboundList": "Ambar Çıkış Listesi"
+    "settings": "Paramètres",
+    "subcontracting": "Sous-traitance",
+    "subcontractingIssueCreate": "Ordre d'émission sous-traitance",
+    "subcontractingIssueList": "Liste des émissions sous-traitance",
+    "subcontractingReceiptCreate": "Ordre de réception sous-traitance",
+    "subcontractingReceiptList": "Liste des réceptions sous-traitance",
+    "warehouse": "Opérations d'entrepôt",
+    "warehouseInboundCreate": "Ordre d'entrée de stock",
+    "warehouseInboundList": "Liste des entrées de stock",
+    "warehouseOutboundCreate": "Ordre de sortie de stock",
+    "warehouseOutboundList": "Liste des sorties de stock"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -185,7 +185,7 @@
     "shipmentNumber": "Expédition #{{number}}",
     "inventoryUpdate": "Mise à jour de l'inventaire",
     "hoursAgo": "il y a {{hours}} heures",
-    "user": "Kullanici"
+    "user": "Utilisateur"
   },
   "goodsReceipt": {
     "create": {
@@ -194,14 +194,14 @@
       "steps": {
         "basicInfo": "Informations de base",
         "orderSelection": "Sélection de commande et d'articles",
-        "stockSelection": "Stok Seçimi"
+        "stockSelection": "Sélection de stock"
       },
       "unknownStep": "Étape inconnue",
       "success": "Réception de marchandises créée avec succès",
       "error": "Une erreur s'est produite lors de la création de la réception de marchandises",
       "mode": {
-        "order": "Sipariş Bazlı",
-        "stock": "Stok Bazlı"
+        "order": "Basé sur commande",
+        "stock": "Basé sur stock"
       }
     },
     "list": {
@@ -241,9 +241,9 @@
       "selectedItems": "Articles sélectionnés",
       "selectedItemsCount": "{{count}} articles",
       "noItemsSelected": "Aucun article sélectionné pour le moment",
-      "customerPrompt": "Stokları görüntülemek için lütfen önceki adımdan bir müşteri seçin.",
-      "searchStocks": "Stok kodu veya adı ile ara...",
-      "noSelectedItems": "Seçili stok bulunmamaktadır"
+      "customerPrompt": "Veuillez sélectionner un client à l'étape précédente pour afficher les stocks.",
+      "searchStocks": "Rechercher par code stock ou nom...",
+      "noSelectedItems": "Aucun stock sélectionné"
     },
     "orderDetails": {
       "title": "Détails de la commande",
@@ -331,24 +331,24 @@
       "createdBy": "Créé par",
       "updatedBy": "Mis à jour par",
       "updatedDate": "Date de mise à jour",
-      "description": "Açıklama",
-      "importLineDetail": "İçerik Satır Detayı",
-      "orderInfo": "Sipariş Bilgisi",
-      "importInfo": "İçerik Bilgisi",
-      "stockCode": "Stok Kodu",
-      "quantity": "Miktar",
-      "unit": "Ölçü Birimi",
-      "erpOrderNo": "ERP Sipariş No",
-      "erpOrderId": "ERP Sipariş ID",
-      "noOrderInfo": "Sipariş bilgisi bulunamadı",
-      "stockName": "Stok Adı",
-      "totalImportQuantity": "Toplam İçerik Miktarı",
-      "targetWarehouse": "Hedef Depo",
-      "info": "Bilgiler",
-      "content": "Mal Kabul İçeriği",
-      "searchContent": "Stok kodu veya adı ile ara...",
-      "noSearchResults": "Arama sonucu bulunamadı",
-      "noImportLines": "İçerik satırı bulunamadı"
+      "description": "Description",
+      "importLineDetail": "Détail de ligne d'import",
+      "orderInfo": "Informations de commande",
+      "importInfo": "Informations d'import",
+      "stockCode": "Code stock",
+      "quantity": "Quantité",
+      "unit": "Unité de mesure",
+      "erpOrderNo": "N° commande ERP",
+      "erpOrderId": "ID commande ERP",
+      "noOrderInfo": "Aucune information de commande trouvée",
+      "stockName": "Nom du stock",
+      "totalImportQuantity": "Quantité d'import totale",
+      "targetWarehouse": "Entrepôt cible",
+      "info": "Informations",
+      "content": "Contenu de réception",
+      "searchContent": "Rechercher par code stock ou nom...",
+      "noSearchResults": "Aucun résultat de recherche",
+      "noImportLines": "Aucune ligne d'import trouvée"
     },
     "assignedList": {
       "title": "Ordres de réception assignés",
@@ -439,8 +439,8 @@
       "selectSourceWarehouse": "Sélectionner l'entrepôt source",
       "notes": "Notes",
       "notesPlaceholder": "Entrez vos notes",
-      "operationUsers": "İşlem Yapacak Kullanıcılar",
-      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz"
+      "operationUsers": "Utilisateurs pour l'opération",
+      "selectOperationUsers": "Sélectionner les utilisateurs pour l'opération"
     },
     "step2": {
       "selectCustomerFirst": "Sélectionnez d'abord un client",
@@ -606,8 +606,8 @@
       "selectTargetWarehouse": "Sélectionner l'entrepôt cible",
       "notes": "Notes",
       "notesPlaceholder": "Notes (optionnel)",
-      "operationUsers": "İşlem Yapacak Kullanıcılar",
-      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz"
+      "operationUsers": "Utilisateurs pour l'opération",
+      "selectOperationUsers": "Sélectionner les utilisateurs pour l'opération"
     },
     "step2": {
       "selectCustomerFirst": "Veuillez d'abord sélectionner un client",
@@ -1000,8 +1000,8 @@
       "selectSourceWarehouse": "Çıkış deposu seçiniz",
       "targetWarehouse": "Varış Deposu",
       "selectTargetWarehouse": "Varış deposu seçiniz",
-      "operationUsers": "İşlem Yapacak Kullanıcılar",
-      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz",
+      "operationUsers": "Utilisateurs pour l'opération",
+      "selectOperationUsers": "Sélectionner les utilisateurs pour l'opération",
       "notesPlaceholder": "Notlarınızı giriniz"
     },
     "step2": {
@@ -1552,19 +1552,19 @@
     "newPasswordMinLength": "Le nouveau mot de passe doit contenir au moins 6 caractères",
     "newPasswordMaxLength": "Le nouveau mot de passe doit contenir au maximum 100 caractères",
     "newPasswordSameAsCurrent": "Le nouveau mot de passe ne peut pas être identique à l'actuel",
-    "invalidGender": "Geçersiz cinsiyet değeri"
+    "invalidGender": "Valeur de sexe invalide"
   },
   "roles": {
-    "admin": "Yonetici"
+    "admin": "Administrateur"
   },
   "profile": {
     "title": "Profil"
   },
-  "language_choice": "Dil",
-  "appearance": "Gorunum",
+  "language_choice": "Langue",
+  "appearance": "Apparence",
   "warehouse": {
     "validation": {
-      "operationTypeRequired": "İşlem tipi zorunludur",
+      "operationTypeRequired": "Le type d'opération est requis",
       "transferDateRequired": "Tarih zorunludur",
       "documentNoRequired": "Belge No zorunludur",
       "customerRequired": "Cari seçimi zorunludur",
@@ -1724,8 +1724,8 @@
       "projectCode": "Proje Kodu",
       "selectProjectCode": "Proje kodu seçiniz",
       "noProject": "Proje yok",
-      "operationUsers": "İşlem Yapacak Kullanıcılar",
-      "selectOperationUsers": "İşlem yapacak kullanıcıları seçiniz",
+      "operationUsers": "Utilisateurs pour l'opération",
+      "selectOperationUsers": "Sélectionner les utilisateurs pour l'opération",
       "notesPlaceholder": "Notlarınızı giriniz"
     },
     "step2": {
