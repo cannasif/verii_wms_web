@@ -724,6 +724,14 @@
     }
   },
   "inventory": {
+    "outsideWarehouse": {
+      "confirmRemoveTitle": "Retirer le produit",
+      "confirmRemoveMessage": "Êtes-vous sûr de vouloir retirer ce produit de l'étagère ?",
+      "confirmMoveTitle": "Déplacer vers une autre zone",
+      "confirmMoveMessage": "Êtes-vous sûr de vouloir déplacer ce produit vers la zone sélectionnée ?",
+      "selectRack": "Sélectionner une étagère",
+      "searchRack": "Rechercher une étagère..."
+    },
     "warehouse3d": {
       "title": "Visualisation 3D de l'entrepôt",
       "description": "Visualisation 3D de l'entrepôt",

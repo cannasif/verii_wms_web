@@ -724,6 +724,14 @@
     }
   },
   "inventory": {
+    "outsideWarehouse": {
+      "confirmRemoveTitle": "Remove product",
+      "confirmRemoveMessage": "Are you sure you want to remove this product from the rack?",
+      "confirmMoveTitle": "Move to another area",
+      "confirmMoveMessage": "Are you sure you want to move this product to the selected area?",
+      "selectRack": "Select rack",
+      "searchRack": "Search rack..."
+    },
     "warehouse3d": {
       "title": "3D Warehouse Visualization",
       "description": "3D visualization of the warehouse",

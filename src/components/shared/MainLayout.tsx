@@ -126,6 +126,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           title: t('sidebar.warehouse3d', '3D Depo'),
           href: '/inventory/3d-warehouse',
         },
+        {
+          title: t('sidebar.warehouse3dOutside', '3D Outside Warehouse'),
+          href: '/inventory/3d-outside-warehouse',
+        },
       ],
     },
     {

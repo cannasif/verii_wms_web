@@ -41,7 +41,7 @@ import {
   WarehouseOutboundApprovalPage,
 } from '@/features/warehouse';
 import { ShipmentCreatePage, ShipmentListPage, AssignedShipmentListPage, ShipmentCollectionPage, ShipmentApprovalPage } from '@/features/shipment';
-import { Warehouse3dPage } from '@/features/inventory/3d-warehouse';
+import { Warehouse3dPage, OutsideWarehousePage } from '@/features/inventory/3d-warehouse';
 import { ParameterFormPage } from '@/features/parameters';
 import { ProfilePage } from '@/features/user-detail';
 import {
@@ -256,6 +256,10 @@ export const router = createBrowserRouter([
           {
             path: '3d-warehouse',
             element: <Warehouse3dPage />,
+          },
+          {
+            path: '3d-outside-warehouse',
+            element: <OutsideWarehousePage />,
           },
         ],
       },

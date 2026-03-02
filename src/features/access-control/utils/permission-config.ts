@@ -28,6 +28,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/shipment/assigned': 'wms.shipment.assigned.view',
   '/shipment/approval': 'wms.shipment.approval.view',
   '/inventory/3d-warehouse': 'wms.inventory.3d-warehouse.view',
+  '/inventory/3d-outside-warehouse': 'wms.inventory.3d-warehouse.view',
   '/reports': 'wms.reports.view',
   '/parameters/gr': 'wms.parameters.gr.view',
   '/parameters/wt': 'wms.parameters.wt.view',

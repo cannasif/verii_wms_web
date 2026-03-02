@@ -724,6 +724,14 @@
     }
   },
   "inventory": {
+    "outsideWarehouse": {
+      "confirmRemoveTitle": "Ürünü çıkart",
+      "confirmRemoveMessage": "Bu ürünü raftan çıkartmak istediğinize emin misiniz?",
+      "confirmMoveTitle": "Farklı bölgeye taşı",
+      "confirmMoveMessage": "Bu ürünü seçtiğiniz bölgeye taşımak istediğinize emin misiniz?",
+      "selectRack": "Raf seçiniz",
+      "searchRack": "Raf ara..."
+    },
     "warehouse3d": {
       "title": "3D Depo Görselleştirme",
       "description": "Deponun 3 boyutlu görselleştirmesi",

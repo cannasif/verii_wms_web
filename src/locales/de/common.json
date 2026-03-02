@@ -724,6 +724,14 @@
     }
   },
   "inventory": {
+    "outsideWarehouse": {
+      "confirmRemoveTitle": "Produkt entfernen",
+      "confirmRemoveMessage": "Sind Sie sicher, dass Sie dieses Produkt aus dem Regal entfernen möchten?",
+      "confirmMoveTitle": "In anderen Bereich verschieben",
+      "confirmMoveMessage": "Sind Sie sicher, dass Sie dieses Produkt in den ausgewählten Bereich verschieben möchten?",
+      "selectRack": "Regal auswählen",
+      "searchRack": "Regal suchen..."
+    },
     "warehouse3d": {
       "title": "3D-Lagervisualisierung",
       "description": "3D-Visualisierung des Lagers",

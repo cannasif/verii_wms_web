@@ -32,6 +32,7 @@ interface ComboboxProps {
   className?: string
   modal?: boolean
   disabled?: boolean
+  listClassName?: string
 }
 
 export function Combobox({
@@ -43,7 +44,8 @@ export function Combobox({
   emptyText = "Sonuç bulunamadı.",
   className,
   modal = false,
-  disabled = false
+  disabled = false,
+  listClassName
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -91,7 +93,7 @@ export function Combobox({
         container={portalContainer}
       >
         <Command>
-          <div className="relative [&_[data-slot=command-input-wrapper]]:pr-10">
+          <div className="relative **:data-[slot=command-input-wrapper]:pr-10">
             <CommandInput
               placeholder={searchPlaceholder}
               value={searchQuery}
@@ -106,7 +108,7 @@ export function Combobox({
               />
             </div>
           </div>
-          <CommandList className="max-h-[220px]">
+          <CommandList className={listClassName ?? "max-h-[220px]"}>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
