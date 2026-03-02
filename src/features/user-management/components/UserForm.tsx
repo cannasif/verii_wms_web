@@ -38,6 +38,7 @@ import type { UserDto } from '../types/user-types';
 import { useUserAuthorityOptionsQuery } from '../hooks/useUserAuthorityOptionsQuery';
 import type { RoleOption } from '../hooks/useUserAuthorityOptionsQuery';
 import { useUserPermissionGroupsForForm } from '../hooks/useUserPermissionGroupsForForm';
+import { usePermissionGroupOptionsQuery } from '../hooks/usePermissionGroupOptionsQuery';
 import { UserFormPermissionGroupSelect } from './UserFormPermissionGroupSelect';
 
 interface UserFormProps {
@@ -70,6 +71,11 @@ export function UserForm({
   const isEditMode = userId != null;
   const roleOptionsQuery = useUserAuthorityOptionsQuery();
   const roleOptions = roleOptionsQuery.data ?? EMPTY_ROLE_OPTIONS;
+  const permissionGroupOptionsQuery = usePermissionGroupOptionsQuery();
+  const permissionGroupOptions = permissionGroupOptionsQuery.data ?? [];
+  const systemAdminGroupIds = permissionGroupOptions
+    .filter((group) => group.isSystemAdmin)
+    .map((group) => group.value);
   const userPermissionGroupsQuery = useUserPermissionGroupsForForm(
     userId
   );
@@ -91,6 +97,9 @@ export function UserForm({
     },
   });
   const isFormValid = form.formState.isValid;
+  const selectedRoleId = form.watch('roleId');
+  const selectedRole = roleOptions.find((opt) => opt.value === selectedRoleId);
+  const isAdminRole = (selectedRole?.label ?? '').toLowerCase().includes('admin');
 
   useEffect(() => {
     if (!open) {
@@ -170,6 +179,47 @@ export function UserForm({
       form.setValue('roleId', matchedRole.value, { shouldDirty: false, shouldTouch: false });
     }
   }, [open, userId, userRoleLabel, roleOptions, form]);
+
+  useEffect(() => {
+    if (roleOptions.length === 0 || !selectedRoleId) {
+      return;
+    }
+
+    if (isAdminRole || systemAdminGroupIds.length === 0) {
+      return;
+    }
+
+    const selectedGroupIds = form.getValues('permissionGroupIds') ?? [];
+    if (selectedGroupIds.length === 0) {
+      return;
+    }
+
+    const filteredGroupIds = selectedGroupIds.filter((id) => !systemAdminGroupIds.includes(id));
+    if (filteredGroupIds.length !== selectedGroupIds.length) {
+      form.setValue('permissionGroupIds', filteredGroupIds, { shouldDirty: true, shouldTouch: true });
+    }
+  }, [isAdminRole, systemAdminGroupIds, form, roleOptions.length, selectedRoleId]);
+
+  useEffect(() => {
+    if (roleOptions.length === 0 || !selectedRoleId) {
+      return;
+    }
+
+    if (!isAdminRole || systemAdminGroupIds.length === 0) {
+      return;
+    }
+
+    const selectedGroupIds = form.getValues('permissionGroupIds') ?? [];
+    const missingSystemAdminIds = systemAdminGroupIds.filter((id) => !selectedGroupIds.includes(id));
+    if (missingSystemAdminIds.length === 0) {
+      return;
+    }
+
+    form.setValue('permissionGroupIds', [...selectedGroupIds, ...missingSystemAdminIds], {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }, [isAdminRole, systemAdminGroupIds, form, roleOptions.length, selectedRoleId]);
 
   const handleSubmit = async (data: UserFormSchema | UserUpdateFormSchema): Promise<void> => {
     await onSubmit(data);
@@ -383,6 +433,7 @@ export function UserForm({
                       value={field.value ?? []}
                       onChange={field.onChange}
                       disabled={isLoading}
+                      isAdminRole={isAdminRole}
                     />
                   </FormControl>
                   <FormMessage />
