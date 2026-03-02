@@ -92,7 +92,7 @@ export function Step2ShipmentOrderSelection({
           </Tabs>
         </div>
         <div className="hidden lg:flex lg:flex-row lg:h-full lg:divide-x lg:divide-border">
-          <div className="w-[30%] overflow-hidden min-w-0 flex flex-col">
+          <div className="lg:w-[32%] xl:w-[30%] overflow-hidden min-w-0 flex flex-col">
             <ShipmentOrderSelectionPanel
               orders={orders}
               selectedOrderId={activeSiparisNo}
