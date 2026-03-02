@@ -186,7 +186,7 @@ export function UserTable({
               </TableHead>
               {onEdit && (
                 <TableHead className="w-[80px]">
-                  {t('common.actions')}
+                  {t('common:common.actions')}
                 </TableHead>
               )}
             </TableRow>
@@ -232,7 +232,7 @@ export function UserTable({
                       size="sm"
                       onClick={() => onEdit(user)}
                     >
-                      {t('common.edit')}
+                      {t('common:common.edit')}
                     </Button>
                   </TableCell>
                 )}
