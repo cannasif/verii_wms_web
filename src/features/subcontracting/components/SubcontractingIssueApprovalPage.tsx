@@ -230,7 +230,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
             </Table>
           </div>
           {data && (
-            <div className="flex items-center justify-between border-t pt-4">
+            <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-muted-foreground">
                 {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
                   current: data.pageNumber * data.pageSize + 1,
@@ -276,7 +276,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
                           {t('subcontracting.issue.approval.documentNo', 'Belge No')}

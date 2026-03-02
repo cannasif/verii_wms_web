@@ -220,7 +220,7 @@ export function PermissionGroupsPage(): ReactElement {
               </TableBody>
             </Table>
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-slate-200/80 p-4 dark:border-white/10">
+              <div className="flex flex-col gap-3 border-t border-slate-200/80 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
                 <span className="text-sm text-slate-500">
                   {t('permissionGroups.table.showing', {
                     from: (pageNumber - 1) * pageSize + 1,

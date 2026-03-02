@@ -303,7 +303,7 @@ export function PackageListPage(): ReactElement {
                         </Badge>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
                           {t('package.list.packingDate', 'Paketleme Tarihi')}
@@ -391,7 +391,7 @@ export function PackageListPage(): ReactElement {
           </div>
 
           {data && data.totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between border-t border-slate-200/80 pt-4 dark:border-white/10">
+            <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="text-sm text-muted-foreground">
                 {t('package.list.pageInfo', 'Sayfa {{current}} / {{total}}', {
                   current: data.pageNumber,
