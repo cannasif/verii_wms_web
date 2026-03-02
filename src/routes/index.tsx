@@ -3,6 +3,7 @@ import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MainLayout } from '@/components/shared/MainLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import { LoginPage, ForgotPasswordPage, ResetPasswordPage } from '@/features/auth';
+import { WelcomePage } from '@/features/welcome';
 import { DashboardPage } from '@/features/dashboard';
 import {
   GoodsReceiptCreatePage,
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <WelcomePage />,
+      },
+      {
+        path: 'dashboard',
         element: <DashboardPage />,
       },
       {
