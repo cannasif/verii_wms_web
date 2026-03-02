@@ -117,7 +117,7 @@ export function PermissionDefinitionMultiSelect({
           {t('permissionGroups.selectAll')}
         </label>
       </div>
-      <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
+      <div className="min-h-[160px] max-h-[240px] overflow-y-auto border rounded-lg p-2 space-y-2 custom-scrollbar">
         {filteredItems.length === 0 ? (
           <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
         ) : (
