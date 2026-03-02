@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Plus, Search, RefreshCw, X, Settings } from 'lucide-react';
@@ -47,6 +47,7 @@ export function PermissionGroupsPage(): ReactElement {
   const pageSize = 20;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
+  const mainScrollTopRef = useRef(0);
 
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber,
@@ -83,14 +84,31 @@ export function PermissionGroupsPage(): ReactElement {
   };
 
   const handleAddClick = (): void => {
+    const main = document.querySelector('main');
+    if (main) mainScrollTopRef.current = main.scrollTop;
     setEditingItem(null);
     setFormOpen(true);
   };
 
   const handleEditClick = (item: PermissionGroupDto): void => {
+    const main = document.querySelector('main');
+    if (main) mainScrollTopRef.current = main.scrollTop;
     setEditingItem(item);
     setFormOpen(true);
   };
+
+  useEffect(() => {
+    if (!formOpen) return;
+    const main = document.querySelector('main');
+    if (!main) return;
+    const saved = mainScrollTopRef.current;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        main.scrollTop = saved;
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [formOpen]);
 
   const handlePermissionsClick = (item: PermissionGroupDto): void => {
     setPermissionsPanelGroupId(item.id);

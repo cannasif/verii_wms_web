@@ -60,11 +60,10 @@ export function Combobox({
     }
   }, [open])
 
-  React.useEffect(() => {
-    if (!open) return
+  React.useLayoutEffect(() => {
     const dialogContent = triggerRef.current?.closest('[data-slot="dialog-content"]') as HTMLElement | null
-    setPortalContainer(dialogContent)
-  }, [open])
+    setPortalContainer(dialogContent ?? null)
+  }, [])
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
