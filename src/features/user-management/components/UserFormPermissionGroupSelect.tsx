@@ -6,15 +6,18 @@ interface UserFormPermissionGroupSelectProps {
   value: number[];
   onChange: (ids: number[]) => void;
   disabled?: boolean;
+  isAdminRole?: boolean;
 }
 
 export function UserFormPermissionGroupSelect({
   value,
   onChange,
   disabled = false,
+  isAdminRole = false,
 }: UserFormPermissionGroupSelectProps): ReactElement {
   const { t } = useTranslation('user-management');
   const { data: items = [], isLoading } = usePermissionGroupOptionsQuery();
+  const selectableItems = items.filter((item) => isAdminRole || !item.isSystemAdmin);
 
   const handleToggle = (id: number): void => {
     if (value.includes(id)) {
@@ -26,7 +29,7 @@ export function UserFormPermissionGroupSelect({
 
   const handleSelectAll = (checked: boolean): void => {
     if (checked) {
-      onChange(items.map((i) => i.value));
+      onChange(selectableItems.map((i) => i.value));
     } else {
       onChange([]);
     }
@@ -47,9 +50,9 @@ export function UserFormPermissionGroupSelect({
           id="user-form-select-all-groups"
           type="checkbox"
           className="h-4 w-4 rounded border border-input accent-primary"
-          checked={items.length > 0 && value.length === items.length}
+          checked={selectableItems.length > 0 && selectableItems.every((item) => value.includes(item.value))}
           onChange={(e) => handleSelectAll(e.target.checked)}
-          disabled={disabled || items.length === 0}
+          disabled={disabled || selectableItems.length === 0}
         />
         <label
           htmlFor="user-form-select-all-groups"
@@ -72,18 +75,29 @@ export function UserFormPermissionGroupSelect({
                 className="h-4 w-4 rounded border border-input accent-primary"
                 checked={value.includes(item.value)}
                 onChange={() => handleToggle(item.value)}
-                disabled={disabled}
+                disabled={disabled || (!isAdminRole && !!item.isSystemAdmin)}
               />
               <label
                 htmlFor={`user-form-group-${item.value}`}
                 className="text-sm cursor-pointer flex-1"
               >
                 {item.label}
+                {item.isSystemAdmin && (
+                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">(System Admin)</span>
+                )}
               </label>
             </div>
           ))
         )}
       </div>
+      {!isAdminRole && items.some((item) => item.isSystemAdmin) && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          {t(
+            'userManagement.form.systemAdminRequiresAdminRole',
+            'System Admin izin grubu sadece Admin rolü seçildiğinde aktif olur.'
+          )}
+        </p>
+      )}
     </div>
   );
 }

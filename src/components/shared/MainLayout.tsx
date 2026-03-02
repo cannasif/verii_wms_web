@@ -47,7 +47,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const defaultNavItems: NavItem[] = useMemo(() => [
     {
       title: t('sidebar.dashboard'),
-      href: '/',
+      href: '/dashboard',
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -479,8 +479,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   ], [t]);
 
   const sortedNavItems = useMemo(() => {
-    const dashboard = defaultNavItems.find((item) => item.href === '/');
-    const others = defaultNavItems.filter((item) => item.href !== '/');
+    const dashboard = defaultNavItems.find((item) => item.href === '/dashboard');
+    const others = defaultNavItems.filter((item) => item.href !== '/dashboard');
     
     const sortedOthers = [...others].sort((a, b) => 
       normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')
