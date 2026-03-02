@@ -292,9 +292,9 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   }, [orderLinesData?.data?.lines, collectedData?.data]);
 
   return (
-    <div className="crm-page flex md:w-1/2 flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]">
+    <div className="crm-page flex w-full flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]">
       <div className="shrink-0 border-b border-slate-200/80 bg-white/80 p-4 space-y-4 dark:border-white/10 dark:bg-white/[0.03]">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/goods-receipt/assigned')}>
             <ArrowLeft className="size-4 mr-2" />
             {t('common.back', 'Geri')}
@@ -307,7 +307,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
         <Card className='py-0'>
           <CardContent className="p-3 space-y-3">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <div className="relative flex-1">
                 <Barcode className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4 hidden md:block" />
                 <Button
@@ -327,7 +327,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   className="pl-10 md:pl-9 h-10"
                 />
               </div>
-              <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default">
+              <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default" className="w-full sm:w-auto">
                 {isSearching ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
@@ -350,7 +350,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                     {selectedStock.olcuAdi}
                   </Badge>
                 </div>
-                <div className="flex items-end gap-2">
+                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
                   <div className="flex-1">
                     <Input
                       type="number"
@@ -364,7 +364,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   <Button
                     onClick={handleCollect}
                     disabled={addBarcodeMutation.isPending}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white h-9"
+                    className="h-9 w-full bg-emerald-500 text-white hover:bg-emerald-600 sm:w-auto"
                   >
                     {addBarcodeMutation.isPending ? (
                       <Loader2 className="size-4 animate-spin mr-1" />
@@ -404,7 +404,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-1.5 mb-1.5">
+                <div className="grid grid-cols-1 gap-1.5 mb-1.5 sm:grid-cols-3">
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
                       {t('goodsReceipt.collection.total', 'Toplam')}

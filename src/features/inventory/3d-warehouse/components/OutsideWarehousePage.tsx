@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -507,7 +507,7 @@ export function OutsideWarehousePage(): ReactElement {
             <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
               <Card className="border-slate-200/80 bg-slate-50/50 dark:border-white/10 dark:bg-slate-900/30">
                 <CardContent className="p-3">
-                  <div className="grid grid-cols-6 gap-2">
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
                     {portalSlots.map((slot) => {
                       const isSelected = slot.slot === selectedSlot;
                       const hasProducts = slot.products.length > 0;
@@ -557,7 +557,7 @@ export function OutsideWarehousePage(): ReactElement {
                             <p className="mt-0.5 text-[11px] text-muted-foreground">
                               {product.code} • {t('inventory.outsideWarehouse.serialNo', 'Seri No')}: {product.serialNo} • {t('inventory.outsideWarehouse.qty', 'Miktar')}: {product.qty} {product.unit}
                             </p>
-                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                               <Combobox
                                 options={portalSlots
                                   .filter((slot) => slot.slot !== selectedSlot)
@@ -574,7 +574,7 @@ export function OutsideWarehousePage(): ReactElement {
                                 searchPlaceholder={t('inventory.outsideWarehouse.searchRack', 'Raf ara...')}
                                 emptyText={t('common.notFound', 'Sonuç bulunamadı')}
                                 listClassName="max-h-[180px]"
-                                className="h-8 min-w-0 flex-1 text-[11px]"
+                                className="h-8 min-w-0 w-full sm:flex-1 text-[11px]"
                               />
                               <Button
                                 type="button"

@@ -494,7 +494,7 @@ export function PackagePackageDetailPage(): ReactElement {
                   <Card key={line.id}>
                     <CardContent className="pt-6">
                       <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
                               {t('package.packageDetail.barcode', 'Barkod')}
@@ -514,7 +514,7 @@ export function PackagePackageDetailPage(): ReactElement {
                           </p>
                           <p className="text-sm font-medium">{line.stockName || '-'}</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 pt-3 border-t">
+                        <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
                               {t('package.packageDetail.yapKod', 'Yap Kodu')}

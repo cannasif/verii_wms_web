@@ -19,13 +19,13 @@ export function Warehouse3dPage(): ReactElement {
   const displaySlot = clickedSlot || hoveredSlot;
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <div className="flex items-center gap-4 mb-2">
+    <div className="flex h-full flex-col gap-4">
+      <div className="mb-2 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
         <label className="text-sm font-medium">
           {t('inventory.warehouse3d.selectWarehouse', 'Depo Seçin')}
         </label>
         <Select value={selectedDepoKodu} onValueChange={setSelectedDepoKodu}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:max-w-[260px]">
             <SelectValue placeholder={t('inventory.warehouse3d.selectWarehouse', 'Depo Seçin')} />
           </SelectTrigger>
           <SelectContent>
@@ -37,7 +37,7 @@ export function Warehouse3dPage(): ReactElement {
           </SelectContent>
         </Select>
         
-        <div className="flex gap-4 ml-auto text-sm">
+        <div className="flex flex-wrap gap-3 text-sm lg:ml-auto lg:justify-end">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded" style={{ background: '#49546d' }}></div>
             <span>{t('inventory.warehouse3d.empty', 'Boş')}</span>
@@ -58,7 +58,7 @@ export function Warehouse3dPage(): ReactElement {
       </div>
 
       {!selectedDepoKodu && (
-        <div className="hidden md:flex items-center justify-center h-[600px] border rounded-lg bg-muted/30">
+        <div className="hidden min-h-[460px] items-center justify-center rounded-lg border bg-muted/30 md:flex xl:min-h-[600px]">
           <div className="text-center p-6">
             <div className="text-5xl mb-4">📦</div>
             <p className="text-lg text-muted-foreground">
@@ -69,7 +69,7 @@ export function Warehouse3dPage(): ReactElement {
       )}
 
       {selectedDepoKodu && isLoading && (
-        <div className="flex items-center justify-center h-[600px]">
+        <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p>{t('common.loading', 'Yükleniyor...')}</p>
@@ -78,7 +78,7 @@ export function Warehouse3dPage(): ReactElement {
       )}
 
       {selectedDepoKodu && error && (
-        <div className="flex items-center justify-center h-[600px]">
+        <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
           <p className="text-destructive">
             {t('inventory.warehouse3d.error', 'Veri yüklenirken bir hata oluştu')}
           </p>
@@ -87,7 +87,7 @@ export function Warehouse3dPage(): ReactElement {
 
       {selectedDepoKodu && warehouseData && !isLoading && (
         <>
-          <div className="hidden md:block relative h-[600px]">
+          <div className="relative hidden min-h-[460px] md:block xl:min-h-[600px]">
             <div className="h-full w-full rounded-lg overflow-hidden">
               <WarehouseScene 
                 key={selectedDepoKodu} 
@@ -170,7 +170,7 @@ export function Warehouse3dPage(): ReactElement {
             )}
           </div>
           
-          <div className="flex md:hidden items-center justify-center h-[400px]">
+          <div className="flex min-h-[320px] items-center justify-center md:hidden">
             <div className="text-center p-6">
               <div className="text-4xl mb-4">🖥️</div>
               <p className="text-muted-foreground">
@@ -182,7 +182,7 @@ export function Warehouse3dPage(): ReactElement {
       )}
 
       {!selectedDepoKodu && (
-        <div className="flex md:hidden items-center justify-center h-[400px]">
+        <div className="flex min-h-[320px] items-center justify-center md:hidden">
           <div className="text-center p-6">
             <div className="text-4xl mb-4">📦</div>
             <p className="text-muted-foreground">

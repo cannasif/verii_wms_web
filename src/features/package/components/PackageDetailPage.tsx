@@ -477,7 +477,7 @@ export function PackageDetailPage(): ReactElement {
                 </p>
                 <p className="text-sm font-medium">{header.customerName || '-'}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
                     {t('package.list.sourceType', 'Kaynak Tipi')}
@@ -619,7 +619,7 @@ export function PackageDetailPage(): ReactElement {
                                 {t(`package.packageStatus.${pkg.status.toLowerCase()}`, pkg.status)}
                               </Badge>
                             </div>
-                            <div className="grid grid-cols-2 gap-3 pt-3 border-t">
+                            <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
                                   {t('package.detail.packageType', 'Paket Tipi')}
@@ -722,7 +722,7 @@ export function PackageDetailPage(): ReactElement {
                       <Card key={line.id}>
                         <CardContent className="pt-6">
                           <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
                                   {t('package.detail.barcode', 'Barkod')}
@@ -742,7 +742,7 @@ export function PackageDetailPage(): ReactElement {
                               </p>
                               <p className="text-sm font-medium">{line.stockName || '-'}</p>
                             </div>
-                            <div className="grid grid-cols-2 gap-3 pt-3 border-t">
+                            <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
                                   {t('package.detail.yapKod', 'Yap Kodu')}
@@ -824,7 +824,7 @@ export function PackageDetailPage(): ReactElement {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField
                     control={packageForm.control}
                     name="packageType"
