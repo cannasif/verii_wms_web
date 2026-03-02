@@ -34,7 +34,10 @@
     "details": "Details",
     "selected": "Selected",
     "generalError": "An error occurred. Please try again.",
-    "update": "Update"
+    "update": "Update",
+    "processing": "Processing...",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to view this page."
   },
   "auth": {
     "login": {
@@ -107,6 +110,7 @@
     "goodsReceiptAssigned": "Assigned Goods Receipt Orders",
     "inventory": "Inventory",
     "warehouse3d": "3D Warehouse",
+    "warehouse3dOutside": "3D Outside Warehouse",
     "reports": "Reports",
     "shipment": "Shipment",
     "shipmentCreate": "Shipment Order",
@@ -160,6 +164,11 @@
     "warehouseInboundList": "Warehouse Inbound List",
     "warehouseOutboundCreate": "Warehouse Outbound Order",
     "warehouseOutboundList": "Warehouse Outbound List"
+  },
+  "welcome": {
+    "title": "Welcome",
+    "subtitle": "You have signed in to the warehouse management system. Go to the dashboard to continue.",
+    "goToDashboard": "Go to dashboard"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1496,7 +1505,7 @@
     "loading": "Loading...",
     "disconnected": "Connection disconnected",
     "notifications": "Notifications",
-    "connectionDisconnected": "connectionDisconnected"
+    "connectionDisconnected": "Connection disconnected"
   },
   "userDetail": {
     "title": "User Details",

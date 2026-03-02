@@ -1,4 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { hasPermission } from '../utils/hasPermission';
 
@@ -9,13 +10,14 @@ interface RequirePermissionProps {
 }
 
 function DefaultForbiddenFallback(): ReactElement {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] p-8 text-center">
       <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-2">
-        Access Denied
+        {t('common.accessDenied', 'Erişim reddedildi')}
       </h2>
       <p className="text-slate-500 dark:text-slate-400">
-        You do not have permission to view this page.
+        {t('common.accessDeniedMessage', 'Bu sayfayı görüntüleme yetkiniz yok.')}
       </p>
     </div>
   );
@@ -26,13 +28,14 @@ export function RequirePermission({
   fallback,
   children,
 }: RequirePermissionProps): ReactElement {
+  const { t } = useTranslation();
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
   const fallbackNode = fallback ?? <DefaultForbiddenFallback />;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <div className="animate-pulse text-slate-500">Loading...</div>
+        <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
       </div>
     );
   }

@@ -34,7 +34,10 @@
     "details": "Detaylar",
     "selected": "Seçili",
     "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
-    "update": "Güncelle"
+    "update": "Güncelle",
+    "processing": "İşleniyor...",
+    "accessDenied": "Erişim reddedildi",
+    "accessDeniedMessage": "Bu sayfayı görüntüleme yetkiniz yok."
   },
   "auth": {
     "login": {
@@ -107,6 +110,7 @@
     "goodsReceiptAssigned": "Atanmış Mal Kabul Emirleri",
     "inventory": "Envanter",
     "warehouse3d": "3D Depo",
+    "warehouse3dOutside": "3D Dış Depo",
     "reports": "Raporlar",
     "shipment": "Sevkiyat",
     "shipmentCreate": "Sevkiyat Emri",
@@ -160,6 +164,11 @@
     "warehouseInboundList": "Ambar Giriş Listesi",
     "warehouseOutboundCreate": "Ambar Çıkış Emri",
     "warehouseOutboundList": "Ambar Çıkış Listesi"
+  },
+  "welcome": {
+    "title": "Hoş geldiniz",
+    "subtitle": "Depo yönetim sistemine giriş yaptınız. Devam etmek için panele gidin.",
+    "goToDashboard": "Panele git"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1496,7 +1505,7 @@
     "loading": "Yükleniyor...",
     "disconnected": "Bağlantı kesildi",
     "notifications": "Bildirimler",
-    "connectionDisconnected": "connectionDisconnected"
+    "connectionDisconnected": "Bağlantı kesildi"
   },
   "userDetail": {
     "title": "Kullanıcı Detayları",

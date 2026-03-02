@@ -34,7 +34,10 @@
     "details": "Détails",
     "selected": "Sélectionné",
     "generalError": "Une erreur s'est produite. Veuillez réessayer.",
-    "update": "Mettre à jour"
+    "update": "Mettre à jour",
+    "processing": "Traitement...",
+    "accessDenied": "Accès refusé",
+    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page."
   },
   "auth": {
     "login": {
@@ -107,6 +110,7 @@
     "goodsReceiptAssigned": "Ordres de réception assignés",
     "inventory": "Inventaire",
     "warehouse3d": "Entrepôt 3D",
+    "warehouse3dOutside": "Entrepôt extérieur 3D",
     "reports": "Rapports",
     "shipment": "Expédition",
     "shipmentCreate": "Ordre d'expédition",
@@ -160,6 +164,11 @@
     "warehouseInboundList": "Liste des entrées de stock",
     "warehouseOutboundCreate": "Ordre de sortie de stock",
     "warehouseOutboundList": "Liste des sorties de stock"
+  },
+  "welcome": {
+    "title": "Bienvenue",
+    "subtitle": "Vous êtes connecté au système de gestion d'entrepôt. Accédez au tableau de bord pour continuer.",
+    "goToDashboard": "Aller au tableau de bord"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -1496,7 +1505,7 @@
     "loading": "Chargement...",
     "disconnected": "Connexion déconnectée",
     "notifications": "Notifications",
-    "connectionDisconnected": "connectionDisconnected"
+    "connectionDisconnected": "Connexion déconnectée"
   },
   "userDetail": {
     "title": "Détails de l'utilisateur",
