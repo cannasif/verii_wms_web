@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
+import { useAllPermissionDefinitionCodesQuery } from '../hooks/useAllPermissionDefinitionCodesQuery';
 import { useSyncPermissionDefinitionsMutation } from '../hooks/useSyncPermissionDefinitionsMutation';
 import { useCreatePermissionDefinitionMutation } from '../hooks/useCreatePermissionDefinitionMutation';
 import { useUpdatePermissionDefinitionMutation } from '../hooks/useUpdatePermissionDefinitionMutation';
@@ -63,6 +64,8 @@ export function PermissionDefinitionsPage(): ReactElement {
   const items = data?.data ?? EMPTY_PERMISSION_DEFINITIONS;
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
+
+  const { data: allUsedCodes } = useAllPermissionDefinitionCodesQuery(formOpen);
 
   useEffect(() => {
     setPageTitle(t('permissionDefinitions.title'));
@@ -283,7 +286,7 @@ export function PermissionDefinitionsPage(): ReactElement {
         onOpenChange={setFormOpen}
         onSubmit={handleFormSubmit}
         item={editingItem}
-        usedCodes={items.map((x) => x.code)}
+        usedCodes={allUsedCodes}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
