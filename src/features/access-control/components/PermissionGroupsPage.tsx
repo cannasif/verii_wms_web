@@ -91,6 +91,7 @@ export function PermissionGroupsPage(): ReactElement {
   };
 
   const handleEditClick = (item: PermissionGroupDto): void => {
+    if (item.isSystemAdmin) return;
     const main = document.querySelector('main');
     if (main) mainScrollTopRef.current = main.scrollTop;
     setEditingItem(item);
@@ -111,21 +112,23 @@ export function PermissionGroupsPage(): ReactElement {
   }, [formOpen]);
 
   const handlePermissionsClick = (item: PermissionGroupDto): void => {
+    if (item.isSystemAdmin) return;
     setPermissionsPanelGroupId(item.id);
     setPermissionsPanelOpen(true);
   };
 
   const handleFormSubmit = async (formData: CreatePermissionGroupSchema): Promise<void> => {
+    if (editingItem?.isSystemAdmin) return;
     if (editingItem) {
       const updateDto = {
         name: formData.name,
         description: formData.description ?? undefined,
-        isSystemAdmin: formData.isSystemAdmin,
+        isSystemAdmin: editingItem.isSystemAdmin,
         isActive: formData.isActive,
       };
       await updateMutation.mutateAsync({ id: editingItem.id, dto: updateDto });
     } else {
-      const createDto = { ...formData, description: formData.description ?? undefined };
+      const createDto = { ...formData, isSystemAdmin: false, description: formData.description ?? undefined };
       await createMutation.mutateAsync(createDto);
     }
     setFormOpen(false);
@@ -133,6 +136,7 @@ export function PermissionGroupsPage(): ReactElement {
   };
 
   const handleDeleteClick = (item: PermissionGroupDto): void => {
+    if (item.isSystemAdmin) return;
     setItemToDelete(item);
     setDeleteDialogOpen(true);
   };
@@ -163,7 +167,7 @@ export function PermissionGroupsPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] flex flex-col md:flex-row items-center justify-between gap-5">
+      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 flex flex-col md:flex-row items-center justify-between gap-5">
         <div className="relative group w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
@@ -186,7 +190,7 @@ export function PermissionGroupsPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/3">
         {isLoading ? (
           <div className="flex items-center justify-center py-20 min-h-[300px]">
             <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
@@ -223,13 +227,32 @@ export function PermissionGroupsPage(): ReactElement {
                     </TableCell>
                     <TableCell>{(item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0)}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handlePermissionsClick(item)} title={t('permissionGroups.managePermissions')}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handlePermissionsClick(item)}
+                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
+                        disabled={item.isSystemAdmin}
+                      >
                         <Settings size={16} />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditClick(item)}
+                        disabled={item.isSystemAdmin}
+                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                      >
                         {t('common.edit')}
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600"
+                        onClick={() => handleDeleteClick(item)}
+                        disabled={item.isSystemAdmin}
+                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                      >
                         {t('common.delete')}
                       </Button>
                     </TableCell>
