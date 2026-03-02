@@ -1,33 +1,17 @@
 import axios from 'axios';
 import i18n from './i18n';
 import { useAuthStore } from '@/stores/auth-store';
+import {
+  loadConfig,
+  getApiUrl,
+  getApiBaseUrl,
+} from './api-config';
 
-const DEFAULT_API_URL = 'http://localhost:5000';
-
-let apiUrl = DEFAULT_API_URL;
-
-export const getApiUrl = (): string => apiUrl;
-
-export const getApiBaseUrl = (): string => apiUrl;
-
-export const loadConfig = async (): Promise<string> => {
-  try {
-    const response = await fetch('/config.json');
-    if (response.ok) {
-      const config = await response.json();
-      if (config.apiUrl) {
-        return config.apiUrl;
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to load config.json, using default API URL:', error);
-  }
-  return DEFAULT_API_URL;
-};
+export { loadConfig, getApiUrl, getApiBaseUrl };
 
 export async function ensureApiReady(): Promise<void> {
-  apiUrl = await loadConfig();
-  api.defaults.baseURL = apiUrl;
+  const base = await loadConfig();
+  api.defaults.baseURL = base;
 }
 
 export const api = axios.create({
@@ -36,8 +20,6 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-void ensureApiReady();
 
 function normalizeApiEnvelope(payload: unknown): unknown {
   if (

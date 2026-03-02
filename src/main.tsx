@@ -6,13 +6,20 @@ import './index.css';
 import './lib/i18n';
 import App from './App.tsx';
 import { queryClient } from './lib/query-client';
+import { ensureApiReady } from './lib/axios';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <App />
-      </ThemeProvider>
-    </QueryClientProvider>
-  </StrictMode>,
-);
+async function bootstrap(): Promise<void> {
+  await ensureApiReady();
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+          <App />
+        </ThemeProvider>
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+}
+
+void bootstrap();

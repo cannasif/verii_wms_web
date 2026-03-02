@@ -11,7 +11,7 @@ class NotificationService {
 
   private async getApiUrl(): Promise<string> {
     await ensureApiReady();
-    return getApiBaseUrl().replace(/\/$/, '') || 'http://localhost:5000';
+    return getApiBaseUrl().replace(/\/$/, '');
   }
 
   private getToken(): string | null {

@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
-import { api } from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/axios';
 import {
   Dialog,
   DialogContent,
@@ -100,7 +100,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    const apiBaseUrl = api.defaults.baseURL || 'http://localhost:5000';
+    const apiBaseUrl = getApiBaseUrl();
     return `${apiBaseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 

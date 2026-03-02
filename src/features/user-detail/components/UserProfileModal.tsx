@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/components/theme-provider';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetail } from '../hooks/useUserDetail';
-import { api } from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/axios';
 import { cn } from '@/lib/utils';
 
 interface UserProfileModalProps {
@@ -30,7 +30,7 @@ const getFullImageUrl = (url: string | null | undefined): string | null => {
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  const apiBaseUrl = api.defaults.baseURL || 'http://localhost:5000';
+  const apiBaseUrl = getApiBaseUrl();
   return `${apiBaseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 

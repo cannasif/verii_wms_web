@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Upload, Trash2, Shield, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
-import { api } from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -92,7 +92,7 @@ export function ProfilePage(): ReactElement {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    const apiBaseUrl = api.defaults.baseURL || 'http://localhost:5000';
+    const apiBaseUrl = getApiBaseUrl();
     return `${apiBaseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
