@@ -113,7 +113,7 @@ export function NotificationItem({ notification }: NotificationItemProps): React
               className="h-7 text-xs gap-1.5"
             >
               <CheckIcon className="size-3" />
-              {t('notification.markAsRead', 'Okundu işaretle')}
+              {t('notification.markAsRead')}
             </Button>
           )}
         </div>

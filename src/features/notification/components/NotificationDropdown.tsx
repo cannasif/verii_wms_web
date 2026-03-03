@@ -229,7 +229,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
                   )}
                   {!hasNextPage && notifications.length > 0 && (
                     <div className="p-2 text-center text-xs text-muted-foreground">
-                      {t('notification.noMoreNotifications', 'Tüm bildirimler yüklendi')}
+                      {t('notification.noMoreNotifications')}
                     </div>
                   )}
                 </>
