@@ -35,14 +35,14 @@ export function ParameterListPage(): ReactElement {
   const [selectedParameter, setSelectedParameter] = useState<Parameter | null>(null);
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('parameters.list.id', 'ID') },
-      { key: 'allowLessQuantityBasedOnOrder', label: t('parameters.list.allowLessQuantity', 'Emre İstinaden Az Miktar') },
-      { key: 'allowMoreQuantityBasedOnOrder', label: t('parameters.list.allowMoreQuantity', 'Emre İstinaden Fazla Miktar') },
-      { key: 'requireApprovalBeforeErp', label: t('parameters.list.requireApproval', 'ERP Öncesi Onay') },
-      { key: 'requireAllOrderItemsCollected', label: t('parameters.list.requireAllOrderItemsCollected', 'Emirdeki Tüm Kalemlere Toplama Yapılmış Olmalı') },
-      { key: 'createdDate', label: t('parameters.list.createdDate', 'Oluşturulma Tarihi') },
-      { key: 'updatedDate', label: t('parameters.list.updatedDate', 'Güncelleme Tarihi') },
-      { key: 'actions', label: t('parameters.list.actions', 'İşlemler') },
+      { key: 'id', label: t('parameters.list.id') },
+      { key: 'allowLessQuantityBasedOnOrder', label: t('parameters.list.allowLessQuantity') },
+      { key: 'allowMoreQuantityBasedOnOrder', label: t('parameters.list.allowMoreQuantity') },
+      { key: 'requireApprovalBeforeErp', label: t('parameters.list.requireApproval') },
+      { key: 'requireAllOrderItemsCollected', label: t('parameters.list.requireAllOrderItemsCollected') },
+      { key: 'createdDate', label: t('parameters.list.createdDate') },
+      { key: 'updatedDate', label: t('parameters.list.updatedDate') },
+      { key: 'actions', label: t('parameters.list.actions') },
     ],
     [t]
   );
@@ -126,14 +126,14 @@ export function ParameterListPage(): ReactElement {
 
     try {
       await deleteMutation.mutateAsync(selectedParameter.id);
-      toast.success(t('parameters.delete.success', 'Parametre başarıyla silindi'));
+      toast.success(t('parameters.delete.success'));
       setDeleteDialogOpen(false);
       setSelectedParameter(null);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('parameters.delete.error', 'Parametre silinirken bir hata oluştu')
+          : t('parameters.delete.error')
       );
     }
   };
@@ -152,7 +152,7 @@ export function ParameterListPage(): ReactElement {
         <p className="text-destructive">
           {error instanceof Error
             ? error.message
-            : t('parameters.list.error', 'Veri yüklenirken bir hata oluştu')}
+            : t('parameters.list.error')}
         </p>
       </div>
     );
@@ -183,7 +183,7 @@ export function ParameterListPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('parameters.list.searchPlaceholder', 'Ara...')}
+                  placeholder={t('parameters.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8 pr-10 w-full md:w-64"
@@ -194,7 +194,7 @@ export function ParameterListPage(): ReactElement {
                 className="gap-2"
               >
                 <Plus className="size-4" />
-                {t('parameters.list.addNew', 'Yeni Ekle')}
+                {t('parameters.list.addNew')}
               </Button>
             </div>
           </div>
@@ -205,14 +205,14 @@ export function ParameterListPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('parameters.list.id', 'ID')}</TableHead>;
-                    if (key === 'allowLessQuantityBasedOnOrder') return <TableHead key={key}>{t('parameters.list.allowLessQuantity', 'Emre İstinaden Az Miktar')}</TableHead>;
-                    if (key === 'allowMoreQuantityBasedOnOrder') return <TableHead key={key}>{t('parameters.list.allowMoreQuantity', 'Emre İstinaden Fazla Miktar')}</TableHead>;
-                    if (key === 'requireApprovalBeforeErp') return <TableHead key={key}>{t('parameters.list.requireApproval', 'ERP Öncesi Onay')}</TableHead>;
-                    if (key === 'requireAllOrderItemsCollected') return <TableHead key={key}>{t('parameters.list.requireAllOrderItemsCollected', 'Emirdeki Tüm Kalemlere Toplama Yapılmış Olmalı')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('parameters.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>;
-                    if (key === 'updatedDate') return <TableHead key={key}>{t('parameters.list.updatedDate', 'Güncelleme Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('parameters.list.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('parameters.list.id')}</TableHead>;
+                    if (key === 'allowLessQuantityBasedOnOrder') return <TableHead key={key}>{t('parameters.list.allowLessQuantity')}</TableHead>;
+                    if (key === 'allowMoreQuantityBasedOnOrder') return <TableHead key={key}>{t('parameters.list.allowMoreQuantity')}</TableHead>;
+                    if (key === 'requireApprovalBeforeErp') return <TableHead key={key}>{t('parameters.list.requireApproval')}</TableHead>;
+                    if (key === 'requireAllOrderItemsCollected') return <TableHead key={key}>{t('parameters.list.requireAllOrderItemsCollected')}</TableHead>;
+                    if (key === 'createdDate') return <TableHead key={key}>{t('parameters.list.createdDate')}</TableHead>;
+                    if (key === 'updatedDate') return <TableHead key={key}>{t('parameters.list.updatedDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('parameters.list.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -262,7 +262,7 @@ export function ParameterListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('parameters.list.noData', 'Veri bulunamadı')}
+                        {t('parameters.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -278,7 +278,7 @@ export function ParameterListPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.id', 'ID')}
+                          {t('parameters.list.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -305,7 +305,7 @@ export function ParameterListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.allowLessQuantity', 'Emre İstinaden Az Miktar')}
+                          {t('parameters.list.allowLessQuantity')}
                         </p>
                         <p className="text-base">
                           {item.allowLessQuantityBasedOnOrder ? t('common.yes') : t('common.no')}
@@ -313,7 +313,7 @@ export function ParameterListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.allowMoreQuantity', 'Emre İstinaden Fazla Miktar')}
+                          {t('parameters.list.allowMoreQuantity')}
                         </p>
                         <p className="text-base">
                           {item.allowMoreQuantityBasedOnOrder ? t('common.yes') : t('common.no')}
@@ -321,7 +321,7 @@ export function ParameterListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.requireApproval', 'ERP Öncesi Onay')}
+                          {t('parameters.list.requireApproval')}
                         </p>
                         <p className="text-base">
                           {item.requireApprovalBeforeErp ? t('common.yes') : t('common.no')}
@@ -329,7 +329,7 @@ export function ParameterListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.requireAllOrderItemsCollected', 'Emirdeki Tüm Kalemlere Toplama Yapılmış Olmalı')}
+                          {t('parameters.list.requireAllOrderItemsCollected')}
                         </p>
                         <p className="text-base">
                           {item.requireAllOrderItemsCollected ? t('common.yes') : t('common.no')}
@@ -337,7 +337,7 @@ export function ParameterListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('parameters.list.createdDate', 'Oluşturulma Tarihi')}
+                          {t('parameters.list.createdDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.createdDate)}</p>
                       </div>
@@ -348,7 +348,7 @@ export function ParameterListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('parameters.list.noData', 'Veri bulunamadı')}
+                  {t('parameters.list.noData')}
                 </p>
               </div>
             )}
@@ -359,11 +359,10 @@ export function ParameterListPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('parameters.delete.title', 'Parametre Sil')}</DialogTitle>
+            <DialogTitle>{t('parameters.delete.title')}</DialogTitle>
             <DialogDescription>
               {t(
-                'parameters.delete.description',
-                'Bu parametreyi silmek istediğinizden emin misiniz?'
+                'parameters.delete.description'
               )}
             </DialogDescription>
           </DialogHeader>

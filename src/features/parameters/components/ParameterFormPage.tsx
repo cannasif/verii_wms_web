@@ -72,14 +72,14 @@ export function ParameterFormPage(): ReactElement {
       await upsertMutation.mutateAsync(data);
       toast.success(
         parameter
-          ? t('parameters.update.success', 'Parametre başarıyla güncellendi')
-          : t('parameters.create.success', 'Parametre başarıyla oluşturuldu')
+          ? t('parameters.update.success')
+          : t('parameters.create.success')
       );
     } catch (error: any) {
       console.error('Parameter update/create error:', error);
       let errorMessage = parameter
-        ? t('parameters.update.error', 'Parametre güncellenirken bir hata oluştu')
-        : t('parameters.create.error', 'Parametre oluşturulurken bir hata oluştu');
+        ? t('parameters.update.error')
+        : t('parameters.create.error');
       
       if (error instanceof Error) {
         errorMessage = error.message;
@@ -109,8 +109,8 @@ export function ParameterFormPage(): ReactElement {
           <CardTitle>{t(`parameters.${parameterType}.title`, parameterConfig.name)}</CardTitle>
           <CardDescription>
             {parameter
-              ? t('parameters.form.editDescription', 'Mevcut parametre ayarlarını düzenleyebilirsiniz')
-              : t('parameters.form.createDescription', 'Yeni parametre ayarlarını oluşturabilirsiniz')}
+              ? t('parameters.form.editDescription')
+              : t('parameters.form.createDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -125,12 +125,11 @@ export function ParameterFormPage(): ReactElement {
                       <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.allowLessQuantity', 'Emre İstinaden Az Miktar')}
+                            {t('parameters.form.allowLessQuantity')}
                           </FormLabel>
                           <FormDescription className="text-sm">
                             {t(
-                              'parameters.form.allowLessQuantityDescription',
-                              'Siparişe göre daha az miktar girilmesine izin verir. Bu seçenek aktif olduğunda, sipariş miktarından daha az miktar girişi yapılabilir.'
+                              'parameters.form.allowLessQuantityDescription'
                             )}
                           </FormDescription>
                         </div>
@@ -163,12 +162,11 @@ export function ParameterFormPage(): ReactElement {
                       <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.allowMoreQuantity', 'Emre İstinaden Fazla Miktar')}
+                            {t('parameters.form.allowMoreQuantity')}
                           </FormLabel>
                           <FormDescription className="text-sm">
                             {t(
-                              'parameters.form.allowMoreQuantityDescription',
-                              'Siparişe göre daha fazla miktar girilmesine izin verir. Bu seçenek aktif olduğunda, sipariş miktarından daha fazla miktar girişi yapılabilir.'
+                              'parameters.form.allowMoreQuantityDescription'
                             )}
                           </FormDescription>
                         </div>
@@ -201,12 +199,11 @@ export function ParameterFormPage(): ReactElement {
                       <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.requireApproval', 'ERP Öncesi Onay')}
+                            {t('parameters.form.requireApproval')}
                           </FormLabel>
                           <FormDescription className="text-sm">
                             {t(
-                              'parameters.form.requireApprovalDescription',
-                              "ERP sistemine gönderilmeden önce onay gerektirir. Bu seçenek aktif olduğunda, işlemler ERP'ye gönderilmeden önce onay sürecinden geçer."
+                              'parameters.form.requireApprovalDescription'
                             )}
                           </FormDescription>
                         </div>
@@ -239,12 +236,11 @@ export function ParameterFormPage(): ReactElement {
                       <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.06]">
                         <div className="flex-1 space-y-1">
                           <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.requireAllOrderItemsCollected', 'Emirdeki Tüm Kalemlere Toplama Yapılmış Olmalı')}
+                            {t('parameters.form.requireAllOrderItemsCollected')}
                           </FormLabel>
                           <FormDescription className="text-sm">
                             {t(
-                              'parameters.form.requireAllOrderItemsCollectedDescription',
-                              'Bu parametre aktif olduğunda, emirdeki tüm kalemlere toplama yapılmış olması zorunludur.'
+                              'parameters.form.requireAllOrderItemsCollectedDescription'
                             )}
                           </FormDescription>
                         </div>
@@ -279,8 +275,8 @@ export function ParameterFormPage(): ReactElement {
                   {upsertMutation.isPending
                     ? t('common.saving')
                     : parameter
-                      ? t('parameters.form.updateButton', 'Güncelle')
-                      : t('parameters.form.createButton', 'Kaydet')}
+                      ? t('parameters.form.updateButton')
+                      : t('parameters.form.createButton')}
                 </Button>
               </div>
             </form>
