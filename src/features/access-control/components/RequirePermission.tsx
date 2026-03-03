@@ -14,10 +14,10 @@ function DefaultForbiddenFallback(): ReactElement {
   return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] p-8 text-center">
       <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-2">
-        {t('common.accessDenied', 'Erişim reddedildi')}
+        {t('common.accessDenied')}
       </h2>
       <p className="text-slate-500 dark:text-slate-400">
-        {t('common.accessDeniedMessage', 'Bu sayfayı görüntüleme yetkiniz yok.')}
+        {t('common.accessDeniedMessage')}
       </p>
     </div>
   );

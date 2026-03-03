@@ -305,7 +305,7 @@ export function PermissionGroupsPage(): ReactElement {
                               variant="ghost"
                               size="sm"
                               onClick={() => handlePermissionsClick(item)}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
                               disabled={item.isSystemAdmin}
                             >
                               <Settings size={16} />
@@ -315,7 +315,7 @@ export function PermissionGroupsPage(): ReactElement {
                               size="sm"
                               onClick={() => handleEditClick(item)}
                               disabled={item.isSystemAdmin}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
                             >
                               {t('common.edit')}
                             </Button>
@@ -325,7 +325,7 @@ export function PermissionGroupsPage(): ReactElement {
                               className="text-red-600"
                               onClick={() => handleDeleteClick(item)}
                               disabled={item.isSystemAdmin}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
                             >
                               {t('common.delete')}
                             </Button>
