@@ -3,12 +3,12 @@ import type { ApiResponse } from '@/types/api';
 import type { TFunction } from 'i18next';
 
 export const createSubcontractingFormSchema = (t: TFunction) => z.object({
-  transferDate: z.string().min(1, t('subcontracting.validation.transferDateRequired', 'Tarih zorunludur')),
-  documentNo: z.string().min(1, t('subcontracting.validation.documentNoRequired', 'Belge No zorunludur')),
+  transferDate: z.string().min(1, t('subcontracting.validation.transferDateRequired')),
+  documentNo: z.string().min(1, t('subcontracting.validation.documentNoRequired')),
   projectCode: z.string().optional(),
-  customerId: z.string().min(1, t('subcontracting.validation.customerRequired', 'Cari seçimi zorunludur')),
-  sourceWarehouse: z.string().min(1, t('subcontracting.validation.sourceWarehouseRequired', 'Çıkış deposu zorunludur')),
-  targetWarehouse: z.string().min(1, t('subcontracting.validation.targetWarehouseRequired', 'Varış deposu zorunludur')),
+  customerId: z.string().min(1, t('subcontracting.validation.customerRequired')),
+  sourceWarehouse: z.string().min(1, t('subcontracting.validation.sourceWarehouseRequired')),
+  targetWarehouse: z.string().min(1, t('subcontracting.validation.targetWarehouseRequired')),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
 });

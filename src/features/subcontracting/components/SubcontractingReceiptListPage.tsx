@@ -22,7 +22,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   const { data, isLoading, error } = useSubcontractingReceiptHeaders();
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.receipt.list.title', 'Fason Giriş Emri Listesi'));
+    setPageTitle(t('subcontracting.receipt.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -80,7 +80,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('subcontracting.receipt.list.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('subcontracting.receipt.list.error')}</p>
       </div>
     );
   }
@@ -90,12 +90,12 @@ export function SubcontractingReceiptListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('subcontracting.receipt.list.title', 'Fason Giriş Emri Listesi')}</CardTitle>
+            <CardTitle>{t('subcontracting.receipt.list.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('subcontracting.receipt.list.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('subcontracting.receipt.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8 pr-10 w-full md:w-64"
@@ -116,16 +116,16 @@ export function SubcontractingReceiptListPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('subcontracting.receipt.list.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.documentType', 'Belge Tipi')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.status', 'Durum')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.list.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.documentNo')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.documentDate')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.customerCode')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.customerName')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.sourceWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.targetWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.documentType')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.status')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.createdDate')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.list.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -145,15 +145,15 @@ export function SubcontractingReceiptListPage(): ReactElement {
                         <div className="flex flex-col gap-1">
                           {item.isCompleted ? (
                             <Badge variant="default" className="w-fit">
-                              {t('subcontracting.receipt.list.completed', 'Tamamlandı')}
+                              {t('subcontracting.receipt.list.completed')}
                             </Badge>
                           ) : item.isPendingApproval ? (
                             <Badge variant="secondary" className="w-fit">
-                              {t('subcontracting.receipt.list.pendingApproval', 'Onay Bekliyor')}
+                              {t('subcontracting.receipt.list.pendingApproval')}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="w-fit">
-                              {t('subcontracting.receipt.list.inProgress', 'Devam Ediyor')}
+                              {t('subcontracting.receipt.list.inProgress')}
                             </Badge>
                           )}
                         </div>
@@ -166,7 +166,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
                           onClick={() => handleRowClick(item)}
                         >
                           <Eye className="size-4" />
-                          <span className="ml-2">{t('subcontracting.receipt.list.viewDetails', 'Detay')}</span>
+                          <span className="ml-2">{t('subcontracting.receipt.list.viewDetails')}</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -175,7 +175,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('subcontracting.receipt.list.noData', 'Veri bulunamadı')}
+                        {t('subcontracting.receipt.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -192,15 +192,15 @@ export function SubcontractingReceiptListPage(): ReactElement {
                       <div className="flex flex-col gap-1">
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('subcontracting.receipt.list.completed', 'Tamamlandı')}
+                            {t('subcontracting.receipt.list.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('subcontracting.receipt.list.pendingApproval', 'Onay Bekliyor')}
+                            {t('subcontracting.receipt.list.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('subcontracting.receipt.list.inProgress', 'Devam Ediyor')}
+                            {t('subcontracting.receipt.list.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -208,37 +208,37 @@ export function SubcontractingReceiptListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.documentNo', 'Belge No')}
+                          {t('subcontracting.receipt.list.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.documentDate', 'Belge Tarihi')}
+                          {t('subcontracting.receipt.list.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.customerCode', 'Cari Kodu')}
+                          {t('subcontracting.receipt.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.customerName', 'Cari Adı')}
+                          {t('subcontracting.receipt.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('subcontracting.receipt.list.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.list.targetWarehouse', 'Varış Deposu')}
+                          {t('subcontracting.receipt.list.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
@@ -251,7 +251,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
                         onClick={() => handleRowClick(item)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('subcontracting.receipt.list.viewDetails', 'Detay')}
+                        {t('subcontracting.receipt.list.viewDetails')}
                       </Button>
                     </div>
                   </CardContent>
@@ -260,7 +260,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('subcontracting.receipt.list.noData', 'Veri bulunamadı')}
+                  {t('subcontracting.receipt.list.noData')}
                 </p>
               </div>
             )}

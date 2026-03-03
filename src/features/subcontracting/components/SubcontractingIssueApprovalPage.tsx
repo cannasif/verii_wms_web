@@ -43,7 +43,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
   const approveMutation = useApproveSitHeader();
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.issue.approval.title', 'Onay Bekleyen Fason Çıkış Emirleri'));
+    setPageTitle(t('subcontracting.issue.approval.title'));
     return () => {
       setPageTitle(null);
     };
@@ -72,12 +72,12 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
   const handleApprove = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: true });
-      toast.success(t('subcontracting.issue.approval.approveSuccess', 'Emir başarıyla onaylandı'));
+      toast.success(t('subcontracting.issue.approval.approveSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('subcontracting.issue.approval.approveError', 'Onay işlemi sırasında bir hata oluştu')
+          : t('subcontracting.issue.approval.approveError')
       );
     }
   };
@@ -85,12 +85,12 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
   const handleReject = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: false });
-      toast.success(t('subcontracting.issue.approval.rejectSuccess', 'Emir başarıyla reddedildi'));
+      toast.success(t('subcontracting.issue.approval.rejectSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('subcontracting.issue.approval.rejectError', 'Red işlemi sırasında bir hata oluştu')
+          : t('subcontracting.issue.approval.rejectError')
       );
     }
   };
@@ -119,7 +119,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('subcontracting.issue.approval.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('subcontracting.issue.approval.error')}
         </p>
       </div>
     );
@@ -130,12 +130,12 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('subcontracting.issue.approval.title', 'Onay Bekleyen Fason Çıkış Emirleri')}</CardTitle>
+            <CardTitle>{t('subcontracting.issue.approval.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('subcontracting.issue.approval.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('subcontracting.issue.approval.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -159,15 +159,15 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('subcontracting.issue.approval.id', 'ID')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.approval.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.id')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.documentNo')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.documentDate')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.customerCode')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.customerName')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.sourceWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.targetWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.completionDate')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.approval.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -193,7 +193,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                             }}
                           >
                             <Eye className="size-4" />
-                            <span className="ml-2">{t('subcontracting.issue.approval.viewDetails', 'Detay')}</span>
+                            <span className="ml-2">{t('subcontracting.issue.approval.viewDetails')}</span>
                           </Button>
                           <Button
                             variant="default"
@@ -202,7 +202,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                             disabled={approveMutation.isPending}
                           >
                             <Check className="size-4" />
-                            <span className="ml-2">{t('subcontracting.issue.approval.approve', 'Onayla')}</span>
+                            <span className="ml-2">{t('subcontracting.issue.approval.approve')}</span>
                           </Button>
                           <Button
                             variant="destructive"
@@ -211,7 +211,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                             disabled={approveMutation.isPending}
                           >
                             <X className="size-4" />
-                            <span className="ml-2">{t('subcontracting.issue.approval.reject', 'Reddet')}</span>
+                            <span className="ml-2">{t('subcontracting.issue.approval.reject')}</span>
                           </Button>
                         </div>
                       </TableCell>
@@ -221,7 +221,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('subcontracting.issue.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                        {t('subcontracting.issue.approval.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -232,7 +232,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -246,10 +246,10 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -257,7 +257,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>
@@ -271,7 +271,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.id', 'ID')}
+                          {t('subcontracting.issue.approval.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -279,43 +279,43 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.documentNo', 'Belge No')}
+                          {t('subcontracting.issue.approval.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.documentDate', 'Belge Tarihi')}
+                          {t('subcontracting.issue.approval.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.customerCode', 'Cari Kodu')}
+                          {t('subcontracting.issue.approval.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.customerName', 'Cari Adı')}
+                          {t('subcontracting.issue.approval.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('subcontracting.issue.approval.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.targetWarehouse', 'Varış Deposu')}
+                          {t('subcontracting.issue.approval.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.approval.completionDate', 'Tamamlanma Tarihi')}
+                          {t('subcontracting.issue.approval.completionDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.completionDate)}</p>
                       </div>
@@ -331,7 +331,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                         }}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('subcontracting.issue.approval.viewDetails', 'Detay')}
+                        {t('subcontracting.issue.approval.viewDetails')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
@@ -342,7 +342,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <Check className="size-4 mr-2" />
-                          {t('subcontracting.issue.approval.approve', 'Onayla')}
+                          {t('subcontracting.issue.approval.approve')}
                         </Button>
                         <Button
                           variant="destructive"
@@ -352,7 +352,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <X className="size-4 mr-2" />
-                          {t('subcontracting.issue.approval.reject', 'Reddet')}
+                          {t('subcontracting.issue.approval.reject')}
                         </Button>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('subcontracting.issue.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                  {t('subcontracting.issue.approval.noData')}
                 </p>
               </div>
             )}
@@ -370,7 +370,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col items-center justify-between gap-4 pt-4 border-t md:hidden">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -384,10 +384,10 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -395,7 +395,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

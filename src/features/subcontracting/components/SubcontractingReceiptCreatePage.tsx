@@ -29,7 +29,7 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   const [selectedItems, setSelectedItems] = useState<SelectedSubcontractingOrderItem[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.receipt.create.title', 'Yeni Fason Giriş Emri'));
+    setPageTitle(t('subcontracting.receipt.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -59,12 +59,12 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-orders'] });
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-order-items'] });
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-headers'] });
-      toast.success(t('subcontracting.receipt.create.success', 'Fason giriş emri başarıyla oluşturuldu'));
+      toast.success(t('subcontracting.receipt.create.success'));
       navigate('/subcontracting/receipt/list');
     },
     onError: (error: Error) => {
       toast.error(
-        error.message || t('subcontracting.receipt.create.error', 'Fason giriş emri oluşturulurken bir hata oluştu')
+        error.message || t('subcontracting.receipt.create.error')
       );
     },
   });
@@ -127,9 +127,9 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   };
 
   const steps = [
-    { label: t('subcontracting.create.steps.basicInfo', 'Temel Bilgiler') },
+    { label: t('subcontracting.create.steps.basicInfo') },
     {
-      label: t('subcontracting.create.steps.orderSelection', 'Sipariş Seçimi'),
+      label: t('subcontracting.create.steps.orderSelection'),
     },
   ];
 
@@ -148,7 +148,7 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
           />
         );
       default:
-        return <div>{t('subcontracting.create.unknownStep', 'Bilinmeyen adım')}</div>;
+        return <div>{t('subcontracting.create.unknownStep')}</div>;
     }
   };
 
@@ -175,12 +175,12 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
                 >
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <div className="flex gap-2">
                   {currentStep < steps.length ? (
                     <Button type="button" onClick={handleNext}>
-                      {t('common.next', 'Sonraki')}
+                      {t('common.next')}
                     </Button>
                   ) : (
                     <Button
@@ -188,7 +188,7 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
                       onClick={handleSave}
                       disabled={createMutation.isPending || selectedItems.length === 0}
                     >
-                      {createMutation.isPending ? t('common.saving', 'Kaydediliyor...') : t('common.save', 'Kaydet')}
+                      {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </div>

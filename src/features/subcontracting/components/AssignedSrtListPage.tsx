@@ -24,7 +24,7 @@ export function AssignedSrtListPage(): ReactElement {
   const { data, isLoading, error } = useAssignedSrtHeaders();
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.srt.assignedList.title', 'Atanmış Fason Giriş Emirleri'));
+    setPageTitle(t('subcontracting.srt.assignedList.title'));
     return () => {
       setPageTitle(null);
     };
@@ -83,7 +83,7 @@ export function AssignedSrtListPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('subcontracting.srt.assignedList.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('subcontracting.srt.assignedList.error')}
         </p>
       </div>
     );
@@ -94,14 +94,13 @@ export function AssignedSrtListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('subcontracting.srt.assignedList.title', 'Atanmış SRT Emirleri')}</CardTitle>
+            <CardTitle>{t('subcontracting.srt.assignedList.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
                   placeholder={t(
-                    'subcontracting.srt.assignedList.searchPlaceholder',
-                    'Belge No, Cari Kodu, Depo...'
+                    'subcontracting.srt.assignedList.searchPlaceholder'
                   )}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -123,16 +122,16 @@ export function AssignedSrtListPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('subcontracting.srt.assignedList.id', 'ID')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.documentType', 'Belge Tipi')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.createdDate', 'Oluşturulma Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.srt.assignedList.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.id')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.documentNo')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.documentDate')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.customerCode')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.customerName')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.sourceWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.targetWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.documentType')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.createdDate')}</TableHead>
+                  <TableHead>{t('subcontracting.srt.assignedList.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -163,7 +162,7 @@ export function AssignedSrtListPage(): ReactElement {
                           >
                             <Eye className="size-4" />
                             <span className="ml-2">
-                              {t('subcontracting.srt.assignedList.viewDetails', 'Detay')}
+                              {t('subcontracting.srt.assignedList.viewDetails')}
                             </span>
                           </Button>
                           <Button
@@ -172,7 +171,7 @@ export function AssignedSrtListPage(): ReactElement {
                             className="bg-emerald-500 hover:bg-emerald-600 text-white"
                             onClick={() => navigate(`/subcontracting/receipt/collection/${item.id}`)}
                           >
-                            {t('common.start', 'Başla')}
+                            {t('common.start')}
                           </Button>
                         </div>
                       </TableCell>
@@ -182,7 +181,7 @@ export function AssignedSrtListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('subcontracting.srt.assignedList.noData', 'Atanmış SRT emri bulunamadı')}
+                        {t('subcontracting.srt.assignedList.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -198,7 +197,7 @@ export function AssignedSrtListPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.id', 'ID')}
+                          {t('subcontracting.srt.assignedList.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -206,37 +205,37 @@ export function AssignedSrtListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.documentNo', 'Belge No')}
+                          {t('subcontracting.srt.assignedList.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.documentDate', 'Belge Tarihi')}
+                          {t('subcontracting.srt.assignedList.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.customerCode', 'Cari Kodu')}
+                          {t('subcontracting.srt.assignedList.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.customerName', 'Cari Adı')}
+                          {t('subcontracting.srt.assignedList.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('subcontracting.srt.assignedList.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.srt.assignedList.targetWarehouse', 'Varış Deposu')}
+                          {t('subcontracting.srt.assignedList.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
@@ -249,7 +248,7 @@ export function AssignedSrtListPage(): ReactElement {
                         onClick={() => handleRowClick(item)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('subcontracting.srt.assignedList.viewDetails', 'Detay')}
+                        {t('subcontracting.srt.assignedList.viewDetails')}
                       </Button>
                       <Button
                         variant="default"
@@ -257,7 +256,7 @@ export function AssignedSrtListPage(): ReactElement {
                         className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
                         onClick={() => navigate(`/subcontracting/receipt/collection/${item.id}`)}
                       >
-                        {t('common.start', 'Başla')}
+                        {t('common.start')}
                       </Button>
                     </div>
                   </CardContent>
@@ -266,7 +265,7 @@ export function AssignedSrtListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('subcontracting.srt.assignedList.noData', 'Atanmış SRT emri bulunamadı')}
+                  {t('subcontracting.srt.assignedList.noData')}
                 </p>
               </div>
             )}

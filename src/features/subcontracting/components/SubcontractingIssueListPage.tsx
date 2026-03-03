@@ -41,7 +41,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.issue.list.title', 'Fason Çıkış Emri Listesi'));
+    setPageTitle(t('subcontracting.issue.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -95,7 +95,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('subcontracting.issue.list.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('subcontracting.issue.list.error')}</p>
       </div>
     );
   }
@@ -105,12 +105,12 @@ export function SubcontractingIssueListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('subcontracting.issue.list.title', 'Fason Çıkış Emri Listesi')}</CardTitle>
+            <CardTitle>{t('subcontracting.issue.list.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('subcontracting.issue.list.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('subcontracting.issue.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -134,16 +134,16 @@ export function SubcontractingIssueListPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('subcontracting.issue.list.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.documentType', 'Belge Tipi')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.status', 'Durum')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.issue.list.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.documentNo')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.documentDate')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.customerCode')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.customerName')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.sourceWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.targetWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.documentType')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.status')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.createdDate')}</TableHead>
+                  <TableHead>{t('subcontracting.issue.list.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -163,15 +163,15 @@ export function SubcontractingIssueListPage(): ReactElement {
                         <div className="flex flex-col gap-1">
                           {item.isCompleted ? (
                             <Badge variant="default" className="w-fit">
-                              {t('subcontracting.issue.list.completed', 'Tamamlandı')}
+                              {t('subcontracting.issue.list.completed')}
                             </Badge>
                           ) : item.isPendingApproval ? (
                             <Badge variant="secondary" className="w-fit">
-                              {t('subcontracting.issue.list.pendingApproval', 'Onay Bekliyor')}
+                              {t('subcontracting.issue.list.pendingApproval')}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="w-fit">
-                              {t('subcontracting.issue.list.inProgress', 'Devam Ediyor')}
+                              {t('subcontracting.issue.list.inProgress')}
                             </Badge>
                           )}
                         </div>
@@ -184,7 +184,7 @@ export function SubcontractingIssueListPage(): ReactElement {
                           onClick={() => handleRowClick(item)}
                         >
                           <Eye className="size-4" />
-                          <span className="ml-2">{t('subcontracting.issue.list.viewDetails', 'Detay')}</span>
+                          <span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -193,7 +193,7 @@ export function SubcontractingIssueListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('subcontracting.issue.list.noData', 'Veri bulunamadı')}
+                        {t('subcontracting.issue.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -210,15 +210,15 @@ export function SubcontractingIssueListPage(): ReactElement {
                       <div className="flex flex-col gap-1">
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('subcontracting.issue.list.completed', 'Tamamlandı')}
+                            {t('subcontracting.issue.list.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('subcontracting.issue.list.pendingApproval', 'Onay Bekliyor')}
+                            {t('subcontracting.issue.list.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('subcontracting.issue.list.inProgress', 'Devam Ediyor')}
+                            {t('subcontracting.issue.list.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -226,37 +226,37 @@ export function SubcontractingIssueListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.documentNo', 'Belge No')}
+                          {t('subcontracting.issue.list.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.documentDate', 'Belge Tarihi')}
+                          {t('subcontracting.issue.list.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.customerCode', 'Cari Kodu')}
+                          {t('subcontracting.issue.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.customerName', 'Cari Adı')}
+                          {t('subcontracting.issue.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('subcontracting.issue.list.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.issue.list.targetWarehouse', 'Varış Deposu')}
+                          {t('subcontracting.issue.list.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
@@ -269,7 +269,7 @@ export function SubcontractingIssueListPage(): ReactElement {
                         onClick={() => handleRowClick(item)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('subcontracting.issue.list.viewDetails', 'Detay')}
+                        {t('subcontracting.issue.list.viewDetails')}
                       </Button>
                     </div>
                   </CardContent>
@@ -278,7 +278,7 @@ export function SubcontractingIssueListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('subcontracting.issue.list.noData', 'Veri bulunamadı')}
+                  {t('subcontracting.issue.list.noData')}
                 </p>
               </div>
             )}
@@ -286,7 +286,7 @@ export function SubcontractingIssueListPage(): ReactElement {
           {data && (
             <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -300,10 +300,10 @@ export function SubcontractingIssueListPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -311,7 +311,7 @@ export function SubcontractingIssueListPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

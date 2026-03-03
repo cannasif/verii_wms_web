@@ -40,7 +40,7 @@ export function SitCollectionPage(): ReactElement {
   const completeSitMutation = useCompleteSit();
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.sit.collection.title', 'SIT Toplama'));
+    setPageTitle(t('subcontracting.sit.collection.title'));
     return () => {
       setPageTitle(null);
     };
@@ -51,14 +51,14 @@ export function SitCollectionPage(): ReactElement {
       setSelectedStock(barcodeData.data[0]);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('subcontracting.sit.collection.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('subcontracting.sit.collection.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('subcontracting.sit.collection.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('subcontracting.sit.collection.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -67,12 +67,12 @@ export function SitCollectionPage(): ReactElement {
 
   const handleCollect = (): void => {
     if (!selectedStock) {
-      toast.error(t('subcontracting.sit.collection.noStockSelected', 'Lütfen önce stok bilgisi getirin'));
+      toast.error(t('subcontracting.sit.collection.noStockSelected'));
       return;
     }
 
     if (quantity <= 0) {
-      toast.error(t('subcontracting.sit.collection.invalidQuantity', 'Geçersiz miktar'));
+      toast.error(t('subcontracting.sit.collection.invalidQuantity'));
       return;
     }
 
@@ -81,7 +81,7 @@ export function SitCollectionPage(): ReactElement {
     );
 
     if (!matchingLine) {
-      toast.error(t('subcontracting.sit.collection.stockNotInOrder', 'Bu stok SIT emrinde bulunmuyor'));
+      toast.error(t('subcontracting.sit.collection.stockNotInOrder'));
       return;
     }
 
@@ -105,16 +105,16 @@ export function SitCollectionPage(): ReactElement {
       {
         onSuccess: (response) => {
           if (response.success) {
-            toast.success(t('subcontracting.sit.collection.collected', 'Ürün toplandı'));
+            toast.success(t('subcontracting.sit.collection.collected'));
             setBarcodeInput('');
             setSelectedStock(null);
             setQuantity(1);
           } else {
-            toast.error(response.message || t('subcontracting.sit.collection.collectError', 'Toplama hatası'));
+            toast.error(response.message || t('subcontracting.sit.collection.collectError'));
           }
         },
         onError: (error: Error) => {
-          toast.error(error.message || t('subcontracting.sit.collection.collectError', 'Toplama hatası'));
+          toast.error(error.message || t('subcontracting.sit.collection.collectError'));
         },
       }
     );
@@ -128,21 +128,21 @@ export function SitCollectionPage(): ReactElement {
 
   const handleComplete = (): void => {
     if (!headerIdNum) {
-      toast.error(t('subcontracting.sit.collection.invalidHeaderId', 'Geçersiz SIT emri'));
+      toast.error(t('subcontracting.sit.collection.invalidHeaderId'));
       return;
     }
 
     completeSitMutation.mutate(headerIdNum, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(t('subcontracting.sit.collection.completed', 'SIT emri başarıyla tamamlandı'));
+          toast.success(t('subcontracting.sit.collection.completed'));
           navigate('/subcontracting/issue/assigned');
         } else {
-          toast.error(response.message || t('subcontracting.sit.collection.completeError', 'Tamamlama hatası'));
+          toast.error(response.message || t('subcontracting.sit.collection.completeError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('subcontracting.sit.collection.completeError', 'Tamamlama hatası'));
+        toast.error(error.message || t('subcontracting.sit.collection.completeError'));
       },
     });
   };
@@ -182,7 +182,7 @@ export function SitCollectionPage(): ReactElement {
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner-sit')) {
-        toast.error(t('subcontracting.sit.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('subcontracting.sit.collection.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -229,7 +229,7 @@ export function SitCollectionPage(): ReactElement {
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('subcontracting.sit.collection.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('subcontracting.sit.collection.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -239,7 +239,7 @@ export function SitCollectionPage(): ReactElement {
           }
         );
       } catch (err) {
-        toast.error(t('subcontracting.sit.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('subcontracting.sit.collection.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -297,11 +297,11 @@ export function SitCollectionPage(): ReactElement {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/subcontracting/issue/assigned')}>
             <ArrowLeft className="size-4 mr-2" />
-            {t('common.back', 'Geri')}
+            {t('common.back')}
           </Button>
           <Button variant="outline" size="sm">
             <List className="size-4 mr-2" />
-            {t('subcontracting.sit.collection.viewCollected', 'Toplananlar')} ({totalCollectedCount})
+            {t('subcontracting.sit.collection.viewCollected')} ({totalCollectedCount})
           </Button>
         </div>
 
@@ -320,7 +320,7 @@ export function SitCollectionPage(): ReactElement {
                   <Camera className="size-4 text-muted-foreground" />
                 </Button>
                 <Input
-                  placeholder={t('subcontracting.sit.collection.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                  placeholder={t('subcontracting.sit.collection.barcodePlaceholder')}
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -331,7 +331,7 @@ export function SitCollectionPage(): ReactElement {
                 {isSearching ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  t('common.search', 'Ara')
+                  t('common.search')
                 )}
               </Button>
             </div>
@@ -358,7 +358,7 @@ export function SitCollectionPage(): ReactElement {
                       value={quantity}
                       onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                       className="h-9"
-                      placeholder={t('subcontracting.sit.collection.quantity', 'Miktar')}
+                      placeholder={t('subcontracting.sit.collection.quantity')}
                     />
                   </div>
                   <Button
@@ -369,7 +369,7 @@ export function SitCollectionPage(): ReactElement {
                     {addBarcodeMutation.isPending ? (
                       <Loader2 className="size-4 animate-spin mr-1" />
                     ) : null}
-                    {t('subcontracting.sit.collection.collect', 'Topla')}
+                    {t('subcontracting.sit.collection.collect')}
                   </Button>
                 </div>
               </div>
@@ -395,7 +395,7 @@ export function SitCollectionPage(): ReactElement {
                     <p className="text-xs font-medium line-clamp-2 mt-1">{line.stockName}</p>
                     {line.yapKod && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {t('subcontracting.sit.collection.yapKod', 'Yapı')}: {line.yapKod}
+                        {t('subcontracting.sit.collection.yapKod')}: {line.yapKod}
                       </p>
                     )}
                   </div>
@@ -407,7 +407,7 @@ export function SitCollectionPage(): ReactElement {
                 <div className="grid grid-cols-1 gap-1.5 mb-1.5 sm:grid-cols-3">
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('subcontracting.sit.collection.total', 'Toplam')}
+                      {t('subcontracting.sit.collection.total')}
                     </p>
                     <p className="text-sm font-bold leading-none">
                       {line.quantity}
@@ -415,7 +415,7 @@ export function SitCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('subcontracting.sit.collection.collected', 'Toplanan')}
+                      {t('subcontracting.sit.collection.collected')}
                     </p>
                     <p className="text-sm font-bold text-emerald-600 leading-none">
                       {line.collectedQuantity}
@@ -423,7 +423,7 @@ export function SitCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('subcontracting.sit.collection.remaining', 'Kalan')}
+                      {t('subcontracting.sit.collection.remaining')}
                     </p>
                     <p className={`text-sm font-bold leading-none ${line.remainingQuantity === 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
                       {line.remainingQuantity}
@@ -443,7 +443,7 @@ export function SitCollectionPage(): ReactElement {
         ) : (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">
-              {t('subcontracting.sit.collection.noOrderLines', 'SIT emri kalemleri bulunamadı')}
+              {t('subcontracting.sit.collection.noOrderLines')}
             </p>
           </div>
         )}
@@ -461,7 +461,7 @@ export function SitCollectionPage(): ReactElement {
           ) : (
             <Check className="size-4 mr-2" />
           )}
-          {t('subcontracting.sit.collection.complete', 'Tamamla')}
+          {t('subcontracting.sit.collection.complete')}
         </Button>
       </div>
 
@@ -472,9 +472,9 @@ export function SitCollectionPage(): ReactElement {
       }}>
         <DialogContent className="max-w-[95vw] w-full p-0 gap-0" showCloseButton={true}>
           <DialogHeader className="p-4 pb-2">
-            <DialogTitle>{t('subcontracting.sit.collection.scanBarcode', 'Barkod Okut')}</DialogTitle>
+            <DialogTitle>{t('subcontracting.sit.collection.scanBarcode')}</DialogTitle>
             <DialogDescription>
-              {t('subcontracting.sit.collection.scanBarcodeDescription', 'Barkodu kameraya hizalayın')}
+              {t('subcontracting.sit.collection.scanBarcodeDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="relative w-full" style={{ minHeight: '300px' }}>

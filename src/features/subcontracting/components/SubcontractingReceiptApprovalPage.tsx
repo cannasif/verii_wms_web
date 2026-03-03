@@ -43,7 +43,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   const approveMutation = useApproveSrtHeader();
 
   useEffect(() => {
-    setPageTitle(t('subcontracting.receipt.approval.title', 'Onay Bekleyen Fason Giriş Emirleri'));
+    setPageTitle(t('subcontracting.receipt.approval.title'));
     return () => {
       setPageTitle(null);
     };
@@ -72,12 +72,12 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   const handleApprove = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: true });
-      toast.success(t('subcontracting.receipt.approval.approveSuccess', 'Emir başarıyla onaylandı'));
+      toast.success(t('subcontracting.receipt.approval.approveSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('subcontracting.receipt.approval.approveError', 'Onay işlemi sırasında bir hata oluştu')
+          : t('subcontracting.receipt.approval.approveError')
       );
     }
   };
@@ -85,12 +85,12 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   const handleReject = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: false });
-      toast.success(t('subcontracting.receipt.approval.rejectSuccess', 'Emir başarıyla reddedildi'));
+      toast.success(t('subcontracting.receipt.approval.rejectSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('subcontracting.receipt.approval.rejectError', 'Red işlemi sırasında bir hata oluştu')
+          : t('subcontracting.receipt.approval.rejectError')
       );
     }
   };
@@ -119,7 +119,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('subcontracting.receipt.approval.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('subcontracting.receipt.approval.error')}
         </p>
       </div>
     );
@@ -130,12 +130,12 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('subcontracting.receipt.approval.title', 'Onay Bekleyen Fason Giriş Emirleri')}</CardTitle>
+            <CardTitle>{t('subcontracting.receipt.approval.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('subcontracting.receipt.approval.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('subcontracting.receipt.approval.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -159,15 +159,15 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('subcontracting.receipt.approval.id', 'ID')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>
-                  <TableHead>{t('subcontracting.receipt.approval.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.id')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.documentNo')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.documentDate')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.customerCode')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.customerName')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.sourceWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.targetWarehouse')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.completionDate')}</TableHead>
+                  <TableHead>{t('subcontracting.receipt.approval.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -193,7 +193,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                             }}
                           >
                             <Eye className="size-4" />
-                            <span className="ml-2">{t('subcontracting.receipt.approval.viewDetails', 'Detay')}</span>
+                            <span className="ml-2">{t('subcontracting.receipt.approval.viewDetails')}</span>
                           </Button>
                           <Button
                             variant="default"
@@ -202,7 +202,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                             disabled={approveMutation.isPending}
                           >
                             <Check className="size-4" />
-                            <span className="ml-2">{t('subcontracting.receipt.approval.approve', 'Onayla')}</span>
+                            <span className="ml-2">{t('subcontracting.receipt.approval.approve')}</span>
                           </Button>
                           <Button
                             variant="destructive"
@@ -211,7 +211,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                             disabled={approveMutation.isPending}
                           >
                             <X className="size-4" />
-                            <span className="ml-2">{t('subcontracting.receipt.approval.reject', 'Reddet')}</span>
+                            <span className="ml-2">{t('subcontracting.receipt.approval.reject')}</span>
                           </Button>
                         </div>
                       </TableCell>
@@ -221,7 +221,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('subcontracting.receipt.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                        {t('subcontracting.receipt.approval.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -232,7 +232,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -246,10 +246,10 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -257,7 +257,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>
@@ -271,7 +271,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.id', 'ID')}
+                          {t('subcontracting.receipt.approval.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -279,43 +279,43 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.documentNo', 'Belge No')}
+                          {t('subcontracting.receipt.approval.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.documentDate', 'Belge Tarihi')}
+                          {t('subcontracting.receipt.approval.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.customerCode', 'Cari Kodu')}
+                          {t('subcontracting.receipt.approval.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.customerName', 'Cari Adı')}
+                          {t('subcontracting.receipt.approval.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('subcontracting.receipt.approval.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.targetWarehouse', 'Varış Deposu')}
+                          {t('subcontracting.receipt.approval.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('subcontracting.receipt.approval.completionDate', 'Tamamlanma Tarihi')}
+                          {t('subcontracting.receipt.approval.completionDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.completionDate)}</p>
                       </div>
@@ -331,7 +331,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                         }}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('subcontracting.receipt.approval.viewDetails', 'Detay')}
+                        {t('subcontracting.receipt.approval.viewDetails')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
@@ -342,7 +342,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <Check className="size-4 mr-2" />
-                          {t('subcontracting.receipt.approval.approve', 'Onayla')}
+                          {t('subcontracting.receipt.approval.approve')}
                         </Button>
                         <Button
                           variant="destructive"
@@ -352,7 +352,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <X className="size-4 mr-2" />
-                          {t('subcontracting.receipt.approval.reject', 'Reddet')}
+                          {t('subcontracting.receipt.approval.reject')}
                         </Button>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('subcontracting.receipt.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                  {t('subcontracting.receipt.approval.noData')}
                 </p>
               </div>
             )}
@@ -370,7 +370,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col items-center justify-between gap-4 pt-4 border-t md:hidden">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -384,10 +384,10 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -395,7 +395,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

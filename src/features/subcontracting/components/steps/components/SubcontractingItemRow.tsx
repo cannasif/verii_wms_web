@@ -84,7 +84,7 @@ export function SubcontractingItemRow({
             {isOver && (
               <Badge variant="destructive" className="text-xs shrink-0">
                 <AlertCircle className="w-3 h-3 mr-1" />
-                {t('common.over', 'Fazla')}
+                {t('common.over')}
               </Badge>
             )}
           </div>
@@ -94,7 +94,7 @@ export function SubcontractingItemRow({
             </Badge>
             <span className="hidden sm:inline">•</span>
             <span>
-              {t('subcontracting.step2.ordered', 'Sipariş')}:{' '}
+              {t('subcontracting.step2.ordered')}:{' '}
               <strong className="text-foreground">{item.orderedQty}</strong>
             </span>
           </div>
@@ -130,50 +130,50 @@ export function SubcontractingItemRow({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor={`serial-${item.id || ''}`} className="text-sm font-medium">
-                {t('subcontracting.details.serialNo', 'Seri No')}
+                {t('subcontracting.details.serialNo')}
               </Label>
               <Input
                 id={`serial-${item.id || ''}`}
                 value={selectedItem?.serialNo || ''}
                 onChange={(e) => handleDetailChange('serialNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('subcontracting.details.serialNoPlaceholder', 'Seri No giriniz')}
+                placeholder={t('subcontracting.details.serialNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`lot-${item.id || ''}`} className="text-sm font-medium">
-                {t('subcontracting.details.lotNo', 'Parti No')}
+                {t('subcontracting.details.lotNo')}
               </Label>
               <Input
                 id={`lot-${item.id || ''}`}
                 value={selectedItem?.lotNo || ''}
                 onChange={(e) => handleDetailChange('lotNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('subcontracting.details.lotNoPlaceholder', 'Parti No giriniz')}
+                placeholder={t('subcontracting.details.lotNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`batch-${item.id || ''}`} className="text-sm font-medium">
-                {t('subcontracting.details.batchNo', 'Batch No')}
+                {t('subcontracting.details.batchNo')}
               </Label>
               <Input
                 id={`batch-${item.id || ''}`}
                 value={selectedItem?.batchNo || ''}
                 onChange={(e) => handleDetailChange('batchNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('subcontracting.details.batchNoPlaceholder', 'Batch No giriniz')}
+                placeholder={t('subcontracting.details.batchNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
-                {t('subcontracting.details.configCode', 'Yapılandırma Kodu')}
+                {t('subcontracting.details.configCode')}
               </Label>
               <Input
                 id={`config-${item.id || ''}`}
                 value={selectedItem?.configCode || ''}
                 onChange={(e) => handleDetailChange('configCode', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('subcontracting.details.configCodePlaceholder', 'Yapılandırma Kodu giriniz')}
+                placeholder={t('subcontracting.details.configCodePlaceholder')}
               />
             </div>
           </div>
