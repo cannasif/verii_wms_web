@@ -1,8 +1,8 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
+import type { PagedResponse } from '@/types/api';
 import type {
   Parameter,
-  ParametersResponse,
   ParameterResponse,
   CreateParameterRequest,
   UpdateParameterRequest,
@@ -14,24 +14,52 @@ const getEndpoint = (type: ParameterType): string => {
   return PARAMETER_TYPES[type].endpoint;
 };
 
+const normalizePagedData = (paged: unknown): Parameter[] => {
+  const raw = paged as { data?: Parameter[]; items?: Parameter[] };
+  if (Array.isArray(raw.data)) return raw.data;
+  if (Array.isArray(raw.items)) return raw.items;
+  return [];
+};
+
 export const parameterApi = {
-  getAll: async (type: ParameterType): Promise<Parameter[]> => {
+  getPaged: async (
+    type: ParameterType,
+    params: {
+      pageNumber?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      filters?: Array<{ column: string; operator: string; value: string }>;
+      filterLogic?: 'and' | 'or';
+    } = {}
+  ): Promise<PagedResponse<Parameter>> => {
     const endpoint = getEndpoint(type);
-    const response = await api.get<ParametersResponse>(`/api/${endpoint}`);
+    const requestBody = {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 1000,
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'desc',
+      filters: params.filters ?? [],
+      filterLogic: params.filterLogic ?? 'and',
+    };
+
+    const response = await api.post<ApiResponse<PagedResponse<Parameter>>>(`/api/${endpoint}/paged`, requestBody);
     if (response.success && response.data) {
-      return response.data;
+      const normalizedData = normalizePagedData(response.data);
+      return { ...response.data, data: normalizedData };
     }
     throw new Error(response.message || 'Parametreler yüklenemedi');
   },
 
+  getAll: async (type: ParameterType): Promise<Parameter[]> => {
+    const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1000 });
+    return paged.data ?? [];
+  },
+
   getFirst: async (type: ParameterType): Promise<Parameter | null> => {
     try {
-      const endpoint = getEndpoint(type);
-      const url = `/api/${endpoint}`;
-      const response = await api.get<ParametersResponse>(url);
-      if (response.success && response.data && response.data.length > 0) {
-        return response.data[0];
-      }
+      const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1, sortBy: 'Id', sortDirection: 'desc' });
+      if (paged.data && paged.data.length > 0) return paged.data[0];
       return null;
     } catch (error) {
       if (error && typeof error === 'object' && 'response' in error) {
@@ -109,4 +137,3 @@ export const parameterApi = {
     }
   },
 };
-
