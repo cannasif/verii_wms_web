@@ -16,7 +16,7 @@ export function DashboardPage(): ReactElement {
   const { setPageTitle } = useUIStore();
 
   useEffect(() => {
-    setPageTitle(t('dashboard.title', 'Dashboard'));
+    setPageTitle(t('dashboard.title'));
     return () => {
       setPageTitle(null);
     };
