@@ -87,9 +87,9 @@ export function Step2StockSelection({
               <span className="text-2xl font-semibold">1</span>
             </div>
             <div className="space-y-2">
-              <CardTitle>{t('goodsReceipt.step2.selectCustomerFirst', 'Önce Müşteri Seçiniz')}</CardTitle>
+              <CardTitle>{t('goodsReceipt.step2.selectCustomerFirst')}</CardTitle>
               <CardDescription>
-                {t('goodsReceipt.step2.customerPrompt', 'Stokları görüntülemek için lütfen önceki adımdan bir müşteri seçin.')}
+                {t('goodsReceipt.step2.customerPrompt')}
               </CardDescription>
             </div>
           </div>
@@ -106,10 +106,10 @@ export function Step2StockSelection({
             <div className="px-4 border-b">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="stocks" className="w-full">
-                  {t('goodsReceipt.step2.stocks', 'Stoklar')}
+                  {t('goodsReceipt.step2.stocks')}
                 </TabsTrigger>
                 <TabsTrigger value="selected" className="w-full">
-                  {t('goodsReceipt.step2.selectedItems', 'Seçili Stoklar')}
+                  {t('goodsReceipt.step2.selectedItems')}
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -119,7 +119,7 @@ export function Step2StockSelection({
                   <div className="relative flex items-center">
                     <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder={t('goodsReceipt.step2.searchStocks', 'Stok kodu veya adı ile ara...')}
+                      placeholder={t('goodsReceipt.step2.searchStocks')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-8 pr-10"
@@ -140,7 +140,7 @@ export function Step2StockSelection({
                     </div>
                   ) : filteredProducts.length === 0 ? (
                     <div className="text-center py-8 text-sm text-muted-foreground">
-                      {t('common.notFound', 'Bulunamadı')}
+                      {t('common.notFound')}
                     </div>
                   ) : (
                     filteredProducts.map((product) => {
@@ -171,7 +171,7 @@ export function Step2StockSelection({
                             </div>
                             {isSelected && (
                               <Badge variant="default" className="shrink-0">
-                                {t('common.selected', 'Seçili')}
+                                {t('common.selected')}
                               </Badge>
                             )}
                           </div>
@@ -188,17 +188,17 @@ export function Step2StockSelection({
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <h3 className="font-semibold text-sm">
-                        {t('goodsReceipt.step2.selectedItems', 'Seçili Stoklar')}
+                        {t('goodsReceipt.step2.selectedItems')}
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        {t('goodsReceipt.step2.itemsCount', '{{count}} kalem ürün', { count: selectedItems.length })}
+                        {t('goodsReceipt.step2.itemsCount', { count: selectedItems.length })}
                       </p>
                     </div>
                   </div>
                   <div className="relative flex items-center">
                     <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                     <Input
-                      placeholder={t('goodsReceipt.step2.searchItems', 'Stok kodu veya adı ile ara...')}
+                      placeholder={t('goodsReceipt.step2.searchItems')}
                       value={searchSelectedQuery}
                       onChange={(e) => setSearchSelectedQuery(e.target.value)}
                       className="pl-7 pr-9 h-7 text-xs"
@@ -217,7 +217,7 @@ export function Step2StockSelection({
                   {selectedItems.length === 0 ? (
                     <div className="text-center py-12">
                       <p className="text-sm text-muted-foreground">
-                        {t('goodsReceipt.step2.noSelectedItems', 'Seçili stok bulunmamaktadır')}
+                        {t('goodsReceipt.step2.noSelectedItems')}
                       </p>
                     </div>
                   ) : (
@@ -282,7 +282,7 @@ export function Step2StockSelection({
               <div className="relative flex items-center">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder={t('goodsReceipt.step2.searchStocks', 'Stok kodu veya adı ile ara...')}
+                  placeholder={t('goodsReceipt.step2.searchStocks')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-8 pr-10"
@@ -303,7 +303,7 @@ export function Step2StockSelection({
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-8 text-sm text-muted-foreground">
-                  {t('common.notFound', 'Bulunamadı')}
+                  {t('common.notFound')}
                 </div>
               ) : (
                 filteredProducts.map((product) => {
@@ -334,7 +334,7 @@ export function Step2StockSelection({
                         </div>
                         {isSelected && (
                           <Badge variant="default" className="shrink-0">
-                            {t('common.selected', 'Seçili')}
+                            {t('common.selected')}
                           </Badge>
                         )}
                       </div>
@@ -350,17 +350,17 @@ export function Step2StockSelection({
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <h3 className="font-semibold text-sm">
-                      {t('goodsReceipt.step2.selectedItems', 'Seçili Stoklar')}
+                      {t('goodsReceipt.step2.selectedItems')}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      {t('goodsReceipt.step2.itemsCount', '{{count}} kalem ürün', { count: selectedItems.length })}
+                      {t('goodsReceipt.step2.itemsCount', { count: selectedItems.length })}
                     </p>
                   </div>
                 </div>
                 <div className="relative flex items-center">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
-                    placeholder={t('goodsReceipt.step2.searchItems', 'Stok kodu veya adı ile ara...')}
+                    placeholder={t('goodsReceipt.step2.searchItems')}
                     value={searchSelectedQuery}
                     onChange={(e) => setSearchSelectedQuery(e.target.value)}
                     className="pl-7 pr-9 h-7 text-xs"
@@ -379,7 +379,7 @@ export function Step2StockSelection({
                 {selectedItems.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-sm text-muted-foreground">
-                      {t('goodsReceipt.step2.noSelectedItems', 'Seçili stok bulunmamaktadır')}
+                      {t('goodsReceipt.step2.noSelectedItems')}
                     </p>
                   </div>
                 ) : (

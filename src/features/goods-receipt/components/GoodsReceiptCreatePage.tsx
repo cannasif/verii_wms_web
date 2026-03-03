@@ -35,7 +35,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
   const [selectedItems, setSelectedItems] = useState<(SelectedOrderItem | SelectedStockItem)[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('goodsReceipt.create.title', 'Yeni Mal Kabul Girişi'));
+    setPageTitle(t('goodsReceipt.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -60,12 +60,12 @@ export function GoodsReceiptCreatePage(): ReactElement {
       return goodsReceiptApi.createGoodsReceipt(formData, selectedItems, receiptMode === 'stock');
     },
     onSuccess: () => {
-      toast.success(t('goodsReceipt.create.success', 'Mal kabul başarıyla oluşturuldu'));
+      toast.success(t('goodsReceipt.create.success'));
       navigate('/goods-receipt/list');
     },
     onError: (error: Error) => {
       toast.error(
-        error.message || t('goodsReceipt.create.error', 'Mal kabul oluşturulurken bir hata oluştu')
+        error.message || t('goodsReceipt.create.error')
       );
     },
   });
@@ -155,7 +155,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
     { label: t('goodsReceipt.create.steps.basicInfo') },
     { label: receiptMode === 'order' 
         ? t('goodsReceipt.create.steps.orderSelection')
-        : t('goodsReceipt.create.steps.stockSelection', 'Stok Seçimi')
+        : t('goodsReceipt.create.steps.stockSelection')
     },
   ];
 
@@ -199,7 +199,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
             if (currentStep > 1) setCurrentStep(1);
           }}
         >
-          {t('goodsReceipt.create.mode.order', 'Sipariş Bazlı')}
+          {t('goodsReceipt.create.mode.order')}
         </Badge>
         <Badge
           variant={receiptMode === 'stock' ? 'default' : 'outline'}
@@ -210,7 +210,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
             if (currentStep > 1) setCurrentStep(1);
           }}
         >
-          {t('goodsReceipt.create.mode.stock', 'Stok Bazlı')}
+          {t('goodsReceipt.create.mode.stock')}
         </Badge>
       </div>
 

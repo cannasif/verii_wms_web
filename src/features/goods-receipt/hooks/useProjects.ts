@@ -19,7 +19,7 @@ export const useProjects = () => {
       toast.error(
         query.error instanceof Error
           ? query.error.message
-          : t('common.generalError', 'Bir hata oluştu. Lütfen tekrar deneyin.'),
+          : t('common.generalError'),
       );
     }
   }, [query.isError, query.error, t]);

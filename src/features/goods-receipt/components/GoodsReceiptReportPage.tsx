@@ -30,7 +30,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('goodsReceipt.report.title', 'Mal Kabul Raporu'));
+    setPageTitle(t('goodsReceipt.report.title'));
     return () => {
       setPageTitle(null);
     };
@@ -99,7 +99,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('goodsReceipt.report.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('goodsReceipt.report.error')}</p>
       </div>
     );
   }
@@ -109,12 +109,12 @@ export function GoodsReceiptReportPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('goodsReceipt.report.title', 'Mal Kabul Raporu')}</CardTitle>
+            <CardTitle>{t('goodsReceipt.report.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('goodsReceipt.report.searchPlaceholder', 'Sipariş No, Cari Kodu, Belge No...')}
+                  placeholder={t('goodsReceipt.report.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8 pr-10 w-full md:w-64"
@@ -139,56 +139,56 @@ export function GoodsReceiptReportPage(): ReactElement {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('id')}
                   >
-                    {t('goodsReceipt.report.id', 'ID')}
+                    {t('goodsReceipt.report.id')}
                     {sortBy === 'id' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('orderId')}
                   >
-                    {t('goodsReceipt.report.orderId', 'Sipariş No')}
+                    {t('goodsReceipt.report.orderId')}
                     {sortBy === 'orderId' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('customerCode')}
                   >
-                    {t('goodsReceipt.report.customerCode', 'Cari Kodu')}
+                    {t('goodsReceipt.report.customerCode')}
                     {sortBy === 'customerCode' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('projectCode')}
                   >
-                    {t('goodsReceipt.report.projectCode', 'Proje Kodu')}
+                    {t('goodsReceipt.report.projectCode')}
                     {sortBy === 'projectCode' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('documentType')}
                   >
-                    {t('goodsReceipt.report.documentType', 'Belge Tipi')}
+                    {t('goodsReceipt.report.documentType')}
                     {sortBy === 'documentType' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('plannedDate')}
                   >
-                    {t('goodsReceipt.report.plannedDate', 'Planlanan Tarih')}
+                    {t('goodsReceipt.report.plannedDate')}
                     {sortBy === 'plannedDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead>
-                    {t('goodsReceipt.report.status', 'Durum')}
+                    {t('goodsReceipt.report.status')}
                   </TableHead>
                   <TableHead
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('createdDate')}
                   >
-                    {t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}
+                    {t('goodsReceipt.report.createdDate')}
                     {sortBy === 'createdDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
                   </TableHead>
                   <TableHead>
-                    {t('goodsReceipt.report.actions', 'İşlemler')}
+                    {t('goodsReceipt.report.actions')}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -210,19 +210,19 @@ export function GoodsReceiptReportPage(): ReactElement {
                         <div className="flex flex-col gap-1">
                           {item.isCompleted ? (
                             <Badge variant="default" className="w-fit">
-                              {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                              {t('goodsReceipt.report.completed')}
                             </Badge>
                           ) : item.isPendingApproval ? (
                             <Badge variant="secondary" className="w-fit">
-                              {t('goodsReceipt.report.pendingApproval', 'Onay Bekliyor')}
+                              {t('goodsReceipt.report.pendingApproval')}
                             </Badge>
                           ) : item.completionDate ? (
                             <Badge variant="default" className="w-fit">
-                              {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                              {t('goodsReceipt.report.completed')}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="w-fit">
-                              {t('goodsReceipt.report.inProgress', 'Devam Ediyor')}
+                              {t('goodsReceipt.report.inProgress')}
                             </Badge>
                           )}
                         </div>
@@ -235,7 +235,7 @@ export function GoodsReceiptReportPage(): ReactElement {
                           onClick={() => setSelectedGrHeaderId(item.id)}
                         >
                           <Eye className="size-4" />
-                          <span className="ml-2">{t('goodsReceipt.report.viewDetails', 'Detay')}</span>
+                          <span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -244,7 +244,7 @@ export function GoodsReceiptReportPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('goodsReceipt.report.noData', 'Veri bulunamadı')}
+                        {t('goodsReceipt.report.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -260,26 +260,26 @@ export function GoodsReceiptReportPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.id', 'ID')}
+                          {t('goodsReceipt.report.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
                       <div className="flex flex-col gap-1">
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                            {t('goodsReceipt.report.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('goodsReceipt.report.pendingApproval', 'Onay Bekliyor')}
+                            {t('goodsReceipt.report.pendingApproval')}
                           </Badge>
                         ) : item.completionDate ? (
                           <Badge variant="default" className="w-fit">
-                            {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                            {t('goodsReceipt.report.completed')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('goodsReceipt.report.inProgress', 'Devam Ediyor')}
+                            {t('goodsReceipt.report.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -287,25 +287,25 @@ export function GoodsReceiptReportPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.orderId', 'Sipariş No')}
+                          {t('goodsReceipt.report.orderId')}
                         </p>
                         <p className="text-base">{item.orderId || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.customerCode', 'Cari Kodu')}
+                          {t('goodsReceipt.report.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.projectCode', 'Proje Kodu')}
+                          {t('goodsReceipt.report.projectCode')}
                         </p>
                         <p className="text-base">{item.projectCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.documentType', 'Belge Tipi')}
+                          {t('goodsReceipt.report.documentType')}
                         </p>
                         <Badge variant={item.documentType === 'E-İrsaliye' ? 'secondary' : 'default'} className="mt-1">
                           {item.documentType || '-'}
@@ -313,13 +313,13 @@ export function GoodsReceiptReportPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.plannedDate', 'Planlanan Tarih')}
+                          {t('goodsReceipt.report.plannedDate')}
                         </p>
                         <p className="text-base">{formatDate(item.plannedDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}
+                          {t('goodsReceipt.report.createdDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.createdDate)}</p>
                       </div>
@@ -332,7 +332,7 @@ export function GoodsReceiptReportPage(): ReactElement {
                         onClick={() => setSelectedGrHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('goodsReceipt.report.viewDetails', 'Detay')}
+                        {t('goodsReceipt.report.viewDetails')}
                       </Button>
                     </div>
                   </CardContent>
@@ -341,7 +341,7 @@ export function GoodsReceiptReportPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('goodsReceipt.report.noData', 'Veri bulunamadı')}
+                  {t('goodsReceipt.report.noData')}
                 </p>
               </div>
             )}
@@ -349,7 +349,7 @@ export function GoodsReceiptReportPage(): ReactElement {
           {data && (
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                {t('goodsReceipt.report.paginationInfo', '{{current}} - {{total}} arası, Toplam: {{totalCount}}', {
+                {t('goodsReceipt.report.paginationInfo', {
                   current: (data.pageNumber - 1) * data.pageSize + 1,
                   total: Math.min(data.pageNumber * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -363,10 +363,10 @@ export function GoodsReceiptReportPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm text-muted-foreground">
-                  {t('goodsReceipt.report.page', 'Sayfa {{page}} / {{totalPages}}', {
+                  {t('goodsReceipt.report.page', {
                     page: data.pageNumber,
                     totalPages: data.totalPages,
                   })}
@@ -377,7 +377,7 @@ export function GoodsReceiptReportPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

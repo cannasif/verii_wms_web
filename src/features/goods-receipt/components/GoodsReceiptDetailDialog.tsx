@@ -77,7 +77,7 @@ function ImportLineDetailDialog({
       <ImportLineDialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         <ImportLineDialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <ImportLineDialogTitle className="text-xl">
-            {t('goodsReceipt.report.importLineDetail', 'İçerik Satır Detayı')}
+            {t('goodsReceipt.report.importLineDetail')}
           </ImportLineDialogTitle>
           <ImportLineDialogDescription>
             {importLine.routes.find((route) => route.stockName)?.stockName || importLine.description1 || importLine.stockCode}
@@ -88,10 +88,10 @@ function ImportLineDetailDialog({
           <Tabs defaultValue="order" className="w-full">
             <TabsList className="w-full justify-start">
               <TabsTrigger value="order">
-                {t('goodsReceipt.report.orderInfo', 'Sipariş Bilgisi')}
+                {t('goodsReceipt.report.orderInfo')}
               </TabsTrigger>
               <TabsTrigger value="import">
-                {t('goodsReceipt.report.importInfo', 'İçerik Bilgisi')}
+                {t('goodsReceipt.report.importInfo')}
               </TabsTrigger>
             </TabsList>
 
@@ -103,45 +103,45 @@ function ImportLineDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3">
-                            {t('goodsReceipt.report.stockCode', 'Stok Kodu')}
+                            {t('goodsReceipt.report.stockCode')}
                           </TableHead>
                           <TableCell>{orderLine.stockCode}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.description', 'Açıklama')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.description')}</TableHead>
                           <TableCell>{orderLine.description}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.quantity', 'Miktar')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.quantity')}</TableHead>
                           <TableCell>
                             {orderLine.quantity} {orderLine.unit}
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.unit', 'Ölçü Birimi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.unit')}</TableHead>
                           <TableCell>{orderLine.unit}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpOrderNo', 'ERP Sipariş No')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpOrderNo')}</TableHead>
                           <TableCell>{orderLine.erpOrderNo}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpOrderId', 'ERP Sipariş ID')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpOrderId')}</TableHead>
                           <TableCell>{orderLine.erpOrderId}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.createdDate')}</TableHead>
                           <TableCell>{formatDateTime(orderLine.createdDate)}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.createdBy', 'Oluşturan')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.createdBy')}</TableHead>
                           <TableCell>{orderLine.createdByFullUser || '-'}</TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
                   ) : (
                     <p className="text-muted-foreground text-center py-4">
-                      {t('goodsReceipt.report.noOrderInfo', 'Sipariş bilgisi bulunamadı')}
+                      {t('goodsReceipt.report.noOrderInfo')}
                     </p>
                   )}
                 </CardContent>
@@ -156,31 +156,31 @@ function ImportLineDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3">
-                            {t('goodsReceipt.report.stockCode', 'Stok Kodu')}
+                            {t('goodsReceipt.report.stockCode')}
                           </TableHead>
                           <TableCell>{importLine.stockCode}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.stockName', 'Stok Adı')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.stockName')}</TableHead>
                           <TableCell>{importLine.routes.find((route) => route.stockName)?.stockName || importLine.description1 || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.description2', 'Açıklama 2')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.description2')}</TableHead>
                           <TableCell>{importLine.description2 || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.totalImportQuantity', 'Toplam İçerik Miktarı')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.totalImportQuantity')}</TableHead>
                           <TableCell className="font-semibold">
                             {totalImportQuantity}
                             {warehouses.length > 0 && (
                               <span className="ml-2 text-muted-foreground font-normal">
-                                ({t('goodsReceipt.report.targetWarehouse', 'Hedef Depo')}: {warehouses.join(', ')})
+                                ({t('goodsReceipt.report.targetWarehouse')}: {warehouses.join(', ')})
                               </span>
                             )}
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.createdDate')}</TableHead>
                           <TableCell>{formatDateTime(importLine.createdDate)}</TableCell>
                         </TableRow>
                       </TableBody>
@@ -272,10 +272,10 @@ export function GoodsReceiptDetailDialog({
         <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle className="text-xl">
-            {t('goodsReceipt.report.detailTitle', 'Mal Kabul Detayı')} - #{grHeaderId}
+            {t('goodsReceipt.report.detailTitle')} - #{grHeaderId}
           </DialogTitle>
           <DialogDescription>
-            {t('goodsReceipt.report.detailDescription', 'Mal kabul işleminin detaylı bilgileri')}
+            {t('goodsReceipt.report.detailDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -288,7 +288,7 @@ export function GoodsReceiptDetailDialog({
         {error && (
             <div className="flex items-center justify-center py-12 flex-1">
             <p className="text-destructive">
-              {t('goodsReceipt.report.detailError', 'Detay yüklenirken bir hata oluştu')}
+              {t('goodsReceipt.report.detailError')}
             </p>
           </div>
         )}
@@ -298,10 +298,10 @@ export function GoodsReceiptDetailDialog({
               <Tabs defaultValue="info" className="w-full h-full flex flex-col">
                 <TabsList className="w-full justify-start px-6 shrink-0">
                   <TabsTrigger value="info">
-                    {t('goodsReceipt.report.info', 'Bilgiler')}
+                    {t('goodsReceipt.report.info')}
                   </TabsTrigger>
                   <TabsTrigger value="content">
-                    {t('goodsReceipt.report.content', 'Mal Kabul İçeriği')}
+                    {t('goodsReceipt.report.content')}
                   </TabsTrigger>
                 </TabsList>
 
@@ -311,54 +311,54 @@ export function GoodsReceiptDetailDialog({
                       <CardContent className="p-4">
                         <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-sm">
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.orderId', 'Sipariş No')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.orderId')}: </span>
                             <span className="font-semibold">{data.orderId || '-'}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.customerCode', 'Cari Kodu')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.customerCode')}: </span>
                             <span className="font-semibold">{data.customerCode || '-'}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.projectCode', 'Proje Kodu')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.projectCode')}: </span>
                             <span className="font-semibold">{data.projectCode || '-'}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.documentType', 'Belge Tipi')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.documentType')}: </span>
                             <Badge variant={data.documentType === 'E-İrsaliye' ? 'secondary' : 'default'} className="ml-1">
                       {data.documentType || '-'}
                     </Badge>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.plannedDate', 'Planlanan Tarih')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.plannedDate')}: </span>
                             <span className="font-semibold">{formatDate(data.plannedDate)}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.branchCode', 'Şube Kodu')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.branchCode')}: </span>
                             <span className="font-semibold">{data.branchCode || '-'}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.yearCode', 'Yıl Kodu')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.yearCode')}: </span>
                             <span className="font-semibold">{data.yearCode || '-'}</span>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.isPlanned', 'Planlı')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.isPlanned')}: </span>
                             <Badge variant={data.isPlanned ? 'default' : 'outline'} className="ml-1">
-                      {data.isPlanned ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                      {data.isPlanned ? t('common.yes') : t('common.no')}
                     </Badge>
                   </div>
                           <div>
-                            <span className="text-muted-foreground">{t('goodsReceipt.report.priorityLevel', 'Öncelik Seviyesi')}: </span>
+                            <span className="text-muted-foreground">{t('goodsReceipt.report.priorityLevel')}: </span>
                             <span className="font-semibold">{data.priorityLevel}</span>
                   </div>
                   {data.description1 && (
                             <div className="col-span-3">
-                              <span className="text-muted-foreground">{t('goodsReceipt.report.description1', 'Açıklama 1')}: </span>
+                              <span className="text-muted-foreground">{t('goodsReceipt.report.description1')}: </span>
                               <span>{data.description1}</span>
                     </div>
                   )}
                   {data.description2 && (
                             <div className="col-span-3">
-                              <span className="text-muted-foreground">{t('goodsReceipt.report.description2', 'Açıklama 2')}: </span>
+                              <span className="text-muted-foreground">{t('goodsReceipt.report.description2')}: </span>
                               <span>{data.description2}</span>
                     </div>
                   )}
@@ -369,16 +369,16 @@ export function GoodsReceiptDetailDialog({
             <Tabs defaultValue="status" className="w-full">
               <TabsList className="w-full justify-start overflow-x-auto">
                 <TabsTrigger value="status">
-                  {t('goodsReceipt.report.statusInfo', 'Durum')}
+                  {t('goodsReceipt.report.statusInfo')}
                 </TabsTrigger>
                 <TabsTrigger value="erp">
-                  {t('goodsReceipt.report.erpInfo', 'ERP')}
+                  {t('goodsReceipt.report.erpInfo')}
                 </TabsTrigger>
                 <TabsTrigger value="additional">
-                  {t('goodsReceipt.report.additionalInfo', 'Ek Bilgiler')}
+                  {t('goodsReceipt.report.additionalInfo')}
                 </TabsTrigger>
                 <TabsTrigger value="audit">
-                  {t('goodsReceipt.report.auditInfo', 'Denetim')}
+                  {t('goodsReceipt.report.auditInfo')}
                 </TabsTrigger>
               </TabsList>
 
@@ -389,34 +389,34 @@ export function GoodsReceiptDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3 md:w-1/4">
-                            {t('goodsReceipt.report.isCompleted', 'Tamamlandı')}
+                            {t('goodsReceipt.report.isCompleted')}
                           </TableHead>
                           <TableCell>
                             <Badge variant={data.isCompleted ? 'default' : 'outline'}>
-                              {data.isCompleted ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                              {data.isCompleted ? t('common.yes') : t('common.no')}
                             </Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.completionDate', 'Tamamlanma Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.completionDate')}</TableHead>
                           <TableCell>{formatDate(data.completionDate)}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.isPendingApproval', 'Onay Bekliyor')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.isPendingApproval')}</TableHead>
                           <TableCell>
                             <Badge variant={data.isPendingApproval ? 'secondary' : 'outline'}>
-                              {data.isPendingApproval ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                              {data.isPendingApproval ? t('common.yes') : t('common.no')}
                             </Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.approvalStatus', 'Onay Durumu')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.approvalStatus')}</TableHead>
                           <TableCell>
                             {data.approvalStatus !== null ? (
                               <Badge variant={data.approvalStatus ? 'default' : 'destructive'}>
                                 {data.approvalStatus
-                                  ? t('goodsReceipt.report.approved', 'Onaylandı')
-                                  : t('goodsReceipt.report.rejected', 'Reddedildi')}
+                                  ? t('goodsReceipt.report.approved')
+                                  : t('goodsReceipt.report.rejected')}
                               </Badge>
                             ) : (
                               '-'
@@ -424,11 +424,11 @@ export function GoodsReceiptDetailDialog({
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.approvedBy', 'Onaylayan')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.approvedBy')}</TableHead>
                           <TableCell>{data.approvedByUserId || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.approvalDate', 'Onay Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.approvalDate')}</TableHead>
                           <TableCell>{formatDateTime(data.approvalDate)}</TableCell>
                         </TableRow>
                       </TableBody>
@@ -444,28 +444,28 @@ export function GoodsReceiptDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3 md:w-1/4">
-                            {t('goodsReceipt.report.isERPIntegrated', 'ERP Entegre')}
+                            {t('goodsReceipt.report.isERPIntegrated')}
                           </TableHead>
                           <TableCell>
                             <Badge variant={data.isERPIntegrated ? 'default' : 'outline'}>
-                              {data.isERPIntegrated ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                              {data.isERPIntegrated ? t('common.yes') : t('common.no')}
                             </Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpReferenceNumber', 'ERP Referans No')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpReferenceNumber')}</TableHead>
                           <TableCell>{data.erpReferenceNumber || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpIntegrationDate', 'ERP Entegrasyon Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpIntegrationDate')}</TableHead>
                           <TableCell>{formatDateTime(data.erpIntegrationDate)}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpIntegrationStatus', 'ERP Entegrasyon Durumu')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpIntegrationStatus')}</TableHead>
                           <TableCell>{data.erpIntegrationStatus || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.erpErrorMessage', 'ERP Hata Mesajı')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.erpErrorMessage')}</TableHead>
                           <TableCell>
                             {data.erpErrorMessage ? (
                               <span className="text-destructive text-sm">{data.erpErrorMessage}</span>
@@ -487,37 +487,37 @@ export function GoodsReceiptDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3 md:w-1/4">
-                            {t('goodsReceipt.report.returnCode', 'İade Kodu')}
+                            {t('goodsReceipt.report.returnCode')}
                           </TableHead>
                           <TableCell>
                             <Badge variant={data.returnCode ? 'secondary' : 'outline'}>
-                              {data.returnCode ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                              {data.returnCode ? t('common.yes') : t('common.no')}
                             </Badge>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.ocrSource', 'OCR Kaynağı')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.ocrSource')}</TableHead>
                           <TableCell>
                             <Badge variant={data.ocrSource ? 'secondary' : 'outline'}>
-                              {data.ocrSource ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}
+                              {data.ocrSource ? t('common.yes') : t('common.no')}
                             </Badge>
                           </TableCell>
                         </TableRow>
                         {data.description3 && (
                           <TableRow>
-                            <TableHead>{t('goodsReceipt.report.description3', 'Açıklama 3')}</TableHead>
+                            <TableHead>{t('goodsReceipt.report.description3')}</TableHead>
                             <TableCell>{data.description3}</TableCell>
                           </TableRow>
                         )}
                         {data.description4 && (
                           <TableRow>
-                            <TableHead>{t('goodsReceipt.report.description4', 'Açıklama 4')}</TableHead>
+                            <TableHead>{t('goodsReceipt.report.description4')}</TableHead>
                             <TableCell>{data.description4}</TableCell>
                           </TableRow>
                         )}
                         {data.description5 && (
                           <TableRow>
-                            <TableHead>{t('goodsReceipt.report.description5', 'Açıklama 5')}</TableHead>
+                            <TableHead>{t('goodsReceipt.report.description5')}</TableHead>
                             <TableCell>{data.description5}</TableCell>
                           </TableRow>
                         )}
@@ -534,23 +534,23 @@ export function GoodsReceiptDetailDialog({
                       <TableBody>
                         <TableRow>
                           <TableHead className="w-1/3 md:w-1/4">
-                            {t('goodsReceipt.report.createdBy', 'Oluşturan')}
+                            {t('goodsReceipt.report.createdBy')}
                           </TableHead>
                           <TableCell>{data.createdByFullUser || '-'}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableHead>{t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}</TableHead>
+                          <TableHead>{t('goodsReceipt.report.createdDate')}</TableHead>
                           <TableCell>{formatDateTime(data.createdDate)}</TableCell>
                         </TableRow>
                         {data.updatedByFullUser && (
                           <TableRow>
-                            <TableHead>{t('goodsReceipt.report.updatedBy', 'Güncelleyen')}</TableHead>
+                            <TableHead>{t('goodsReceipt.report.updatedBy')}</TableHead>
                             <TableCell>{data.updatedByFullUser}</TableCell>
                           </TableRow>
                         )}
                         {data.updatedDate && (
                           <TableRow>
-                            <TableHead>{t('goodsReceipt.report.updatedDate', 'Güncellenme Tarihi')}</TableHead>
+                            <TableHead>{t('goodsReceipt.report.updatedDate')}</TableHead>
                             <TableCell>{formatDateTime(data.updatedDate)}</TableCell>
                           </TableRow>
                         )}
@@ -568,7 +568,7 @@ export function GoodsReceiptDetailDialog({
                     <div className="relative flex items-center">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        placeholder={t('goodsReceipt.report.searchContent', 'Stok kodu veya adı ile ara...')}
+                        placeholder={t('goodsReceipt.report.searchContent')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-8 pr-10"
@@ -622,22 +622,22 @@ export function GoodsReceiptDetailDialog({
                                     {orderLine && (
                                       <>
                                         <div>
-                                          <span className="text-muted-foreground">{t('goodsReceipt.report.erpOrderNo', 'ERP Sipariş No')}: </span>
+                                          <span className="text-muted-foreground">{t('goodsReceipt.report.erpOrderNo')}: </span>
                                           <span>{orderLine.erpOrderNo}</span>
                                         </div>
                                         <div>
-                                          <span className="text-muted-foreground">{t('goodsReceipt.report.description', 'Açıklama')}: </span>
+                                          <span className="text-muted-foreground">{t('goodsReceipt.report.description')}: </span>
                                           <span>{orderLine.description}</span>
                                         </div>
                                       </>
                                     )}
                                     <div>
-                                      <span className="text-muted-foreground">{t('goodsReceipt.report.totalImportQuantity', 'Toplam İçerik Miktarı')}: </span>
+                                      <span className="text-muted-foreground">{t('goodsReceipt.report.totalImportQuantity')}: </span>
                                       <span className="font-semibold">{totalQuantity}</span>
                                     </div>
                                     {warehouses.length > 0 && (
                                       <div>
-                                        <span className="text-muted-foreground">{t('goodsReceipt.report.targetWarehouse', 'Hedef Depo')}: </span>
+                                        <span className="text-muted-foreground">{t('goodsReceipt.report.targetWarehouse')}: </span>
                                         <span>{warehouses.join(', ')}</span>
                                       </div>
                                     )}
@@ -648,7 +648,7 @@ export function GoodsReceiptDetailDialog({
                                     onClick={() => handleImportLineClick(importLine)}
                                     className="w-full"
                                   >
-                                    {t('common.details', 'Detaylar')}
+                                    {t('common.details')}
                                   </Button>
                                 </div>
                               </AccordionContent>
@@ -660,8 +660,8 @@ export function GoodsReceiptDetailDialog({
                       <div className="flex items-center justify-center py-12">
                         <p className="text-muted-foreground">
                           {searchQuery
-                            ? t('goodsReceipt.report.noSearchResults', 'Arama sonucu bulunamadı')
-                            : t('goodsReceipt.report.noImportLines', 'İçerik satırı bulunamadı')}
+                            ? t('goodsReceipt.report.noSearchResults')
+                            : t('goodsReceipt.report.noImportLines')}
                         </p>
                       </div>
                     )}

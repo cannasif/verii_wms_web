@@ -71,8 +71,8 @@ export function Step1BasicInfo(): ReactElement {
                   getOptionValue={(opt) => opt.cariKod}
                   getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
                   placeholder={t('goodsReceipt.step1.selectCustomer')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('common.notFound', 'Bulunamadı')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
                   isLoading={customersLoading}
                   disabled={customersError}
                   itemLimit={100}
@@ -99,8 +99,8 @@ export function Step1BasicInfo(): ReactElement {
                   getOptionValue={(opt) => opt.projeKod}
                   getOptionLabel={(opt) => `${opt.projeAciklama} (${opt.projeKod})`}
                   placeholder={t('goodsReceipt.step1.selectProjectCode')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('common.notFound', 'Bulunamadı')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
                   isLoading={projectsLoading}
                   disabled={projectsError}
                   itemLimit={100}

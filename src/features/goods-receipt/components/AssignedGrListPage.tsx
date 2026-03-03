@@ -23,7 +23,7 @@ export function AssignedGrListPage(): ReactElement {
   const { data, isLoading, error } = useAssignedGrHeaders();
 
   useEffect(() => {
-    setPageTitle(t('goodsReceipt.assignedList.title', 'Atanmış Mal Kabul Emirleri'));
+    setPageTitle(t('goodsReceipt.assignedList.title'));
     return () => {
       setPageTitle(null);
     };
@@ -75,7 +75,7 @@ export function AssignedGrListPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('goodsReceipt.assignedList.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('goodsReceipt.assignedList.error')}
         </p>
       </div>
     );
@@ -86,14 +86,13 @@ export function AssignedGrListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('goodsReceipt.assignedList.title', 'Atanmış Mal Kabul Emirleri')}</CardTitle>
+            <CardTitle>{t('goodsReceipt.assignedList.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
                   placeholder={t(
-                    'goodsReceipt.assignedList.searchPlaceholder',
-                    'Sipariş No, Cari Kodu...'
+                    'goodsReceipt.assignedList.searchPlaceholder'
                   )}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -115,15 +114,15 @@ export function AssignedGrListPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('goodsReceipt.report.id', 'ID')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.orderId', 'Sipariş No')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.projectCode', 'Proje Kodu')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.documentType', 'Belge Tipi')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.plannedDate', 'Planlanan Tarih')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.status', 'Durum')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.createdDate', 'Oluşturulma Tarihi')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.id')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.orderId')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.customerCode')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.projectCode')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.documentType')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.plannedDate')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.status')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.createdDate')}</TableHead>
+                  <TableHead>{t('goodsReceipt.report.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -145,15 +144,15 @@ export function AssignedGrListPage(): ReactElement {
                       <TableCell>
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                            {t('goodsReceipt.report.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('goodsReceipt.report.pendingApproval', 'Onay Bekliyor')}
+                            {t('goodsReceipt.report.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('goodsReceipt.report.inProgress', 'Devam Ediyor')}
+                            {t('goodsReceipt.report.inProgress')}
                           </Badge>
                         )}
                       </TableCell>
@@ -167,7 +166,7 @@ export function AssignedGrListPage(): ReactElement {
                           >
                             <Eye className="size-4" />
                             <span className="ml-2">
-                              {t('goodsReceipt.report.viewDetails', 'Detay')}
+                              {t('goodsReceipt.report.viewDetails')}
                             </span>
                           </Button>
                           <Button
@@ -176,7 +175,7 @@ export function AssignedGrListPage(): ReactElement {
                             className="bg-emerald-500 hover:bg-emerald-600 text-white"
                             onClick={() => navigate(`/goods-receipt/collection/${item.id}`)}
                           >
-                            {t('common.start', 'Başla')}
+                            {t('common.start')}
                           </Button>
                         </div>
                       </TableCell>
@@ -186,7 +185,7 @@ export function AssignedGrListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('goodsReceipt.assignedList.noData', 'Atanmış mal kabul emri bulunamadı')}
+                        {t('goodsReceipt.assignedList.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -202,22 +201,22 @@ export function AssignedGrListPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.id', 'ID')}
+                          {t('goodsReceipt.report.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
                       <div>
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('goodsReceipt.report.completed', 'Tamamlandı')}
+                            {t('goodsReceipt.report.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('goodsReceipt.report.pendingApproval', 'Onay Bekliyor')}
+                            {t('goodsReceipt.report.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('goodsReceipt.report.inProgress', 'Devam Ediyor')}
+                            {t('goodsReceipt.report.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -225,25 +224,25 @@ export function AssignedGrListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.orderId', 'Sipariş No')}
+                          {t('goodsReceipt.report.orderId')}
                         </p>
                         <p className="text-base">{item.orderId || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.customerCode', 'Cari Kodu')}
+                          {t('goodsReceipt.report.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.projectCode', 'Proje Kodu')}
+                          {t('goodsReceipt.report.projectCode')}
                         </p>
                         <p className="text-base">{item.projectCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('goodsReceipt.report.plannedDate', 'Planlanan Tarih')}
+                          {t('goodsReceipt.report.plannedDate')}
                         </p>
                         <p className="text-base">{formatDate(item.plannedDate)}</p>
                       </div>
@@ -256,7 +255,7 @@ export function AssignedGrListPage(): ReactElement {
                         onClick={() => setSelectedHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('goodsReceipt.report.viewDetails', 'Detay')}
+                        {t('goodsReceipt.report.viewDetails')}
                       </Button>
                       <Button
                         variant="default"
@@ -264,7 +263,7 @@ export function AssignedGrListPage(): ReactElement {
                         className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
                         onClick={() => navigate(`/goods-receipt/collection/${item.id}`)}
                       >
-                        {t('common.start', 'Başla')}
+                        {t('common.start')}
                       </Button>
                     </div>
                   </CardContent>
@@ -273,7 +272,7 @@ export function AssignedGrListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('goodsReceipt.assignedList.noData', 'Atanmış mal kabul emri bulunamadı')}
+                  {t('goodsReceipt.assignedList.noData')}
                 </p>
               </div>
             )}

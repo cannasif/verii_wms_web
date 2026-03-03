@@ -70,9 +70,9 @@ export function ReceivingArea({
           <div className="text-center space-y-4">
             <PackageOpen className="w-12 h-12 mx-auto text-muted-foreground opacity-50" />
             <div className="space-y-2">
-              <CardTitle>{t('goodsReceipt.step2.noOrderSelected', 'Sipariş Seçimi')}</CardTitle>
+              <CardTitle>{t('goodsReceipt.step2.noOrderSelected')}</CardTitle>
               <CardDescription>
-                {t('goodsReceipt.step2.selectOrderPrompt', 'İşlem yapmak için siparişler sekmesinden bir sipariş seçiniz.')}
+                {t('goodsReceipt.step2.selectOrderPrompt')}
               </CardDescription>
             </div>
           </div>
@@ -97,7 +97,7 @@ export function ReceivingArea({
         <CardContent className="flex flex-col items-center justify-center py-12">
           <PackageOpen className="w-12 h-12 mb-4 text-muted-foreground opacity-50" />
           <p className="text-sm text-muted-foreground">
-            {t('goodsReceipt.orderItems.itemNotFound', 'Bu siparişte ürün bulunamadı.')}
+            {t('goodsReceipt.orderItems.itemNotFound')}
           </p>
         </CardContent>
       </Card>
@@ -115,15 +115,15 @@ export function ReceivingArea({
         <div className="flex items-center justify-between gap-2">
           <div>
             <h3 className="font-semibold text-sm">
-              {t('goodsReceipt.step2.orderContent', 'Sipariş İçeriği')}
+              {t('goodsReceipt.step2.orderContent')}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {t('goodsReceipt.step2.itemsCount', '{{count}} kalem ürün', { count: totalItems })}
+              {t('goodsReceipt.step2.itemsCount', { count: totalItems })}
             </p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground">
-              {t('goodsReceipt.step2.started', 'Başlanan')}
+              {t('goodsReceipt.step2.started')}
             </p>
             <p className="text-sm font-semibold">{startedItems}/{totalItems}</p>
           </div>
@@ -131,7 +131,7 @@ export function ReceivingArea({
         <div className="relative flex items-center">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder={t('goodsReceipt.step2.searchItems', 'Stok kodu veya adı ile ara...')}
+            placeholder={t('goodsReceipt.step2.searchItems')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 pr-9 h-7 text-xs"
@@ -150,7 +150,7 @@ export function ReceivingArea({
         {filteredItems.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">
-              {t('common.noResults', 'Sonuç bulunamadı')}
+              {t('common.noResults')}
             </p>
           </div>
         ) : (

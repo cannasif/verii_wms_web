@@ -4,11 +4,11 @@ import type { TFunction } from 'i18next';
 import type { ErpCustomer, ErpProject, ErpWarehouse, ErpProduct } from '@/services/erp-types';
 
 export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
-  receiptDate: z.string().min(1, t('goodsReceipt.validation.receiptDateRequired', 'Tarih zorunludur')),
-  documentNo: z.string().min(1, t('goodsReceipt.validation.documentNoRequired', 'Belge No zorunludur')),
+  receiptDate: z.string().min(1, t('goodsReceipt.validation.receiptDateRequired')),
+  documentNo: z.string().min(1, t('goodsReceipt.validation.documentNoRequired')),
   projectCode: z.string().optional(),
   isInvoice: z.boolean(),
-  customerId: z.string().min(1, t('goodsReceipt.validation.customerRequired', 'Cari seçimi zorunludur')),
+  customerId: z.string().min(1, t('goodsReceipt.validation.customerRequired')),
   notes: z.string().optional(),
 });
 

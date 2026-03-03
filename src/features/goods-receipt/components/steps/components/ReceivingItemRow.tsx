@@ -86,7 +86,7 @@ export function ReceivingItemRow({
                         {isOver && (
                             <Badge variant="destructive" className="text-xs shrink-0">
                                 <AlertCircle className="w-3 h-3 mr-1" />
-                                {t('common.over', 'Fazla')}
+                                {t('common.over')}
                             </Badge>
                         )}
                     </div>
@@ -96,7 +96,7 @@ export function ReceivingItemRow({
                         </Badge>
                         <span className="hidden sm:inline">•</span>
                         <span>
-                            {t('goodsReceipt.orderDetails.ordered', 'Sipariş')}:{' '}
+                            {t('goodsReceipt.orderDetails.ordered')}:{' '}
                             <strong className="text-foreground">{itemQuantity} {item.unit || ''}</strong>
                         </span>
                     </div>
@@ -121,9 +121,9 @@ export function ReceivingItemRow({
                                 options={warehouses}
                                 getOptionValue={(opt) => opt.depoKodu.toString()}
                                 getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                                placeholder={t('goodsReceipt.step1.selectWarehouse', 'Depo seçiniz')}
-                                searchPlaceholder={t('common.search', 'Ara...')}
-                                emptyText={t('common.notFound', 'Bulunamadı')}
+                                placeholder={t('goodsReceipt.step1.selectWarehouse')}
+                                searchPlaceholder={t('common.search')}
+                                emptyText={t('common.notFound')}
                             />
                         </div>
                         <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
@@ -157,50 +157,50 @@ export function ReceivingItemRow({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="space-y-2">
                             <Label htmlFor={`serial-${item.id || ''}`} className="text-sm font-medium">
-                                {t('goodsReceipt.details.serialNo', 'Seri No')}
+                                {t('goodsReceipt.details.serialNo')}
                             </Label>
                             <Input
                                 id={`serial-${item.id || ''}`}
                                 value={selectedItem?.serialNo || ''}
                                 onChange={(e) => handleDetailChange('serialNo', e.target.value)}
                                 className="h-9 text-sm"
-                                placeholder={t('goodsReceipt.details.serialNoPlaceholder', 'Seri No giriniz')}
+                                placeholder={t('goodsReceipt.details.serialNoPlaceholder')}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor={`lot-${item.id || ''}`} className="text-sm font-medium">
-                                {t('goodsReceipt.details.lotNo', 'Parti No')}
+                                {t('goodsReceipt.details.lotNo')}
                             </Label>
                             <Input
                                 id={`lot-${item.id || ''}`}
                                 value={selectedItem?.lotNo || ''}
                                 onChange={(e) => handleDetailChange('lotNo', e.target.value)}
                                 className="h-9 text-sm"
-                                placeholder={t('goodsReceipt.details.lotNoPlaceholder', 'Parti No giriniz')}
+                                placeholder={t('goodsReceipt.details.lotNoPlaceholder')}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor={`batch-${item.id || ''}`} className="text-sm font-medium">
-                                {t('goodsReceipt.details.batchNo', 'Batch No')}
+                                {t('goodsReceipt.details.batchNo')}
                             </Label>
                             <Input
                                 id={`batch-${item.id || ''}`}
                                 value={selectedItem?.batchNo || ''}
                                 onChange={(e) => handleDetailChange('batchNo', e.target.value)}
                                 className="h-9 text-sm"
-                                placeholder={t('goodsReceipt.details.batchNoPlaceholder', 'Batch No giriniz')}
+                                placeholder={t('goodsReceipt.details.batchNoPlaceholder')}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
-                                {t('goodsReceipt.details.configCode', 'Yapılandırma Kodu')}
+                                {t('goodsReceipt.details.configCode')}
                             </Label>
                             <Input
                                 id={`config-${item.id || ''}`}
                                 value={selectedItem?.configCode || ''}
                                 onChange={(e) => handleDetailChange('configCode', e.target.value)}
                                 className="h-9 text-sm"
-                                placeholder={t('goodsReceipt.details.configCodePlaceholder', 'Yapılandırma Kodu giriniz')}
+                                placeholder={t('goodsReceipt.details.configCodePlaceholder')}
                             />
                         </div>
                     </div>

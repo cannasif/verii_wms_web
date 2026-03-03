@@ -40,7 +40,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   const completeGoodsReceiptMutation = useCompleteGoodsReceipt();
 
   useEffect(() => {
-    setPageTitle(t('goodsReceipt.collection.title', 'Mal Kabul Toplama'));
+    setPageTitle(t('goodsReceipt.collection.title'));
     return () => {
       setPageTitle(null);
     };
@@ -51,14 +51,14 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       setSelectedStock(barcodeData.data[0]);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('goodsReceipt.collection.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('goodsReceipt.collection.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('goodsReceipt.collection.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('goodsReceipt.collection.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -67,12 +67,12 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
   const handleCollect = (): void => {
     if (!selectedStock) {
-      toast.error(t('goodsReceipt.collection.noStockSelected', 'Lütfen önce stok bilgisi getirin'));
+      toast.error(t('goodsReceipt.collection.noStockSelected'));
       return;
     }
 
     if (quantity <= 0) {
-      toast.error(t('goodsReceipt.collection.invalidQuantity', 'Geçersiz miktar'));
+      toast.error(t('goodsReceipt.collection.invalidQuantity'));
       return;
     }
 
@@ -81,7 +81,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
     );
 
     if (!matchingLine) {
-      toast.error(t('goodsReceipt.collection.stockNotInOrder', 'Bu stok mal kabul emrinde bulunmuyor'));
+      toast.error(t('goodsReceipt.collection.stockNotInOrder'));
       return;
     }
 
@@ -105,16 +105,16 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       {
         onSuccess: (response) => {
           if (response.success) {
-            toast.success(t('goodsReceipt.collection.collected', 'Ürün toplandı'));
+            toast.success(t('goodsReceipt.collection.collected'));
             setBarcodeInput('');
             setSelectedStock(null);
             setQuantity(1);
           } else {
-            toast.error(response.message || t('goodsReceipt.collection.collectError', 'Toplama hatası'));
+            toast.error(response.message || t('goodsReceipt.collection.collectError'));
           }
         },
         onError: (error: Error) => {
-          toast.error(error.message || t('goodsReceipt.collection.collectError', 'Toplama hatası'));
+          toast.error(error.message || t('goodsReceipt.collection.collectError'));
         },
       }
     );
@@ -128,21 +128,21 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
   const handleComplete = (): void => {
     if (!headerIdNum) {
-      toast.error(t('goodsReceipt.collection.invalidHeaderId', 'Geçersiz mal kabul emri'));
+      toast.error(t('goodsReceipt.collection.invalidHeaderId'));
       return;
     }
 
     completeGoodsReceiptMutation.mutate(headerIdNum, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(t('goodsReceipt.collection.completed', 'Mal kabul emri başarıyla tamamlandı'));
+          toast.success(t('goodsReceipt.collection.completed'));
           navigate('/goods-receipt/assigned');
         } else {
-          toast.error(response.message || t('goodsReceipt.collection.completeError', 'Tamamlama hatası'));
+          toast.error(response.message || t('goodsReceipt.collection.completeError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('goodsReceipt.collection.completeError', 'Tamamlama hatası'));
+        toast.error(error.message || t('goodsReceipt.collection.completeError'));
       },
     });
   };
@@ -182,7 +182,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner')) {
-        toast.error(t('goodsReceipt.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('goodsReceipt.collection.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -229,7 +229,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('goodsReceipt.collection.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('goodsReceipt.collection.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -239,7 +239,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
           }
         );
       } catch (err) {
-        toast.error(t('goodsReceipt.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('goodsReceipt.collection.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -297,11 +297,11 @@ export function GoodsReceiptCollectionPage(): ReactElement {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/goods-receipt/assigned')}>
             <ArrowLeft className="size-4 mr-2" />
-            {t('common.back', 'Geri')}
+            {t('common.back')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate(`/goods-receipt/collected/${headerId}`)}>
             <List className="size-4 mr-2" />
-            {t('goodsReceipt.collection.viewCollected', 'Toplananlar')} ({totalCollectedCount})
+            {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
           </Button>
         </div>
 
@@ -320,7 +320,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   <Camera className="size-4 text-muted-foreground" />
                 </Button>
                 <Input
-                  placeholder={t('goodsReceipt.collection.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                  placeholder={t('goodsReceipt.collection.barcodePlaceholder')}
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -331,7 +331,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                 {isSearching ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  t('common.search', 'Ara')
+                  t('common.search')
                 )}
               </Button>
             </div>
@@ -358,7 +358,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                       value={quantity}
                       onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                       className="h-9"
-                      placeholder={t('goodsReceipt.collection.quantity', 'Miktar')}
+                      placeholder={t('goodsReceipt.collection.quantity')}
                     />
                   </div>
                   <Button
@@ -369,7 +369,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                     {addBarcodeMutation.isPending ? (
                       <Loader2 className="size-4 animate-spin mr-1" />
                     ) : null}
-                    {t('goodsReceipt.collection.collect', 'Topla')}
+                    {t('goodsReceipt.collection.collect')}
                   </Button>
                 </div>
               </div>
@@ -395,7 +395,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                     <p className="text-xs font-medium line-clamp-2 mt-1">{line.stockName || line.description}</p>
                     {line.yapKod && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {t('goodsReceipt.collection.yapKod', 'Yapı')}: {line.yapKod}
+                        {t('goodsReceipt.collection.yapKod')}: {line.yapKod}
                       </p>
                     )}
                   </div>
@@ -407,7 +407,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                 <div className="grid grid-cols-1 gap-1.5 mb-1.5 sm:grid-cols-3">
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.total', 'Toplam')}
+                      {t('goodsReceipt.collection.total')}
                     </p>
                     <p className="text-sm font-bold leading-none">
                       {line.quantity}
@@ -415,7 +415,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.collected', 'Toplanan')}
+                      {t('goodsReceipt.collection.collected')}
                     </p>
                     <p className="text-sm font-bold text-emerald-600 leading-none">
                       {line.collectedQuantity}
@@ -423,7 +423,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.remaining', 'Kalan')}
+                      {t('goodsReceipt.collection.remaining')}
                     </p>
                     <p className={`text-sm font-bold leading-none ${line.remainingQuantity === 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
                       {line.remainingQuantity}
@@ -443,7 +443,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
         ) : (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">
-              {t('goodsReceipt.collection.noOrderLines', 'Mal kabul emri kalemleri bulunamadı')}
+              {t('goodsReceipt.collection.noOrderLines')}
             </p>
           </div>
         )}
@@ -461,7 +461,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
           ) : (
             <Check className="size-4 mr-2" />
           )}
-          {t('goodsReceipt.collection.complete', 'Tamamla')}
+          {t('goodsReceipt.collection.complete')}
         </Button>
       </div>
 
@@ -472,9 +472,9 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       }}>
         <DialogContent className="max-w-[95vw] w-full p-0 gap-0" showCloseButton={true}>
           <DialogHeader className="p-4 pb-2">
-            <DialogTitle>{t('goodsReceipt.collection.scanBarcode', 'Barkod Okut')}</DialogTitle>
+            <DialogTitle>{t('goodsReceipt.collection.scanBarcode')}</DialogTitle>
             <DialogDescription>
-              {t('goodsReceipt.collection.scanBarcodeDescription', 'Barkodu kameraya hizalayın')}
+              {t('goodsReceipt.collection.scanBarcodeDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="relative w-full" style={{ minHeight: '300px' }}>
