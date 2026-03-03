@@ -6,17 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Eye, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { ShipmentDetailDialog } from './ShipmentDetailDialog';
 import type { ShipmentHeader } from '../types/shipment';
 import { Button } from '@/components/ui/button';
 import type { PagedFilter } from '@/types/api';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePageSizePreference } from '@/hooks/usePageSizePreference';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { GridExportColumn } from '@/lib/grid-export';
+import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export function ShipmentListPage(): ReactElement {
   const { t } = useTranslation();
@@ -30,6 +33,9 @@ export function ShipmentListPage(): ReactElement {
   });
   const [sortBy] = useState<string>('Id');
   const [sortDirection] = useState<'asc' | 'desc'>('desc');
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
       { key: 'documentNo', label: t('shipment.list.documentNo', 'Belge No') },
@@ -44,6 +50,19 @@ export function ShipmentListPage(): ReactElement {
       { key: 'actions', label: t('shipment.list.actions', 'İşlemler') },
     ],
     [t]
+  );
+  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () => [
+      { value: 'documentNo', type: 'string', labelKey: 'shipment.list.documentNo' },
+      { value: 'documentDate', type: 'date', labelKey: 'shipment.list.documentDate' },
+      { value: 'customerCode', type: 'string', labelKey: 'shipment.list.customerCode' },
+      { value: 'customerName', type: 'string', labelKey: 'shipment.list.customerName' },
+      { value: 'sourceWarehouse', type: 'string', labelKey: 'shipment.list.sourceWarehouse' },
+      { value: 'targetWarehouse', type: 'string', labelKey: 'shipment.list.targetWarehouse' },
+      { value: 'documentType', type: 'string', labelKey: 'shipment.list.documentType' },
+      { value: 'isCompleted', type: 'boolean', labelKey: 'shipment.list.status' },
+    ],
+    []
   );
   const {
     userId,
@@ -62,8 +81,22 @@ export function ShipmentListPage(): ReactElement {
     if (searchTerm) {
       result.push({ column: 'documentNo', operator: 'contains', value: searchTerm });
     }
+    result.push(...appliedAdvancedFilters);
     return result;
-  }, [searchTerm]);
+  }, [searchTerm, appliedAdvancedFilters]);
+
+  const applyAdvancedFilters = (): void => {
+    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
+  };
+
+  const clearAdvancedFilters = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
+  };
 
   const { data, isLoading, error } = useShipmentHeadersPaged({
     pageNumber,
@@ -167,6 +200,32 @@ export function ShipmentListPage(): ReactElement {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle>{t('shipment.list.title', 'Sevkiyat Emri Listesi')}</CardTitle>
             <div className="flex items-center gap-2">
+              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t('common.filter', 'Filtrele')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
+                >
+                  <AdvancedFilter
+                    columns={advancedFilterColumns}
+                    defaultColumn="documentNo"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={applyAdvancedFilters}
+                    onClear={clearAdvancedFilters}
+                    embedded
+                  />
+                </PopoverContent>
+              </Popover>
               <GridExportMenu
                 fileName="shipment-list"
                 columns={exportColumns}
