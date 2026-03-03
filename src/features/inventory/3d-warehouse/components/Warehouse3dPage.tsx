@@ -22,11 +22,11 @@ export function Warehouse3dPage(): ReactElement {
     <div className="flex h-full flex-col gap-4">
       <div className="mb-2 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
         <label className="text-sm font-medium">
-          {t('inventory.warehouse3d.selectWarehouse', 'Depo Seçin')}
+          {t('inventory.warehouse3d.selectWarehouse')}
         </label>
         <Select value={selectedDepoKodu} onValueChange={setSelectedDepoKodu}>
           <SelectTrigger className="w-full sm:max-w-[260px]">
-            <SelectValue placeholder={t('inventory.warehouse3d.selectWarehouse', 'Depo Seçin')} />
+            <SelectValue placeholder={t('inventory.warehouse3d.selectWarehouse')} />
           </SelectTrigger>
           <SelectContent>
             {warehouses?.map((warehouse) => (
@@ -40,19 +40,19 @@ export function Warehouse3dPage(): ReactElement {
         <div className="flex flex-wrap gap-3 text-sm lg:ml-auto lg:justify-end">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded" style={{ background: '#49546d' }}></div>
-            <span>{t('inventory.warehouse3d.empty', 'Boş')}</span>
+            <span>{t('inventory.warehouse3d.empty')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded" style={{ background: '#f7ba3e' }}></div>
-            <span>{t('inventory.warehouse3d.lowStock', 'Düşük Stok')}</span>
+            <span>{t('inventory.warehouse3d.lowStock')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded" style={{ background: '#3c9dff' }}></div>
-            <span>{t('inventory.warehouse3d.mediumStock', 'Normal Stok')}</span>
+            <span>{t('inventory.warehouse3d.mediumStock')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded" style={{ background: '#10b981' }}></div>
-            <span>{t('inventory.warehouse3d.highStock', 'Yüksek Stok')}</span>
+            <span>{t('inventory.warehouse3d.highStock')}</span>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ export function Warehouse3dPage(): ReactElement {
           <div className="text-center p-6">
             <div className="text-5xl mb-4">📦</div>
             <p className="text-lg text-muted-foreground">
-              {t('inventory.warehouse3d.pleaseSelectWarehouse', 'Lütfen bir depo seçiniz')}
+              {t('inventory.warehouse3d.pleaseSelectWarehouse')}
             </p>
           </div>
         </div>
@@ -72,7 +72,7 @@ export function Warehouse3dPage(): ReactElement {
         <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>{t('common.loading', 'Yükleniyor...')}</p>
+            <p>{t('common.loading')}</p>
           </div>
         </div>
       )}
@@ -80,7 +80,7 @@ export function Warehouse3dPage(): ReactElement {
       {selectedDepoKodu && error && (
         <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
           <p className="text-destructive">
-            {t('inventory.warehouse3d.error', 'Veri yüklenirken bir hata oluştu')}
+            {t('inventory.warehouse3d.error')}
           </p>
         </div>
       )}
@@ -98,22 +98,22 @@ export function Warehouse3dPage(): ReactElement {
             </div>
             
             <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur rounded-lg p-3 text-xs space-y-1">
-              <div className="font-medium mb-2">{t('inventory.warehouse3d.controls', 'Kontroller')}</div>
+              <div className="font-medium mb-2">{t('inventory.warehouse3d.controls')}</div>
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.leftClickDrag', '🖱️ Sol Tık + Sürükle')}</kbd>
-                <span>{t('inventory.warehouse3d.rotate', 'Döndür')}</span>
+                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.leftClickDrag')}</kbd>
+                <span>{t('inventory.warehouse3d.rotate')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.rightClickDrag', '🖱️ Sağ Tık + Sürükle')}</kbd>
-                <span>{t('inventory.warehouse3d.pan', 'Kaydır')}</span>
+                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.rightClickDrag')}</kbd>
+                <span>{t('inventory.warehouse3d.pan')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.scroll', '🖱️ Scroll')}</kbd>
-                <span>{t('inventory.warehouse3d.zoom', 'Yakınlaştır/Uzaklaştır')}</span>
+                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.scroll')}</kbd>
+                <span>{t('inventory.warehouse3d.zoom')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.clickShelf', '🖱️ Raf Tıkla')}</kbd>
-                <span>{t('inventory.warehouse3d.selectShelf', 'Raf Seç')}</span>
+                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.clickShelf')}</kbd>
+                <span>{t('inventory.warehouse3d.selectShelf')}</span>
               </div>
             </div>
             
@@ -140,21 +140,21 @@ export function Warehouse3dPage(): ReactElement {
                                     displaySlot.totalBakiye < 50 ? '#3c9dff' : '#10b981'
                       }}
                     />
-                    {t('inventory.warehouse3d.totalStock', 'Toplam Stok')}: {displaySlot.totalBakiye}
+                    {t('inventory.warehouse3d.totalStock')}: {displaySlot.totalBakiye}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {displaySlot.stocks.length > 0 ? (
                     <div className="space-y-2">
                       <p className="text-sm font-medium">
-                        {t('inventory.warehouse3d.products', 'Ürünler')}:
+                        {t('inventory.warehouse3d.products')}:
                       </p>
                       <div className="space-y-1 max-h-60 overflow-y-auto">
                         {displaySlot.stocks.map((stock, index) => (
                           <div key={index} className="text-xs p-2 bg-muted rounded">
                             <p className="font-medium">{stock.stokAdi}</p>
                             <p className="text-muted-foreground">
-                              {stock.stokKodu} - {t('inventory.warehouse3d.quantity', 'Miktar')}: {stock.bakiye}
+                              {stock.stokKodu} - {t('inventory.warehouse3d.quantity')}: {stock.bakiye}
                             </p>
                           </div>
                         ))}
@@ -162,7 +162,7 @@ export function Warehouse3dPage(): ReactElement {
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      {t('inventory.warehouse3d.emptyCell', 'Bu hücre boş')}
+                      {t('inventory.warehouse3d.emptyCell')}
                     </p>
                   )}
                 </CardContent>
@@ -174,7 +174,7 @@ export function Warehouse3dPage(): ReactElement {
             <div className="text-center p-6">
               <div className="text-4xl mb-4">🖥️</div>
               <p className="text-muted-foreground">
-                {t('inventory.warehouse3d.desktopOnly', '3 boyutlu depo modelleme özelliği yalnızca masaüstü cihazlarda kullanılabilir.')}
+                {t('inventory.warehouse3d.desktopOnly')}
               </p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export function Warehouse3dPage(): ReactElement {
           <div className="text-center p-6">
             <div className="text-4xl mb-4">📦</div>
             <p className="text-muted-foreground">
-              {t('inventory.warehouse3d.pleaseSelectWarehouse', 'Lütfen bir depo seçiniz')}
+              {t('inventory.warehouse3d.pleaseSelectWarehouse')}
             </p>
           </div>
         </div>

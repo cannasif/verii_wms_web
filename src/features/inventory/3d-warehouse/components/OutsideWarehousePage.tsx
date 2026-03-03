@@ -230,23 +230,23 @@ export function OutsideWarehousePage(): ReactElement {
           <DialogHeader>
             <DialogTitle>
               {confirmType === 'remove' &&
-                t('inventory.outsideWarehouse.confirmRemoveTitle', 'Ürünü çıkart')}
+                t('inventory.outsideWarehouse.confirmRemoveTitle')}
               {confirmType === 'move' &&
-                t('inventory.outsideWarehouse.confirmMoveTitle', 'Farklı bölgeye taşı')}
+                t('inventory.outsideWarehouse.confirmMoveTitle')}
             </DialogTitle>
             <DialogDescription>
               {confirmType === 'remove' &&
-                t('inventory.outsideWarehouse.confirmRemoveMessage', 'Bu ürünü raftan çıkartmak istediğinize emin misiniz?')}
+                t('inventory.outsideWarehouse.confirmRemoveMessage')}
               {confirmType === 'move' &&
-                t('inventory.outsideWarehouse.confirmMoveMessage', 'Bu ürünü seçtiğiniz bölgeye taşımak istediğinize emin misiniz?')}
+                t('inventory.outsideWarehouse.confirmMoveMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
-              {t('common.no', 'Hayır')}
+              {t('common.no')}
             </Button>
             <Button type="button" onClick={handleConfirmYes}>
-              {t('common.yes', 'Evet')}
+              {t('common.yes')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -255,12 +255,11 @@ export function OutsideWarehousePage(): ReactElement {
       <div className="crm-toolbar flex items-center justify-between pb-3">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white md:text-3xl">
-            {t('inventory.outsideWarehouse.title', '3D Outside Warehouse')}
+            {t('inventory.outsideWarehouse.title')}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
             {t(
               'inventory.outsideWarehouse.subtitle',
-              'Dış saha genel plan görünümü - Aşama 1 (sadece görsel)',
             )}
           </p>
         </div>
@@ -274,7 +273,7 @@ export function OutsideWarehousePage(): ReactElement {
           <div className="absolute left-[4%] top-[6%] h-[14%] w-[12%] rounded-sm border-2 border-slate-600/90 bg-slate-200/95 dark:border-slate-500 dark:bg-slate-800/90">
             <div className="absolute right-0 top-0 h-2 w-2 rounded-full border border-slate-700 bg-slate-800 dark:border-slate-400 dark:bg-slate-500" />
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.7rem] font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100">
-              {t('inventory.outsideWarehouse.security', 'Güvenlik')}
+              {t('inventory.outsideWarehouse.security')}
             </div>
           </div>
           <div className="absolute left-[15.5%] top-[10%] h-[0.5%] w-[4%] bg-red-500 rounded-full" aria-hidden />
@@ -293,7 +292,7 @@ export function OutsideWarehousePage(): ReactElement {
               ))}
             </div>
             <div className="absolute -bottom-3 left-0 right-0 text-center text-[0.6rem] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              {t('inventory.outsideWarehouse.parking', 'Otopark')}
+              {t('inventory.outsideWarehouse.parking')}
             </div>
           </div>
 
@@ -305,7 +304,7 @@ export function OutsideWarehousePage(): ReactElement {
               <span className="text-[0.5rem] font-bold text-slate-600 dark:text-slate-400">‖</span>
             </div>
             <div className="absolute left-1/2 top-[88%] -translate-x-1/2 text-[0.72rem] font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100">
-              {t('inventory.outsideWarehouse.factory', 'Fabrika')}
+              {t('inventory.outsideWarehouse.factory')}
             </div>
           </div>
 
@@ -325,7 +324,7 @@ export function OutsideWarehousePage(): ReactElement {
               <span className="text-[0.5rem] font-bold text-slate-600 dark:text-slate-400">‖</span>
             </div>
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.85rem] font-bold uppercase tracking-[0.15em] text-slate-800 dark:text-slate-100">
-              {t('inventory.outsideWarehouse.depot', 'Depo')}
+              {t('inventory.outsideWarehouse.depot')}
             </div>
           </div>
 
@@ -333,10 +332,10 @@ export function OutsideWarehousePage(): ReactElement {
             type="button"
             onClick={() => setPortalOpen(true)}
             className="group absolute left-[38%] top-[6%] h-[32%] w-[42%] cursor-pointer rounded-md border-2 border-cyan-500/80 bg-slate-100/95 text-left shadow-sm transition-all duration-200 hover:border-cyan-400 hover:shadow-md active:scale-[0.99] active:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 dark:border-cyan-400/70 dark:bg-slate-800/90 dark:focus-visible:ring-offset-slate-900"
-            aria-label={t('inventory.outsideWarehouse.portalClickArea', 'Portal sahası tıklanabilir alan')}
+            aria-label={t('inventory.outsideWarehouse.portalClickArea')}
           >
             <Badge variant="secondary" className="absolute right-2 top-2 text-[0.6rem] font-bold uppercase tracking-wider border-cyan-500/40 bg-cyan-500/15 text-cyan-800 dark:bg-cyan-400/20 dark:text-cyan-200">
-              {t('inventory.outsideWarehouse.clickable', 'Tıklanabilir')}
+              {t('inventory.outsideWarehouse.clickable')}
             </Badge>
             <div className="absolute left-[4%] right-[4%] top-[10%] grid grid-cols-4 grid-rows-10 gap-1">
               {Array.from({ length: 40 }).map((_, i) => {
@@ -358,7 +357,7 @@ export function OutsideWarehousePage(): ReactElement {
             </div>
             <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 text-center">
               <span className="block text-[0.6rem] font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-200">
-                {t('inventory.outsideWarehouse.portalArea', 'Portal Sahası (Saclarin Oldugu Yer)')}
+                {t('inventory.outsideWarehouse.portalArea')}
               </span>
               <span className="block text-[0.5rem] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
                 Specialized sheet metal storage rack area
@@ -419,7 +418,7 @@ export function OutsideWarehousePage(): ReactElement {
               General layout plan
             </p>
             <p className="text-[0.45rem] text-slate-600 dark:text-slate-400">
-              {t('inventory.outsideWarehouse.drawnBy', 'Drawn by')} / Date / Rev. A
+              {t('inventory.outsideWarehouse.drawnBy')} / Date / Rev. A
             </p>
             <p className="text-[0.45rem] font-medium text-slate-700 dark:text-slate-300">
               1:100 (Illustrative)
@@ -434,19 +433,18 @@ export function OutsideWarehousePage(): ReactElement {
           className={`fixed inset-0 z-50 flex flex-col bg-background ${isPortalClosing ? 'portal-overlay-exit' : 'portal-overlay-enter'}`}
           aria-modal="true"
           role="dialog"
-          aria-label={t('inventory.outsideWarehouse.portalSchema', 'Portal Raf Şeması')}
+          aria-label={t('inventory.outsideWarehouse.portalSchema')}
         >
           <div className="flex-1 overflow-y-auto p-4 md:p-6">
         <Card>
           <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
               <CardTitle className="text-lg">
-                {t('inventory.outsideWarehouse.portalSchema', 'Portal Raf Semasi')}
+                {t('inventory.outsideWarehouse.portalSchema')}
               </CardTitle>
               <CardDescription>
                 {t(
                   'inventory.outsideWarehouse.portalSchemaHint',
-                  'Raf alanlarindan birini secerek urunleri goruntuleyin',
                 )}
               </CardDescription>
             </div>
@@ -458,7 +456,7 @@ export function OutsideWarehousePage(): ReactElement {
                 onClick={() => setShowAddProduct((prev) => !prev)}
                 className="border-cyan-500/40 bg-cyan-500/10 text-cyan-700 hover:bg-cyan-500/20 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300 dark:hover:bg-cyan-400/20"
               >
-                {t('inventory.outsideWarehouse.addProduct', 'Urun Ekle')}
+                {t('inventory.outsideWarehouse.addProduct')}
               </Button>
               <Button
                 type="button"
@@ -466,7 +464,7 @@ export function OutsideWarehousePage(): ReactElement {
                 size="sm"
                 onClick={() => setIsPortalClosing(true)}
               >
-                {t('common.close', 'Kapat')}
+                {t('common.close')}
               </Button>
             </div>
           </CardHeader>
@@ -477,17 +475,17 @@ export function OutsideWarehousePage(): ReactElement {
                   options={stockOptions}
                   value={selectedCatalogCode}
                   onValueChange={setSelectedCatalogCode}
-                  placeholder={t('inventory.outsideWarehouse.selectStock', 'Stok seçiniz')}
-                  searchPlaceholder={t('inventory.outsideWarehouse.searchStock', 'Stok ara...')}
-                  emptyText={t('common.notFound', 'Sonuç bulunamadı')}
+                  placeholder={t('inventory.outsideWarehouse.selectStock')}
+                  searchPlaceholder={t('inventory.outsideWarehouse.searchStock')}
+                  emptyText={t('common.notFound')}
                 />
                 <Combobox
                   options={serialOptions}
                   value={selectedSerialNo}
                   onValueChange={setSelectedSerialNo}
-                  placeholder={t('inventory.outsideWarehouse.selectSerial', 'Seri seçiniz')}
-                  searchPlaceholder={t('inventory.outsideWarehouse.searchSerial', 'Seri ara...')}
-                  emptyText={t('common.notFound', 'Sonuç bulunamadı')}
+                  placeholder={t('inventory.outsideWarehouse.selectSerial')}
+                  searchPlaceholder={t('inventory.outsideWarehouse.searchSerial')}
+                  emptyText={t('common.notFound')}
                   disabled={serialOptions.length === 0}
                 />
                 <Input
@@ -495,11 +493,11 @@ export function OutsideWarehousePage(): ReactElement {
                   min={1}
                   value={addQty}
                   onChange={(e) => setAddQty(Number(e.target.value))}
-                  placeholder={t('inventory.outsideWarehouse.qty', 'Miktar')}
+                  placeholder={t('inventory.outsideWarehouse.qty')}
                   className="h-9"
                 />
                 <Button type="button" size="sm" onClick={handleAddProduct} className="h-9">
-                  {t('inventory.outsideWarehouse.addToRegion', 'Bolgeye Ekle')}
+                  {t('inventory.outsideWarehouse.addToRegion')}
                 </Button>
               </div>
             )}
@@ -536,17 +534,17 @@ export function OutsideWarehousePage(): ReactElement {
                 <CardHeader className="pb-2 shrink-0">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <CardTitle className="text-sm">
-                      {t('inventory.outsideWarehouse.selectedArea', 'Secili Bolge')}: {selectedSlotDetail.slot}
+                      {t('inventory.outsideWarehouse.selectedArea')}: {selectedSlotDetail.slot}
                     </CardTitle>
                     <Badge variant="secondary" className="text-[10px] font-semibold">
-                      {selectedSlotDetail.products.length} {t('inventory.outsideWarehouse.product', 'Urun')}
+                      {selectedSlotDetail.products.length} {t('inventory.outsideWarehouse.product')}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 overflow-y-auto min-h-0 flex-1">
                   {selectedSlotDetail.products.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                      {t('inventory.outsideWarehouse.emptyRack', 'Bu rafta urun bulunmuyor')}
+                      {t('inventory.outsideWarehouse.emptyRack')}
                     </p>
                   ) : (
                     <div className="space-y-2">
@@ -555,7 +553,7 @@ export function OutsideWarehousePage(): ReactElement {
                           <CardContent className="p-3">
                             <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">{product.name}</p>
                             <p className="mt-0.5 text-[11px] text-muted-foreground">
-                              {product.code} • {t('inventory.outsideWarehouse.serialNo', 'Seri No')}: {product.serialNo} • {t('inventory.outsideWarehouse.qty', 'Miktar')}: {product.qty} {product.unit}
+                              {product.code} • {t('inventory.outsideWarehouse.serialNo')}: {product.serialNo} • {t('inventory.outsideWarehouse.qty')}: {product.qty} {product.unit}
                             </p>
                             <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                               <Combobox
@@ -570,9 +568,9 @@ export function OutsideWarehousePage(): ReactElement {
                                 onValueChange={(value) =>
                                   setMoveTargets((prev) => ({ ...prev, [product.serialNo]: value }))
                                 }
-                                placeholder={t('inventory.outsideWarehouse.selectRack', 'Raf seçiniz')}
-                                searchPlaceholder={t('inventory.outsideWarehouse.searchRack', 'Raf ara...')}
-                                emptyText={t('common.notFound', 'Sonuç bulunamadı')}
+                                placeholder={t('inventory.outsideWarehouse.selectRack')}
+                                searchPlaceholder={t('inventory.outsideWarehouse.searchRack')}
+                                emptyText={t('common.notFound')}
                                 listClassName="max-h-[180px]"
                                 className="h-8 min-w-0 w-full sm:flex-1 text-[11px]"
                               />
@@ -583,7 +581,7 @@ export function OutsideWarehousePage(): ReactElement {
                                 className="h-8 border-amber-400/50 bg-amber-50 px-2.5 text-[11px] font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-500/40 dark:bg-amber-900/20 dark:text-amber-200 dark:hover:bg-amber-900/35"
                                 onClick={() => openConfirmMove(product)}
                               >
-                                {t('inventory.outsideWarehouse.move', 'Farkli Bolgeye Al')}
+                                {t('inventory.outsideWarehouse.move')}
                               </Button>
                               <Button
                                 type="button"
@@ -592,7 +590,7 @@ export function OutsideWarehousePage(): ReactElement {
                                 className="h-8 border-rose-400/50 bg-rose-50 px-2.5 text-[11px] font-semibold text-rose-800 hover:bg-rose-100 dark:border-rose-500/40 dark:bg-rose-900/20 dark:text-rose-200 dark:hover:bg-rose-900/35"
                                 onClick={() => openConfirmRemove(product.serialNo)}
                               >
-                                {t('inventory.outsideWarehouse.remove', 'Cikart')}
+                                {t('inventory.outsideWarehouse.remove')}
                               </Button>
                             </div>
                           </CardContent>
