@@ -18,16 +18,16 @@ export function WelcomePage(): ReactElement {
       <Card className="w-full max-w-lg border-2 shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-semibold">
-            {t('welcome.title', 'Hoş geldiniz')}
+            {t('welcome.title')}
           </CardTitle>
           <CardDescription className="text-base">
-            {t('welcome.subtitle', 'Depo yönetim sistemine giriş yaptınız. Devam etmek için panele gidin.')}
+            {t('welcome.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
           <Button asChild size="lg" className="shadow-md">
             <Link to="/dashboard">
-              {t('welcome.goToDashboard', 'Panele git')}
+              {t('welcome.goToDashboard')}
             </Link>
           </Button>
         </CardContent>
