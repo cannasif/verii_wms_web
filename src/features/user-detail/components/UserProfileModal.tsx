@@ -36,7 +36,7 @@ export function UserProfileModal({
   const { user, logout, branch } = useAuthStore();
   const { data: userDetail } = useUserDetail();
 
-  const displayName = user?.name || user?.email || t('dashboard.user', 'User');
+  const displayName = user?.name || user?.email || t('dashboard.user');
   const displayInitial = displayName.charAt(0).toUpperCase();
   const imageUrl = getFullProfileImageUrl(userDetail?.profilePictureUrl);
   const isDark = theme === 'dark';
@@ -63,11 +63,11 @@ export function UserProfileModal({
         )}
         aria-describedby="user-profile-description"
       >
-        <DialogTitle className="sr-only">{t('sidebar.settings', 'Settings')}</DialogTitle>
+        <DialogTitle className="sr-only">{t('sidebar.settings')}</DialogTitle>
 
         <section
           id="user-profile-description"
-          aria-label={t('profile.title', 'Profile')}
+          aria-label={t('profile.title')}
           className={cn(
             'flex flex-col items-center justify-center gap-4 border-b p-6 md:border-b-0 md:border-r md:p-8',
             isDark ? 'border-border bg-muted/30' : 'border-border bg-muted/20'
@@ -96,7 +96,7 @@ export function UserProfileModal({
               {displayName}
             </p>
             <p className="text-sm text-muted-foreground">
-              {branch?.name ?? t('roles.admin', 'Admin')}
+              {branch?.name ?? t('roles.admin')}
             </p>
           </div>
           <div
@@ -113,7 +113,7 @@ export function UserProfileModal({
         <div className="flex min-h-0 flex-col">
           <div className="shrink-0 border-b px-6 py-4 md:px-8">
             <h2 className="text-base font-semibold">
-              {t('sidebar.settings', 'Settings')}
+              {t('sidebar.settings')}
             </h2>
           </div>
 
@@ -137,9 +137,9 @@ export function UserProfileModal({
                   <User className="h-5 w-5" aria-hidden />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium">{t('profile.title', 'Profile')}</p>
+                  <p className="font-medium">{t('profile.title')}</p>
                   <p className="truncate text-xs text-muted-foreground">
-                    {t('userDetail.subtitle', 'Update your user detail information')}
+                    {t('userDetail.subtitle')}
                   </p>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export function UserProfileModal({
                 >
                   <Languages className="h-5 w-5" aria-hidden />
                 </div>
-                <span className="font-medium">{t('language_choice', 'Language')}</span>
+                <span className="font-medium">{t('language_choice')}</span>
               </div>
               <Select value={currentLanguage.code} onValueChange={handleLanguageChange}>
                 <SelectTrigger className="h-9 w-36 shrink-0">
@@ -196,7 +196,7 @@ export function UserProfileModal({
                     <Sun className="h-5 w-5" aria-hidden />
                   )}
                 </div>
-                <span className="font-medium">{t('appearance', 'Appearance')}</span>
+                <span className="font-medium">{t('appearance')}</span>
               </div>
               <Switch
                 checked={isDark}
@@ -212,7 +212,7 @@ export function UserProfileModal({
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" aria-hidden />
-              {t('auth.logout', 'Logout')}
+              {t('auth.logout')}
             </Button>
           </DialogFooter>
         </div>

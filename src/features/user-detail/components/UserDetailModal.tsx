@@ -71,13 +71,13 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
   });
 
   const changePasswordSchema = useMemo(() => z.object({
-    currentPassword: z.string().min(1, t('userDetail.currentPasswordRequired', 'Mevcut şifre zorunludur')),
+    currentPassword: z.string().min(1, t('userDetail.currentPasswordRequired')),
     newPassword: z
       .string()
-      .min(6, t('userDetail.newPasswordMinLength', 'Yeni şifre en az 6 karakter olmalıdır'))
-      .max(100, t('userDetail.newPasswordMaxLength', 'Yeni şifre en fazla 100 karakter olabilir')),
+      .min(6, t('userDetail.newPasswordMinLength'))
+      .max(100, t('userDetail.newPasswordMaxLength')),
   }).refine((data) => data.currentPassword !== data.newPassword, {
-    message: t('userDetail.newPasswordSameAsCurrent', 'Yeni şifre mevcut şifre ile aynı olamaz'),
+    message: t('userDetail.newPasswordSameAsCurrent'),
     path: ['newPassword'],
   }), [t]);
 
@@ -140,7 +140,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       form.setError('profilePictureUrl', {
         type: 'manual',
-        message: t('userDetail.invalidFileFormat', 'Geçersiz dosya formatı. Sadece JPG, PNG, GIF, WEBP formatları desteklenir.'),
+        message: t('userDetail.invalidFileFormat'),
       });
       return;
     }
@@ -148,7 +148,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     if (file.size > MAX_FILE_SIZE) {
       form.setError('profilePictureUrl', {
         type: 'manual',
-        message: t('userDetail.fileSizeExceeded', 'Dosya boyutu çok büyük. Maksimum 5 MB olmalıdır.'),
+        message: t('userDetail.fileSizeExceeded'),
       });
       return;
     }
@@ -171,18 +171,18 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     uploadMutation.mutate(selectedFile, {
       onSuccess: (response) => {
         if (response.success && response.data) {
-          toast.success(t('userDetail.profilePictureUploadedSuccessfully', 'Profil resmi başarıyla yüklendi'));
+          toast.success(t('userDetail.profilePictureUploadedSuccessfully'));
           form.setValue('profilePictureUrl', response.data);
           const fullUrl = getFullImageUrl(response.data);
           setPreviewImage(fullUrl);
           setSelectedFile(null);
           refetch();
         } else {
-          toast.error(response.message || t('userDetail.profilePictureUploadError', 'Profil resmi yüklenemedi'));
+          toast.error(response.message || t('userDetail.profilePictureUploadError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('userDetail.profilePictureUploadError', 'Profil resmi yüklenirken bir hata oluştu'));
+        toast.error(error.message || t('userDetail.profilePictureUploadError'));
       },
     });
   };
@@ -196,18 +196,18 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     deleteMutation.mutate(undefined as never, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(t('userDetail.profilePictureDeletedSuccessfully', 'Profil resmi başarıyla silindi'));
+          toast.success(t('userDetail.profilePictureDeletedSuccessfully'));
           setDeletePictureDialogOpen(false);
           form.setValue('profilePictureUrl', '');
           setPreviewImage(null);
           setSelectedFile(null);
           refetch();
         } else {
-          toast.error(response.message || t('userDetail.profilePictureDeleteError', 'Profil resmi silinemedi'));
+          toast.error(response.message || t('userDetail.profilePictureDeleteError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('userDetail.profilePictureDeleteError', 'Profil resmi silinirken bir hata oluştu'));
+        toast.error(error.message || t('userDetail.profilePictureDeleteError'));
         setDeletePictureDialogOpen(false);
       },
     });
@@ -225,17 +225,17 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
         },
         {
           onSuccess: () => {
-            toast.success(t('userDetail.updatedSuccessfully', 'Kullanıcı detayı başarıyla güncellendi'));
+            toast.success(t('userDetail.updatedSuccessfully'));
             onClose();
           },
           onError: (error: Error) => {
-            toast.error(error.message || t('userDetail.updateError', 'Kullanıcı detayı güncellenirken bir hata oluştu'));
+            toast.error(error.message || t('userDetail.updateError'));
           },
         }
       );
     } else {
       if (!user?.id) {
-        toast.error(t('userDetail.userNotFound', 'Kullanıcı bulunamadı'));
+        toast.error(t('userDetail.userNotFound'));
         return;
       }
       createMutation.mutate(
@@ -249,11 +249,11 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
         },
         {
           onSuccess: () => {
-            toast.success(t('userDetail.createdSuccessfully', 'Kullanıcı detayı başarıyla oluşturuldu'));
+            toast.success(t('userDetail.createdSuccessfully'));
             onClose();
           },
           onError: (error: Error) => {
-            toast.error(error.message || t('userDetail.createError', 'Kullanıcı detayı oluşturulurken bir hata oluştu'));
+            toast.error(error.message || t('userDetail.createError'));
           },
         }
       );
@@ -275,9 +275,9 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('userDetail.title', 'Kullanıcı Detayları')}</DialogTitle>
+          <DialogTitle>{t('userDetail.title')}</DialogTitle>
           <DialogDescription>
-            {t('userDetail.subtitle', 'Kullanıcı detay bilgilerinizi güncelleyin')}
+            {t('userDetail.subtitle')}
           </DialogDescription>
         </DialogHeader>
 
@@ -295,13 +295,13 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                     {previewImage ? (
                       <img
                         src={previewImage}
-                        alt={t('userDetail.profilePicture', 'Profil Resmi')}
+                        alt={t('userDetail.profilePicture')}
                         className="size-32 rounded-full object-cover border-2 border-border"
                       />
                     ) : (
                       <div className="size-32 rounded-full bg-muted border-2 border-border flex items-center justify-center">
                         <span className="text-muted-foreground text-sm">
-                          {t('userDetail.noImage', 'Resim Yok')}
+                          {t('userDetail.noImage')}
                         </span>
                       </div>
                     )}
@@ -339,7 +339,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                       className="w-full"
                     >
                       <Upload className="size-4 mr-2" />
-                      {t('userDetail.selectFile', 'Dosya Seç')}
+                      {t('userDetail.selectFile')}
                     </Button>
                     {selectedFile && (
                       <div className="space-y-2">
@@ -355,12 +355,12 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                           {isUploading ? (
                             <>
                               <Loader2 className="size-4 mr-2 animate-spin" />
-                              {t('userDetail.uploading', 'Yükleniyor...')}
+                              {t('userDetail.uploading')}
                             </>
                           ) : (
                             <>
                               <Upload className="size-4 mr-2" />
-                              {t('userDetail.upload', 'Yükle')}
+                              {t('userDetail.upload')}
                             </>
                           )}
                         </Button>
@@ -384,7 +384,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                     name="height"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('userDetail.height', 'Boy (cm)')}</FormLabel>
+                        <FormLabel>{t('userDetail.height')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -410,7 +410,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                     name="weight"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('userDetail.weight', 'Kilo (kg)')}</FormLabel>
+                        <FormLabel>{t('userDetail.weight')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -437,7 +437,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                   name="gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('userDetail.gender', 'Cinsiyet')}</FormLabel>
+                      <FormLabel>{t('userDetail.gender')}</FormLabel>
                       <Select
                         value={field.value?.toString() ?? Gender.NotSpecified.toString()}
                         onValueChange={(value) => {
@@ -447,21 +447,21 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('userDetail.selectGender', 'Cinsiyet seçiniz')} />
+                            <SelectValue placeholder={t('userDetail.selectGender')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value={Gender.NotSpecified.toString()}>
-                            {t('userDetail.gender.notSpecified', 'Belirtilmemiş')}
+                            {t('userDetail.gender.notSpecified')}
                           </SelectItem>
                           <SelectItem value={Gender.Male.toString()}>
-                            {t('userDetail.gender.male', 'Erkek')}
+                            {t('userDetail.gender.male')}
                           </SelectItem>
                           <SelectItem value={Gender.Female.toString()}>
-                            {t('userDetail.gender.female', 'Kadın')}
+                            {t('userDetail.gender.female')}
                           </SelectItem>
                           <SelectItem value={Gender.Other.toString()}>
-                            {t('userDetail.gender.other', 'Diğer')}
+                            {t('userDetail.gender.other')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -475,10 +475,10 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('userDetail.description', 'Açıklama')}</FormLabel>
+                      <FormLabel>{t('userDetail.description')}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder={t('userDetail.descriptionPlaceholder', 'Açıklama giriniz...')}
+                          placeholder={t('userDetail.descriptionPlaceholder')}
                           maxLength={2000}
                           className="min-h-24"
                           {...field}
@@ -497,18 +497,18 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-                    {t('common.cancel', 'İptal')}
+                    {t('common.cancel')}
                   </Button>
                   <Button type="submit" disabled={isLoading || isUploading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="size-4 mr-2 animate-spin" />
-                        {t('common.saving', 'Kaydediliyor...')}
+                        {t('common.saving')}
                       </>
                     ) : isEditMode ? (
-                      t('common.update', 'Güncelle')
+                      t('common.update')
                     ) : (
-                      t('common.save', 'Kaydet')
+                      t('common.save')
                     )}
                   </Button>
                 </DialogFooter>
@@ -518,7 +518,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
             <div className="mt-4">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="change-password">
-                  <AccordionTrigger>{t('userDetail.changePassword', 'Şifre Değiştir')}</AccordionTrigger>
+                  <AccordionTrigger>{t('userDetail.changePassword')}</AccordionTrigger>
                   <AccordionContent>
                     <Form {...changePasswordForm}>
                       <form onSubmit={changePasswordForm.handleSubmit(handleChangePasswordSubmit)} className="space-y-4 pt-2">
@@ -527,7 +527,7 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                         name="currentPassword"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('userDetail.currentPassword', 'Mevcut Şifre')}</FormLabel>
+                            <FormLabel>{t('userDetail.currentPassword')}</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -556,14 +556,14 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                         name="newPassword"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('userDetail.newPassword', 'Yeni Şifre')}</FormLabel>
+                            <FormLabel>{t('userDetail.newPassword')}</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                                 <Input
                                   {...field}
                                   type={isNewPasswordVisible ? 'text' : 'password'}
-                                  placeholder={t('userDetail.newPasswordPlaceholder', 'Yeni şifreniz')}
+                                  placeholder={t('userDetail.newPasswordPlaceholder')}
                                   className="pl-10 pr-10"
                                 />
                                 <button
@@ -585,12 +585,12 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
                             {isChangingPassword ? (
                               <>
                                 <Loader2 className="size-4 mr-2 animate-spin" />
-                                {t('userDetail.changingPassword', 'Şifre değiştiriliyor...')}
+                                {t('userDetail.changingPassword')}
                               </>
                             ) : (
                               <>
                                 <Shield className="size-4 mr-2" />
-                                {t('userDetail.changePasswordButton', 'Şifreyi Güncelle')}
+                                {t('userDetail.changePasswordButton')}
                               </>
                             )}
                           </Button>
@@ -608,14 +608,14 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
       <Dialog open={deletePictureDialogOpen} onOpenChange={setDeletePictureDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('userDetail.deletePictureTitle', 'Profil Resmini Sil')}</DialogTitle>
+            <DialogTitle>{t('userDetail.deletePictureTitle')}</DialogTitle>
             <DialogDescription>
-              {t('userDetail.deletePictureMessage', 'Profil resmini silmek istediğinize emin misiniz?')}
+              {t('userDetail.deletePictureMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeletePictureDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -625,10 +625,10 @@ export function UserDetailModal({ isOpen, onClose }: UserDetailModalProps): Reac
               {isDeleting ? (
                 <>
                   <Loader2 className="size-4 mr-2 animate-spin" />
-                  {t('common.loading', 'Yükleniyor...')}
+                  {t('common.loading')}
                 </>
               ) : (
-                t('common.delete', 'Sil')
+                t('common.delete')
               )}
             </Button>
           </DialogFooter>

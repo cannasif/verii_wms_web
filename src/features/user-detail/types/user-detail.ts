@@ -58,27 +58,27 @@ export const createUserDetailFormSchema = (t: TFunction) => z.object({
       }
       return false;
     }, {
-      message: t('userDetail.invalidUrl', 'Geçersiz URL formatı'),
+      message: t('userDetail.invalidUrl'),
     })
     .optional()
     .or(z.literal('')),
   height: z
     .number()
-    .min(0, t('userDetail.heightMin', 'Boy 0\'dan küçük olamaz'))
-    .max(300, t('userDetail.heightMax', 'Boy 300\'den büyük olamaz'))
+    .min(0, t('userDetail.heightMin'))
+    .max(300, t('userDetail.heightMax'))
     .nullable()
     .optional(),
   weight: z
     .number()
-    .min(0, t('userDetail.weightMin', 'Kilo 0\'dan küçük olamaz'))
-    .max(500, t('userDetail.weightMax', 'Kilo 500\'den büyük olamaz'))
+    .min(0, t('userDetail.weightMin'))
+    .max(500, t('userDetail.weightMax'))
     .nullable()
     .optional(),
-  description: z.string().max(2000, t('userDetail.descriptionMax', 'Açıklama en fazla 2000 karakter olabilir')).optional().or(z.literal('')),
+  description: z.string().max(2000, t('userDetail.descriptionMax')).optional().or(z.literal('')),
   gender: z
     .number()
     .refine((val) => Object.values(Gender).includes(val as Gender), {
-      message: t('userDetail.invalidGender', 'Geçersiz cinsiyet değeri'),
+      message: t('userDetail.invalidGender'),
     })
     .nullable()
     .optional(),
