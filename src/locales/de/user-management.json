@@ -54,7 +54,8 @@
       "permissionGroupsHelp": "Berechtigungsgruppen für diesen Benutzer",
       "permissionGroupsNoData": "Keine Berechtigungsgruppen gefunden",
       "generatedPasswordInfo": "Leer lassen, um ein temporäres Passwort zu erzeugen",
-      "selectAll": "Alle auswählen"
+      "selectAll": "Alle auswählen",
+      "systemAdminRequiresAdminRole": "System-Admin erfordert die Admin-Rolle"
     },
     "stats": {
       "totalUsers": "Benutzer gesamt",

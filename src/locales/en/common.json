@@ -40,7 +40,9 @@
     "update": "Update",
     "processing": "Processing...",
     "accessDenied": "Access Denied",
-    "accessDeniedMessage": "You do not have permission to view this page."
+    "accessDeniedMessage": "You do not have permission to view this page.",
+    "rowsPerPage": "Rows per page",
+    "records": "records"
   },
   "auth": {
     "login": {
@@ -255,7 +257,8 @@
       "noItemsSelected": "No items selected yet",
       "customerPrompt": "Please select a customer from the previous step to view stocks.",
       "searchStocks": "Search by stock code or name...",
-      "noSelectedItems": "No selected stock"
+      "noSelectedItems": "No selected stock",
+      "stocks": "Stocks"
     },
     "orderDetails": {
       "title": "Order Details",
@@ -742,7 +745,32 @@
       "confirmMoveTitle": "Move to another area",
       "confirmMoveMessage": "Are you sure you want to move this product to the selected area?",
       "selectRack": "Select rack",
-      "searchRack": "Search rack..."
+      "searchRack": "Search rack...",
+      "title": "3D Outside Warehouse",
+      "subtitle": "Outside warehouse area layout",
+      "security": "Security",
+      "parking": "Parking",
+      "factory": "Factory",
+      "depot": "Depot",
+      "portalClickArea": "Clickable portal area",
+      "clickable": "Clickable",
+      "portalArea": "Portal Area (Sheet Metal Zone)",
+      "drawnBy": "Drawn by",
+      "portalSchema": "Portal Rack Schema",
+      "portalSchemaHint": "Select a rack from the portal schema",
+      "addProduct": "Add Product",
+      "selectStock": "Select stock",
+      "searchStock": "Search stock...",
+      "selectSerial": "Select serial",
+      "searchSerial": "Search serial...",
+      "qty": "Quantity",
+      "addToRegion": "Add to Region",
+      "selectedArea": "Selected Area",
+      "product": "Product",
+      "emptyRack": "No product found on this rack",
+      "serialNo": "Serial No",
+      "move": "Move to Another Area",
+      "remove": "Remove"
     },
     "warehouse3d": {
       "title": "3D Warehouse Visualization",
@@ -1766,5 +1794,12 @@
       "batchNoPlaceholder": "Enter batch number",
       "configCodePlaceholder": "Enter configuration code"
     }
-  }
+  },
+  "advancedFilter": {
+    "true": "True",
+    "false": "False"
+  },
+  "export": "Export",
+  "exportExcel": "Excel",
+  "exportPdf": "PDF"
 }

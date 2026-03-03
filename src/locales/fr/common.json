@@ -40,7 +40,9 @@
     "update": "Mettre à jour",
     "processing": "Traitement...",
     "accessDenied": "Accès refusé",
-    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page."
+    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page.",
+    "rowsPerPage": "Par page",
+    "records": "enregistrements"
   },
   "auth": {
     "login": {
@@ -255,7 +257,8 @@
       "noItemsSelected": "Aucun article sélectionné pour le moment",
       "customerPrompt": "Veuillez sélectionner un client à l'étape précédente pour afficher les stocks.",
       "searchStocks": "Rechercher par code stock ou nom...",
-      "noSelectedItems": "Aucun stock sélectionné"
+      "noSelectedItems": "Aucun stock sélectionné",
+      "stocks": "Stocks"
     },
     "orderDetails": {
       "title": "Détails de la commande",
@@ -742,7 +745,32 @@
       "confirmMoveTitle": "Déplacer vers une autre zone",
       "confirmMoveMessage": "Êtes-vous sûr de vouloir déplacer ce produit vers la zone sélectionnée ?",
       "selectRack": "Sélectionner une étagère",
-      "searchRack": "Rechercher une étagère..."
+      "searchRack": "Rechercher une étagère...",
+      "title": "Entrepôt extérieur 3D",
+      "subtitle": "Plan de la zone d'entrepôt extérieur",
+      "security": "Sécurité",
+      "parking": "Parking",
+      "factory": "Usine",
+      "depot": "Dépôt",
+      "portalClickArea": "Zone portail cliquable",
+      "clickable": "Cliquable",
+      "portalArea": "Zone Portail (Zone des tôles)",
+      "drawnBy": "Dessiné par",
+      "portalSchema": "Schéma des racks du portail",
+      "portalSchemaHint": "Sélectionnez un rack depuis le schéma du portail",
+      "addProduct": "Ajouter un produit",
+      "selectStock": "Sélectionner un stock",
+      "searchStock": "Rechercher un stock...",
+      "selectSerial": "Sélectionner un numéro de série",
+      "searchSerial": "Rechercher un numéro de série...",
+      "qty": "Quantité",
+      "addToRegion": "Ajouter à la zone",
+      "selectedArea": "Zone sélectionnée",
+      "product": "Produit",
+      "emptyRack": "Aucun produit sur ce rack",
+      "serialNo": "N° de série",
+      "move": "Déplacer vers une autre zone",
+      "remove": "Retirer"
     },
     "warehouse3d": {
       "title": "Visualisation 3D de l'entrepôt",
@@ -1766,5 +1794,12 @@
       "batchNoPlaceholder": "Batch No giriniz",
       "configCodePlaceholder": "Yapılandırma Kodu giriniz"
     }
-  }
+  },
+  "advancedFilter": {
+    "true": "Vrai",
+    "false": "Faux"
+  },
+  "export": "Exporter",
+  "exportExcel": "Excel",
+  "exportPdf": "PDF"
 }

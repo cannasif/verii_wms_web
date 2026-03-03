@@ -40,7 +40,9 @@
     "update": "Güncelle",
     "processing": "İşleniyor...",
     "accessDenied": "Erişim reddedildi",
-    "accessDeniedMessage": "Bu sayfayı görüntüleme yetkiniz yok."
+    "accessDeniedMessage": "Bu sayfayı görüntüleme yetkiniz yok.",
+    "rowsPerPage": "Sayfada",
+    "records": "kayıt"
   },
   "auth": {
     "login": {
@@ -255,7 +257,8 @@
       "noItemsSelected": "Henüz kalem seçilmedi",
       "customerPrompt": "Stokları görüntülemek için lütfen önceki adımdan bir müşteri seçin.",
       "searchStocks": "Stok kodu veya adı ile ara...",
-      "noSelectedItems": "Seçili stok bulunmamaktadır"
+      "noSelectedItems": "Seçili stok bulunmamaktadır",
+      "stocks": "Stoklar"
     },
     "orderDetails": {
       "title": "Sipariş Detayları",
@@ -742,7 +745,32 @@
       "confirmMoveTitle": "Farklı bölgeye taşı",
       "confirmMoveMessage": "Bu ürünü seçtiğiniz bölgeye taşımak istediğinize emin misiniz?",
       "selectRack": "Raf seçiniz",
-      "searchRack": "Raf ara..."
+      "searchRack": "Raf ara...",
+      "title": "3D Outside Warehouse",
+      "subtitle": "Subtitle",
+      "security": "Güvenlik",
+      "parking": "Otopark",
+      "factory": "Fabrika",
+      "depot": "Depo",
+      "portalClickArea": "Portal sahası tıklanabilir alan",
+      "clickable": "Tıklanabilir",
+      "portalArea": "Portal Sahası (Saclarin Oldugu Yer)",
+      "drawnBy": "Drawn by",
+      "portalSchema": "Portal Raf Şeması",
+      "portalSchemaHint": "Portal Schema Hint",
+      "addProduct": "Urun Ekle",
+      "selectStock": "Stok seçiniz",
+      "searchStock": "Stok ara...",
+      "selectSerial": "Seri seçiniz",
+      "searchSerial": "Seri ara...",
+      "qty": "Miktar",
+      "addToRegion": "Bolgeye Ekle",
+      "selectedArea": "Secili Bolge",
+      "product": "Urun",
+      "emptyRack": "Bu rafta urun bulunmuyor",
+      "serialNo": "Seri No",
+      "move": "Farkli Bolgeye Al",
+      "remove": "Cikart"
     },
     "warehouse3d": {
       "title": "3D Depo Görselleştirme",
@@ -1766,5 +1794,12 @@
       "batchNoPlaceholder": "Batch No giriniz",
       "configCodePlaceholder": "Yapılandırma Kodu giriniz"
     }
-  }
+  },
+  "advancedFilter": {
+    "true": "True",
+    "false": "False"
+  },
+  "export": "Dışa Aktar",
+  "exportExcel": "Excel",
+  "exportPdf": "PDF"
 }

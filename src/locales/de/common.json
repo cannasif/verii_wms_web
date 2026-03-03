@@ -40,7 +40,9 @@
     "update": "Aktualisieren",
     "processing": "Wird verarbeitet...",
     "accessDenied": "Zugriff verweigert",
-    "accessDeniedMessage": "Sie haben keine Berechtigung, diese Seite anzuzeigen."
+    "accessDeniedMessage": "Sie haben keine Berechtigung, diese Seite anzuzeigen.",
+    "rowsPerPage": "Pro Seite",
+    "records": "Einträge"
   },
   "auth": {
     "login": {
@@ -255,7 +257,8 @@
       "noItemsSelected": "Noch keine Positionen ausgewählt",
       "customerPrompt": "Bitte wählen Sie im vorherigen Schritt einen Kunden, um die Bestände anzuzeigen.",
       "searchStocks": "Nach Lagerbestandscode oder Name suchen...",
-      "noSelectedItems": "Kein Lagerbestand ausgewählt"
+      "noSelectedItems": "Kein Lagerbestand ausgewählt",
+      "stocks": "Bestände"
     },
     "orderDetails": {
       "title": "Bestelldetails",
@@ -742,7 +745,32 @@
       "confirmMoveTitle": "In anderen Bereich verschieben",
       "confirmMoveMessage": "Sind Sie sicher, dass Sie dieses Produkt in den ausgewählten Bereich verschieben möchten?",
       "selectRack": "Regal auswählen",
-      "searchRack": "Regal suchen..."
+      "searchRack": "Regal suchen...",
+      "title": "3D Außenlager",
+      "subtitle": "Layout des Außenlagerbereichs",
+      "security": "Sicherheit",
+      "parking": "Parkplatz",
+      "factory": "Fabrik",
+      "depot": "Depot",
+      "portalClickArea": "Klickbarer Portalbereich",
+      "clickable": "Klickbar",
+      "portalArea": "Portalbereich (Bereich mit Blechen)",
+      "drawnBy": "Gezeichnet von",
+      "portalSchema": "Portal-Regalschema",
+      "portalSchemaHint": "Wählen Sie ein Regal aus dem Portalschema",
+      "addProduct": "Produkt hinzufügen",
+      "selectStock": "Bestand auswählen",
+      "searchStock": "Bestand suchen...",
+      "selectSerial": "Seriennummer auswählen",
+      "searchSerial": "Seriennummer suchen...",
+      "qty": "Menge",
+      "addToRegion": "Zum Bereich hinzufügen",
+      "selectedArea": "Ausgewählter Bereich",
+      "product": "Produkt",
+      "emptyRack": "In diesem Regal befindet sich kein Produkt",
+      "serialNo": "Seriennr.",
+      "move": "In anderen Bereich verschieben",
+      "remove": "Entfernen"
     },
     "warehouse3d": {
       "title": "3D-Lagervisualisierung",
@@ -1766,5 +1794,12 @@
       "batchNoPlaceholder": "Batch-Nummer eingeben",
       "configCodePlaceholder": "Konfigurationscode eingeben"
     }
-  }
+  },
+  "advancedFilter": {
+    "true": "Wahr",
+    "false": "Falsch"
+  },
+  "export": "Exportieren",
+  "exportExcel": "Excel",
+  "exportPdf": "PDF"
 }

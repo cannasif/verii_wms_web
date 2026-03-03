@@ -91,7 +91,8 @@
       "confirmTitle": "Delete Permission Group",
       "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
-    "search": "Search..."
+    "search": "Search...",
+    "systemAdminLocked": "System Admin group cannot be modified"
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",

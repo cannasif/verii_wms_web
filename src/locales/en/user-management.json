@@ -54,7 +54,8 @@
       "permissionGroupsHelp": "Permission groups to assign to the user",
       "permissionGroupsNoData": "No permission groups found",
       "generatedPasswordInfo": "Leave blank to generate temporary password",
-      "selectAll": "Select all"
+      "selectAll": "Select all",
+      "systemAdminRequiresAdminRole": "System Admin requires Admin role"
     },
     "stats": {
       "totalUsers": "Total Users",

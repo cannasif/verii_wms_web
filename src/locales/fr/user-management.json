@@ -54,7 +54,8 @@
       "permissionGroupsHelp": "Groupes d'autorisations à attribuer à l'utilisateur",
       "permissionGroupsNoData": "Aucun groupe d'autorisations trouvé",
       "generatedPasswordInfo": "Laisser vide pour générer un mot de passe temporaire",
-      "selectAll": "Tout sélectionner"
+      "selectAll": "Tout sélectionner",
+      "systemAdminRequiresAdminRole": "System Admin nécessite le rôle Admin"
     },
     "stats": {
       "totalUsers": "Utilisateurs totaux",
