@@ -29,7 +29,7 @@ export function ShipmentCreatePage(): ReactElement {
   const [selectedItems, setSelectedItems] = useState<SelectedShipmentOrderItem[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('shipment.create.title', 'Yeni Sevkiyat Emri'));
+    setPageTitle(t('shipment.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -57,12 +57,12 @@ export function ShipmentCreatePage(): ReactElement {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shipment-orders'] });
       queryClient.invalidateQueries({ queryKey: ['shipment-order-items'] });
-      toast.success(t('shipment.create.success', 'Sevkiyat emri başarıyla oluşturuldu'));
+      toast.success(t('shipment.create.success'));
       navigate('/shipment/list');
     },
     onError: (error: Error) => {
       toast.error(
-        error.message || t('shipment.create.error', 'Sevkiyat emri oluşturulurken bir hata oluştu')
+        error.message || t('shipment.create.error')
       );
     },
   });
@@ -125,9 +125,9 @@ export function ShipmentCreatePage(): ReactElement {
   };
 
   const steps = [
-    { label: t('shipment.create.steps.basicInfo', 'Temel Bilgiler') },
+    { label: t('shipment.create.steps.basicInfo') },
     {
-      label: t('shipment.create.steps.orderSelection', 'Sipariş Seçimi'),
+      label: t('shipment.create.steps.orderSelection'),
     },
   ];
 
@@ -145,7 +145,7 @@ export function ShipmentCreatePage(): ReactElement {
           />
         );
       default:
-        return <div>{t('shipment.create.unknownStep', 'Bilinmeyen adım')}</div>;
+        return <div>{t('shipment.create.unknownStep')}</div>;
     }
   };
 
@@ -172,12 +172,12 @@ export function ShipmentCreatePage(): ReactElement {
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
                 >
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <div className="flex gap-2">
                   {currentStep < steps.length ? (
                     <Button type="button" onClick={handleNext}>
-                      {t('common.next', 'Sonraki')}
+                      {t('common.next')}
                     </Button>
                   ) : (
                     <Button
@@ -185,7 +185,7 @@ export function ShipmentCreatePage(): ReactElement {
                       onClick={handleSave}
                       disabled={createMutation.isPending || selectedItems.length === 0}
                     >
-                      {createMutation.isPending ? t('common.saving', 'Kaydediliyor...') : t('common.save', 'Kaydet')}
+                      {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </div>

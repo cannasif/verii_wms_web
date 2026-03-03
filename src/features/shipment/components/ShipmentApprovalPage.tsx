@@ -39,15 +39,15 @@ export function ShipmentApprovalPage(): ReactElement {
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('shipment.approval.id', 'ID') },
-      { key: 'documentNo', label: t('shipment.approval.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('shipment.approval.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('shipment.approval.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('shipment.approval.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('shipment.approval.sourceWarehouse', 'Çıkış Deposu') },
-      { key: 'targetWarehouse', label: t('shipment.approval.targetWarehouse', 'Varış Deposu') },
-      { key: 'completionDate', label: t('shipment.approval.completionDate', 'Tamamlanma Tarihi') },
-      { key: 'actions', label: t('shipment.approval.actions', 'İşlemler') },
+      { key: 'id', label: t('shipment.approval.id') },
+      { key: 'documentNo', label: t('shipment.approval.documentNo') },
+      { key: 'documentDate', label: t('shipment.approval.documentDate') },
+      { key: 'customerCode', label: t('shipment.approval.customerCode') },
+      { key: 'customerName', label: t('shipment.approval.customerName') },
+      { key: 'sourceWarehouse', label: t('shipment.approval.sourceWarehouse') },
+      { key: 'targetWarehouse', label: t('shipment.approval.targetWarehouse') },
+      { key: 'completionDate', label: t('shipment.approval.completionDate') },
+      { key: 'actions', label: t('shipment.approval.actions') },
     ],
     [t]
   );
@@ -109,7 +109,7 @@ export function ShipmentApprovalPage(): ReactElement {
   const approveMutation = useApproveShipment();
 
   useEffect(() => {
-    setPageTitle(t('shipment.approval.title', 'Onay Bekleyen Sevkiyat Emirleri'));
+    setPageTitle(t('shipment.approval.title'));
     return () => {
       setPageTitle(null);
     };
@@ -138,12 +138,12 @@ export function ShipmentApprovalPage(): ReactElement {
   const handleApprove = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: true });
-      toast.success(t('shipment.approval.approveSuccess', 'Emir başarıyla onaylandı'));
+      toast.success(t('shipment.approval.approveSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('shipment.approval.approveError', 'Onay işlemi sırasında bir hata oluştu')
+          : t('shipment.approval.approveError')
       );
     }
   };
@@ -151,12 +151,12 @@ export function ShipmentApprovalPage(): ReactElement {
   const handleReject = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: false });
-      toast.success(t('shipment.approval.rejectSuccess', 'Emir başarıyla reddedildi'));
+      toast.success(t('shipment.approval.rejectSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('shipment.approval.rejectError', 'Red işlemi sırasında bir hata oluştu')
+          : t('shipment.approval.rejectError')
       );
     }
   };
@@ -210,7 +210,7 @@ export function ShipmentApprovalPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('shipment.approval.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('shipment.approval.error')}
         </p>
       </div>
     );
@@ -221,7 +221,7 @@ export function ShipmentApprovalPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('shipment.approval.title', 'Onay Bekleyen Sevkiyat Emirleri')}</CardTitle>
+            <CardTitle>{t('shipment.approval.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -231,7 +231,7 @@ export function ShipmentApprovalPage(): ReactElement {
                     className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -267,7 +267,7 @@ export function ShipmentApprovalPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('shipment.approval.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('shipment.approval.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -292,15 +292,15 @@ export function ShipmentApprovalPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('shipment.approval.id', 'ID')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('shipment.approval.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('shipment.approval.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('shipment.approval.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('shipment.approval.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('shipment.approval.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('shipment.approval.targetWarehouse', 'Varış Deposu')}</TableHead>;
-                    if (key === 'completionDate') return <TableHead key={key}>{t('shipment.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('shipment.approval.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('shipment.approval.id')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('shipment.approval.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('shipment.approval.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('shipment.approval.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('shipment.approval.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('shipment.approval.sourceWarehouse')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('shipment.approval.targetWarehouse')}</TableHead>;
+                    if (key === 'completionDate') return <TableHead key={key}>{t('shipment.approval.completionDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('shipment.approval.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -328,7 +328,7 @@ export function ShipmentApprovalPage(): ReactElement {
                                   onClick={() => setSelectedHeaderId(item.id)}
                                 >
                                   <Eye className="size-4" />
-                                  <span className="ml-2">{t('shipment.approval.viewDetails', 'Detay')}</span>
+                                  <span className="ml-2">{t('shipment.approval.viewDetails')}</span>
                                 </Button>
                                 <Button
                                   variant="default"
@@ -337,7 +337,7 @@ export function ShipmentApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <Check className="size-4" />
-                                  <span className="ml-2">{t('shipment.approval.approve', 'Onayla')}</span>
+                                  <span className="ml-2">{t('shipment.approval.approve')}</span>
                                 </Button>
                                 <Button
                                   variant="destructive"
@@ -346,7 +346,7 @@ export function ShipmentApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <X className="size-4" />
-                                  <span className="ml-2">{t('shipment.approval.reject', 'Reddet')}</span>
+                                  <span className="ml-2">{t('shipment.approval.reject')}</span>
                                 </Button>
                               </div>
                             </TableCell>
@@ -360,7 +360,7 @@ export function ShipmentApprovalPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('shipment.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                        {t('shipment.approval.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -372,7 +372,7 @@ export function ShipmentApprovalPage(): ReactElement {
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
                     total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -380,7 +380,7 @@ export function ShipmentApprovalPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -401,7 +401,7 @@ export function ShipmentApprovalPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -413,10 +413,10 @@ export function ShipmentApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -424,7 +424,7 @@ export function ShipmentApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>
@@ -438,7 +438,7 @@ export function ShipmentApprovalPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.id', 'ID')}
+                          {t('shipment.approval.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -446,43 +446,43 @@ export function ShipmentApprovalPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.documentNo', 'Belge No')}
+                          {t('shipment.approval.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.documentDate', 'Belge Tarihi')}
+                          {t('shipment.approval.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.customerCode', 'Cari Kodu')}
+                          {t('shipment.approval.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.customerName', 'Cari Adı')}
+                          {t('shipment.approval.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('shipment.approval.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.targetWarehouse', 'Varış Deposu')}
+                          {t('shipment.approval.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.approval.completionDate', 'Tamamlanma Tarihi')}
+                          {t('shipment.approval.completionDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.completionDate)}</p>
                       </div>
@@ -495,7 +495,7 @@ export function ShipmentApprovalPage(): ReactElement {
                         onClick={() => setSelectedHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('shipment.approval.viewDetails', 'Detay')}
+                        {t('shipment.approval.viewDetails')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
@@ -506,7 +506,7 @@ export function ShipmentApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <Check className="size-4 mr-2" />
-                          {t('shipment.approval.approve', 'Onayla')}
+                          {t('shipment.approval.approve')}
                         </Button>
                         <Button
                           variant="destructive"
@@ -516,7 +516,7 @@ export function ShipmentApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <X className="size-4 mr-2" />
-                          {t('shipment.approval.reject', 'Reddet')}
+                          {t('shipment.approval.reject')}
                         </Button>
                       </div>
                     </div>
@@ -526,7 +526,7 @@ export function ShipmentApprovalPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('shipment.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                  {t('shipment.approval.noData')}
                 </p>
               </div>
             )}
@@ -534,7 +534,7 @@ export function ShipmentApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col items-center justify-between gap-4 pt-4 border-t md:hidden">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -548,10 +548,10 @@ export function ShipmentApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -559,7 +559,7 @@ export function ShipmentApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

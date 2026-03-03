@@ -3,11 +3,11 @@ import type { ApiResponse } from '@/types/api';
 import type { TFunction } from 'i18next';
 
 export const createShipmentFormSchema = (t: TFunction) => z.object({
-  transferDate: z.string().min(1, t('shipment.validation.transferDateRequired', 'Tarih zorunludur')),
-  documentNo: z.string().min(1, t('shipment.validation.documentNoRequired', 'Belge No zorunludur')),
+  transferDate: z.string().min(1, t('shipment.validation.transferDateRequired')),
+  documentNo: z.string().min(1, t('shipment.validation.documentNoRequired')),
   projectCode: z.string().optional(),
-  customerId: z.string().min(1, t('shipment.validation.customerRequired', 'Cari seçimi zorunludur')),
-  sourceWarehouse: z.string().min(1, t('shipment.validation.sourceWarehouseRequired', 'Çıkış deposu zorunludur')),
+  customerId: z.string().min(1, t('shipment.validation.customerRequired')),
+  sourceWarehouse: z.string().min(1, t('shipment.validation.sourceWarehouseRequired')),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
 });

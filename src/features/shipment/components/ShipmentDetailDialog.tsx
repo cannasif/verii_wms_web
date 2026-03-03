@@ -77,10 +77,10 @@ export function ShipmentDetailDialog({
       <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle className="text-xl">
-            {t('shipment.list.detailTitle', 'Sevkiyat Emri Detayı')} - #{headerId}
+            {t('shipment.list.detailTitle')} - #{headerId}
           </DialogTitle>
           <DialogDescription>
-            {t('shipment.list.detailDescription', 'Sevkiyat emrinin detaylı bilgileri')}
+            {t('shipment.list.detailDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -90,29 +90,29 @@ export function ShipmentDetailDialog({
               <Card>
                 <CardContent className="pt-4 pb-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('shipment.list.documentInfo', 'Belge Bilgileri')}
+                    {t('shipment.list.documentInfo')}
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.id', 'ID')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.id')}</span>
                       <span className="text-sm font-semibold">{header.id}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentNo', 'Belge No')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentNo')}</span>
                       <span className="text-sm font-medium">{header.documentNo || '-'}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentDate', 'Belge Tarihi')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentDate')}</span>
                       <span className="text-sm">{formatDate(header.documentDate)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentType', 'Belge Tipi')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.documentType')}</span>
                       <Badge variant="outline" className="text-xs">
                         {header.documentType || '-'}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.createdDate', 'Oluşturulma Tarihi')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.createdDate')}</span>
                       <span className="text-xs">{formatDateTime(header.createdDate)}</span>
                     </div>
                   </div>
@@ -122,31 +122,31 @@ export function ShipmentDetailDialog({
               <Card>
                 <CardContent className="pt-4 pb-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('shipment.list.customerInfo', 'Cari Bilgileri')}
+                    {t('shipment.list.customerInfo')}
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.customerCode', 'Cari Kodu')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.customerCode')}</span>
                       <span className="text-sm font-medium">{header.customerCode || '-'}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.customerName', 'Cari Adı')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.customerName')}</span>
                       <span className="text-sm truncate max-w-[150px] text-right">{header.customerName || '-'}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.status', 'Durum')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.status')}</span>
                       <div>
                         {header.isCompleted ? (
                           <Badge variant="default" className="text-xs">
-                            {t('shipment.list.completed', 'Tamamlandı')}
+                            {t('shipment.list.completed')}
                           </Badge>
                         ) : header.isPendingApproval ? (
                           <Badge variant="secondary" className="text-xs">
-                            {t('shipment.list.pendingApproval', 'Onay Bekliyor')}
+                            {t('shipment.list.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="text-xs">
-                            {t('shipment.list.inProgress', 'Devam Ediyor')}
+                            {t('shipment.list.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -157,7 +157,7 @@ export function ShipmentDetailDialog({
                       <Separator className="my-3" />
                       <div>
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                          {t('shipment.step1.notes', 'Notlar')}
+                          {t('shipment.step1.notes')}
                         </p>
                         <p className="text-xs text-muted-foreground line-clamp-3">{header.description1}</p>
                       </div>
@@ -169,15 +169,15 @@ export function ShipmentDetailDialog({
               <Card>
                 <CardContent className="pt-4 pb-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('shipment.list.warehouseInfo', 'Depo Bilgileri')}
+                    {t('shipment.list.warehouseInfo')}
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.sourceWarehouse', 'Çıkış Deposu')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.sourceWarehouse')}</span>
                       <span className="text-sm font-medium">{header.sourceWarehouse || '-'}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('shipment.list.targetWarehouse', 'Varış Deposu')}</span>
+                      <span className="text-xs text-muted-foreground">{t('shipment.list.targetWarehouse')}</span>
                       <span className="text-sm font-medium">{header.targetWarehouse || '-'}</span>
                     </div>
                   </div>
@@ -188,12 +188,12 @@ export function ShipmentDetailDialog({
             <div className="flex flex-col flex-1 min-h-0">
               <div className="pb-2 space-y-2 border-b shrink-0 mb-2">
                 <h3 className="text-sm font-semibold">
-                  {t('shipment.list.lines', 'Kalemler')}
+                  {t('shipment.list.lines')}
                 </h3>
                 <div className="relative flex items-center">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
-                    placeholder={t('shipment.step2.searchItems', 'Stok kodu veya adı ile ara...')}
+                    placeholder={t('shipment.step2.searchItems')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-7 pr-9 h-7 text-xs"
@@ -216,20 +216,20 @@ export function ShipmentDetailDialog({
                 ) : filteredLines.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">
-                      {t('shipment.list.noData', 'Veri bulunamadı')}
+                      {t('shipment.list.noData')}
                     </p>
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[120px]">{t('shipment.list.orderNo', 'Sipariş No')}</TableHead>
-                        <TableHead className="w-[100px]">{t('shipment.list.stockCode', 'Stok Kodu')}</TableHead>
-                        <TableHead>{t('shipment.list.stockName', 'Stok Adı')}</TableHead>
-                        <TableHead className="w-[100px]">{t('shipment.details.configCode', 'Yapılandırma Kodu')}</TableHead>
-                        <TableHead className="w-[120px]">{t('shipment.list.serialNo', 'Seri No')}</TableHead>
-                        <TableHead className="w-[120px]">{t('shipment.details.lotNo', 'Parti No')}</TableHead>
-                        <TableHead className="w-[120px]">{t('shipment.details.batchNo', 'Batch No')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.list.orderNo')}</TableHead>
+                        <TableHead className="w-[100px]">{t('shipment.list.stockCode')}</TableHead>
+                        <TableHead>{t('shipment.list.stockName')}</TableHead>
+                        <TableHead className="w-[100px]">{t('shipment.details.configCode')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.list.serialNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.details.lotNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.details.batchNo')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

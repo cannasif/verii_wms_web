@@ -31,7 +31,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.transferDate', 'Sevkiyat Tarihi')}</FormLabel>
+              <FormLabel>{t('shipment.step1.transferDate')}</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -45,9 +45,9 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.documentNo', 'Belge No')}</FormLabel>
+              <FormLabel>{t('shipment.step1.documentNo')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('shipment.step1.documentNoPlaceholder', 'Belge No giriniz')} {...field} />
+                <Input placeholder={t('shipment.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -61,7 +61,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.customer', 'Cari')}</FormLabel>
+              <FormLabel>{t('shipment.step1.customer')}</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -69,9 +69,9 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                   options={customers || []}
                   getOptionValue={(opt) => opt.cariKod}
                   getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
-                  placeholder={t('shipment.step1.selectCustomer', 'Cari seçiniz')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('common.notFound', 'Bulunamadı')}
+                  placeholder={t('shipment.step1.selectCustomer')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
                   isLoading={isLoadingCustomers}
                   itemLimit={100}
                 />
@@ -86,7 +86,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="projectCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.projectCode', 'Proje Kodu')}</FormLabel>
+              <FormLabel>{t('shipment.step1.projectCode')}</FormLabel>
               <FormControl>
                 <SearchableSelect<Project>
                   value={field.value || ''}
@@ -96,9 +96,9 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                   options={projects || []}
                   getOptionValue={(opt) => opt.projeKod}
                   getOptionLabel={(opt) => `${opt.projeAciklama} (${opt.projeKod})`}
-                  placeholder={t('shipment.step1.selectProjectCode', 'Proje kodu seçiniz')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('shipment.step1.noProject', 'Proje yok')}
+                  placeholder={t('shipment.step1.selectProjectCode')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('shipment.step1.noProject')}
                   isLoading={isLoadingProjects}
                   itemLimit={100}
                 />
@@ -114,7 +114,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
         name="sourceWarehouse"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('shipment.step1.sourceWarehouse', 'Çıkış Deposu')}</FormLabel>
+            <FormLabel>{t('shipment.step1.sourceWarehouse')}</FormLabel>
             <FormControl>
               <SearchableSelect<Warehouse>
                 value={field.value}
@@ -122,9 +122,9 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                 options={warehouses || []}
                 getOptionValue={(opt) => String(opt.depoKodu)}
                 getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                placeholder={t('shipment.step1.selectSourceWarehouse', 'Çıkış deposu seçiniz')}
-                searchPlaceholder={t('common.search', 'Ara...')}
-                emptyText={t('common.notFound', 'Bulunamadı')}
+                placeholder={t('shipment.step1.selectSourceWarehouse')}
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.notFound')}
                 isLoading={isLoadingWarehouses}
                 itemLimit={100}
               />
@@ -139,7 +139,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
         name="userIds"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('shipment.step1.operationUsers', 'İşlem Yapacak Kullanıcılar')}</FormLabel>
+            <FormLabel>{t('shipment.step1.operationUsers')}</FormLabel>
             <FormControl>
               <SearchableMultiSelect<UserDto>
                 value={field.value || []}
@@ -150,7 +150,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                   const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
                   return opt.email ? `${name} (${opt.email})` : name;
                 }}
-                placeholder={t('shipment.step1.selectOperationUsers', 'İşlem yapacak kullanıcıları seçiniz')}
+                placeholder={t('shipment.step1.selectOperationUsers')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('common.notFound')}
                 isLoading={isLoadingUsers}
@@ -167,9 +167,9 @@ export function Step1ShipmentBasicInfo(): ReactElement {
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('shipment.step1.notes', 'Notlar')}</FormLabel>
+            <FormLabel>{t('shipment.step1.notes')}</FormLabel>
             <FormControl>
-              <Textarea placeholder={t('shipment.step1.notesPlaceholder', 'Notlarınızı giriniz')} {...field} />
+              <Textarea placeholder={t('shipment.step1.notesPlaceholder')} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

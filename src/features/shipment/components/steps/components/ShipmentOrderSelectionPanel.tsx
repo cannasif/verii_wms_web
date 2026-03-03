@@ -40,7 +40,7 @@ export function ShipmentOrderSelectionPanel({
         <div className="relative">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder={t('common.search', 'Sipariş No ile ara...')}
+            placeholder={t('common.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-7 text-xs"
@@ -51,11 +51,11 @@ export function ShipmentOrderSelectionPanel({
       <div className="flex-1 overflow-y-auto space-y-1.5 p-2">
         {isLoading ? (
           <div className="text-center py-12">
-            <p className="text-sm text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+            <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-muted-foreground">{t('common.noResults', 'Sonuç bulunamadı')}</p>
+            <p className="text-sm text-muted-foreground">{t('common.noResults')}</p>
           </div>
         ) : (
           filteredOrders.map((order) => (
@@ -80,8 +80,8 @@ export function ShipmentOrderSelectionPanel({
                   className="text-[10px] shrink-0 px-1.5 py-0"
                 >
                   {order.remainingForImport > 0
-                    ? t('shipment.step2.pending', 'Beklemede')
-                    : t('shipment.step2.completed', 'Tamamlandı')}
+                    ? t('shipment.step2.pending')
+                    : t('shipment.step2.completed')}
                 </Badge>
               </div>
               <div className="flex items-center justify-between text-[10px] text-muted-foreground">
@@ -102,7 +102,7 @@ export function ShipmentOrderSelectionPanel({
                   </span>
                 </div>
                 <span className="font-medium">
-                  {t('shipment.step2.remaining', 'Kalan')}: {order.remainingForImport.toFixed(2)}
+                  {t('shipment.step2.remaining')}: {order.remainingForImport.toFixed(2)}
                 </span>
               </div>
             </div>
