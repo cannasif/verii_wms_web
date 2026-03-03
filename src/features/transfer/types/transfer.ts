@@ -3,14 +3,14 @@ import type { ApiResponse } from '@/types/api';
 import type { TFunction } from 'i18next';
 
 export const createTransferFormSchema = (t: TFunction, isFreeTransfer: boolean = false) => z.object({
-  transferDate: z.string().min(1, t('transfer.validation.transferDateRequired', 'Tarih zorunludur')),
-  documentNo: z.string().min(1, t('transfer.validation.documentNoRequired', 'Belge No zorunludur')),
+  transferDate: z.string().min(1, t('transfer.validation.transferDateRequired')),
+  documentNo: z.string().min(1, t('transfer.validation.documentNoRequired')),
   projectCode: z.string().optional(),
-  customerId: isFreeTransfer ? z.string().optional() : z.string().min(1, t('transfer.validation.customerRequired', 'Cari seçimi zorunludur')),
+  customerId: isFreeTransfer ? z.string().optional() : z.string().min(1, t('transfer.validation.customerRequired')),
   sourceWarehouse: isFreeTransfer 
-    ? z.string().min(1, t('transfer.validation.sourceWarehouseRequired', 'Çıkış deposu zorunludur'))
+    ? z.string().min(1, t('transfer.validation.sourceWarehouseRequired'))
     : z.string().optional(),
-  targetWarehouse: z.string().min(1, t('transfer.validation.targetWarehouseRequired', 'Varış deposu zorunludur')),
+  targetWarehouse: z.string().min(1, t('transfer.validation.targetWarehouseRequired')),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
 });

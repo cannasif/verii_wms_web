@@ -205,7 +205,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
         name="userIds"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('transfer.step1.operationUsers', 'İşlem Yapacak Kullanıcılar')}</FormLabel>
+            <FormLabel>{t('transfer.step1.operationUsers')}</FormLabel>
             <FormControl>
               <SearchableMultiSelect<UserDto>
                 value={field.value || []}
@@ -216,7 +216,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
                   const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
                   return opt.email ? `${name} (${opt.email})` : name;
                 }}
-                placeholder={t('transfer.step1.selectOperationUsers', 'İşlem yapacak kullanıcıları seçiniz')}
+                placeholder={t('transfer.step1.selectOperationUsers')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('common.notFound')}
                 isLoading={isLoadingUsers}

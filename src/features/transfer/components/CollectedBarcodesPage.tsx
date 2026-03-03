@@ -33,15 +33,15 @@ export function CollectedBarcodesPage(): ReactElement {
     deleteRouteMutation.mutate(selectedRoute.routeId, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(t('transfer.collection.deleteSuccess', 'Barkod başarıyla silindi'));
+          toast.success(t('transfer.collection.deleteSuccess'));
           setDeleteDialogOpen(false);
           setSelectedRoute(null);
         } else {
-          toast.error(response.message || t('transfer.collection.deleteError', 'Barkod silinemedi'));
+          toast.error(response.message || t('transfer.collection.deleteError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('transfer.collection.deleteError', 'Barkod silinemedi'));
+        toast.error(error.message || t('transfer.collection.deleteError'));
       },
     });
   };
@@ -78,10 +78,10 @@ export function CollectedBarcodesPage(): ReactElement {
         <div className="flex items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate(`/transfer/collection/${headerId}`)}>
             <ArrowLeft className="size-4 mr-2" />
-            {t('common.back', 'Geri')}
+            {t('common.back')}
           </Button>
           <div className="text-sm text-muted-foreground">
-            {t('transfer.collection.totalCollected', 'Toplam')} {allCollectedBarcodes.length} {t('transfer.collection.itemsCollected', 'adet ürün toplandı')}
+            {t('transfer.collection.totalCollected')} {allCollectedBarcodes.length} {t('transfer.collection.itemsCollected')}
           </div>
         </div>
       </div>
@@ -98,16 +98,16 @@ export function CollectedBarcodesPage(): ReactElement {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('transfer.collection.barcode', 'Barkod')}</TableHead>
-                      <TableHead>{t('transfer.collection.stockCode', 'Stok Kodu')}</TableHead>
-                      <TableHead>{t('transfer.collection.stockName', 'Stok Adı')}</TableHead>
-                      <TableHead>{t('transfer.collection.yapKod', 'Yapı Kodu')}</TableHead>
-                      <TableHead>{t('transfer.collection.yapAcik', 'Yapı Açıklaması')}</TableHead>
-                      <TableHead>{t('transfer.collection.serialNo', 'Seri No')}</TableHead>
-                      <TableHead>{t('transfer.collection.packageNo', 'Paket No')}</TableHead>
-                      <TableHead>{t('transfer.collection.packageHeaderId', 'Paket Kayıt No')}</TableHead>
-                      <TableHead className="text-right">{t('transfer.collection.quantity', 'Miktar')}</TableHead>
-                      <TableHead className="text-right">{t('common.actions', 'İşlemler')}</TableHead>
+                      <TableHead>{t('transfer.collection.barcode')}</TableHead>
+                      <TableHead>{t('transfer.collection.stockCode')}</TableHead>
+                      <TableHead>{t('transfer.collection.stockName')}</TableHead>
+                      <TableHead>{t('transfer.collection.yapKod')}</TableHead>
+                      <TableHead>{t('transfer.collection.yapAcik')}</TableHead>
+                      <TableHead>{t('transfer.collection.serialNo')}</TableHead>
+                      <TableHead>{t('transfer.collection.packageNo')}</TableHead>
+                      <TableHead>{t('transfer.collection.packageHeaderId')}</TableHead>
+                      <TableHead className="text-right">{t('transfer.collection.quantity')}</TableHead>
+                      <TableHead className="text-right">{t('common.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -167,7 +167,7 @@ export function CollectedBarcodesPage(): ReactElement {
                                 size="sm"
                                 className="h-6 w-6 p-0 hover:bg-accent"
                                 onClick={() => navigate(`/package/detail/${item.packageHeaderId}`)}
-                                title={t('transfer.collection.viewPackage', 'Paket detayını görüntüle')}
+                                title={t('transfer.collection.viewPackage')}
                               >
                                 <ExternalLink className="size-3.5 text-muted-foreground hover:text-foreground" />
                               </Button>
@@ -196,7 +196,7 @@ export function CollectedBarcodesPage(): ReactElement {
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">
-                  {t('transfer.collection.noCollectedBarcodes', 'Henüz toplanan barkod bulunmuyor')}
+                  {t('transfer.collection.noCollectedBarcodes')}
                 </p>
               </div>
             )}
@@ -207,22 +207,20 @@ export function CollectedBarcodesPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('transfer.collection.deleteConfirmTitle', 'Ürünü Sil')}</DialogTitle>
+            <DialogTitle>{t('transfer.collection.deleteConfirmTitle')}</DialogTitle>
             <DialogDescription>
               {selectedRoute?.packageNo && selectedRoute.packageNo !== '-'
                 ? t(
-                    'transfer.collection.deleteConfirmWithPackage',
-                    'Seçili ürün paketten de işlemden de kaldırılacaktır. Bu işlemi yapmak istediğinizden emin misiniz?'
+                    'transfer.collection.deleteConfirmWithPackage'
                   )
                 : t(
-                    'transfer.collection.deleteConfirmWithoutPackage',
-                    'Ürün toplamadan kaldırılacaktır. Bu işlemi yapmak istediğinizden emin misiniz?'
+                    'transfer.collection.deleteConfirmWithoutPackage'
                   )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel', 'İptal')}
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -232,10 +230,10 @@ export function CollectedBarcodesPage(): ReactElement {
               {deleteRouteMutation.isPending ? (
                 <>
                   <Loader2 className="size-4 mr-2 animate-spin" />
-                  {t('common.loading', 'Yükleniyor...')}
+                  {t('common.loading')}
                 </>
               ) : (
-                t('common.delete', 'Sil')
+                t('common.delete')
               )}
             </Button>
           </DialogFooter>

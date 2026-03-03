@@ -88,7 +88,7 @@ export function TransferItemRow({
             {isOver && (
               <Badge variant="destructive" className="text-xs shrink-0">
                 <AlertCircle className="w-3 h-3 mr-1" />
-                {t('common.over', 'Fazla')}
+                {t('common.over')}
               </Badge>
             )}
           </div>
@@ -98,7 +98,7 @@ export function TransferItemRow({
             </Badge>
             <span className="hidden sm:inline">•</span>
             <span>
-              {t('transfer.step2.ordered', 'Sipariş')}:{' '}
+              {t('transfer.step2.ordered')}:{' '}
               <strong className="text-foreground">{item.orderedQty}</strong>
             </span>
           </div>
@@ -137,7 +137,7 @@ export function TransferItemRow({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor={`sourceWarehouse-${item.id || ''}`} className="text-sm font-medium">
-                {t('transfer.details.sourceWarehouse', 'Çıkış Deposu')}
+                {t('transfer.details.sourceWarehouse')}
               </Label>
               <SearchableSelect<Warehouse>
                 value={selectedItem?.sourceWarehouse?.toString() || ''}
@@ -145,57 +145,57 @@ export function TransferItemRow({
                 options={warehouses}
                 getOptionValue={(opt) => String(opt.depoKodu)}
                 getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                placeholder={t('transfer.step1.selectSourceWarehouse', 'Çıkış deposu seçiniz')}
-                searchPlaceholder={t('common.search', 'Ara...')}
-                emptyText={t('common.notFound', 'Bulunamadı')}
+                placeholder={t('transfer.step1.selectSourceWarehouse')}
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.notFound')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`serial-${item.id || ''}`} className="text-sm font-medium">
-                {t('transfer.details.serialNo', 'Seri No')}
+                {t('transfer.details.serialNo')}
               </Label>
               <Input
                 id={`serial-${item.id || ''}`}
                 value={selectedItem?.serialNo || ''}
                 onChange={(e) => handleDetailChange('serialNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('transfer.details.serialNoPlaceholder', 'Seri No giriniz')}
+                placeholder={t('transfer.details.serialNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`lot-${item.id || ''}`} className="text-sm font-medium">
-                {t('transfer.details.lotNo', 'Parti No')}
+                {t('transfer.details.lotNo')}
               </Label>
               <Input
                 id={`lot-${item.id || ''}`}
                 value={selectedItem?.lotNo || ''}
                 onChange={(e) => handleDetailChange('lotNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('transfer.details.lotNoPlaceholder', 'Parti No giriniz')}
+                placeholder={t('transfer.details.lotNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`batch-${item.id || ''}`} className="text-sm font-medium">
-                {t('transfer.details.batchNo', 'Batch No')}
+                {t('transfer.details.batchNo')}
               </Label>
               <Input
                 id={`batch-${item.id || ''}`}
                 value={selectedItem?.batchNo || ''}
                 onChange={(e) => handleDetailChange('batchNo', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('transfer.details.batchNoPlaceholder', 'Batch No giriniz')}
+                placeholder={t('transfer.details.batchNoPlaceholder')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
-                {t('transfer.details.configCode', 'Yapılandırma Kodu')}
+                {t('transfer.details.configCode')}
               </Label>
               <Input
                 id={`config-${item.id || ''}`}
                 value={selectedItem?.configCode || ''}
                 onChange={(e) => handleDetailChange('configCode', e.target.value)}
                 className="h-9 text-sm"
-                placeholder={t('transfer.details.configCodePlaceholder', 'Yapılandırma Kodu giriniz')}
+                placeholder={t('transfer.details.configCodePlaceholder')}
               />
             </div>
           </div>

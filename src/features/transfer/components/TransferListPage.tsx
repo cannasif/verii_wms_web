@@ -38,16 +38,16 @@ export function TransferListPage(): ReactElement {
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('transfer.list.id', 'ID') },
-      { key: 'documentNo', label: t('transfer.list.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('transfer.list.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('transfer.list.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('transfer.list.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse', 'Çıkış Deposu') },
-      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse', 'Varış Deposu') },
-      { key: 'documentType', label: t('transfer.list.documentType', 'Belge Tipi') },
-      { key: 'createdDate', label: t('transfer.list.createdDate', 'Oluşturulma Tarihi') },
-      { key: 'actions', label: t('goodsReceipt.report.actions', 'İşlemler') },
+      { key: 'id', label: t('transfer.list.id') },
+      { key: 'documentNo', label: t('transfer.list.documentNo') },
+      { key: 'documentDate', label: t('transfer.list.documentDate') },
+      { key: 'customerCode', label: t('transfer.list.customerCode') },
+      { key: 'customerName', label: t('transfer.list.customerName') },
+      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse') },
+      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse') },
+      { key: 'documentType', label: t('transfer.list.documentType') },
+      { key: 'createdDate', label: t('transfer.list.createdDate') },
+      { key: 'actions', label: t('goodsReceipt.report.actions') },
     ],
     [t]
   );
@@ -109,7 +109,7 @@ export function TransferListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('transfer.list.title', 'Transfer Emri Listesi'));
+    setPageTitle(t('transfer.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -184,7 +184,7 @@ export function TransferListPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('transfer.list.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('transfer.list.error')}</p>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export function TransferListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('transfer.list.title', 'Transfer Emri Listesi')}</CardTitle>
+            <CardTitle>{t('transfer.list.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -204,7 +204,7 @@ export function TransferListPage(): ReactElement {
                     className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -240,7 +240,7 @@ export function TransferListPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('transfer.list.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('transfer.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -265,16 +265,16 @@ export function TransferListPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id', 'ID')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse', 'Varış Deposu')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType', 'Belge Tipi')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse')}</TableHead>;
+                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType')}</TableHead>;
+                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -308,7 +308,7 @@ export function TransferListPage(): ReactElement {
                                 onClick={() => setSelectedHeaderId(item.id)}
                               >
                                 <Eye className="size-4" />
-                                <span className="ml-2">{t('transfer.list.viewDetails', 'Detay')}</span>
+                                <span className="ml-2">{t('transfer.list.viewDetails')}</span>
                               </Button>
                             </TableCell>
                           );
@@ -321,7 +321,7 @@ export function TransferListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('transfer.list.noData', 'Veri bulunamadı')}
+                        {t('transfer.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -337,7 +337,7 @@ export function TransferListPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.id', 'ID')}
+                          {t('transfer.list.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -345,37 +345,37 @@ export function TransferListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentNo', 'Belge No')}
+                          {t('transfer.list.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentDate', 'Belge Tarihi')}
+                          {t('transfer.list.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerCode', 'Cari Kodu')}
+                          {t('transfer.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerName', 'Cari Adı')}
+                          {t('transfer.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('transfer.list.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.targetWarehouse', 'Varış Deposu')}
+                          {t('transfer.list.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
@@ -388,7 +388,7 @@ export function TransferListPage(): ReactElement {
                         onClick={() => setSelectedHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('transfer.list.viewDetails', 'Detay')}
+                        {t('transfer.list.viewDetails')}
                       </Button>
                     </div>
                   </CardContent>
@@ -397,7 +397,7 @@ export function TransferListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('transfer.list.noData', 'Veri bulunamadı')}
+                  {t('transfer.list.noData')}
                 </p>
               </div>
             )}
@@ -406,7 +406,7 @@ export function TransferListPage(): ReactElement {
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
                     total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -414,7 +414,7 @@ export function TransferListPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -435,7 +435,7 @@ export function TransferListPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -447,10 +447,10 @@ export function TransferListPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -458,7 +458,7 @@ export function TransferListPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

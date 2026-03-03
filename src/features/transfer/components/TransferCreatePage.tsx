@@ -38,7 +38,7 @@ export function TransferCreatePage(): ReactElement {
   >([]);
 
   useEffect(() => {
-    setPageTitle(t('transfer.create.title', 'Yeni Transfer Emri'));
+    setPageTitle(t('transfer.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -66,12 +66,12 @@ export function TransferCreatePage(): ReactElement {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transferHeaders'] });
-      toast.success(t('transfer.create.success', 'Transfer emri başarıyla oluşturuldu'));
+      toast.success(t('transfer.create.success'));
       navigate('/transfer/list');
     },
     onError: (error: Error) => {
       toast.error(
-        error.message || t('transfer.create.error', 'Transfer emri oluşturulurken bir hata oluştu')
+        error.message || t('transfer.create.error')
       );
     },
   });
@@ -161,7 +161,7 @@ export function TransferCreatePage(): ReactElement {
       label:
         transferMode === 'order'
           ? t('transfer.create.steps.orderSelection')
-          : t('transfer.create.steps.stockSelection', 'Stok Seçimi'),
+          : t('transfer.create.steps.stockSelection'),
     },
   ];
 
@@ -205,7 +205,7 @@ export function TransferCreatePage(): ReactElement {
             if (currentStep > 1) setCurrentStep(1);
           }}
         >
-          {t('transfer.create.mode.order', 'Siparişe Bağlı Transfer')}
+          {t('transfer.create.mode.order')}
         </Badge>
         <Badge
           variant={transferMode === 'free' ? 'default' : 'outline'}
@@ -216,7 +216,7 @@ export function TransferCreatePage(): ReactElement {
             if (currentStep > 1) setCurrentStep(1);
           }}
         >
-          {t('transfer.create.mode.free', 'Serbest Transfer')}
+          {t('transfer.create.mode.free')}
         </Badge>
       </div>
 

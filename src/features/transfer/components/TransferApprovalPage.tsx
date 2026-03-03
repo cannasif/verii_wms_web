@@ -39,15 +39,15 @@ export function TransferApprovalPage(): ReactElement {
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('transfer.approval.id', 'ID') },
-      { key: 'documentNo', label: t('transfer.approval.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('transfer.approval.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('transfer.approval.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('transfer.approval.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('transfer.approval.sourceWarehouse', 'Çıkış Deposu') },
-      { key: 'targetWarehouse', label: t('transfer.approval.targetWarehouse', 'Varış Deposu') },
-      { key: 'completionDate', label: t('transfer.approval.completionDate', 'Tamamlanma Tarihi') },
-      { key: 'actions', label: t('transfer.approval.actions', 'İşlemler') },
+      { key: 'id', label: t('transfer.approval.id') },
+      { key: 'documentNo', label: t('transfer.approval.documentNo') },
+      { key: 'documentDate', label: t('transfer.approval.documentDate') },
+      { key: 'customerCode', label: t('transfer.approval.customerCode') },
+      { key: 'customerName', label: t('transfer.approval.customerName') },
+      { key: 'sourceWarehouse', label: t('transfer.approval.sourceWarehouse') },
+      { key: 'targetWarehouse', label: t('transfer.approval.targetWarehouse') },
+      { key: 'completionDate', label: t('transfer.approval.completionDate') },
+      { key: 'actions', label: t('transfer.approval.actions') },
     ],
     [t]
   );
@@ -109,7 +109,7 @@ export function TransferApprovalPage(): ReactElement {
   const approveMutation = useApproveTransfer();
 
   useEffect(() => {
-    setPageTitle(t('transfer.approval.title', 'Onay Bekleyen Transfer Emirleri'));
+    setPageTitle(t('transfer.approval.title'));
     return () => {
       setPageTitle(null);
     };
@@ -138,12 +138,12 @@ export function TransferApprovalPage(): ReactElement {
   const handleApprove = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: true });
-      toast.success(t('transfer.approval.approveSuccess', 'Emir başarıyla onaylandı'));
+      toast.success(t('transfer.approval.approveSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('transfer.approval.approveError', 'Onay işlemi sırasında bir hata oluştu')
+          : t('transfer.approval.approveError')
       );
     }
   };
@@ -151,12 +151,12 @@ export function TransferApprovalPage(): ReactElement {
   const handleReject = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: false });
-      toast.success(t('transfer.approval.rejectSuccess', 'Emir başarıyla reddedildi'));
+      toast.success(t('transfer.approval.rejectSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('transfer.approval.rejectError', 'Red işlemi sırasında bir hata oluştu')
+          : t('transfer.approval.rejectError')
       );
     }
   };
@@ -210,7 +210,7 @@ export function TransferApprovalPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('transfer.approval.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('transfer.approval.error')}
         </p>
       </div>
     );
@@ -221,7 +221,7 @@ export function TransferApprovalPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('transfer.approval.title', 'Onay Bekleyen Transfer Emirleri')}</CardTitle>
+            <CardTitle>{t('transfer.approval.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -231,7 +231,7 @@ export function TransferApprovalPage(): ReactElement {
                     className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -267,7 +267,7 @@ export function TransferApprovalPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('transfer.approval.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('transfer.approval.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -292,15 +292,15 @@ export function TransferApprovalPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('transfer.approval.id', 'ID')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.approval.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.approval.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.approval.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.approval.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.approval.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.approval.targetWarehouse', 'Varış Deposu')}</TableHead>;
-                    if (key === 'completionDate') return <TableHead key={key}>{t('transfer.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('transfer.approval.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('transfer.approval.id')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.approval.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.approval.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.approval.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.approval.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.approval.sourceWarehouse')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.approval.targetWarehouse')}</TableHead>;
+                    if (key === 'completionDate') return <TableHead key={key}>{t('transfer.approval.completionDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('transfer.approval.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -328,7 +328,7 @@ export function TransferApprovalPage(): ReactElement {
                                   onClick={() => setSelectedHeaderId(item.id)}
                                 >
                                   <Eye className="size-4" />
-                                  <span className="ml-2">{t('transfer.approval.viewDetails', 'Detay')}</span>
+                                  <span className="ml-2">{t('transfer.approval.viewDetails')}</span>
                                 </Button>
                                 <Button
                                   variant="default"
@@ -337,7 +337,7 @@ export function TransferApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <Check className="size-4" />
-                                  <span className="ml-2">{t('transfer.approval.approve', 'Onayla')}</span>
+                                  <span className="ml-2">{t('transfer.approval.approve')}</span>
                                 </Button>
                                 <Button
                                   variant="destructive"
@@ -346,7 +346,7 @@ export function TransferApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <X className="size-4" />
-                                  <span className="ml-2">{t('transfer.approval.reject', 'Reddet')}</span>
+                                  <span className="ml-2">{t('transfer.approval.reject')}</span>
                                 </Button>
                               </div>
                             </TableCell>
@@ -360,7 +360,7 @@ export function TransferApprovalPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('transfer.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                        {t('transfer.approval.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -372,7 +372,7 @@ export function TransferApprovalPage(): ReactElement {
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
                     total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -380,7 +380,7 @@ export function TransferApprovalPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -401,7 +401,7 @@ export function TransferApprovalPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -413,10 +413,10 @@ export function TransferApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -424,7 +424,7 @@ export function TransferApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>
@@ -438,7 +438,7 @@ export function TransferApprovalPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.id', 'ID')}
+                          {t('transfer.approval.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -446,43 +446,43 @@ export function TransferApprovalPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.documentNo', 'Belge No')}
+                          {t('transfer.approval.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.documentDate', 'Belge Tarihi')}
+                          {t('transfer.approval.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.customerCode', 'Cari Kodu')}
+                          {t('transfer.approval.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.customerName', 'Cari Adı')}
+                          {t('transfer.approval.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('transfer.approval.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouseName || item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.targetWarehouse', 'Varış Deposu')}
+                          {t('transfer.approval.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouseName || item.targetWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.approval.completionDate', 'Tamamlanma Tarihi')}
+                          {t('transfer.approval.completionDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.completionDate)}</p>
                       </div>
@@ -495,7 +495,7 @@ export function TransferApprovalPage(): ReactElement {
                         onClick={() => setSelectedHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('transfer.approval.viewDetails', 'Detay')}
+                        {t('transfer.approval.viewDetails')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
@@ -506,7 +506,7 @@ export function TransferApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <Check className="size-4 mr-2" />
-                          {t('transfer.approval.approve', 'Onayla')}
+                          {t('transfer.approval.approve')}
                         </Button>
                         <Button
                           variant="destructive"
@@ -516,7 +516,7 @@ export function TransferApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <X className="size-4 mr-2" />
-                          {t('transfer.approval.reject', 'Reddet')}
+                          {t('transfer.approval.reject')}
                         </Button>
                       </div>
                     </div>
@@ -526,7 +526,7 @@ export function TransferApprovalPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('transfer.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                  {t('transfer.approval.noData')}
                 </p>
               </div>
             )}
@@ -534,7 +534,7 @@ export function TransferApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col items-center justify-between gap-4 pt-4 border-t md:hidden">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -548,10 +548,10 @@ export function TransferApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -559,7 +559,7 @@ export function TransferApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

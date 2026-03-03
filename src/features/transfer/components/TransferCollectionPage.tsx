@@ -40,7 +40,7 @@ export function TransferCollectionPage(): ReactElement {
   const completeTransferMutation = useCompleteTransfer();
 
   useEffect(() => {
-    setPageTitle(t('transfer.collection.title', 'Transfer Toplama'));
+    setPageTitle(t('transfer.collection.title'));
     return () => {
       setPageTitle(null);
     };
@@ -51,14 +51,14 @@ export function TransferCollectionPage(): ReactElement {
       setSelectedStock(barcodeData.data[0]);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('transfer.collection.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('transfer.collection.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('transfer.collection.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('transfer.collection.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -67,12 +67,12 @@ export function TransferCollectionPage(): ReactElement {
 
   const handleCollect = () => {
     if (!selectedStock) {
-      toast.error(t('transfer.collection.noStockSelected', 'Lütfen önce stok bilgisi getirin'));
+      toast.error(t('transfer.collection.noStockSelected'));
       return;
     }
 
     if (quantity <= 0) {
-      toast.error(t('transfer.collection.invalidQuantity', 'Geçersiz miktar'));
+      toast.error(t('transfer.collection.invalidQuantity'));
       return;
     }
 
@@ -81,7 +81,7 @@ export function TransferCollectionPage(): ReactElement {
     );
 
     if (!matchingLine) {
-      toast.error(t('transfer.collection.stockNotInOrder', 'Bu stok transfer emrinde bulunmuyor'));
+      toast.error(t('transfer.collection.stockNotInOrder'));
       return;
     }
 
@@ -105,16 +105,16 @@ export function TransferCollectionPage(): ReactElement {
       {
         onSuccess: (response) => {
           if (response.success) {
-            toast.success(t('transfer.collection.collected', 'Ürün toplandı'));
+            toast.success(t('transfer.collection.collected'));
             setBarcodeInput('');
             setSelectedStock(null);
             setQuantity(1);
           } else {
-            toast.error(response.message || t('transfer.collection.collectError', 'Toplama hatası'));
+            toast.error(response.message || t('transfer.collection.collectError'));
           }
         },
         onError: (error: Error) => {
-          toast.error(error.message || t('transfer.collection.collectError', 'Toplama hatası'));
+          toast.error(error.message || t('transfer.collection.collectError'));
         },
       }
     );
@@ -128,21 +128,21 @@ export function TransferCollectionPage(): ReactElement {
 
   const handleComplete = () => {
     if (!headerIdNum) {
-      toast.error(t('transfer.collection.invalidHeaderId', 'Geçersiz transfer emri'));
+      toast.error(t('transfer.collection.invalidHeaderId'));
       return;
     }
 
     completeTransferMutation.mutate(headerIdNum, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(t('transfer.collection.completed', 'Transfer emri başarıyla tamamlandı'));
+          toast.success(t('transfer.collection.completed'));
           navigate('/transfer/assigned');
         } else {
-          toast.error(response.message || t('transfer.collection.completeError', 'Tamamlama hatası'));
+          toast.error(response.message || t('transfer.collection.completeError'));
         }
       },
       onError: (error: Error) => {
-        toast.error(error.message || t('transfer.collection.completeError', 'Tamamlama hatası'));
+        toast.error(error.message || t('transfer.collection.completeError'));
       },
     });
   };
@@ -184,7 +184,7 @@ export function TransferCollectionPage(): ReactElement {
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner')) {
-        toast.error(t('transfer.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('transfer.collection.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -231,7 +231,7 @@ export function TransferCollectionPage(): ReactElement {
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('transfer.collection.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('transfer.collection.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -241,7 +241,7 @@ export function TransferCollectionPage(): ReactElement {
           }
         );
       } catch (err) {
-        toast.error(t('transfer.collection.cameraError', 'Kamera açılamadı'));
+        toast.error(t('transfer.collection.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -299,11 +299,11 @@ export function TransferCollectionPage(): ReactElement {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/transfer/assigned')}>
             <ArrowLeft className="size-4 mr-2" />
-            {t('common.back', 'Geri')}
+            {t('common.back')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate(`/transfer/collected/${headerId}`)}>
             <List className="size-4 mr-2" />
-            {t('transfer.collection.viewCollected', 'Toplananlar')} ({totalCollectedCount})
+            {t('transfer.collection.viewCollected')} ({totalCollectedCount})
           </Button>
         </div>
 
@@ -322,7 +322,7 @@ export function TransferCollectionPage(): ReactElement {
                   <Camera className="size-4 text-muted-foreground" />
                 </Button>
                 <Input
-                  placeholder={t('transfer.collection.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                  placeholder={t('transfer.collection.barcodePlaceholder')}
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -333,7 +333,7 @@ export function TransferCollectionPage(): ReactElement {
                 {isSearching ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  t('common.search', 'Ara')
+                  t('common.search')
                 )}
               </Button>
             </div>
@@ -360,7 +360,7 @@ export function TransferCollectionPage(): ReactElement {
                       value={quantity}
                       onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                       className="h-9"
-                      placeholder={t('transfer.collection.quantity', 'Miktar')}
+                      placeholder={t('transfer.collection.quantity')}
                     />
                   </div>
                   <Button
@@ -371,7 +371,7 @@ export function TransferCollectionPage(): ReactElement {
                     {addBarcodeMutation.isPending ? (
                       <Loader2 className="size-4 animate-spin mr-1" />
                     ) : null}
-                    {t('transfer.collection.collect', 'Topla')}
+                    {t('transfer.collection.collect')}
                   </Button>
                 </div>
               </div>
@@ -397,7 +397,7 @@ export function TransferCollectionPage(): ReactElement {
                     <p className="text-xs font-medium line-clamp-2 mt-1">{line.stockName}</p>
                     {line.yapKod && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {t('transfer.collection.yapKod', 'Yapı')}: {line.yapKod}
+                        {t('transfer.collection.yapKod')}: {line.yapKod}
                       </p>
                     )}
                   </div>
@@ -409,7 +409,7 @@ export function TransferCollectionPage(): ReactElement {
                 <div className="grid grid-cols-1 gap-1.5 mb-1.5 sm:grid-cols-3">
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('transfer.collection.total', 'Toplam')}
+                      {t('transfer.collection.total')}
                     </p>
                     <p className="text-sm font-bold leading-none">
                       {line.quantity}
@@ -417,7 +417,7 @@ export function TransferCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('transfer.collection.collected', 'Toplanan')}
+                      {t('transfer.collection.collected')}
                     </p>
                     <p className="text-sm font-bold text-emerald-600 leading-none">
                       {line.collectedQuantity}
@@ -425,7 +425,7 @@ export function TransferCollectionPage(): ReactElement {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('transfer.collection.remaining', 'Kalan')}
+                      {t('transfer.collection.remaining')}
                     </p>
                     <p className={`text-sm font-bold leading-none ${line.remainingQuantity === 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
                       {line.remainingQuantity}
@@ -445,7 +445,7 @@ export function TransferCollectionPage(): ReactElement {
         ) : (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">
-              {t('transfer.collection.noOrderLines', 'Transfer emri kalemleri bulunamadı')}
+              {t('transfer.collection.noOrderLines')}
             </p>
           </div>
         )}
@@ -463,7 +463,7 @@ export function TransferCollectionPage(): ReactElement {
           ) : (
             <Check className="size-4 mr-2" />
           )}
-          {t('transfer.collection.complete', 'Tamamla')}
+          {t('transfer.collection.complete')}
         </Button>
       </div>
 
@@ -474,9 +474,9 @@ export function TransferCollectionPage(): ReactElement {
       }}>
         <DialogContent className="max-w-[95vw] w-full p-0 gap-0" showCloseButton={true}>
           <DialogHeader className="p-4 pb-2">
-            <DialogTitle>{t('transfer.collection.scanBarcode', 'Barkod Okut')}</DialogTitle>
+            <DialogTitle>{t('transfer.collection.scanBarcode')}</DialogTitle>
             <DialogDescription>
-              {t('transfer.collection.scanBarcodeDescription', 'Barkodu kameraya hizalayın')}
+              {t('transfer.collection.scanBarcodeDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="relative w-full" style={{ minHeight: '300px' }}>

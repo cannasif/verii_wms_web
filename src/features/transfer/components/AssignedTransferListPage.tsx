@@ -25,16 +25,16 @@ export function AssignedTransferListPage(): ReactElement {
 
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('transfer.list.id', 'ID') },
-      { key: 'documentNo', label: t('transfer.list.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('transfer.list.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('transfer.list.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('transfer.list.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse', 'Çıkış Deposu') },
-      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse', 'Varış Deposu') },
-      { key: 'documentType', label: t('transfer.list.documentType', 'Belge Tipi') },
-      { key: 'createdDate', label: t('transfer.list.createdDate', 'Oluşturulma Tarihi') },
-      { key: 'actions', label: t('goodsReceipt.report.actions', 'İşlemler') },
+      { key: 'id', label: t('transfer.list.id') },
+      { key: 'documentNo', label: t('transfer.list.documentNo') },
+      { key: 'documentDate', label: t('transfer.list.documentDate') },
+      { key: 'customerCode', label: t('transfer.list.customerCode') },
+      { key: 'customerName', label: t('transfer.list.customerName') },
+      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse') },
+      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse') },
+      { key: 'documentType', label: t('transfer.list.documentType') },
+      { key: 'createdDate', label: t('transfer.list.createdDate') },
+      { key: 'actions', label: t('goodsReceipt.report.actions') },
     ],
     [t]
   );
@@ -54,7 +54,7 @@ export function AssignedTransferListPage(): ReactElement {
   const { data, isLoading, error } = useAssignedTransferHeaders();
 
   useEffect(() => {
-    setPageTitle(t('transfer.assignedList.title', 'Atanmış Transfer Emirleri'));
+    setPageTitle(t('transfer.assignedList.title'));
     return () => {
       setPageTitle(null);
     };
@@ -134,7 +134,7 @@ export function AssignedTransferListPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('transfer.assignedList.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('transfer.assignedList.error')}
         </p>
       </div>
     );
@@ -145,7 +145,7 @@ export function AssignedTransferListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('transfer.assignedList.title', 'Atanmış Transfer Emirleri')}</CardTitle>
+            <CardTitle>{t('transfer.assignedList.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <GridExportMenu
                 fileName="transfer-assigned-list"
@@ -166,8 +166,7 @@ export function AssignedTransferListPage(): ReactElement {
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
                   placeholder={t(
-                    'transfer.assignedList.searchPlaceholder',
-                    'Belge No, Cari Kodu, Depo...'
+                    'transfer.assignedList.searchPlaceholder'
                   )}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -190,16 +189,16 @@ export function AssignedTransferListPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id', 'ID')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse', 'Varış Deposu')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType', 'Belge Tipi')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse')}</TableHead>;
+                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType')}</TableHead>;
+                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -222,7 +221,7 @@ export function AssignedTransferListPage(): ReactElement {
                         if (key === 'targetWarehouse') return <TableCell key={key}>{item.targetWarehouse || '-'}</TableCell>;
                         if (key === 'documentType') return <TableCell key={key}><Badge variant="outline">{item.documentType || '-'}</Badge></TableCell>;
                         if (key === 'createdDate') return <TableCell key={key}>{formatDateTime(item.createdDate)}</TableCell>;
-                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}><Eye className="size-4" /><span className="ml-2">{t('transfer.list.viewDetails', 'Detay')}</span></Button><Button variant="default" size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => navigate(`/transfer/collection/${item.id}`)}>{t('common.start', 'Başla')}</Button></div></TableCell>;
+                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}><Eye className="size-4" /><span className="ml-2">{t('transfer.list.viewDetails')}</span></Button><Button variant="default" size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => navigate(`/transfer/collection/${item.id}`)}>{t('common.start')}</Button></div></TableCell>;
                         return null;
                       })}
                     </TableRow>
@@ -231,7 +230,7 @@ export function AssignedTransferListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('transfer.assignedList.noData', 'Atanmış transfer emri bulunamadı')}
+                        {t('transfer.assignedList.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -247,7 +246,7 @@ export function AssignedTransferListPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.id', 'ID')}
+                          {t('transfer.list.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -255,37 +254,37 @@ export function AssignedTransferListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentNo', 'Belge No')}
+                          {t('transfer.list.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentDate', 'Belge Tarihi')}
+                          {t('transfer.list.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerCode', 'Cari Kodu')}
+                          {t('transfer.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerName', 'Cari Adı')}
+                          {t('transfer.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('transfer.list.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.targetWarehouse', 'Varış Deposu')}
+                          {t('transfer.list.targetWarehouse')}
                         </p>
                         <p className="text-base">{item.targetWarehouse || '-'}</p>
                       </div>
@@ -298,7 +297,7 @@ export function AssignedTransferListPage(): ReactElement {
                         onClick={() => setSelectedHeaderId(item.id)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('transfer.list.viewDetails', 'Detay')}
+                        {t('transfer.list.viewDetails')}
                       </Button>
                       <Button
                         variant="default"
@@ -306,7 +305,7 @@ export function AssignedTransferListPage(): ReactElement {
                         className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
                         onClick={() => navigate(`/transfer/collection/${item.id}`)}
                       >
-                        {t('common.start', 'Başla')}
+                        {t('common.start')}
                       </Button>
                     </div>
                   </CardContent>
@@ -315,7 +314,7 @@ export function AssignedTransferListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('transfer.assignedList.noData', 'Atanmış transfer emri bulunamadı')}
+                  {t('transfer.assignedList.noData')}
                 </p>
               </div>
             )}

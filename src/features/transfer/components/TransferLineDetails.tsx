@@ -20,13 +20,13 @@ export function TransferLineDetails({ line }: TransferLineDetailsProps): ReactEl
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('transfer.list.stockCode', 'Stok Kodu')}
+                {t('transfer.list.stockCode')}
               </p>
               <p className="text-base font-semibold">{line.stockCode}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('transfer.list.quantity', 'Miktar')}
+                {t('transfer.list.quantity')}
               </p>
               <p className="text-base">
                 {line.quantity} {line.unit}
@@ -35,7 +35,7 @@ export function TransferLineDetails({ line }: TransferLineDetailsProps): ReactEl
             {line.yapKod && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  {t('transfer.details.configCode', 'Yapılandırma Kodu')}
+                  {t('transfer.details.configCode')}
                 </p>
                 <p className="text-base">{line.yapKod}</p>
               </div>
@@ -43,7 +43,7 @@ export function TransferLineDetails({ line }: TransferLineDetailsProps): ReactEl
             {line.description && (
               <div className="md:col-span-2">
                 <p className="text-sm font-medium text-muted-foreground">
-                  {t('goodsReceipt.report.description', 'Açıklama')}
+                  {t('goodsReceipt.report.description')}
                 </p>
                 <p className="text-base">{line.description}</p>
               </div>
@@ -60,19 +60,19 @@ export function TransferLineDetails({ line }: TransferLineDetailsProps): ReactEl
         <Card>
           <CardContent className="pt-6">
             <h4 className="text-sm font-semibold mb-4">
-              {t('transfer.list.lineDetails', 'Kalem Detayları')}
+              {t('transfer.list.lineDetails')}
             </h4>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('transfer.list.quantity', 'Miktar')}</TableHead>
-                    <TableHead>{t('transfer.list.serialNo', 'Seri No')}</TableHead>
-                    <TableHead>{t('transfer.list.serialNo2', 'Seri No 2')}</TableHead>
-                    <TableHead>{t('transfer.details.lotNo', 'Parti No')}</TableHead>
-                    <TableHead>{t('transfer.details.batchNo', 'Batch No')}</TableHead>
-                    <TableHead>{t('transfer.list.sourceCellCode', 'Çıkış Hücre')}</TableHead>
-                    <TableHead>{t('transfer.list.targetCellCode', 'Varış Hücre')}</TableHead>
+                    <TableHead>{t('transfer.list.quantity')}</TableHead>
+                    <TableHead>{t('transfer.list.serialNo')}</TableHead>
+                    <TableHead>{t('transfer.list.serialNo2')}</TableHead>
+                    <TableHead>{t('transfer.details.lotNo')}</TableHead>
+                    <TableHead>{t('transfer.details.batchNo')}</TableHead>
+                    <TableHead>{t('transfer.list.sourceCellCode')}</TableHead>
+                    <TableHead>{t('transfer.list.targetCellCode')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
