@@ -93,8 +93,7 @@ export function UserFormPermissionGroupSelect({
       {!isAdminRole && items.some((item) => item.isSystemAdmin) && (
         <p className="text-xs text-amber-600 dark:text-amber-400">
           {t(
-            'userManagement.form.systemAdminRequiresAdminRole',
-            'System Admin izin grubu sadece Admin rolü seçildiğinde aktif olur.'
+            'userManagement.form.systemAdminRequiresAdminRole'
           )}
         </p>
       )}
