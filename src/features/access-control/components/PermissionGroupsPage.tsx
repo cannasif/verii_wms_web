@@ -31,12 +31,16 @@ import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 
 export function PermissionGroupsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
   const { setPageTitle } = useUIStore();
+  const pageKey = 'access-control-permission-groups';
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PermissionGroupDto | null>(null);
@@ -45,6 +49,24 @@ export function PermissionGroupsPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 20;
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'name', label: t('permissionGroups.table.name') },
+      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin') },
+      { key: 'isActive', label: t('permissionGroups.table.isActive') },
+      { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
+      { key: 'actions', label: t('common.actions') },
+    ],
+    [t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({ pageKey, columns });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
   const mainScrollTopRef = useRef(0);
@@ -73,6 +95,26 @@ export function PermissionGroupsPage(): ReactElement {
         (item.description && item.description.toLowerCase().includes(lower))
     );
   }, [items, searchTerm]);
+
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    return filteredItems.map((item) => ({
+      name: item.name,
+      isSystemAdmin: item.isSystemAdmin ? t('common.yes') : t('common.no'),
+      isActive: item.isActive ? t('common.yes') : t('common.no'),
+      permissionCount: item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0,
+    }));
+  }, [filteredItems, t]);
 
   useEffect(() => {
     setPageTitle(t('permissionGroups.title'));
@@ -185,9 +227,25 @@ export function PermissionGroupsPage(): ReactElement {
             </button>
           )}
         </div>
-        <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <GridExportMenu
+            fileName={pageKey}
+            columns={exportColumns}
+            rows={exportRows}
+          />
+          <ColumnPreferencesPopover
+            pageKey={pageKey}
+            userId={userId}
+            columns={columns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+          />
+          <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isLoading}>
+            <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/3">
@@ -204,58 +262,78 @@ export function PermissionGroupsPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('permissionGroups.table.name')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isSystemAdmin')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.isActive')}</TableHead>
-                  <TableHead>{t('permissionGroups.table.permissionCount')}</TableHead>
-                  <TableHead className="text-right">{t('common.actions')}</TableHead>
+                  {orderedVisibleColumns.map((key) => {
+                    if (key === 'actions') return <TableHead key={key} className="text-right">{t('common.actions')}</TableHead>;
+                    if (key === 'name') return <TableHead key={key}>{t('permissionGroups.table.name')}</TableHead>;
+                    if (key === 'isSystemAdmin') return <TableHead key={key}>{t('permissionGroups.table.isSystemAdmin')}</TableHead>;
+                    if (key === 'isActive') return <TableHead key={key}>{t('permissionGroups.table.isActive')}</TableHead>;
+                    if (key === 'permissionCount') return <TableHead key={key}>{t('permissionGroups.table.permissionCount')}</TableHead>;
+                    return null;
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredItems.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={item.isSystemAdmin ? 'default' : 'secondary'}>
-                        {item.isSystemAdmin ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                        {item.isActive ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{(item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handlePermissionsClick(item)}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
-                        disabled={item.isSystemAdmin}
-                      >
-                        <Settings size={16} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditClick(item)}
-                        disabled={item.isSystemAdmin}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
-                      >
-                        {t('common.edit')}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600"
-                        onClick={() => handleDeleteClick(item)}
-                        disabled={item.isSystemAdmin}
-                        title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
-                      >
-                        {t('common.delete')}
-                      </Button>
-                    </TableCell>
+                    {orderedVisibleColumns.map((key) => {
+                      if (key === 'name') return <TableCell key={key} className="font-medium">{item.name}</TableCell>;
+                      if (key === 'isSystemAdmin') {
+                        return (
+                          <TableCell key={key}>
+                            <Badge variant={item.isSystemAdmin ? 'default' : 'secondary'}>
+                              {item.isSystemAdmin ? t('common.yes') : t('common.no')}
+                            </Badge>
+                          </TableCell>
+                        );
+                      }
+                      if (key === 'isActive') {
+                        return (
+                          <TableCell key={key}>
+                            <Badge variant={item.isActive ? 'default' : 'secondary'}>
+                              {item.isActive ? t('common.yes') : t('common.no')}
+                            </Badge>
+                          </TableCell>
+                        );
+                      }
+                      if (key === 'permissionCount') {
+                        return <TableCell key={key}>{(item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0)}</TableCell>;
+                      }
+                      if (key === 'actions') {
+                        return (
+                          <TableCell key={key} className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handlePermissionsClick(item)}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
+                              disabled={item.isSystemAdmin}
+                            >
+                              <Settings size={16} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditClick(item)}
+                              disabled={item.isSystemAdmin}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                            >
+                              {t('common.edit')}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600"
+                              onClick={() => handleDeleteClick(item)}
+                              disabled={item.isSystemAdmin}
+                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+                            >
+                              {t('common.delete')}
+                            </Button>
+                          </TableCell>
+                        );
+                      }
+                      return null;
+                    })}
                   </TableRow>
                 ))}
               </TableBody>

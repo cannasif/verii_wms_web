@@ -33,18 +33,41 @@ import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
 import { getPermissionDisplayMeta, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import type { GridExportColumn } from '@/lib/grid-export';
+
 const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 
 
 export function PermissionDefinitionsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
   const { setPageTitle } = useUIStore();
+  const pageKey = 'access-control-permission-definitions';
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PermissionDefinitionDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 20;
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'code', label: t('permissionDefinitions.table.code') },
+      { key: 'name', label: t('permissionDefinitions.table.name') },
+      { key: 'isActive', label: t('permissionDefinitions.table.isActive') },
+      { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
+      { key: 'actions', label: t('common.actions') },
+    ],
+    [t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({ pageKey, columns });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionDefinitionDto | null>(null);
 
@@ -86,6 +109,30 @@ export function PermissionDefinitionsPage(): ReactElement {
       );
     });
   }, [items, searchTerm, t]);
+
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    return filteredItems.map((item) => {
+      const meta = getPermissionDisplayMeta(item.code);
+      const displayName = meta ? t(meta.key, meta.fallback) : item.name;
+      return {
+        code: item.code,
+        name: displayName,
+        isActive: item.isActive ? t('common.yes') : t('common.no'),
+        updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
+      };
+    });
+  }, [filteredItems, t]);
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['permissions', 'definitions'] });
@@ -158,7 +205,7 @@ export function PermissionDefinitionsPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] flex flex-col md:flex-row items-center justify-between gap-5">
+      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 flex flex-col md:flex-row items-center justify-between gap-5">
         <div className="relative group w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
@@ -177,6 +224,20 @@ export function PermissionDefinitionsPage(): ReactElement {
           )}
         </div>
         <div className="flex items-center gap-2">
+        <GridExportMenu
+          fileName={pageKey}
+          columns={exportColumns}
+          rows={exportRows}
+        />
+        <ColumnPreferencesPopover
+          pageKey={pageKey}
+          userId={userId}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          columnOrder={columnOrder}
+          onVisibleColumnsChange={setVisibleColumns}
+          onColumnOrderChange={setColumnOrder}
+        />
         <Button
           variant="outline"
           onClick={handleSyncFromRoutes}
@@ -191,7 +252,7 @@ export function PermissionDefinitionsPage(): ReactElement {
       </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 p-1 shadow-sm dark:border-white/10 dark:bg-white/3">
         {isLoading ? (
           <div className="flex items-center justify-center py-20 min-h-[300px]">
             <div className="animate-pulse text-slate-500">{t('common.loading')}</div>
@@ -205,55 +266,77 @@ export function PermissionDefinitionsPage(): ReactElement {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('permissionDefinitions.table.code')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.name')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.isActive')}</TableHead>
-                  <TableHead>{t('permissionDefinitions.table.updatedDate')}</TableHead>
-                  <TableHead className="text-right">{t('common.actions')}</TableHead>
+                  {orderedVisibleColumns.map((key) => {
+                    if (key === 'actions') return <TableHead key={key} className="text-right">{t('common.actions')}</TableHead>;
+                    if (key === 'code') return <TableHead key={key}>{t('permissionDefinitions.table.code')}</TableHead>;
+                    if (key === 'name') return <TableHead key={key}>{t('permissionDefinitions.table.name')}</TableHead>;
+                    if (key === 'isActive') return <TableHead key={key}>{t('permissionDefinitions.table.isActive')}</TableHead>;
+                    if (key === 'updatedDate') return <TableHead key={key}>{t('permissionDefinitions.table.updatedDate')}</TableHead>;
+                    return null;
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredItems.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-mono text-sm">{item.code}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span>
-                          {(() => {
-                            const meta = getPermissionDisplayMeta(item.code);
-                            return meta ? t(meta.key, meta.fallback) : item.name;
-                          })()}
-                        </span>
-                        {(() => {
-                          const meta = getPermissionDisplayMeta(item.code);
-                          const displayName = meta ? t(meta.key, meta.fallback) : item.name;
-                          const storedName = item.name;
-                          if (!meta) return null;
-                          if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
-                          return (
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                              {storedName}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                        {item.isActive ? t('common.yes') : t('common.no')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-500 text-sm">
-                      {item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
-                        {t('common.edit')}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
-                        {t('common.delete')}
-                      </Button>
-                    </TableCell>
+                    {orderedVisibleColumns.map((key) => {
+                      if (key === 'code') return <TableCell key={key} className="font-mono text-sm">{item.code}</TableCell>;
+                      if (key === 'name') {
+                        return (
+                          <TableCell key={key}>
+                            <div className="flex flex-col">
+                              <span>
+                                {(() => {
+                                  const meta = getPermissionDisplayMeta(item.code);
+                                  return meta ? t(meta.key, meta.fallback) : item.name;
+                                })()}
+                              </span>
+                              {(() => {
+                                const meta = getPermissionDisplayMeta(item.code);
+                                const displayName = meta ? t(meta.key, meta.fallback) : item.name;
+                                const storedName = item.name;
+                                if (!meta) return null;
+                                if (storedName.trim().toLowerCase() === displayName.trim().toLowerCase()) return null;
+                                return (
+                                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                                    {storedName}
+                                  </span>
+                                );
+                              })()}
+                            </div>
+                          </TableCell>
+                        );
+                      }
+                      if (key === 'isActive') {
+                        return (
+                          <TableCell key={key}>
+                            <Badge variant={item.isActive ? 'default' : 'secondary'}>
+                              {item.isActive ? t('common.yes') : t('common.no')}
+                            </Badge>
+                          </TableCell>
+                        );
+                      }
+                      if (key === 'updatedDate') {
+                        return (
+                          <TableCell key={key} className="text-slate-500 text-sm">
+                            {item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-'}
+                          </TableCell>
+                        );
+                      }
+                      if (key === 'actions') {
+                        return (
+                          <TableCell key={key} className="text-right">
+                            <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
+                              {t('common.edit')}
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
+                              {t('common.delete')}
+                            </Button>
+                          </TableCell>
+                        );
+                      }
+                      return null;
+                    })}
                   </TableRow>
                 ))}
               </TableBody>
