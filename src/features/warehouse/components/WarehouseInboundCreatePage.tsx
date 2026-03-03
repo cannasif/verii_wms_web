@@ -29,7 +29,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('warehouse.inbound.create.title', 'Yeni Ambar Giriş Emri'));
+    setPageTitle(t('warehouse.inbound.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -59,12 +59,12 @@ export function WarehouseInboundCreatePage(): ReactElement {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse-inbound-orders'] });
       queryClient.invalidateQueries({ queryKey: ['warehouse-inbound-order-items'] });
-      toast.success(t('warehouse.inbound.create.success', 'Ambar giriş emri başarıyla oluşturuldu'));
+      toast.success(t('warehouse.inbound.create.success'));
       navigate('/warehouse/inbound/list');
     },
     onError: (error: Error) => {
       toast.error(
-        error.message || t('warehouse.inbound.create.error', 'Ambar giriş emri oluşturulurken bir hata oluştu')
+        error.message || t('warehouse.inbound.create.error')
       );
     },
   });
@@ -127,9 +127,9 @@ export function WarehouseInboundCreatePage(): ReactElement {
   };
 
   const steps = [
-    { label: t('warehouse.create.steps.basicInfo', 'Temel Bilgiler') },
+    { label: t('warehouse.create.steps.basicInfo') },
     {
-      label: t('warehouse.create.steps.orderSelection', 'Sipariş Seçimi'),
+      label: t('warehouse.create.steps.orderSelection'),
     },
   ];
 
@@ -148,7 +148,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
           />
         );
       default:
-        return <div>{t('warehouse.create.unknownStep', 'Bilinmeyen adım')}</div>;
+        return <div>{t('warehouse.create.unknownStep')}</div>;
     }
   };
 
@@ -175,12 +175,12 @@ export function WarehouseInboundCreatePage(): ReactElement {
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
                 >
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <div className="flex gap-2">
                   {currentStep < steps.length ? (
                     <Button type="button" onClick={handleNext}>
-                      {t('common.next', 'Sonraki')}
+                      {t('common.next')}
                     </Button>
                   ) : (
                     <Button
@@ -188,7 +188,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
                       onClick={handleSave}
                       disabled={createMutation.isPending || selectedItems.length === 0}
                     >
-                      {createMutation.isPending ? t('common.saving', 'Kaydediliyor...') : t('common.save', 'Kaydet')}
+                      {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </div>

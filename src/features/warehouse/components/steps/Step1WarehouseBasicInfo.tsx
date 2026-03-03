@@ -41,14 +41,14 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="operationType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.operationType', 'İşlem Tipi')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.operationType')}</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(value)}
                 value={field.value || undefined}
               >
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('warehouse.step1.selectOperationType', 'İşlem tipi seçiniz')} />
+                    <SelectValue placeholder={t('warehouse.step1.selectOperationType')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -70,7 +70,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
             name="targetWarehouse"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('warehouse.step1.entryWarehouse', 'Giriş Deposu')}</FormLabel>
+                <FormLabel>{t('warehouse.step1.entryWarehouse')}</FormLabel>
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
@@ -78,9 +78,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                     options={warehouses || []}
                     getOptionValue={(opt) => String(opt.depoKodu)}
                     getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                    placeholder={t('warehouse.step1.selectEntryWarehouse', 'Giriş deposu seçiniz')}
-                    searchPlaceholder={t('common.search', 'Ara...')}
-                    emptyText={t('common.notFound', 'Bulunamadı')}
+                    placeholder={t('warehouse.step1.selectEntryWarehouse')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
                     isLoading={isLoadingWarehouses}
                     itemLimit={100}
                   />
@@ -95,7 +95,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
             name="sourceWarehouse"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('warehouse.step1.sourceWarehouse', 'Çıkış Deposu')}</FormLabel>
+                <FormLabel>{t('warehouse.step1.sourceWarehouse')}</FormLabel>
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
@@ -103,9 +103,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                     options={warehouses || []}
                     getOptionValue={(opt) => String(opt.depoKodu)}
                     getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                    placeholder={t('warehouse.step1.selectSourceWarehouse', 'Çıkış deposu seçiniz')}
-                    searchPlaceholder={t('common.search', 'Ara...')}
-                    emptyText={t('common.notFound', 'Bulunamadı')}
+                    placeholder={t('warehouse.step1.selectSourceWarehouse')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
                     isLoading={isLoadingWarehouses}
                     itemLimit={100}
                   />
@@ -123,7 +123,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.transferDate', 'Transfer Tarihi')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.transferDate')}</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -137,9 +137,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.documentNo', 'Belge No')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.documentNo')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('warehouse.step1.documentNoPlaceholder', 'Belge No giriniz')} {...field} />
+                <Input placeholder={t('warehouse.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -153,7 +153,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.customer', 'Cari')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.customer')}</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -161,9 +161,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                   options={customers || []}
                   getOptionValue={(opt) => opt.cariKod}
                   getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
-                  placeholder={t('warehouse.step1.selectCustomer', 'Cari seçiniz')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('common.notFound', 'Bulunamadı')}
+                  placeholder={t('warehouse.step1.selectCustomer')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
                   isLoading={isLoadingCustomers}
                   itemLimit={100}
                 />
@@ -178,7 +178,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="projectCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.projectCode', 'Proje Kodu')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.projectCode')}</FormLabel>
               <FormControl>
                 <SearchableSelect<Project>
                   value={field.value || ''}
@@ -188,9 +188,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                   options={projects || []}
                   getOptionValue={(opt) => opt.projeKod}
                   getOptionLabel={(opt) => `${opt.projeAciklama} (${opt.projeKod})`}
-                  placeholder={t('warehouse.step1.selectProjectCode', 'Proje kodu seçiniz')}
-                  searchPlaceholder={t('common.search', 'Ara...')}
-                  emptyText={t('warehouse.step1.noProject', 'Proje yok')}
+                  placeholder={t('warehouse.step1.selectProjectCode')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('warehouse.step1.noProject')}
                   isLoading={isLoadingProjects}
                   itemLimit={100}
                 />
@@ -206,7 +206,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
         name="userIds"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('warehouse.step1.operationUsers', 'İşlem Yapacak Kullanıcılar')}</FormLabel>
+            <FormLabel>{t('warehouse.step1.operationUsers')}</FormLabel>
             <FormControl>
               <SearchableMultiSelect<UserDto>
                 value={field.value || []}
@@ -217,7 +217,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                   const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
                   return opt.email ? `${name} (${opt.email})` : name;
                 }}
-                placeholder={t('warehouse.step1.selectOperationUsers', 'İşlem yapacak kullanıcıları seçiniz')}
+                placeholder={t('warehouse.step1.selectOperationUsers')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('common.notFound')}
                 isLoading={isLoadingUsers}
@@ -234,9 +234,9 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('warehouse.step1.notes', 'Notlar')}</FormLabel>
+            <FormLabel>{t('warehouse.step1.notes')}</FormLabel>
             <FormControl>
-              <Textarea placeholder={t('warehouse.step1.notesPlaceholder', 'Notlarınızı giriniz')} {...field} />
+              <Textarea placeholder={t('warehouse.step1.notesPlaceholder')} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

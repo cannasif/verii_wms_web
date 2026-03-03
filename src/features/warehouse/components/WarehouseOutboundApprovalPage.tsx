@@ -40,14 +40,14 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('warehouse.outbound.approval.id', 'ID') },
-      { key: 'documentNo', label: t('warehouse.outbound.approval.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('warehouse.outbound.approval.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('warehouse.outbound.approval.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('warehouse.outbound.approval.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('warehouse.outbound.approval.sourceWarehouse', 'Depo') },
-      { key: 'completionDate', label: t('warehouse.outbound.approval.completionDate', 'Tamamlanma Tarihi') },
-      { key: 'actions', label: t('warehouse.outbound.approval.actions', 'İşlemler') },
+      { key: 'id', label: t('warehouse.outbound.approval.id') },
+      { key: 'documentNo', label: t('warehouse.outbound.approval.documentNo') },
+      { key: 'documentDate', label: t('warehouse.outbound.approval.documentDate') },
+      { key: 'customerCode', label: t('warehouse.outbound.approval.customerCode') },
+      { key: 'customerName', label: t('warehouse.outbound.approval.customerName') },
+      { key: 'sourceWarehouse', label: t('warehouse.outbound.approval.sourceWarehouse') },
+      { key: 'completionDate', label: t('warehouse.outbound.approval.completionDate') },
+      { key: 'actions', label: t('warehouse.outbound.approval.actions') },
     ],
     [t]
   );
@@ -108,7 +108,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const approveMutation = useApproveWoHeader();
 
   useEffect(() => {
-    setPageTitle(t('warehouse.outbound.approval.title', 'Onay Bekleyen Ambar Çıkış Emirleri'));
+    setPageTitle(t('warehouse.outbound.approval.title'));
     return () => {
       setPageTitle(null);
     };
@@ -137,12 +137,12 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const handleApprove = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: true });
-      toast.success(t('warehouse.outbound.approval.approveSuccess', 'Emir başarıyla onaylandı'));
+      toast.success(t('warehouse.outbound.approval.approveSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('warehouse.outbound.approval.approveError', 'Onay işlemi sırasında bir hata oluştu')
+          : t('warehouse.outbound.approval.approveError')
       );
     }
   };
@@ -150,12 +150,12 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const handleReject = async (id: number): Promise<void> => {
     try {
       await approveMutation.mutateAsync({ id, approved: false });
-      toast.success(t('warehouse.outbound.approval.rejectSuccess', 'Emir başarıyla reddedildi'));
+      toast.success(t('warehouse.outbound.approval.rejectSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('warehouse.outbound.approval.rejectError', 'Red işlemi sırasında bir hata oluştu')
+          : t('warehouse.outbound.approval.rejectError')
       );
     }
   };
@@ -208,7 +208,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-destructive">
-          {t('warehouse.outbound.approval.error', 'Veri yüklenirken bir hata oluştu')}
+          {t('warehouse.outbound.approval.error')}
         </p>
       </div>
     );
@@ -219,7 +219,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('warehouse.outbound.approval.title', 'Onay Bekleyen Ambar Çıkış Emirleri')}</CardTitle>
+            <CardTitle>{t('warehouse.outbound.approval.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -229,7 +229,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                     className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -265,7 +265,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('warehouse.outbound.approval.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('warehouse.outbound.approval.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -290,14 +290,14 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('warehouse.outbound.approval.id', 'ID')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.outbound.approval.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.outbound.approval.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.outbound.approval.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.outbound.approval.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('warehouse.outbound.approval.sourceWarehouse', 'Depo')}</TableHead>;
-                    if (key === 'completionDate') return <TableHead key={key}>{t('warehouse.outbound.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.outbound.approval.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key}>{t('warehouse.outbound.approval.id')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.outbound.approval.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.outbound.approval.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.outbound.approval.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.outbound.approval.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('warehouse.outbound.approval.sourceWarehouse')}</TableHead>;
+                    if (key === 'completionDate') return <TableHead key={key}>{t('warehouse.outbound.approval.completionDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.outbound.approval.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -327,7 +327,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                                   }}
                                 >
                                   <Eye className="size-4" />
-                                  <span className="ml-2">{t('warehouse.outbound.approval.viewDetails', 'Detay')}</span>
+                                  <span className="ml-2">{t('warehouse.outbound.approval.viewDetails')}</span>
                                 </Button>
                                 <Button
                                   variant="default"
@@ -336,7 +336,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <Check className="size-4" />
-                                  <span className="ml-2">{t('warehouse.outbound.approval.approve', 'Onayla')}</span>
+                                  <span className="ml-2">{t('warehouse.outbound.approval.approve')}</span>
                                 </Button>
                                 <Button
                                   variant="destructive"
@@ -345,7 +345,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                                   disabled={approveMutation.isPending}
                                 >
                                   <X className="size-4" />
-                                  <span className="ml-2">{t('warehouse.outbound.approval.reject', 'Reddet')}</span>
+                                  <span className="ml-2">{t('warehouse.outbound.approval.reject')}</span>
                                 </Button>
                               </div>
                             </TableCell>
@@ -359,7 +359,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('warehouse.outbound.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                        {t('warehouse.outbound.approval.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -371,7 +371,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
                     total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -379,7 +379,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -400,7 +400,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -412,10 +412,10 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -423,7 +423,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>
@@ -437,7 +437,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.id', 'ID')}
+                          {t('warehouse.outbound.approval.id')}
                         </p>
                         <p className="text-base font-semibold">{item.id}</p>
                       </div>
@@ -445,37 +445,37 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.documentNo', 'Belge No')}
+                          {t('warehouse.outbound.approval.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.documentDate', 'Belge Tarihi')}
+                          {t('warehouse.outbound.approval.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.customerCode', 'Cari Kodu')}
+                          {t('warehouse.outbound.approval.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.customerName', 'Cari Adı')}
+                          {t('warehouse.outbound.approval.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.sourceWarehouse', 'Depo')}
+                          {t('warehouse.outbound.approval.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.approval.completionDate', 'Tamamlanma Tarihi')}
+                          {t('warehouse.outbound.approval.completionDate')}
                         </p>
                         <p className="text-base">{formatDateTime(item.completionDate)}</p>
                       </div>
@@ -491,7 +491,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                         }}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('warehouse.outbound.approval.viewDetails', 'Detay')}
+                        {t('warehouse.outbound.approval.viewDetails')}
                       </Button>
                       <div className="flex gap-2">
                         <Button
@@ -502,7 +502,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <Check className="size-4 mr-2" />
-                          {t('warehouse.outbound.approval.approve', 'Onayla')}
+                          {t('warehouse.outbound.approval.approve')}
                         </Button>
                         <Button
                           variant="destructive"
@@ -512,7 +512,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                           disabled={approveMutation.isPending}
                         >
                           <X className="size-4 mr-2" />
-                          {t('warehouse.outbound.approval.reject', 'Reddet')}
+                          {t('warehouse.outbound.approval.reject')}
                         </Button>
                       </div>
                     </div>
@@ -522,7 +522,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('warehouse.outbound.approval.noData', 'Onay bekleyen emir bulunamadı')}
+                  {t('warehouse.outbound.approval.noData')}
                 </p>
               </div>
             )}
@@ -530,7 +530,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
           {data && (
             <div className="flex flex-col items-center justify-between gap-4 pt-4 border-t md:hidden">
               <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                {t('common.paginationInfo', {
                   current: data.pageNumber * data.pageSize + 1,
                   total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                   totalCount: data.totalCount,
@@ -544,10 +544,10 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                   disabled={!data.hasPreviousPage}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -555,7 +555,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={!data.hasNextPage}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

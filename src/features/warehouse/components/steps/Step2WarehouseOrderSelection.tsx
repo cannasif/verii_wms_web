@@ -57,9 +57,9 @@ export function Step2WarehouseOrderSelection({
               <span className="text-2xl font-semibold">1</span>
             </div>
             <div className="space-y-2">
-              <CardTitle>{t('warehouse.step2.selectCustomerFirst', 'Önce Cari Seçiniz')}</CardTitle>
+              <CardTitle>{t('warehouse.step2.selectCustomerFirst')}</CardTitle>
               <CardDescription>
-                {t('warehouse.step2.customerPrompt', 'Siparişleri görüntülemek için lütfen önceki adımdan bir cari seçin.')}
+                {t('warehouse.step2.customerPrompt')}
               </CardDescription>
             </div>
           </div>
@@ -76,10 +76,10 @@ export function Step2WarehouseOrderSelection({
             <div className="px-4 border-b">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="orders" className="w-full">
-                  {t('warehouse.step2.orders', 'Siparişler')}
+                  {t('warehouse.step2.orders')}
                 </TabsTrigger>
                 <TabsTrigger value="items" className="w-full" disabled={!activeSiparisNo}>
-                  {t('warehouse.step2.orderContent', 'Sipariş İçeriği')}
+                  {t('warehouse.step2.orderContent')}
                 </TabsTrigger>
               </TabsList>
             </div>

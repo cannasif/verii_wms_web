@@ -51,15 +51,15 @@ export function WarehouseOutboundListPage(): ReactElement {
   });
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'documentNo', label: t('warehouse.outbound.list.documentNo', 'Belge No') },
-      { key: 'documentDate', label: t('warehouse.outbound.list.documentDate', 'Belge Tarihi') },
-      { key: 'customerCode', label: t('warehouse.outbound.list.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('warehouse.outbound.list.customerName', 'Cari Adı') },
-      { key: 'sourceWarehouse', label: t('warehouse.outbound.list.sourceWarehouse', 'Çıkış Deposu') },
-      { key: 'documentType', label: t('warehouse.outbound.list.documentType', 'Belge Tipi') },
-      { key: 'status', label: t('warehouse.outbound.list.status', 'Durum') },
-      { key: 'createdDate', label: t('warehouse.outbound.list.createdDate', 'Oluşturulma Tarihi') },
-      { key: 'actions', label: t('warehouse.outbound.list.actions', 'İşlemler') },
+      { key: 'documentNo', label: t('warehouse.outbound.list.documentNo') },
+      { key: 'documentDate', label: t('warehouse.outbound.list.documentDate') },
+      { key: 'customerCode', label: t('warehouse.outbound.list.customerCode') },
+      { key: 'customerName', label: t('warehouse.outbound.list.customerName') },
+      { key: 'sourceWarehouse', label: t('warehouse.outbound.list.sourceWarehouse') },
+      { key: 'documentType', label: t('warehouse.outbound.list.documentType') },
+      { key: 'status', label: t('warehouse.outbound.list.status') },
+      { key: 'createdDate', label: t('warehouse.outbound.list.createdDate') },
+      { key: 'actions', label: t('warehouse.outbound.list.actions') },
     ],
     [t]
   );
@@ -93,7 +93,7 @@ export function WarehouseOutboundListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('warehouse.outbound.list.title', 'Ambar Çıkış Emri Listesi'));
+    setPageTitle(t('warehouse.outbound.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -150,9 +150,9 @@ export function WarehouseOutboundListPage(): ReactElement {
   };
 
   const getStatusLabel = (item: WarehouseHeader): string => {
-    if (item.isCompleted) return t('warehouse.outbound.list.completed', 'Tamamlandı');
-    if (item.isPendingApproval) return t('warehouse.outbound.list.pendingApproval', 'Onay Bekliyor');
-    return t('warehouse.outbound.list.inProgress', 'Devam Ediyor');
+    if (item.isCompleted) return t('warehouse.outbound.list.completed');
+    if (item.isPendingApproval) return t('warehouse.outbound.list.pendingApproval');
+    return t('warehouse.outbound.list.inProgress');
   };
 
   const exportColumns = useMemo<GridExportColumn[]>(
@@ -191,7 +191,7 @@ export function WarehouseOutboundListPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('warehouse.outbound.list.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('warehouse.outbound.list.error')}</p>
       </div>
     );
   }
@@ -201,7 +201,7 @@ export function WarehouseOutboundListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('warehouse.outbound.list.title', 'Ambar Çıkış Emri Listesi')}</CardTitle>
+            <CardTitle>{t('warehouse.outbound.list.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -215,7 +215,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                     }`}
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                     {appliedAdvancedFilters.length > 0 && (
                       <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
                         {appliedAdvancedFilters.length}
@@ -256,7 +256,7 @@ export function WarehouseOutboundListPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('warehouse.outbound.list.searchPlaceholder', 'Belge No, Cari Kodu, Depo...')}
+                  placeholder={t('warehouse.outbound.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -281,15 +281,15 @@ export function WarehouseOutboundListPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.outbound.list.documentNo', 'Belge No')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.outbound.list.documentDate', 'Belge Tarihi')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.outbound.list.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.outbound.list.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('warehouse.outbound.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('warehouse.outbound.list.documentType', 'Belge Tipi')}</TableHead>;
-                    if (key === 'status') return <TableHead key={key}>{t('warehouse.outbound.list.status', 'Durum')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('warehouse.outbound.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.outbound.list.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.outbound.list.documentNo')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.outbound.list.documentDate')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.outbound.list.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.outbound.list.customerName')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('warehouse.outbound.list.sourceWarehouse')}</TableHead>;
+                    if (key === 'documentType') return <TableHead key={key}>{t('warehouse.outbound.list.documentType')}</TableHead>;
+                    if (key === 'status') return <TableHead key={key}>{t('warehouse.outbound.list.status')}</TableHead>;
+                    if (key === 'createdDate') return <TableHead key={key}>{t('warehouse.outbound.list.createdDate')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.outbound.list.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -317,15 +317,15 @@ export function WarehouseOutboundListPage(): ReactElement {
                               <div className="flex flex-col gap-1">
                                 {item.isCompleted ? (
                                   <Badge variant="default" className="w-fit">
-                                    {t('warehouse.outbound.list.completed', 'Tamamlandı')}
+                                    {t('warehouse.outbound.list.completed')}
                                   </Badge>
                                 ) : item.isPendingApproval ? (
                                   <Badge variant="secondary" className="w-fit">
-                                    {t('warehouse.outbound.list.pendingApproval', 'Onay Bekliyor')}
+                                    {t('warehouse.outbound.list.pendingApproval')}
                                   </Badge>
                                 ) : (
                                   <Badge variant="outline" className="w-fit">
-                                    {t('warehouse.outbound.list.inProgress', 'Devam Ediyor')}
+                                    {t('warehouse.outbound.list.inProgress')}
                                   </Badge>
                                 )}
                               </div>
@@ -342,7 +342,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                                 onClick={() => handleRowClick(item)}
                               >
                                 <Eye className="size-4" />
-                                <span className="ml-2">{t('warehouse.outbound.list.viewDetails', 'Detay')}</span>
+                                <span className="ml-2">{t('warehouse.outbound.list.viewDetails')}</span>
                               </Button>
                             </TableCell>
                           );
@@ -355,7 +355,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('warehouse.outbound.list.noData', 'Veri bulunamadı')}
+                        {t('warehouse.outbound.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -372,15 +372,15 @@ export function WarehouseOutboundListPage(): ReactElement {
                       <div className="flex flex-col gap-1">
                         {item.isCompleted ? (
                           <Badge variant="default" className="w-fit">
-                            {t('warehouse.outbound.list.completed', 'Tamamlandı')}
+                            {t('warehouse.outbound.list.completed')}
                           </Badge>
                         ) : item.isPendingApproval ? (
                           <Badge variant="secondary" className="w-fit">
-                            {t('warehouse.outbound.list.pendingApproval', 'Onay Bekliyor')}
+                            {t('warehouse.outbound.list.pendingApproval')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="w-fit">
-                            {t('warehouse.outbound.list.inProgress', 'Devam Ediyor')}
+                            {t('warehouse.outbound.list.inProgress')}
                           </Badge>
                         )}
                       </div>
@@ -388,31 +388,31 @@ export function WarehouseOutboundListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.documentNo', 'Belge No')}
+                          {t('warehouse.outbound.list.documentNo')}
                         </p>
                         <p className="text-base">{item.documentNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.documentDate', 'Belge Tarihi')}
+                          {t('warehouse.outbound.list.documentDate')}
                         </p>
                         <p className="text-base">{formatDate(item.documentDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.customerCode', 'Cari Kodu')}
+                          {t('warehouse.outbound.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.customerName', 'Cari Adı')}
+                          {t('warehouse.outbound.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.sourceWarehouse', 'Çıkış Deposu')}
+                          {t('warehouse.outbound.list.sourceWarehouse')}
                         </p>
                         <p className="text-base">{item.sourceWarehouse || '-'}</p>
                       </div>
@@ -425,7 +425,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                         onClick={() => handleRowClick(item)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('warehouse.outbound.list.viewDetails', 'Detay')}
+                        {t('warehouse.outbound.list.viewDetails')}
                       </Button>
                     </div>
                   </CardContent>
@@ -434,7 +434,7 @@ export function WarehouseOutboundListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('warehouse.outbound.list.noData', 'Veri bulunamadı')}
+                  {t('warehouse.outbound.list.noData')}
                 </p>
               </div>
             )}
@@ -443,7 +443,7 @@ export function WarehouseOutboundListPage(): ReactElement {
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
                     total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -451,7 +451,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -472,7 +472,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -484,10 +484,10 @@ export function WarehouseOutboundListPage(): ReactElement {
                   disabled={data.pageNumber <= 0}
                 >
                   <ChevronLeft className="size-4" />
-                  {t('common.previous', 'Önceki')}
+                  {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber + 1} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -495,7 +495,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                   onClick={handleNextPage}
                   disabled={data.pageNumber + 1 >= data.totalPages}
                 >
-                  {t('common.next', 'Sonraki')}
+                  {t('common.next')}
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

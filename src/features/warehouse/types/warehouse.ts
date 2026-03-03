@@ -34,16 +34,16 @@ export const warehouseInboundTypeOptions = [
 ];
 
 export const createWarehouseFormSchema = (t: TFunction, type: 'inbound' | 'outbound') => z.object({
-  operationType: z.string().min(1, t('warehouse.validation.operationTypeRequired', 'İşlem tipi zorunludur')),
-  transferDate: z.string().min(1, t('warehouse.validation.transferDateRequired', 'Tarih zorunludur')),
-  documentNo: z.string().min(1, t('warehouse.validation.documentNoRequired', 'Belge No zorunludur')),
+  operationType: z.string().min(1, t('warehouse.validation.operationTypeRequired')),
+  transferDate: z.string().min(1, t('warehouse.validation.transferDateRequired')),
+  documentNo: z.string().min(1, t('warehouse.validation.documentNoRequired')),
   projectCode: z.string().optional(),
-  customerId: z.string().min(1, t('warehouse.validation.customerRequired', 'Cari seçimi zorunludur')),
+  customerId: z.string().min(1, t('warehouse.validation.customerRequired')),
   sourceWarehouse: type === 'outbound' 
-    ? z.string().min(1, t('warehouse.validation.sourceWarehouseRequired', 'Çıkış deposu zorunludur'))
+    ? z.string().min(1, t('warehouse.validation.sourceWarehouseRequired'))
     : z.string().optional(),
   targetWarehouse: type === 'inbound'
-    ? z.string().min(1, t('warehouse.validation.targetWarehouseRequired', 'Giriş deposu zorunludur'))
+    ? z.string().min(1, t('warehouse.validation.targetWarehouseRequired'))
     : z.string().optional(),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
