@@ -89,7 +89,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.goodsReceiptAssigned', 'Atanmış Mal Kabul Emirleri'),
+          title: t('sidebar.goodsReceiptAssigned'),
           href: '/goods-receipt/assigned',
         },
         {
@@ -123,11 +123,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.warehouse3d', '3D Depo'),
+          title: t('sidebar.warehouse3d'),
           href: '/inventory/3d-warehouse',
         },
         {
-          title: t('sidebar.warehouse3dOutside', '3D Outside Warehouse'),
+          title: t('sidebar.warehouse3dOutside'),
           href: '/inventory/3d-outside-warehouse',
         },
       ],
@@ -156,7 +156,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
     },
     {
-      title: t('sidebar.package', 'Paketleme'),
+      title: t('sidebar.package'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -176,11 +176,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.packageCreate', 'Yeni Paketleme'),
+          title: t('sidebar.packageCreate'),
           href: '/package/create',
         },
         {
-          title: t('sidebar.packageList', 'Paketleme Listesi'),
+          title: t('sidebar.packageList'),
           href: '/package/list',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
@@ -204,11 +204,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.transferAssigned', 'Atanmış Transfer Emirleri'),
+          title: t('sidebar.transferAssigned'),
           href: '/transfer/assigned',
         },
         {
-          title: t('sidebar.transferApproval', 'Onay Bekleyen Emirler'),
+          title: t('sidebar.transferApproval'),
           href: '/transfer/approval',
         },
         {
@@ -222,7 +222,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
-      title: t('sidebar.subcontracting', 'Fason İşlemleri'),
+      title: t('sidebar.subcontracting'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -240,41 +240,41 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.subcontractingIssueAssigned', 'Atanmış Fason Çıkış Emirleri'),
+          title: t('sidebar.subcontractingIssueAssigned'),
           href: '/subcontracting/issue/assigned',
         },
         {
-          title: t('sidebar.subcontractingIssueApproval', 'Onay Bekleyen Fason Çıkış Emirleri'),
+          title: t('sidebar.subcontractingIssueApproval'),
           href: '/subcontracting/issue/approval',
         },
         {
-          title: t('sidebar.subcontractingIssueCreate', 'Fason Çıkış Emri'),
+          title: t('sidebar.subcontractingIssueCreate'),
           href: '/subcontracting/issue/create',
         },
         {
-          title: t('sidebar.subcontractingIssueList', 'Fason Çıkış Listesi'),
+          title: t('sidebar.subcontractingIssueList'),
           href: '/subcontracting/issue/list',
         },
         {
-          title: t('sidebar.subcontractingReceiptAssigned', 'Atanmış Fason Giriş Emirleri'),
+          title: t('sidebar.subcontractingReceiptAssigned'),
           href: '/subcontracting/receipt/assigned',
         },
         {
-          title: t('sidebar.subcontractingReceiptApproval', 'Onay Bekleyen Fason Giriş Emirleri'),
+          title: t('sidebar.subcontractingReceiptApproval'),
           href: '/subcontracting/receipt/approval',
         },
         {
-          title: t('sidebar.subcontractingReceiptCreate', 'Fason Giriş Emri'),
+          title: t('sidebar.subcontractingReceiptCreate'),
           href: '/subcontracting/receipt/create',
         },
         {
-          title: t('sidebar.subcontractingReceiptList', 'Fason Giriş Listesi'),
+          title: t('sidebar.subcontractingReceiptList'),
           href: '/subcontracting/receipt/list',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
-      title: t('sidebar.warehouse', 'Ambar İşlemleri'),
+      title: t('sidebar.warehouse'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -295,41 +295,41 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.warehouseInboundAssigned', 'Atanmış Ambar Giriş Emirleri'),
+          title: t('sidebar.warehouseInboundAssigned'),
           href: '/warehouse/inbound/assigned',
         },
         {
-          title: t('sidebar.warehouseInboundApproval', 'Onay Bekleyen Ambar Giriş Emirleri'),
+          title: t('sidebar.warehouseInboundApproval'),
           href: '/warehouse/inbound/approval',
         },
         {
-          title: t('sidebar.warehouseInboundCreate', 'Ambar Giriş Emri'),
+          title: t('sidebar.warehouseInboundCreate'),
           href: '/warehouse/inbound/create',
         },
         {
-          title: t('sidebar.warehouseInboundList', 'Ambar Giriş Listesi'),
+          title: t('sidebar.warehouseInboundList'),
           href: '/warehouse/inbound/list',
         },
         {
-          title: t('sidebar.warehouseOutboundAssigned', 'Atanmış Ambar Çıkış Emirleri'),
+          title: t('sidebar.warehouseOutboundAssigned'),
           href: '/warehouse/outbound/assigned',
         },
         {
-          title: t('sidebar.warehouseOutboundApproval', 'Onay Bekleyen Ambar Çıkış Emirleri'),
+          title: t('sidebar.warehouseOutboundApproval'),
           href: '/warehouse/outbound/approval',
         },
         {
-          title: t('sidebar.warehouseOutboundCreate', 'Ambar Çıkış Emri'),
+          title: t('sidebar.warehouseOutboundCreate'),
           href: '/warehouse/outbound/create',
         },
         {
-          title: t('sidebar.warehouseOutboundList', 'Ambar Çıkış Listesi'),
+          title: t('sidebar.warehouseOutboundList'),
           href: '/warehouse/outbound/list',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
-      title: t('sidebar.shipment', 'Sevkiyat'),
+      title: t('sidebar.shipment'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -349,25 +349,25 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.shipmentAssigned', 'Atanmış Sevkiyat Emirleri'),
+          title: t('sidebar.shipmentAssigned'),
           href: '/shipment/assigned',
         },
         {
-          title: t('sidebar.shipmentApproval', 'Onay Bekleyen Sevkiyat Emirleri'),
+          title: t('sidebar.shipmentApproval'),
           href: '/shipment/approval',
         },
         {
-          title: t('sidebar.shipmentCreate', 'Sevkiyat Emri'),
+          title: t('sidebar.shipmentCreate'),
           href: '/shipment/create',
         },
         {
-          title: t('sidebar.shipmentList', 'Sevkiyat Emri Listesi'),
+          title: t('sidebar.shipmentList'),
           href: '/shipment/list',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
-      title: t('sidebar.accessControl', 'Erişim Kontrolü'),
+      title: t('sidebar.accessControl'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -387,33 +387,33 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.userManagement', 'Kullanıcı Yönetimi'),
+          title: t('sidebar.userManagement'),
           href: '/access-control/user-management',
         },
         {
-          title: t('sidebar.permissionDefinitions', 'İzin Tanımları'),
+          title: t('sidebar.permissionDefinitions'),
           href: '/access-control/permission-definitions',
         },
         {
-          title: t('sidebar.permissionGroups', 'İzin Grupları'),
+          title: t('sidebar.permissionGroups'),
           href: '/access-control/permission-groups',
         },
         {
-          title: t('sidebar.userGroupAssignments', 'Kullanıcı Grup Atamaları'),
+          title: t('sidebar.userGroupAssignments'),
           href: '/access-control/user-group-assignments',
         },
         {
-          title: t('sidebar.mailSettings', 'Mail Ayarları'),
+          title: t('sidebar.mailSettings'),
           href: '/users/mail-settings',
         },
         {
-          title: t('sidebar.hangfireMonitoring', 'Hangfire İzleme'),
+          title: t('sidebar.hangfireMonitoring'),
           href: '/hangfire-monitoring',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
-      title: t('sidebar.parameters', 'Parametre'),
+      title: t('sidebar.parameters'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -431,47 +431,47 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ),
       children: [
         {
-          title: t('sidebar.parametersGr', 'Mal Kabul Parametreleri'),
+          title: t('sidebar.parametersGr'),
           href: '/parameters/gr',
         },
         {
-          title: t('sidebar.parametersWt', 'Depo Transfer Parametreleri'),
+          title: t('sidebar.parametersWt'),
           href: '/parameters/wt',
         },
         {
-          title: t('sidebar.parametersWo', 'Depo Çıkış Parametreleri'),
+          title: t('sidebar.parametersWo'),
           href: '/parameters/wo',
         },
         {
-          title: t('sidebar.parametersWi', 'Depo Giriş Parametreleri'),
+          title: t('sidebar.parametersWi'),
           href: '/parameters/wi',
         },
         {
-          title: t('sidebar.parametersSh', 'Sevkiyat Parametreleri'),
+          title: t('sidebar.parametersSh'),
           href: '/parameters/sh',
         },
         {
-          title: t('sidebar.parametersSrt', 'Taşeron Alış Transfer Parametreleri'),
+          title: t('sidebar.parametersSrt'),
           href: '/parameters/srt',
         },
         {
-          title: t('sidebar.parametersSit', 'Taşeron Çıkış Transfer Parametreleri'),
+          title: t('sidebar.parametersSit'),
           href: '/parameters/sit',
         },
         {
-          title: t('sidebar.parametersPt', 'Üretim Transfer Parametreleri'),
+          title: t('sidebar.parametersPt'),
           href: '/parameters/pt',
         },
         {
-          title: t('sidebar.parametersPr', 'Üretim Parametreleri'),
+          title: t('sidebar.parametersPr'),
           href: '/parameters/pr',
         },
         {
-          title: t('sidebar.parametersIc', 'Sayım Parametreleri'),
+          title: t('sidebar.parametersIc'),
           href: '/parameters/ic',
         },
         {
-          title: t('sidebar.parametersP', 'Paket Parametreleri'),
+          title: t('sidebar.parametersP'),
           href: '/parameters/p',
         },
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),

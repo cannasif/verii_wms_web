@@ -147,7 +147,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 onKeyDown={handleSearchKeyDown}
                 onFocus={() => setIsSearchFocus(true)}
                 onBlur={() => setTimeout(() => setIsSearchFocus(false), 120)}
-                placeholder={t('navbar.search_placeholder', 'Hizli arama yap...')}
+                placeholder={t('navbar.search_placeholder')}
                 className={cn(
                   'w-full rounded-2xl border py-3 pl-12 pr-24 text-sm font-medium outline-none transition-all duration-300',
                   'border-slate-200 bg-slate-100/60 text-slate-900 placeholder:text-slate-500 focus:border-pink-500/30 focus:bg-white focus:ring-4 focus:ring-pink-500/10',
@@ -200,7 +200,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                     ))
                   ) : (
                     <p className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
-                      {t('common.notFound', 'Sonuc bulunamadi')}
+                      {t('common.notFound')}
                     </p>
                   )}
                 </div>
@@ -225,7 +225,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                     {displayName}
                   </p>
                   <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
-                    {branch?.name || t('roles.admin', 'Yonetici')}
+                    {branch?.name || t('roles.admin')}
                   </p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-tr from-pink-500 via-orange-500 to-yellow-500 p-[2px]">
@@ -245,7 +245,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
             value={searchQuery}
             onChange={handleSearch}
             onKeyDown={handleSearchKeyDown}
-            placeholder={t('navbar.search_placeholder', 'Hizli arama yap...')}
+            placeholder={t('navbar.search_placeholder')}
             className="w-full rounded-xl border border-slate-200 bg-slate-100/70 py-2.5 pl-10 pr-20 text-sm text-slate-900 outline-none focus:border-pink-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
           />
           <button

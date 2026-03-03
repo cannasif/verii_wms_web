@@ -40,7 +40,7 @@ export function ThemeToggle() {
       <Switch
         checked={isDark}
         onCheckedChange={handleToggle}
-        aria-label={t('theme.toggle', 'Tema değiştir')}
+        aria-label={t('theme.toggle')}
       />
       <Moon className="h-4 w-4 text-muted-foreground" />
     </div>
