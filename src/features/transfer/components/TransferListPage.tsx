@@ -12,16 +12,51 @@ import { Eye, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import type { TransferHeader } from '../types/transfer';
 import type { PagedFilter } from '@/types/api';
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { usePageSizePreference } from '@/hooks/usePageSizePreference';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 export function TransferListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize] = useState(10);
+  const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
+    pageKey: 'transfer-list',
+    defaultPageSize: 10,
+  });
   const [sortBy] = useState<string>('Id');
   const [sortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'id', label: t('transfer.list.id', 'ID') },
+      { key: 'documentNo', label: t('transfer.list.documentNo', 'Belge No') },
+      { key: 'documentDate', label: t('transfer.list.documentDate', 'Belge Tarihi') },
+      { key: 'customerCode', label: t('transfer.list.customerCode', 'Cari Kodu') },
+      { key: 'customerName', label: t('transfer.list.customerName', 'Cari Adı') },
+      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse', 'Çıkış Deposu') },
+      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse', 'Varış Deposu') },
+      { key: 'documentType', label: t('transfer.list.documentType', 'Belge Tipi') },
+      { key: 'createdDate', label: t('transfer.list.createdDate', 'Oluşturulma Tarihi') },
+      { key: 'actions', label: t('goodsReceipt.report.actions', 'İşlemler') },
+    ],
+    [t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({
+    pageKey: 'transfer-list',
+    columns,
+    idColumnKey: 'id',
+  });
 
   const filters: PagedFilter[] = useMemo(() => {
     const result: PagedFilter[] = [];
@@ -78,6 +113,32 @@ export function TransferListPage(): ReactElement {
     }
   };
 
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    if (!data?.data) return [];
+    return data.data.map((item) => ({
+      id: item.id,
+      documentNo: item.documentNo || '-',
+      documentDate: formatDate(item.documentDate),
+      customerCode: item.customerCode || '-',
+      customerName: item.customerName || '-',
+      sourceWarehouse: item.sourceWarehouse || '-',
+      targetWarehouse: item.targetWarehouse || '-',
+      documentType: item.documentType || '-',
+      createdDate: formatDateTime(item.createdDate),
+    }));
+  }, [data?.data]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -101,6 +162,21 @@ export function TransferListPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('transfer.list.title', 'Transfer Emri Listesi')}</CardTitle>
             <div className="flex items-center gap-2">
+              <GridExportMenu
+                fileName="transfer-list"
+                columns={exportColumns}
+                rows={exportRows}
+              />
+              <ColumnPreferencesPopover
+                pageKey="transfer-list"
+                userId={userId}
+                columns={columns}
+                visibleColumns={visibleColumns}
+                columnOrder={columnOrder}
+                lockedKeys={['id']}
+                onVisibleColumnsChange={setVisibleColumns}
+                onColumnOrderChange={setColumnOrder}
+              />
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
@@ -124,52 +200,66 @@ export function TransferListPage(): ReactElement {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('transfer.list.id', 'ID')}</TableHead>
-                  <TableHead>{t('transfer.list.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('transfer.list.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('transfer.list.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('transfer.list.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>
-                  <TableHead>{t('transfer.list.targetWarehouse', 'Varış Deposu')}</TableHead>
-                  <TableHead>{t('transfer.list.documentType', 'Belge Tipi')}</TableHead>
-                  <TableHead>{t('transfer.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>
-                  <TableHead>{t('goodsReceipt.report.actions', 'İşlemler')}</TableHead>
+                  {orderedVisibleColumns.map((key) => {
+                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id', 'ID')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo', 'Belge No')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate', 'Belge Tarihi')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode', 'Cari Kodu')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName', 'Cari Adı')}</TableHead>;
+                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse', 'Çıkış Deposu')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse', 'Varış Deposu')}</TableHead>;
+                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType', 'Belge Tipi')}</TableHead>;
+                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate', 'Oluşturulma Tarihi')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions', 'İşlemler')}</TableHead>;
+                    return null;
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.data && data.data.length > 0 ? (
                   data.data.map((item: TransferHeader) => (
                     <TableRow key={item.id} className="cursor-pointer" onClick={() => setSelectedHeaderId(item.id)}>
-                      <TableCell>{item.id}</TableCell>
-                      <TableCell className="font-medium">{item.documentNo || '-'}</TableCell>
-                      <TableCell>{formatDate(item.documentDate)}</TableCell>
-                      <TableCell>{item.customerCode || '-'}</TableCell>
-                      <TableCell>{item.customerName || '-'}</TableCell>
-                      <TableCell>{item.sourceWarehouse || '-'}</TableCell>
-                      <TableCell>{item.targetWarehouse || '-'}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{item.documentType || '-'}</Badge>
-                      </TableCell>
-                      <TableCell>{formatDateTime(item.createdDate)}</TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedHeaderId(item.id)}
-                        >
-                          <Eye className="size-4" />
-                          <span className="ml-2">{t('transfer.list.viewDetails', 'Detay')}</span>
-                        </Button>
-                      </TableCell>
+                      {orderedVisibleColumns.map((key) => {
+                        if (key === 'id') return <TableCell key={key}>{item.id}</TableCell>;
+                        if (key === 'documentNo') return <TableCell key={key} className="font-medium">{item.documentNo || '-'}</TableCell>;
+                        if (key === 'documentDate') return <TableCell key={key}>{formatDate(item.documentDate)}</TableCell>;
+                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
+                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
+                        if (key === 'sourceWarehouse') return <TableCell key={key}>{item.sourceWarehouse || '-'}</TableCell>;
+                        if (key === 'targetWarehouse') return <TableCell key={key}>{item.targetWarehouse || '-'}</TableCell>;
+                        if (key === 'documentType') {
+                          return (
+                            <TableCell key={key}>
+                              <Badge variant="outline">{item.documentType || '-'}</Badge>
+                            </TableCell>
+                          );
+                        }
+                        if (key === 'createdDate') return <TableCell key={key}>{formatDateTime(item.createdDate)}</TableCell>;
+                        if (key === 'actions') {
+                          return (
+                            <TableCell key={key} onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedHeaderId(item.id)}
+                              >
+                                <Eye className="size-4" />
+                                <span className="ml-2">{t('transfer.list.viewDetails', 'Detay')}</span>
+                              </Button>
+                            </TableCell>
+                          );
+                        }
+                        return null;
+                      })}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8">
+                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
                         {t('transfer.list.noData', 'Veri bulunamadı')}
                       </p>
@@ -254,12 +344,40 @@ export function TransferListPage(): ReactElement {
           </div>
           {data && (
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
-              <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
-                  current: data.pageNumber * data.pageSize + 1,
-                  total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
-                  totalCount: data.totalCount,
-                })}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                <div className="text-sm text-muted-foreground">
+                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                    current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
+                    total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
+                    totalCount: data.totalCount,
+                  })}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.rowsPerPage', 'Sayfada')}
+                  </span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) => {
+                      setPageSize(Number.parseInt(value, 10));
+                      setPageNumber(0);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pageSizeOptions.map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.records', 'kayıt')}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
