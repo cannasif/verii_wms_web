@@ -8,16 +8,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
-import { Eye, Search, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, Search, Check, X, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { toast } from 'sonner';
 import type { WarehouseHeader } from '../types/warehouse';
 import type { PagedFilter } from '@/types/api';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePageSizePreference } from '@/hooks/usePageSizePreference';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { GridExportColumn } from '@/lib/grid-export';
+import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export function WarehouseInboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
@@ -32,6 +35,9 @@ export function WarehouseInboundApprovalPage(): ReactElement {
   const [sortBy] = useState<string>('Id');
   const [sortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const columns = useMemo<ColumnDef[]>(
     () => [
       { key: 'id', label: t('warehouse.inbound.approval.id', 'ID') },
@@ -44,6 +50,18 @@ export function WarehouseInboundApprovalPage(): ReactElement {
       { key: 'actions', label: t('warehouse.inbound.approval.actions', 'İşlemler') },
     ],
     [t]
+  );
+  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () => [
+      { value: 'id', type: 'number', labelKey: 'warehouse.inbound.approval.id' },
+      { value: 'documentNo', type: 'string', labelKey: 'warehouse.inbound.approval.documentNo' },
+      { value: 'documentDate', type: 'date', labelKey: 'warehouse.inbound.approval.documentDate' },
+      { value: 'customerCode', type: 'string', labelKey: 'warehouse.inbound.approval.customerCode' },
+      { value: 'customerName', type: 'string', labelKey: 'warehouse.inbound.approval.customerName' },
+      { value: 'targetWarehouse', type: 'string', labelKey: 'warehouse.inbound.approval.targetWarehouse' },
+      { value: 'completionDate', type: 'date', labelKey: 'warehouse.inbound.approval.completionDate' },
+    ],
+    []
   );
   const {
     userId,
@@ -63,8 +81,22 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     if (searchTerm) {
       result.push({ column: 'documentNo', operator: 'contains', value: searchTerm });
     }
+    result.push(...appliedAdvancedFilters);
     return result;
-  }, [searchTerm]);
+  }, [searchTerm, appliedAdvancedFilters]);
+
+  const applyAdvancedFilters = (): void => {
+    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
+  };
+
+  const clearAdvancedFilters = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
+  };
 
   const { data, isLoading, error } = useAwaitingApprovalWiHeaders({
     pageNumber,
@@ -189,6 +221,32 @@ export function WarehouseInboundApprovalPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('warehouse.inbound.approval.title', 'Onay Bekleyen Ambar Giriş Emirleri')}</CardTitle>
             <div className="flex items-center gap-2">
+              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t('common.filter', 'Filtrele')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
+                >
+                  <AdvancedFilter
+                    columns={advancedFilterColumns}
+                    defaultColumn="documentNo"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={applyAdvancedFilters}
+                    onClear={clearAdvancedFilters}
+                    embedded
+                  />
+                </PopoverContent>
+              </Popover>
               <GridExportMenu
                 fileName="warehouse-inbound-approval-list"
                 columns={exportColumns}

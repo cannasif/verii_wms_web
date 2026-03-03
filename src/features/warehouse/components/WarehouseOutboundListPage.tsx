@@ -8,15 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
-import { Eye, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import type { WarehouseHeader } from '../types/warehouse';
 import type { PagedFilter } from '@/types/api';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePageSizePreference } from '@/hooks/usePageSizePreference';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { GridExportColumn } from '@/lib/grid-export';
+import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
 
 export function WarehouseOutboundListPage(): ReactElement {
   const { t } = useTranslation();
@@ -27,6 +30,21 @@ export function WarehouseOutboundListPage(): ReactElement {
   const [sortBy] = useState<string>('Id');
   const [sortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
+  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () => [
+      { value: 'documentNo', type: 'string', labelKey: 'warehouse.outbound.list.documentNo' },
+      { value: 'documentDate', type: 'date', labelKey: 'warehouse.outbound.list.documentDate' },
+      { value: 'customerCode', type: 'string', labelKey: 'warehouse.outbound.list.customerCode' },
+      { value: 'customerName', type: 'string', labelKey: 'warehouse.outbound.list.customerName' },
+      { value: 'sourceWarehouse', type: 'string', labelKey: 'warehouse.outbound.list.sourceWarehouse' },
+      { value: 'documentType', type: 'string', labelKey: 'warehouse.outbound.list.documentType' },
+      { value: 'isCompleted', type: 'boolean', labelKey: 'warehouse.outbound.list.status' },
+    ],
+    []
+  );
   const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
     pageKey: 'warehouse-outbound-list',
     defaultPageSize: 10,
@@ -62,8 +80,9 @@ export function WarehouseOutboundListPage(): ReactElement {
     if (searchTerm) {
       result.push({ column: 'documentNo', operator: 'contains', value: searchTerm });
     }
+    result.push(...appliedAdvancedFilters);
     return result;
-  }, [searchTerm]);
+  }, [searchTerm, appliedAdvancedFilters]);
 
   const { data, isLoading, error } = useWarehouseOutboundHeadersPaged({
     pageNumber,
@@ -101,13 +120,13 @@ export function WarehouseOutboundListPage(): ReactElement {
   };
 
   const handlePreviousPage = (): void => {
-    if (data?.hasPreviousPage) {
+    if (data && data.pageNumber > 0) {
       setPageNumber((prev) => prev - 1);
     }
   };
 
   const handleNextPage = (): void => {
-    if (data?.hasNextPage) {
+    if (data && data.pageNumber + 1 < data.totalPages) {
       setPageNumber((prev) => prev + 1);
     }
   };
@@ -115,6 +134,19 @@ export function WarehouseOutboundListPage(): ReactElement {
   const handleRowClick = (header: WarehouseHeader): void => {
     setSelectedHeaderId(header.id);
     setSelectedDocumentType(header.documentType);
+  };
+
+  const applyAdvancedFilters = (): void => {
+    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
+  };
+
+  const clearAdvancedFilters = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+    setPageNumber(0);
+    setFilterPopoverOpen(false);
   };
 
   const getStatusLabel = (item: WarehouseHeader): string => {
@@ -171,6 +203,42 @@ export function WarehouseOutboundListPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('warehouse.outbound.list.title', 'Ambar Çıkış Emri Listesi')}</CardTitle>
             <div className="flex items-center gap-2">
+              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`h-9 border-dashed text-xs sm:text-sm ${
+                      appliedAdvancedFilters.length > 0
+                        ? 'border-emerald-400/70 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/60 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/15'
+                        : 'border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t('common.filter', 'Filtrele')}
+                    {appliedAdvancedFilters.length > 0 && (
+                      <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                        {appliedAdvancedFilters.length}
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
+                >
+                  <AdvancedFilter
+                    columns={advancedFilterColumns}
+                    defaultColumn="documentNo"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={applyAdvancedFilters}
+                    onClear={clearAdvancedFilters}
+                    appliedFilterCount={appliedAdvancedFilters.length}
+                    embedded
+                  />
+                </PopoverContent>
+              </Popover>
               <GridExportMenu
                 fileName="warehouse-outbound-list"
                 columns={exportColumns}
@@ -413,7 +481,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                   variant="outline"
                   size="sm"
                   onClick={handlePreviousPage}
-                  disabled={!data.hasPreviousPage}
+                  disabled={data.pageNumber <= 0}
                 >
                   <ChevronLeft className="size-4" />
                   {t('common.previous', 'Önceki')}
@@ -425,7 +493,7 @@ export function WarehouseOutboundListPage(): ReactElement {
                   variant="outline"
                   size="sm"
                   onClick={handleNextPage}
-                  disabled={!data.hasNextPage}
+                  disabled={data.pageNumber + 1 >= data.totalPages}
                 >
                   {t('common.next', 'Sonraki')}
                   <ChevronRight className="size-4" />
