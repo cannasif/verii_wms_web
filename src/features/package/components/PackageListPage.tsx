@@ -22,7 +22,11 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { toast } from 'sonner';
 import type { PHeaderDto } from '../types/package';
 import type { PagedFilter } from '@/types/api';
-
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { usePageSizePreference } from '@/hooks/usePageSizePreference';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
@@ -46,12 +50,47 @@ export function PackageListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(10);
+  const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
+    pageKey: 'package-list',
+    defaultPageSize: 10,
+  });
   const [sortBy, setSortBy] = useState<string>('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PHeaderDto | null>(null);
+
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'id', label: t('package.list.id', 'Kayıt No') },
+      { key: 'packingNo', label: t('package.list.packingNo', 'Paketleme No') },
+      { key: 'packingDate', label: t('package.list.packingDate', 'Paketleme Tarihi') },
+      { key: 'warehouseCode', label: t('package.list.warehouseCode', 'Depo Kodu') },
+      { key: 'sourceType', label: t('package.list.sourceType', 'Kaynak Tipi') },
+      { key: 'matchedSource', label: t('package.list.matchedSource', 'Eşleşen Kaynak') },
+      { key: 'customerCode', label: t('package.list.customerCode', 'Cari Kodu') },
+      { key: 'customerName', label: t('package.list.customerName', 'Cari Adı') },
+      { key: 'status', label: t('package.list.status', 'Durum') },
+      { key: 'totalPackageCount', label: t('package.list.totalPackageCount', 'Toplam Paket') },
+      { key: 'totalQuantity', label: t('package.list.totalQuantity', 'Toplam Miktar') },
+      { key: 'totalGrossWeight', label: t('package.list.totalGrossWeight', 'Toplam Brüt Ağırlık') },
+      { key: 'trackingNo', label: t('package.list.trackingNo', 'Takip No') },
+      { key: 'actions', label: t('package.list.actions', 'İşlemler') },
+    ],
+    [t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({
+    pageKey: 'package-list',
+    columns,
+    idColumnKey: 'id',
+  });
 
   const filters: PagedFilter[] = useMemo(() => {
     const result: PagedFilter[] = [];
@@ -98,6 +137,45 @@ export function PackageListPage(): ReactElement {
       setPageNumber((prev) => prev + 1);
     }
   };
+
+  const formatDateForExport = (dateString: string | null | undefined): string => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+  };
+
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    if (!data?.data) return [];
+    return data.data.map((item) => ({
+      id: item.id,
+      packingNo: item.packingNo || '-',
+      packingDate: formatDateForExport(item.packingDate),
+      warehouseCode: item.warehouseCode || '-',
+      sourceType: item.sourceType ? t(`package.sourceType.${item.sourceType.toUpperCase()}`, item.sourceType) : '-',
+      matchedSource: item.sourceHeaderId != null ? `#${item.sourceHeaderId}` : '-',
+      customerCode: item.customerCode || '-',
+      customerName: item.customerName || '-',
+      status: item.status ? t(`package.status.${item.status.toLowerCase()}`, item.status) : '-',
+      totalPackageCount: item.totalPackageCount ?? 0,
+      totalQuantity: item.totalQuantity ?? 0,
+      totalGrossWeight: item.totalGrossWeight ?? 0,
+      trackingNo: item.trackingNo || '-',
+    }));
+  }, [data?.data, t]);
 
   const handleDelete = async (): Promise<void> => {
     if (!selectedHeader) return;
@@ -149,6 +227,21 @@ export function PackageListPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('package.list.title', 'Paketleme Listesi')}</CardTitle>
             <div className="flex items-center gap-2">
+              <GridExportMenu
+                fileName="package-list"
+                columns={exportColumns}
+                rows={exportRows}
+              />
+              <ColumnPreferencesPopover
+                pageKey="package-list"
+                userId={userId}
+                columns={columns}
+                visibleColumns={visibleColumns}
+                columnOrder={columnOrder}
+                lockedKeys={['id']}
+                onVisibleColumnsChange={setVisibleColumns}
+                onColumnOrderChange={setColumnOrder}
+              />
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
@@ -180,106 +273,55 @@ export function PackageListPage(): ReactElement {
         </CardHeader>
         <CardContent>
 
-          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('Id')}
-                  >
-                    {t('package.list.id', 'Kayıt No')}
-                    {sortBy === 'Id' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('packingNo')}
-                  >
-                    {t('package.list.packingNo', 'Paketleme No')}
-                    {sortBy === 'packingNo' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('packingDate')}
-                  >
-                    {t('package.list.packingDate', 'Paketleme Tarihi')}
-                    {sortBy === 'packingDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}
-                  </TableHead>
-                  <TableHead>{t('package.list.warehouseCode', 'Depo Kodu')}</TableHead>
-                  <TableHead>{t('package.list.sourceType', 'Kaynak Tipi')}</TableHead>
-                  <TableHead>{t('package.list.matchedSource', 'Eşleşen Kaynak')}</TableHead>
-                  <TableHead>{t('package.list.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('package.list.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('package.list.status', 'Durum')}</TableHead>
-                  <TableHead>{t('package.list.totalPackageCount', 'Toplam Paket')}</TableHead>
-                  <TableHead>{t('package.list.totalQuantity', 'Toplam Miktar')}</TableHead>
-                  <TableHead>{t('package.list.totalGrossWeight', 'Toplam Brüt Ağırlık')}</TableHead>
-                  <TableHead>{t('package.list.trackingNo', 'Takip No')}</TableHead>
-                  <TableHead>{t('package.list.actions', 'İşlemler')}</TableHead>
+                  {orderedVisibleColumns.map((key) => {
+                    if (key === 'id') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('Id')}>{t('package.list.id', 'Kayıt No')}{sortBy === 'Id' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'packingNo') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingNo')}>{t('package.list.packingNo', 'Paketleme No')}{sortBy === 'packingNo' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'packingDate') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingDate')}>{t('package.list.packingDate', 'Paketleme Tarihi')}{sortBy === 'packingDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'warehouseCode') return <TableHead key={key}>{t('package.list.warehouseCode', 'Depo Kodu')}</TableHead>;
+                    if (key === 'sourceType') return <TableHead key={key}>{t('package.list.sourceType', 'Kaynak Tipi')}</TableHead>;
+                    if (key === 'matchedSource') return <TableHead key={key}>{t('package.list.matchedSource', 'Eşleşen Kaynak')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('package.list.customerCode', 'Cari Kodu')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('package.list.customerName', 'Cari Adı')}</TableHead>;
+                    if (key === 'status') return <TableHead key={key}>{t('package.list.status', 'Durum')}</TableHead>;
+                    if (key === 'totalPackageCount') return <TableHead key={key}>{t('package.list.totalPackageCount', 'Toplam Paket')}</TableHead>;
+                    if (key === 'totalQuantity') return <TableHead key={key}>{t('package.list.totalQuantity', 'Toplam Miktar')}</TableHead>;
+                    if (key === 'totalGrossWeight') return <TableHead key={key}>{t('package.list.totalGrossWeight', 'Toplam Brüt Ağırlık')}</TableHead>;
+                    if (key === 'trackingNo') return <TableHead key={key}>{t('package.list.trackingNo', 'Takip No')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('package.list.actions', 'İşlemler')}</TableHead>;
+                    return null;
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.data && data.data.length > 0 ? (
                   data.data.map((item: PHeaderDto) => (
                     <TableRow key={item.id}>
-                      <TableCell className="font-medium">#{item.id}</TableCell>
-                      <TableCell className="font-medium">{item.packingNo || '-'}</TableCell>
-                      <TableCell>{formatDate(item.packingDate)}</TableCell>
-                      <TableCell>{item.warehouseCode || '-'}</TableCell>
-                      <TableCell>
-                        {item.sourceType ? (
-                          <Badge variant="outline">
-                            {t(`package.sourceType.${item.sourceType.toUpperCase()}`, item.sourceType.toUpperCase())}
-                          </Badge>
-                        ) : (
-                          '-'
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {item.sourceHeaderId ? (
-                          <span className="font-medium">#{item.sourceHeaderId}</span>
-                        ) : (
-                          '-'
-                        )}
-                      </TableCell>
-                      <TableCell>{item.customerCode || '-'}</TableCell>
-                      <TableCell>{item.customerName || '-'}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusBadgeColor(item.status)}>
-                          {t(`package.status.${item.status.toLowerCase()}`, item.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{item.totalPackageCount || 0}</TableCell>
-                      <TableCell>{item.totalQuantity || 0}</TableCell>
-                      <TableCell>{item.totalGrossWeight || 0}</TableCell>
-                      <TableCell>{item.trackingNo || '-'}</TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/package/detail/${item.id}`)}
-                          >
-                            <Eye className="size-4 mr-2" />
-                            {t('package.list.detail', 'Detay')}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedHeader(item);
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="size-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                      {orderedVisibleColumns.map((key) => {
+                        if (key === 'id') return <TableCell key={key} className="font-medium">#{item.id}</TableCell>;
+                        if (key === 'packingNo') return <TableCell key={key} className="font-medium">{item.packingNo || '-'}</TableCell>;
+                        if (key === 'packingDate') return <TableCell key={key}>{formatDate(item.packingDate)}</TableCell>;
+                        if (key === 'warehouseCode') return <TableCell key={key}>{item.warehouseCode || '-'}</TableCell>;
+                        if (key === 'sourceType') return <TableCell key={key}>{item.sourceType ? <Badge variant="outline">{t(`package.sourceType.${item.sourceType.toUpperCase()}`, item.sourceType.toUpperCase())}</Badge> : '-'}</TableCell>;
+                        if (key === 'matchedSource') return <TableCell key={key}>{item.sourceHeaderId ? <span className="font-medium">#{item.sourceHeaderId}</span> : '-'}</TableCell>;
+                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
+                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
+                        if (key === 'status') return <TableCell key={key}><Badge className={getStatusBadgeColor(item.status)}>{t(`package.status.${item.status.toLowerCase()}`, item.status)}</Badge></TableCell>;
+                        if (key === 'totalPackageCount') return <TableCell key={key}>{item.totalPackageCount || 0}</TableCell>;
+                        if (key === 'totalQuantity') return <TableCell key={key}>{item.totalQuantity || 0}</TableCell>;
+                        if (key === 'totalGrossWeight') return <TableCell key={key}>{item.totalGrossWeight || 0}</TableCell>;
+                        if (key === 'trackingNo') return <TableCell key={key}>{item.trackingNo || '-'}</TableCell>;
+                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${item.id}`)}><Eye className="size-4 mr-2" />{t('package.list.detail', 'Detay')}</Button><Button variant="ghost" size="sm" onClick={() => { setSelectedHeader(item); setDeleteDialogOpen(true); }}><Trash2 className="size-4" /></Button></div></TableCell>;
+                        return null;
+                      })}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={13} className="text-center py-8">
+                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
                         {t('package.list.noData', 'Veri bulunamadı')}
                       </p>
@@ -293,7 +335,7 @@ export function PackageListPage(): ReactElement {
           <div className="md:hidden space-y-4 pb-1">
             {data?.data && data.data.length > 0 ? (
               data.data.map((item: PHeaderDto) => (
-                <Card key={item.id} className="border border-slate-200/70 bg-white/85 dark:border-white/10 dark:bg-white/[0.04]">
+                <Card key={item.id} className="border border-slate-200/70 bg-white/85 dark:border-white/10 dark:bg-white/4">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex flex-col gap-1">
@@ -390,13 +432,42 @@ export function PackageListPage(): ReactElement {
             )}
           </div>
 
-          {data && data.totalPages > 1 && (
+          {data && (
             <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
-              <div className="text-sm text-muted-foreground">
-                {t('package.list.pageInfo', 'Sayfa {{current}} / {{total}}', {
-                  current: data.pageNumber,
-                  total: data.totalPages,
-                })}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                <div className="text-sm text-muted-foreground">
+                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                    current: data.totalCount > 0 ? (data.pageNumber - 1) * data.pageSize + 1 : 0,
+                    total: Math.min(data.pageNumber * data.pageSize, data.totalCount),
+                    totalCount: data.totalCount,
+                  })}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.rowsPerPage', 'Sayfada')}
+                  </span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) => {
+                      setPageSize(Number.parseInt(value, 10));
+                      setPageNumber(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pageSizeOptions.map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.records', 'kayıt')}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -408,6 +479,9 @@ export function PackageListPage(): ReactElement {
                   <ChevronLeft className="size-4" />
                   {t('common.previous')}
                 </Button>
+                <span className="text-sm">
+                  {t('common.page', 'Sayfa')} {data.pageNumber} / {data.totalPages}
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
