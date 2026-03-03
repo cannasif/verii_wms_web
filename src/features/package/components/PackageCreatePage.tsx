@@ -59,7 +59,7 @@ export function PackageCreatePage(): ReactElement {
   }, [urlHeaderId, headerId]);
 
   useEffect(() => {
-    setPageTitle(t('package.create.title', 'Yeni Paketleme Oluştur'));
+    setPageTitle(t('package.create.title'));
     return () => {
       setPageTitle(null);
     };
@@ -67,10 +67,10 @@ export function PackageCreatePage(): ReactElement {
 
   const steps = useMemo(
     () => [
-      { label: t('package.wizard.step1.title', 'Paketleme Başlığı') },
-      { label: t('package.wizard.step2.title', 'Paket Ekle') },
-      { label: t('package.wizard.step3.title', 'Paket Satırları') },
-      { label: t('package.wizard.step4.title', 'Özet & Tamamla') },
+      { label: t('package.wizard.step1.title') },
+      { label: t('package.wizard.step2.title') },
+      { label: t('package.wizard.step3.title') },
+      { label: t('package.wizard.step4.title') },
     ],
     [t]
   );
@@ -95,13 +95,13 @@ export function PackageCreatePage(): ReactElement {
         setHeaderId(id);
         navigate(`/package/create/${id}`, { replace: true });
         setCurrentStep(2);
-        toast.success(t('package.wizard.headerCreated', 'Paketleme başlığı oluşturuldu'));
+        toast.success(t('package.wizard.headerCreated'));
       }
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.wizard.headerError', 'Paketleme başlığı oluşturulurken bir hata oluştu')
+          : t('package.wizard.headerError')
       );
       throw error;
     }
@@ -121,7 +121,7 @@ export function PackageCreatePage(): ReactElement {
 
   const handleStep2SaveAndExit = (): void => {
     navigate('/package/list');
-    toast.success(t('package.wizard.saved', 'Paketleme kaydedildi'));
+    toast.success(t('package.wizard.saved'));
   };
 
   const handleStep3Next = (): void => {
@@ -134,7 +134,7 @@ export function PackageCreatePage(): ReactElement {
 
   const handleStep3SaveAndExit = (): void => {
     navigate('/package/list');
-    toast.success(t('package.wizard.saved', 'Paketleme kaydedildi'));
+    toast.success(t('package.wizard.saved'));
   };
 
   const handleStep4Previous = (): void => {
@@ -161,13 +161,13 @@ export function PackageCreatePage(): ReactElement {
         },
       });
 
-      toast.success(t('package.wizard.completed', 'Paketleme başarıyla tamamlandı'));
+      toast.success(t('package.wizard.completed'));
       navigate('/package/list');
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.wizard.completeError', 'Paketleme tamamlanırken bir hata oluştu')
+          : t('package.wizard.completeError')
       );
     }
   };
@@ -217,7 +217,7 @@ export function PackageCreatePage(): ReactElement {
             <Card>
               <div className="p-6 text-center">
                 <p className="text-muted-foreground">
-                  {t('package.wizard.headerRequired', 'Önce paketleme başlığı oluşturmalısınız')}
+                  {t('package.wizard.headerRequired')}
                 </p>
               </div>
             </Card>
@@ -237,7 +237,7 @@ export function PackageCreatePage(): ReactElement {
             <Card>
               <div className="p-6 text-center">
                 <p className="text-muted-foreground">
-                  {t('package.wizard.headerRequired', 'Önce paketleme başlığı oluşturmalısınız')}
+                  {t('package.wizard.headerRequired')}
                 </p>
               </div>
             </Card>
@@ -257,7 +257,7 @@ export function PackageCreatePage(): ReactElement {
             <Card>
               <div className="p-6 text-center">
                 <p className="text-muted-foreground">
-                  {t('package.wizard.headerRequired', 'Önce paketleme başlığı oluşturmalısınız')}
+                  {t('package.wizard.headerRequired')}
                 </p>
               </div>
             </Card>
@@ -279,7 +279,7 @@ export function PackageCreatePage(): ReactElement {
         return (
           <Card>
             <div className="p-6 text-center">
-              <p className="text-muted-foreground">{t('package.wizard.unknownStep', 'Bilinmeyen adım')}</p>
+              <p className="text-muted-foreground">{t('package.wizard.unknownStep')}</p>
             </div>
           </Card>
         );
@@ -310,13 +310,12 @@ export function PackageCreatePage(): ReactElement {
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('package.wizard.cancelTitle', 'İşlemi İptal Et')}</DialogTitle>
+            <DialogTitle>{t('package.wizard.cancelTitle')}</DialogTitle>
             <DialogDescription>
               {currentStep === 1
-                ? t('package.wizard.cancelMessage', 'İşlemi iptal etmek istediğinizden emin misiniz?')
+                ? t('package.wizard.cancelMessage')
                 : t(
-                    'package.wizard.cancelMessageWithData',
-                    'Tüm veriler silinecek. İşlemi iptal etmek istediğinizden emin misiniz?'
+                    'package.wizard.cancelMessageWithData'
                   )}
             </DialogDescription>
           </DialogHeader>
@@ -325,7 +324,7 @@ export function PackageCreatePage(): ReactElement {
               {t('common.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleConfirmCancel}>
-              {t('common.confirm', 'Onayla')}
+              {t('common.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

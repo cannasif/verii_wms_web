@@ -89,14 +89,14 @@ export function Step3LineForm({
       form.setValue('quantity', stock.cevrim || 1);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('package.wizard.step3.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('package.wizard.step3.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, form, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('package.wizard.step3.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('package.wizard.step3.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -111,7 +111,7 @@ export function Step3LineForm({
 
   const handleOpenDialog = (): void => {
     if (packages.length === 0) {
-      toast.error(t('package.wizard.step3.noPackages', 'Önce paket eklemelisiniz'));
+      toast.error(t('package.wizard.step3.noPackages'));
       return;
     }
     if (!selectedPackageId && packages.length > 0) {
@@ -159,7 +159,7 @@ export function Step3LineForm({
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner-line')) {
-        toast.error(t('package.wizard.step3.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.wizard.step3.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -206,7 +206,7 @@ export function Step3LineForm({
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('package.wizard.step3.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('package.wizard.step3.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -215,7 +215,7 @@ export function Step3LineForm({
           }
         );
       } catch (err) {
-        toast.error(t('package.wizard.step3.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.wizard.step3.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -251,7 +251,7 @@ export function Step3LineForm({
         serialNo4: data.serialNo4 || undefined,
         sourceRouteId: data.sourceRouteId,
       });
-      toast.success(t('package.wizard.lineAdded', 'Satır eklendi'));
+      toast.success(t('package.wizard.lineAdded'));
       setLineDialogOpen(false);
       setBarcodeInput('');
       setSelectedStock(null);
@@ -272,7 +272,7 @@ export function Step3LineForm({
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.wizard.lineError', 'Satır eklenirken bir hata oluştu')
+          : t('package.wizard.lineError')
       );
     }
   };
@@ -280,12 +280,12 @@ export function Step3LineForm({
   const handleDelete = async (lineId: number): Promise<void> => {
     try {
       await deleteMutation.mutateAsync(lineId);
-      toast.success(t('package.wizard.lineDeleted', 'Satır silindi'));
+      toast.success(t('package.wizard.lineDeleted'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.wizard.lineDeleteError', 'Satır silinirken bir hata oluştu')
+          : t('package.wizard.lineDeleteError')
       );
     }
   };
@@ -301,14 +301,14 @@ export function Step3LineForm({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{t('package.wizard.step3.title', '3. Paket Satırları')}</CardTitle>
+              <CardTitle>{t('package.wizard.step3.title')}</CardTitle>
               <CardDescription>
-                {t('package.wizard.step3.description', 'Paketlere satırlar ekleyiniz (Opsiyonel)')}
+                {t('package.wizard.step3.description')}
               </CardDescription>
             </div>
             <Button onClick={handleOpenDialog} disabled={packages.length === 0}>
               <Plus className="size-4 mr-2" />
-              {t('package.wizard.step3.addLine', 'Yeni Satır Ekle')}
+              {t('package.wizard.step3.addLine')}
             </Button>
           </div>
         </CardHeader>
@@ -316,25 +316,25 @@ export function Step3LineForm({
           {packages.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">
-                {t('package.wizard.step3.noPackagesMessage', 'Önce paket eklemelisiniz')}
+                {t('package.wizard.step3.noPackagesMessage')}
               </p>
             </div>
           ) : isLoadingLines ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+              <p className="text-muted-foreground">{t('common.loading')}</p>
             </div>
           ) : lines.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                  <TableHead>{t('package.detail.stockCode', 'Stok Kodu')}</TableHead>
-                  <TableHead>{t('package.detail.stockName', 'Stok Adı')}</TableHead>
-                  <TableHead>{t('package.detail.yapKod', 'Yap Kodu')}</TableHead>
-                  <TableHead>{t('package.detail.yapAcik', 'Yap Açıklama')}</TableHead>
-                  <TableHead>{t('package.detail.quantity', 'Miktar')}</TableHead>
-                  <TableHead>{t('package.detail.serialNo', 'Seri No')}</TableHead>
-                  <TableHead>{t('package.detail.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('package.detail.barcode')}</TableHead>
+                  <TableHead>{t('package.detail.stockCode')}</TableHead>
+                  <TableHead>{t('package.detail.stockName')}</TableHead>
+                  <TableHead>{t('package.detail.yapKod')}</TableHead>
+                  <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                  <TableHead>{t('package.detail.quantity')}</TableHead>
+                  <TableHead>{t('package.detail.serialNo')}</TableHead>
+                  <TableHead>{t('package.detail.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -370,7 +370,7 @@ export function Step3LineForm({
           ) : (
             <div className="text-center py-8">
               <p className="text-muted-foreground">
-                {t('package.wizard.step3.noLines', 'Henüz satır eklenmedi')}
+                {t('package.wizard.step3.noLines')}
               </p>
             </div>
           )}
@@ -380,9 +380,9 @@ export function Step3LineForm({
       <Dialog open={lineDialogOpen} onOpenChange={setLineDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t('package.wizard.step3.addLine', 'Yeni Satır Ekle')}</DialogTitle>
+            <DialogTitle>{t('package.wizard.step3.addLine')}</DialogTitle>
             <DialogDescription>
-              {t('package.wizard.step3.addLineDescription', 'Yeni bir satır ekleyin')}
+              {t('package.wizard.step3.addLineDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -401,7 +401,7 @@ export function Step3LineForm({
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
                     <Input
-                      placeholder={t('package.wizard.step3.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                      placeholder={t('package.wizard.step3.barcodePlaceholder')}
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
@@ -412,7 +412,7 @@ export function Step3LineForm({
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
-                      t('common.search', 'Ara')
+                      t('common.search')
                     )}
                   </Button>
                 </div>
@@ -441,7 +441,7 @@ export function Step3LineForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          {t('package.form.package', 'Paket')} <span className="text-destructive">*</span>
+                          {t('package.form.package')} <span className="text-destructive">*</span>
                         </FormLabel>
                         <Select
                           value={field.value?.toString() || ''}
@@ -453,7 +453,7 @@ export function Step3LineForm({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={t('package.form.selectPackage', 'Paket Seçin')} />
+                              <SelectValue placeholder={t('package.form.selectPackage')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -474,7 +474,7 @@ export function Step3LineForm({
                     name="barcode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('package.form.barcode', 'Barkod')}</FormLabel>
+                        <FormLabel>{t('package.form.barcode')}</FormLabel>
                         <FormControl>
                           <Input {...field} readOnly />
                         </FormControl>
@@ -489,7 +489,7 @@ export function Step3LineForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('package.form.stockCode', 'Stok Kodu')} <span className="text-destructive">*</span>
+                        {t('package.form.stockCode')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -504,7 +504,7 @@ export function Step3LineForm({
                   name="yapKod"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.yapKod', 'Yap Kodu')}</FormLabel>
+                      <FormLabel>{t('package.form.yapKod')}</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ''} />
                       </FormControl>
@@ -519,7 +519,7 @@ export function Step3LineForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('package.form.quantity', 'Miktar')} <span className="text-destructive">*</span>
+                        {t('package.form.quantity')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -540,7 +540,7 @@ export function Step3LineForm({
                   name="sourceRouteId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.sourceRouteId', 'Kaynak Rota ID')}</FormLabel>
+                      <FormLabel>{t('package.form.sourceRouteId')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -559,7 +559,7 @@ export function Step3LineForm({
                   name="serialNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.serialNo', 'Seri No')}</FormLabel>
+                      <FormLabel>{t('package.form.serialNo')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -573,7 +573,7 @@ export function Step3LineForm({
                   name="serialNo2"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.serialNo2', 'Seri No 2')}</FormLabel>
+                      <FormLabel>{t('package.form.serialNo2')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -587,7 +587,7 @@ export function Step3LineForm({
                   name="serialNo3"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.serialNo3', 'Seri No 3')}</FormLabel>
+                      <FormLabel>{t('package.form.serialNo3')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -601,7 +601,7 @@ export function Step3LineForm({
                   name="serialNo4"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.serialNo4', 'Seri No 4')}</FormLabel>
+                      <FormLabel>{t('package.form.serialNo4')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -637,9 +637,9 @@ export function Step3LineForm({
       <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('package.wizard.step3.scanBarcode', 'Barkod Okut')}</DialogTitle>
+            <DialogTitle>{t('package.wizard.step3.scanBarcode')}</DialogTitle>
             <DialogDescription>
-              {t('package.wizard.step3.scanBarcodeDescription', 'Barkodu kameraya hizalayın')}
+              {t('package.wizard.step3.scanBarcodeDescription')}
             </DialogDescription>
           </DialogHeader>
           <div ref={scannerContainerRef} className="w-full">
@@ -650,14 +650,14 @@ export function Step3LineForm({
 
       <div className="flex justify-between gap-2">
         <Button variant="outline" onClick={onPrevious}>
-          {t('package.wizard.previousStep', 'Önceki Adım')}
+          {t('package.wizard.previousStep')}
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onSaveAndExit}>
-            {t('package.wizard.saveAndExit', 'Kaydet ve Çık')}
+            {t('package.wizard.saveAndExit')}
           </Button>
           <Button onClick={onNext}>
-            {t('package.wizard.nextStep', 'Sonraki Adım')}
+            {t('package.wizard.nextStep')}
           </Button>
         </div>
       </div>

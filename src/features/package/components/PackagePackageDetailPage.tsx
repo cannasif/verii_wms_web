@@ -95,9 +95,9 @@ export function PackagePackageDetailPage(): ReactElement {
 
   useEffect(() => {
     if (packageData) {
-      setPageTitle(t('package.packageDetail.title', 'Paket Detayı') + ' - ' + packageData.packageNo);
+      setPageTitle(t('package.packageDetail.title') + ' - ' + packageData.packageNo);
     } else {
-      setPageTitle(t('package.packageDetail.title', 'Paket Detayı'));
+      setPageTitle(t('package.packageDetail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -109,13 +109,13 @@ export function PackagePackageDetailPage(): ReactElement {
 
     try {
       await deleteMutation.mutateAsync(packageId);
-      toast.success(t('package.packageDetail.deleteSuccess', 'Paket başarıyla silindi'));
+      toast.success(t('package.packageDetail.deleteSuccess'));
       navigate(`/package/detail/${packageData.packingHeaderId}`);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.packageDetail.deleteError', 'Paket silinirken bir hata oluştu')
+          : t('package.packageDetail.deleteError')
       );
     }
   };
@@ -123,12 +123,12 @@ export function PackagePackageDetailPage(): ReactElement {
   const handleDeleteLine = async (lineId: number): Promise<void> => {
     try {
       await deleteLineMutation.mutateAsync(lineId);
-      toast.success(t('package.packageDetail.lineDeleteSuccess', 'Satır başarıyla silindi'));
+      toast.success(t('package.packageDetail.lineDeleteSuccess'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.packageDetail.lineDeleteError', 'Satır silinirken bir hata oluştu')
+          : t('package.packageDetail.lineDeleteError')
       );
     }
   };
@@ -140,14 +140,14 @@ export function PackagePackageDetailPage(): ReactElement {
       setSerialNo(stock.seriBarkodMu ? stock.barkod : '');
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('package.packageDetail.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('package.packageDetail.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('package.packageDetail.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('package.packageDetail.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -196,7 +196,7 @@ export function PackagePackageDetailPage(): ReactElement {
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner-package')) {
-        toast.error(t('package.packageDetail.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.packageDetail.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -243,7 +243,7 @@ export function PackagePackageDetailPage(): ReactElement {
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('package.packageDetail.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('package.packageDetail.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -252,7 +252,7 @@ export function PackagePackageDetailPage(): ReactElement {
           }
         );
       } catch (err) {
-        toast.error(t('package.packageDetail.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.packageDetail.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -275,17 +275,17 @@ export function PackagePackageDetailPage(): ReactElement {
 
   const handleLineSubmit = async (): Promise<void> => {
     if (!selectedStock) {
-      toast.error(t('package.packageDetail.noStockSelected', 'Lütfen önce stok bilgisi getirin'));
+      toast.error(t('package.packageDetail.noStockSelected'));
       return;
     }
 
     if (quantity <= 0) {
-      toast.error(t('package.packageDetail.invalidQuantity', 'Geçersiz miktar'));
+      toast.error(t('package.packageDetail.invalidQuantity'));
       return;
     }
 
     if (!packageData) {
-      toast.error(t('package.packageDetail.packageNotFound', 'Paket bulunamadı'));
+      toast.error(t('package.packageDetail.packageNotFound'));
       return;
     }
 
@@ -303,7 +303,7 @@ export function PackagePackageDetailPage(): ReactElement {
         serialNo4: '',
         sourceRouteId: undefined,
       });
-      toast.success(t('package.packageDetail.lineAddSuccess', 'Satır başarıyla eklendi'));
+      toast.success(t('package.packageDetail.lineAddSuccess'));
       setLineDialogOpen(false);
       setBarcodeInput('');
       setSelectedStock(null);
@@ -314,7 +314,7 @@ export function PackagePackageDetailPage(): ReactElement {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.packageDetail.lineAddError', 'Satır eklenirken bir hata oluştu')
+          : t('package.packageDetail.lineAddError')
       );
     }
   };
@@ -330,7 +330,7 @@ export function PackagePackageDetailPage(): ReactElement {
   if (!packageData) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.packageDetail.notFound', 'Paket bulunamadı')}</p>
+        <p className="text-destructive">{t('package.packageDetail.notFound')}</p>
       </div>
     );
   }
@@ -341,13 +341,13 @@ export function PackagePackageDetailPage(): ReactElement {
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>{t('package.packageDetail.title', 'Paket Detayı')}</CardTitle>
+              <CardTitle>{t('package.packageDetail.title')}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">{packageData.packageNo}</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={() => navigate(`/package/detail/${packageData.packingHeaderId}`)}>
                 <ArrowLeft className="size-4 mr-2" />
-                {t('package.packageDetail.backToHeader', 'Paketlemeye Dön')}
+                {t('package.packageDetail.backToHeader')}
               </Button>
               <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
                 <Trash2 className="size-4 mr-2" />
@@ -361,7 +361,7 @@ export function PackagePackageDetailPage(): ReactElement {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.status', 'Durum')}
+                  {t('package.packageDetail.status')}
                 </p>
                 <Badge className={getStatusBadgeColor(packageData.status)}>
                   {t(`package.packageStatus.${packageData.status.toLowerCase()}`, packageData.status)}
@@ -369,19 +369,19 @@ export function PackagePackageDetailPage(): ReactElement {
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.packageType', 'Paket Tipi')}
+                  {t('package.packageDetail.packageType')}
                 </p>
                 <p className="text-sm font-medium">{packageData.packageType}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.barcode', 'Barkod')}
+                  {t('package.packageDetail.barcode')}
                 </p>
                 <p className="text-sm font-medium">{packageData.barcode || '-'}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.isMixed', 'Karışık')}
+                  {t('package.packageDetail.isMixed')}
                 </p>
                 <p className="text-sm font-medium">{packageData.isMixed ? t('common.yes') : t('common.no')}</p>
               </div>
@@ -389,24 +389,24 @@ export function PackagePackageDetailPage(): ReactElement {
 
             <div className="pt-2 border-t">
               <p className="text-xs font-medium text-muted-foreground mb-3">
-                {t('package.packageDetail.dimensions', 'Boyutlar')}
+                {t('package.packageDetail.dimensions')}
               </p>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.packageDetail.length', 'Uzunluk')}
+                    {t('package.packageDetail.length')}
                   </p>
                   <p className="text-sm font-medium">{packageData.length || '-'}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.packageDetail.width', 'Genişlik')}
+                    {t('package.packageDetail.width')}
                   </p>
                   <p className="text-sm font-medium">{packageData.width || '-'}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.packageDetail.height', 'Yükseklik')}
+                    {t('package.packageDetail.height')}
                   </p>
                   <p className="text-sm font-medium">{packageData.height || '-'}</p>
                 </div>
@@ -416,19 +416,19 @@ export function PackagePackageDetailPage(): ReactElement {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t">
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.volume', 'Hacim')}
+                  {t('package.packageDetail.volume')}
                 </p>
                 <p className="text-sm font-medium">{packageData.volume || '-'}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.netWeight', 'Net Ağırlık')}
+                  {t('package.packageDetail.netWeight')}
                 </p>
                 <p className="text-sm font-medium">{packageData.netWeight || '-'}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.packageDetail.grossWeight', 'Brüt Ağırlık')}
+                  {t('package.packageDetail.grossWeight')}
                 </p>
                 <p className="text-sm font-medium">{packageData.grossWeight || '-'}</p>
               </div>
@@ -438,7 +438,7 @@ export function PackagePackageDetailPage(): ReactElement {
           <div className="flex justify-end mb-4">
             <Button onClick={() => setLineDialogOpen(true)}>
               <Plus className="size-4 mr-2" />
-              {t('package.packageDetail.addLine', 'Yeni Satır Ekle')}
+              {t('package.packageDetail.addLine')}
             </Button>
           </div>
 
@@ -450,14 +450,14 @@ export function PackagePackageDetailPage(): ReactElement {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('package.packageDetail.barcode', 'Barkod')}</TableHead>
-                      <TableHead>{t('package.packageDetail.stockCode', 'Stok Kodu')}</TableHead>
-                      <TableHead>{t('package.packageDetail.stockName', 'Stok Adı')}</TableHead>
-                      <TableHead>{t('package.packageDetail.yapKod', 'Yap Kodu')}</TableHead>
-                      <TableHead>{t('package.packageDetail.yapAcik', 'Yap Açıklama')}</TableHead>
-                      <TableHead>{t('package.packageDetail.quantity', 'Miktar')}</TableHead>
-                      <TableHead>{t('package.packageDetail.serialNo', 'Seri No')}</TableHead>
-                      <TableHead>{t('package.packageDetail.actions', 'İşlemler')}</TableHead>
+                      <TableHead>{t('package.packageDetail.barcode')}</TableHead>
+                      <TableHead>{t('package.packageDetail.stockCode')}</TableHead>
+                      <TableHead>{t('package.packageDetail.stockName')}</TableHead>
+                      <TableHead>{t('package.packageDetail.yapKod')}</TableHead>
+                      <TableHead>{t('package.packageDetail.yapAcik')}</TableHead>
+                      <TableHead>{t('package.packageDetail.quantity')}</TableHead>
+                      <TableHead>{t('package.packageDetail.serialNo')}</TableHead>
+                      <TableHead>{t('package.packageDetail.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -497,33 +497,33 @@ export function PackagePackageDetailPage(): ReactElement {
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.barcode', 'Barkod')}
+                              {t('package.packageDetail.barcode')}
                             </p>
                             <p className="text-sm font-medium">{line.barcode || '-'}</p>
                           </div>
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.stockCode', 'Stok Kodu')}
+                              {t('package.packageDetail.stockCode')}
                             </p>
                             <p className="text-sm font-medium">{line.stockCode}</p>
                           </div>
                         </div>
                         <div className="pt-3 border-t">
                           <p className="text-xs font-medium text-muted-foreground mb-1">
-                            {t('package.packageDetail.stockName', 'Stok Adı')}
+                            {t('package.packageDetail.stockName')}
                           </p>
                           <p className="text-sm font-medium">{line.stockName || '-'}</p>
                         </div>
                         <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.yapKod', 'Yap Kodu')}
+                              {t('package.packageDetail.yapKod')}
                             </p>
                             <p className="text-sm font-medium">{line.yapKod}</p>
                           </div>
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.quantity', 'Miktar')}
+                              {t('package.packageDetail.quantity')}
                             </p>
                             <p className="text-sm font-medium">{line.quantity}</p>
                           </div>
@@ -531,7 +531,7 @@ export function PackagePackageDetailPage(): ReactElement {
                         {line.yapAcik && (
                           <div className="pt-3 border-t">
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.yapAcik', 'Yap Açıklama')}
+                              {t('package.packageDetail.yapAcik')}
                             </p>
                             <p className="text-sm font-medium">{line.yapAcik}</p>
                           </div>
@@ -539,7 +539,7 @@ export function PackagePackageDetailPage(): ReactElement {
                         {(line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4) && (
                           <div className="pt-3 border-t">
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              {t('package.packageDetail.serialNo', 'Seri No')}
+                              {t('package.packageDetail.serialNo')}
                             </p>
                             <p className="text-sm font-medium">
                               {line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4}
@@ -566,7 +566,7 @@ export function PackagePackageDetailPage(): ReactElement {
             </>
           ) : (
             <p className="text-muted-foreground text-center py-8">
-              {t('package.packageDetail.noLines', 'Satır bulunamadı')}
+              {t('package.packageDetail.noLines')}
             </p>
           )}
         </CardContent>
@@ -575,9 +575,9 @@ export function PackagePackageDetailPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('package.packageDetail.deleteConfirm', 'Paketi Sil')}</DialogTitle>
+            <DialogTitle>{t('package.packageDetail.deleteConfirm')}</DialogTitle>
             <DialogDescription>
-              {t('package.packageDetail.deleteConfirmMessage', 'Bu paketi silmek istediğinizden emin misiniz?')}
+              {t('package.packageDetail.deleteConfirmMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -604,9 +604,9 @@ export function PackagePackageDetailPage(): ReactElement {
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>{t('package.packageDetail.addLine', 'Yeni Satır Ekle')}</DialogTitle>
+            <DialogTitle>{t('package.packageDetail.addLine')}</DialogTitle>
             <DialogDescription>
-              {t('package.packageDetail.addLineDescription', 'Barkod okutun veya yazın, sonra ara')}
+              {t('package.packageDetail.addLineDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -625,7 +625,7 @@ export function PackagePackageDetailPage(): ReactElement {
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
                     <Input
-                      placeholder={t('package.packageDetail.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                      placeholder={t('package.packageDetail.barcodePlaceholder')}
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
@@ -636,7 +636,7 @@ export function PackagePackageDetailPage(): ReactElement {
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
-                      t('common.search', 'Ara')
+                      t('common.search')
                     )}
                   </Button>
                 </div>
@@ -652,11 +652,11 @@ export function PackagePackageDetailPage(): ReactElement {
                         {selectedStock.yapKod && (
                           <div className="mt-2 space-y-1">
                             <p className="text-xs text-muted-foreground">
-                              <span className="font-medium">{t('package.form.yapKod', 'Yap Kodu')}:</span> {selectedStock.yapKod}
+                              <span className="font-medium">{t('package.form.yapKod')}:</span> {selectedStock.yapKod}
                             </p>
                             {selectedStock.yapAcik && (
                               <p className="text-xs text-muted-foreground">
-                                <span className="font-medium">{t('package.form.yapAcik', 'Yap Açıklama')}:</span> {selectedStock.yapAcik}
+                                <span className="font-medium">{t('package.form.yapAcik')}:</span> {selectedStock.yapAcik}
                               </p>
                             )}
                           </div>
@@ -670,7 +670,7 @@ export function PackagePackageDetailPage(): ReactElement {
                     <div className="space-y-2">
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.packageDetail.quantity', 'Miktar')} <span className="text-destructive">*</span>
+                          {t('package.packageDetail.quantity')} <span className="text-destructive">*</span>
                         </label>
                         <Input
                           type="number"
@@ -678,18 +678,18 @@ export function PackagePackageDetailPage(): ReactElement {
                           value={quantity}
                           onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                           className="h-9"
-                          placeholder={t('package.packageDetail.quantity', 'Miktar')}
+                          placeholder={t('package.packageDetail.quantity')}
                         />
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.form.serialNo', 'Seri No')}
+                          {t('package.form.serialNo')}
                         </label>
                         <Input
                           value={serialNo}
                           onChange={(e) => setSerialNo(e.target.value)}
                           className="h-9"
-                          placeholder={t('package.form.serialNo', 'Seri No')}
+                          placeholder={t('package.form.serialNo')}
                         />
                       </div>
                     </div>
@@ -702,7 +702,7 @@ export function PackagePackageDetailPage(): ReactElement {
                         {createLineMutation.isPending ? (
                           <Loader2 className="size-4 animate-spin mr-1" />
                         ) : null}
-                        {t('package.packageDetail.add', 'Ekle')}
+                        {t('package.packageDetail.add')}
                       </Button>
                     </div>
                   </div>
@@ -714,9 +714,9 @@ export function PackagePackageDetailPage(): ReactElement {
               <Dialog open={isCameraOpen} onOpenChange={handleCloseCamera}>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>{t('package.packageDetail.scanBarcode', 'Barkod Okut')}</DialogTitle>
+                    <DialogTitle>{t('package.packageDetail.scanBarcode')}</DialogTitle>
                     <DialogDescription>
-                      {t('package.packageDetail.scanBarcodeDescription', 'Kamerayı barkoda doğrultun')}
+                      {t('package.packageDetail.scanBarcodeDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <div ref={scannerContainerRef} className="w-full">

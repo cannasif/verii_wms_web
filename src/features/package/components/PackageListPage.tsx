@@ -68,20 +68,20 @@ export function PackageListPage(): ReactElement {
 
   const columns = useMemo<ColumnDef[]>(
     () => [
-      { key: 'id', label: t('package.list.id', 'Kayıt No') },
-      { key: 'packingNo', label: t('package.list.packingNo', 'Paketleme No') },
-      { key: 'packingDate', label: t('package.list.packingDate', 'Paketleme Tarihi') },
-      { key: 'warehouseCode', label: t('package.list.warehouseCode', 'Depo Kodu') },
-      { key: 'sourceType', label: t('package.list.sourceType', 'Kaynak Tipi') },
-      { key: 'matchedSource', label: t('package.list.matchedSource', 'Eşleşen Kaynak') },
-      { key: 'customerCode', label: t('package.list.customerCode', 'Cari Kodu') },
-      { key: 'customerName', label: t('package.list.customerName', 'Cari Adı') },
-      { key: 'status', label: t('package.list.status', 'Durum') },
-      { key: 'totalPackageCount', label: t('package.list.totalPackageCount', 'Toplam Paket') },
-      { key: 'totalQuantity', label: t('package.list.totalQuantity', 'Toplam Miktar') },
-      { key: 'totalGrossWeight', label: t('package.list.totalGrossWeight', 'Toplam Brüt Ağırlık') },
-      { key: 'trackingNo', label: t('package.list.trackingNo', 'Takip No') },
-      { key: 'actions', label: t('package.list.actions', 'İşlemler') },
+      { key: 'id', label: t('package.list.id') },
+      { key: 'packingNo', label: t('package.list.packingNo') },
+      { key: 'packingDate', label: t('package.list.packingDate') },
+      { key: 'warehouseCode', label: t('package.list.warehouseCode') },
+      { key: 'sourceType', label: t('package.list.sourceType') },
+      { key: 'matchedSource', label: t('package.list.matchedSource') },
+      { key: 'customerCode', label: t('package.list.customerCode') },
+      { key: 'customerName', label: t('package.list.customerName') },
+      { key: 'status', label: t('package.list.status') },
+      { key: 'totalPackageCount', label: t('package.list.totalPackageCount') },
+      { key: 'totalQuantity', label: t('package.list.totalQuantity') },
+      { key: 'totalGrossWeight', label: t('package.list.totalGrossWeight') },
+      { key: 'trackingNo', label: t('package.list.trackingNo') },
+      { key: 'actions', label: t('package.list.actions') },
     ],
     [t]
   );
@@ -144,7 +144,7 @@ export function PackageListPage(): ReactElement {
   const deleteMutation = useDeletePHeader();
 
   useEffect(() => {
-    setPageTitle(t('package.list.title', 'Paketleme Listesi'));
+    setPageTitle(t('package.list.title'));
     return () => {
       setPageTitle(null);
     };
@@ -215,14 +215,14 @@ export function PackageListPage(): ReactElement {
 
     try {
       await deleteMutation.mutateAsync(selectedHeader.id);
-      toast.success(t('package.list.deleteSuccess', 'Paketleme başarıyla silindi'));
+      toast.success(t('package.list.deleteSuccess'));
       setDeleteDialogOpen(false);
       setSelectedHeader(null);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.list.deleteError', 'Paketleme silinirken bir hata oluştu')
+          : t('package.list.deleteError')
       );
     }
   };
@@ -248,7 +248,7 @@ export function PackageListPage(): ReactElement {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.list.error', 'Veri yüklenirken bir hata oluştu')}</p>
+        <p className="text-destructive">{t('package.list.error')}</p>
       </div>
     );
   }
@@ -258,7 +258,7 @@ export function PackageListPage(): ReactElement {
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('package.list.title', 'Paketleme Listesi')}</CardTitle>
+            <CardTitle>{t('package.list.title')}</CardTitle>
             <div className="flex items-center gap-2">
               <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -268,7 +268,7 @@ export function PackageListPage(): ReactElement {
                     className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
                   >
                     <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter', 'Filtrele')}
+                    {t('common.filter')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -304,7 +304,7 @@ export function PackageListPage(): ReactElement {
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
-                  placeholder={t('package.list.searchPlaceholder', 'Paketleme No, Cari Kodu...')}
+                  placeholder={t('package.list.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -325,7 +325,7 @@ export function PackageListPage(): ReactElement {
               </div>
               <Button onClick={() => navigate('/package/create')}>
                 <Plus className="size-4 mr-2" />
-                {t('package.list.createNew', 'Yeni Paketleme')}
+                {t('package.list.createNew')}
               </Button>
             </div>
           </div>
@@ -337,20 +337,20 @@ export function PackageListPage(): ReactElement {
               <TableHeader>
                 <TableRow>
                   {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('Id')}>{t('package.list.id', 'Kayıt No')}{sortBy === 'Id' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
-                    if (key === 'packingNo') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingNo')}>{t('package.list.packingNo', 'Paketleme No')}{sortBy === 'packingNo' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
-                    if (key === 'packingDate') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingDate')}>{t('package.list.packingDate', 'Paketleme Tarihi')}{sortBy === 'packingDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
-                    if (key === 'warehouseCode') return <TableHead key={key}>{t('package.list.warehouseCode', 'Depo Kodu')}</TableHead>;
-                    if (key === 'sourceType') return <TableHead key={key}>{t('package.list.sourceType', 'Kaynak Tipi')}</TableHead>;
-                    if (key === 'matchedSource') return <TableHead key={key}>{t('package.list.matchedSource', 'Eşleşen Kaynak')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('package.list.customerCode', 'Cari Kodu')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('package.list.customerName', 'Cari Adı')}</TableHead>;
-                    if (key === 'status') return <TableHead key={key}>{t('package.list.status', 'Durum')}</TableHead>;
-                    if (key === 'totalPackageCount') return <TableHead key={key}>{t('package.list.totalPackageCount', 'Toplam Paket')}</TableHead>;
-                    if (key === 'totalQuantity') return <TableHead key={key}>{t('package.list.totalQuantity', 'Toplam Miktar')}</TableHead>;
-                    if (key === 'totalGrossWeight') return <TableHead key={key}>{t('package.list.totalGrossWeight', 'Toplam Brüt Ağırlık')}</TableHead>;
-                    if (key === 'trackingNo') return <TableHead key={key}>{t('package.list.trackingNo', 'Takip No')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('package.list.actions', 'İşlemler')}</TableHead>;
+                    if (key === 'id') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('Id')}>{t('package.list.id')}{sortBy === 'Id' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'packingNo') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingNo')}>{t('package.list.packingNo')}{sortBy === 'packingNo' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'packingDate') return <TableHead key={key} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('packingDate')}>{t('package.list.packingDate')}{sortBy === 'packingDate' && (sortDirection === 'asc' ? ' ↑' : ' ↓')}</TableHead>;
+                    if (key === 'warehouseCode') return <TableHead key={key}>{t('package.list.warehouseCode')}</TableHead>;
+                    if (key === 'sourceType') return <TableHead key={key}>{t('package.list.sourceType')}</TableHead>;
+                    if (key === 'matchedSource') return <TableHead key={key}>{t('package.list.matchedSource')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('package.list.customerCode')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('package.list.customerName')}</TableHead>;
+                    if (key === 'status') return <TableHead key={key}>{t('package.list.status')}</TableHead>;
+                    if (key === 'totalPackageCount') return <TableHead key={key}>{t('package.list.totalPackageCount')}</TableHead>;
+                    if (key === 'totalQuantity') return <TableHead key={key}>{t('package.list.totalQuantity')}</TableHead>;
+                    if (key === 'totalGrossWeight') return <TableHead key={key}>{t('package.list.totalGrossWeight')}</TableHead>;
+                    if (key === 'trackingNo') return <TableHead key={key}>{t('package.list.trackingNo')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('package.list.actions')}</TableHead>;
                     return null;
                   })}
                 </TableRow>
@@ -373,7 +373,7 @@ export function PackageListPage(): ReactElement {
                         if (key === 'totalQuantity') return <TableCell key={key}>{item.totalQuantity || 0}</TableCell>;
                         if (key === 'totalGrossWeight') return <TableCell key={key}>{item.totalGrossWeight || 0}</TableCell>;
                         if (key === 'trackingNo') return <TableCell key={key}>{item.trackingNo || '-'}</TableCell>;
-                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${item.id}`)}><Eye className="size-4 mr-2" />{t('package.list.detail', 'Detay')}</Button><Button variant="ghost" size="sm" onClick={() => { setSelectedHeader(item); setDeleteDialogOpen(true); }}><Trash2 className="size-4" /></Button></div></TableCell>;
+                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${item.id}`)}><Eye className="size-4 mr-2" />{t('package.list.detail')}</Button><Button variant="ghost" size="sm" onClick={() => { setSelectedHeader(item); setDeleteDialogOpen(true); }}><Trash2 className="size-4" /></Button></div></TableCell>;
                         return null;
                       })}
                     </TableRow>
@@ -382,7 +382,7 @@ export function PackageListPage(): ReactElement {
                   <TableRow>
                     <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
-                        {t('package.list.noData', 'Veri bulunamadı')}
+                        {t('package.list.noData')}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -407,19 +407,19 @@ export function PackageListPage(): ReactElement {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.packingDate', 'Paketleme Tarihi')}
+                          {t('package.list.packingDate')}
                         </p>
                         <p className="text-base">{formatDate(item.packingDate)}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.warehouseCode', 'Depo Kodu')}
+                          {t('package.list.warehouseCode')}
                         </p>
                         <p className="text-base">{item.warehouseCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.sourceType', 'Kaynak Tipi')}
+                          {t('package.list.sourceType')}
                         </p>
                         <p className="text-base">
                           {item.sourceType ? (
@@ -433,7 +433,7 @@ export function PackageListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.matchedSource', 'Eşleşen Kaynak')}
+                          {t('package.list.matchedSource')}
                         </p>
                         <p className="text-base">
                           {item.sourceHeaderId ? `#${item.sourceHeaderId}` : '-'}
@@ -441,19 +441,19 @@ export function PackageListPage(): ReactElement {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.customerCode', 'Cari Kodu')}
+                          {t('package.list.customerCode')}
                         </p>
                         <p className="text-base">{item.customerCode || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.customerName', 'Cari Adı')}
+                          {t('package.list.customerName')}
                         </p>
                         <p className="text-base">{item.customerName || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                          {t('package.list.totalPackageCount', 'Toplam Paket')}
+                          {t('package.list.totalPackageCount')}
                         </p>
                         <p className="text-base">{item.totalPackageCount || 0}</p>
                       </div>
@@ -466,7 +466,7 @@ export function PackageListPage(): ReactElement {
                         onClick={() => navigate(`/package/detail/${item.id}`)}
                       >
                         <Eye className="size-4 mr-2" />
-                        {t('package.list.detail', 'Detay')}
+                        {t('package.list.detail')}
                       </Button>
                       <Button
                         variant="outline"
@@ -485,7 +485,7 @@ export function PackageListPage(): ReactElement {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  {t('package.list.noData', 'Veri bulunamadı')}
+                  {t('package.list.noData')}
                 </p>
               </div>
             )}
@@ -495,7 +495,7 @@ export function PackageListPage(): ReactElement {
             <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                  {t('common.paginationInfo', {
                     current: data.totalCount > 0 ? (data.pageNumber - 1) * data.pageSize + 1 : 0,
                     total: Math.min(data.pageNumber * data.pageSize, data.totalCount),
                     totalCount: data.totalCount,
@@ -503,7 +503,7 @@ export function PackageListPage(): ReactElement {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage', 'Sayfada')}
+                    {t('common.rowsPerPage')}
                   </span>
                   <Select
                     value={String(pageSize)}
@@ -524,7 +524,7 @@ export function PackageListPage(): ReactElement {
                     </SelectContent>
                   </Select>
                   <span className="text-sm text-muted-foreground">
-                    {t('common.records', 'kayıt')}
+                    {t('common.records')}
                   </span>
                 </div>
               </div>
@@ -539,7 +539,7 @@ export function PackageListPage(): ReactElement {
                   {t('common.previous')}
                 </Button>
                 <span className="text-sm">
-                  {t('common.page', 'Sayfa')} {data.pageNumber} / {data.totalPages}
+                  {t('common.page')} {data.pageNumber} / {data.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -559,9 +559,9 @@ export function PackageListPage(): ReactElement {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('package.list.deleteConfirm', 'Paketlemeyi Sil')}</DialogTitle>
+            <DialogTitle>{t('package.list.deleteConfirm')}</DialogTitle>
             <DialogDescription>
-              {t('package.list.deleteConfirmMessage', 'Bu paketlemeyi silmek istediğinizden emin misiniz?')}
+              {t('package.list.deleteConfirmMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

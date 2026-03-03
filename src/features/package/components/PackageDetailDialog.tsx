@@ -68,8 +68,8 @@ export function PackageDetailDialog({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>{t('package.list.detailTitle', 'Paketleme Detayı')}</DialogTitle>
-            <DialogDescription>{t('common.loading', 'Yükleniyor...')}</DialogDescription>
+            <DialogTitle>{t('package.list.detailTitle')}</DialogTitle>
+            <DialogDescription>{t('common.loading')}</DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -81,9 +81,9 @@ export function PackageDetailDialog({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>{t('package.list.detailTitle', 'Paketleme Detayı')}</DialogTitle>
+            <DialogTitle>{t('package.list.detailTitle')}</DialogTitle>
             <DialogDescription>
-              {t('package.detail.notFound', 'Paketleme bulunamadı')}
+              {t('package.detail.notFound')}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -96,10 +96,10 @@ export function PackageDetailDialog({
       <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle className="text-xl">
-            {t('package.list.detailTitle', 'Paketleme Detayı')} - {header.packingNo}
+            {t('package.list.detailTitle')} - {header.packingNo}
           </DialogTitle>
           <DialogDescription>
-            {t('package.list.detailDescription', 'Paketleme detaylı bilgileri')}
+            {t('package.list.detailDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -108,30 +108,30 @@ export function PackageDetailDialog({
             <Card>
               <CardContent className="pt-4 pb-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  {t('package.detail.basicInfo', 'Temel Bilgiler')}
+                  {t('package.detail.basicInfo')}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.packingNo', 'Paketleme No')}
+                      {t('package.form.packingNo')}
                     </span>
                     <span className="text-sm font-semibold">{header.packingNo}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.packingDate', 'Paketleme Tarihi')}
+                      {t('package.form.packingDate')}
                     </span>
                     <span className="text-sm">{formatDate(header.packingDate)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.warehouseCode', 'Depo Kodu')}
+                      {t('package.form.warehouseCode')}
                     </span>
                     <span className="text-sm">{header.warehouseCode || '-'}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.customerCode', 'Cari Kodu')}
+                      {t('package.form.customerCode')}
                     </span>
                     <span className="text-sm">
                       {header.customerCode || '-'}
@@ -140,7 +140,7 @@ export function PackageDetailDialog({
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.status', 'Durum')}
+                      {t('package.form.status')}
                     </span>
                     <Badge className={getStatusBadgeColor(header.status)}>
                       {t(`package.status.${header.status.toLowerCase()}`, header.status)}
@@ -153,30 +153,30 @@ export function PackageDetailDialog({
             <Card>
               <CardContent className="pt-4 pb-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  {t('package.detail.summary', 'Özet Bilgiler')}
+                  {t('package.detail.summary')}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.detail.totalPackageCount', 'Toplam Paket Sayısı')}
+                      {t('package.detail.totalPackageCount')}
                     </span>
                     <span className="text-sm font-semibold">{header.totalPackageCount || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.detail.totalQuantity', 'Toplam Miktar')}
+                      {t('package.detail.totalQuantity')}
                     </span>
                     <span className="text-sm font-semibold">{header.totalQuantity || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.detail.totalGrossWeight', 'Toplam Brüt Ağırlık')}
+                      {t('package.detail.totalGrossWeight')}
                     </span>
                     <span className="text-sm font-semibold">{header.totalGrossWeight || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.detail.totalVolume', 'Toplam Hacim')}
+                      {t('package.detail.totalVolume')}
                     </span>
                     <span className="text-sm font-semibold">{header.totalVolume || 0}</span>
                   </div>
@@ -187,18 +187,18 @@ export function PackageDetailDialog({
             <Card>
               <CardContent className="pt-4 pb-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  {t('package.detail.shippingInfo', 'Kargo Bilgileri')}
+                  {t('package.detail.shippingInfo')}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.trackingNo', 'Takip No')}
+                      {t('package.form.trackingNo')}
                     </span>
                     <span className="text-sm">{header.trackingNo || '-'}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {t('package.form.carrierServiceType', 'Kargo Servis Tipi')}
+                      {t('package.form.carrierServiceType')}
                     </span>
                     <span className="text-sm">{header.carrierServiceType || '-'}</span>
                   </div>
@@ -210,30 +210,30 @@ export function PackageDetailDialog({
           <Tabs defaultValue="packages" className="flex-1 overflow-hidden flex flex-col">
             <TabsList className="shrink-0">
               <TabsTrigger value="packages">
-                {t('package.detail.packages', 'Paketler')} ({packages?.length || 0})
+                {t('package.detail.packages')} ({packages?.length || 0})
               </TabsTrigger>
               <TabsTrigger value="lines">
-                {t('package.detail.lines', 'Satırlar')} ({lines?.length || 0})
+                {t('package.detail.lines')} ({lines?.length || 0})
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="packages" className="flex-1 overflow-auto mt-4">
               {isLoadingPackages ? (
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+                  <p className="text-muted-foreground">{t('common.loading')}</p>
                 </div>
               ) : packages && packages.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('package.detail.packageNo', 'Paket No')}</TableHead>
-                      <TableHead>{t('package.detail.packageType', 'Paket Tipi')}</TableHead>
-                      <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                      <TableHead>{t('package.detail.status', 'Durum')}</TableHead>
-                      <TableHead>{t('package.detail.netWeight', 'Net Ağırlık')}</TableHead>
-                      <TableHead>{t('package.detail.grossWeight', 'Brüt Ağırlık')}</TableHead>
-                      <TableHead>{t('package.detail.volume', 'Hacim')}</TableHead>
-                      <TableHead>{t('package.detail.isMixed', 'Karışık')}</TableHead>
+                      <TableHead>{t('package.detail.packageNo')}</TableHead>
+                      <TableHead>{t('package.detail.packageType')}</TableHead>
+                      <TableHead>{t('package.detail.barcode')}</TableHead>
+                      <TableHead>{t('package.detail.status')}</TableHead>
+                      <TableHead>{t('package.detail.netWeight')}</TableHead>
+                      <TableHead>{t('package.detail.grossWeight')}</TableHead>
+                      <TableHead>{t('package.detail.volume')}</TableHead>
+                      <TableHead>{t('package.detail.isMixed')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -252,7 +252,7 @@ export function PackageDetailDialog({
                         <TableCell>{pkg.netWeight || '-'}</TableCell>
                         <TableCell>{pkg.grossWeight || '-'}</TableCell>
                         <TableCell>{pkg.volume || '-'}</TableCell>
-                        <TableCell>{pkg.isMixed ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}</TableCell>
+                        <TableCell>{pkg.isMixed ? t('common.yes') : t('common.no')}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -260,7 +260,7 @@ export function PackageDetailDialog({
               ) : (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">
-                    {t('package.detail.noPackages', 'Paket bulunamadı')}
+                    {t('package.detail.noPackages')}
                   </p>
                 </div>
               )}
@@ -269,19 +269,19 @@ export function PackageDetailDialog({
             <TabsContent value="lines" className="flex-1 overflow-auto mt-4">
               {isLoadingLines ? (
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+                  <p className="text-muted-foreground">{t('common.loading')}</p>
                 </div>
               ) : lines && lines.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                      <TableHead>{t('package.detail.stockCode', 'Stok Kodu')}</TableHead>
-                      <TableHead>{t('package.detail.stockName', 'Stok Adı')}</TableHead>
-                      <TableHead>{t('package.detail.yapKod', 'Yap Kodu')}</TableHead>
-                      <TableHead>{t('package.detail.yapAcik', 'Yap Açıklama')}</TableHead>
-                      <TableHead>{t('package.detail.quantity', 'Miktar')}</TableHead>
-                      <TableHead>{t('package.detail.serialNo', 'Seri No')}</TableHead>
+                      <TableHead>{t('package.detail.barcode')}</TableHead>
+                      <TableHead>{t('package.detail.stockCode')}</TableHead>
+                      <TableHead>{t('package.detail.stockName')}</TableHead>
+                      <TableHead>{t('package.detail.yapKod')}</TableHead>
+                      <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                      <TableHead>{t('package.detail.quantity')}</TableHead>
+                      <TableHead>{t('package.detail.serialNo')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -307,7 +307,7 @@ export function PackageDetailDialog({
                 </Table>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('package.detail.noLines', 'Satır bulunamadı')}</p>
+                  <p className="text-muted-foreground">{t('package.detail.noLines')}</p>
                 </div>
               )}
             </TabsContent>

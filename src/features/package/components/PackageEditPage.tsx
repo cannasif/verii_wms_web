@@ -72,15 +72,15 @@ export function PackageEditPage(): ReactElement {
 
   const sourceTypeOptions = useMemo(
     () => [
-      { value: 'GR', label: t('package.sourceType.GR', 'Mal Kabul') },
-      { value: 'WT', label: t('package.sourceType.WT', 'Depo Transferi') },
-      { value: 'SH', label: t('package.sourceType.SH', 'Sevkiyat') },
-      { value: 'PR', label: t('package.sourceType.PR', 'Üretim') },
-      { value: 'PT', label: t('package.sourceType.PT', 'Üretim Transferi') },
-      { value: 'SIT', label: t('package.sourceType.SIT', 'Yarı Mamul Çıkış Transferi') },
-      { value: 'SRT', label: t('package.sourceType.SRT', 'Yarı Mamul Giriş Transferi') },
-      { value: 'WI', label: t('package.sourceType.WI', 'Ambar Girişi') },
-      { value: 'WO', label: t('package.sourceType.WO', 'Ambar Çıkışı') },
+      { value: 'GR', label: t('package.sourceType.GR') },
+      { value: 'WT', label: t('package.sourceType.WT') },
+      { value: 'SH', label: t('package.sourceType.SH') },
+      { value: 'PR', label: t('package.sourceType.PR') },
+      { value: 'PT', label: t('package.sourceType.PT') },
+      { value: 'SIT', label: t('package.sourceType.SIT') },
+      { value: 'SRT', label: t('package.sourceType.SRT') },
+      { value: 'WI', label: t('package.sourceType.WI') },
+      { value: 'WO', label: t('package.sourceType.WO') },
     ],
     [t]
   );
@@ -115,7 +115,7 @@ export function PackageEditPage(): ReactElement {
   }, [header, form]);
 
   useEffect(() => {
-    setPageTitle(t('package.edit.title', 'Paketleme Düzenle'));
+    setPageTitle(t('package.edit.title'));
     return () => {
       setPageTitle(null);
     };
@@ -141,13 +141,13 @@ export function PackageEditPage(): ReactElement {
           trackingNo: data.trackingNo || undefined,
         },
       });
-      toast.success(t('package.edit.success', 'Paketleme başarıyla güncellendi'));
+      toast.success(t('package.edit.success'));
       navigate(`/package/detail/${headerId}`);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.edit.error', 'Paketleme güncellenirken bir hata oluştu')
+          : t('package.edit.error')
       );
     }
   };
@@ -163,7 +163,7 @@ export function PackageEditPage(): ReactElement {
   if (!header) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.edit.notFound', 'Paketleme bulunamadı')}</p>
+        <p className="text-destructive">{t('package.edit.notFound')}</p>
       </div>
     );
   }
@@ -174,9 +174,9 @@ export function PackageEditPage(): ReactElement {
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>{t('package.edit.title', 'Paketleme Düzenle')}</CardTitle>
+              <CardTitle>{t('package.edit.title')}</CardTitle>
               <CardDescription>
-                {t('package.edit.description', 'Paketleme bilgilerini düzenleyin')}
+                {t('package.edit.description')}
               </CardDescription>
             </div>
             {header?.sourceType && header?.sourceHeaderId && (
@@ -191,24 +191,24 @@ export function PackageEditPage(): ReactElement {
                     });
                     toast.success(
                       header.isMatched
-                        ? t('package.edit.unmatchSuccess', 'Bağlantı başarıyla kesildi')
-                        : t('package.edit.matchSuccess', 'Eşleme başarıyla yapıldı')
+                        ? t('package.edit.unmatchSuccess')
+                        : t('package.edit.matchSuccess')
                     );
                   } catch (error) {
                     toast.error(
                       error instanceof Error
                         ? error.message
-                        : t('package.edit.matchError', 'Eşleme işlemi sırasında bir hata oluştu')
+                        : t('package.edit.matchError')
                     );
                   }
                 }}
                 disabled={matchPlinesMutation.isPending}
               >
                 {matchPlinesMutation.isPending
-                  ? t('common.saving', 'Kaydediliyor...')
+                  ? t('common.saving')
                   : header.isMatched
-                    ? t('package.edit.unmatch', 'Bağlantıyı Kes')
-                    : t('package.edit.match', 'Eşle')}
+                    ? t('package.edit.unmatch')
+                    : t('package.edit.match')}
               </Button>
             )}
           </div>
@@ -223,7 +223,7 @@ export function PackageEditPage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('package.form.packingNo', 'Paketleme No')} <span className="text-destructive">*</span>
+                        {t('package.form.packingNo')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -238,7 +238,7 @@ export function PackageEditPage(): ReactElement {
                   name="packingDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.packingDate', 'Paketleme Tarihi')}</FormLabel>
+                      <FormLabel>{t('package.form.packingDate')}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -252,7 +252,7 @@ export function PackageEditPage(): ReactElement {
                   name="sourceType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.sourceType', 'Kaynak Tipi')}</FormLabel>
+                      <FormLabel>{t('package.form.sourceType')}</FormLabel>
                       <FormControl>
                         <SearchableSelect<{ value: string; label: string }>
                           value={field.value || ''}
@@ -263,9 +263,9 @@ export function PackageEditPage(): ReactElement {
                           options={sourceTypeOptions}
                           getOptionValue={(opt) => opt.value}
                           getOptionLabel={(opt) => opt.label}
-                          placeholder={t('package.form.selectSourceType', 'Kaynak Tipi Seçin')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
-                          emptyText={t('package.form.noSourceType', 'Kaynak tipi bulunamadı')}
+                          placeholder={t('package.form.selectSourceType')}
+                          searchPlaceholder={t('common.search')}
+                          emptyText={t('package.form.noSourceType')}
                           itemLimit={100}
                         />
                       </FormControl>
@@ -279,7 +279,7 @@ export function PackageEditPage(): ReactElement {
                   name="sourceHeaderId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.sourceHeaderId', 'Eşlenecek Header')}</FormLabel>
+                      <FormLabel>{t('package.form.sourceHeaderId')}</FormLabel>
                       <FormControl>
                         <SearchableSelect<AvailableHeaderDto>
                           value={field.value?.toString() || ''}
@@ -287,12 +287,12 @@ export function PackageEditPage(): ReactElement {
                           options={availableHeaders || []}
                           getOptionValue={(opt) => opt.id.toString()}
                           getOptionLabel={getHeaderDisplayLabel}
-                          placeholder={t('package.form.selectSourceHeader', 'Eşlenecek Header Seçin')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
+                          placeholder={t('package.form.selectSourceHeader')}
+                          searchPlaceholder={t('common.search')}
                           emptyText={
                             sourceType
-                              ? t('package.form.noAvailableHeaders', 'Eşlenecek header bulunamadı')
-                              : t('package.form.selectSourceTypeFirst', 'Önce kaynak tipi seçiniz')
+                              ? t('package.form.noAvailableHeaders')
+                              : t('package.form.selectSourceTypeFirst')
                           }
                           isLoading={isLoadingHeaders}
                           disabled={!sourceType}
@@ -309,7 +309,7 @@ export function PackageEditPage(): ReactElement {
                   name="warehouseCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.warehouseCode', 'Depo')}</FormLabel>
+                      <FormLabel>{t('package.form.warehouseCode')}</FormLabel>
                       <FormControl>
                         <SearchableSelect<Warehouse>
                           value={field.value}
@@ -317,9 +317,9 @@ export function PackageEditPage(): ReactElement {
                           options={warehouses || []}
                           getOptionValue={(opt) => opt.depoKodu.toString()}
                           getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                          placeholder={t('package.form.selectWarehouse', 'Depo seçiniz')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
-                          emptyText={t('common.notFound', 'Bulunamadı')}
+                          placeholder={t('package.form.selectWarehouse')}
+                          searchPlaceholder={t('common.search')}
+                          emptyText={t('common.notFound')}
                           isLoading={isLoadingWarehouses}
                           itemLimit={100}
                         />
@@ -334,7 +334,7 @@ export function PackageEditPage(): ReactElement {
                   name="customerCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.customerCode', 'Cari')}</FormLabel>
+                      <FormLabel>{t('package.form.customerCode')}</FormLabel>
                       <FormControl>
                         <SearchableSelect<Customer>
                           value={field.value}
@@ -342,9 +342,9 @@ export function PackageEditPage(): ReactElement {
                           options={customers || []}
                           getOptionValue={(opt) => opt.cariKod}
                           getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
-                          placeholder={t('package.form.selectCustomer', 'Cari seçiniz')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
-                          emptyText={t('common.notFound', 'Bulunamadı')}
+                          placeholder={t('package.form.selectCustomer')}
+                          searchPlaceholder={t('common.search')}
+                          emptyText={t('common.notFound')}
                           isLoading={isLoadingCustomers}
                           itemLimit={100}
                         />
@@ -359,7 +359,7 @@ export function PackageEditPage(): ReactElement {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.status', 'Durum')}</FormLabel>
+                      <FormLabel>{t('package.form.status')}</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger>
@@ -367,11 +367,11 @@ export function PackageEditPage(): ReactElement {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Draft">{t('package.status.draft', 'Taslak')}</SelectItem>
-                          <SelectItem value="Packing">{t('package.status.packing', 'Paketleniyor')}</SelectItem>
-                          <SelectItem value="Packed">{t('package.status.packed', 'Paketlendi')}</SelectItem>
-                          <SelectItem value="Shipped">{t('package.status.shipped', 'Gönderildi')}</SelectItem>
-                          <SelectItem value="Cancelled">{t('package.status.cancelled', 'İptal Edildi')}</SelectItem>
+                          <SelectItem value="Draft">{t('package.status.draft')}</SelectItem>
+                          <SelectItem value="Packing">{t('package.status.packing')}</SelectItem>
+                          <SelectItem value="Packed">{t('package.status.packed')}</SelectItem>
+                          <SelectItem value="Shipped">{t('package.status.shipped')}</SelectItem>
+                          <SelectItem value="Cancelled">{t('package.status.cancelled')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -384,7 +384,7 @@ export function PackageEditPage(): ReactElement {
                   name="carrierId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.carrierId', 'Kargo Firması')}</FormLabel>
+                      <FormLabel>{t('package.form.carrierId')}</FormLabel>
                       <FormControl>
                         <SearchableSelect<{ value: number; label: string }>
                           value={field.value?.toString() || ''}
@@ -392,9 +392,9 @@ export function PackageEditPage(): ReactElement {
                           options={cargoCompanyOptions}
                           getOptionValue={(opt) => opt.value.toString()}
                           getOptionLabel={(opt) => opt.label}
-                          placeholder={t('package.form.selectCarrier', 'Kargo Firması Seçin')}
-                          searchPlaceholder={t('common.search', 'Ara...')}
-                          emptyText={t('package.form.noCarrier', 'Kargo firması bulunamadı')}
+                          placeholder={t('package.form.selectCarrier')}
+                          searchPlaceholder={t('common.search')}
+                          emptyText={t('package.form.noCarrier')}
                           itemLimit={100}
                         />
                       </FormControl>
@@ -408,7 +408,7 @@ export function PackageEditPage(): ReactElement {
                   name="carrierServiceType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.carrierServiceType', 'Kargo Servis Tipi')}</FormLabel>
+                      <FormLabel>{t('package.form.carrierServiceType')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -422,7 +422,7 @@ export function PackageEditPage(): ReactElement {
                   name="trackingNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.trackingNo', 'Takip No')}</FormLabel>
+                      <FormLabel>{t('package.form.trackingNo')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -437,7 +437,7 @@ export function PackageEditPage(): ReactElement {
                 name="customerAddress"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.customerAddress', 'Cari Adresi')}</FormLabel>
+                    <FormLabel>{t('package.form.customerAddress')}</FormLabel>
                     <FormControl>
                       <Textarea {...field} rows={3} />
                     </FormControl>

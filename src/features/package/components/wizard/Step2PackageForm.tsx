@@ -109,7 +109,7 @@ export function Step2PackageForm({
     } else {
       setEditingPackage(null);
       if (!packingHeaderId || packingHeaderId <= 0) {
-        toast.error(t('package.form.packingHeaderIdRequired', 'Paketleme Başlık ID zorunludur'));
+        toast.error(t('package.form.packingHeaderIdRequired'));
         return;
       }
       form.reset({
@@ -134,14 +134,14 @@ export function Step2PackageForm({
   const handleSubmit = async (data: PPackageFormData): Promise<void> => {
     try {
       if (editingPackage) {
-        toast.success(t('package.wizard.packageUpdated', 'Paket güncellendi'));
+        toast.success(t('package.wizard.packageUpdated'));
         setPackageDialogOpen(false);
         form.reset();
       } else {
         const packageNoValue = (data.packageNo || '').trim();
         
         if (!packageNoValue) {
-          toast.error(t('package.form.packageNoRequired', 'Paket No zorunludur'));
+          toast.error(t('package.form.packageNoRequired'));
           form.setFocus('packageNo');
           return;
         }
@@ -149,7 +149,7 @@ export function Step2PackageForm({
         const headerIdToUse = data.packingHeaderId || packingHeaderId;
         
         if (!headerIdToUse || headerIdToUse <= 0) {
-          toast.error(t('package.form.packingHeaderIdRequired', 'Paketleme Başlık ID zorunludur'));
+          toast.error(t('package.form.packingHeaderIdRequired'));
           return;
         }
         
@@ -169,7 +169,7 @@ export function Step2PackageForm({
           status: data.status || 'Open',
         });
         
-        toast.success(t('package.wizard.packageAdded', 'Paket eklendi'));
+        toast.success(t('package.wizard.packageAdded'));
         setPackageDialogOpen(false);
         setEditingPackage(null);
         form.reset({
@@ -192,7 +192,7 @@ export function Step2PackageForm({
       console.error('Package create error:', error);
       const errorMessage = error instanceof Error 
         ? error.message 
-        : t('package.wizard.packageError', 'Paket eklenirken bir hata oluştu');
+        : t('package.wizard.packageError');
       toast.error(errorMessage);
     }
   };
@@ -200,19 +200,19 @@ export function Step2PackageForm({
   const handleDelete = async (packageId: number): Promise<void> => {
     try {
       await deleteMutation.mutateAsync(packageId);
-      toast.success(t('package.wizard.packageDeleted', 'Paket silindi'));
+      toast.success(t('package.wizard.packageDeleted'));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.wizard.packageDeleteError', 'Paket silinirken bir hata oluştu')
+          : t('package.wizard.packageDeleteError')
       );
     }
   };
 
   const handleNextStep = (): void => {
     if (packages.length === 0) {
-      toast.error(t('package.wizard.atLeastOnePackage', 'En az 1 paket eklemelisiniz'));
+      toast.error(t('package.wizard.atLeastOnePackage'));
       return;
     }
     onNext();
@@ -224,35 +224,35 @@ export function Step2PackageForm({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{t('package.wizard.step2.title', '2. Paket Ekle')}</CardTitle>
+              <CardTitle>{t('package.wizard.step2.title')}</CardTitle>
               <CardDescription>
-                {t('package.wizard.step2.description', 'Paketleme için paketler ekleyiniz')}
+                {t('package.wizard.step2.description')}
               </CardDescription>
             </div>
             <Button onClick={() => handleOpenDialog()}>
               <Plus className="size-4 mr-2" />
-              {t('package.wizard.step2.addPackage', 'Yeni Paket Ekle')}
+              {t('package.wizard.step2.addPackage')}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {isLoadingPackages ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('common.loading', 'Yükleniyor...')}</p>
+              <p className="text-muted-foreground">{t('common.loading')}</p>
             </div>
           ) : packages.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('package.detail.packageNo', 'Paket No')}</TableHead>
-                  <TableHead>{t('package.detail.packageType', 'Paket Tipi')}</TableHead>
-                  <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                  <TableHead>{t('package.detail.status', 'Durum')}</TableHead>
-                  <TableHead>{t('package.detail.netWeight', 'Net Ağırlık')}</TableHead>
-                  <TableHead>{t('package.detail.grossWeight', 'Brüt Ağırlık')}</TableHead>
-                  <TableHead>{t('package.detail.volume', 'Hacim')}</TableHead>
-                  <TableHead>{t('package.detail.isMixed', 'Karışık')}</TableHead>
-                  <TableHead>{t('package.detail.actions', 'İşlemler')}</TableHead>
+                  <TableHead>{t('package.detail.packageNo')}</TableHead>
+                  <TableHead>{t('package.detail.packageType')}</TableHead>
+                  <TableHead>{t('package.detail.barcode')}</TableHead>
+                  <TableHead>{t('package.detail.status')}</TableHead>
+                  <TableHead>{t('package.detail.netWeight')}</TableHead>
+                  <TableHead>{t('package.detail.grossWeight')}</TableHead>
+                  <TableHead>{t('package.detail.volume')}</TableHead>
+                  <TableHead>{t('package.detail.isMixed')}</TableHead>
+                  <TableHead>{t('package.detail.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -271,7 +271,7 @@ export function Step2PackageForm({
                     <TableCell>{pkg.netWeight || '-'}</TableCell>
                     <TableCell>{pkg.grossWeight || '-'}</TableCell>
                     <TableCell>{pkg.volume || '-'}</TableCell>
-                    <TableCell>{pkg.isMixed ? t('common.yes', 'Evet') : t('common.no', 'Hayır')}</TableCell>
+                    <TableCell>{pkg.isMixed ? t('common.yes') : t('common.no')}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button
@@ -298,7 +298,7 @@ export function Step2PackageForm({
           ) : (
             <div className="text-center py-8">
               <p className="text-muted-foreground">
-                {t('package.wizard.step2.noPackages', 'Henüz paket eklenmedi')}
+                {t('package.wizard.step2.noPackages')}
               </p>
             </div>
           )}
@@ -310,13 +310,13 @@ export function Step2PackageForm({
           <DialogHeader>
             <DialogTitle>
               {editingPackage
-                ? t('package.wizard.step2.editPackage', 'Paket Düzenle')
-                : t('package.wizard.step2.addPackage', 'Yeni Paket Ekle')}
+                ? t('package.wizard.step2.editPackage')
+                : t('package.wizard.step2.addPackage')}
             </DialogTitle>
             <DialogDescription>
               {editingPackage
-                ? t('package.wizard.step2.editPackageDescription', 'Paket bilgilerini düzenleyin')
-                : t('package.wizard.step2.addPackageDescription', 'Yeni bir paket ekleyin')}
+                ? t('package.wizard.step2.editPackageDescription')
+                : t('package.wizard.step2.addPackageDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -328,7 +328,7 @@ export function Step2PackageForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('package.form.packageNo', 'Paket No')} <span className="text-destructive">*</span>
+                        {t('package.form.packageNo')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -350,7 +350,7 @@ export function Step2PackageForm({
                   name="packageType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.packageType', 'Paket Tipi')}</FormLabel>
+                      <FormLabel>{t('package.form.packageType')}</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger>
@@ -358,10 +358,10 @@ export function Step2PackageForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Box">{t('package.packageType.box', 'Kutu')}</SelectItem>
-                          <SelectItem value="Pallet">{t('package.packageType.pallet', 'Palet')}</SelectItem>
-                          <SelectItem value="Bag">{t('package.packageType.bag', 'Çanta')}</SelectItem>
-                          <SelectItem value="Custom">{t('package.packageType.custom', 'Özel')}</SelectItem>
+                          <SelectItem value="Box">{t('package.packageType.box')}</SelectItem>
+                          <SelectItem value="Pallet">{t('package.packageType.pallet')}</SelectItem>
+                          <SelectItem value="Bag">{t('package.packageType.bag')}</SelectItem>
+                          <SelectItem value="Custom">{t('package.packageType.custom')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -374,7 +374,7 @@ export function Step2PackageForm({
                   name="length"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.length', 'Uzunluk')}</FormLabel>
+                      <FormLabel>{t('package.form.length')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -394,7 +394,7 @@ export function Step2PackageForm({
                   name="width"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.width', 'Genişlik')}</FormLabel>
+                      <FormLabel>{t('package.form.width')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -414,7 +414,7 @@ export function Step2PackageForm({
                   name="height"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.height', 'Yükseklik')}</FormLabel>
+                      <FormLabel>{t('package.form.height')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -434,7 +434,7 @@ export function Step2PackageForm({
                   name="volume"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.volume', 'Hacim')}</FormLabel>
+                      <FormLabel>{t('package.form.volume')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -454,7 +454,7 @@ export function Step2PackageForm({
                   name="netWeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.netWeight', 'Net Ağırlık')}</FormLabel>
+                      <FormLabel>{t('package.form.netWeight')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -474,7 +474,7 @@ export function Step2PackageForm({
                   name="tareWeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.tareWeight', 'Dara Ağırlık')}</FormLabel>
+                      <FormLabel>{t('package.form.tareWeight')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -494,7 +494,7 @@ export function Step2PackageForm({
                   name="grossWeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.grossWeight', 'Brüt Ağırlık')}</FormLabel>
+                      <FormLabel>{t('package.form.grossWeight')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -514,7 +514,7 @@ export function Step2PackageForm({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('package.form.status', 'Durum')}</FormLabel>
+                      <FormLabel>{t('package.form.status')}</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger>
@@ -522,9 +522,9 @@ export function Step2PackageForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Open">{t('package.packageStatus.open', 'Açık')}</SelectItem>
-                          <SelectItem value="Closed">{t('package.packageStatus.closed', 'Kapalı')}</SelectItem>
-                          <SelectItem value="Loaded">{t('package.packageStatus.loaded', 'Yüklendi')}</SelectItem>
+                          <SelectItem value="Open">{t('package.packageStatus.open')}</SelectItem>
+                          <SelectItem value="Closed">{t('package.packageStatus.closed')}</SelectItem>
+                          <SelectItem value="Loaded">{t('package.packageStatus.loaded')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -556,14 +556,14 @@ export function Step2PackageForm({
 
       <div className="flex justify-between gap-2">
         <Button variant="outline" onClick={onPrevious}>
-          {t('package.wizard.previousStep', 'Önceki Adım')}
+          {t('package.wizard.previousStep')}
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onSaveAndExit}>
-            {t('package.wizard.saveAndExit', 'Kaydet ve Çık')}
+            {t('package.wizard.saveAndExit')}
           </Button>
           <Button onClick={handleNextStep} disabled={packages.length === 0}>
-            {t('package.wizard.saveAndContinue', 'Kaydet ve İlerle')}
+            {t('package.wizard.saveAndContinue')}
           </Button>
         </div>
       </div>

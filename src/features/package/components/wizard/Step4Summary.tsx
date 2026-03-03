@@ -89,39 +89,39 @@ export function Step4Summary({
       <Card>
         <CardHeader>
           <div className="crm-toolbar flex items-center justify-between">
-            <CardTitle>{t('package.wizard.step4.title', '4. Özet & Tamamla')}</CardTitle>
+            <CardTitle>{t('package.wizard.step4.title')}</CardTitle>
             <Button variant="outline" size="sm" onClick={onEditHeader}>
               <Edit className="size-4 mr-2" />
-              {t('package.wizard.step4.editHeader', "Header'ı Düzenle")}
+              {t('package.wizard.step4.editHeader')}
             </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-6 crm-page">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h4 className="font-semibold mb-2">{t('package.wizard.step4.headerInfo', 'Header Bilgileri')}</h4>
+              <h4 className="font-semibold mb-2">{t('package.wizard.step4.headerInfo')}</h4>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.form.packingNo', 'Paketleme No')}:</span>
+                  <span className="text-muted-foreground">{t('package.form.packingNo')}:</span>
                   <span className="font-medium">{headerData.packingNo}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.form.packingDate', 'Paketleme Tarihi')}:</span>
+                  <span className="text-muted-foreground">{t('package.form.packingDate')}:</span>
                   <span>{formatDate(headerData.packingDate)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.form.warehouseCode', 'Depo')}:</span>
+                  <span className="text-muted-foreground">{t('package.form.warehouseCode')}:</span>
                   <span>{headerData.warehouseCode || '-'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.form.customerCode', 'Cari')}:</span>
+                  <span className="text-muted-foreground">{t('package.form.customerCode')}:</span>
                   <span>
                     {headerData.customerCode || '-'}
                     {headerData.customerName && ` (${headerData.customerName})`}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.form.status', 'Durum')}:</span>
+                  <span className="text-muted-foreground">{t('package.form.status')}:</span>
                   <Badge className={getStatusBadgeColor(headerData.status)}>
                     {t(`package.status.${headerData.status.toLowerCase()}`, headerData.status)}
                   </Badge>
@@ -130,32 +130,32 @@ export function Step4Summary({
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2">{t('package.wizard.step4.summaryTotals', 'Toplam Bilgileri')}</h4>
+              <h4 className="font-semibold mb-2">{t('package.wizard.step4.summaryTotals')}</h4>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    {t('package.detail.totalPackageCount', 'Toplam Paket Sayısı')}:
+                    {t('package.detail.totalPackageCount')}:
                   </span>
                   <span className="font-medium">{summaryTotals.totalPackageCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.detail.totalQuantity', 'Toplam Miktar')}:</span>
+                  <span className="text-muted-foreground">{t('package.detail.totalQuantity')}:</span>
                   <span className="font-medium">{summaryTotals.totalQuantity}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    {t('package.detail.totalNetWeight', 'Toplam Net Ağırlık')}:
+                    {t('package.detail.totalNetWeight')}:
                   </span>
                   <span className="font-medium">{summaryTotals.totalNetWeight}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    {t('package.detail.totalGrossWeight', 'Toplam Brüt Ağırlık')}:
+                    {t('package.detail.totalGrossWeight')}:
                   </span>
                   <span className="font-medium">{summaryTotals.totalGrossWeight}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('package.detail.totalVolume', 'Toplam Hacim')}:</span>
+                  <span className="text-muted-foreground">{t('package.detail.totalVolume')}:</span>
                   <span className="font-medium">{summaryTotals.totalVolume}</span>
                 </div>
               </div>
@@ -165,26 +165,26 @@ export function Step4Summary({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold">
-                {t('package.wizard.step4.packages', 'Paketler')} ({packages.length})
+                {t('package.wizard.step4.packages')} ({packages.length})
               </h4>
               <Button variant="outline" size="sm" onClick={onEditPackages}>
                 <Edit className="size-4 mr-2" />
-                {t('package.wizard.step4.editPackages', 'Paketleri Düzenle')}
+                {t('package.wizard.step4.editPackages')}
               </Button>
             </div>
             {isLoadingPackages ? (
-              <p className="text-muted-foreground text-center py-4">{t('common.loading', 'Yükleniyor...')}</p>
+              <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : packages.length > 0 ? (
               <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('package.detail.packageNo', 'Paket No')}</TableHead>
-                      <TableHead>{t('package.detail.packageType', 'Paket Tipi')}</TableHead>
-                      <TableHead>{t('package.detail.status', 'Durum')}</TableHead>
-                      <TableHead>{t('package.detail.netWeight', 'Net Ağırlık')}</TableHead>
-                      <TableHead>{t('package.detail.grossWeight', 'Brüt Ağırlık')}</TableHead>
-                      <TableHead>{t('package.detail.volume', 'Hacim')}</TableHead>
+                      <TableHead>{t('package.detail.packageNo')}</TableHead>
+                      <TableHead>{t('package.detail.packageType')}</TableHead>
+                      <TableHead>{t('package.detail.status')}</TableHead>
+                      <TableHead>{t('package.detail.netWeight')}</TableHead>
+                      <TableHead>{t('package.detail.grossWeight')}</TableHead>
+                      <TableHead>{t('package.detail.volume')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -207,7 +207,7 @@ export function Step4Summary({
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                {t('package.wizard.step4.noPackages', 'Paket bulunamadı')}
+                {t('package.wizard.step4.noPackages')}
               </p>
             )}
           </div>
@@ -215,27 +215,27 @@ export function Step4Summary({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold">
-                {t('package.wizard.step4.lines', 'Satırlar')} ({lines.length})
+                {t('package.wizard.step4.lines')} ({lines.length})
               </h4>
               <Button variant="outline" size="sm" onClick={onEditLines}>
                 <Edit className="size-4 mr-2" />
-                {t('package.wizard.step4.editLines', 'Satırları Düzenle')}
+                {t('package.wizard.step4.editLines')}
               </Button>
             </div>
             {isLoadingLines ? (
-              <p className="text-muted-foreground text-center py-4">{t('common.loading', 'Yükleniyor...')}</p>
+              <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : lines.length > 0 ? (
               <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                      <TableHead>{t('package.detail.stockCode', 'Stok Kodu')}</TableHead>
-                      <TableHead>{t('package.detail.stockName', 'Stok Adı')}</TableHead>
-                      <TableHead>{t('package.detail.yapKod', 'Yap Kodu')}</TableHead>
-                      <TableHead>{t('package.detail.yapAcik', 'Yap Açıklama')}</TableHead>
-                      <TableHead>{t('package.detail.quantity', 'Miktar')}</TableHead>
-                      <TableHead>{t('package.detail.serialNo', 'Seri No')}</TableHead>
+                      <TableHead>{t('package.detail.barcode')}</TableHead>
+                      <TableHead>{t('package.detail.stockCode')}</TableHead>
+                      <TableHead>{t('package.detail.stockName')}</TableHead>
+                      <TableHead>{t('package.detail.yapKod')}</TableHead>
+                      <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                      <TableHead>{t('package.detail.quantity')}</TableHead>
+                      <TableHead>{t('package.detail.serialNo')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -259,7 +259,7 @@ export function Step4Summary({
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                {t('package.wizard.step4.noLines', 'Satır bulunamadı')}
+                {t('package.wizard.step4.noLines')}
               </p>
             )}
           </div>
@@ -268,7 +268,7 @@ export function Step4Summary({
 
       <div className="flex justify-between gap-2">
         <Button variant="outline" onClick={onPrevious}>
-          {t('package.wizard.previousStep', 'Önceki Adım')}
+          {t('package.wizard.previousStep')}
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onCancel}>
@@ -276,8 +276,8 @@ export function Step4Summary({
           </Button>
           <Button onClick={onComplete} disabled={isLoading}>
             {isLoading
-              ? t('common.saving', 'Kaydediliyor...')
-              : t('package.wizard.step4.complete', 'Tamamla ve Kaydet')}
+              ? t('common.saving')
+              : t('package.wizard.step4.complete')}
           </Button>
         </div>
       </div>

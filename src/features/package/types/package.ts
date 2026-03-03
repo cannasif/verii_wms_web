@@ -222,7 +222,7 @@ export const pHeaderFormSchema = (t: TFunction) => {
   void t;
   return z.object({
     warehouseCode: z.string().optional(),
-    packingNo: z.string().min(1, t('package.form.packingNoRequired', 'Paketleme No zorunludur')),
+    packingNo: z.string().min(1, t('package.form.packingNoRequired')),
     packingDate: z.string().optional(),
     sourceType: z.enum(['GR', 'WT', 'PR', 'PT', 'SIT', 'SRT', 'WI', 'WO', 'SH']).optional(),
     sourceHeaderId: z.number().optional(),
@@ -264,8 +264,8 @@ export type PHeaderFormData = z.infer<ReturnType<typeof pHeaderFormSchema>>;
 export const pPackageFormSchema = (t: TFunction) => {
   void t;
   return z.object({
-    packingHeaderId: z.number().min(1, t('package.form.packingHeaderIdRequired', 'Paketleme Başlık ID zorunludur')),
-    packageNo: z.string().min(1, t('package.form.packageNoRequired', 'Paket No zorunludur')),
+    packingHeaderId: z.number().min(1, t('package.form.packingHeaderIdRequired')),
+    packageNo: z.string().min(1, t('package.form.packageNoRequired')),
     packageType: z.enum(['Box', 'Pallet', 'Bag', 'Custom']).optional(),
     barcode: z.string().optional(),
     length: z.number().optional(),
@@ -285,12 +285,12 @@ export type PPackageFormData = z.infer<ReturnType<typeof pPackageFormSchema>>;
 export const pLineFormSchema = (t: TFunction) => {
   void t;
   return z.object({
-    packingHeaderId: z.number().min(1, t('package.form.packingHeaderIdRequired', 'Paketleme Başlık ID zorunludur')),
-    packageId: z.number().min(1, t('package.form.packageIdRequired', 'Paket ID zorunludur')),
+    packingHeaderId: z.number().min(1, t('package.form.packingHeaderIdRequired')),
+    packageId: z.number().min(1, t('package.form.packageIdRequired')),
     barcode: z.string().optional(),
-    stockCode: z.string().min(1, t('package.form.stockCodeRequired', 'Stok Kodu zorunludur')),
+    stockCode: z.string().min(1, t('package.form.stockCodeRequired')),
     yapKod: z.string().optional(),
-    quantity: z.number().min(0.01, t('package.form.quantityRequired', 'Miktar zorunludur')),
+    quantity: z.number().min(0.01, t('package.form.quantityRequired')),
     serialNo: z.string().optional(),
     serialNo2: z.string().optional(),
     serialNo3: z.string().optional(),

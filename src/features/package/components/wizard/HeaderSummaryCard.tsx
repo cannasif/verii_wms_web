@@ -62,7 +62,7 @@ export function HeaderSummaryCard({
                 {t(`package.status.${headerData.status.toLowerCase()}`, headerData.status)}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                {t('package.wizard.stepProgress', 'Adım {{current}}/{{total}}', {
+                {t('package.wizard.stepProgress', {
                   current: currentStep,
                   total: totalSteps,
                 })}
@@ -70,29 +70,29 @@ export function HeaderSummaryCard({
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <span>
-                📅 {t('package.form.packingDate', 'Paketleme Tarihi')}: {formatDate(headerData.packingDate)}
+                📅 {t('package.form.packingDate')}: {formatDate(headerData.packingDate)}
               </span>
               {headerData.warehouseCode && (
                 <span>
-                  🏢 {t('package.form.warehouseCode', 'Depo')}: {headerData.warehouseCode}
+                  🏢 {t('package.form.warehouseCode')}: {headerData.warehouseCode}
                 </span>
               )}
               {headerData.customerCode && (
                 <span>
-                  👤 {t('package.form.customerCode', 'Cari')}: {headerData.customerCode}
+                  👤 {t('package.form.customerCode')}: {headerData.customerCode}
                   {headerData.customerName && ` - ${headerData.customerName}`}
                 </span>
               )}
               {headerData.trackingNo && (
                 <span>
-                  📦 {t('package.form.trackingNo', 'Takip No')}: {headerData.trackingNo}
+                  📦 {t('package.form.trackingNo')}: {headerData.trackingNo}
                 </span>
               )}
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={onEdit}>
             <Edit className="size-4 mr-2" />
-            {t('package.wizard.editHeader', "Header'ı Düzenle")}
+            {t('package.wizard.editHeader')}
           </Button>
         </div>
       </CardContent>

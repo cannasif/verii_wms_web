@@ -135,9 +135,9 @@ export function PackageDetailPage(): ReactElement {
 
   useEffect(() => {
     if (header) {
-      setPageTitle(t('package.detail.title', 'Paketleme Detayı') + ' - ' + header.packingNo);
+      setPageTitle(t('package.detail.title') + ' - ' + header.packingNo);
     } else {
-      setPageTitle(t('package.detail.title', 'Paketleme Detayı'));
+      setPageTitle(t('package.detail.title'));
     }
     return () => {
       setPageTitle(null);
@@ -162,14 +162,14 @@ export function PackageDetailPage(): ReactElement {
         isMixed: data.isMixed,
         status: data.status,
       });
-      toast.success(t('package.detail.packageAddSuccess', 'Paket başarıyla eklendi'));
+      toast.success(t('package.detail.packageAddSuccess'));
       setPackageDialogOpen(false);
       packageForm.reset();
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.detail.packageAddError', 'Paket eklenirken bir hata oluştu')
+          : t('package.detail.packageAddError')
       );
     }
   };
@@ -181,14 +181,14 @@ export function PackageDetailPage(): ReactElement {
       setSerialNo(stock.seriBarkodMu ? stock.barkod : '');
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
-      toast.error(t('package.detail.stockNotFound', 'Stok bulunamadı'));
+      toast.error(t('package.detail.stockNotFound'));
       setEnableSearch(false);
     }
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
-      toast.error(t('package.detail.enterBarcode', 'Lütfen barkod giriniz'));
+      toast.error(t('package.detail.enterBarcode'));
       return;
     }
     setSearchBarcode(barcodeInput);
@@ -237,7 +237,7 @@ export function PackageDetailPage(): ReactElement {
       });
 
       if (!scannerContainerRef.current || !document.getElementById('barcode-scanner')) {
-        toast.error(t('package.detail.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.detail.cameraError'));
         setIsCameraOpen(false);
         return;
       }
@@ -284,7 +284,7 @@ export function PackageDetailPage(): ReactElement {
           (decodedText) => {
             setBarcodeInput(decodedText);
             handleCloseCamera();
-            toast.success(t('package.detail.barcodeScanned', 'Barkod okundu'));
+            toast.success(t('package.detail.barcodeScanned'));
             setTimeout(() => {
               handleBarcodeSearch();
             }, 100);
@@ -293,7 +293,7 @@ export function PackageDetailPage(): ReactElement {
           }
         );
       } catch (err) {
-        toast.error(t('package.detail.cameraError', 'Kamera açılamadı'));
+        toast.error(t('package.detail.cameraError'));
         console.error('Camera error:', err);
         handleCloseCamera();
       }
@@ -316,12 +316,12 @@ export function PackageDetailPage(): ReactElement {
 
   const handleLineSubmit = async (): Promise<void> => {
     if (!selectedStock) {
-      toast.error(t('package.detail.noStockSelected', 'Lütfen önce stok bilgisi getirin'));
+      toast.error(t('package.detail.noStockSelected'));
       return;
     }
 
     if (quantity <= 0) {
-      toast.error(t('package.detail.invalidQuantity', 'Geçersiz miktar'));
+      toast.error(t('package.detail.invalidQuantity'));
       return;
     }
 
@@ -339,7 +339,7 @@ export function PackageDetailPage(): ReactElement {
         serialNo4: '',
         sourceRouteId: undefined,
       });
-      toast.success(t('package.detail.lineAddSuccess', 'Satır başarıyla eklendi'));
+      toast.success(t('package.detail.lineAddSuccess'));
       setLineDialogOpen(false);
       setBarcodeInput('');
       setSelectedStock(null);
@@ -350,7 +350,7 @@ export function PackageDetailPage(): ReactElement {
       toast.error(
         error instanceof Error
           ? error.message
-          : t('package.detail.lineAddError', 'Satır eklenirken bir hata oluştu')
+          : t('package.detail.lineAddError')
       );
     }
   };
@@ -375,7 +375,7 @@ export function PackageDetailPage(): ReactElement {
   if (!header) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.detail.notFound', 'Paketleme bulunamadı')}</p>
+        <p className="text-destructive">{t('package.detail.notFound')}</p>
       </div>
     );
   }
@@ -386,13 +386,13 @@ export function PackageDetailPage(): ReactElement {
         <CardHeader>
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>{t('package.detail.title', 'Paketleme Detayı')}</CardTitle>
+              <CardTitle>{t('package.detail.title')}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">{header.packingNo}</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={() => navigate('/package/list')}>
                 <ArrowLeft className="size-4 mr-2" />
-                {t('common.back', 'Geri')}
+                {t('common.back')}
               </Button>
               {header?.sourceType && header?.sourceHeaderId && (
                 <Button
@@ -406,29 +406,29 @@ export function PackageDetailPage(): ReactElement {
                       });
                       toast.success(
                         header.isMatched
-                          ? t('package.detail.unmatchSuccess', 'Bağlantı başarıyla kesildi')
-                          : t('package.detail.matchSuccess', 'Eşleme başarıyla yapıldı')
+                          ? t('package.detail.unmatchSuccess')
+                          : t('package.detail.matchSuccess')
                       );
                     } catch (error) {
                       toast.error(
                         error instanceof Error
                           ? error.message
-                          : t('package.detail.matchError', 'Eşleme işlemi sırasında bir hata oluştu')
+                          : t('package.detail.matchError')
                       );
                     }
                   }}
                   disabled={matchPlinesMutation.isPending}
                 >
                   {matchPlinesMutation.isPending
-                    ? t('common.saving', 'Kaydediliyor...')
+                    ? t('common.saving')
                     : header.isMatched
-                      ? t('package.detail.unmatch', 'Bağlantıyı Kes')
-                      : t('package.detail.match', 'Eşle')}
+                      ? t('package.detail.unmatch')
+                      : t('package.detail.match')}
                 </Button>
               )}
               <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)}>
                 <Edit className="size-4 mr-2" />
-                {t('common.edit', 'Düzenle')}
+                {t('common.edit')}
               </Button>
             </div>
           </div>
@@ -438,7 +438,7 @@ export function PackageDetailPage(): ReactElement {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.status', 'Durum')}
+                  {t('package.detail.status')}
                 </p>
                 <Badge className={getStatusBadgeColor(header.status)}>
                   {t(`package.status.${header.status.toLowerCase()}`, header.status)}
@@ -446,25 +446,25 @@ export function PackageDetailPage(): ReactElement {
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.packingDate', 'Paketleme Tarihi')}
+                  {t('package.detail.packingDate')}
                 </p>
                 <p className="text-sm font-medium">{formatDate(header.packingDate)}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.warehouseCode', 'Depo Kodu')}
+                  {t('package.detail.warehouseCode')}
                 </p>
                 <p className="text-sm font-medium">{header.warehouseCode || '-'}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.customerCode', 'Cari Kodu')}
+                  {t('package.detail.customerCode')}
                 </p>
                 <p className="text-sm font-medium">{header.customerCode || '-'}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.trackingNo', 'Takip No')}
+                  {t('package.detail.trackingNo')}
                 </p>
                 <p className="text-sm font-medium">{header.trackingNo || '-'}</p>
               </div>
@@ -473,14 +473,14 @@ export function PackageDetailPage(): ReactElement {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.customerName', 'Cari Adı')}
+                  {t('package.detail.customerName')}
                 </p>
                 <p className="text-sm font-medium">{header.customerName || '-'}</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.list.sourceType', 'Kaynak Tipi')}
+                    {t('package.list.sourceType')}
                   </p>
                   {header.sourceType ? (
                     <Badge variant="outline" className="text-xs">
@@ -492,7 +492,7 @@ export function PackageDetailPage(): ReactElement {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.list.matchedSource', 'Eşleşen Kaynak')}
+                    {t('package.list.matchedSource')}
                   </p>
                   <p className="text-sm font-medium">
                     {header.sourceHeaderId ? `#${header.sourceHeaderId}` : '-'}
@@ -504,19 +504,19 @@ export function PackageDetailPage(): ReactElement {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t">
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalPackageCount', 'Toplam Paket')}
+                  {t('package.detail.totalPackageCount')}
                 </p>
                 <p className="text-lg font-semibold">{header.totalPackageCount || 0}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalQuantity', 'Toplam Miktar')}
+                  {t('package.detail.totalQuantity')}
                 </p>
                 <p className="text-lg font-semibold">{header.totalQuantity || 0}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalGrossWeight', 'Toplam Brüt Ağırlık')}
+                  {t('package.detail.totalGrossWeight')}
                 </p>
                 <p className="text-lg font-semibold">{header.totalGrossWeight || 0}</p>
               </div>
@@ -526,10 +526,10 @@ export function PackageDetailPage(): ReactElement {
           <Tabs defaultValue="packages" className="w-full">
             <TabsList>
               <TabsTrigger value="packages">
-                {t('package.detail.packages', 'Paketler')} ({packages?.length || 0})
+                {t('package.detail.packages')} ({packages?.length || 0})
               </TabsTrigger>
               <TabsTrigger value="lines">
-                {t('package.detail.lines', 'Satırlar')} ({lines?.length || 0})
+                {t('package.detail.lines')} ({lines?.length || 0})
               </TabsTrigger>
             </TabsList>
 
@@ -537,7 +537,7 @@ export function PackageDetailPage(): ReactElement {
               <div className="flex justify-end mb-4">
                 <Button onClick={() => setPackageDialogOpen(true)}>
                   <Plus className="size-4 mr-2" />
-                  {t('package.detail.addPackage', 'Yeni Paket Ekle')}
+                  {t('package.detail.addPackage')}
                 </Button>
               </div>
               {isLoadingPackages ? (
@@ -548,14 +548,14 @@ export function PackageDetailPage(): ReactElement {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{t('package.detail.packageNo', 'Paket No')}</TableHead>
-                          <TableHead>{t('package.detail.packageType', 'Paket Tipi')}</TableHead>
-                          <TableHead>{t('package.detail.status', 'Durum')}</TableHead>
-                          <TableHead>{t('package.detail.netWeight', 'Net Ağırlık')}</TableHead>
-                          <TableHead>{t('package.detail.grossWeight', 'Brüt Ağırlık')}</TableHead>
-                          <TableHead>{t('package.detail.volume', 'Hacim')}</TableHead>
-                          <TableHead>{t('package.detail.isMixed', 'Karışık')}</TableHead>
-                          <TableHead>{t('package.detail.actions', 'İşlemler')}</TableHead>
+                          <TableHead>{t('package.detail.packageNo')}</TableHead>
+                          <TableHead>{t('package.detail.packageType')}</TableHead>
+                          <TableHead>{t('package.detail.status')}</TableHead>
+                          <TableHead>{t('package.detail.netWeight')}</TableHead>
+                          <TableHead>{t('package.detail.grossWeight')}</TableHead>
+                          <TableHead>{t('package.detail.volume')}</TableHead>
+                          <TableHead>{t('package.detail.isMixed')}</TableHead>
+                          <TableHead>{t('package.detail.actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -588,7 +588,7 @@ export function PackageDetailPage(): ReactElement {
                                   onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
                                 >
                                   <Eye className="size-4" />
-                                  <span className="ml-2">{t('package.detail.viewDetails', 'Detay')}</span>
+                                  <span className="ml-2">{t('package.detail.viewDetails')}</span>
                                 </Button>
                               </div>
                             </TableCell>
@@ -605,7 +605,7 @@ export function PackageDetailPage(): ReactElement {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.packageNo', 'Paket No')}
+                                  {t('package.detail.packageNo')}
                                 </p>
                                 <Button
                                   variant="link"
@@ -622,31 +622,31 @@ export function PackageDetailPage(): ReactElement {
                             <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.packageType', 'Paket Tipi')}
+                                  {t('package.detail.packageType')}
                                 </p>
                                 <p className="text-sm font-medium">{pkg.packageType}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.isMixed', 'Karışık')}
+                                  {t('package.detail.isMixed')}
                                 </p>
                                 <p className="text-sm font-medium">{pkg.isMixed ? t('common.yes') : t('common.no')}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.netWeight', 'Net Ağırlık')}
+                                  {t('package.detail.netWeight')}
                                 </p>
                                 <p className="text-sm font-medium">{pkg.netWeight || '-'}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.grossWeight', 'Brüt Ağırlık')}
+                                  {t('package.detail.grossWeight')}
                                 </p>
                                 <p className="text-sm font-medium">{pkg.grossWeight || '-'}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.volume', 'Hacim')}
+                                  {t('package.detail.volume')}
                                 </p>
                                 <p className="text-sm font-medium">{pkg.volume || '-'}</p>
                               </div>
@@ -658,7 +658,7 @@ export function PackageDetailPage(): ReactElement {
                                 onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
                               >
                                 <Eye className="size-4 mr-2" />
-                                {t('package.detail.viewDetails', 'Detay')}
+                                {t('package.detail.viewDetails')}
                               </Button>
                             </div>
                           </div>
@@ -669,7 +669,7 @@ export function PackageDetailPage(): ReactElement {
                 </>
               ) : (
                 <p className="text-muted-foreground text-center py-8">
-                  {t('package.detail.noPackages', 'Paket bulunamadı')}
+                  {t('package.detail.noPackages')}
                 </p>
               )}
             </TabsContent>
@@ -678,7 +678,7 @@ export function PackageDetailPage(): ReactElement {
               <div className="flex justify-end mb-4">
                 <Button onClick={() => setLineDialogOpen(true)}>
                   <Plus className="size-4 mr-2" />
-                  {t('package.detail.addLine', 'Yeni Satır Ekle')}
+                  {t('package.detail.addLine')}
                 </Button>
               </div>
               {isLoadingLines ? (
@@ -689,13 +689,13 @@ export function PackageDetailPage(): ReactElement {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{t('package.detail.barcode', 'Barkod')}</TableHead>
-                          <TableHead>{t('package.detail.stockCode', 'Stok Kodu')}</TableHead>
-                          <TableHead>{t('package.detail.stockName', 'Stok Adı')}</TableHead>
-                          <TableHead>{t('package.detail.yapKod', 'Yap Kodu')}</TableHead>
-                          <TableHead>{t('package.detail.yapAcik', 'Yap Açıklama')}</TableHead>
-                          <TableHead>{t('package.detail.quantity', 'Miktar')}</TableHead>
-                          <TableHead>{t('package.detail.serialNo', 'Seri No')}</TableHead>
+                          <TableHead>{t('package.detail.barcode')}</TableHead>
+                          <TableHead>{t('package.detail.stockCode')}</TableHead>
+                          <TableHead>{t('package.detail.stockName')}</TableHead>
+                          <TableHead>{t('package.detail.yapKod')}</TableHead>
+                          <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                          <TableHead>{t('package.detail.quantity')}</TableHead>
+                          <TableHead>{t('package.detail.serialNo')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -725,33 +725,33 @@ export function PackageDetailPage(): ReactElement {
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.barcode', 'Barkod')}
+                                  {t('package.detail.barcode')}
                                 </p>
                                 <p className="text-sm font-medium">{line.barcode || '-'}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.stockCode', 'Stok Kodu')}
+                                  {t('package.detail.stockCode')}
                                 </p>
                                 <p className="text-sm font-medium">{line.stockCode}</p>
                               </div>
                             </div>
                             <div className="pt-3 border-t">
                               <p className="text-xs font-medium text-muted-foreground mb-1">
-                                {t('package.detail.stockName', 'Stok Adı')}
+                                {t('package.detail.stockName')}
                               </p>
                               <p className="text-sm font-medium">{line.stockName || '-'}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.yapKod', 'Yap Kodu')}
+                                  {t('package.detail.yapKod')}
                                 </p>
                                 <p className="text-sm font-medium">{line.yapKod}</p>
                               </div>
                               <div>
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.quantity', 'Miktar')}
+                                  {t('package.detail.quantity')}
                                 </p>
                                 <p className="text-sm font-medium">{line.quantity}</p>
                               </div>
@@ -759,7 +759,7 @@ export function PackageDetailPage(): ReactElement {
                             {line.yapAcik && (
                               <div className="pt-3 border-t">
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.yapAcik', 'Yap Açıklama')}
+                                  {t('package.detail.yapAcik')}
                                 </p>
                                 <p className="text-sm font-medium">{line.yapAcik}</p>
                               </div>
@@ -767,7 +767,7 @@ export function PackageDetailPage(): ReactElement {
                             {(line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4) && (
                               <div className="pt-3 border-t">
                                 <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.serialNo', 'Seri No')}
+                                  {t('package.detail.serialNo')}
                                 </p>
                                 <p className="text-sm font-medium">
                                   {line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4}
@@ -782,7 +782,7 @@ export function PackageDetailPage(): ReactElement {
                 </>
               ) : (
                 <p className="text-muted-foreground text-center py-8">
-                  {t('package.detail.noLines', 'Satır bulunamadı')}
+                  {t('package.detail.noLines')}
                 </p>
               )}
             </TabsContent>
@@ -793,9 +793,9 @@ export function PackageDetailPage(): ReactElement {
       <Dialog open={packageDialogOpen} onOpenChange={setPackageDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>{t('package.detail.addPackage', 'Yeni Paket Ekle')}</DialogTitle>
+            <DialogTitle>{t('package.detail.addPackage')}</DialogTitle>
             <DialogDescription>
-              {t('package.detail.addPackageDescription', 'Yeni bir paket ekleyin')}
+              {t('package.detail.addPackageDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...packageForm}>
@@ -807,7 +807,7 @@ export function PackageDetailPage(): ReactElement {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('package.form.packageNo', 'Paket No')} <span className="text-destructive">*</span>
+                        {t('package.form.packageNo')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -830,7 +830,7 @@ export function PackageDetailPage(): ReactElement {
                     name="packageType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('package.form.packageType', 'Paket Tipi')}</FormLabel>
+                        <FormLabel>{t('package.form.packageType')}</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger>
@@ -838,10 +838,10 @@ export function PackageDetailPage(): ReactElement {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Box">{t('package.packageType.box', 'Kutu')}</SelectItem>
-                            <SelectItem value="Pallet">{t('package.packageType.pallet', 'Palet')}</SelectItem>
-                            <SelectItem value="Bag">{t('package.packageType.bag', 'Çanta')}</SelectItem>
-                            <SelectItem value="Custom">{t('package.packageType.custom', 'Özel')}</SelectItem>
+                            <SelectItem value="Box">{t('package.packageType.box')}</SelectItem>
+                            <SelectItem value="Pallet">{t('package.packageType.pallet')}</SelectItem>
+                            <SelectItem value="Bag">{t('package.packageType.bag')}</SelectItem>
+                            <SelectItem value="Custom">{t('package.packageType.custom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -854,7 +854,7 @@ export function PackageDetailPage(): ReactElement {
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('package.form.status', 'Durum')}</FormLabel>
+                        <FormLabel>{t('package.form.status')}</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger>
@@ -862,9 +862,9 @@ export function PackageDetailPage(): ReactElement {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Open">{t('package.packageStatus.open', 'Açık')}</SelectItem>
-                            <SelectItem value="Closed">{t('package.packageStatus.closed', 'Kapalı')}</SelectItem>
-                            <SelectItem value="Loaded">{t('package.packageStatus.loaded', 'Yüklendi')}</SelectItem>
+                            <SelectItem value="Open">{t('package.packageStatus.open')}</SelectItem>
+                            <SelectItem value="Closed">{t('package.packageStatus.closed')}</SelectItem>
+                            <SelectItem value="Loaded">{t('package.packageStatus.loaded')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -875,7 +875,7 @@ export function PackageDetailPage(): ReactElement {
 
                 <div className="pt-2 border-t">
                   <p className="text-sm font-medium text-muted-foreground mb-3">
-                    {t('package.form.dimensions', 'Boyutlar')}
+                    {t('package.form.dimensions')}
                   </p>
                   <div className="grid grid-cols-3 gap-3">
                     <FormField
@@ -883,7 +883,7 @@ export function PackageDetailPage(): ReactElement {
                       name="length"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.length', 'Uzunluk')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.length')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -902,7 +902,7 @@ export function PackageDetailPage(): ReactElement {
                       name="width"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.width', 'Genişlik')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.width')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -921,7 +921,7 @@ export function PackageDetailPage(): ReactElement {
                       name="height"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.height', 'Yükseklik')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.height')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -939,7 +939,7 @@ export function PackageDetailPage(): ReactElement {
 
                 <div className="pt-2 border-t">
                   <p className="text-sm font-medium text-muted-foreground mb-3">
-                    {t('package.form.weights', 'Ağırlık Bilgileri')}
+                    {t('package.form.weights')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <FormField
@@ -947,7 +947,7 @@ export function PackageDetailPage(): ReactElement {
                       name="netWeight"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.netWeight', 'Net Ağırlık')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.netWeight')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -966,7 +966,7 @@ export function PackageDetailPage(): ReactElement {
                       name="tareWeight"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.tareWeight', 'Dara Ağırlık')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.tareWeight')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -985,7 +985,7 @@ export function PackageDetailPage(): ReactElement {
                       name="grossWeight"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.grossWeight', 'Brüt Ağırlık')}</FormLabel>
+                          <FormLabel className="text-xs">{t('package.form.grossWeight')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -1007,7 +1007,7 @@ export function PackageDetailPage(): ReactElement {
                     name="volume"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('package.form.volume', 'Hacim')}</FormLabel>
+                        <FormLabel>{t('package.form.volume')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -1057,9 +1057,9 @@ export function PackageDetailPage(): ReactElement {
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>{t('package.detail.addLine', 'Yeni Satır Ekle')}</DialogTitle>
+            <DialogTitle>{t('package.detail.addLine')}</DialogTitle>
             <DialogDescription>
-              {t('package.detail.addLineDescription', 'Barkod okutun veya yazın, sonra ara')}
+              {t('package.detail.addLineDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...lineForm}>
@@ -1070,7 +1070,7 @@ export function PackageDetailPage(): ReactElement {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('package.form.package', 'Paket')} <span className="text-destructive">*</span>
+                      {t('package.form.package')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <Select
                       value={field.value ? field.value.toString() : ''}
@@ -1078,7 +1078,7 @@ export function PackageDetailPage(): ReactElement {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('package.form.selectPackage', 'Paket Seçin')} />
+                          <SelectValue placeholder={t('package.form.selectPackage')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -1109,7 +1109,7 @@ export function PackageDetailPage(): ReactElement {
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
                     <Input
-                      placeholder={t('package.detail.barcodePlaceholder', 'Barkod okutun veya yazın')}
+                      placeholder={t('package.detail.barcodePlaceholder')}
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
@@ -1120,7 +1120,7 @@ export function PackageDetailPage(): ReactElement {
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
-                      t('common.search', 'Ara')
+                      t('common.search')
                     )}
                   </Button>
                 </div>
@@ -1136,11 +1136,11 @@ export function PackageDetailPage(): ReactElement {
                         {selectedStock.yapKod && (
                           <div className="mt-2 space-y-1">
                             <p className="text-xs text-muted-foreground">
-                              <span className="font-medium">{t('package.form.yapKod', 'Yap Kodu')}:</span> {selectedStock.yapKod}
+                              <span className="font-medium">{t('package.form.yapKod')}:</span> {selectedStock.yapKod}
                             </p>
                             {selectedStock.yapAcik && (
                               <p className="text-xs text-muted-foreground">
-                                <span className="font-medium">{t('package.form.yapAcik', 'Yap Açıklama')}:</span> {selectedStock.yapAcik}
+                                <span className="font-medium">{t('package.form.yapAcik')}:</span> {selectedStock.yapAcik}
                               </p>
                             )}
                           </div>
@@ -1154,7 +1154,7 @@ export function PackageDetailPage(): ReactElement {
                     <div className="space-y-2">
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.detail.quantity', 'Miktar')} <span className="text-destructive">*</span>
+                          {t('package.detail.quantity')} <span className="text-destructive">*</span>
                         </label>
                         <Input
                           type="number"
@@ -1162,18 +1162,18 @@ export function PackageDetailPage(): ReactElement {
                           value={quantity}
                           onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                           className="h-9"
-                          placeholder={t('package.detail.quantity', 'Miktar')}
+                          placeholder={t('package.detail.quantity')}
                         />
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.form.serialNo', 'Seri No')}
+                          {t('package.form.serialNo')}
                         </label>
                         <Input
                           value={serialNo}
                           onChange={(e) => setSerialNo(e.target.value)}
                           className="h-9"
-                          placeholder={t('package.form.serialNo', 'Seri No')}
+                          placeholder={t('package.form.serialNo')}
                         />
                       </div>
                     </div>
@@ -1186,7 +1186,7 @@ export function PackageDetailPage(): ReactElement {
                         {createLineMutation.isPending ? (
                           <Loader2 className="size-4 animate-spin mr-1" />
                         ) : null}
-                        {t('package.detail.add', 'Ekle')}
+                        {t('package.detail.add')}
                       </Button>
                     </div>
                   </div>
@@ -1198,9 +1198,9 @@ export function PackageDetailPage(): ReactElement {
               <Dialog open={isCameraOpen} onOpenChange={handleCloseCamera}>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>{t('package.detail.scanBarcode', 'Barkod Okut')}</DialogTitle>
+                    <DialogTitle>{t('package.detail.scanBarcode')}</DialogTitle>
                     <DialogDescription>
-                      {t('package.detail.scanBarcodeDescription', 'Kamerayı barkoda doğrultun')}
+                      {t('package.detail.scanBarcodeDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <div ref={scannerContainerRef} className="w-full">

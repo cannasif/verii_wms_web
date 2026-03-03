@@ -85,15 +85,15 @@ export function Step1HeaderForm({
 
   const sourceTypeOptions = useMemo(
     () => [
-      { value: 'GR', label: t('package.sourceType.GR', 'Mal Kabul') },
-      { value: 'WT', label: t('package.sourceType.WT', 'Depo Transferi') },
-      { value: 'SH', label: t('package.sourceType.SH', 'Sevkiyat') },
-      { value: 'PR', label: t('package.sourceType.PR', 'Üretim') },
-      { value: 'PT', label: t('package.sourceType.PT', 'Üretim Transferi') },
-      { value: 'SIT', label: t('package.sourceType.SIT', 'Yarı Mamul Çıkış Transferi') },
-      { value: 'SRT', label: t('package.sourceType.SRT', 'Yarı Mamul Giriş Transferi') },
-      { value: 'WI', label: t('package.sourceType.WI', 'Ambar Girişi') },
-      { value: 'WO', label: t('package.sourceType.WO', 'Ambar Çıkışı') },
+      { value: 'GR', label: t('package.sourceType.GR') },
+      { value: 'WT', label: t('package.sourceType.WT') },
+      { value: 'SH', label: t('package.sourceType.SH') },
+      { value: 'PR', label: t('package.sourceType.PR') },
+      { value: 'PT', label: t('package.sourceType.PT') },
+      { value: 'SIT', label: t('package.sourceType.SIT') },
+      { value: 'SRT', label: t('package.sourceType.SRT') },
+      { value: 'WI', label: t('package.sourceType.WI') },
+      { value: 'WO', label: t('package.sourceType.WO') },
     ],
     [t]
   );
@@ -116,9 +116,9 @@ export function Step1HeaderForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('package.wizard.step1.title', '1. Paketleme Başlığı')}</CardTitle>
+        <CardTitle>{t('package.wizard.step1.title')}</CardTitle>
         <CardDescription>
-          {t('package.wizard.step1.description', 'Paketleme başlık bilgilerini giriniz')}
+          {t('package.wizard.step1.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -131,7 +131,7 @@ export function Step1HeaderForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('package.form.packingNo', 'Paketleme No')} <span className="text-destructive">*</span>
+                      {t('package.form.packingNo')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="PKG-2025-000001" />
@@ -146,7 +146,7 @@ export function Step1HeaderForm({
                 name="packingDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.packingDate', 'Paketleme Tarihi')}</FormLabel>
+                    <FormLabel>{t('package.form.packingDate')}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -160,7 +160,7 @@ export function Step1HeaderForm({
                 name="sourceType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.sourceType', 'Kaynak Tipi')}</FormLabel>
+                    <FormLabel>{t('package.form.sourceType')}</FormLabel>
                     <FormControl>
                       <SearchableSelect<{ value: string; label: string }>
                         value={field.value || ''}
@@ -171,9 +171,9 @@ export function Step1HeaderForm({
                         options={sourceTypeOptions}
                         getOptionValue={(opt) => opt.value}
                         getOptionLabel={(opt) => opt.label}
-                        placeholder={t('package.form.selectSourceType', 'Kaynak Tipi Seçin')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
-                        emptyText={t('package.form.noSourceType', 'Kaynak tipi bulunamadı')}
+                        placeholder={t('package.form.selectSourceType')}
+                        searchPlaceholder={t('common.search')}
+                        emptyText={t('package.form.noSourceType')}
                         itemLimit={100}
                       />
                     </FormControl>
@@ -187,7 +187,7 @@ export function Step1HeaderForm({
                 name="sourceHeaderId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.sourceHeaderId', 'Eşlenecek Header')}</FormLabel>
+                    <FormLabel>{t('package.form.sourceHeaderId')}</FormLabel>
                     <FormControl>
                       <SearchableSelect<AvailableHeaderDto>
                         value={field.value?.toString() || ''}
@@ -195,12 +195,12 @@ export function Step1HeaderForm({
                         options={availableHeaders || []}
                         getOptionValue={(opt) => opt.id.toString()}
                         getOptionLabel={getHeaderDisplayLabel}
-                        placeholder={t('package.form.selectSourceHeader', 'Eşlenecek Header Seçin')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
+                        placeholder={t('package.form.selectSourceHeader')}
+                        searchPlaceholder={t('common.search')}
                         emptyText={
                           sourceType
-                            ? t('package.form.noAvailableHeaders', 'Eşlenecek header bulunamadı')
-                            : t('package.form.selectSourceTypeFirst', 'Önce kaynak tipi seçiniz')
+                            ? t('package.form.noAvailableHeaders')
+                            : t('package.form.selectSourceTypeFirst')
                         }
                         isLoading={isLoadingHeaders}
                         disabled={!sourceType}
@@ -217,7 +217,7 @@ export function Step1HeaderForm({
                 name="warehouseCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.warehouseCode', 'Depo')}</FormLabel>
+                    <FormLabel>{t('package.form.warehouseCode')}</FormLabel>
                     <FormControl>
                       <SearchableSelect<Warehouse>
                         value={field.value}
@@ -225,9 +225,9 @@ export function Step1HeaderForm({
                         options={warehouses || []}
                         getOptionValue={(opt) => opt.depoKodu.toString()}
                         getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
-                        placeholder={t('package.form.selectWarehouse', 'Depo seçiniz')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
-                        emptyText={t('common.notFound', 'Bulunamadı')}
+                        placeholder={t('package.form.selectWarehouse')}
+                        searchPlaceholder={t('common.search')}
+                        emptyText={t('common.notFound')}
                         isLoading={isLoadingWarehouses}
                         itemLimit={100}
                       />
@@ -242,7 +242,7 @@ export function Step1HeaderForm({
                 name="customerCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.customerCode', 'Cari')}</FormLabel>
+                    <FormLabel>{t('package.form.customerCode')}</FormLabel>
                     <FormControl>
                       <SearchableSelect<Customer>
                         value={field.value}
@@ -250,9 +250,9 @@ export function Step1HeaderForm({
                         options={customers || []}
                         getOptionValue={(opt) => opt.cariKod}
                         getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
-                        placeholder={t('package.form.selectCustomer', 'Cari seçiniz')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
-                        emptyText={t('common.notFound', 'Bulunamadı')}
+                        placeholder={t('package.form.selectCustomer')}
+                        searchPlaceholder={t('common.search')}
+                        emptyText={t('common.notFound')}
                         isLoading={isLoadingCustomers}
                         itemLimit={100}
                       />
@@ -267,7 +267,7 @@ export function Step1HeaderForm({
                 name="carrierId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.carrierId', 'Kargo Firması')}</FormLabel>
+                    <FormLabel>{t('package.form.carrierId')}</FormLabel>
                     <FormControl>
                       <SearchableSelect<{ value: number; label: string }>
                         value={field.value?.toString() || ''}
@@ -275,9 +275,9 @@ export function Step1HeaderForm({
                         options={cargoCompanyOptions}
                         getOptionValue={(opt) => opt.value.toString()}
                         getOptionLabel={(opt) => opt.label}
-                        placeholder={t('package.form.selectCarrier', 'Kargo Firması Seçin')}
-                        searchPlaceholder={t('common.search', 'Ara...')}
-                        emptyText={t('package.form.noCarrier', 'Kargo firması bulunamadı')}
+                        placeholder={t('package.form.selectCarrier')}
+                        searchPlaceholder={t('common.search')}
+                        emptyText={t('package.form.noCarrier')}
                         itemLimit={100}
                       />
                     </FormControl>
@@ -291,7 +291,7 @@ export function Step1HeaderForm({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.status', 'Durum')}</FormLabel>
+                    <FormLabel>{t('package.form.status')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled>
                       <FormControl>
                         <SelectTrigger>
@@ -299,11 +299,11 @@ export function Step1HeaderForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Draft">{t('package.status.draft', 'Taslak')}</SelectItem>
-                        <SelectItem value="Packing">{t('package.status.packing', 'Paketleniyor')}</SelectItem>
-                        <SelectItem value="Packed">{t('package.status.packed', 'Paketlendi')}</SelectItem>
-                        <SelectItem value="Shipped">{t('package.status.shipped', 'Gönderildi')}</SelectItem>
-                        <SelectItem value="Cancelled">{t('package.status.cancelled', 'İptal Edildi')}</SelectItem>
+                        <SelectItem value="Draft">{t('package.status.draft')}</SelectItem>
+                        <SelectItem value="Packing">{t('package.status.packing')}</SelectItem>
+                        <SelectItem value="Packed">{t('package.status.packed')}</SelectItem>
+                        <SelectItem value="Shipped">{t('package.status.shipped')}</SelectItem>
+                        <SelectItem value="Cancelled">{t('package.status.cancelled')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -316,7 +316,7 @@ export function Step1HeaderForm({
                 name="carrierServiceType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.carrierServiceType', 'Kargo Servis Tipi')}</FormLabel>
+                    <FormLabel>{t('package.form.carrierServiceType')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -330,7 +330,7 @@ export function Step1HeaderForm({
                 name="trackingNo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('package.form.trackingNo', 'Takip No')}</FormLabel>
+                    <FormLabel>{t('package.form.trackingNo')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -345,7 +345,7 @@ export function Step1HeaderForm({
               name="customerAddress"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('package.form.customerAddress', 'Cari Adresi')}</FormLabel>
+                  <FormLabel>{t('package.form.customerAddress')}</FormLabel>
                   <FormControl>
                     <Textarea {...field} rows={3} />
                   </FormControl>
@@ -366,7 +366,7 @@ export function Step1HeaderForm({
                 type="submit"
                 disabled={isLoading}
               >
-                {isLoading ? t('common.saving') : t('package.wizard.saveAndContinue', 'Kaydet ve İlerle')}
+                {isLoading ? t('common.saving') : t('package.wizard.saveAndContinue')}
               </Button>
             </div>
           </form>
