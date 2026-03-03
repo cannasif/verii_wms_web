@@ -13,6 +13,11 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { toast } from 'sonner';
 import type { WarehouseHeader } from '../types/warehouse';
 import type { PagedFilter } from '@/types/api';
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { usePageSizePreference } from '@/hooks/usePageSizePreference';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 export function WarehouseInboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
@@ -20,10 +25,38 @@ export function WarehouseInboundApprovalPage(): ReactElement {
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize] = useState(10);
+  const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
+    pageKey: 'warehouse-inbound-approval-list',
+    defaultPageSize: 10,
+  });
   const [sortBy] = useState<string>('Id');
   const [sortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'id', label: t('warehouse.inbound.approval.id', 'ID') },
+      { key: 'documentNo', label: t('warehouse.inbound.approval.documentNo', 'Belge No') },
+      { key: 'documentDate', label: t('warehouse.inbound.approval.documentDate', 'Belge Tarihi') },
+      { key: 'customerCode', label: t('warehouse.inbound.approval.customerCode', 'Cari Kodu') },
+      { key: 'customerName', label: t('warehouse.inbound.approval.customerName', 'Cari Adı') },
+      { key: 'targetWarehouse', label: t('warehouse.inbound.approval.targetWarehouse', 'Depo') },
+      { key: 'completionDate', label: t('warehouse.inbound.approval.completionDate', 'Tamamlanma Tarihi') },
+      { key: 'actions', label: t('warehouse.inbound.approval.actions', 'İşlemler') },
+    ],
+    [t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({
+    pageKey: 'warehouse-inbound-approval-list',
+    columns,
+    idColumnKey: 'id',
+  });
 
   const filters: PagedFilter[] = useMemo(() => {
     const result: PagedFilter[] = [];
@@ -107,6 +140,30 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     }
   };
 
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    if (!data?.data) return [];
+    return data.data.map((item) => ({
+      id: item.id,
+      documentNo: item.documentNo || '-',
+      documentDate: formatDate(item.documentDate),
+      customerCode: item.customerCode || '-',
+      customerName: item.customerName || '-',
+      targetWarehouse: item.targetWarehouse || '-',
+      completionDate: formatDateTime(item.completionDate),
+    }));
+  }, [data?.data]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -132,6 +189,21 @@ export function WarehouseInboundApprovalPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('warehouse.inbound.approval.title', 'Onay Bekleyen Ambar Giriş Emirleri')}</CardTitle>
             <div className="flex items-center gap-2">
+              <GridExportMenu
+                fileName="warehouse-inbound-approval-list"
+                columns={exportColumns}
+                rows={exportRows}
+              />
+              <ColumnPreferencesPopover
+                pageKey="warehouse-inbound-approval-list"
+                userId={userId}
+                columns={columns}
+                visibleColumns={visibleColumns}
+                columnOrder={columnOrder}
+                lockedKeys={['id']}
+                onVisibleColumnsChange={setVisibleColumns}
+                onColumnOrderChange={setColumnOrder}
+              />
               <div className="relative flex items-center w-full md:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
@@ -155,69 +227,79 @@ export function WarehouseInboundApprovalPage(): ReactElement {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('warehouse.inbound.approval.id', 'ID')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.documentNo', 'Belge No')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.documentDate', 'Belge Tarihi')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.customerCode', 'Cari Kodu')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.customerName', 'Cari Adı')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.targetWarehouse', 'Depo')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>
-                  <TableHead>{t('warehouse.inbound.approval.actions', 'İşlemler')}</TableHead>
+                  {orderedVisibleColumns.map((key) => {
+                    if (key === 'id') return <TableHead key={key}>{t('warehouse.inbound.approval.id', 'ID')}</TableHead>;
+                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.inbound.approval.documentNo', 'Belge No')}</TableHead>;
+                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.inbound.approval.documentDate', 'Belge Tarihi')}</TableHead>;
+                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.inbound.approval.customerCode', 'Cari Kodu')}</TableHead>;
+                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.inbound.approval.customerName', 'Cari Adı')}</TableHead>;
+                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('warehouse.inbound.approval.targetWarehouse', 'Depo')}</TableHead>;
+                    if (key === 'completionDate') return <TableHead key={key}>{t('warehouse.inbound.approval.completionDate', 'Tamamlanma Tarihi')}</TableHead>;
+                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.inbound.approval.actions', 'İşlemler')}</TableHead>;
+                    return null;
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.data && data.data.length > 0 ? (
                   data.data.map((item: WarehouseHeader) => (
                     <TableRow key={item.id}>
-                      <TableCell>{item.id}</TableCell>
-                      <TableCell className="font-medium">{item.documentNo || '-'}</TableCell>
-                      <TableCell>{formatDate(item.documentDate)}</TableCell>
-                      <TableCell>{item.customerCode || '-'}</TableCell>
-                      <TableCell>{item.customerName || '-'}</TableCell>
-                      <TableCell>{item.targetWarehouse || '-'}</TableCell>
-                      <TableCell>{formatDateTime(item.completionDate)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedHeaderId(item.id);
-                              setSelectedDocumentType(item.documentType);
-                            }}
-                          >
-                            <Eye className="size-4" />
-                            <span className="ml-2">{t('warehouse.inbound.approval.viewDetails', 'Detay')}</span>
-                          </Button>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleApprove(item.id)}
-                            disabled={approveMutation.isPending}
-                          >
-                            <Check className="size-4" />
-                            <span className="ml-2">{t('warehouse.inbound.approval.approve', 'Onayla')}</span>
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleReject(item.id)}
-                            disabled={approveMutation.isPending}
-                          >
-                            <X className="size-4" />
-                            <span className="ml-2">{t('warehouse.inbound.approval.reject', 'Reddet')}</span>
-                          </Button>
-                        </div>
-                      </TableCell>
+                      {orderedVisibleColumns.map((key) => {
+                        if (key === 'id') return <TableCell key={key}>{item.id}</TableCell>;
+                        if (key === 'documentNo') return <TableCell key={key} className="font-medium">{item.documentNo || '-'}</TableCell>;
+                        if (key === 'documentDate') return <TableCell key={key}>{formatDate(item.documentDate)}</TableCell>;
+                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
+                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
+                        if (key === 'targetWarehouse') return <TableCell key={key}>{item.targetWarehouse || '-'}</TableCell>;
+                        if (key === 'completionDate') return <TableCell key={key}>{formatDateTime(item.completionDate)}</TableCell>;
+                        if (key === 'actions') {
+                          return (
+                            <TableCell key={key}>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedHeaderId(item.id);
+                                    setSelectedDocumentType(item.documentType);
+                                  }}
+                                >
+                                  <Eye className="size-4" />
+                                  <span className="ml-2">{t('warehouse.inbound.approval.viewDetails', 'Detay')}</span>
+                                </Button>
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => handleApprove(item.id)}
+                                  disabled={approveMutation.isPending}
+                                >
+                                  <Check className="size-4" />
+                                  <span className="ml-2">{t('warehouse.inbound.approval.approve', 'Onayla')}</span>
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleReject(item.id)}
+                                  disabled={approveMutation.isPending}
+                                >
+                                  <X className="size-4" />
+                                  <span className="ml-2">{t('warehouse.inbound.approval.reject', 'Reddet')}</span>
+                                </Button>
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        return null;
+                      })}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
                       <p className="text-muted-foreground">
                         {t('warehouse.inbound.approval.noData', 'Onay bekleyen emir bulunamadı')}
                       </p>
@@ -229,12 +311,40 @@ export function WarehouseInboundApprovalPage(): ReactElement {
           </div>
           {data && (
             <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
-              <div className="text-sm text-muted-foreground">
-                {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
-                  current: data.pageNumber * data.pageSize + 1,
-                  total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
-                  totalCount: data.totalCount,
-                })}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                <div className="text-sm text-muted-foreground">
+                  {t('common.paginationInfo', '{{current}} - {{total}} of {{totalCount}}', {
+                    current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
+                    total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
+                    totalCount: data.totalCount,
+                  })}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.rowsPerPage', 'Sayfada')}
+                  </span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) => {
+                      setPageSize(Number.parseInt(value, 10));
+                      setPageNumber(0);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pageSizeOptions.map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-muted-foreground">
+                    {t('common.records', 'kayıt')}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -410,4 +520,3 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     </div>
   );
 }
-
