@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Table,
@@ -15,6 +15,9 @@ import { useUserList } from '../hooks/useUserList';
 import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
 import type { PagedFilter } from '@/types/api';
+import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import type { GridExportColumn } from '@/lib/grid-export';
 
 interface UserTableProps {
   pageNumber: number;
@@ -38,6 +41,7 @@ export function UserTable({
   onEdit,
 }: UserTableProps): ReactElement {
   const { t, i18n } = useTranslation(['user-management', 'common']);
+  const pageKey = 'user-management-list';
 
   const { data, isLoading } = useUserList({
     pageNumber,
@@ -48,6 +52,27 @@ export function UserTable({
   });
 
   const updateUser = useUpdateUser();
+  const columns = useMemo<ColumnDef[]>(
+    () => [
+      { key: 'id', label: t('userManagement.table.id') },
+      { key: 'username', label: t('userManagement.table.username') },
+      { key: 'email', label: t('userManagement.table.email') },
+      { key: 'fullName', label: t('userManagement.table.fullName') },
+      { key: 'role', label: t('userManagement.table.role') },
+      { key: 'status', label: t('userManagement.table.status') },
+      { key: 'createdDate', label: t('userManagement.table.createdDate') },
+      ...(onEdit ? [{ key: 'actions', label: t('common:common.actions') }] : []),
+    ],
+    [onEdit, t]
+  );
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    setColumnOrder,
+    setVisibleColumns,
+  } = useColumnPreferences({ pageKey, columns, idColumnKey: 'id' });
 
   const handleStatusChange = async (user: UserDto, checked: boolean): Promise<void> => {
     await updateUser.mutateAsync({
@@ -61,6 +86,32 @@ export function UserTable({
       sortBy === column && sortDirection === 'asc' ? 'desc' : 'asc';
     onSortChange(column, newDirection);
   };
+
+  const exportColumns = useMemo<GridExportColumn[]>(
+    () =>
+      orderedVisibleColumns
+        .filter((key) => key !== 'actions')
+        .map((key) => ({
+          key,
+          label: columns.find((column) => column.key === key)?.label ?? key,
+        })),
+    [columns, orderedVisibleColumns]
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    const list = data?.data ?? [];
+    return list.map((user) => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      fullName: user.fullName || '-',
+      role: user.role || '-',
+      status: user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive'),
+      createdDate: user.creationTime || user.createdDate
+        ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
+        : '-',
+    }));
+  }, [data?.data, t, i18n.language]);
 
   const SortIcon = ({ column }: { column: string }): ReactElement => {
     if (sortBy !== column) {
@@ -141,101 +192,142 @@ export function UserTable({
 
   return (
     <>
+      <div className="mb-3 flex justify-end gap-2">
+        <GridExportMenu
+          fileName={pageKey}
+          columns={exportColumns}
+          rows={exportRows}
+        />
+        <ColumnPreferencesPopover
+          pageKey={pageKey}
+          userId={userId}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          columnOrder={columnOrder}
+          lockedKeys={['id']}
+          onVisibleColumnsChange={setVisibleColumns}
+          onColumnOrderChange={setColumnOrder}
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Id')}
-              >
-                <div className="flex items-center">
-                  {t('userManagement.table.id')}
-                  <SortIcon column="Id" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Username')}
-              >
-                <div className="flex items-center">
-                  {t('userManagement.table.username')}
-                  <SortIcon column="Username" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => handleSort('Email')}
-              >
-                <div className="flex items-center">
-                  {t('userManagement.table.email')}
-                  <SortIcon column="Email" />
-                </div>
-              </TableHead>
-              <TableHead>
-                {t('userManagement.table.fullName')}
-              </TableHead>
-              <TableHead>
-                {t('userManagement.table.role')}
-              </TableHead>
-              <TableHead>
-                {t('userManagement.table.status')}
-              </TableHead>
-              <TableHead>
-                {t('userManagement.table.createdDate')}
-              </TableHead>
-              {onEdit && (
-                <TableHead className="w-[80px]">
-                  {t('common:common.actions')}
-                </TableHead>
-              )}
+              {orderedVisibleColumns.map((key) => {
+                if (key === 'id') {
+                  return (
+                    <TableHead
+                      key={key}
+                      className="cursor-pointer select-none"
+                      onClick={() => handleSort('Id')}
+                    >
+                      <div className="flex items-center">
+                        {t('userManagement.table.id')}
+                        <SortIcon column="Id" />
+                      </div>
+                    </TableHead>
+                  );
+                }
+
+                if (key === 'username') {
+                  return (
+                    <TableHead
+                      key={key}
+                      className="cursor-pointer select-none"
+                      onClick={() => handleSort('Username')}
+                    >
+                      <div className="flex items-center">
+                        {t('userManagement.table.username')}
+                        <SortIcon column="Username" />
+                      </div>
+                    </TableHead>
+                  );
+                }
+
+                if (key === 'email') {
+                  return (
+                    <TableHead
+                      key={key}
+                      className="cursor-pointer select-none"
+                      onClick={() => handleSort('Email')}
+                    >
+                      <div className="flex items-center">
+                        {t('userManagement.table.email')}
+                        <SortIcon column="Email" />
+                      </div>
+                    </TableHead>
+                  );
+                }
+
+                if (key === 'fullName') return <TableHead key={key}>{t('userManagement.table.fullName')}</TableHead>;
+                if (key === 'role') return <TableHead key={key}>{t('userManagement.table.role')}</TableHead>;
+                if (key === 'status') return <TableHead key={key}>{t('userManagement.table.status')}</TableHead>;
+                if (key === 'createdDate') return <TableHead key={key}>{t('userManagement.table.createdDate')}</TableHead>;
+                if (key === 'actions') return <TableHead key={key} className="w-[80px]">{t('common:common.actions')}</TableHead>;
+                return null;
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.map((user: UserDto) => (
               <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell className="font-medium">{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.fullName || '-'}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{user.role || '-'}</Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={user.isActive}
-                      onCheckedChange={(checked) => handleStatusChange(user, checked)}
-                      disabled={updateUser.isPending}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                        {user.isActive
-                            ? t('userManagement.table.active')
-                            : t('userManagement.table.inactive')}
-                    </span>
-                    {user.isEmailConfirmed && (
-                      <Badge variant="outline" className="text-xs">
-                        {t('userManagement.table.confirmed')}
-                      </Badge>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {user.creationTime || user.createdDate
-                    ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
-                    : '-'}
-                </TableCell>
-                {onEdit && (
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(user)}
-                    >
-                      {t('common:common.edit')}
-                    </Button>
-                  </TableCell>
-                )}
+                {orderedVisibleColumns.map((key) => {
+                  if (key === 'id') return <TableCell key={key}>{user.id}</TableCell>;
+                  if (key === 'username') return <TableCell key={key} className="font-medium">{user.username}</TableCell>;
+                  if (key === 'email') return <TableCell key={key}>{user.email}</TableCell>;
+                  if (key === 'fullName') return <TableCell key={key}>{user.fullName || '-'}</TableCell>;
+                  if (key === 'role') {
+                    return (
+                      <TableCell key={key}>
+                        <Badge variant="outline">{user.role || '-'}</Badge>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'status') {
+                    return (
+                      <TableCell key={key}>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={user.isActive}
+                            onCheckedChange={(checked) => handleStatusChange(user, checked)}
+                            disabled={updateUser.isPending}
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                          </span>
+                          {user.isEmailConfirmed && (
+                            <Badge variant="outline" className="text-xs">
+                              {t('userManagement.table.confirmed')}
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'createdDate') {
+                    return (
+                      <TableCell key={key}>
+                        {user.creationTime || user.createdDate
+                          ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
+                          : '-'}
+                      </TableCell>
+                    );
+                  }
+                  if (key === 'actions' && onEdit) {
+                    return (
+                      <TableCell key={key}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEdit(user)}
+                        >
+                          {t('common:common.edit')}
+                        </Button>
+                      </TableCell>
+                    );
+                  }
+                  return null;
+                })}
               </TableRow>
             ))}
           </TableBody>
