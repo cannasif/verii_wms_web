@@ -17,16 +17,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Search, Trash2, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Plus, Search, Trash2, ChevronLeft, ChevronRight, Eye, Filter } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { toast } from 'sonner';
 import type { PHeaderDto } from '../types/package';
 import type { PagedFilter } from '@/types/api';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePageSizePreference } from '@/hooks/usePageSizePreference';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { GridExportColumn } from '@/lib/grid-export';
+import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
@@ -59,6 +62,9 @@ export function PackageListPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PHeaderDto | null>(null);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
 
   const columns = useMemo<ColumnDef[]>(
     () => [
@@ -79,6 +85,19 @@ export function PackageListPage(): ReactElement {
     ],
     [t]
   );
+  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () => [
+      { value: 'id', type: 'number', labelKey: 'package.list.id' },
+      { value: 'packingNo', type: 'string', labelKey: 'package.list.packingNo' },
+      { value: 'packingDate', type: 'date', labelKey: 'package.list.packingDate' },
+      { value: 'warehouseCode', type: 'string', labelKey: 'package.list.warehouseCode' },
+      { value: 'customerCode', type: 'string', labelKey: 'package.list.customerCode' },
+      { value: 'customerName', type: 'string', labelKey: 'package.list.customerName' },
+      { value: 'status', type: 'string', labelKey: 'package.list.status' },
+      { value: 'trackingNo', type: 'string', labelKey: 'package.list.trackingNo' },
+    ],
+    []
+  );
   const {
     userId,
     columnOrder,
@@ -97,8 +116,22 @@ export function PackageListPage(): ReactElement {
     if (searchTerm) {
       result.push({ column: 'packingNo', operator: 'contains', value: searchTerm });
     }
+    result.push(...appliedAdvancedFilters);
     return result;
-  }, [searchTerm]);
+  }, [searchTerm, appliedAdvancedFilters]);
+
+  const applyAdvancedFilters = (): void => {
+    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setPageNumber(1);
+    setFilterPopoverOpen(false);
+  };
+
+  const clearAdvancedFilters = (): void => {
+    setDraftFilterRows([]);
+    setAppliedAdvancedFilters([]);
+    setPageNumber(1);
+    setFilterPopoverOpen(false);
+  };
 
   const { data, isLoading, error } = usePHeaders({
     pageNumber,
@@ -227,6 +260,32 @@ export function PackageListPage(): ReactElement {
           <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle>{t('package.list.title', 'Paketleme Listesi')}</CardTitle>
             <div className="flex items-center gap-2">
+              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    {t('common.filter', 'Filtrele')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
+                >
+                  <AdvancedFilter
+                    columns={advancedFilterColumns}
+                    defaultColumn="packingNo"
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={setDraftFilterRows}
+                    onSearch={applyAdvancedFilters}
+                    onClear={clearAdvancedFilters}
+                    embedded
+                  />
+                </PopoverContent>
+              </Popover>
               <GridExportMenu
                 fileName="package-list"
                 columns={exportColumns}
