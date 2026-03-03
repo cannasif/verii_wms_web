@@ -6,3 +6,4 @@ export { MainLayout } from './MainLayout';
 export { ColumnPreferencesPopover } from './ColumnPreferencesPopover';
 export type { ColumnDef } from './ColumnPreferencesPopover';
 export { GridExportMenu } from './GridExportMenu';
+export { AdvancedFilter } from './AdvancedFilter';
