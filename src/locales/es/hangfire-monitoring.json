@@ -1,0 +1,29 @@
+{
+  "menu": "Monitoreo Hangfire",
+  "title": "Monitoreo Hangfire",
+  "description": "Monitoree el estado del trabajo, los trabajos fallidos y la cola de mensajes muertos.",
+  "refresh": "Actualizar",
+  "stats": {
+    "enqueued": "En cola",
+    "processing": "Procesando",
+    "succeeded": "Exitoso",
+    "failed": "Fallido"
+  },
+  "table": {
+    "jobId": "ID Trabajo",
+    "jobName": "Trabajo",
+    "state": "Estado",
+    "time": "Hora",
+    "reason": "Motivo"
+  },
+  "failed": {
+    "title": "Trabajos Fallidos",
+    "empty": "No se encontraron trabajos fallidos.",
+    "total": "Total"
+  },
+  "deadLetter": {
+    "title": "Cola de Mensajes Muertos",
+    "empty": "La cola de mensajes muertos está vacía.",
+    "enqueued": "En cola"
+  }
+}

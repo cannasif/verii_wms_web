@@ -1,0 +1,80 @@
+{
+  "userManagement": {
+    "menu": "Gestión de Usuarios",
+    "description": "Gestionar y editar usuarios",
+    "addButton": "Agregar Nuevo Usuario",
+    "table": {
+      "id": "ID",
+      "username": "Nombre de Usuario",
+      "email": "Correo",
+      "fullName": "Nombre Completo",
+      "role": "Rol",
+      "status": "Estado",
+      "createdDate": "Fecha de Creación",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "confirmed": "Confirmado",
+      "showing": "{{from}}-{{to}} / {{total}} mostrados",
+      "page": "Página {{current}} / {{total}}",
+      "actions": "Acciones",
+      "noData": "Sin datos",
+      "loading": "Cargando...",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "editUser": "Editar Usuario",
+      "addUser": "Agregar Nuevo Usuario",
+      "editDescription": "Editar información del usuario",
+      "addDescription": "Ingresar información del nuevo usuario",
+      "username": "Nombre de Usuario",
+      "usernamePlaceholder": "Ingrese nombre de usuario",
+      "email": "Correo",
+      "emailPlaceholder": "Ingrese dirección de correo",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Se generará contraseña temporal si se deja en blanco",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Ingrese nombre",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Ingrese apellido",
+      "phoneNumber": "Teléfono",
+      "phoneNumberPlaceholder": "Ingrese número de teléfono",
+      "role": "Rol",
+      "rolePlaceholder": "Seleccionar rol",
+      "isActive": "Activo",
+      "isActiveDescription": "Estado activo del usuario",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "roleRequired": "La selección de rol es obligatoria",
+      "permissionGroups": "Grupos de Permisos",
+      "permissionGroupsPlaceholder": "Seleccionar grupos de permisos",
+      "permissionGroupsHelp": "Grupos de permisos a los que se asignará el usuario",
+      "permissionGroupsNoData": "No se encontraron grupos de permisos",
+      "generatedPasswordInfo": "Si la contraseña está vacía, se generará una temporal",
+      "selectAll": "Seleccionar todo",
+      "systemAdminRequiresAdminRole": "El rol de Administrador del Sistema requiere el rol de admin"
+    },
+    "stats": {
+      "totalUsers": "Total Usuarios",
+      "activeUsers": "Usuarios Activos",
+      "newThisMonth": "Nuevos Este Mes",
+      "confirmedUsers": "Usuarios Confirmados",
+      "loading": "Cargando..."
+    },
+    "delete": {
+      "confirmTitle": "Eliminar Usuario",
+      "confirmMessage": "¿Está seguro de que desea eliminar el usuario {{username}}?"
+    },
+    "messages": {
+      "createSuccess": "Usuario creado exitosamente",
+      "createError": "No se pudo crear el usuario",
+      "updateSuccess": "Usuario actualizado exitosamente",
+      "updateError": "No se pudo actualizar el usuario",
+      "deleteSuccess": "Usuario eliminado exitosamente",
+      "deleteError": "No se pudo eliminar el usuario"
+    }
+  }
+}
