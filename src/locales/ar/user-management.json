@@ -1,0 +1,80 @@
+{
+  "userManagement": {
+    "menu": "إدارة المستخدمين",
+    "description": "إدارة المستخدمين وتعديلهم",
+    "addButton": "إضافة مستخدم جديد",
+    "table": {
+      "id": "المعرف",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "fullName": "الاسم الكامل",
+      "role": "الدور",
+      "status": "الحالة",
+      "createdDate": "تاريخ الإنشاء",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "confirmed": "مؤكد",
+      "showing": "{{from}}-{{to}} / {{total}} معروضة",
+      "page": "صفحة {{current}} / {{total}}",
+      "actions": "الإجراءات",
+      "noData": "لا توجد بيانات",
+      "loading": "جارٍ التحميل...",
+      "previous": "السابق",
+      "next": "التالي",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "form": {
+      "editUser": "تعديل المستخدم",
+      "addUser": "إضافة مستخدم جديد",
+      "editDescription": "تعديل معلومات المستخدم",
+      "addDescription": "أدخل معلومات المستخدم الجديد",
+      "username": "اسم المستخدم",
+      "usernamePlaceholder": "أدخل اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل عنوان البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "سيتم إنشاء كلمة مرور مؤقتة إذا تُرك فارغاً",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "أدخل الاسم الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "أدخل اسم العائلة",
+      "phoneNumber": "الهاتف",
+      "phoneNumberPlaceholder": "أدخل رقم الهاتف",
+      "role": "الدور",
+      "rolePlaceholder": "اختر دوراً",
+      "isActive": "نشط",
+      "isActiveDescription": "حالة نشاط المستخدم",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "cancel": "إلغاء",
+      "roleRequired": "اختيار الدور إلزامي",
+      "permissionGroups": "مجموعات الأذونات",
+      "permissionGroupsPlaceholder": "اختر مجموعات الأذونات",
+      "permissionGroupsHelp": "مجموعات الأذونات التي سيُعين إليها المستخدم",
+      "permissionGroupsNoData": "لم يتم العثور على مجموعات أذونات",
+      "generatedPasswordInfo": "إذا تُركت كلمة المرور فارغة، سيتم إنشاء كلمة مرور مؤقتة",
+      "selectAll": "تحديد الكل",
+      "systemAdminRequiresAdminRole": "دور مسؤول النظام يتطلب دور admin"
+    },
+    "stats": {
+      "totalUsers": "إجمالي المستخدمين",
+      "activeUsers": "المستخدمون النشطون",
+      "newThisMonth": "جدد هذا الشهر",
+      "confirmedUsers": "المستخدمون المؤكدون",
+      "loading": "جارٍ التحميل..."
+    },
+    "delete": {
+      "confirmTitle": "حذف المستخدم",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف المستخدم {{username}}؟"
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء المستخدم بنجاح",
+      "createError": "تعذر إنشاء المستخدم",
+      "updateSuccess": "تم تحديث المستخدم بنجاح",
+      "updateError": "تعذر تحديث المستخدم",
+      "deleteSuccess": "تم حذف المستخدم بنجاح",
+      "deleteError": "تعذر حذف المستخدم"
+    }
+  }
+}

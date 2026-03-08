@@ -1,0 +1,23 @@
+{
+  "PageTitle": "إعدادات البريد",
+  "PageDescription": "تكوين إعدادات خادم SMTP",
+  "Save": "حفظ",
+  "SavedSuccessfully": "تم حفظ إعدادات البريد بنجاح",
+  "SaveFailed": "تعذر حفظ إعدادات البريد",
+  "Fields": {
+    "Host": "اسم الخادم",
+    "Port": "منفذ الاتصال",
+    "EnableSsl": "استخدام SSL",
+    "Username": "اسم المستخدم",
+    "Password": "كلمة المرور",
+    "PasswordPlaceholder": "أدخل كلمة مرور جديدة للتغيير",
+    "FromEmail": "بريد المُرسِل",
+    "FromName": "اسم المُرسِل",
+    "Timeout": "المهلة (ثانية)"
+  },
+  "TestMail": {
+    "Send": "إرسال بريد اختبار",
+    "Sending": "جارٍ الإرسال...",
+    "Success": "تم إرسال بريد الاختبار"
+  }
+}
