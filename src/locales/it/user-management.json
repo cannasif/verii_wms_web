@@ -1,0 +1,80 @@
+{
+  "userManagement": {
+    "menu": "Gestione Utenti",
+    "description": "Gestisci e modifica gli utenti",
+    "addButton": "Aggiungi Nuovo Utente",
+    "table": {
+      "id": "ID",
+      "username": "Nome Utente",
+      "email": "Email",
+      "fullName": "Nome Completo",
+      "role": "Ruolo",
+      "status": "Stato",
+      "createdDate": "Data di Creazione",
+      "active": "Attivo",
+      "inactive": "Inattivo",
+      "confirmed": "Confermato",
+      "showing": "{{from}}-{{to}} / {{total}} visualizzati",
+      "page": "Pagina {{current}} / {{total}}",
+      "actions": "Azioni",
+      "noData": "Nessun dato",
+      "loading": "Caricamento...",
+      "previous": "Precedente",
+      "next": "Successivo",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    },
+    "form": {
+      "editUser": "Modifica Utente",
+      "addUser": "Aggiungi Nuovo Utente",
+      "editDescription": "Modifica le informazioni utente",
+      "addDescription": "Inserire le informazioni del nuovo utente",
+      "username": "Nome Utente",
+      "usernamePlaceholder": "Inserisci nome utente",
+      "email": "Email",
+      "emailPlaceholder": "Inserisci indirizzo email",
+      "password": "Password",
+      "passwordPlaceholder": "Verrà generata una password temporanea se lasciata vuota",
+      "firstName": "Nome",
+      "firstNamePlaceholder": "Inserisci nome",
+      "lastName": "Cognome",
+      "lastNamePlaceholder": "Inserisci cognome",
+      "phoneNumber": "Telefono",
+      "phoneNumberPlaceholder": "Inserisci numero di telefono",
+      "role": "Ruolo",
+      "rolePlaceholder": "Seleziona ruolo",
+      "isActive": "Attivo",
+      "isActiveDescription": "Stato attivo utente",
+      "save": "Salva",
+      "saving": "Salvataggio...",
+      "cancel": "Annulla",
+      "roleRequired": "La selezione del ruolo è obbligatoria",
+      "permissionGroups": "Gruppi Permessi",
+      "permissionGroupsPlaceholder": "Seleziona gruppi di permessi",
+      "permissionGroupsHelp": "Gruppi di permessi a cui l'utente sarà assegnato",
+      "permissionGroupsNoData": "Nessun gruppo di permessi trovato",
+      "generatedPasswordInfo": "Se la password è vuota, verrà generata una temporanea",
+      "selectAll": "Seleziona tutto",
+      "systemAdminRequiresAdminRole": "Il ruolo System Admin richiede il ruolo admin"
+    },
+    "stats": {
+      "totalUsers": "Totale Utenti",
+      "activeUsers": "Utenti Attivi",
+      "newThisMonth": "Nuovi Questo Mese",
+      "confirmedUsers": "Utenti Confermati",
+      "loading": "Caricamento..."
+    },
+    "delete": {
+      "confirmTitle": "Elimina Utente",
+      "confirmMessage": "Sei sicuro di voler eliminare l'utente {{username}}?"
+    },
+    "messages": {
+      "createSuccess": "Utente creato con successo",
+      "createError": "Impossibile creare l'utente",
+      "updateSuccess": "Utente aggiornato con successo",
+      "updateError": "Impossibile aggiornare l'utente",
+      "deleteSuccess": "Utente eliminato con successo",
+      "deleteError": "Impossibile eliminare l'utente"
+    }
+  }
+}

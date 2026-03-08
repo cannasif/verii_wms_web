@@ -1,0 +1,29 @@
+{
+  "menu": "Monitoraggio Hangfire",
+  "title": "Monitoraggio Hangfire",
+  "description": "Monitora lo stato dei lavori, i lavori falliti e la coda di messaggi non consegnati.",
+  "refresh": "Aggiorna",
+  "stats": {
+    "enqueued": "In coda",
+    "processing": "In elaborazione",
+    "succeeded": "Riuscito",
+    "failed": "Fallito"
+  },
+  "table": {
+    "jobId": "ID Lavoro",
+    "jobName": "Lavoro",
+    "state": "Stato",
+    "time": "Ora",
+    "reason": "Motivo"
+  },
+  "failed": {
+    "title": "Lavori Falliti",
+    "empty": "Nessun lavoro fallito trovato.",
+    "total": "Totale"
+  },
+  "deadLetter": {
+    "title": "Coda messaggi non consegnati",
+    "empty": "La coda è vuota.",
+    "enqueued": "In coda"
+  }
+}
