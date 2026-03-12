@@ -60,6 +60,7 @@ import {
 import { UserManagementPage } from '@/features/user-management';
 import { MailSettingsPage } from '@/features/mail-settings';
 import { HangfireMonitoringPage } from '@/features/hangfire-monitoring';
+import { getAppBasePath } from '@/lib/api-config';
 
 export const router = createBrowserRouter([
   {
@@ -374,4 +375,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+], {
+  basename: getAppBasePath(),
+});

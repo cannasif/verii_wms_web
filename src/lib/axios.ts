@@ -5,9 +5,11 @@ import {
   loadConfig,
   getApiUrl,
   getApiBaseUrl,
+  isCurrentAppPath,
+  resolveAppPath,
 } from './api-config';
 
-export { loadConfig, getApiUrl, getApiBaseUrl };
+export { loadConfig, getApiUrl, getApiBaseUrl, resolveAppPath };
 
 export async function ensureApiReady(): Promise<void> {
   const base = await loadConfig();
@@ -124,8 +126,8 @@ api.interceptors.response.use(
       sessionStorage.removeItem('access_token');
       useAuthStore.getState().logout();
 
-      if (window.location.pathname !== '/auth/login') {
-        window.location.href = '/auth/login?sessionExpired=true';
+      if (!isCurrentAppPath('/auth/login?sessionExpired=true')) {
+        window.location.href = resolveAppPath('/auth/login?sessionExpired=true');
       }
     }
 
