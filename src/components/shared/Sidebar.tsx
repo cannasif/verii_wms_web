@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
+import v3riiWmsLogo from '@/assets/v3riiwms.png';
+import v3logo from '@/assets/v3logo.png';
 
 interface NavItem {
   title: string;
@@ -386,26 +388,29 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
         )}
       >
         <div className="h-24 shrink-0 border-b border-slate-200/70 dark:border-white/5">
-          <div className={cn("flex h-full items-center px-4", isSidebarOpen ? "justify-between" : "justify-center")}>
+          <div className={cn("relative flex h-full items-center px-4", isSidebarOpen ? "justify-center" : "justify-center")}>
             {isSidebarOpen ? (
               <>
-                <div className="text-left">
-                  <p className="text-3xl font-bold tracking-tight text-slate-900 dark:bg-gradient-to-r dark:from-pink-500 dark:to-orange-400 dark:bg-clip-text dark:text-transparent">
-                    V3RII
-                  </p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-pink-300/80">
-                    WMS
-                  </p>
+                <div className="flex items-center">
+                  <img
+                    src={v3riiWmsLogo}
+                    alt="V3RII WMS"
+                    className="h-30 w-200 object-contain justify-center"
+                  />
                 </div>
-                <button
-                  onClick={() => useUIStore.getState().setSidebarOpen(false)}
-                  className="rounded-lg p-2 text-slate-500 transition-colors hover:text-red-500 lg:hidden"
+                 <button
+                onClick={() => useUIStore.getState().setSidebarOpen(false)}
+                className="absolute right-4 rounded-lg p-2 text-slate-500 transition-colors hover:text-red-500 lg:hidden"
                 >
                   <X size={20} />
                 </button>
               </>
             ) : (
-              <p className="text-lg font-bold text-slate-900 dark:text-pink-400">V3</p>
+                 <img
+                  src={v3logo}
+                  alt="V3"
+                  className="h-10 w-auto object-contain scale-200"
+                />
             )}
           </div>
         </div>

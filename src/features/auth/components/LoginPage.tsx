@@ -16,8 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
-import loginImage from '@/assets/login.jpg';
-import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, ShieldCheck, TriangleAlert } from 'lucide-react';
+import loginImage from '@/assets/login.png';
+import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert, ShieldCheck } from 'lucide-react';
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
 export function LoginPage(): React.JSX.Element {
@@ -99,21 +99,17 @@ export function LoginPage(): React.JSX.Element {
             <img src={loginImage} alt="WMS Login" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-linear-to-t from-[#070d1f] via-[#070d1f]/45 to-transparent" />
             <div className="absolute bottom-8 left-8 right-8">
-              <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/80">V3RII WMS</p>
-              <p className="mt-2 text-2xl font-bold leading-tight text-white">
-                Depo operasyonlarinizi
-                <span className="block bg-linear-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">tek merkezden yonetin</span>
-              </p>
+              
             </div>
           </div>
 
           <div className="relative overflow-hidden p-8 sm:p-10">
             <WmsBackgroundAnimation isPaused={isBgAnimationPaused} />
             <div className="relative z-10 mb-8 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
-                <ShieldCheck size={26} />
-              </div>
-              <h1 className="text-3xl font-bold tracking-tight text-white">{t('auth.login.title')}</h1>
+<div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+  <ShieldCheck size={26} />
+</div>
+                <h1 className="text-3xl font-bold tracking-tight text-white">{t('auth.login.title')}</h1>
               <p className="mt-1 text-sm text-slate-400">{t('auth.login.subtitle')}</p>
             </div>
 
