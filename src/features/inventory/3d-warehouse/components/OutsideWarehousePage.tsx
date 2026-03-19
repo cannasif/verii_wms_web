@@ -221,10 +221,6 @@ export function OutsideWarehousePage(): ReactElement {
   const selectedSlotDetail =
     portalSlots.find((item) => item.slot === selectedSlot) ?? portalSlots[0];
   const selectedCatalogProduct = DEMO_PRODUCT_CATALOG.find((item) => item.code === selectedCatalogCode);
-  const stockOptions = DEMO_PRODUCT_CATALOG.map((item) => ({
-    value: item.code,
-    label: `${item.code} - ${item.name}`,
-  }));
   const serialOptions = (selectedCatalogProduct?.serialNos ?? []).map((serial) => ({
     value: serial,
     label: serial,
