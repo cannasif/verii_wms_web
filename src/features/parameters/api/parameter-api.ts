@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse } from '@/types/api';
 import type { PagedResponse } from '@/types/api';
 import type {
@@ -10,6 +11,20 @@ import type {
 } from '../types/parameter';
 import { PARAMETER_TYPES } from '../types/parameter';
 
+type ParameterApiErrorPayload = {
+  exceptionMessage?: string;
+  message?: string;
+};
+
+type ParameterApiError = {
+  response?: {
+    status?: number;
+    config?: { url?: string };
+    data?: ParameterApiErrorPayload;
+  };
+  message?: string;
+};
+
 const getEndpoint = (type: ParameterType): string => {
   return PARAMETER_TYPES[type].endpoint;
 };
@@ -19,6 +34,11 @@ const normalizePagedData = (paged: unknown): Parameter[] => {
   if (Array.isArray(raw.data)) return raw.data;
   if (Array.isArray(raw.items)) return raw.items;
   return [];
+};
+
+const extractApiErrorMessage = (error: unknown, fallback: string): string => {
+  const apiError = error as ParameterApiError;
+  return apiError.response?.data?.exceptionMessage || apiError.response?.data?.message || apiError.message || fallback;
 };
 
 export const parameterApi = {
@@ -34,14 +54,7 @@ export const parameterApi = {
     } = {}
   ): Promise<PagedResponse<Parameter>> => {
     const endpoint = getEndpoint(type);
-    const requestBody = {
-      pageNumber: params.pageNumber ?? 1,
-      pageSize: params.pageSize ?? 1000,
-      sortBy: params.sortBy ?? 'Id',
-      sortDirection: params.sortDirection ?? 'desc',
-      filters: params.filters ?? [],
-      filterLogic: params.filterLogic ?? 'and',
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1, pageSize: 1000 });
 
     const response = await api.post<ApiResponse<PagedResponse<Parameter>>>(`/api/${endpoint}/paged`, requestBody);
     if (response.success && response.data) {
@@ -91,13 +104,8 @@ export const parameterApi = {
       }
       const errorMessage = response.exceptionMessage || response.message || 'Parametre oluşturulamadı';
       throw new Error(errorMessage);
-    } catch (error: any) {
-      if (error?.response?.data) {
-        const apiError = error.response.data;
-        const errorMessage = apiError.exceptionMessage || apiError.message || 'Parametre oluşturulamadı';
-        throw new Error(errorMessage);
-      }
-      throw error;
+    } catch (error: unknown) {
+      throw new Error(extractApiErrorMessage(error, 'Parametre oluşturulamadı'));
     }
   },
 
@@ -109,13 +117,8 @@ export const parameterApi = {
         const errorMessage = response.exceptionMessage || response.message || 'Parametre güncellenemedi';
         throw new Error(errorMessage);
       }
-    } catch (error: any) {
-      if (error?.response?.data) {
-        const apiError = error.response.data;
-        const errorMessage = apiError.exceptionMessage || apiError.message || 'Parametre güncellenemedi';
-        throw new Error(errorMessage);
-      }
-      throw error;
+    } catch (error: unknown) {
+      throw new Error(extractApiErrorMessage(error, 'Parametre güncellenemedi'));
     }
   },
 

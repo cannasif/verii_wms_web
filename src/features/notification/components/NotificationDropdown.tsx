@@ -57,7 +57,8 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       setNotifications(response.data);
       setPaginationState(1, response.totalPages, response.hasNextPage);
       setUnreadCount(response.totalCount);
-    } catch (error) {
+    } catch {
+      // Initial load failures are handled by the shared notification connection flow.
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,8 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       
       appendNotifications(response.data);
       setPaginationState(nextPage, response.totalPages, response.hasNextPage);
-    } catch (error) {
+    } catch {
+      // Pagination failures should not break the dropdown UI.
     } finally {
       setLoadingMore(false);
     }
@@ -166,7 +168,8 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
     try {
       await notificationApi.markAllAsRead();
       markAllAsReadStore();
-    } catch (error) {
+    } catch {
+      // Mark-all failures are surfaced by the underlying store refresh path.
     }
   };
 
@@ -242,4 +245,3 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
     </DropdownMenu>
   );
 }
-

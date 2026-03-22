@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   PHeaderDto,
@@ -22,15 +23,7 @@ import type {
 
 export const packageApi = {
   getPHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<PHeaderDto>> => {
-    const { pageNumber = 1, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1 });
 
     const response = await api.post<PHeadersPagedResponse>('/api/PHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -62,9 +55,9 @@ export const packageApi = {
   },
 
   updatePHeader: async (id: number, data: UpdatePHeaderDto): Promise<void> => {
-    const cleanData = { ...data };
-    delete (cleanData as any).sourceType;
-    delete (cleanData as any).sourceHeaderId;
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([key]) => key !== 'sourceType' && key !== 'sourceHeaderId')
+    ) as Omit<UpdatePHeaderDto, 'sourceType' | 'sourceHeaderId'>;
     const response = await api.put<ApiResponse<unknown>>(`/api/PHeader/${id}`, cleanData);
     if (!response.success) {
       throw new Error(response.message || 'Paketleme güncellenemedi');
@@ -79,15 +72,7 @@ export const packageApi = {
   },
 
   getPPackagesPaged: async (params: PagedParams = {}): Promise<PagedResponse<PPackageDto>> => {
-    const { pageNumber = 1, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1 });
 
     const response = await api.post<PPackagesPagedResponse>('/api/PPackage/paged', requestBody);
     if (response.success && response.data) {
@@ -135,15 +120,7 @@ export const packageApi = {
   },
 
   getPLinesPaged: async (params: PagedParams = {}): Promise<PagedResponse<PLineDto>> => {
-    const { pageNumber = 1, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1 });
 
     const response = await api.post<PLinesPagedResponse>('/api/PLine/paged', requestBody);
     if (response.success && response.data) {
@@ -222,4 +199,3 @@ export const packageApi = {
     throw new Error(response.message || 'Eşleme işlemi başarısız oldu');
   },
 };
-

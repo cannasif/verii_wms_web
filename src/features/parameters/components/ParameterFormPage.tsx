@@ -16,6 +16,16 @@ import { toast } from 'sonner';
 import { PARAMETER_TYPES, type ParameterType, type ParameterFormData } from '../types/parameter';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
+type ParameterFormError = {
+  response?: {
+    data?: {
+      exceptionMessage?: string;
+      message?: string;
+    };
+  };
+  message?: string;
+};
+
 export function ParameterFormPage(): ReactElement {
   const { t } = useTranslation();
   const { type } = useParams<{ type: ParameterType }>();
@@ -75,7 +85,7 @@ export function ParameterFormPage(): ReactElement {
           ? t('parameters.update.success')
           : t('parameters.create.success')
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Parameter update/create error:', error);
       let errorMessage = parameter
         ? t('parameters.update.error')
@@ -83,11 +93,11 @@ export function ParameterFormPage(): ReactElement {
       
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (error?.response?.data) {
-        const apiError = error.response.data;
+      } else if ((error as ParameterFormError)?.response?.data) {
+        const apiError = (error as ParameterFormError).response?.data;
         errorMessage = apiError.exceptionMessage || apiError.message || errorMessage;
-      } else if (error?.message) {
-        errorMessage = error.message;
+      } else if ((error as ParameterFormError)?.message) {
+        errorMessage = (error as ParameterFormError).message ?? errorMessage;
       }
       
       toast.error(errorMessage);
@@ -286,4 +296,3 @@ export function ParameterFormPage(): ReactElement {
     </div>
   );
 }
-

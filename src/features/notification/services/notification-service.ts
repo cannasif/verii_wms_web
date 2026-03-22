@@ -4,6 +4,8 @@ import { notificationApi } from '../api/notification-api';
 import type { NotificationDto, SignalRNotificationPayload } from '../types/notification';
 import { useNotificationStore } from '../stores/notification-store';
 
+type NotificationPayloadRecord = Partial<SignalRNotificationPayload> & Record<string, unknown>;
+
 class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
   private pollingInterval: NodeJS.Timeout | null = null;
@@ -90,21 +92,23 @@ class NotificationService {
   }
 
 
-  private handleNotification(payload: any): void {
-    const mapChannel = (channel: any): 'Terminal' | 'Web' => {
+  private handleNotification(payload: NotificationPayloadRecord): void {
+    const mapChannel = (channel: unknown): 'Terminal' | 'Web' => {
       if (typeof channel === 'string') {
-        return channel as 'Terminal' | 'Web';
+        if (channel === 'Terminal' || channel === 'Web') {
+          return channel;
+        }
       }
       if (channel === 1 || channel === 'Terminal') return 'Terminal';
       if (channel === 2 || channel === 'Web') return 'Web';
       return 'Web';
     };
 
-    const mapSeverity = (type: any): 'info' | 'warning' | 'error' => {
+    const mapSeverity = (type: unknown): 'info' | 'warning' | 'error' => {
       if (typeof type === 'string') {
         const lowerType = type.toLowerCase();
         if (lowerType === 'info' || lowerType === 'warning' || lowerType === 'error') {
-          return lowerType as 'info' | 'warning' | 'error';
+          return lowerType;
         }
       }
       if (type === 1 || type === 'info') return 'info';

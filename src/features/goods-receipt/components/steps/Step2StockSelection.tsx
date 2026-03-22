@@ -263,9 +263,9 @@ export function Step2StockSelection({
                             item={orderItem}
                             selectedItem={item}
                             warehouses={warehouses}
-                            onUpdateItem={(_itemId, updates) => onUpdateItem(item.stockCode, updates)}
+                            onUpdateItem={(_, updates) => onUpdateItem(item.stockCode, updates)}
                             onToggleItem={() => {}}
-                            onRemoveItem={(_itemId) => onRemoveItem(item.stockCode)}
+                            onRemoveItem={() => onRemoveItem(item.stockCode)}
                           />
                         );
                       })
@@ -425,9 +425,9 @@ export function Step2StockSelection({
                           item={orderItem}
                           selectedItem={item}
                           warehouses={warehouses}
-                          onUpdateItem={(_itemId, updates) => onUpdateItem(item.stockCode, updates)}
+                          onUpdateItem={(_, updates) => onUpdateItem(item.stockCode, updates)}
                           onToggleItem={() => {}}
-                          onRemoveItem={(_itemId) => onRemoveItem(item.stockCode)}
+                          onRemoveItem={() => onRemoveItem(item.stockCode)}
                         />
                       );
                     })

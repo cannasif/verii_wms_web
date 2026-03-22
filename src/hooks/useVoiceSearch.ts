@@ -12,7 +12,7 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
 
   useEffect(() => {
     const checkSupport = () => {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       setIsSupported(!!SpeechRecognition);
     };
     checkSupport();
@@ -24,7 +24,11 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
       return;
     }
 
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setError('Tarayıcınız sesli aramayı desteklemiyor');
+      return;
+    }
     const recognition = new SpeechRecognition();
 
     recognition.continuous = false;
@@ -36,15 +40,15 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
       setError(null);
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
+        .map((result) => result[0]?.transcript ?? '')
         .join('');
       onResult(transcript);
       setIsListening(false);
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event.error === 'no-speech') {
         setError('Ses algılanamadı');
       } else if (event.error === 'not-allowed') {
@@ -61,7 +65,7 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
 
     try {
       recognition.start();
-    } catch (err) {
+    } catch {
       setError('Sesli arama başlatılamadı');
       setIsListening(false);
     }
@@ -81,9 +85,35 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
 };
 
 declare global {
+  interface SpeechRecognitionResultLike {
+    0: { transcript: string };
+  }
+
+  interface SpeechRecognitionEvent extends Event {
+    results: ArrayLike<SpeechRecognitionResultLike>;
+  }
+
+  interface SpeechRecognitionErrorEvent extends Event {
+    error: string;
+  }
+
+  interface SpeechRecognitionInstance {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onstart: (() => void) | null;
+    onresult: ((event: SpeechRecognitionEvent) => void) | null;
+    onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+    onend: (() => void) | null;
+    start: () => void;
+  }
+
+  interface SpeechRecognitionConstructor {
+    new (): SpeechRecognitionInstance;
+  }
+
   interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
   }
 }
-

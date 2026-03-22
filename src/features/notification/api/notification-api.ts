@@ -1,11 +1,17 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedResponse } from '@/types/api';
 import type { NotificationDto, CreateNotificationRequest, GetPagedNotificationsRequest, PagedNotificationsResponse } from '../types/notification';
 
-const mapChannel = (channel: any): 'Terminal' | 'Web' => {
+type NotificationApiRecord = Record<string, unknown>;
+
+const getRecordValue = <T>(record: NotificationApiRecord, key: string): T | undefined =>
+  record[key] as T | undefined;
+
+const mapChannel = (channel: unknown): 'Terminal' | 'Web' => {
   if (typeof channel === 'string') {
     if (channel === 'Terminal' || channel === 'Web') {
-      return channel as 'Terminal' | 'Web';
+      return channel;
     }
   }
   if (channel === 1 || channel === 'Web') return 'Web';
@@ -13,11 +19,11 @@ const mapChannel = (channel: any): 'Terminal' | 'Web' => {
   return 'Web';
 };
 
-const mapSeverity = (severity: any): 'info' | 'warning' | 'error' => {
+const mapSeverity = (severity: unknown): 'info' | 'warning' | 'error' => {
   if (typeof severity === 'string') {
     const lowerSeverity = severity.toLowerCase();
     if (lowerSeverity === 'info' || lowerSeverity === 'warning' || lowerSeverity === 'error') {
-      return lowerSeverity as 'info' | 'warning' | 'error';
+      return lowerSeverity;
     }
   }
   if (severity === 1 || severity === 'info') return 'info';
@@ -26,21 +32,24 @@ const mapSeverity = (severity: any): 'info' | 'warning' | 'error' => {
   return 'info';
 };
 
-const mapNotification = (item: any): NotificationDto => ({
-  id: item.id,
-  title: item.title,
-  message: item.message,
-  channel: mapChannel(item.channel),
-  severity: mapSeverity(item.severity),
-  isRead: item.isRead || false,
-  readDate: item.readDate || null,
-  timestamp: item.timestamp || item.createdDate || new Date().toISOString(),
-  recipientUserId: item.recipientUserId ?? null,
-  recipientTerminalUserId: item.recipientTerminalUserId ?? null,
-  relatedEntityType: item.relatedEntityType || null,
-  relatedEntityId: item.relatedEntityId || null,
-  actionUrl: item.actionUrl || null,
-  terminalActionCode: item.terminalActionCode || null,
+const mapNotification = (item: NotificationApiRecord): NotificationDto => ({
+  id: getRecordValue<number>(item, 'id') ?? 0,
+  title: getRecordValue<string>(item, 'title') ?? '',
+  message: getRecordValue<string>(item, 'message') ?? '',
+  channel: mapChannel(getRecordValue(item, 'channel')),
+  severity: mapSeverity(getRecordValue(item, 'severity')),
+  isRead: getRecordValue<boolean>(item, 'isRead') ?? false,
+  readDate: getRecordValue<string | null>(item, 'readDate') ?? null,
+  timestamp:
+    getRecordValue<string>(item, 'timestamp') ??
+    getRecordValue<string>(item, 'createdDate') ??
+    new Date().toISOString(),
+  recipientUserId: getRecordValue<number | null>(item, 'recipientUserId') ?? null,
+  recipientTerminalUserId: getRecordValue<number | null>(item, 'recipientTerminalUserId') ?? null,
+  relatedEntityType: getRecordValue<string | null>(item, 'relatedEntityType') ?? null,
+  relatedEntityId: getRecordValue<number | null>(item, 'relatedEntityId') ?? null,
+  actionUrl: getRecordValue<string | null>(item, 'actionUrl') ?? null,
+  terminalActionCode: getRecordValue<string | null>(item, 'terminalActionCode') ?? null,
 });
 
 export const notificationApi = {
@@ -82,13 +91,7 @@ export const notificationApi = {
   getPagedNotifications: async (
     params: GetPagedNotificationsRequest = {}
   ): Promise<PagedResponse<NotificationDto>> => {
-    const requestBody = {
-      pageNumber: params.pageNumber ?? 1,
-      pageSize: params.pageSize ?? 10,
-      sortBy: params.sortBy ?? 'Id',
-      sortDirection: params.sortDirection ?? 'desc',
-      filters: params.filters ?? [],
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1 });
     const response = await api.post('/api/notification/user/paged', requestBody) as PagedNotificationsResponse;
     if (response.success && response.data) {
       return {
