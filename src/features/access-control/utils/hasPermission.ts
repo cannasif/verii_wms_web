@@ -7,14 +7,7 @@ export function hasPermission(
 ): boolean {
   if (!permissions) return false;
   if (permissions.isSystemAdmin === true) return true;
-  if (permissions.permissionCodes.includes(requiredCode)) return true;
-
-  const parts = requiredCode.split('.').filter(Boolean);
-  const isViewLike = parts.length >= 3 && parts[parts.length - 1] === 'view';
-  if (!isViewLike) return false;
-
-  const moduleFallback = `${parts[0]}.view`;
-  return permissions.permissionCodes.includes(moduleFallback);
+  return permissions.permissionCodes.includes(requiredCode);
 }
 
 export function resolveRequiredPermission(pathname: string): string | null {

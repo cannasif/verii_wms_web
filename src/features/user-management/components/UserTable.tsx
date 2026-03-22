@@ -28,6 +28,7 @@ interface UserTableProps {
   onPageChange: (page: number) => void;
   onSortChange: (sortBy: string, sortDirection: 'asc' | 'desc') => void;
   onEdit?: (user: UserDto) => void;
+  canUpdate?: boolean;
 }
 
 export function UserTable({
@@ -39,6 +40,7 @@ export function UserTable({
   onPageChange,
   onSortChange,
   onEdit,
+  canUpdate = false,
 }: UserTableProps): ReactElement {
   const { t, i18n } = useTranslation(['user-management', 'common']);
   const pageKey = 'user-management-list';
@@ -61,9 +63,9 @@ export function UserTable({
       { key: 'role', label: t('userManagement.table.role') },
       { key: 'status', label: t('userManagement.table.status') },
       { key: 'createdDate', label: t('userManagement.table.createdDate') },
-      ...(onEdit ? [{ key: 'actions', label: t('common:common.actions') }] : []),
+      ...(onEdit && canUpdate ? [{ key: 'actions', label: t('common:common.actions') }] : []),
     ],
-    [onEdit, t]
+    [canUpdate, onEdit, t]
   );
   const {
     userId,
@@ -290,7 +292,7 @@ export function UserTable({
                           <Switch
                             checked={user.isActive}
                             onCheckedChange={(checked) => handleStatusChange(user, checked)}
-                            disabled={updateUser.isPending}
+                            disabled={updateUser.isPending || !canUpdate}
                           />
                           <span className="text-sm text-muted-foreground">
                             {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
@@ -313,7 +315,7 @@ export function UserTable({
                       </TableCell>
                     );
                   }
-                  if (key === 'actions' && onEdit) {
+                  if (key === 'actions' && onEdit && canUpdate) {
                     return (
                       <TableCell key={key}>
                         <Button

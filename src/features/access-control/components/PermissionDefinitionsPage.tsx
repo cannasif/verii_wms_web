@@ -29,6 +29,7 @@ import { useSyncPermissionDefinitionsMutation } from '../hooks/useSyncPermission
 import { useCreatePermissionDefinitionMutation } from '../hooks/useCreatePermissionDefinitionMutation';
 import { useUpdatePermissionDefinitionMutation } from '../hooks/useUpdatePermissionDefinitionMutation';
 import { useDeletePermissionDefinitionMutation } from '../hooks/useDeletePermissionDefinitionMutation';
+import { usePermissionAccess } from '../hooks/usePermissionAccess';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
@@ -83,6 +84,9 @@ export function PermissionDefinitionsPage(): ReactElement {
   const deleteMutation = useDeletePermissionDefinitionMutation();
 
   const syncMutation = useSyncPermissionDefinitionsMutation();
+  const permissionAccess = usePermissionAccess();
+  const canCreate = permissionAccess.can('access-control.permission-definitions.create');
+  const canUpdate = permissionAccess.can('access-control.permission-definitions.update');
 
   const items = data?.data ?? EMPTY_PERMISSION_DEFINITIONS;
   const totalCount = data?.totalCount ?? 0;
@@ -199,10 +203,12 @@ export function PermissionDefinitionsPage(): ReactElement {
             {t('permissionDefinitions.description')}
           </p>
         </div>
-        <Button onClick={handleAddClick}>
-          <Plus size={18} className="mr-2" />
-          {t('permissionDefinitions.add')}
-        </Button>
+        {canCreate ? (
+          <Button onClick={handleAddClick}>
+            <Plus size={18} className="mr-2" />
+            {t('permissionDefinitions.add')}
+          </Button>
+        ) : null}
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 flex flex-col md:flex-row items-center justify-between gap-5">
@@ -238,14 +244,16 @@ export function PermissionDefinitionsPage(): ReactElement {
           onVisibleColumnsChange={setVisibleColumns}
           onColumnOrderChange={setColumnOrder}
         />
-        <Button
-          variant="outline"
-          onClick={handleSyncFromRoutes}
-          disabled={isLoading || syncMutation.isPending}
-        >
-          <RefreshCw size={18} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
-          {t('permissionDefinitions.syncFromRoutes')}
-        </Button>
+        {canCreate ? (
+          <Button
+            variant="outline"
+            onClick={handleSyncFromRoutes}
+            disabled={isLoading || syncMutation.isPending}
+          >
+            <RefreshCw size={18} className={syncMutation.isPending ? 'animate-spin mr-2' : 'mr-2'} />
+            {t('permissionDefinitions.syncFromRoutes')}
+          </Button>
+        ) : null}
         <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isLoading}>
           <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
         </Button>
@@ -326,12 +334,16 @@ export function PermissionDefinitionsPage(): ReactElement {
                       if (key === 'actions') {
                         return (
                           <TableCell key={key} className="text-right">
-                            <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
-                              {t('common.edit')}
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
-                              {t('common.delete')}
-                            </Button>
+                            {canUpdate ? (
+                              <>
+                                <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>
+                                  {t('common.edit')}
+                                </Button>
+                                <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDeleteClick(item)}>
+                                  {t('common.delete')}
+                                </Button>
+                              </>
+                            ) : null}
                           </TableCell>
                         );
                       }

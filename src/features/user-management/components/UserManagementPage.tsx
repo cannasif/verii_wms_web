@@ -8,6 +8,7 @@ import { UserTable } from './UserTable';
 import { UserForm } from './UserForm';
 import { useCreateUser } from '../hooks/useCreateUser';
 import { useUpdateUser } from '../hooks/useUpdateUser';
+import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import type { UserDto, CreateUserDto, UpdateUserDto } from '../types/user-types';
 import type { UserFormSchema, UserUpdateFormSchema } from '../types/user-types';
 
@@ -24,6 +25,9 @@ export function UserManagementPage(): ReactElement {
 
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
+  const permissionAccess = usePermissionAccess();
+  const canCreate = permissionAccess.can('access-control.user-management.create');
+  const canUpdate = permissionAccess.can('access-control.user-management.update');
 
   useEffect(() => {
     setPageTitle(t('userManagement.menu'));
@@ -88,9 +92,11 @@ export function UserManagementPage(): ReactElement {
             {t('userManagement.description')}
           </p>
         </div>
-        <Button onClick={handleAddClick}>
-          {t('userManagement.addButton')}
-        </Button>
+        {canCreate ? (
+          <Button onClick={handleAddClick}>
+            {t('userManagement.addButton')}
+          </Button>
+        ) : null}
       </div>
 
       <UserStats />
@@ -104,10 +110,11 @@ export function UserManagementPage(): ReactElement {
           filters={filters}
           onPageChange={setPageNumber}
           onSortChange={handleSortChange}
-          onEdit={(u) => {
+          canUpdate={canUpdate}
+          onEdit={canUpdate ? (u) => {
             setEditingUser(u);
             setFormOpen(true);
-          }}
+          } : undefined}
         />
       </div>
 

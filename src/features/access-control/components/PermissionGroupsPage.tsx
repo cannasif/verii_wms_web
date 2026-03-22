@@ -27,6 +27,7 @@ import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
 import { useCreatePermissionGroupMutation } from '../hooks/useCreatePermissionGroupMutation';
 import { useUpdatePermissionGroupMutation } from '../hooks/useUpdatePermissionGroupMutation';
 import { useDeletePermissionGroupMutation } from '../hooks/useDeletePermissionGroupMutation';
+import { usePermissionAccess } from '../hooks/usePermissionAccess';
 import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
 import type { PermissionGroupDto } from '../types/access-control.types';
@@ -81,6 +82,9 @@ export function PermissionGroupsPage(): ReactElement {
   const createMutation = useCreatePermissionGroupMutation();
   const updateMutation = useUpdatePermissionGroupMutation();
   const deleteMutation = useDeletePermissionGroupMutation();
+  const permissionAccess = usePermissionAccess();
+  const canCreate = permissionAccess.can('access-control.permission-groups.create');
+  const canUpdate = permissionAccess.can('access-control.permission-groups.update');
 
   const items = data?.data ?? EMPTY_ITEMS;
   const totalCount = data?.totalCount ?? 0;
@@ -203,10 +207,12 @@ export function PermissionGroupsPage(): ReactElement {
             {t('permissionGroups.description')}
           </p>
         </div>
-        <Button onClick={handleAddClick}>
-          <Plus size={18} className="mr-2" />
-          {t('permissionGroups.add')}
-        </Button>
+        {canCreate ? (
+          <Button onClick={handleAddClick}>
+            <Plus size={18} className="mr-2" />
+            {t('permissionGroups.add')}
+          </Button>
+        ) : null}
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 flex flex-col md:flex-row items-center justify-between gap-5">
@@ -301,34 +307,38 @@ export function PermissionGroupsPage(): ReactElement {
                       if (key === 'actions') {
                         return (
                           <TableCell key={key} className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handlePermissionsClick(item)}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
-                              disabled={item.isSystemAdmin}
-                            >
-                              <Settings size={16} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditClick(item)}
-                              disabled={item.isSystemAdmin}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
-                            >
-                              {t('common.edit')}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600"
-                              onClick={() => handleDeleteClick(item)}
-                              disabled={item.isSystemAdmin}
-                              title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
-                            >
-                              {t('common.delete')}
-                            </Button>
+                            {canUpdate ? (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handlePermissionsClick(item)}
+                                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
+                                  disabled={item.isSystemAdmin}
+                                >
+                                  <Settings size={16} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditClick(item)}
+                                  disabled={item.isSystemAdmin}
+                                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
+                                >
+                                  {t('common.edit')}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600"
+                                  onClick={() => handleDeleteClick(item)}
+                                  disabled={item.isSystemAdmin}
+                                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
+                                >
+                                  {t('common.delete')}
+                                </Button>
+                              </>
+                            ) : null}
                           </TableCell>
                         );
                       }

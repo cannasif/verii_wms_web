@@ -2,7 +2,14 @@ import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
-import { getPermissionDisplayMeta, getPermissionModuleDisplayMeta, isLeafPermissionCode } from '../utils/permission-config';
+import {
+  getPermissionActionLabel,
+  getPermissionDisplayMeta,
+  getPermissionModuleDisplayMeta,
+  getPermissionScope,
+  getPermissionScopeDisplayMeta,
+  isLeafPermissionCode,
+} from '../utils/permission-config';
 
 interface PermissionDefinitionMultiSelectProps {
   value: number[];
@@ -49,9 +56,16 @@ export function PermissionDefinitionMultiSelect({
   const groupedItems = useMemo(() => {
     const buckets = new Map<string, typeof filteredItems>();
     for (const item of filteredItems) {
-      const prefix = (item.code ?? '').split('.').filter(Boolean)[0] ?? 'other';
-      const meta = getPermissionModuleDisplayMeta(prefix);
-      const groupLabel = meta ? t(meta.key, meta.fallback) : prefix;
+      const code = item.code ?? '';
+      const scope = getPermissionScope(code);
+      const scopeMeta = getPermissionScopeDisplayMeta(scope);
+      const prefix = code.split('.').filter(Boolean)[0] ?? 'other';
+      const moduleMeta = getPermissionModuleDisplayMeta(prefix);
+      const groupLabel = scopeMeta
+        ? t(scopeMeta.key, scopeMeta.fallback)
+        : moduleMeta
+          ? t(moduleMeta.key, moduleMeta.fallback)
+          : scope;
       const existing = buckets.get(groupLabel);
       if (existing) {
         existing.push(item);
@@ -128,6 +142,7 @@ export function PermissionDefinitionMultiSelect({
               </div>
               {group.map((item) => {
                 const display = getDisplayLabel(item.code, item.name);
+                const actionLabel = getPermissionActionLabel(item.code);
                 return (
                   <div key={item.id} className="flex items-center gap-2">
                     <input
@@ -140,7 +155,9 @@ export function PermissionDefinitionMultiSelect({
                     />
                     <label htmlFor={`perm-${item.id}`} className="text-sm cursor-pointer flex-1">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="truncate">{display}</span>
+                        <span className="truncate">
+                          {t(actionLabel.key, actionLabel.fallback)} - {display}
+                        </span>
                         <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{item.code}</span>
                       </div>
                     </label>
