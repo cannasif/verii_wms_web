@@ -14,17 +14,27 @@ interface GridExportMenuProps {
   fileName: string;
   columns: GridExportColumn[];
   rows: Record<string, unknown>[];
+  getExportData?: () => Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }>;
 }
 
-export function GridExportMenu({ fileName, columns, rows }: GridExportMenuProps): ReactElement {
+export function GridExportMenu({ fileName, columns, rows, getExportData }: GridExportMenuProps): ReactElement {
   const { t } = useTranslation('common');
   const [isExporting, setIsExporting] = useState(false);
+
+  const resolveExportPayload = async (): Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }> => {
+    if (getExportData) {
+      return getExportData();
+    }
+
+    return { columns, rows };
+  };
 
   const handleExcelExport = async (): Promise<void> => {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      await exportGridToExcel({ fileName, columns, rows });
+      const payload = await resolveExportPayload();
+      await exportGridToExcel({ fileName, columns: payload.columns, rows: payload.rows });
     } finally {
       setIsExporting(false);
     }
@@ -34,7 +44,8 @@ export function GridExportMenu({ fileName, columns, rows }: GridExportMenuProps)
     if (isExporting) return;
     setIsExporting(true);
     try {
-      await exportGridToPdf({ fileName, columns, rows });
+      const payload = await resolveExportPayload();
+      await exportGridToPdf({ fileName, columns: payload.columns, rows: payload.rows });
     } finally {
       setIsExporting(false);
     }

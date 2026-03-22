@@ -15,9 +15,25 @@ import type {
   CollectedBarcodesResponse,
   TransferHeader,
   AwaitingApprovalHeader,
+  TransferLine,
+  TransferLineSerial,
 } from '../types/transfer';
 import { buildTransferGenerateRequest } from '../utils/transfer-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
+import { buildPagedRequest } from '@/lib/paged';
+
+function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+  return {
+    success: true,
+    message,
+    exceptionMessage: '',
+    data: data.data,
+    errors: [],
+    timestamp: new Date().toISOString(),
+    statusCode: 200,
+    className: 'ApiResponse',
+  };
+}
 
 export const transferApi = {
   getOrdersByCustomer: async (customerCode: string): Promise<TransferOrdersResponse> => {
@@ -29,7 +45,13 @@ export const transferApi = {
   },
 
   getAssignedHeaders: async (userId: number): Promise<TransferHeadersResponse> => {
-    return await api.get<TransferHeadersResponse>(`/api/WtHeader/assigned/${userId}`);
+    const response = await api.get<ApiResponse<PagedResponse<TransferHeader>>>(`/api/WtHeader/assigned/${userId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış transfer listesi yüklendi');
+    }
+    throw new Error(response.message || 'Atanmış transfer listesi yüklenemedi');
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedTransferOrderLinesResponse> => {
@@ -46,19 +68,12 @@ export const transferApi = {
   },
 
   getHeaders: async (): Promise<TransferHeadersResponse> => {
-    return await api.get<TransferHeadersResponse>('/api/WtHeader');
+    const data = await transferApi.getHeadersPaged();
+    return toLegacyCollectionResponse(data, 'Transfer listesi yüklendi');
   },
 
   getHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<TransferHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<TransferHeader>>>('/api/WtHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -68,11 +83,23 @@ export const transferApi = {
   },
 
   getLines: async (headerId: number): Promise<TransferLinesResponse> => {
-    return await api.get<TransferLinesResponse>(`/api/WtLine/header/${headerId}`);
+    const response = await api.get<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Transfer satırları yüklendi');
+    }
+    throw new Error(response.message || 'Transfer satırları yüklenemedi');
   },
 
   getLineSerials: async (lineId: number): Promise<TransferLineSerialsResponse> => {
-    return await api.get<TransferLineSerialsResponse>(`/api/WtLineSerial/line/${lineId}`);
+    const response = await api.get<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Transfer seri listesi yüklendi');
+    }
+    throw new Error(response.message || 'Transfer seri listesi yüklenemedi');
   },
 
   getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
@@ -98,15 +125,7 @@ export const transferApi = {
   },
 
   getAwaitingApprovalHeaders: async (params: PagedParams = {}): Promise<PagedResponse<AwaitingApprovalHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<AwaitingApprovalHeader>>>(
       '/api/WtHeader/completed-awaiting-erp-approval',

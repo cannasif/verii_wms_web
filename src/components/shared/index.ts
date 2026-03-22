@@ -7,3 +7,7 @@ export { ColumnPreferencesPopover } from './ColumnPreferencesPopover';
 export type { ColumnDef } from './ColumnPreferencesPopover';
 export { GridExportMenu } from './GridExportMenu';
 export { AdvancedFilter } from './AdvancedFilter';
+export { DataTableActionBar } from './DataTableActionBar';
+export type { DataTableActionBarProps, DataTableSearchConfig } from './DataTableActionBar';
+export { DataTableGrid } from './DataTableGrid';
+export type { DataTableGridColumn, DataTableSortDirection } from './DataTableGrid';

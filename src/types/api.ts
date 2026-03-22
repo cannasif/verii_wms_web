@@ -20,7 +20,9 @@ export interface PagedParams {
   pageSize?: number;
   sortBy?: string;
   sortDirection?: string;
+  search?: string;
   filters?: PagedFilter[];
+  filterLogic?: 'and' | 'or';
 }
 
 export interface PagedResponse<T> {

@@ -12,6 +12,8 @@ export interface AdvancedFilterProps {
   defaultColumn: string;
   draftRows: FilterRow[];
   onDraftRowsChange: (rows: FilterRow[]) => void;
+  filterLogic?: 'and' | 'or';
+  onFilterLogicChange?: (value: 'and' | 'or') => void;
   onSearch: () => void;
   onClear: () => void;
   translationNamespace?: string;
@@ -28,6 +30,8 @@ export function AdvancedFilter({
   defaultColumn,
   draftRows,
   onDraftRowsChange,
+  filterLogic = 'and',
+  onFilterLogicChange,
   onSearch,
   onClear,
   translationNamespace = 'common',
@@ -101,6 +105,22 @@ export function AdvancedFilter({
       {appliedFilterCount > 0 && (
         <div className="rounded-md border border-emerald-200/70 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
           {getLabel('activeInfo', 'Filtre uygulandi')}: {appliedFilterCount}
+        </div>
+      )}
+      {onFilterLogicChange && (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            {getLabel('logic', 'Kosul')}
+          </span>
+          <Select value={filterLogic} onValueChange={(value: 'and' | 'or') => onFilterLogicChange(value)}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder={getLabel('logic', 'Kosul')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="and">{getLabel('logicAnd', 'AND')}</SelectItem>
+              <SelectItem value="or">{getLabel('logicOr', 'OR')}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       )}
       {draftRows.length > 0 && (

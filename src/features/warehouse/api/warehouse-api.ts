@@ -8,9 +8,25 @@ import type {
   WarehouseLinesResponse,
   WarehouseLineSerialsResponse,
   WarehouseHeader,
+  WarehouseLine,
+  WarehouseLineSerial,
 } from '../types/warehouse';
 import { buildWarehouseInboundRequest, buildWarehouseOutboundRequest } from '../utils/warehouse-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
+import { buildPagedRequest } from '@/lib/paged';
+
+function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+  return {
+    success: true,
+    message,
+    exceptionMessage: '',
+    data: data.data,
+    errors: [],
+    timestamp: new Date().toISOString(),
+    statusCode: 200,
+    className: 'ApiResponse',
+  };
+}
 
 export const warehouseApi = {
   getInboundOrdersByCustomer: async (customerCode: string): Promise<WarehouseOrdersResponse> => {
@@ -46,23 +62,17 @@ export const warehouseApi = {
   },
 
   getInboundHeaders: async (): Promise<WarehouseHeadersResponse> => {
-    return await api.get<WarehouseHeadersResponse>('/api/WiHeader');
+    const data = await warehouseApi.getInboundHeadersPaged();
+    return toLegacyCollectionResponse(data, 'Depo giriş listesi yüklendi');
   },
 
   getOutboundHeaders: async (): Promise<WarehouseHeadersResponse> => {
-    return await api.get<WarehouseHeadersResponse>('/api/WoHeader');
+    const data = await warehouseApi.getOutboundHeadersPaged();
+    return toLegacyCollectionResponse(data, 'Depo çıkış listesi yüklendi');
   },
 
   getInboundHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>('/api/WiHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -72,15 +82,7 @@ export const warehouseApi = {
   },
 
   getOutboundHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>('/api/WoHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -90,19 +92,43 @@ export const warehouseApi = {
   },
 
   getAssignedInboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
-    return await api.get<WarehouseHeadersResponse>(`/api/WiHeader/assigned/${userId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseHeader>>>(`/api/WiHeader/assigned/${userId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo giriş listesi yüklendi');
+    }
+    throw new Error(response.message || 'Atanmış depo giriş listesi yüklenemedi');
   },
 
   getAssignedOutboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
-    return await api.get<WarehouseHeadersResponse>(`/api/WoHeader/assigned/${userId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseHeader>>>(`/api/WoHeader/assigned/${userId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo çıkış listesi yüklendi');
+    }
+    throw new Error(response.message || 'Atanmış depo çıkış listesi yüklenemedi');
   },
 
   getInboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
-    return await api.get<WarehouseLinesResponse>(`/api/WiLine/header/${headerId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WiLine/header/${headerId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş satırları yüklendi');
+    }
+    throw new Error(response.message || 'Depo giriş satırları yüklenemedi');
   },
 
   getOutboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
-    return await api.get<WarehouseLinesResponse>(`/api/WoLine/header/${headerId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WoLine/header/${headerId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış satırları yüklendi');
+    }
+    throw new Error(response.message || 'Depo çıkış satırları yüklenemedi');
   },
 
   getAssignedInboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
@@ -114,23 +140,27 @@ export const warehouseApi = {
   },
 
   getInboundLineSerials: async (lineId: number): Promise<WarehouseLineSerialsResponse> => {
-    return await api.get<WarehouseLineSerialsResponse>(`/api/WiLineSerial/line/${lineId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WiLineSerial/line/${lineId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş seri listesi yüklendi');
+    }
+    throw new Error(response.message || 'Depo giriş seri listesi yüklenemedi');
   },
 
   getOutboundLineSerials: async (lineId: number): Promise<WarehouseLineSerialsResponse> => {
-    return await api.get<WarehouseLineSerialsResponse>(`/api/WoLineSerial/line/${lineId}`);
+    const response = await api.get<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WoLineSerial/line/${lineId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış seri listesi yüklendi');
+    }
+    throw new Error(response.message || 'Depo çıkış seri listesi yüklenemedi');
   },
 
   getAwaitingApprovalWiHeaders: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>(
       '/api/WiHeader/completed-awaiting-erp-approval',
@@ -143,15 +173,7 @@ export const warehouseApi = {
   },
 
   getAwaitingApprovalWoHeaders: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>(
       '/api/WoHeader/completed-awaiting-erp-approval',
@@ -175,4 +197,3 @@ export const warehouseApi = {
     });
   },
 };
-

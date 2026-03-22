@@ -13,9 +13,25 @@ import type {
   AddBarcodeResponse,
   CollectedBarcodesResponse,
   ShipmentHeader,
+  ShipmentLine,
+  ShipmentLineSerial,
 } from '../types/shipment';
 import { buildShipmentGenerateRequest } from '../utils/shipment-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
+import { buildPagedRequest } from '@/lib/paged';
+
+function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+  return {
+    success: true,
+    message,
+    exceptionMessage: '',
+    data: data.data,
+    errors: [],
+    timestamp: new Date().toISOString(),
+    statusCode: 200,
+    className: 'ApiResponse',
+  };
+}
 
 export const shipmentApi = {
   getOrdersByCustomer: async (customerCode: string): Promise<ShipmentOrdersResponse> => {
@@ -27,19 +43,12 @@ export const shipmentApi = {
   },
 
   getHeaders: async (): Promise<ShipmentHeadersResponse> => {
-    return await api.get<ShipmentHeadersResponse>('/api/ShHeader');
+    const data = await shipmentApi.getHeadersPaged();
+    return toLegacyCollectionResponse(data, 'Sevkiyat listesi yüklendi');
   },
 
   getHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<ShipmentHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<ShipmentHeader>>>('/api/ShHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -49,7 +58,13 @@ export const shipmentApi = {
   },
 
   getAssignedHeaders: async (userId: number): Promise<ShipmentHeadersResponse> => {
-    return await api.get<ShipmentHeadersResponse>(`/api/ShHeader/assigned/${userId}`);
+    const response = await api.get<ApiResponse<PagedResponse<ShipmentHeader>>>(`/api/ShHeader/assigned/${userId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış sevkiyat listesi yüklendi');
+    }
+    throw new Error(response.message || 'Atanmış sevkiyat listesi yüklenemedi');
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedShipmentOrderLinesResponse> => {
@@ -57,11 +72,23 @@ export const shipmentApi = {
   },
 
   getLines: async (headerId: number): Promise<ShipmentLinesResponse> => {
-    return await api.get<ShipmentLinesResponse>(`/api/ShLine/header/${headerId}`);
+    const response = await api.get<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/header/${headerId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat satırları yüklendi');
+    }
+    throw new Error(response.message || 'Sevkiyat satırları yüklenemedi');
   },
 
   getLineSerials: async (lineId: number): Promise<ShipmentLineSerialsResponse> => {
-    return await api.get<ShipmentLineSerialsResponse>(`/api/ShLineSerial/line/${lineId}`);
+    const response = await api.get<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat seri listesi yüklendi');
+    }
+    throw new Error(response.message || 'Sevkiyat seri listesi yüklenemedi');
   },
 
   getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
@@ -91,15 +118,7 @@ export const shipmentApi = {
   },
 
   getAwaitingApprovalHeaders: async (params: PagedParams = {}): Promise<PagedResponse<ShipmentHeader>> => {
-    const { pageNumber = 0, pageSize = 10, sortBy = 'Id', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<ShipmentHeader>>>(
       '/api/ShHeader/completed-awaiting-erp-approval',

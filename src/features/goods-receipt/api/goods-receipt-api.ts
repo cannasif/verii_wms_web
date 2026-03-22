@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   Order,
@@ -18,6 +19,19 @@ import type {
 } from '../types/goods-receipt';
 import { erpCommonApi } from '@/services/erp-common-api';
 import { buildGoodsReceiptBulkCreateRequest } from '../utils/goods-receipt-create';
+
+function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+  return {
+    success: true,
+    message,
+    exceptionMessage: '',
+    data: data.data,
+    errors: [],
+    timestamp: new Date().toISOString(),
+    statusCode: 200,
+    className: 'ApiResponse',
+  };
+}
 
 export const goodsReceiptApi = {
   getCustomers: erpCommonApi.getCustomers,
@@ -51,15 +65,7 @@ export const goodsReceiptApi = {
   },
 
   getGrHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<GrHeader>> => {
-    const { pageNumber = 1, pageSize = 10, sortBy = 'createdDate', sortDirection = 'desc', filters = [] } = params;
-
-    const requestBody = {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      filters,
-    };
+    const requestBody = buildPagedRequest(params, { pageNumber: 1, sortBy: 'createdDate' });
 
     const response = await api.post<ApiResponse<PagedResponse<GrHeader>>>('/api/GrHeader/paged', requestBody);
     if (response.success && response.data) {
@@ -77,9 +83,11 @@ export const goodsReceiptApi = {
   },
 
   getGrLines: async (headerId: number): Promise<GrLine[]> => {
-    const response = await api.get<ApiResponse<GrLine[]>>(`/api/GrLine/by-header/${headerId}`);
-    if (response.success && response.data) {
-      return response.data;
+    const response = await api.get<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
+    });
+    if (response.success && response.data?.data) {
+      return response.data.data;
     }
     throw new Error(response.message || 'Mal kabul satırları yüklenemedi');
   },
@@ -93,7 +101,13 @@ export const goodsReceiptApi = {
   },
 
   getAssignedHeaders: async (userId: number): Promise<GrHeadersResponse> => {
-    return await api.get<GrHeadersResponse>(`/api/GrHeader/assigned/${userId}`);
+    const response = await api.get<ApiResponse<PagedResponse<GrHeader>>>(`/api/GrHeader/assigned/${userId}`, {
+      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+    });
+    if (response.success && response.data) {
+      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış mal kabul listesi yüklendi');
+    }
+    throw new Error(response.message || 'Atanmış mal kabul listesi yüklenemedi');
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedGrOrderLinesResponse> => {
