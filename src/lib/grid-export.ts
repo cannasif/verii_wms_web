@@ -15,6 +15,36 @@ const dynamicImport = <TModule>(moduleName: string): Promise<TModule> => {
   return new Function('m', 'return import(m)')(moduleName) as Promise<TModule>;
 };
 
+type XlsxModule = {
+  utils: {
+    json_to_sheet: (rows: Record<string, string | number>[]) => unknown;
+    book_new: () => unknown;
+    book_append_sheet: (workbook: unknown, worksheet: unknown, sheetName: string) => void;
+  };
+  writeFile: (workbook: unknown, fileName: string) => void;
+};
+
+type JsPdfConstructor = new (options?: { orientation?: 'portrait' | 'landscape' }) => {
+  save: (fileName: string) => void;
+};
+
+type JsPdfModule = {
+  default: JsPdfConstructor;
+};
+
+type AutoTableModule = {
+  default: (
+    doc: InstanceType<JsPdfConstructor>,
+    options: {
+      head: string[][];
+      body: Array<Array<string | number>>;
+      styles: { fontSize: number; cellPadding: number };
+      headStyles: { fillColor: [number, number, number] };
+      margin: { top: number };
+    }
+  ) => void;
+};
+
 const normalizeCellValue = (value: unknown): string | number => {
   if (value === null || value === undefined) return '';
   if (typeof value === 'number') return value;
@@ -94,7 +124,7 @@ const fallbackExportPdf = (params: GridExportParams): void => {
 export async function exportGridToExcel(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const XLSX = await dynamicImport('xlsx');
+    const XLSX = await dynamicImport<XlsxModule>('xlsx');
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -108,8 +138,8 @@ export async function exportGridToPdf(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
     const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      dynamicImport('jspdf'),
-      dynamicImport('jspdf-autotable'),
+      dynamicImport<JsPdfModule>('jspdf'),
+      dynamicImport<AutoTableModule>('jspdf-autotable'),
     ]);
 
     const doc = new JsPDF({ orientation: 'landscape' });

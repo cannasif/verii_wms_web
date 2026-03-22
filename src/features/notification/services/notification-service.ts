@@ -4,8 +4,6 @@ import { notificationApi } from '../api/notification-api';
 import type { NotificationDto, SignalRNotificationPayload } from '../types/notification';
 import { useNotificationStore } from '../stores/notification-store';
 
-type NotificationPayloadRecord = Partial<SignalRNotificationPayload> & Record<string, unknown>;
-
 class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
   private pollingInterval: NodeJS.Timeout | null = null;
@@ -92,7 +90,7 @@ class NotificationService {
   }
 
 
-  private handleNotification(payload: NotificationPayloadRecord): void {
+  private handleNotification(payload: Partial<SignalRNotificationPayload>): void {
     const mapChannel = (channel: unknown): 'Terminal' | 'Web' => {
       if (typeof channel === 'string') {
         if (channel === 'Terminal' || channel === 'Web') {
@@ -118,9 +116,9 @@ class NotificationService {
     };
 
     const notification: NotificationDto = {
-      id: payload.id,
-      title: payload.title,
-      message: payload.message,
+      id: payload.id ?? 0,
+      title: payload.title ?? '',
+      message: payload.message ?? '',
       channel: mapChannel(payload.channel),
       severity: mapSeverity(payload.type),
       isRead: false,
@@ -128,10 +126,10 @@ class NotificationService {
       timestamp: payload.timestamp || new Date().toISOString(),
       recipientUserId: payload.recipientUserId ?? null,
       recipientTerminalUserId: payload.recipientTerminalUserId ?? null,
-      relatedEntityType: payload.relatedEntityType || null,
-      relatedEntityId: payload.relatedEntityId || null,
-      actionUrl: payload.actionUrl || null,
-      terminalActionCode: payload.terminalActionCode || null,
+      relatedEntityType: 'relatedEntityType' in payload && typeof payload.relatedEntityType === 'string' ? payload.relatedEntityType : null,
+      relatedEntityId: 'relatedEntityId' in payload && typeof payload.relatedEntityId === 'number' ? payload.relatedEntityId : null,
+      actionUrl: 'actionUrl' in payload && typeof payload.actionUrl === 'string' ? payload.actionUrl : null,
+      terminalActionCode: 'terminalActionCode' in payload && typeof payload.terminalActionCode === 'string' ? payload.terminalActionCode : null,
     };
 
     useNotificationStore.getState().addNotification(notification);

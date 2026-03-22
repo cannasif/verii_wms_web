@@ -95,7 +95,9 @@ export function ParameterFormPage(): ReactElement {
         errorMessage = error.message;
       } else if ((error as ParameterFormError)?.response?.data) {
         const apiError = (error as ParameterFormError).response?.data;
-        errorMessage = apiError.exceptionMessage || apiError.message || errorMessage;
+        if (apiError) {
+          errorMessage = apiError.exceptionMessage || apiError.message || errorMessage;
+        }
       } else if ((error as ParameterFormError)?.message) {
         errorMessage = (error as ParameterFormError).message ?? errorMessage;
       }
