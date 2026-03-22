@@ -61,8 +61,8 @@ export function Step4Summary({
   const { data: packagesData, isLoading: isLoadingPackages } = usePPackagesByHeader(headerData.id);
   const { data: linesData, isLoading: isLoadingLines } = usePLinesByHeader(headerData.id);
 
-  const packages = packagesData || [];
-  const lines = linesData || [];
+  const packages = useMemo(() => packagesData ?? [], [packagesData]);
+  const lines = useMemo(() => linesData ?? [], [linesData]);
 
   const summaryTotals = useMemo(() => {
     const totalQuantity = lines.reduce((sum, line) => sum + (line.quantity || 0), 0);

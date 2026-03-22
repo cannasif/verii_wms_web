@@ -1,55 +1,80 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useUIStore } from '@/stores/ui-store';
-import { useWarehouseOutboundHeadersPaged } from '../hooks/useWarehouseHeaders';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { WarehouseDetailDialog } from './WarehouseDetailDialog';
-import { Eye, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import type { WarehouseHeader } from '../types/warehouse';
-import type { PagedFilter } from '@/types/api';
-import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
-import { usePageSizePreference } from '@/hooks/usePageSizePreference';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { GridExportColumn } from '@/lib/grid-export';
-import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
-import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
+import { useUIStore } from '@/stores/ui-store';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { useWarehouseOutboundHeadersPaged } from '../hooks/useWarehouseHeaders';
+import type { WarehouseHeader } from '../types/warehouse';
+import { WarehouseDetailDialog } from './WarehouseDetailDialog';
+
+type WarehouseOutboundColumnKey =
+  | 'documentNo'
+  | 'documentDate'
+  | 'customerCode'
+  | 'customerName'
+  | 'sourceWarehouse'
+  | 'documentType'
+  | 'status'
+  | 'createdDate'
+  | 'actions';
+
+const advancedFilterColumns: readonly FilterColumnConfig[] = [
+  { value: 'documentNo', type: 'string', labelKey: 'warehouse.outbound.list.documentNo' },
+  { value: 'documentDate', type: 'date', labelKey: 'warehouse.outbound.list.documentDate' },
+  { value: 'customerCode', type: 'string', labelKey: 'warehouse.outbound.list.customerCode' },
+  { value: 'customerName', type: 'string', labelKey: 'warehouse.outbound.list.customerName' },
+  { value: 'sourceWarehouse', type: 'string', labelKey: 'warehouse.outbound.list.sourceWarehouse' },
+  { value: 'documentType', type: 'string', labelKey: 'warehouse.outbound.list.documentType' },
+  { value: 'isCompleted', type: 'boolean', labelKey: 'warehouse.outbound.list.status' },
+];
+
+function mapSortBy(value: WarehouseOutboundColumnKey): string {
+  switch (value) {
+    case 'documentNo':
+      return 'DocumentNo';
+    case 'documentDate':
+      return 'DocumentDate';
+    case 'customerCode':
+      return 'CustomerCode';
+    case 'customerName':
+      return 'CustomerName';
+    case 'sourceWarehouse':
+      return 'SourceWarehouse';
+    case 'documentType':
+      return 'DocumentType';
+    case 'createdDate':
+    default:
+      return 'CreatedDate';
+  }
+}
 
 export function WarehouseOutboundListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
-  const [pageNumber, setPageNumber] = useState(0);
-  const [sortBy] = useState<string>('Id');
-  const [sortDirection] = useState<'asc' | 'desc'>('desc');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
-  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
-  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
-    () => [
-      { value: 'documentNo', type: 'string', labelKey: 'warehouse.outbound.list.documentNo' },
-      { value: 'documentDate', type: 'date', labelKey: 'warehouse.outbound.list.documentDate' },
-      { value: 'customerCode', type: 'string', labelKey: 'warehouse.outbound.list.customerCode' },
-      { value: 'customerName', type: 'string', labelKey: 'warehouse.outbound.list.customerName' },
-      { value: 'sourceWarehouse', type: 'string', labelKey: 'warehouse.outbound.list.sourceWarehouse' },
-      { value: 'documentType', type: 'string', labelKey: 'warehouse.outbound.list.documentType' },
-      { value: 'isCompleted', type: 'boolean', labelKey: 'warehouse.outbound.list.status' },
-    ],
-    []
-  );
-  const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
+
+  const pagedGrid = usePagedDataGrid<WarehouseOutboundColumnKey>({
     pageKey: 'warehouse-outbound-list',
-    defaultPageSize: 10,
+    defaultSortBy: 'createdDate',
+    defaultSortDirection: 'desc',
+    mapSortBy,
   });
-  const columns = useMemo<ColumnDef[]>(
+
+  useEffect(() => {
+    setPageTitle(t('warehouse.outbound.list.title'));
+    return () => setPageTitle(null);
+  }, [setPageTitle, t]);
+
+  const columns = useMemo<DataTableGridColumn<WarehouseOutboundColumnKey>[]>(
     () => [
       { key: 'documentNo', label: t('warehouse.outbound.list.documentNo') },
       { key: 'documentDate', label: t('warehouse.outbound.list.documentDate') },
@@ -57,47 +82,19 @@ export function WarehouseOutboundListPage(): ReactElement {
       { key: 'customerName', label: t('warehouse.outbound.list.customerName') },
       { key: 'sourceWarehouse', label: t('warehouse.outbound.list.sourceWarehouse') },
       { key: 'documentType', label: t('warehouse.outbound.list.documentType') },
-      { key: 'status', label: t('warehouse.outbound.list.status') },
+      { key: 'status', label: t('warehouse.outbound.list.status'), sortable: false },
       { key: 'createdDate', label: t('warehouse.outbound.list.createdDate') },
-      { key: 'actions', label: t('warehouse.outbound.list.actions') },
+      { key: 'actions', label: t('warehouse.outbound.list.actions'), sortable: false },
     ],
-    [t]
+    [t],
   );
-  const {
-    userId,
-    columnOrder,
-    visibleColumns,
-    orderedVisibleColumns,
-    setColumnOrder,
-    setVisibleColumns,
-  } = useColumnPreferences({
+
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
     pageKey: 'warehouse-outbound-list',
-    columns,
+    columns: columns.map(({ key, label }) => ({ key, label })),
   });
 
-  const filters: PagedFilter[] = useMemo(() => {
-    const result: PagedFilter[] = [];
-    if (searchTerm) {
-      result.push({ column: 'documentNo', operator: 'contains', value: searchTerm });
-    }
-    result.push(...appliedAdvancedFilters);
-    return result;
-  }, [searchTerm, appliedAdvancedFilters]);
-
-  const { data, isLoading, error } = useWarehouseOutboundHeadersPaged({
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-    filters,
-  });
-
-  useEffect(() => {
-    setPageTitle(t('warehouse.outbound.list.title'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+  const { data, isLoading, error } = useWarehouseOutboundHeadersPaged(pagedGrid.queryParams);
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
@@ -119,51 +116,30 @@ export function WarehouseOutboundListPage(): ReactElement {
     });
   };
 
-  const handlePreviousPage = (): void => {
-    if (data && data.pageNumber > 0) {
-      setPageNumber((prev) => prev - 1);
-    }
-  };
-
-  const handleNextPage = (): void => {
-    if (data && data.pageNumber + 1 < data.totalPages) {
-      setPageNumber((prev) => prev + 1);
-    }
-  };
+  const getStatusLabel = useCallback((item: WarehouseHeader): string => {
+    if (item.isCompleted) return t('warehouse.outbound.list.completed');
+    if (item.isPendingApproval) return t('warehouse.outbound.list.pendingApproval');
+    return t('warehouse.outbound.list.inProgress');
+  }, [t]);
 
   const handleRowClick = (header: WarehouseHeader): void => {
     setSelectedHeaderId(header.id);
     setSelectedDocumentType(header.documentType);
   };
 
-  const applyAdvancedFilters = (): void => {
-    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
-    setPageNumber(0);
-    setFilterPopoverOpen(false);
-  };
+  const exportColumns = useMemo(
+    () => orderedVisibleColumns
+      .filter((key) => key !== 'actions')
+      .map((key) => ({
+        key,
+        label: columns.find((column) => column.key === key)?.label ?? key,
+      })),
+    [columns, orderedVisibleColumns],
+  );
 
-  const clearAdvancedFilters = (): void => {
-    setDraftFilterRows([]);
-    setAppliedAdvancedFilters([]);
-    setPageNumber(0);
-    setFilterPopoverOpen(false);
-  };
-
-  const getStatusLabel = (item: WarehouseHeader): string => {
-    if (item.isCompleted) return t('warehouse.outbound.list.completed');
-    if (item.isPendingApproval) return t('warehouse.outbound.list.pendingApproval');
-    return t('warehouse.outbound.list.inProgress');
-  };
-
-  const exportColumns = useMemo<GridExportColumn[]>(
-    () =>
-      orderedVisibleColumns
-        .filter((key) => key !== 'actions')
-        .map((key) => ({
-          key,
-          label: columns.find((column) => column.key === key)?.label ?? key,
-        })),
-    [columns, orderedVisibleColumns]
+  const visibleColumnKeys = useMemo(
+    () => orderedVisibleColumns.filter((key) => key !== 'actions') as WarehouseOutboundColumnKey[],
+    [orderedVisibleColumns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
@@ -178,343 +154,144 @@ export function WarehouseOutboundListPage(): ReactElement {
       status: getStatusLabel(item),
       createdDate: formatDateTime(item.createdDate),
     }));
-  }, [data?.data, t]);
+  }, [data?.data, getStatusLabel]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
+  const renderSortIcon = (columnKey: WarehouseOutboundColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('warehouse.outbound.list.error')}</p>
-      </div>
-    );
-  }
+  const range = getPagedRange(data);
+  const paginationInfoText = t('common.paginationInfo', {
+    current: range.from,
+    total: range.to,
+    count: range.total,
+    defaultValue: `${range.from}-${range.to} / ${range.total}`,
+  });
 
   return (
-    <div className="space-y-6 crm-page">
+    <div className="crm-page space-y-6">
       <Card>
         <CardHeader>
-          <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('warehouse.outbound.list.title')}</CardTitle>
-            <div className="flex items-center gap-2">
-              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`h-9 border-dashed text-xs sm:text-sm ${
-                      appliedAdvancedFilters.length > 0
-                        ? 'border-emerald-400/70 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/60 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/15'
-                        : 'border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter')}
-                    {appliedAdvancedFilters.length > 0 && (
-                      <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                        {appliedAdvancedFilters.length}
-                      </span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
-                >
-                  <AdvancedFilter
-                    columns={advancedFilterColumns}
-                    defaultColumn="documentNo"
-                    draftRows={draftFilterRows}
-                    onDraftRowsChange={setDraftFilterRows}
-                    onSearch={applyAdvancedFilters}
-                    onClear={clearAdvancedFilters}
-                    appliedFilterCount={appliedAdvancedFilters.length}
-                    embedded
-                  />
-                </PopoverContent>
-              </Popover>
-              <GridExportMenu
-                fileName="warehouse-outbound-list"
-                columns={exportColumns}
-                rows={exportRows}
-              />
-              <ColumnPreferencesPopover
-                pageKey="warehouse-outbound-list"
-                userId={userId}
-                columns={columns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-              />
-              <div className="relative flex items-center w-full md:w-auto">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
-                <Input
-                  placeholder={t('warehouse.outbound.list.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setPageNumber(0);
-                  }}
-                  className="pl-8 pr-10 w-full md:w-64"
-                />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <VoiceSearchButton
-                    onResult={(text) => setSearchTerm(text)}
-                    size="sm"
-                    variant="ghost"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <CardTitle>{t('warehouse.outbound.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {orderedVisibleColumns.map((key) => {
-                    if (key === 'documentNo') return <TableHead key={key}>{t('warehouse.outbound.list.documentNo')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('warehouse.outbound.list.documentDate')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('warehouse.outbound.list.customerCode')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('warehouse.outbound.list.customerName')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('warehouse.outbound.list.sourceWarehouse')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('warehouse.outbound.list.documentType')}</TableHead>;
-                    if (key === 'status') return <TableHead key={key}>{t('warehouse.outbound.list.status')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('warehouse.outbound.list.createdDate')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('warehouse.outbound.list.actions')}</TableHead>;
-                    return null;
-                  })}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.data && data.data.length > 0 ? (
-                  data.data.map((item: WarehouseHeader) => (
-                    <TableRow key={item.id} className="cursor-pointer" onClick={() => handleRowClick(item)}>
-                      {orderedVisibleColumns.map((key) => {
-                        if (key === 'documentNo') return <TableCell key={key} className="font-medium">{item.documentNo || '-'}</TableCell>;
-                        if (key === 'documentDate') return <TableCell key={key}>{formatDate(item.documentDate)}</TableCell>;
-                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
-                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
-                        if (key === 'sourceWarehouse') return <TableCell key={key}>{item.sourceWarehouse || '-'}</TableCell>;
-                        if (key === 'documentType') {
-                          return (
-                            <TableCell key={key}>
-                              <Badge variant="outline">{item.documentType || '-'}</Badge>
-                            </TableCell>
-                          );
-                        }
-                        if (key === 'status') {
-                          return (
-                            <TableCell key={key}>
-                              <div className="flex flex-col gap-1">
-                                {item.isCompleted ? (
-                                  <Badge variant="default" className="w-fit">
-                                    {t('warehouse.outbound.list.completed')}
-                                  </Badge>
-                                ) : item.isPendingApproval ? (
-                                  <Badge variant="secondary" className="w-fit">
-                                    {t('warehouse.outbound.list.pendingApproval')}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="w-fit">
-                                    {t('warehouse.outbound.list.inProgress')}
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                          );
-                        }
-                        if (key === 'createdDate') return <TableCell key={key}>{formatDateTime(item.createdDate)}</TableCell>;
-                        if (key === 'actions') {
-                          return (
-                            <TableCell key={key} onClick={(e) => e.stopPropagation()}>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRowClick(item)}
-                              >
-                                <Eye className="size-4" />
-                                <span className="ml-2">{t('warehouse.outbound.list.viewDetails')}</span>
-                              </Button>
-                            </TableCell>
-                          );
-                        }
-                        return null;
-                      })}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
-                      <p className="text-muted-foreground">
-                        {t('warehouse.outbound.list.noData')}
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="md:hidden space-y-4 pb-1">
-            {data?.data && data.data.length > 0 ? (
-              data.data.map((item: WarehouseHeader) => (
-                <Card key={item.id} className="border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex flex-col gap-1">
-                        {item.isCompleted ? (
-                          <Badge variant="default" className="w-fit">
-                            {t('warehouse.outbound.list.completed')}
-                          </Badge>
-                        ) : item.isPendingApproval ? (
-                          <Badge variant="secondary" className="w-fit">
-                            {t('warehouse.outbound.list.pendingApproval')}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="w-fit">
-                            {t('warehouse.outbound.list.inProgress')}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.documentNo')}
-                        </p>
-                        <p className="text-base">{item.documentNo || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.documentDate')}
-                        </p>
-                        <p className="text-base">{formatDate(item.documentDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.customerCode')}
-                        </p>
-                        <p className="text-base">{item.customerCode || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.customerName')}
-                        </p>
-                        <p className="text-base">{item.customerName || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('warehouse.outbound.list.sourceWarehouse')}
-                        </p>
-                        <p className="text-base">{item.sourceWarehouse || '-'}</p>
-                      </div>
-                    </div>
-                    <div className="pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => handleRowClick(item)}
-                      >
-                        <Eye className="size-4 mr-2" />
-                        {t('warehouse.outbound.list.viewDetails')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">
-                  {t('warehouse.outbound.list.noData')}
-                </p>
-              </div>
+          <DataTableGrid<WarehouseHeader, WarehouseOutboundColumnKey>
+            columns={columns}
+            visibleColumnKeys={visibleColumnKeys}
+            rows={data?.data ?? []}
+            rowKey={(row) => row.id}
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'documentNo':
+                  return <span className="font-medium">{row.documentNo || '-'}</span>;
+                case 'documentDate':
+                  return formatDate(row.documentDate);
+                case 'customerCode':
+                  return row.customerCode || '-';
+                case 'customerName':
+                  return row.customerName || '-';
+                case 'sourceWarehouse':
+                  return row.sourceWarehouse || '-';
+                case 'documentType':
+                  return <Badge variant="outline">{row.documentType || '-'}</Badge>;
+                case 'status':
+                  return row.isCompleted ? (
+                    <Badge variant="default" className="w-fit">{t('warehouse.outbound.list.completed')}</Badge>
+                  ) : row.isPendingApproval ? (
+                    <Badge variant="secondary" className="w-fit">{t('warehouse.outbound.list.pendingApproval')}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="w-fit">{t('warehouse.outbound.list.inProgress')}</Badge>
+                  );
+                case 'createdDate':
+                  return formatDateTime(row.createdDate);
+                case 'actions':
+                default:
+                  return null;
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={(columnKey) => {
+              if (columnKey === 'status' || columnKey === 'actions') return;
+              pagedGrid.handleSort(columnKey);
+            }}
+            renderSortIcon={renderSortIcon}
+            isLoading={isLoading}
+            isError={Boolean(error)}
+            errorText={t('warehouse.outbound.list.error')}
+            emptyText={t('warehouse.outbound.list.noData')}
+            rowClassName="cursor-pointer"
+            onRowClick={handleRowClick}
+            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            actionsHeaderLabel={t('warehouse.outbound.list.actions')}
+            renderActionsCell={(row) => (
+              <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)}>
+                <Eye className="size-4" />
+                <span className="ml-2">{t('warehouse.outbound.list.viewDetails')}</span>
+              </Button>
             )}
-          </div>
-          {data && (
-            <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', {
-                    current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
-                    total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
-                    totalCount: data.totalCount,
-                  })}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage')}
-                  </span>
-                  <Select
-                    value={String(pageSize)}
-                    onValueChange={(value) => {
-                      setPageSize(Number.parseInt(value, 10));
-                      setPageNumber(0);
-                    }}
-                  >
-                    <SelectTrigger className="h-8 w-[88px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pageSizeOptions.map((size) => (
-                        <SelectItem key={size} value={String(size)}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <span className="text-sm text-muted-foreground">
-                    {t('common.records')}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
+            pageSize={pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(data)}
+            totalPages={data?.totalPages ?? 1}
+            hasPreviousPage={data?.hasPreviousPage ?? false}
+            hasNextPage={data?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={paginationInfoText}
+            actionBar={{
+              pageKey: 'warehouse-outbound-list',
+              userId,
+              columns: columns.map(({ key, label }) => ({ key, label })),
+              visibleColumns,
+              columnOrder,
+              onVisibleColumnsChange: setVisibleColumns,
+              onColumnOrderChange: setColumnOrder,
+              exportFileName: 'warehouse-outbound-list',
+              exportColumns,
+              exportRows,
+              filterColumns: advancedFilterColumns,
+              defaultFilterColumn: 'documentNo',
+              draftFilterRows: pagedGrid.draftFilterRows,
+              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+              filterLogic: pagedGrid.filterLogic,
+              onFilterLogicChange: pagedGrid.setFilterLogic,
+              onApplyFilters: pagedGrid.applyAdvancedFilters,
+              onClearFilters: pagedGrid.clearAdvancedFilters,
+              translationNamespace: 'common',
+              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+              search: {
+                ...pagedGrid.searchConfig,
+                placeholder: t('warehouse.outbound.list.searchPlaceholder'),
+                className: 'h-9 w-full md:w-64',
+              },
+              leftSlot: (
+                <VoiceSearchButton
+                  onResult={pagedGrid.handleVoiceSearch}
                   size="sm"
-                  onClick={handlePreviousPage}
-                  disabled={data.pageNumber <= 0}
-                >
-                  <ChevronLeft className="size-4" />
-                  {t('common.previous')}
-                </Button>
-                <span className="text-sm">
-                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
-                </span>
-                <Button
                   variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={data.pageNumber + 1 >= data.totalPages}
-                >
-                  {t('common.next')}
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
-            </div>
-          )}
+                />
+              ),
+            }}
+          />
         </CardContent>
       </Card>
 
-      {selectedHeaderId && selectedDocumentType && (
-        <WarehouseDetailDialog
-          headerId={selectedHeaderId}
-          documentType={selectedDocumentType}
-          isOpen={!!selectedHeaderId}
-          onClose={() => {
-            setSelectedHeaderId(null);
-            setSelectedDocumentType(null);
-          }}
-        />
-      )}
+      <WarehouseDetailDialog
+        headerId={selectedHeaderId ?? 0}
+        documentType={selectedDocumentType ?? ''}
+        isOpen={selectedHeaderId !== null}
+        onClose={() => {
+          setSelectedHeaderId(null);
+          setSelectedDocumentType(null);
+        }}
+      />
     </div>
   );
 }

@@ -85,7 +85,7 @@ export function Step2PackageForm({
     if (packingHeaderId && packingHeaderId > 0) {
       form.setValue('packingHeaderId', packingHeaderId);
     }
-  }, [packingHeaderId]);
+  }, [form, packingHeaderId]);
 
   const handleOpenDialog = (pkg?: PPackageDto): void => {
     if (pkg) {
@@ -570,4 +570,3 @@ export function Step2PackageForm({
     </div>
   );
 }
-

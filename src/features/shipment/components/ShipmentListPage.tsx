@@ -1,42 +1,83 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useUIStore } from '@/stores/ui-store';
-import { useShipmentHeadersPaged } from '../hooks/useShipmentHeaders';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Eye, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
-import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { ShipmentDetailDialog } from './ShipmentDetailDialog';
-import type { ShipmentHeader } from '../types/shipment';
 import { Button } from '@/components/ui/button';
-import type { PagedFilter } from '@/types/api';
-import { AdvancedFilter, ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
-import { usePageSizePreference } from '@/hooks/usePageSizePreference';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { GridExportColumn } from '@/lib/grid-export';
-import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
-import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
+import { useUIStore } from '@/stores/ui-store';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { useShipmentHeadersPaged } from '../hooks/useShipmentHeaders';
+import type { ShipmentHeader } from '../types/shipment';
+import { ShipmentDetailDialog } from './ShipmentDetailDialog';
+
+type ShipmentColumnKey =
+  | 'documentNo'
+  | 'documentDate'
+  | 'customerCode'
+  | 'customerName'
+  | 'sourceWarehouse'
+  | 'targetWarehouse'
+  | 'documentType'
+  | 'status'
+  | 'createdDate'
+  | 'actions';
+
+const advancedFilterColumns: readonly FilterColumnConfig[] = [
+  { value: 'documentNo', type: 'string', labelKey: 'shipment.list.documentNo' },
+  { value: 'documentDate', type: 'date', labelKey: 'shipment.list.documentDate' },
+  { value: 'customerCode', type: 'string', labelKey: 'shipment.list.customerCode' },
+  { value: 'customerName', type: 'string', labelKey: 'shipment.list.customerName' },
+  { value: 'sourceWarehouse', type: 'string', labelKey: 'shipment.list.sourceWarehouse' },
+  { value: 'targetWarehouse', type: 'string', labelKey: 'shipment.list.targetWarehouse' },
+  { value: 'documentType', type: 'string', labelKey: 'shipment.list.documentType' },
+  { value: 'isCompleted', type: 'boolean', labelKey: 'shipment.list.status' },
+];
+
+function mapSortBy(value: ShipmentColumnKey): string {
+  switch (value) {
+    case 'documentNo':
+      return 'DocumentNo';
+    case 'documentDate':
+      return 'DocumentDate';
+    case 'customerCode':
+      return 'CustomerCode';
+    case 'customerName':
+      return 'CustomerName';
+    case 'sourceWarehouse':
+      return 'SourceWarehouse';
+    case 'targetWarehouse':
+      return 'TargetWarehouse';
+    case 'documentType':
+      return 'DocumentType';
+    case 'createdDate':
+    default:
+      return 'CreatedDate';
+  }
+}
 
 export function ShipmentListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(0);
-  const { pageSize, pageSizeOptions, setPageSize } = usePageSizePreference({
+
+  const pagedGrid = usePagedDataGrid<ShipmentColumnKey>({
     pageKey: 'shipment-list',
-    defaultPageSize: 10,
+    defaultSortBy: 'createdDate',
+    defaultSortDirection: 'desc',
+    mapSortBy,
   });
-  const [sortBy] = useState<string>('Id');
-  const [sortDirection] = useState<'asc' | 'desc'>('desc');
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
-  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
-  const columns = useMemo<ColumnDef[]>(
+
+  useEffect(() => {
+    setPageTitle(t('shipment.list.title'));
+    return () => setPageTitle(null);
+  }, [setPageTitle, t]);
+
+  const columns = useMemo<DataTableGridColumn<ShipmentColumnKey>[]>(
     () => [
       { key: 'documentNo', label: t('shipment.list.documentNo') },
       { key: 'documentDate', label: t('shipment.list.documentDate') },
@@ -45,73 +86,19 @@ export function ShipmentListPage(): ReactElement {
       { key: 'sourceWarehouse', label: t('shipment.list.sourceWarehouse') },
       { key: 'targetWarehouse', label: t('shipment.list.targetWarehouse') },
       { key: 'documentType', label: t('shipment.list.documentType') },
-      { key: 'status', label: t('shipment.list.status') },
+      { key: 'status', label: t('shipment.list.status'), sortable: false },
       { key: 'createdDate', label: t('shipment.list.createdDate') },
-      { key: 'actions', label: t('shipment.list.actions') },
+      { key: 'actions', label: t('shipment.list.actions'), sortable: false },
     ],
-    [t]
+    [t],
   );
-  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
-    () => [
-      { value: 'documentNo', type: 'string', labelKey: 'shipment.list.documentNo' },
-      { value: 'documentDate', type: 'date', labelKey: 'shipment.list.documentDate' },
-      { value: 'customerCode', type: 'string', labelKey: 'shipment.list.customerCode' },
-      { value: 'customerName', type: 'string', labelKey: 'shipment.list.customerName' },
-      { value: 'sourceWarehouse', type: 'string', labelKey: 'shipment.list.sourceWarehouse' },
-      { value: 'targetWarehouse', type: 'string', labelKey: 'shipment.list.targetWarehouse' },
-      { value: 'documentType', type: 'string', labelKey: 'shipment.list.documentType' },
-      { value: 'isCompleted', type: 'boolean', labelKey: 'shipment.list.status' },
-    ],
-    []
-  );
-  const {
-    userId,
-    columnOrder,
-    visibleColumns,
-    orderedVisibleColumns,
-    setColumnOrder,
-    setVisibleColumns,
-  } = useColumnPreferences({
+
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
     pageKey: 'shipment-list',
-    columns,
+    columns: columns.map(({ key, label }) => ({ key, label })),
   });
 
-  const filters: PagedFilter[] = useMemo(() => {
-    const result: PagedFilter[] = [];
-    if (searchTerm) {
-      result.push({ column: 'documentNo', operator: 'contains', value: searchTerm });
-    }
-    result.push(...appliedAdvancedFilters);
-    return result;
-  }, [searchTerm, appliedAdvancedFilters]);
-
-  const applyAdvancedFilters = (): void => {
-    setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
-    setPageNumber(0);
-    setFilterPopoverOpen(false);
-  };
-
-  const clearAdvancedFilters = (): void => {
-    setDraftFilterRows([]);
-    setAppliedAdvancedFilters([]);
-    setPageNumber(0);
-    setFilterPopoverOpen(false);
-  };
-
-  const { data, isLoading, error } = useShipmentHeadersPaged({
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-    filters,
-  });
-
-  useEffect(() => {
-    setPageTitle(t('shipment.list.title'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+  const { data, isLoading, error } = useShipmentHeadersPaged(pagedGrid.queryParams);
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
@@ -133,33 +120,25 @@ export function ShipmentListPage(): ReactElement {
     });
   };
 
-  const handlePreviousPage = (): void => {
-    if (data?.hasPreviousPage) {
-      setPageNumber((prev) => prev - 1);
-    }
-  };
-
-  const handleNextPage = (): void => {
-    if (data?.hasNextPage) {
-      setPageNumber((prev) => prev + 1);
-    }
-  };
-
-  const getStatusLabel = (item: ShipmentHeader): string => {
+  const getStatusLabel = useCallback((item: ShipmentHeader): string => {
     if (item.isCompleted) return t('shipment.list.completed');
     if (item.isPendingApproval) return t('shipment.list.pendingApproval');
     return t('shipment.list.inProgress');
-  };
+  }, [t]);
 
-  const exportColumns = useMemo<GridExportColumn[]>(
-    () =>
-      orderedVisibleColumns
-        .filter((key) => key !== 'actions')
-        .map((key) => ({
-          key,
-          label: columns.find((column) => column.key === key)?.label ?? key,
-        })),
-    [columns, orderedVisibleColumns]
+  const exportColumns = useMemo(
+    () => orderedVisibleColumns
+      .filter((key) => key !== 'actions')
+      .map((key) => ({
+        key,
+        label: columns.find((column) => column.key === key)?.label ?? key,
+      })),
+    [columns, orderedVisibleColumns],
+  );
+
+  const visibleColumnKeys = useMemo(
+    () => orderedVisibleColumns.filter((key) => key !== 'actions') as ShipmentColumnKey[],
+    [orderedVisibleColumns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
@@ -175,328 +154,142 @@ export function ShipmentListPage(): ReactElement {
       status: getStatusLabel(item),
       createdDate: formatDateTime(item.createdDate),
     }));
-  }, [data?.data, t]);
+  }, [data?.data, getStatusLabel]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
+  const renderSortIcon = (columnKey: ShipmentColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('shipment.list.error')}</p>
-      </div>
-    );
-  }
+  const range = getPagedRange(data);
+  const paginationInfoText = t('common.paginationInfo', {
+    current: range.from,
+    total: range.to,
+    count: range.total,
+    defaultValue: `${range.from}-${range.to} / ${range.total}`,
+  });
 
   return (
-    <div className="space-y-6">
+    <div className="crm-page space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>{t('shipment.list.title')}</CardTitle>
-            <div className="flex items-center gap-2">
-              <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('common.filter')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="w-full min-w-[320px] max-w-[420px] p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50"
-                >
-                  <AdvancedFilter
-                    columns={advancedFilterColumns}
-                    defaultColumn="documentNo"
-                    draftRows={draftFilterRows}
-                    onDraftRowsChange={setDraftFilterRows}
-                    onSearch={applyAdvancedFilters}
-                    onClear={clearAdvancedFilters}
-                    embedded
-                  />
-                </PopoverContent>
-              </Popover>
-              <GridExportMenu
-                fileName="shipment-list"
-                columns={exportColumns}
-                rows={exportRows}
-              />
-              <ColumnPreferencesPopover
-                pageKey="shipment-list"
-                userId={userId}
-                columns={columns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-              />
-              <div className="relative flex items-center w-full md:w-auto">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
-                <Input
-                  placeholder={t('shipment.list.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setPageNumber(0);
-                  }}
-                  className="pl-8 pr-10 w-full md:w-64"
-                />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <VoiceSearchButton
-                    onResult={(text) => setSearchTerm(text)}
-                    size="sm"
-                    variant="ghost"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <CardTitle>{t('shipment.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="hidden md:block rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {orderedVisibleColumns.map((key) => {
-                    if (key === 'documentNo') return <TableHead key={key}>{t('shipment.list.documentNo')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('shipment.list.documentDate')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('shipment.list.customerCode')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('shipment.list.customerName')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('shipment.list.sourceWarehouse')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('shipment.list.targetWarehouse')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('shipment.list.documentType')}</TableHead>;
-                    if (key === 'status') return <TableHead key={key}>{t('shipment.list.status')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('shipment.list.createdDate')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('shipment.list.actions')}</TableHead>;
-                    return null;
-                  })}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.data && data.data.length > 0 ? (
-                  data.data.map((item: ShipmentHeader) => (
-                    <TableRow key={item.id} className="cursor-pointer" onClick={() => setSelectedHeaderId(item.id)}>
-                      {orderedVisibleColumns.map((key) => {
-                        if (key === 'documentNo') return <TableCell key={key} className="font-medium">{item.documentNo || '-'}</TableCell>;
-                        if (key === 'documentDate') return <TableCell key={key}>{formatDate(item.documentDate)}</TableCell>;
-                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
-                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
-                        if (key === 'sourceWarehouse') return <TableCell key={key}>{item.sourceWarehouse || '-'}</TableCell>;
-                        if (key === 'targetWarehouse') return <TableCell key={key}>{item.targetWarehouse || '-'}</TableCell>;
-                        if (key === 'documentType') {
-                          return (
-                            <TableCell key={key}>
-                              <Badge variant="outline">{item.documentType || '-'}</Badge>
-                            </TableCell>
-                          );
-                        }
-                        if (key === 'status') {
-                          return (
-                            <TableCell key={key}>
-                              <div className="flex flex-col gap-1">
-                                {item.isCompleted ? (
-                                  <Badge variant="default" className="w-fit">
-                                    {t('shipment.list.completed')}
-                                  </Badge>
-                                ) : item.isPendingApproval ? (
-                                  <Badge variant="secondary" className="w-fit">
-                                    {t('shipment.list.pendingApproval')}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="w-fit">
-                                    {t('shipment.list.inProgress')}
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                          );
-                        }
-                        if (key === 'createdDate') return <TableCell key={key}>{formatDateTime(item.createdDate)}</TableCell>;
-                        if (key === 'actions') {
-                          return (
-                            <TableCell key={key} onClick={(e) => e.stopPropagation()}>
-                              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}>
-                                <Eye className="size-4" />
-                                <span className="ml-2">{t('shipment.list.viewDetails')}</span>
-                              </Button>
-                            </TableCell>
-                          );
-                        }
-                        return null;
-                      })}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
-                      <p className="text-muted-foreground">
-                        {t('shipment.list.noData')}
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="md:hidden space-y-4">
-            {data?.data && data.data.length > 0 ? (
-              data.data.map((item: ShipmentHeader) => (
-                <Card key={item.id} className="border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex flex-col gap-1">
-                        {item.isCompleted ? (
-                          <Badge variant="default" className="w-fit">
-                            {t('shipment.list.completed')}
-                          </Badge>
-                        ) : item.isPendingApproval ? (
-                          <Badge variant="secondary" className="w-fit">
-                            {t('shipment.list.pendingApproval')}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="w-fit">
-                            {t('shipment.list.inProgress')}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.documentNo')}
-                        </p>
-                        <p className="text-base">{item.documentNo || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.documentDate')}
-                        </p>
-                        <p className="text-base">{formatDate(item.documentDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.customerCode')}
-                        </p>
-                        <p className="text-base">{item.customerCode || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.customerName')}
-                        </p>
-                        <p className="text-base">{item.customerName || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.sourceWarehouse')}
-                        </p>
-                        <p className="text-base">{item.sourceWarehouse || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('shipment.list.targetWarehouse')}
-                        </p>
-                        <p className="text-base">{item.targetWarehouse || '-'}</p>
-                      </div>
-                    </div>
-                    <div className="pt-2">
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => setSelectedHeaderId(item.id)}>
-                        <Eye className="size-4 mr-2" />
-                        {t('shipment.list.viewDetails')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">
-                  {t('shipment.list.noData')}
-                </p>
-              </div>
+          <DataTableGrid<ShipmentHeader, ShipmentColumnKey>
+            columns={columns}
+            visibleColumnKeys={visibleColumnKeys}
+            rows={data?.data ?? []}
+            rowKey={(row) => row.id}
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'documentNo':
+                  return <span className="font-medium">{row.documentNo || '-'}</span>;
+                case 'documentDate':
+                  return formatDate(row.documentDate);
+                case 'customerCode':
+                  return row.customerCode || '-';
+                case 'customerName':
+                  return row.customerName || '-';
+                case 'sourceWarehouse':
+                  return row.sourceWarehouse || '-';
+                case 'targetWarehouse':
+                  return row.targetWarehouse || '-';
+                case 'documentType':
+                  return <Badge variant="outline">{row.documentType || '-'}</Badge>;
+                case 'status':
+                  return row.isCompleted ? (
+                    <Badge variant="default" className="w-fit">{t('shipment.list.completed')}</Badge>
+                  ) : row.isPendingApproval ? (
+                    <Badge variant="secondary" className="w-fit">{t('shipment.list.pendingApproval')}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="w-fit">{t('shipment.list.inProgress')}</Badge>
+                  );
+                case 'createdDate':
+                  return formatDateTime(row.createdDate);
+                case 'actions':
+                default:
+                  return null;
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={(columnKey) => {
+              if (columnKey === 'status' || columnKey === 'actions') return;
+              pagedGrid.handleSort(columnKey);
+            }}
+            renderSortIcon={renderSortIcon}
+            isLoading={isLoading}
+            isError={Boolean(error)}
+            errorText={t('shipment.list.error')}
+            emptyText={t('shipment.list.noData')}
+            rowClassName="cursor-pointer"
+            onRowClick={(row) => setSelectedHeaderId(row.id)}
+            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            actionsHeaderLabel={t('shipment.list.actions')}
+            renderActionsCell={(row) => (
+              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)}>
+                <Eye className="size-4" />
+                <span className="ml-2">{t('shipment.list.viewDetails')}</span>
+              </Button>
             )}
-          </div>
-          {data && (
-            <div className="flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                <div className="text-sm text-muted-foreground">
-                  {t('common.paginationInfo', {
-                    current: data.totalCount > 0 ? data.pageNumber * data.pageSize + 1 : 0,
-                    total: Math.min((data.pageNumber + 1) * data.pageSize, data.totalCount),
-                    totalCount: data.totalCount,
-                  })}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {t('common.rowsPerPage')}
-                  </span>
-                  <Select
-                    value={String(pageSize)}
-                    onValueChange={(value) => {
-                      setPageSize(Number.parseInt(value, 10));
-                      setPageNumber(0);
-                    }}
-                  >
-                    <SelectTrigger className="h-8 w-[88px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pageSizeOptions.map((size) => (
-                        <SelectItem key={size} value={String(size)}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <span className="text-sm text-muted-foreground">
-                    {t('common.records')}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
+            pageSize={pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(data)}
+            totalPages={data?.totalPages ?? 1}
+            hasPreviousPage={data?.hasPreviousPage ?? false}
+            hasNextPage={data?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={paginationInfoText}
+            actionBar={{
+              pageKey: 'shipment-list',
+              userId,
+              columns: columns.map(({ key, label }) => ({ key, label })),
+              visibleColumns,
+              columnOrder,
+              onVisibleColumnsChange: setVisibleColumns,
+              onColumnOrderChange: setColumnOrder,
+              exportFileName: 'shipment-list',
+              exportColumns,
+              exportRows,
+              filterColumns: advancedFilterColumns,
+              defaultFilterColumn: 'documentNo',
+              draftFilterRows: pagedGrid.draftFilterRows,
+              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+              filterLogic: pagedGrid.filterLogic,
+              onFilterLogicChange: pagedGrid.setFilterLogic,
+              onApplyFilters: pagedGrid.applyAdvancedFilters,
+              onClearFilters: pagedGrid.clearAdvancedFilters,
+              translationNamespace: 'common',
+              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+              search: {
+                ...pagedGrid.searchConfig,
+                placeholder: t('shipment.list.searchPlaceholder'),
+                className: 'h-9 w-full md:w-64',
+              },
+              leftSlot: (
+                <VoiceSearchButton
+                  onResult={pagedGrid.handleVoiceSearch}
                   size="sm"
-                  onClick={handlePreviousPage}
-                  disabled={!data.hasPreviousPage}
-                >
-                  <ChevronLeft className="size-4" />
-                  {t('common.previous')}
-                </Button>
-                <span className="text-sm">
-                  {t('common.page')} {data.pageNumber + 1} / {data.totalPages}
-                </span>
-                <Button
                   variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={!data.hasNextPage}
-                >
-                  {t('common.next')}
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
-            </div>
-          )}
+                />
+              ),
+            }}
+          />
         </CardContent>
       </Card>
 
-      {selectedHeaderId && (
-        <ShipmentDetailDialog
-          headerId={selectedHeaderId}
-          isOpen={!!selectedHeaderId}
-          onClose={() => setSelectedHeaderId(null)}
-        />
-      )}
+      <ShipmentDetailDialog
+        headerId={selectedHeaderId ?? 0}
+        isOpen={selectedHeaderId !== null}
+        onClose={() => setSelectedHeaderId(null)}
+      />
     </div>
   );
 }
