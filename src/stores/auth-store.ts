@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getUserFromToken, isTokenValid } from '@/utils/jwt';
 
 interface User {
   id: number;
@@ -22,6 +23,17 @@ interface AuthState {
   isAuthenticated: () => boolean;
 }
 
+const ACCESS_TOKEN_KEY = 'access_token';
+
+function getStoredToken(): string | null {
+  return localStorage.getItem(ACCESS_TOKEN_KEY) || sessionStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+function clearStoredAuth(): void {
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -29,16 +41,38 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       branch: null,
       setAuth: (user, token, branch) => {
-        localStorage.setItem('access_token', token);
+        localStorage.setItem(ACCESS_TOKEN_KEY, token);
+        sessionStorage.removeItem(ACCESS_TOKEN_KEY);
         set({ user, token, branch });
       },
       logout: () => {
-        localStorage.removeItem('access_token');
+        clearStoredAuth();
         set({ user: null, token: null, branch: null });
       },
       isAuthenticated: () => {
         const state = get();
-        return !!state.token && !!state.user;
+        const token = state.token || getStoredToken();
+
+        if (!token || !isTokenValid(token)) {
+          if (state.token || state.user || state.branch) {
+            clearStoredAuth();
+            set({ user: null, token: null, branch: null });
+          }
+          return false;
+        }
+
+        const user = state.user ?? getUserFromToken(token);
+        if (!user) {
+          clearStoredAuth();
+          set({ user: null, token: null, branch: null });
+          return false;
+        }
+
+        if (state.token !== token || !state.user) {
+          set({ user, token, branch: state.branch });
+        }
+
+        return true;
       },
     }),
     {
@@ -47,4 +81,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-

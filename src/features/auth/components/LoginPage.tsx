@@ -42,10 +42,11 @@ export function LoginPage(): React.JSX.Element {
 
   useEffect(() => {
     if (searchParams.get('sessionExpired') === 'true') {
-      logout();
-      toast.warning(t('auth.login.sessionExpired'));
+      if (!token || !isTokenValid(token)) {
+        logout();
+        toast.warning(t('auth.login.sessionExpired'));
+      }
       setSearchParams({}, { replace: true });
-      return;
     }
 
     if (token && isTokenValid(token) && isAuthenticated()) {
