@@ -1,4 +1,5 @@
 import { type ReactElement, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ArrowDown, ArrowUp, Columns3, Eye, EyeOff } from 'lucide-react';
@@ -30,6 +31,7 @@ export function ColumnPreferencesPopover({
   onVisibleColumnsChange,
   onColumnOrderChange,
 }: ColumnPreferencesPopoverProps): ReactElement {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const lockedSet = useMemo(() => new Set(lockedKeys), [lockedKeys]);
   const columnMap = useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
@@ -88,7 +90,7 @@ export function ColumnPreferencesPopover({
           className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
         >
           <Columns3 className="mr-2 h-4 w-4" />
-          Sütunlar
+          {t('common.columns')}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -97,7 +99,7 @@ export function ColumnPreferencesPopover({
       >
         <div className="p-2 space-y-2">
           <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-            Görünen Sütunlar
+            {t('common.visibleColumns')}
           </div>
           <div className="space-y-1 max-h-48 overflow-y-auto">
             {displayColumns.map((key) => {
@@ -142,7 +144,7 @@ export function ColumnPreferencesPopover({
                       size="icon"
                       className="h-6 w-6 shrink-0 text-slate-400 hover:text-destructive"
                       onClick={() => toggleColumn(key)}
-                      title="Gizle"
+                      title={t('common.hide')}
                     >
                       <EyeOff className="h-3.5 w-3.5" />
                     </Button>
@@ -154,7 +156,7 @@ export function ColumnPreferencesPopover({
           {hiddenColumns.length > 0 && (
             <>
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5 pt-2 border-t border-slate-100 dark:border-white/10">
-                Gizli Sütunlar
+                {t('common.hiddenColumns')}
               </div>
               <div className="space-y-1">
                 {hiddenColumns.map((key) => {
@@ -174,7 +176,7 @@ export function ColumnPreferencesPopover({
                         size="icon"
                         className="h-6 w-6 shrink-0"
                         onClick={() => toggleColumn(key)}
-                        title="Göster"
+                        title={t('common.show')}
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>

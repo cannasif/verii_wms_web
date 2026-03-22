@@ -75,7 +75,7 @@ export function PermissionGroupMultiSelect({
               <label htmlFor={`group-${item.id}`} className="text-sm cursor-pointer flex-1">
                 {item.name}
                 {item.isSystemAdmin && (
-                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">(System Admin)</span>
+                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">({t('common.systemAdmin')})</span>
                 )}
               </label>
             </div>

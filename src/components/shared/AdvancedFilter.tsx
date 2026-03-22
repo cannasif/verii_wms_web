@@ -81,19 +81,19 @@ export function AdvancedFilter({
     <div className={embedded ? 'p-4 space-y-4' : 'rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-card/50 p-4 space-y-4'}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          {getLabel('title', 'Gelişmiş Filtre')}
+          {getLabel('title')}
         </h3>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-4 w-4 mr-1" />
-            {getLabel('add', 'Filtre Ekle')}
+            {getLabel('add')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onClear}>
-            {getLabel('clear', 'Temizle')}
+            {getLabel('clear')}
           </Button>
           <Button type="button" size="sm" onClick={onSearch}>
             <Search className="h-4 w-4 mr-1" />
-            {getLabel('search', 'Ara')}
+            {getLabel('search')}
             {appliedFilterCount > 0 && (
               <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
                 {appliedFilterCount}
@@ -104,21 +104,21 @@ export function AdvancedFilter({
       </div>
       {appliedFilterCount > 0 && (
         <div className="rounded-md border border-emerald-200/70 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
-          {getLabel('activeInfo', 'Filtre uygulandi')}: {appliedFilterCount}
+          {getLabel('activeInfo')}: {appliedFilterCount}
         </div>
       )}
       {onFilterLogicChange && (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-            {getLabel('logic', 'Kosul')}
+            {getLabel('logic')}
           </span>
           <Select value={filterLogic} onValueChange={(value: 'and' | 'or') => onFilterLogicChange(value)}>
             <SelectTrigger className="w-full sm:w-[140px]">
-              <SelectValue placeholder={getLabel('logic', 'Kosul')} />
+              <SelectValue placeholder={getLabel('logic')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="and">{getLabel('logicAnd', 'AND')}</SelectItem>
-              <SelectItem value="or">{getLabel('logicOr', 'OR')}</SelectItem>
+              <SelectItem value="and">{getLabel('logicAnd')}</SelectItem>
+              <SelectItem value="or">{getLabel('logicOr')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -132,7 +132,7 @@ export function AdvancedFilter({
               <div key={row.id} className="flex flex-wrap items-center gap-2">
                 <Select value={row.column} onValueChange={(value) => updateRow(row.id, { column: value })}>
                   <SelectTrigger className="w-full sm:w-[170px]">
-                    <SelectValue placeholder={getLabel('column', 'Alan')} />
+                    <SelectValue placeholder={getLabel('column')} />
                   </SelectTrigger>
                   <SelectContent>
                     {columns.map((column) => (
@@ -144,12 +144,12 @@ export function AdvancedFilter({
                 </Select>
                 <Select value={row.operator} onValueChange={(value) => updateRow(row.id, { operator: value })}>
                   <SelectTrigger className="w-full sm:w-[140px]">
-                    <SelectValue placeholder={getLabel('operator', 'Operator')} />
+                    <SelectValue placeholder={getLabel('operator')} />
                   </SelectTrigger>
                   <SelectContent>
                     {getOperatorsForColumn(row.column, columns).map((operator) => (
                       <SelectItem key={operator} value={operator}>
-                        {t(`advancedFilter.operator${operator}`, { ns: 'common', defaultValue: operator })}
+                        {t(`advancedFilter.operator${operator}`, { ns: 'common' })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -160,18 +160,18 @@ export function AdvancedFilter({
                     onValueChange={(value) => updateRow(row.id, { value: value === '_none' ? '' : value })}
                   >
                     <SelectTrigger className="w-full sm:w-[170px]">
-                      <SelectValue placeholder={getLabel('value', 'Deger')} />
+                      <SelectValue placeholder={getLabel('value')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="_none">{getLabel('value', 'Deger')}</SelectItem>
-                      <SelectItem value="true">{t('advancedFilter.true', { ns: 'common', defaultValue: 'True' })}</SelectItem>
-                      <SelectItem value="false">{t('advancedFilter.false', { ns: 'common', defaultValue: 'False' })}</SelectItem>
+                      <SelectItem value="_none">{getLabel('value')}</SelectItem>
+                      <SelectItem value="true">{t('advancedFilter.true', { ns: 'common' })}</SelectItem>
+                      <SelectItem value="false">{t('advancedFilter.false', { ns: 'common' })}</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
                   <Input
                     type={isDate ? 'date' : 'text'}
-                    placeholder={getLabel('value', 'Deger')}
+                    placeholder={getLabel('value')}
                     value={row.value}
                     onChange={(event) => updateRow(row.id, { value: event.target.value })}
                     className="w-full sm:w-[170px]"
@@ -183,7 +183,7 @@ export function AdvancedFilter({
                   size="icon"
                   className="shrink-0 text-slate-500 hover:text-destructive"
                   onClick={() => removeRow(row.id)}
-                  aria-label={getLabel('remove', 'Sil')}
+                  aria-label={getLabel('remove')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

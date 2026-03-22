@@ -1,4 +1,5 @@
 import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
@@ -18,18 +19,19 @@ export function VoiceSearchButton({
   size = 'icon',
   variant = 'ghost',
 }: VoiceSearchButtonProps): ReactElement {
+  const { t } = useTranslation();
   const { isListening, error, isSupported, startListening, stopListening } = useVoiceSearch({
     onResult: (text) => {
       onResult(text);
       if (text.trim()) {
-        toast.success('Sesli arama tamamlandı');
+        toast.success(t('voiceSearch.completed'));
       }
     },
   });
 
   const handleClick = (): void => {
     if (!isSupported) {
-      toast.error('Tarayıcınız sesli aramayı desteklemiyor');
+      toast.error(t('voiceSearch.unsupported'));
       return;
     }
 
@@ -56,7 +58,7 @@ export function VoiceSearchButton({
         className
       )}
       disabled={!isSupported}
-      title={isListening ? 'Dinlemeyi durdur' : 'Sesli arama'}
+      title={isListening ? t('voiceSearch.stop') : t('voiceSearch.start')}
     >
       {isListening ? (
         <MicOff className="h-4 w-4" />
@@ -66,4 +68,3 @@ export function VoiceSearchButton({
     </Button>
   );
 }
-

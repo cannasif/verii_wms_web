@@ -21,7 +21,7 @@ interface ProductVisual {
   color: string;
   bgColor: string;
   borderColor: string;
-  label: string;
+  labelKey: string;
 }
 
 interface ProductImage {
@@ -52,11 +52,11 @@ interface PortalSlotDetail {
 }
 
 const PRODUCT_TYPE_VISUALS: Record<ProductType, ProductVisual> = {
-  'solar-panel':  { color: '#f59e0b', bgColor: 'rgba(245,158,11,0.14)', borderColor: 'rgba(245,158,11,0.45)', label: 'GÜNEŞ PANELİ' },
-  'solar-frame':  { color: '#34d399', bgColor: 'rgba(52,211,153,0.12)', borderColor: 'rgba(52,211,153,0.40)', label: 'SOLAR ÇERÇEVE' },
-  'galv-pipe':    { color: '#60a5fa', bgColor: 'rgba(96,165,250,0.13)', borderColor: 'rgba(96,165,250,0.42)', label: 'GALVANİZ BORU' },
-  'sheet-metal':  { color: '#94a3b8', bgColor: 'rgba(148,163,184,0.11)', borderColor: 'rgba(148,163,184,0.38)', label: 'SAC LEVHA' },
-  'alum-profile': { color: '#c4b5fd', bgColor: 'rgba(196,181,253,0.11)', borderColor: 'rgba(196,181,253,0.38)', label: 'ALÜMİNYUM PROFİL' },
+  'solar-panel':  { color: '#f59e0b', bgColor: 'rgba(245,158,11,0.14)', borderColor: 'rgba(245,158,11,0.45)', labelKey: 'inventory.outsideWarehouse.typeSolarPanel' },
+  'solar-frame':  { color: '#34d399', bgColor: 'rgba(52,211,153,0.12)', borderColor: 'rgba(52,211,153,0.40)', labelKey: 'inventory.outsideWarehouse.typeSolarFrame' },
+  'galv-pipe':    { color: '#60a5fa', bgColor: 'rgba(96,165,250,0.13)', borderColor: 'rgba(96,165,250,0.42)', labelKey: 'inventory.outsideWarehouse.typeGalvPipe' },
+  'sheet-metal':  { color: '#94a3b8', bgColor: 'rgba(148,163,184,0.11)', borderColor: 'rgba(148,163,184,0.38)', labelKey: 'inventory.outsideWarehouse.typeSheetMetal' },
+  'alum-profile': { color: '#c4b5fd', bgColor: 'rgba(196,181,253,0.11)', borderColor: 'rgba(196,181,253,0.38)', labelKey: 'inventory.outsideWarehouse.typeAlumProfile' },
 };
 
 const PRODUCT_TYPE_IMAGES: Record<ProductType, ProductImage> = {
@@ -1411,10 +1411,10 @@ export function OutsideWarehousePage(): ReactElement {
                 LEGEND
               </div>
               {[
-                { color: BP.cyan, label: 'RACK ZONE (ACTIVE)' },
-                { color: BP.line, label: 'BUILDING / WALL' },
-                { color: 'rgba(34,211,238,0.6)', label: 'OCCUPIED SLOT' },
-                { color: BP.lineLight, label: 'EMPTY SLOT' },
+                { color: BP.cyan, label: t('inventory.outsideWarehouse.legendRackZone') },
+                { color: BP.line, label: t('inventory.outsideWarehouse.legendBuildingWall') },
+                { color: 'rgba(34,211,238,0.6)', label: t('inventory.outsideWarehouse.legendOccupiedSlot') },
+                { color: BP.lineLight, label: t('inventory.outsideWarehouse.legendEmptySlot') },
               ].map(({ color, label }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
                   <div style={{ width: 10, height: 6, background: color, flexShrink: 0, border: `1px solid ${color}` }} />
@@ -1631,7 +1631,7 @@ export function OutsideWarehousePage(): ReactElement {
                   : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20'
                 }
               >
-                {showAddProduct ? '✕ KAPAT' : `+ ${t('inventory.outsideWarehouse.addProduct')}`}
+                {showAddProduct ? `✕ ${t('inventory.outsideWarehouse.closeAddProduct')}` : `+ ${t('inventory.outsideWarehouse.addProduct')}`}
               </Button>
               <Button
                 type="button"
@@ -1673,12 +1673,12 @@ export function OutsideWarehousePage(): ReactElement {
               {/* Add product form */}
               {showAddProduct && (() => {
                 const typeFilters: Array<{ key: ProductType | 'all'; label: string }> = [
-                  { key: 'all', label: 'TÜMÜ' },
-                  { key: 'solar-panel', label: 'GÜNEŞ PANELİ' },
-                  { key: 'solar-frame', label: 'SOLAR ÇERÇEVE' },
-                  { key: 'galv-pipe', label: 'GALVANİZ BORU' },
-                  { key: 'sheet-metal', label: 'SAC LEVHA' },
-                  { key: 'alum-profile', label: 'ALÜMİNYUM PROFİL' },
+                  { key: 'all', label: t('inventory.outsideWarehouse.allTypes') },
+                  { key: 'solar-panel', label: t('inventory.outsideWarehouse.typeSolarPanel') },
+                  { key: 'solar-frame', label: t('inventory.outsideWarehouse.typeSolarFrame') },
+                  { key: 'galv-pipe', label: t('inventory.outsideWarehouse.typeGalvPipe') },
+                  { key: 'sheet-metal', label: t('inventory.outsideWarehouse.typeSheetMetal') },
+                  { key: 'alum-profile', label: t('inventory.outsideWarehouse.typeAlumProfile') },
                 ];
                 const filteredCatalog = addTypeFilter === 'all'
                   ? DEMO_PRODUCT_CATALOG
@@ -1848,7 +1848,7 @@ export function OutsideWarehousePage(): ReactElement {
                                       letterSpacing: '0.06em',
                                     }}
                                   >
-                                    {vis.label}
+                                    {t(vis.labelKey)}
                                   </div>
                                   {/* Selected checkmark */}
                                   {isSelected && (
@@ -1935,7 +1935,7 @@ export function OutsideWarehousePage(): ReactElement {
                               </div>
                               <div style={{ padding: '6px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: PRODUCT_TYPE_VISUALS[activeCatalogProduct.type].color, fontSize: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                  {PRODUCT_TYPE_VISUALS[activeCatalogProduct.type].label}
+                                  {t(PRODUCT_TYPE_VISUALS[activeCatalogProduct.type].labelKey)}
                                 </span>
                                 <span style={{ color: '#2a5070', fontSize: '0.38rem' }}>{activeCatalogProduct.code} · {activeCatalogProduct.unit}</span>
                               </div>
@@ -2398,7 +2398,7 @@ export function OutsideWarehousePage(): ReactElement {
                                         lineHeight: 1.2,
                                       }}
                                     >
-                                      {mixedTypes ? 'KARMA STOK' : vis.label}
+                                      {mixedTypes ? t('inventory.outsideWarehouse.mixedStock') : t(vis.labelKey)}
                                     </span>
                                   </div>
                                 );
@@ -2539,10 +2539,10 @@ export function OutsideWarehousePage(): ReactElement {
                     AÇIKLAMA:
                   </span>
                   {[
-                    { bg: 'rgba(34,211,238,0.1)', border: '#22d3ee', label: 'SEÇİLİ SLOT' },
-                    { bg: 'rgba(12,40,72,0.8)', border: 'rgba(34,211,238,0.3)', label: 'DOLU SLOT' },
-                    { bg: 'rgba(7,15,30,0.7)', border: '#1a3558', label: 'BOŞ SLOT' },
-                    { bg: 'rgba(34,211,238,0.18)', border: '#22d3ee', label: 'BIRAK HEDEFİ' },
+                    { bg: 'rgba(34,211,238,0.1)', border: '#22d3ee', label: t('inventory.outsideWarehouse.legendSelectedSlot') },
+                    { bg: 'rgba(12,40,72,0.8)', border: 'rgba(34,211,238,0.3)', label: t('inventory.outsideWarehouse.legendOccupiedSlot') },
+                    { bg: 'rgba(7,15,30,0.7)', border: '#1a3558', label: t('inventory.outsideWarehouse.legendEmptySlot') },
+                    { bg: 'rgba(34,211,238,0.18)', border: '#22d3ee', label: t('inventory.outsideWarehouse.legendDropTarget') },
                   ].map(({ bg, border, label }) => (
                     <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <div
@@ -2748,7 +2748,7 @@ export function OutsideWarehousePage(): ReactElement {
                                       padding: '1px 6px',
                                     }}
                                   >
-                                    {PRODUCT_TYPE_VISUALS[product.type].label}
+                                    {t(PRODUCT_TYPE_VISUALS[product.type].labelKey)}
                                   </span>
                                 </div>
                                 <div

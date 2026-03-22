@@ -42,7 +42,16 @@
     "accessDenied": "تم رفض الوصول",
     "accessDeniedMessage": "ليس لديك صلاحية لعرض هذه الصفحة.",
     "rowsPerPage": "في الصفحة",
-    "records": "سجلات"
+    "records": "سجلات",
+    "columns": "الاعمدة",
+    "visibleColumns": "الاعمدة الظاهرة",
+    "hiddenColumns": "الاعمدة المخفية",
+    "hide": "اخفاء",
+    "show": "اظهار",
+    "breadcrumb": "مسار التنقل",
+    "select": "اختر...",
+    "user": "المستخدم",
+    "systemAdmin": "System Admin"
   },
   "auth": {
     "login": {
@@ -1797,9 +1806,31 @@
   },
   "advancedFilter": {
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "title": "تصفية متقدمة",
+    "add": "اضافة فلتر",
+    "clear": "مسح",
+    "search": "بحث",
+    "activeInfo": "تم تطبيق الفلتر",
+    "logic": "الشرط",
+    "logicAnd": "AND",
+    "logicOr": "OR",
+    "column": "الحقل",
+    "operator": "المشغل",
+    "value": "القيمة",
+    "remove": "حذف"
   },
   "export": "Export",
   "exportExcel": "Excel",
-  "exportPdf": "PDF"
+  "exportPdf": "PDF",
+  "voiceSearch": {
+    "start": "بحث صوتي",
+    "stop": "ايقاف الاستماع",
+    "completed": "اكتمل البحث الصوتي",
+    "unsupported": "المتصفح لا يدعم البحث الصوتي",
+    "noSpeech": "لم يتم اكتشاف صوت",
+    "permissionDenied": "لم يتم منح إذن الميكروفون",
+    "errorWithReason": "خطأ في البحث الصوتي: {{reason}}",
+    "startFailed": "تعذر بدء البحث الصوتي"
+  }
 }

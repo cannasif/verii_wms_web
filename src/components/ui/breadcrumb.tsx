@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 
 interface BreadcrumbItem {
@@ -12,8 +13,9 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ items, className }: BreadcrumbProps): React.ReactElement {
+  const { t } = useTranslation()
   return (
-    <nav className={cn("flex items-center space-x-2", className)} aria-label="Breadcrumb">
+    <nav className={cn("flex items-center space-x-2", className)} aria-label={t('common.breadcrumb')}>
       <ol className="flex items-center space-x-2">
         {items.map((item, index) => (
           <li key={index} className="flex items-center">
@@ -49,4 +51,3 @@ export function Breadcrumb({ items, className }: BreadcrumbProps): React.ReactEl
     </nav>
   );
 }
-

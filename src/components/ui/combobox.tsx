@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -39,18 +40,22 @@ export function Combobox({
   options,
   value,
   onValueChange,
-  placeholder = "Seçiniz...",
-  searchPlaceholder = "Ara...",
-  emptyText = "Sonuç bulunamadı.",
+  placeholder,
+  searchPlaceholder,
+  emptyText,
   className,
   modal = false,
   disabled = false,
   listClassName
 }: ComboboxProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
   const triggerRef = React.useRef<HTMLButtonElement | null>(null)
+  const resolvedPlaceholder = placeholder ?? t('common.select')
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('common.search')
+  const resolvedEmptyText = emptyText ?? t('common.noResults')
 
   const selectedOption = options.find((option) => option.value === value)
 
@@ -82,7 +87,7 @@ export function Combobox({
           )}
         >
           <span className="truncate">
-            {selectedOption ? selectedOption.label : placeholder}
+            {selectedOption ? selectedOption.label : resolvedPlaceholder}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -95,7 +100,7 @@ export function Combobox({
         <Command>
           <div className="relative **:data-[slot=command-input-wrapper]:pr-10">
             <CommandInput
-              placeholder={searchPlaceholder}
+              placeholder={resolvedSearchPlaceholder}
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
@@ -109,7 +114,7 @@ export function Combobox({
             </div>
           </div>
           <CommandList className={listClassName ?? "max-h-[220px]"}>
-            <CommandEmpty>{emptyText}</CommandEmpty>
+            <CommandEmpty>{resolvedEmptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

@@ -83,7 +83,7 @@ export function UserFormPermissionGroupSelect({
               >
                 {item.label}
                 {item.isSystemAdmin && (
-                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">(System Admin)</span>
+                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">({t('common.systemAdmin')})</span>
                 )}
               </label>
             </div>

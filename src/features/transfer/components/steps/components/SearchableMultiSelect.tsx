@@ -1,4 +1,5 @@
 import { type ReactElement, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Check, ChevronsUpDown, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -40,17 +41,21 @@ export function SearchableMultiSelect<T>({
   options,
   getOptionValue,
   getOptionLabel,
-  placeholder = 'Seçiniz...',
-  searchPlaceholder = 'Ara...',
-  emptyText = 'Sonuç bulunamadı.',
+  placeholder,
+  searchPlaceholder,
+  emptyText,
   isLoading = false,
   disabled = false,
   className,
   maxHeight = '220px',
   itemLimit = 100,
 }: SearchableMultiSelectProps<T>): ReactElement {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const resolvedPlaceholder = placeholder ?? t('common.select');
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('common.search');
+  const resolvedEmptyText = emptyText ?? t('common.noResults');
 
   const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -96,7 +101,7 @@ export function SearchableMultiSelect<T>({
           {isLoading ? (
             <span className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-muted-foreground">Yükleniyor...</span>
+              <span className="text-muted-foreground">{t('common.loading')}</span>
             </span>
           ) : selectedOptions.length > 0 ? (
             <div className="flex flex-wrap gap-1 flex-1">
@@ -132,7 +137,7 @@ export function SearchableMultiSelect<T>({
               })}
             </div>
           ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
+            <span className="text-muted-foreground">{resolvedPlaceholder}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -141,7 +146,7 @@ export function SearchableMultiSelect<T>({
         <Command shouldFilter={false}>
           <div className="relative [&_[data-slot=command-input-wrapper]]:pr-10">
             <CommandInput
-              placeholder={searchPlaceholder}
+              placeholder={resolvedSearchPlaceholder}
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
@@ -161,7 +166,7 @@ export function SearchableMultiSelect<T>({
               </div>
             ) : (
               <>
-                <CommandEmpty>{emptyText}</CommandEmpty>
+                <CommandEmpty>{resolvedEmptyText}</CommandEmpty>
                 <CommandGroup>
                   {filteredOptions.map((option) => {
                     const optionValue = getOptionValue(option);

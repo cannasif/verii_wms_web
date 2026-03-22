@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import i18n from '@/lib/i18n';
 
 interface UseVoiceSearchOptions {
   onResult: (text: string) => void;
@@ -20,13 +21,13 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
 
   const startListening = useCallback(() => {
     if (!isSupported) {
-      setError('Tarayıcınız sesli aramayı desteklemiyor');
+      setError(i18n.t('voiceSearch.unsupported'));
       return;
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setError('Tarayıcınız sesli aramayı desteklemiyor');
+      setError(i18n.t('voiceSearch.unsupported'));
       return;
     }
     const recognition = new SpeechRecognition();
@@ -50,11 +51,11 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event.error === 'no-speech') {
-        setError('Ses algılanamadı');
+        setError(i18n.t('voiceSearch.noSpeech'));
       } else if (event.error === 'not-allowed') {
-        setError('Mikrofon izni verilmedi');
+        setError(i18n.t('voiceSearch.permissionDenied'));
       } else {
-        setError('Sesli arama hatası: ' + event.error);
+        setError(i18n.t('voiceSearch.errorWithReason', { reason: event.error }));
       }
       setIsListening(false);
     };
@@ -66,7 +67,7 @@ export const useVoiceSearch = ({ onResult, language = 'tr-TR' }: UseVoiceSearchO
     try {
       recognition.start();
     } catch {
-      setError('Sesli arama başlatılamadı');
+      setError(i18n.t('voiceSearch.startFailed'));
       setIsListening(false);
     }
   }, [isSupported, language, onResult]);

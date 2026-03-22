@@ -42,7 +42,16 @@
     "accessDenied": "Acceso denegado",
     "accessDeniedMessage": "No tiene permiso para ver esta página.",
     "rowsPerPage": "Por página",
-    "records": "registros"
+    "records": "registros",
+    "columns": "Columnas",
+    "visibleColumns": "Columnas visibles",
+    "hiddenColumns": "Columnas ocultas",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "breadcrumb": "Ruta de navegacion",
+    "select": "Seleccionar...",
+    "user": "Usuario",
+    "systemAdmin": "System Admin"
   },
   "auth": {
     "login": {
@@ -1797,9 +1806,31 @@
   },
   "advancedFilter": {
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "title": "Filtro avanzado",
+    "add": "Agregar filtro",
+    "clear": "Limpiar",
+    "search": "Buscar",
+    "activeInfo": "Filtro aplicado",
+    "logic": "Condicion",
+    "logicAnd": "Y",
+    "logicOr": "O",
+    "column": "Campo",
+    "operator": "Operador",
+    "value": "Valor",
+    "remove": "Eliminar"
   },
   "export": "Export",
   "exportExcel": "Excel",
-  "exportPdf": "PDF"
+  "exportPdf": "PDF",
+  "voiceSearch": {
+    "start": "Busqueda por voz",
+    "stop": "Detener escucha",
+    "completed": "Busqueda por voz completada",
+    "unsupported": "Tu navegador no admite busqueda por voz",
+    "noSpeech": "No se detecto voz",
+    "permissionDenied": "No se concedio permiso al microfono",
+    "errorWithReason": "Error de busqueda por voz: {{reason}}",
+    "startFailed": "No se pudo iniciar la busqueda por voz"
+  }
 }

@@ -42,7 +42,16 @@
     "accessDenied": "Accesso negato",
     "accessDeniedMessage": "Non hai il permesso di visualizzare questa pagina.",
     "rowsPerPage": "Per pagina",
-    "records": "record"
+    "records": "record",
+    "columns": "Colonne",
+    "visibleColumns": "Colonne visibili",
+    "hiddenColumns": "Colonne nascoste",
+    "hide": "Nascondi",
+    "show": "Mostra",
+    "breadcrumb": "Percorso di navigazione",
+    "select": "Seleziona...",
+    "user": "Utente",
+    "systemAdmin": "System Admin"
   },
   "auth": {
     "login": {
@@ -1797,9 +1806,31 @@
   },
   "advancedFilter": {
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "title": "Filtro avanzato",
+    "add": "Aggiungi filtro",
+    "clear": "Cancella",
+    "search": "Cerca",
+    "activeInfo": "Filtro applicato",
+    "logic": "Condizione",
+    "logicAnd": "E",
+    "logicOr": "O",
+    "column": "Campo",
+    "operator": "Operatore",
+    "value": "Valore",
+    "remove": "Rimuovi"
   },
   "export": "Export",
   "exportExcel": "Excel",
-  "exportPdf": "PDF"
+  "exportPdf": "PDF",
+  "voiceSearch": {
+    "start": "Ricerca vocale",
+    "stop": "Interrompi ascolto",
+    "completed": "Ricerca vocale completata",
+    "unsupported": "Il browser non supporta la ricerca vocale",
+    "noSpeech": "Nessuna voce rilevata",
+    "permissionDenied": "Autorizzazione microfono non concessa",
+    "errorWithReason": "Errore ricerca vocale: {{reason}}",
+    "startFailed": "Impossibile avviare la ricerca vocale"
+  }
 }

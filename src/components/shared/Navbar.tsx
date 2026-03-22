@@ -122,7 +122,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     }
   };
 
-  const displayName = user?.name || user?.email || 'Kullanici';
+  const displayName = user?.name || user?.email || t('common.user');
   const displayInitial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -168,7 +168,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                         ? 'animate-pulse bg-pink-500/10 text-pink-500'
                         : 'text-slate-400 hover:bg-slate-200 hover:text-pink-500 dark:hover:bg-white/10'
                     )}
-                    title="Sesli Ara"
+                    title={t('voiceSearch.start')}
                   >
                     <Mic size={18} />
                   </button>
