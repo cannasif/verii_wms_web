@@ -1,3 +1,4 @@
+import { createRequiredIdError } from '@/lib/localized-error';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouse-api';
 import { WAREHOUSE_QUERY_KEYS } from '../utils/query-keys';
@@ -8,7 +9,7 @@ export function useAssignedWarehouseInboundLines(headerId: number | null): UseQu
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_LINES, headerId],
     queryFn: () => {
       if (!headerId) {
-        throw new Error('Header ID is required');
+        throw createRequiredIdError('header');
       }
       return warehouseApi.getAssignedInboundLines(headerId);
     },
@@ -22,7 +23,7 @@ export function useAssignedWarehouseOutboundLines(headerId: number | null): UseQ
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_LINES, headerId],
     queryFn: () => {
       if (!headerId) {
-        throw new Error('Header ID is required');
+        throw createRequiredIdError('header');
       }
       return warehouseApi.getAssignedOutboundLines(headerId);
     },

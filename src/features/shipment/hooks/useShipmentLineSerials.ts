@@ -1,3 +1,4 @@
+import { createRequiredIdError } from '@/lib/localized-error';
 import { useQuery } from '@tanstack/react-query';
 import { shipmentApi } from '../api/shipment-api';
 import { SHIPMENT_QUERY_KEYS } from '../utils/query-keys';
@@ -6,7 +7,7 @@ export function useShipmentLineSerials(lineId: number | null) {
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.LINE_SERIALS, lineId],
     queryFn: () => {
-      if (!lineId) throw new Error('Line ID is required');
+      if (!lineId) throw createRequiredIdError('line');
       return shipmentApi.getLineSerials(lineId);
     },
     enabled: !!lineId,

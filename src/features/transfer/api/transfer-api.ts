@@ -21,6 +21,7 @@ import type {
 import { buildTransferGenerateRequest } from '../utils/transfer-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -51,7 +52,7 @@ export const transferApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış transfer listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış transfer listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.transferAssignedHeadersLoadFailed'));
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedTransferOrderLinesResponse> => {
@@ -79,7 +80,7 @@ export const transferApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Transfer listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.transferHeadersLoadFailed'));
   },
 
   getLines: async (headerId: number): Promise<TransferLinesResponse> => {
@@ -89,7 +90,7 @@ export const transferApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer satırları yüklendi');
     }
-    throw new Error(response.message || 'Transfer satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.transferLinesLoadFailed'));
   },
 
   getLineSerials: async (lineId: number): Promise<TransferLineSerialsResponse> => {
@@ -99,7 +100,7 @@ export const transferApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Transfer seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.transferSerialsLoadFailed'));
   },
 
   getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
@@ -134,7 +135,7 @@ export const transferApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen emirler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.transferApprovalLoadFailed'));
   },
 
   approveTransfer: async (id: number, approved: boolean): Promise<ApiResponse<unknown>> => {

@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import { extractData } from '../utils/extract-api-data';
+import { getLocalizedText } from '@/lib/localized-error';
 import type {
   ApiResponse,
   PagedRequest,
@@ -76,7 +77,7 @@ export const permissionDefinitionApi = {
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/permission-definitions/${id}`);
     if (!(response as ApiResponse<object>).success) {
-      throw new Error((response as ApiResponse<object>).message || 'Delete failed');
+      throw new Error((response as ApiResponse<object>).message || getLocalizedText('common.errors.deleteFailed'));
     }
   },
 };

@@ -19,6 +19,7 @@ import type {
 import { buildSubcontractingIssueRequest, buildSubcontractingReceiptRequest } from '../utils/subcontracting-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -57,7 +58,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış fason çıkış listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış fason çıkış listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedIssueHeadersLoadFailed'));
   },
 
   getAssignedSrtHeaders: async (userId: number): Promise<SubcontractingHeadersResponse> => {
@@ -67,7 +68,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış fason giriş listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış fason giriş listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedReceiptHeadersLoadFailed'));
   },
 
   getAssignedSitOrderLines: async (headerId: number): Promise<AssignedSubcontractingOrderLinesResponse> => {
@@ -141,7 +142,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Taşeron alış listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptHeadersLoadFailed'));
   },
 
   getIssueHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
@@ -151,7 +152,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Taşeron çıkış listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueHeadersLoadFailed'));
   },
 
   getReceiptLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
@@ -161,7 +162,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş satırları yüklendi');
     }
-    throw new Error(response.message || 'Fason giriş satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptLinesLoadFailed'));
   },
 
   getIssueLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
@@ -171,7 +172,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış satırları yüklendi');
     }
-    throw new Error(response.message || 'Fason çıkış satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueLinesLoadFailed'));
   },
 
   getReceiptLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
@@ -181,7 +182,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Fason giriş seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptSerialsLoadFailed'));
   },
 
   getIssueLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
@@ -191,7 +192,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Fason çıkış seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueSerialsLoadFailed'));
   },
 
   getAwaitingApprovalSitHeaders: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
@@ -204,7 +205,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen fason çıkış emirleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueApprovalLoadFailed'));
   },
 
   getAwaitingApprovalSrtHeaders: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
@@ -217,7 +218,7 @@ export const subcontractingApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen fason giriş emirleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptApprovalLoadFailed'));
   },
 
   approveSitHeader: async (id: number, approved: boolean): Promise<ApiResponse<unknown>> => {

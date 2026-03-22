@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   Order,
@@ -44,7 +45,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Siparişler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptOrdersLoadFailed'));
   },
 
   getOrderItems: async (customerCode: string, siparisNoCsv: string): Promise<OrderItem[]> => {
@@ -52,7 +53,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Sipariş kalemleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptOrderItemsLoadFailed'));
   },
 
   createGoodsReceipt: async (formData: GoodsReceiptFormData, selectedItems: (SelectedOrderItem | SelectedStockItem)[], isStockBased: boolean = false): Promise<number> => {
@@ -61,7 +62,7 @@ export const goodsReceiptApi = {
     if (response.success) {
       return response.data || 0;
     }
-    throw new Error(response.message || 'Mal kabul oluşturulamadı');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
   },
 
   getGrHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<GrHeader>> => {
@@ -71,7 +72,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Mal kabul listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptHeadersLoadFailed'));
   },
 
   getGrHeaderById: async (id: number): Promise<GrHeader> => {
@@ -79,7 +80,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Mal kabul detayı yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptHeaderDetailLoadFailed'));
   },
 
   getGrLines: async (headerId: number): Promise<GrLine[]> => {
@@ -89,7 +90,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data?.data) {
       return response.data.data;
     }
-    throw new Error(response.message || 'Mal kabul satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
   },
 
   getGrImportLinesWithRoutes: async (headerId: number): Promise<GrImportLine[]> => {
@@ -97,7 +98,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Mal kabul içerik satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptImportLinesLoadFailed'));
   },
 
   getAssignedHeaders: async (userId: number): Promise<GrHeadersResponse> => {
@@ -107,7 +108,7 @@ export const goodsReceiptApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış mal kabul listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış mal kabul listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptAssignedHeadersLoadFailed'));
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedGrOrderLinesResponse> => {

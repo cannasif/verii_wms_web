@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { ErpCustomer, ErpProject, ErpWarehouse, ErpProduct, BranchErp } from './erp-types';
 
 export const erpCommonApi = {
@@ -8,7 +9,7 @@ export const erpCommonApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Cariler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.erpCustomersLoadFailed'));
   },
 
   getProjects: async (): Promise<ErpProject[]> => {
@@ -16,7 +17,7 @@ export const erpCommonApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Projeler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.erpProjectsLoadFailed'));
   },
 
   getWarehouses: async (depoKodu?: number): Promise<ErpWarehouse[]> => {
@@ -27,7 +28,7 @@ export const erpCommonApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Depolar yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.erpWarehousesLoadFailed'));
   },
 
   getProducts: async (): Promise<ErpProduct[]> => {
@@ -35,7 +36,7 @@ export const erpCommonApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Stoklar yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.erpProductsLoadFailed'));
   },
 
   getBranches: async (): Promise<BranchErp[]> => {
@@ -43,6 +44,6 @@ export const erpCommonApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Şubeler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.erpBranchesLoadFailed'));
   },
 };

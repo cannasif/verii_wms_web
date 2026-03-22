@@ -1,7 +1,8 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { ApiResponse, PagedResponse } from '@/types/api';
-import type { NotificationDto, CreateNotificationRequest, GetPagedNotificationsRequest, PagedNotificationsResponse } from '../types/notification';
+import type { NotificationDto, CreateNotificationRequest, GetPagedNotificationsRequest } from '../types/notification';
 
 type NotificationApiRecord = Record<string, unknown>;
 
@@ -55,51 +56,51 @@ const mapNotification = (item: NotificationApiRecord): NotificationDto => ({
 export const notificationApi = {
   getByUserId: async (userId?: number): Promise<NotificationDto[]> => {
     const url = userId ? `/api/notification/user/${userId}` : '/api/notification/user';
-    const response = await api.get(url) as ApiResponse<NotificationDto[]>;
+    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url);
     if (response.success && response.data) {
       return response.data.map(mapNotification);
     }
-    throw new Error(response.message || 'Bildirimler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationsLoadFailed'));
   },
 
   getByTerminalUserId: async (terminalUserId?: number): Promise<NotificationDto[]> => {
     const url = terminalUserId 
       ? `/api/notification/terminal-user/${terminalUserId}` 
       : '/api/notification/terminal-user';
-    const response = await api.get(url) as ApiResponse<NotificationDto[]>;
+    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url);
     if (response.success && response.data) {
       return response.data.map(mapNotification);
     }
-    throw new Error(response.message || 'Bildirimler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationsLoadFailed'));
   },
 
   markAsRead: async (id: number): Promise<void> => {
     const response = await api.put(`/api/notification/${id}/read`) as ApiResponse<void>;
     if (!response.success) {
-      throw new Error(response.message || 'Bildirim okundu olarak işaretlenemedi');
+      throw new Error(response.message || getLocalizedText('common.errors.notificationMarkReadFailed'));
     }
   },
 
   create: async (request: CreateNotificationRequest): Promise<NotificationDto> => {
-    const response = await api.post('/api/notification', request) as ApiResponse<NotificationDto>;
+    const response = await api.post<ApiResponse<NotificationApiRecord>>('/api/notification', request);
     if (response.success && response.data) {
       return mapNotification(response.data);
     }
-    throw new Error(response.message || 'Bildirim oluşturulamadı');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationCreateFailed'));
   },
 
   getPagedNotifications: async (
     params: GetPagedNotificationsRequest = {}
   ): Promise<PagedResponse<NotificationDto>> => {
     const requestBody = buildPagedRequest(params, { pageNumber: 1 });
-    const response = await api.post('/api/notification/user/paged', requestBody) as PagedNotificationsResponse;
+    const response = await api.post<ApiResponse<PagedResponse<NotificationApiRecord>>>('/api/notification/user/paged', requestBody);
     if (response.success && response.data) {
       return {
         ...response.data,
         data: response.data.data.map(mapNotification),
       };
     }
-    throw new Error(response.message || 'Bildirimler yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationsLoadFailed'));
   },
 
   markNotificationsAsReadBulk: async (ids: number[]): Promise<boolean> => {
@@ -107,7 +108,7 @@ export const notificationApi = {
     if (response.success) {
       return response.data;
     }
-    throw new Error(response.message || 'Bildirimler okundu olarak işaretlenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationsMarkReadBulkFailed'));
   },
 
   markAllAsRead: async (): Promise<boolean> => {
@@ -115,6 +116,6 @@ export const notificationApi = {
     if (response.success) {
       return response.data;
     }
-    throw new Error(response.message || 'Tüm bildirimler okundu olarak işaretlenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.notificationsMarkAllReadFailed'));
   },
 };

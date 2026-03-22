@@ -1,3 +1,4 @@
+import { createRequiredIdError } from '@/lib/localized-error';
 import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouse-api';
 import { DocumentType } from '@/types/document-type';
@@ -6,7 +7,7 @@ export function useWarehouseLineSerials(lineId: number | null, documentType: str
   return useQuery({
     queryKey: ['warehouse-line-serials', lineId, documentType],
     queryFn: () => {
-      if (!lineId) throw new Error('Line ID is required');
+      if (!lineId) throw createRequiredIdError('line');
       if (documentType === DocumentType.WI) {
         return warehouseApi.getInboundLineSerials(lineId);
       } else {

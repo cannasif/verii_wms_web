@@ -14,6 +14,7 @@ import type {
 import { buildWarehouseInboundRequest, buildWarehouseOutboundRequest } from '../utils/warehouse-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -78,7 +79,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Depo giriş listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundHeadersLoadFailed'));
   },
 
   getOutboundHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
@@ -88,7 +89,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Depo çıkış listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundHeadersLoadFailed'));
   },
 
   getAssignedInboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
@@ -98,7 +99,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo giriş listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış depo giriş listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseAssignedInboundHeadersLoadFailed'));
   },
 
   getAssignedOutboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
@@ -108,7 +109,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo çıkış listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış depo çıkış listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseAssignedOutboundHeadersLoadFailed'));
   },
 
   getInboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
@@ -118,7 +119,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş satırları yüklendi');
     }
-    throw new Error(response.message || 'Depo giriş satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundLinesLoadFailed'));
   },
 
   getOutboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
@@ -128,7 +129,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış satırları yüklendi');
     }
-    throw new Error(response.message || 'Depo çıkış satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundLinesLoadFailed'));
   },
 
   getAssignedInboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
@@ -146,7 +147,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Depo giriş seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundSerialsLoadFailed'));
   },
 
   getOutboundLineSerials: async (lineId: number): Promise<WarehouseLineSerialsResponse> => {
@@ -156,7 +157,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Depo çıkış seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundSerialsLoadFailed'));
   },
 
   getAwaitingApprovalWiHeaders: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
@@ -169,7 +170,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen ambar giriş emirleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundApprovalLoadFailed'));
   },
 
   getAwaitingApprovalWoHeaders: async (params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
@@ -182,7 +183,7 @@ export const warehouseApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen ambar çıkış emirleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundApprovalLoadFailed'));
   },
 
   approveWiHeader: async (id: number, approved: boolean): Promise<ApiResponse<unknown>> => {

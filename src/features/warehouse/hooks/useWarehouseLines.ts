@@ -1,3 +1,4 @@
+import { createRequiredIdError } from '@/lib/localized-error';
 import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouse-api';
 import { DocumentType } from '@/types/document-type';
@@ -6,7 +7,7 @@ export function useWarehouseLines(headerId: number | null, documentType: string)
   return useQuery({
     queryKey: ['warehouse-lines', headerId, documentType],
     queryFn: () => {
-      if (!headerId) throw new Error('Header ID is required');
+      if (!headerId) throw createRequiredIdError('header');
       if (documentType === DocumentType.WI) {
         return warehouseApi.getInboundLines(headerId);
       } else {

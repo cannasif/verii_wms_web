@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse } from '@/types/api';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { UserAuthorityDto } from '../types/user-types';
 
 export const userAuthorityApi = {
@@ -15,6 +16,6 @@ export const userAuthorityApi = {
     if (response.success && response.data?.data) {
       return response.data.data;
     }
-    throw new Error(response.message ?? 'Role list could not be loaded');
+    throw new Error(response.message ?? getLocalizedText('common.errors.roleListLoadFailed'));
   },
 };

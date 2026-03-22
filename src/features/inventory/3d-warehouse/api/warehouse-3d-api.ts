@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { WarehouseShelvesWithStockInformationDto } from '../types/warehouse-3d';
 
 export const warehouse3dApi = {
@@ -14,6 +15,6 @@ export const warehouse3dApi = {
       return response.data;
     }
     
-    throw new Error(response.message || 'Depo bilgileri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.warehouse3dLoadFailed'));
   },
 };

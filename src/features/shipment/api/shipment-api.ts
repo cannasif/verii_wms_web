@@ -19,6 +19,7 @@ import type {
 import { buildShipmentGenerateRequest } from '../utils/shipment-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -54,7 +55,7 @@ export const shipmentApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Sevkiyat listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentHeadersLoadFailed'));
   },
 
   getAssignedHeaders: async (userId: number): Promise<ShipmentHeadersResponse> => {
@@ -64,7 +65,7 @@ export const shipmentApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Atanmış sevkiyat listesi yüklendi');
     }
-    throw new Error(response.message || 'Atanmış sevkiyat listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentAssignedHeadersLoadFailed'));
   },
 
   getAssignedOrderLines: async (headerId: number): Promise<AssignedShipmentOrderLinesResponse> => {
@@ -78,7 +79,7 @@ export const shipmentApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat satırları yüklendi');
     }
-    throw new Error(response.message || 'Sevkiyat satırları yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentLinesLoadFailed'));
   },
 
   getLineSerials: async (lineId: number): Promise<ShipmentLineSerialsResponse> => {
@@ -88,7 +89,7 @@ export const shipmentApi = {
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat seri listesi yüklendi');
     }
-    throw new Error(response.message || 'Sevkiyat seri listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentSerialsLoadFailed'));
   },
 
   getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
@@ -127,7 +128,7 @@ export const shipmentApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Onay bekleyen sevkiyat emirleri yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentApprovalLoadFailed'));
   },
 
   approveShipment: async (id: number, approved: boolean): Promise<ApiResponse<unknown>> => {

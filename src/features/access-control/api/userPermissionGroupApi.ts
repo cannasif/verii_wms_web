@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { getLocalizedText } from '@/lib/localized-error';
 import { extractData } from '../utils/extract-api-data';
 import type {
   ApiResponse,
@@ -23,7 +24,7 @@ export const userPermissionGroupApi = {
       dto
     );
     if (!(response as ApiResponse<object>).success) {
-      throw new Error((response as ApiResponse<object>).message || 'Set user groups failed');
+      throw new Error((response as ApiResponse<object>).message || getLocalizedText('common.errors.userGroupSetFailed'));
     }
   },
 };

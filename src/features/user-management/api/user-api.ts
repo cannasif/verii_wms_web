@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams } from '@/types/api';
+import { getLocalizedText } from '@/lib/localized-error';
 import type { UserDto, CreateUserDto, UpdateUserDto } from '../types/user-types';
 
 export const userApi = {
@@ -31,7 +32,7 @@ export const userApi = {
       
       return pagedData;
     }
-    throw new Error(response.message || 'Kullanıcı listesi yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.userListLoadFailed'));
   },
 
   getById: async (id: number): Promise<UserDto> => {
@@ -39,7 +40,7 @@ export const userApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Kullanıcı detayı yüklenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.userDetailLoadFailed'));
   },
 
   create: async (data: CreateUserDto): Promise<UserDto> => {
@@ -51,7 +52,7 @@ export const userApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Kullanıcı oluşturulamadı');
+    throw new Error(response.message || getLocalizedText('common.errors.userCreateFailed'));
   },
 
   update: async (id: number, data: UpdateUserDto): Promise<UserDto> => {
@@ -59,13 +60,13 @@ export const userApi = {
     if (response.success && response.data) {
       return response.data;
     }
-    throw new Error(response.message || 'Kullanıcı güncellenemedi');
+    throw new Error(response.message || getLocalizedText('common.errors.userUpdateFailed'));
   },
 
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/User/${id}`);
     if (!response.success) {
-      throw new Error(response.message || 'Kullanıcı silinemedi');
+      throw new Error(response.message || getLocalizedText('common.errors.userDeleteFailed'));
     }
   },
 };
