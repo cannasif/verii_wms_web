@@ -18,13 +18,18 @@ interface UseColumnPreferencesResult {
   setVisibleColumns: (columns: string[]) => void;
 }
 
+function arraysEqual(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
 export function useColumnPreferences({
   pageKey,
   columns,
   idColumnKey = 'id',
 }: UseColumnPreferencesOptions): UseColumnPreferencesResult {
   const userId = useAuthStore((state) => state.user?.id);
-  const defaultOrder = useMemo(() => columns.map((column) => column.key), [columns]);
+  const columnSignature = columns.map((column) => column.key).join('|');
+  const defaultOrder = useMemo(() => (columnSignature ? columnSignature.split('|') : []), [columnSignature]);
   const [columnOrder, setColumnOrder] = useState<string[]>(defaultOrder);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultOrder);
 
@@ -35,9 +40,9 @@ export function useColumnPreferences({
     const validVisible = prefs.visibleKeys.filter((key) => normalizedOrder.includes(key));
     const normalizedVisible = validVisible.length > 0 ? validVisible : normalizedOrder;
 
-    setColumnOrder(normalizedOrder);
-    setVisibleColumns(normalizedVisible);
-  }, [defaultOrder, idColumnKey, pageKey, userId]);
+    setColumnOrder((current) => (arraysEqual(current, normalizedOrder) ? current : normalizedOrder));
+    setVisibleColumns((current) => (arraysEqual(current, normalizedVisible) ? current : normalizedVisible));
+  }, [columnSignature, defaultOrder, idColumnKey, pageKey, userId]);
 
   const orderedVisibleColumns = useMemo(
     () => columnOrder.filter((key) => visibleColumns.includes(key)),

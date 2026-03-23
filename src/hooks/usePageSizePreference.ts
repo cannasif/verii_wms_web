@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 
 const PAGE_SIZE_STORAGE_PREFIX = 'page-size';
@@ -26,34 +26,41 @@ export function usePageSizePreference({
   options = [10, 20, 50, 100],
 }: UsePageSizePreferenceOptions): UsePageSizePreferenceResult {
   const userId = useAuthStore((state) => state.user?.id);
+  const optionsKey = options.join(',');
   const normalizedOptions = useMemo(() => {
-    const sorted = [...options].filter((opt) => Number.isFinite(opt) && opt > 0);
-    return sorted.length > 0 ? sorted : [defaultPageSize];
-  }, [defaultPageSize, options]);
+    const parsed = optionsKey
+      .split(',')
+      .map((s) => Number.parseInt(s, 10))
+      .filter((opt) => Number.isFinite(opt) && opt > 0);
+    return parsed.length > 0 ? parsed : [defaultPageSize];
+  }, [defaultPageSize, optionsKey]);
   const fallbackSize = normalizedOptions.includes(defaultPageSize)
     ? defaultPageSize
     : normalizedOptions[0];
   const [pageSize, setPageSizeState] = useState<number>(fallbackSize);
+  const initStorageKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     const key = getStorageKey(pageKey, userId);
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) {
-        setPageSizeState(fallbackSize);
-        return;
+    if (initStorageKeyRef.current !== key) {
+      initStorageKeyRef.current = key;
+      try {
+        const raw = localStorage.getItem(key);
+        let next = fallbackSize;
+        if (raw) {
+          const parsed = Number.parseInt(raw, 10);
+          if (!Number.isNaN(parsed) && normalizedOptions.includes(parsed)) {
+            next = parsed;
+          }
+        }
+        setPageSizeState((prev) => (Object.is(prev, next) ? prev : next));
+      } catch {
+        setPageSizeState((prev) => (Object.is(prev, fallbackSize) ? prev : fallbackSize));
       }
-
-      const parsed = Number.parseInt(raw, 10);
-      if (Number.isNaN(parsed) || !normalizedOptions.includes(parsed)) {
-        setPageSizeState(fallbackSize);
-        return;
-      }
-
-      setPageSizeState(parsed);
-    } catch {
-      setPageSizeState(fallbackSize);
+      return;
     }
+
+    setPageSizeState((prev) => (normalizedOptions.includes(prev) ? prev : fallbackSize));
   }, [fallbackSize, normalizedOptions, pageKey, userId]);
 
   const setPageSize = (value: number): void => {
@@ -64,7 +71,7 @@ export function usePageSizePreference({
     try {
       localStorage.setItem(key, String(next));
     } catch {
-      // Ignore localStorage errors.
+      return;
     }
   };
 
