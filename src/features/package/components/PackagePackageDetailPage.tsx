@@ -26,7 +26,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Trash2, Plus, ArrowLeft, Barcode, Camera, Loader2, Package } from 'lucide-react';
 import { toast } from 'sonner';
-import { Html5Qrcode, Html5QrcodeScanType, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import {
+  createDefaultScannerConfig,
+  getPreferredCameraId,
+  loadHtml5Qrcode,
+  stopAndClearScanner,
+  type Html5QrcodeInstance,
+} from '@/lib/html5-qrcode';
 import type { PLineDto } from '../types/package';
 
 const getStatusBadgeColor = (status: string): string => {
@@ -57,7 +63,7 @@ export function PackagePackageDetailPage(): ReactElement {
   const [quantity, setQuantity] = useState<number>(1);
   const [serialNo, setSerialNo] = useState<string>('');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const qrCodeScannerRef = useRef<Html5Qrcode | null>(null);
+  const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: packageData, isLoading: isLoadingPackage } = usePPackage(packageId);
@@ -165,12 +171,8 @@ export function PackagePackageDetailPage(): ReactElement {
   };
 
   const handleCloseCamera = () => {
-    if (qrCodeScannerRef.current) {
-      qrCodeScannerRef.current.stop().catch(() => {
-      });
-      qrCodeScannerRef.current.clear();
-      qrCodeScannerRef.current = null;
-    }
+    void stopAndClearScanner(qrCodeScannerRef.current);
+    qrCodeScannerRef.current = null;
     setIsCameraOpen(false);
   };
 
@@ -202,40 +204,15 @@ export function PackagePackageDetailPage(): ReactElement {
       }
 
       const scannerId = 'barcode-scanner-package';
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.CODE_93,
-          Html5QrcodeSupportedFormats.CODABAR,
-          Html5QrcodeSupportedFormats.ITF,
-        ],
-      };
+      const html5QrcodeModule = await loadHtml5Qrcode();
+      const { Html5Qrcode } = html5QrcodeModule;
+      const config = createDefaultScannerConfig(html5QrcodeModule);
 
       const html5QrCode = new Html5Qrcode(scannerId);
       qrCodeScannerRef.current = html5QrCode;
 
       try {
-        const devices = await Html5Qrcode.getCameras();
-        let cameraId: string | { facingMode: string } = { facingMode: 'environment' };
-        
-        const backCamera = devices.find((device) => 
-          device.label.toLowerCase().includes('back') || 
-          device.label.toLowerCase().includes('rear') ||
-          device.label.toLowerCase().includes('environment')
-        );
-        
-        if (backCamera) {
-          cameraId = backCamera.id;
-        }
+        const cameraId = await getPreferredCameraId(Html5Qrcode);
 
         await html5QrCode.start(
           cameraId,
@@ -264,12 +241,8 @@ export function PackagePackageDetailPage(): ReactElement {
 
     return () => {
       clearTimeout(timeoutId);
-      if (qrCodeScannerRef.current) {
-        qrCodeScannerRef.current.stop().catch(() => {
-        });
-        qrCodeScannerRef.current.clear();
-        qrCodeScannerRef.current = null;
-      }
+      void stopAndClearScanner(qrCodeScannerRef.current);
+      qrCodeScannerRef.current = null;
     };
   }, [isCameraOpen, t, handleBarcodeSearch]);
 
