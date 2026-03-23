@@ -1,11 +1,15 @@
-import { type ReactElement, useState } from 'react';
+import { Suspense, lazy, type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWarehouse3d } from '../hooks/useWarehouse3d';
-import { WarehouseScene } from './WarehouseScene';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import type { WarehouseSlot } from '../types/warehouse-3d';
+
+const WarehouseScene = lazy(async () => {
+  const module = await import('./WarehouseScene');
+  return { default: module.WarehouseScene };
+});
 
 export function Warehouse3dPage(): ReactElement {
   const { t } = useTranslation();
@@ -89,12 +93,23 @@ export function Warehouse3dPage(): ReactElement {
         <>
           <div className="relative hidden min-h-[460px] md:block xl:min-h-[600px]">
             <div className="h-full w-full rounded-lg overflow-hidden">
-              <WarehouseScene 
-                key={selectedDepoKodu} 
-                data={warehouseData} 
-                onSlotHover={setHoveredSlot}
-                onSlotClick={setClickedSlot}
-              />
+              <Suspense
+                fallback={
+                  <div className="flex h-full min-h-[460px] items-center justify-center xl:min-h-[600px]">
+                    <div className="text-center">
+                      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
+                      <p>{t('common.loading')}</p>
+                    </div>
+                  </div>
+                }
+              >
+                <WarehouseScene
+                  key={selectedDepoKodu}
+                  data={warehouseData}
+                  onSlotHover={setHoveredSlot}
+                  onSlotClick={setClickedSlot}
+                />
+              </Suspense>
             </div>
             
             <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur rounded-lg p-3 text-xs space-y-1">
