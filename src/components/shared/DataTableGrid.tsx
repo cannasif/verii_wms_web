@@ -126,7 +126,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       pointerId: event.pointerId,
     };
     setIsDragging(true);
-    container.setPointerCapture(event.pointerId);
+    tableScrollRef.current?.setPointerCapture(event.pointerId);
   };
 
   const handleDragMove = (event: ReactPointerEvent<HTMLDivElement>): void => {
@@ -184,7 +184,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       <div
         ref={tableScrollRef}
         className={cn(
-          'w-full min-w-0 overflow-x-auto rounded-md border [&>[data-slot=table-container]]:overflow-visible',
+          'w-full min-w-0 overflow-x-auto [scrollbar-gutter:stable] custom-scrollbar-lg rounded-2xl border border-slate-200/70 bg-white dark:border-white/10 dark:bg-[#130822]',
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         )}
         onPointerDown={handleDragStart}
