@@ -147,7 +147,7 @@ export function PackageListPage(): ReactElement {
     idColumnKey: 'id',
   });
 
-  const { data, isLoading, error } = usePHeaders(pagedGrid.queryParams);
+  const { data, isLoading, isFetching, error } = usePHeaders(pagedGrid.queryParams);
 
   const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return '-';
@@ -278,7 +278,7 @@ export function PackageListPage(): ReactElement {
               pagedGrid.handleSort(columnKey);
             }}
             renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
+            isLoading={isLoading || isFetching}
             isError={Boolean(error)}
             errorText={t('package.list.error')}
             emptyText={t('package.list.noData')}
