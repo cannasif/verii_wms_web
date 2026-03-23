@@ -1,5 +1,4 @@
-/* [USER_MGMT_STAGE_6_DONE] */
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
@@ -17,11 +16,6 @@ export function UserManagementPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDto | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(20);
-  const [sortBy, setSortBy] = useState('Id');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [filters] = useState<Record<string, unknown>>({});
 
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
@@ -75,12 +69,6 @@ export function UserManagementPage(): ReactElement {
     setEditingUser(null);
   };
 
-  const handleSortChange = (newSortBy: string, newSortDirection: 'asc' | 'desc'): void => {
-    setSortBy(newSortBy);
-    setSortDirection(newSortDirection);
-    setPageNumber(1);
-  };
-
   return (
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
@@ -103,13 +91,6 @@ export function UserManagementPage(): ReactElement {
 
       <div className="space-y-4">
         <UserTable
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          filters={filters}
-          onPageChange={setPageNumber}
-          onSortChange={handleSortChange}
           canUpdate={canUpdate}
           onEdit={canUpdate ? (u) => {
             setEditingUser(u);

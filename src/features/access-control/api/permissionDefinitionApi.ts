@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import { extractData } from '../utils/extract-api-data';
 import { getLocalizedText } from '@/lib/localized-error';
 import type {
@@ -12,24 +13,16 @@ import type {
   PermissionDefinitionSyncResultDto,
 } from '../types/access-control.types';
 
-function buildQueryParams(params: PagedRequest): string {
-  const queryParams = new URLSearchParams();
-  if (params.pageNumber !== undefined) queryParams.append('pageNumber', params.pageNumber.toString());
-  if (params.pageSize !== undefined) queryParams.append('pageSize', params.pageSize.toString());
-  if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-  if (params.filters?.length) {
-    queryParams.append('filters', JSON.stringify(params.filters));
-    queryParams.append('filterLogic', params.filterLogic ?? 'and');
-  }
-  return queryParams.toString();
-}
-
 export const permissionDefinitionApi = {
   getList: async (params: PagedRequest): Promise<PagedResponse<PermissionDefinitionDto>> => {
-    const query = buildQueryParams(params);
-    const response = await api.get<ApiResponse<PagedResponse<PermissionDefinitionDto>>>(
-      `/api/permission-definitions${query ? `?${query}` : ''}`
+    const response = await api.post<ApiResponse<PagedResponse<PermissionDefinitionDto>>>(
+      '/api/permission-definitions/paged',
+      buildPagedRequest(params, {
+        pageNumber: 0,
+        pageSize: 20,
+        sortBy: 'UpdatedDate',
+        sortDirection: 'desc',
+      }),
     );
     const data = extractData(response as ApiResponse<PagedResponse<PermissionDefinitionDto>>);
     const rawData = data as unknown as { items?: PermissionDefinitionDto[]; data?: PermissionDefinitionDto[] };

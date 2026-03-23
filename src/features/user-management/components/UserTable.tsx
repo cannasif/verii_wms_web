@@ -1,80 +1,97 @@
 import { type ReactElement, useMemo } from 'react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUserList } from '../hooks/useUserList';
 import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
-import type { PagedFilter } from '@/types/api';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
-import type { GridExportColumn } from '@/lib/grid-export';
+
+type UserColumnKey =
+  | 'id'
+  | 'username'
+  | 'email'
+  | 'fullName'
+  | 'role'
+  | 'status'
+  | 'createdDate'
+  | 'actions';
 
 interface UserTableProps {
-  pageNumber: number;
-  pageSize: number;
-  sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
-  filters?: PagedFilter[] | Record<string, unknown>;
-  onPageChange: (page: number) => void;
-  onSortChange: (sortBy: string, sortDirection: 'asc' | 'desc') => void;
   onEdit?: (user: UserDto) => void;
   canUpdate?: boolean;
 }
 
+const advancedFilterColumns: readonly FilterColumnConfig[] = [
+  { value: 'username', type: 'string', labelKey: 'userManagement.table.username' },
+  { value: 'email', type: 'string', labelKey: 'userManagement.table.email' },
+  { value: 'firstName', type: 'string', labelKey: 'userManagement.form.firstName.label' },
+  { value: 'lastName', type: 'string', labelKey: 'userManagement.form.lastName.label' },
+  { value: 'role', type: 'string', labelKey: 'userManagement.table.role' },
+  { value: 'isActive', type: 'boolean', labelKey: 'userManagement.table.status' },
+];
+
+function mapSortBy(value: UserColumnKey): string {
+  switch (value) {
+    case 'id':
+      return 'Id';
+    case 'username':
+      return 'Username';
+    case 'email':
+      return 'Email';
+    case 'fullName':
+      return 'FirstName';
+    case 'role':
+      return 'Role';
+    case 'createdDate':
+    default:
+      return 'Id';
+  }
+}
+
 export function UserTable({
-  pageNumber,
-  pageSize,
-  sortBy = 'Id',
-  sortDirection = 'asc',
-  filters = {},
-  onPageChange,
-  onSortChange,
   onEdit,
   canUpdate = false,
 }: UserTableProps): ReactElement {
   const { t, i18n } = useTranslation(['user-management', 'common']);
   const pageKey = 'user-management-list';
+  const updateUser = useUpdateUser();
 
-  const { data, isLoading } = useUserList({
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-    filters: Array.isArray(filters) ? filters : undefined,
+  const pagedGrid = usePagedDataGrid<UserColumnKey>({
+    pageKey,
+    defaultSortBy: 'id',
+    defaultSortDirection: 'asc',
+    mapSortBy,
   });
 
-  const updateUser = useUpdateUser();
-  const columns = useMemo<ColumnDef[]>(
+  const columns = useMemo<DataTableGridColumn<UserColumnKey>[]>(
     () => [
       { key: 'id', label: t('userManagement.table.id') },
       { key: 'username', label: t('userManagement.table.username') },
       { key: 'email', label: t('userManagement.table.email') },
-      { key: 'fullName', label: t('userManagement.table.fullName') },
-      { key: 'role', label: t('userManagement.table.role') },
-      { key: 'status', label: t('userManagement.table.status') },
+      { key: 'fullName', label: t('userManagement.table.fullName'), sortable: false },
+      { key: 'role', label: t('userManagement.table.role'), sortable: false },
+      { key: 'status', label: t('userManagement.table.status'), sortable: false },
       { key: 'createdDate', label: t('userManagement.table.createdDate') },
-      ...(onEdit && canUpdate ? [{ key: 'actions', label: t('common:common.actions') }] : []),
+      { key: 'actions', label: t('common.actions'), sortable: false },
     ],
-    [canUpdate, onEdit, t]
+    [t],
   );
-  const {
-    userId,
-    columnOrder,
-    visibleColumns,
-    orderedVisibleColumns,
-    setColumnOrder,
-    setVisibleColumns,
-  } = useColumnPreferences({ pageKey, columns, idColumnKey: 'id' });
+
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+    pageKey,
+    columns: columns.map(({ key, label }) => ({ key, label })),
+    idColumnKey: 'id',
+  });
+
+  const { data, isLoading, error } = useUserList(pagedGrid.queryParams);
 
   const handleStatusChange = async (user: UserDto, checked: boolean): Promise<void> => {
     await updateUser.mutateAsync({
@@ -83,26 +100,23 @@ export function UserTable({
     });
   };
 
-  const handleSort = (column: string): void => {
-    const newDirection =
-      sortBy === column && sortDirection === 'asc' ? 'desc' : 'asc';
-    onSortChange(column, newDirection);
-  };
+  const visibleColumnKeys = useMemo(
+    () => orderedVisibleColumns.filter((key) => key !== 'actions') as UserColumnKey[],
+    [orderedVisibleColumns],
+  );
 
-  const exportColumns = useMemo<GridExportColumn[]>(
-    () =>
-      orderedVisibleColumns
-        .filter((key) => key !== 'actions')
-        .map((key) => ({
-          key,
-          label: columns.find((column) => column.key === key)?.label ?? key,
-        })),
-    [columns, orderedVisibleColumns]
+  const exportColumns = useMemo(
+    () => orderedVisibleColumns
+      .filter((key) => key !== 'actions')
+      .map((key) => ({
+        key,
+        label: columns.find((column) => column.key === key)?.label ?? key,
+      })),
+    [columns, orderedVisibleColumns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
-    const list = data?.data ?? [];
-    return list.map((user) => ({
+    return (data?.data ?? []).map((user) => ({
       id: user.id,
       username: user.username,
       email: user.email,
@@ -113,262 +127,135 @@ export function UserTable({
         ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
         : '-',
     }));
-  }, [data?.data, t, i18n.language]);
+  }, [data?.data, i18n.language, t]);
 
-  const SortIcon = ({ column }: { column: string }): ReactElement => {
-    if (sortBy !== column) {
-      return (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="ml-1 inline-block text-muted-foreground"
-        >
-          <path d="M8 9l4-4 4 4" />
-          <path d="M16 15l-4 4-4-4" />
-        </svg>
-      );
-    }
-    return sortDirection === 'asc' ? (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="ml-1 inline-block"
-      >
-        <path d="M8 9l4-4 4 4" />
-      </svg>
-    ) : (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="ml-1 inline-block"
-      >
-        <path d="M16 15l-4 4-4-4" />
-      </svg>
-    );
+  const renderSortIcon = (columnKey: UserColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">
-          {t('userManagement.table.loading')}
-        </div>
-      </div>
-    );
-  }
-
-  const users = data?.data || [];
-  
-  if (!data || users.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">
-          {t('userManagement.table.noData')}
-        </div>
-      </div>
-    );
-  }
-
-  const totalPages = Math.ceil((data.totalCount || 0) / pageSize);
+  const range = getPagedRange(data);
+  const paginationInfoText = t('common.paginationInfo', {
+    current: range.from,
+    total: range.to,
+    count: range.total,
+    defaultValue: `${range.from}-${range.to} / ${range.total}`,
+  });
 
   return (
-    <>
-      <div className="mb-3 flex justify-end gap-2">
-        <GridExportMenu
-          fileName={pageKey}
-          columns={exportColumns}
-          rows={exportRows}
-        />
-        <ColumnPreferencesPopover
-          pageKey={pageKey}
-          userId={userId}
-          columns={columns}
-          visibleColumns={visibleColumns}
-          columnOrder={columnOrder}
-          lockedKeys={['id']}
-          onVisibleColumnsChange={setVisibleColumns}
-          onColumnOrderChange={setColumnOrder}
-        />
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {orderedVisibleColumns.map((key) => {
-                if (key === 'id') {
-                  return (
-                    <TableHead
-                      key={key}
-                      className="cursor-pointer select-none"
-                      onClick={() => handleSort('Id')}
-                    >
-                      <div className="flex items-center">
-                        {t('userManagement.table.id')}
-                        <SortIcon column="Id" />
-                      </div>
-                    </TableHead>
-                  );
-                }
-
-                if (key === 'username') {
-                  return (
-                    <TableHead
-                      key={key}
-                      className="cursor-pointer select-none"
-                      onClick={() => handleSort('Username')}
-                    >
-                      <div className="flex items-center">
-                        {t('userManagement.table.username')}
-                        <SortIcon column="Username" />
-                      </div>
-                    </TableHead>
-                  );
-                }
-
-                if (key === 'email') {
-                  return (
-                    <TableHead
-                      key={key}
-                      className="cursor-pointer select-none"
-                      onClick={() => handleSort('Email')}
-                    >
-                      <div className="flex items-center">
-                        {t('userManagement.table.email')}
-                        <SortIcon column="Email" />
-                      </div>
-                    </TableHead>
-                  );
-                }
-
-                if (key === 'fullName') return <TableHead key={key}>{t('userManagement.table.fullName')}</TableHead>;
-                if (key === 'role') return <TableHead key={key}>{t('userManagement.table.role')}</TableHead>;
-                if (key === 'status') return <TableHead key={key}>{t('userManagement.table.status')}</TableHead>;
-                if (key === 'createdDate') return <TableHead key={key}>{t('userManagement.table.createdDate')}</TableHead>;
-                if (key === 'actions') return <TableHead key={key} className="w-[80px]">{t('common:common.actions')}</TableHead>;
-                return null;
-              })}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user: UserDto) => (
-              <TableRow key={user.id}>
-                {orderedVisibleColumns.map((key) => {
-                  if (key === 'id') return <TableCell key={key}>{user.id}</TableCell>;
-                  if (key === 'username') return <TableCell key={key} className="font-medium">{user.username}</TableCell>;
-                  if (key === 'email') return <TableCell key={key}>{user.email}</TableCell>;
-                  if (key === 'fullName') return <TableCell key={key}>{user.fullName || '-'}</TableCell>;
-                  if (key === 'role') {
-                    return (
-                      <TableCell key={key}>
-                        <Badge variant="outline">{user.role || '-'}</Badge>
-                      </TableCell>
-                    );
-                  }
-                  if (key === 'status') {
-                    return (
-                      <TableCell key={key}>
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={user.isActive}
-                            onCheckedChange={(checked) => handleStatusChange(user, checked)}
-                            disabled={updateUser.isPending || !canUpdate}
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
-                          </span>
-                          {user.isEmailConfirmed && (
-                            <Badge variant="outline" className="text-xs">
-                              {t('userManagement.table.confirmed')}
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                    );
-                  }
-                  if (key === 'createdDate') {
-                    return (
-                      <TableCell key={key}>
-                        {user.creationTime || user.createdDate
-                          ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
-                          : '-'}
-                      </TableCell>
-                    );
-                  }
-                  if (key === 'actions' && onEdit && canUpdate) {
-                    return (
-                      <TableCell key={key}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onEdit(user)}
-                        >
-                          {t('common:common.edit')}
-                        </Button>
-                      </TableCell>
-                    );
-                  }
-                  return null;
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex items-center justify-between py-4">
-        <div className="text-sm text-muted-foreground">
-          {t('userManagement.table.showing', {
-            from: (pageNumber - 1) * pageSize + 1,
-            to: Math.min(pageNumber * pageSize, data.totalCount || 0),
-            total: data.totalCount || 0,
-          })}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pageNumber - 1)}
-            disabled={pageNumber <= 1}
-          >
-            {t('userManagement.table.previous')}
+    <DataTableGrid<UserDto, UserColumnKey>
+      columns={columns}
+      visibleColumnKeys={visibleColumnKeys}
+      rows={data?.data ?? []}
+      rowKey={(row) => row.id}
+      renderCell={(user, columnKey) => {
+        switch (columnKey) {
+          case 'id':
+            return user.id;
+          case 'username':
+            return <span className="font-medium">{user.username}</span>;
+          case 'email':
+            return user.email;
+          case 'fullName':
+            return user.fullName || '-';
+          case 'role':
+            return <Badge variant="outline">{user.role || '-'}</Badge>;
+          case 'status':
+            return (
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={user.isActive}
+                  onCheckedChange={(checked) => void handleStatusChange(user, checked)}
+                  disabled={updateUser.isPending || !canUpdate}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                </span>
+                {user.isEmailConfirmed && (
+                  <Badge variant="outline" className="text-xs">
+                    {t('userManagement.table.confirmed')}
+                  </Badge>
+                )}
+              </div>
+            );
+          case 'createdDate':
+            return user.creationTime || user.createdDate
+              ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
+              : '-';
+          case 'actions':
+          default:
+            return null;
+        }
+      }}
+      sortBy={pagedGrid.sortBy}
+      sortDirection={pagedGrid.sortDirection}
+      onSort={(columnKey) => {
+        if (columnKey === 'fullName' || columnKey === 'role' || columnKey === 'status' || columnKey === 'actions') return;
+        pagedGrid.handleSort(columnKey);
+      }}
+      renderSortIcon={renderSortIcon}
+      isLoading={isLoading}
+      isError={Boolean(error)}
+      errorText={t('common.errors.userListLoadFailed', { ns: 'common' })}
+      emptyText={t('userManagement.table.noData')}
+      showActionsColumn={orderedVisibleColumns.includes('actions') && Boolean(onEdit) && canUpdate}
+      actionsHeaderLabel={t('common.actions')}
+      renderActionsCell={(user) => (
+        onEdit && canUpdate ? (
+          <Button variant="ghost" size="sm" onClick={() => onEdit(user)}>
+            <span>{t('common.edit')}</span>
           </Button>
-          <div className="flex items-center px-4 text-sm">
-            {t('userManagement.table.page', {
-              current: pageNumber,
-              total: totalPages,
-            })}
-          </div>
-          <Button
-            variant="outline"
+        ) : null
+      )}
+      iconOnlyActions={false}
+      pageSize={pagedGrid.pageSize}
+      pageSizeOptions={pagedGrid.pageSizeOptions}
+      onPageSizeChange={pagedGrid.handlePageSizeChange}
+      pageNumber={pagedGrid.getDisplayPageNumber(data)}
+      totalPages={data?.totalPages ?? 1}
+      hasPreviousPage={data?.hasPreviousPage ?? false}
+      hasNextPage={data?.hasNextPage ?? false}
+      onPreviousPage={pagedGrid.goToPreviousPage}
+      onNextPage={pagedGrid.goToNextPage}
+      previousLabel={t('common.previous')}
+      nextLabel={t('common.next')}
+      paginationInfoText={paginationInfoText}
+      actionBar={{
+        pageKey,
+        userId,
+        columns: columns.map(({ key, label }) => ({ key, label })),
+        visibleColumns,
+        columnOrder,
+        onVisibleColumnsChange: setVisibleColumns,
+        onColumnOrderChange: setColumnOrder,
+        exportFileName: pageKey,
+        exportColumns,
+        exportRows,
+        filterColumns: advancedFilterColumns,
+        defaultFilterColumn: 'username',
+        draftFilterRows: pagedGrid.draftFilterRows,
+        onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+        filterLogic: pagedGrid.filterLogic,
+        onFilterLogicChange: pagedGrid.setFilterLogic,
+        onApplyFilters: pagedGrid.applyAdvancedFilters,
+        onClearFilters: pagedGrid.clearAdvancedFilters,
+        translationNamespace: 'common',
+        appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+        search: {
+          ...pagedGrid.searchConfig,
+          placeholder: t('userManagement.searchPlaceholder', { defaultValue: t('common.search') }),
+          className: 'h-9 w-full md:w-64',
+        },
+        leftSlot: (
+          <VoiceSearchButton
+            onResult={pagedGrid.handleVoiceSearch}
             size="sm"
-            onClick={() => onPageChange(pageNumber + 1)}
-            disabled={pageNumber >= totalPages}
-          >
-            {t('userManagement.table.next')}
-          </Button>
-        </div>
-      </div>
-    </>
+            variant="outline"
+          />
+        ),
+      }}
+    />
   );
 }
