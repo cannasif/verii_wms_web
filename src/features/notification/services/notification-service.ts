@@ -1,11 +1,20 @@
-import * as signalR from '@microsoft/signalr';
+import type * as SignalR from '@microsoft/signalr';
 import { ensureApiReady, getApiBaseUrl } from '@/lib/axios';
 import { notificationApi } from '../api/notification-api';
 import type { NotificationDto, SignalRNotificationPayload } from '../types/notification';
 import { useNotificationStore } from '../stores/notification-store';
 
+type SignalRModule = typeof import('@microsoft/signalr');
+
+let signalRModulePromise: Promise<SignalRModule> | null = null;
+
+async function loadSignalR(): Promise<SignalRModule> {
+  signalRModulePromise ??= import('@microsoft/signalr');
+  return signalRModulePromise;
+}
+
 class NotificationService {
-  private hubConnection: signalR.HubConnection | null = null;
+  private hubConnection: SignalR.HubConnection | null = null;
   private pollingInterval: NodeJS.Timeout | null = null;
   private isPolling = false;
 
@@ -19,6 +28,7 @@ class NotificationService {
   }
 
   async connect(): Promise<void> {
+    const signalR = await loadSignalR();
     const token = this.getToken();
     if (!token) {
       console.warn('[NotificationService] No token available for SignalR connection');
@@ -218,7 +228,7 @@ class NotificationService {
     }
   }
 
-  getConnectionState(): signalR.HubConnectionState | null {
+  getConnectionState(): SignalR.HubConnectionState | null {
     return this.hubConnection?.state ?? null;
   }
 }
