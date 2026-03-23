@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
-import loginImage from '@/assets/login.png';
+import loginImage from '@/assets/login.jpg';
 import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert, ShieldCheck } from 'lucide-react';
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
