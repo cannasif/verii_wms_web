@@ -15,18 +15,6 @@ export default defineConfig({
             return undefined;
           }
 
-          if (id.includes('@react-three/drei')) {
-            return 'drei-vendor';
-          }
-
-          if (id.includes('@react-three/fiber')) {
-            return 'fiber-vendor';
-          }
-
-          if (id.includes('/three/')) {
-            return 'three-core-vendor';
-          }
-
           if (id.includes('@microsoft/signalr')) {
             return 'signalr-vendor';
           }
@@ -34,12 +22,8 @@ export default defineConfig({
           if (id.includes('html5-qrcode')) {
             return 'scanner-vendor';
           }
-
-          if (id.includes('react-router') || id.includes('react-dom') || id.includes('react')) {
-            return 'react-vendor';
-          }
-
-          return 'vendor';
+          
+          return undefined;
         },
       },
     },
