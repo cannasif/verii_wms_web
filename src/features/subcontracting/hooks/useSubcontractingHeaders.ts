@@ -46,6 +46,17 @@ export function useAssignedSitHeaders() {
   });
 }
 
+export function useAssignedSitHeadersPaged(params: PagedParams = {}) {
+  const userId = useAuthStore((state) => state.user?.id);
+
+  return useQuery({
+    queryKey: ['assigned-sit-headers', userId, params],
+    queryFn: () => subcontractingApi.getAssignedSitHeaders(userId || 0, params),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
 export function useAssignedSrtHeaders() {
   const userId = useAuthStore((state) => state.user?.id);
 
@@ -57,3 +68,13 @@ export function useAssignedSrtHeaders() {
   });
 }
 
+export function useAssignedSrtHeadersPaged(params: PagedParams = {}) {
+  const userId = useAuthStore((state) => state.user?.id);
+
+  return useQuery({
+    queryKey: ['assigned-srt-headers', userId, params],
+    queryFn: () => subcontractingApi.getAssignedSrtHeaders(userId || 0, params),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
+  });
+}

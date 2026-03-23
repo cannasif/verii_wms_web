@@ -1,115 +1,136 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useUIStore } from '@/stores/ui-store';
-import { useAssignedTransferHeaders } from '../hooks/useAssignedTransferHeaders';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { TransferDetailDialog } from './TransferDetailDialog';
-import { Eye, Search } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import type { TransferHeader } from '../types/transfer';
-import { ColumnPreferencesPopover, GridExportMenu, type ColumnDef } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
-import type { GridExportColumn } from '@/lib/grid-export';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { useUIStore } from '@/stores/ui-store';
+import { useAssignedTransferHeaders } from '../hooks/useAssignedTransferHeaders';
+import { TransferDetailDialog } from './TransferDetailDialog';
+import type { TransferHeader } from '../types/transfer';
+
+type TransferAssignedColumnKey =
+  | 'id'
+  | 'documentNo'
+  | 'documentDate'
+  | 'customerCode'
+  | 'customerName'
+  | 'sourceWarehouse'
+  | 'targetWarehouse'
+  | 'documentType'
+  | 'createdDate'
+  | 'actions';
+
+const advancedFilterColumns: readonly FilterColumnConfig[] = [
+  { value: 'documentNo', type: 'string', labelKey: 'transfer.list.documentNo' },
+  { value: 'customerCode', type: 'string', labelKey: 'transfer.list.customerCode' },
+  { value: 'customerName', type: 'string', labelKey: 'transfer.list.customerName' },
+  { value: 'sourceWarehouse', type: 'string', labelKey: 'transfer.list.sourceWarehouse' },
+  { value: 'targetWarehouse', type: 'string', labelKey: 'transfer.list.targetWarehouse' },
+  { value: 'documentType', type: 'string', labelKey: 'transfer.list.documentType' },
+];
+
+function mapSortBy(value: TransferAssignedColumnKey): string {
+  switch (value) {
+    case 'documentNo':
+      return 'DocumentNo';
+    case 'documentDate':
+      return 'DocumentDate';
+    case 'customerCode':
+      return 'CustomerCode';
+    case 'customerName':
+      return 'CustomerName';
+    case 'sourceWarehouse':
+      return 'SourceWarehouse';
+    case 'targetWarehouse':
+      return 'TargetWarehouse';
+    case 'documentType':
+      return 'DocumentType';
+    case 'createdDate':
+      return 'CreatedDate';
+    case 'id':
+    default:
+      return 'Id';
+  }
+}
+
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+function formatDateTime(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 export function AssignedTransferListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const pageKey = 'transfer-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
-  const columns = useMemo<ColumnDef[]>(
-    () => [
-      { key: 'id', label: t('transfer.list.id') },
-      { key: 'documentNo', label: t('transfer.list.documentNo') },
-      { key: 'documentDate', label: t('transfer.list.documentDate') },
-      { key: 'customerCode', label: t('transfer.list.customerCode') },
-      { key: 'customerName', label: t('transfer.list.customerName') },
-      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse') },
-      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse') },
-      { key: 'documentType', label: t('transfer.list.documentType') },
-      { key: 'createdDate', label: t('transfer.list.createdDate') },
-      { key: 'actions', label: t('goodsReceipt.report.actions') },
-    ],
-    [t]
-  );
-  const {
-    userId,
-    columnOrder,
-    visibleColumns,
-    orderedVisibleColumns,
-    setColumnOrder,
-    setVisibleColumns,
-  } = useColumnPreferences({
-    pageKey: 'transfer-assigned-list',
-    columns,
+  const pagedGrid = usePagedDataGrid<TransferAssignedColumnKey>({
+    pageKey,
+    defaultSortBy: 'createdDate',
+    defaultSortDirection: 'desc',
+    defaultPageSize: 20,
+    mapSortBy,
+  });
+
+  const columns = useMemo<DataTableGridColumn<TransferAssignedColumnKey>[]>(() => [
+    { key: 'id', label: t('transfer.list.id') },
+    { key: 'documentNo', label: t('transfer.list.documentNo') },
+    { key: 'documentDate', label: t('transfer.list.documentDate') },
+    { key: 'customerCode', label: t('transfer.list.customerCode') },
+    { key: 'customerName', label: t('transfer.list.customerName') },
+    { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse') },
+    { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse') },
+    { key: 'documentType', label: t('transfer.list.documentType') },
+    { key: 'createdDate', label: t('transfer.list.createdDate') },
+    { key: 'actions', label: t('common.actions'), sortable: false },
+  ], [t]);
+
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+    pageKey,
+    columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
   });
 
-  const { data, isLoading, error } = useAssignedTransferHeaders();
+  const { data, isLoading, error } = useAssignedTransferHeaders(pagedGrid.queryParams);
 
   useEffect(() => {
     setPageTitle(t('transfer.assignedList.title'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+    return () => setPageTitle(null);
+  }, [setPageTitle, t]);
 
-  const formatDate = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
-
-  const formatDateTime = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const filteredData = useMemo(() => {
-    if (!data?.data) return [];
-    if (!searchTerm) return data.data;
-    const searchLower = searchTerm.toLowerCase();
-    return data.data.filter((item) => {
-      return (
-        item.documentNo?.toLowerCase().includes(searchLower) ||
-        item.customerCode?.toLowerCase().includes(searchLower) ||
-        item.customerName?.toLowerCase().includes(searchLower) ||
-        item.sourceWarehouse?.toLowerCase().includes(searchLower) ||
-        item.targetWarehouse?.toLowerCase().includes(searchLower) ||
-        item.description1?.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [data?.data, searchTerm]);
-
-  const exportColumns = useMemo<GridExportColumn[]>(
-    () =>
-      orderedVisibleColumns
-        .filter((key) => key !== 'actions')
-        .map((key) => ({
-          key,
-          label: columns.find((column) => column.key === key)?.label ?? key,
-        })),
-    [columns, orderedVisibleColumns]
+  const exportColumns = useMemo(
+    () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
+      key,
+      label: columns.find((column) => column.key === key)?.label ?? key,
+    })),
+    [columns, orderedVisibleColumns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
-    if (!filteredData.length) return [];
-    return filteredData.map((item) => ({
+    return (data?.data ?? []).map((item) => ({
       id: item.id,
       documentNo: item.documentNo || '-',
       documentDate: formatDate(item.documentDate),
@@ -120,217 +141,145 @@ export function AssignedTransferListPage(): ReactElement {
       documentType: item.documentType || '-',
       createdDate: formatDateTime(item.createdDate),
     }));
-  }, [filteredData]);
+  }, [data?.data]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
+  const range = getPagedRange(data);
+  const paginationInfoText = t('common.paginationInfo', {
+    current: range.from,
+    total: range.to,
+    count: range.total,
+    defaultValue: `${range.from}-${range.to} / ${range.total}`,
+  });
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">
-          {t('transfer.assignedList.error')}
-        </p>
-      </div>
-    );
-  }
+  const visibleColumnKeys = useMemo(
+    () => orderedVisibleColumns.filter((key) => key !== 'actions') as TransferAssignedColumnKey[],
+    [orderedVisibleColumns],
+  );
+
+  const renderSortIcon = (columnKey: TransferAssignedColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
 
   return (
     <div className="space-y-6 crm-page">
-      <Card>
-        <CardHeader>
-          <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>{t('transfer.assignedList.title')}</CardTitle>
-            <div className="flex items-center gap-2">
-              <GridExportMenu
-                fileName="transfer-assigned-list"
-                columns={exportColumns}
-                rows={exportRows}
-              />
-              <ColumnPreferencesPopover
-                pageKey="transfer-assigned-list"
-                userId={userId}
-                columns={columns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                lockedKeys={['id']}
-                onVisibleColumnsChange={setVisibleColumns}
-                onColumnOrderChange={setColumnOrder}
-              />
-              <div className="relative flex items-center w-full md:w-auto">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
-                <Input
-                  placeholder={t(
-                    'transfer.assignedList.searchPlaceholder'
-                  )}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 pr-10 w-full md:w-64"
-                />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <VoiceSearchButton
-                    onResult={(text) => setSearchTerm(text)}
-                    size="sm"
-                    variant="ghost"
-                  />
-                </div>
-              </div>
+      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+        <DataTableGrid<TransferHeader, TransferAssignedColumnKey>
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(item, columnKey) => {
+            switch (columnKey) {
+              case 'id':
+                return item.id;
+              case 'documentNo':
+                return <span className="font-medium">{item.documentNo || '-'}</span>;
+              case 'documentDate':
+                return formatDate(item.documentDate);
+              case 'customerCode':
+                return item.customerCode || '-';
+              case 'customerName':
+                return item.customerName || '-';
+              case 'sourceWarehouse':
+                return item.sourceWarehouse || '-';
+              case 'targetWarehouse':
+                return item.targetWarehouse || '-';
+              case 'documentType':
+                return <Badge variant="outline">{item.documentType || '-'}</Badge>;
+              case 'createdDate':
+                return formatDateTime(item.createdDate);
+              case 'actions':
+              default:
+                return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey === 'actions') return;
+            pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={Boolean(error)}
+          errorText={t('transfer.assignedList.error')}
+          emptyText={t('transfer.assignedList.noData')}
+          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          actionsHeaderLabel={t('common.actions')}
+          renderActionsCell={(item) => (
+            <div className="flex items-center justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}>
+                {t('transfer.list.viewDetails')}
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-emerald-500 text-white hover:bg-emerald-600"
+                onClick={() => navigate(`/transfer/collection/${item.id}`)}
+              >
+                {t('common.start')}
+              </Button>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {orderedVisibleColumns.map((key) => {
-                    if (key === 'id') return <TableHead key={key}>{t('transfer.list.id')}</TableHead>;
-                    if (key === 'documentNo') return <TableHead key={key}>{t('transfer.list.documentNo')}</TableHead>;
-                    if (key === 'documentDate') return <TableHead key={key}>{t('transfer.list.documentDate')}</TableHead>;
-                    if (key === 'customerCode') return <TableHead key={key}>{t('transfer.list.customerCode')}</TableHead>;
-                    if (key === 'customerName') return <TableHead key={key}>{t('transfer.list.customerName')}</TableHead>;
-                    if (key === 'sourceWarehouse') return <TableHead key={key}>{t('transfer.list.sourceWarehouse')}</TableHead>;
-                    if (key === 'targetWarehouse') return <TableHead key={key}>{t('transfer.list.targetWarehouse')}</TableHead>;
-                    if (key === 'documentType') return <TableHead key={key}>{t('transfer.list.documentType')}</TableHead>;
-                    if (key === 'createdDate') return <TableHead key={key}>{t('transfer.list.createdDate')}</TableHead>;
-                    if (key === 'actions') return <TableHead key={key}>{t('goodsReceipt.report.actions')}</TableHead>;
-                    return null;
-                  })}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredData && filteredData.length > 0 ? (
-                  filteredData.map((item: TransferHeader) => (
-                    <TableRow
-                      key={item.id}
-                      className="cursor-pointer"
-                      onClick={() => setSelectedHeaderId(item.id)}
-                    >
-                      {orderedVisibleColumns.map((key) => {
-                        if (key === 'id') return <TableCell key={key}>{item.id}</TableCell>;
-                        if (key === 'documentNo') return <TableCell key={key} className="font-medium">{item.documentNo || '-'}</TableCell>;
-                        if (key === 'documentDate') return <TableCell key={key}>{formatDate(item.documentDate)}</TableCell>;
-                        if (key === 'customerCode') return <TableCell key={key}>{item.customerCode || '-'}</TableCell>;
-                        if (key === 'customerName') return <TableCell key={key}>{item.customerName || '-'}</TableCell>;
-                        if (key === 'sourceWarehouse') return <TableCell key={key}>{item.sourceWarehouse || '-'}</TableCell>;
-                        if (key === 'targetWarehouse') return <TableCell key={key}>{item.targetWarehouse || '-'}</TableCell>;
-                        if (key === 'documentType') return <TableCell key={key}><Badge variant="outline">{item.documentType || '-'}</Badge></TableCell>;
-                        if (key === 'createdDate') return <TableCell key={key}>{formatDateTime(item.createdDate)}</TableCell>;
-                        if (key === 'actions') return <TableCell key={key} onClick={(e) => e.stopPropagation()}><div className="flex items-center gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}><Eye className="size-4" /><span className="ml-2">{t('transfer.list.viewDetails')}</span></Button><Button variant="default" size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => navigate(`/transfer/collection/${item.id}`)}>{t('common.start')}</Button></div></TableCell>;
-                        return null;
-                      })}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={Math.max(orderedVisibleColumns.length, 1)} className="text-center py-8">
-                      <p className="text-muted-foreground">
-                        {t('transfer.assignedList.noData')}
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="md:hidden space-y-4 pb-1">
-            {filteredData && filteredData.length > 0 ? (
-              filteredData.map((item: TransferHeader) => (
-                <Card key={item.id} className="border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.id')}
-                        </p>
-                        <p className="text-base font-semibold">{item.id}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentNo')}
-                        </p>
-                        <p className="text-base">{item.documentNo || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.documentDate')}
-                        </p>
-                        <p className="text-base">{formatDate(item.documentDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerCode')}
-                        </p>
-                        <p className="text-base">{item.customerCode || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.customerName')}
-                        </p>
-                        <p className="text-base">{item.customerName || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.sourceWarehouse')}
-                        </p>
-                        <p className="text-base">{item.sourceWarehouse || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t('transfer.list.targetWarehouse')}
-                        </p>
-                        <p className="text-base">{item.targetWarehouse || '-'}</p>
-                      </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => setSelectedHeaderId(item.id)}
-                      >
-                        <Eye className="size-4 mr-2" />
-                        {t('transfer.list.viewDetails')}
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
-                        onClick={() => navigate(`/transfer/collection/${item.id}`)}
-                      >
-                        {t('common.start')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">
-                  {t('transfer.assignedList.noData')}
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          )}
+          pageSize={data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={Math.max(data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(data?.hasPreviousPage)}
+          hasNextPage={Boolean(data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: pageKey,
+            exportColumns,
+            exportRows,
+            filterColumns: advancedFilterColumns,
+            defaultFilterColumn: 'documentNo',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('transfer.assignedList.searchPlaceholder'),
+            },
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="sm"
+                variant="outline"
+              />
+            ),
+          }}
+        />
+      </div>
 
       {selectedHeaderId && (
         <TransferDetailDialog
           headerId={selectedHeaderId}
-          isOpen={!!selectedHeaderId}
+          isOpen={selectedHeaderId != null}
           onClose={() => setSelectedHeaderId(null)}
         />
       )}
     </div>
   );
 }
-
-

@@ -11,7 +11,6 @@ import type {
   GrHeader,
   GrLine,
   GrImportLine,
-  GrHeadersResponse,
   AssignedGrOrderLinesResponse,
   StokBarcodeResponse,
   AddBarcodeRequest,
@@ -20,19 +19,6 @@ import type {
 } from '../types/goods-receipt';
 import { erpCommonApi } from '@/services/erp-common-api';
 import { buildGoodsReceiptBulkCreateRequest } from '../utils/goods-receipt-create';
-
-function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
-  return {
-    success: true,
-    message,
-    exceptionMessage: '',
-    data: data.data,
-    errors: [],
-    timestamp: new Date().toISOString(),
-    statusCode: 200,
-    className: 'ApiResponse',
-  };
-}
 
 export const goodsReceiptApi = {
   getCustomers: erpCommonApi.getCustomers,
@@ -84,9 +70,7 @@ export const goodsReceiptApi = {
   },
 
   getGrLines: async (headerId: number): Promise<GrLine[]> => {
-    const response = await api.get<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data?.data) {
       return response.data.data;
     }
@@ -101,12 +85,13 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptImportLinesLoadFailed'));
   },
 
-  getAssignedHeaders: async (userId: number): Promise<GrHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<GrHeader>>>(`/api/GrHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<GrHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<GrHeader>>>(
+      `/api/GrHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış mal kabul listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptAssignedHeadersLoadFailed'));
   },

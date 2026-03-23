@@ -51,22 +51,24 @@ export const subcontractingApi = {
     return await api.get<SubcontractingOrderItemsResponse>(`/api/SitFunction/lines/${orderNumbers}`);
   },
 
-  getAssignedSitHeaders: async (userId: number): Promise<SubcontractingHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingHeader>>>(`/api/SitHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedSitHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
+      `/api/SitHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış fason çıkış listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedIssueHeadersLoadFailed'));
   },
 
-  getAssignedSrtHeaders: async (userId: number): Promise<SubcontractingHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingHeader>>>(`/api/SrtHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedSrtHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
+      `/api/SrtHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış fason giriş listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedReceiptHeadersLoadFailed'));
   },
@@ -156,9 +158,7 @@ export const subcontractingApi = {
   },
 
   getReceiptLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş satırları yüklendi');
     }
@@ -166,9 +166,7 @@ export const subcontractingApi = {
   },
 
   getIssueLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış satırları yüklendi');
     }
@@ -176,9 +174,7 @@ export const subcontractingApi = {
   },
 
   getReceiptLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş seri listesi yüklendi');
     }
@@ -186,9 +182,7 @@ export const subcontractingApi = {
   },
 
   getIssueLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış seri listesi yüklendi');
     }

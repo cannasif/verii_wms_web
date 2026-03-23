@@ -92,30 +92,30 @@ export const warehouseApi = {
     throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundHeadersLoadFailed'));
   },
 
-  getAssignedInboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseHeader>>>(`/api/WiHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedInboundHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>(
+      `/api/WiHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo giriş listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.warehouseAssignedInboundHeadersLoadFailed'));
   },
 
-  getAssignedOutboundHeaders: async (userId: number): Promise<WarehouseHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseHeader>>>(`/api/WoHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedOutboundHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<WarehouseHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseHeader>>>(
+      `/api/WoHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış depo çıkış listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.warehouseAssignedOutboundHeadersLoadFailed'));
   },
 
   getInboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WiLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WiLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş satırları yüklendi');
     }
@@ -123,9 +123,7 @@ export const warehouseApi = {
   },
 
   getOutboundLines: async (headerId: number): Promise<WarehouseLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WoLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WoLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış satırları yüklendi');
     }
@@ -141,9 +139,7 @@ export const warehouseApi = {
   },
 
   getInboundLineSerials: async (lineId: number): Promise<WarehouseLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WiLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WiLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş seri listesi yüklendi');
     }
@@ -151,9 +147,7 @@ export const warehouseApi = {
   },
 
   getOutboundLineSerials: async (lineId: number): Promise<WarehouseLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WoLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WoLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış seri listesi yüklendi');
     }

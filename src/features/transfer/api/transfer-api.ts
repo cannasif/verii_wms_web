@@ -45,12 +45,19 @@ export const transferApi = {
     return await api.get<TransferOrderItemsResponse>(`/api/WtFunction/lines/${orderNumbers}`);
   },
 
-  getAssignedHeaders: async (userId: number): Promise<TransferHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<TransferHeader>>>(`/api/WtHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
+  getAssignedHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<TransferHeader>> => {
+    const requestBody = buildPagedRequest(params, {
+      pageNumber: 0,
+      sortBy: 'Id',
+      sortDirection: 'desc',
     });
+
+    const response = await api.post<ApiResponse<PagedResponse<TransferHeader>>>(
+      `/api/WtHeader/assigned/${userId}/paged`,
+      requestBody
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış transfer listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferAssignedHeadersLoadFailed'));
   },
@@ -84,9 +91,7 @@ export const transferApi = {
   },
 
   getLines: async (headerId: number): Promise<TransferLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer satırları yüklendi');
     }
@@ -94,9 +99,7 @@ export const transferApi = {
   },
 
   getLineSerials: async (lineId: number): Promise<TransferLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer seri listesi yüklendi');
     }

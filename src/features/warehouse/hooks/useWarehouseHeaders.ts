@@ -42,7 +42,27 @@ export function useAssignedWarehouseInboundHeaders(): UseQueryResult<WarehouseHe
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_HEADERS, userId],
-    queryFn: () => warehouseApi.getAssignedInboundHeaders(userId || 0),
+    queryFn: async () => ({
+      success: true,
+      message: '',
+      exceptionMessage: '',
+      data: (await warehouseApi.getAssignedInboundHeaders(userId || 0)).data,
+      errors: [],
+      timestamp: new Date().toISOString(),
+      statusCode: 200,
+      className: 'ApiResponse',
+    }),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
+export function useAssignedWarehouseInboundHeadersPaged(params: PagedParams = {}): UseQueryResult<PagedResponse<WarehouseHeader>> {
+  const userId = useAuthStore((state) => state.user?.id);
+
+  return useQuery({
+    queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_HEADERS, userId, params],
+    queryFn: () => warehouseApi.getAssignedInboundHeaders(userId || 0, params),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
@@ -53,9 +73,28 @@ export function useAssignedWarehouseOutboundHeaders(): UseQueryResult<WarehouseH
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_HEADERS, userId],
-    queryFn: () => warehouseApi.getAssignedOutboundHeaders(userId || 0),
+    queryFn: async () => ({
+      success: true,
+      message: '',
+      exceptionMessage: '',
+      data: (await warehouseApi.getAssignedOutboundHeaders(userId || 0)).data,
+      errors: [],
+      timestamp: new Date().toISOString(),
+      statusCode: 200,
+      className: 'ApiResponse',
+    }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
 }
 
+export function useAssignedWarehouseOutboundHeadersPaged(params: PagedParams = {}): UseQueryResult<PagedResponse<WarehouseHeader>> {
+  const userId = useAuthStore((state) => state.user?.id);
+
+  return useQuery({
+    queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_HEADERS, userId, params],
+    queryFn: () => warehouseApi.getAssignedOutboundHeaders(userId || 0, params),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
+  });
+}

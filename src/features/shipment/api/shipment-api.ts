@@ -58,12 +58,13 @@ export const shipmentApi = {
     throw new Error(response.message || getLocalizedText('common.errors.shipmentHeadersLoadFailed'));
   },
 
-  getAssignedHeaders: async (userId: number): Promise<ShipmentHeadersResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<ShipmentHeader>>>(`/api/ShHeader/assigned/${userId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'desc' },
-    });
+  getAssignedHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<ShipmentHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentHeader>>>(
+      `/api/ShHeader/assigned/${userId}/paged`,
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Atanmış sevkiyat listesi yüklendi');
+      return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.shipmentAssignedHeadersLoadFailed'));
   },
@@ -73,9 +74,7 @@ export const shipmentApi = {
   },
 
   getLines: async (headerId: number): Promise<ShipmentLinesResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/header/${headerId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat satırları yüklendi');
     }
@@ -83,9 +82,7 @@ export const shipmentApi = {
   },
 
   getLineSerials: async (lineId: number): Promise<ShipmentLineSerialsResponse> => {
-    const response = await api.get<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}`, {
-      params: { pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' },
-    });
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat seri listesi yüklendi');
     }
