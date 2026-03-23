@@ -35,10 +35,6 @@ export default defineConfig({
             return 'scanner-vendor';
           }
 
-          if (id.includes('@radix-ui')) {
-            return 'radix-vendor';
-          }
-
           if (id.includes('react-router') || id.includes('react-dom') || id.includes('react')) {
             return 'react-vendor';
           }
