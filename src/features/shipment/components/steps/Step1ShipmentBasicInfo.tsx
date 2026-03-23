@@ -31,7 +31,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.transferDate')}</FormLabel>
+              <FormLabel>{t('shipment.step1.transferDate')} *</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -45,7 +45,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.documentNo')}</FormLabel>
+              <FormLabel>{t('shipment.step1.documentNo')} *</FormLabel>
               <FormControl>
                 <Input placeholder={t('shipment.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
@@ -61,7 +61,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipment.step1.customer')}</FormLabel>
+              <FormLabel>{t('shipment.step1.customer')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -114,7 +114,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
         name="sourceWarehouse"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('shipment.step1.sourceWarehouse')}</FormLabel>
+            <FormLabel>{t('shipment.step1.sourceWarehouse')} *</FormLabel>
             <FormControl>
               <SearchableSelect<Warehouse>
                 value={field.value}
@@ -178,7 +178,6 @@ export function Step1ShipmentBasicInfo(): ReactElement {
     </div>
   );
 }
-
 
 
 

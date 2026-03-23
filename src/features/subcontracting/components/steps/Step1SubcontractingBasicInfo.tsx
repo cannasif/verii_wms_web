@@ -31,7 +31,7 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('subcontracting.step1.transferDate')}</FormLabel>
+              <FormLabel>{t('subcontracting.step1.transferDate')} *</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -45,7 +45,7 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('subcontracting.step1.documentNo')}</FormLabel>
+              <FormLabel>{t('subcontracting.step1.documentNo')} *</FormLabel>
               <FormControl>
                 <Input placeholder={t('subcontracting.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
@@ -61,7 +61,7 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('subcontracting.step1.customer')}</FormLabel>
+              <FormLabel>{t('subcontracting.step1.customer')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -115,7 +115,7 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
           name="sourceWarehouse"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('subcontracting.step1.sourceWarehouse')}</FormLabel>
+              <FormLabel>{t('subcontracting.step1.sourceWarehouse')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Warehouse>
                   value={field.value}
@@ -140,7 +140,7 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
           name="targetWarehouse"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('subcontracting.step1.targetWarehouse')}</FormLabel>
+              <FormLabel>{t('subcontracting.step1.targetWarehouse')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Warehouse>
                   value={field.value}
@@ -205,4 +205,3 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
     </div>
   );
 }
-

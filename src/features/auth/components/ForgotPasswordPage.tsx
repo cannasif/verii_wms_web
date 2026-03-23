@@ -77,7 +77,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.forgotPassword.emailLabel')}</FormLabel>
+                      <FormLabel>{t('auth.forgotPassword.emailLabel')} *</FormLabel>
                       <FormControl>
                         <Input
                           type="email"

@@ -115,7 +115,7 @@ export function TransferItemRow({
                 'w-full sm:w-20 text-right font-mono h-8 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                 isOver && 'border-destructive focus-visible:ring-destructive'
               )}
-              placeholder="0"
+              placeholder={t('common.numericPlaceholder')}
             />
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               {item.unit || ''}
@@ -204,4 +204,3 @@ export function TransferItemRow({
     </div>
   );
 }
-

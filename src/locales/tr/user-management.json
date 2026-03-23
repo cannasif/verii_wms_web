@@ -55,7 +55,7 @@
       "permissionGroupsNoData": "İzin grubu bulunamadı",
       "generatedPasswordInfo": "Şifre boş bırakılırsa geçici şifre oluşturulur",
       "selectAll": "Tümünü seç",
-      "systemAdminRequiresAdminRole": "System Admin Requires Admin Role"
+      "systemAdminRequiresAdminRole": "Sistem yöneticisi için admin rolü gereklidir"
     },
     "stats": {
       "totalUsers": "Toplam Kullanıcı",

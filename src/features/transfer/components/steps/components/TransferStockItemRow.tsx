@@ -96,7 +96,7 @@ export function TransferStockItemRow({
               className={cn(
                 'w-full sm:w-20 text-right font-mono h-8 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
               )}
-              placeholder="0"
+              placeholder={t('common.numericPlaceholder')}
             />
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               {product.olcuBr1}
@@ -189,4 +189,3 @@ export function TransferStockItemRow({
     </div>
   );
 }
-

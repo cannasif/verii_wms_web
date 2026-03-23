@@ -99,7 +99,7 @@ export function MailSettingsForm({
               name="host"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Fields.Host')}</FormLabel>
+                  <FormLabel>{t('Fields.Host')} *</FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="smtp.gmail.com" {...field} />
                   </FormControl>
@@ -177,7 +177,7 @@ export function MailSettingsForm({
               name="fromEmail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Fields.FromEmail')}</FormLabel>
+                  <FormLabel>{t('Fields.FromEmail')} *</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -190,7 +190,7 @@ export function MailSettingsForm({
               name="fromName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Fields.FromName')}</FormLabel>
+                  <FormLabel>{t('Fields.FromName')} *</FormLabel>
                   <FormControl>
                     <Input type="text" readOnly disabled {...field} />
                   </FormControl>

@@ -41,7 +41,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="operationType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.operationType')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.operationType')} *</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(value)}
                 value={field.value || undefined}
@@ -70,7 +70,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
             name="targetWarehouse"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('warehouse.step1.entryWarehouse')}</FormLabel>
+                <FormLabel>{t('warehouse.step1.entryWarehouse')} *</FormLabel>
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
@@ -95,7 +95,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
             name="sourceWarehouse"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('warehouse.step1.sourceWarehouse')}</FormLabel>
+                <FormLabel>{t('warehouse.step1.sourceWarehouse')} *</FormLabel>
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
@@ -123,7 +123,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.transferDate')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.transferDate')} *</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -137,7 +137,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.documentNo')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.documentNo')} *</FormLabel>
               <FormControl>
                 <Input placeholder={t('warehouse.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
@@ -153,7 +153,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('warehouse.step1.customer')}</FormLabel>
+              <FormLabel>{t('warehouse.step1.customer')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -245,4 +245,3 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
     </div>
   );
 }
-

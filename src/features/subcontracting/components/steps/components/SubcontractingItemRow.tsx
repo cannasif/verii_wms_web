@@ -111,7 +111,7 @@ export function SubcontractingItemRow({
                 'w-full sm:w-20 text-right font-mono h-8 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                 isOver && 'border-destructive focus-visible:ring-destructive'
               )}
-              placeholder="0"
+              placeholder={t('common.numericPlaceholder')}
             />
           </div>
           <Button
@@ -182,4 +182,3 @@ export function SubcontractingItemRow({
     </div>
   );
 }
-

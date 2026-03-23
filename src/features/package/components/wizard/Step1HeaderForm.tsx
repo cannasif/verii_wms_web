@@ -134,7 +134,7 @@ export function Step1HeaderForm({
                       {t('package.form.packingNo')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="PKG-2025-000001" />
+                      <Input {...field} placeholder={t('package.form.packingNo')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -375,4 +375,3 @@ export function Step1HeaderForm({
     </Card>
   );
 }
-

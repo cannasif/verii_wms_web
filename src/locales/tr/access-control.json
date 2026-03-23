@@ -92,7 +92,7 @@
       "confirmMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
     },
     "search": "Ara...",
-    "systemAdminLocked": "System Admin grubu değiştirilemez"
+    "systemAdminLocked": "Sistem yöneticisi grubu değiştirilemez"
   },
   "userGroupAssignments": {
     "title": "Kullanıcı Grup Atamaları",

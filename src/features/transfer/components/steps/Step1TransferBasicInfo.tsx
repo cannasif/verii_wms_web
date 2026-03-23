@@ -35,7 +35,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
           name="transferDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('transfer.step1.transferDate')}</FormLabel>
+              <FormLabel>{t('transfer.step1.transferDate')} *</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -49,7 +49,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
           name="documentNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('transfer.step1.documentNo')}</FormLabel>
+              <FormLabel>{t('transfer.step1.documentNo')} *</FormLabel>
               <FormControl>
                 <Input placeholder={t('transfer.step1.documentNoPlaceholder')} {...field} />
               </FormControl>
@@ -65,7 +65,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('transfer.step1.customer')}</FormLabel>
+              <FormLabel>{t('transfer.step1.customer')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
@@ -93,7 +93,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
             name="sourceWarehouse"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('transfer.step1.sourceWarehouse')}</FormLabel>
+                <FormLabel>{t('transfer.step1.sourceWarehouse')} *</FormLabel>
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
@@ -119,7 +119,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
           name="targetWarehouse"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('transfer.step1.targetWarehouse')}</FormLabel>
+              <FormLabel>{t('transfer.step1.targetWarehouse')} *</FormLabel>
               <FormControl>
                 <SearchableSelect<Warehouse>
                   value={field.value}
@@ -244,4 +244,3 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
     </div>
   );
 }
-

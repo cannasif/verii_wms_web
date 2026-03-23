@@ -52,6 +52,7 @@
     "select": "Select...",
     "user": "User",
     "systemAdmin": "System Admin",
+    "numericPlaceholder": "0",
     "errors": {
       "requestFailed": "Request failed.",
       "unexpected": "An unexpected error occurred.",

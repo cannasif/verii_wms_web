@@ -241,7 +241,7 @@ export function DataTableActionBar({
               <button
                 onClick={() => setShowFilters(false)}
                 className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                aria-label={t('close', { ns: 'common', defaultValue: 'Close' })}
+                aria-label={t('close', { ns: 'common' })}
               >
                 <X size={16} />
               </button>
