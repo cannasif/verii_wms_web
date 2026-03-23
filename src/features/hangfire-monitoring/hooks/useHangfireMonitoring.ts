@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
+import type { PagedParams } from '@/types/api';
 
 const REFRESH_INTERVAL_MS = 60_000;
 
@@ -32,6 +33,24 @@ export function useHangfireDeadLetterQuery(from: number, count: number) {
     queryKey: HANGFIRE_QUERY_KEYS.DEAD_LETTER(from, count),
     refetchInterval: REFRESH_INTERVAL_MS,
     queryFn: () => hangfireMonitoringApi.getDeadLetter(from, count),
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useHangfireFailedPagedQuery(params: PagedParams = {}) {
+  return useQuery({
+    queryKey: ['hangfire', 'failed-paged', params],
+    queryFn: () => hangfireMonitoringApi.getFailedPaged(params),
+    refetchInterval: REFRESH_INTERVAL_MS,
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useHangfireDeadLetterPagedQuery(params: PagedParams = {}) {
+  return useQuery({
+    queryKey: ['hangfire', 'dead-letter-paged', params],
+    queryFn: () => hangfireMonitoringApi.getDeadLetterPaged(params),
+    refetchInterval: REFRESH_INTERVAL_MS,
     refetchIntervalInBackground: false,
   });
 }

@@ -1,7 +1,10 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
+import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   HangfireDeadLetterResponseDto,
   HangfireFailedResponseDto,
+  HangfireJobItemDto,
   HangfireStatsDto,
 } from '../types/hangfireMonitoring.types';
 
@@ -56,6 +59,46 @@ export const hangfireMonitoringApi = {
       enqueued: Number(response?.Enqueued ?? response?.enqueued ?? 0),
       items: normalizeJobs(response?.Items ?? response?.items),
       timestamp: String(response?.Timestamp ?? response?.timestamp ?? new Date().toISOString()),
+    };
+  },
+
+  async getFailedPaged(params: PagedParams = {}): Promise<PagedResponse<HangfireJobItemDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<HangfireJobItemDto>>>(
+      '/api/hangfire/failed/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'jobId', sortDirection: 'desc' }),
+    );
+    const data = response.data;
+    return {
+      ...(data ?? {
+        data: [],
+        totalCount: 0,
+        pageNumber: 0,
+        pageSize: 20,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }),
+      data: normalizeJobs(data?.data),
+    };
+  },
+
+  async getDeadLetterPaged(params: PagedParams = {}): Promise<PagedResponse<HangfireJobItemDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<HangfireJobItemDto>>>(
+      '/api/hangfire/dead-letter/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'jobId', sortDirection: 'desc' }),
+    );
+    const data = response.data;
+    return {
+      ...(data ?? {
+        data: [],
+        totalCount: 0,
+        pageNumber: 0,
+        pageSize: 20,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }),
+      data: normalizeJobs(data?.data),
     };
   },
 };
