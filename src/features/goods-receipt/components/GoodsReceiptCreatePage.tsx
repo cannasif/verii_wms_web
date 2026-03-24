@@ -76,6 +76,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
       if (!isValid) return;
     }
     if (currentStep === 2 && selectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
 
