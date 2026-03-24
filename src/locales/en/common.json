@@ -52,6 +52,9 @@
     "select": "Select...",
     "user": "User",
     "systemAdmin": "System Admin",
+    "validation": {
+      "selectAtLeastOneItem": "You must select at least one item before continuing."
+    },
     "numericPlaceholder": "0",
     "errors": {
       "requestFailed": "Request failed.",

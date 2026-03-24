@@ -52,6 +52,9 @@
     "select": "Seçiniz...",
     "user": "Kullanıcı",
     "systemAdmin": "Sistem Yöneticisi",
+    "validation": {
+      "selectAtLeastOneItem": "Devam etmeden önce en az bir kalem seçmelisiniz."
+    },
     "numericPlaceholder": "0",
     "errors": {
       "requestFailed": "İstek başarısız oldu.",
