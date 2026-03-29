@@ -1,8 +1,10 @@
 import { DocumentType } from '@/types/document-type';
 import type {
   WarehouseGenerateRequest,
+  WarehouseBulkCreateRequest,
   WarehouseFormData,
   SelectedWarehouseOrderItem,
+  SelectedWarehouseStockItem,
 } from '../types/warehouse';
 
 export function buildWarehouseInboundRequest(
@@ -155,4 +157,109 @@ export function buildWarehouseOutboundRequest(
   return request;
 }
 
+export function buildWarehouseOutboundBulkRequest(
+  formData: WarehouseFormData,
+  selectedItems: SelectedWarehouseStockItem[],
+): WarehouseBulkCreateRequest {
+  const now = new Date().toISOString();
+  const sourceWarehouse = formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined;
+
+  const lines: WarehouseBulkCreateRequest['lines'] = [];
+  const lineSerials: WarehouseBulkCreateRequest['lineSerials'] = [];
+  const importLines: WarehouseBulkCreateRequest['importLines'] = [];
+  const routes: WarehouseBulkCreateRequest['routes'] = [];
+
+  selectedItems.forEach((item) => {
+    const lineClientKey = crypto.randomUUID();
+    const lineGroupGuid = crypto.randomUUID();
+    const importLineClientKey = crypto.randomUUID();
+    const importLineGroupGuid = crypto.randomUUID();
+
+    lines.push({
+      clientKey: lineClientKey,
+      clientGuid: lineGroupGuid,
+      stockCode: item.stockCode,
+      yapKod: '',
+      quantity: item.transferQuantity,
+      unit: item.unit || '',
+      erpOrderNo: '',
+      erpOrderId: '',
+      description: item.stockName,
+    });
+
+    lineSerials.push({
+      quantity: item.transferQuantity,
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      serialNo3: item.lotNo || '',
+      serialNo4: item.batchNo || '',
+      sourceCellCode: item.sourceCellCode || '',
+      targetCellCode: item.targetCellCode || '',
+      lineClientKey,
+      lineGroupGuid,
+    });
+
+    importLines.push({
+      clientKey: importLineClientKey,
+      clientGroupGuid: importLineGroupGuid,
+      lineClientKey,
+      lineGroupGuid,
+      stockCode: item.stockCode,
+      quantity: item.transferQuantity,
+      unit: item.unit || '',
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      serialNo3: item.lotNo || '',
+      serialNo4: item.batchNo || '',
+      scannedBarkod: item.stockCode,
+      erpOrderNumber: '',
+      erpOrderNo: '',
+      erpOrderLineNumber: '',
+    });
+
+    routes.push({
+      lineClientKey,
+      lineGroupGuid,
+      importLineClientKey,
+      importLineGroupGuid,
+      stockCode: item.stockCode,
+      quantity: item.transferQuantity,
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      sourceWarehouse,
+      targetWarehouse: undefined,
+      sourceCellCode: item.sourceCellCode || '',
+      targetCellCode: item.targetCellCode || '',
+      description: item.configCode || item.stockName,
+    });
+  });
+
+  return {
+    header: {
+      branchCode: '0',
+      projectCode: formData.projectCode || '',
+      orderId: '',
+      documentType: DocumentType.WO,
+      yearCode: new Date().getFullYear().toString(),
+      description1: formData.notes || '',
+      description2: '',
+      priorityLevel: 0,
+      plannedDate: formData.transferDate,
+      isPlanned: true,
+      isCompleted: false,
+      completedDate: now,
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      customerCode: formData.customerId || '',
+      sourceWarehouse: formData.sourceWarehouse || '',
+      targetWarehouse: '',
+      outboundType: formData.operationType || '',
+      type: 0,
+    },
+    lines,
+    lineSerials,
+    importLines,
+    routes,
+  };
+}
 

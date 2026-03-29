@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 import {
   createWarehouseFormSchema,
-  type SelectedWarehouseOrderItem,
-  type WarehouseOrderItem,
+  type SelectedWarehouseStockItem,
   type WarehouseFormData,
+  type WarehouseStockItem,
 } from '../types/warehouse';
 import { warehouseApi } from '../api/warehouse-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
-import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelection';
+import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 
 export function WarehouseOutboundCreatePage(): ReactElement {
   const { t } = useTranslation();
@@ -26,18 +26,18 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SelectedWarehouseStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('warehouse.outbound.create.title'));
     return () => {
       setPageTitle(null);
     };
-  }, [t, setPageTitle]);
+  }, [setPageTitle, t]);
 
   const schema = useMemo(() => createWarehouseFormSchema(t, 'outbound'), [t]);
 
-  const form = useForm({
+  const form = useForm<WarehouseFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       operationType: undefined,
@@ -57,15 +57,13 @@ export function WarehouseOutboundCreatePage(): ReactElement {
       return warehouseApi.createWarehouseOutbound(formData, selectedItems);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-orders'] });
-      queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-order-items'] });
+      queryClient.invalidateQueries({ queryKey: ['warehouse.outboundHeaders'] });
+      queryClient.invalidateQueries({ queryKey: ['warehouse.outboundHeadersPaged'] });
       toast.success(t('warehouse.outbound.create.success'));
       navigate('/warehouse/outbound/list');
     },
     onError: (error: Error) => {
-      toast.error(
-        error.message || t('warehouse.outbound.create.error')
-      );
+      toast.error(error.message || t('warehouse.outbound.create.error'));
     },
   });
 
@@ -74,6 +72,7 @@ export function WarehouseOutboundCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
+
     if (currentStep === 2 && selectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
@@ -86,40 +85,30 @@ export function WarehouseOutboundCreatePage(): ReactElement {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleToggleItem = (item: WarehouseOrderItem): void => {
+  const handleToggleItem = (item: WarehouseStockItem): void => {
     setSelectedItems((prev) => {
-      const existingIndex = prev.findIndex((si) => si.id === item.id);
+      const existingIndex = prev.findIndex((selected) => selected.stockCode === item.stockCode);
       if (existingIndex >= 0) {
-        return prev.filter((_, idx) => idx !== existingIndex);
+        return prev.filter((_, index) => index !== existingIndex);
       }
-      const orderItem = item;
+
       return [
         ...prev,
         {
-          ...orderItem,
-          transferQuantity: orderItem.remainingForImport || 0,
+          ...item,
+          transferQuantity: 0,
           isSelected: true,
-        } as SelectedWarehouseOrderItem,
+        },
       ];
     });
   };
 
-  const handleUpdateItem = (
-    itemId: string,
-    updates: Partial<SelectedWarehouseOrderItem>
-  ): void => {
-    setSelectedItems((prev) =>
-      prev.map((item) => {
-        const itemIdMatch = item.id === itemId;
-        return itemIdMatch ? { ...item, ...updates } : item;
-      })
-    );
+  const handleUpdateItem = (itemId: string, updates: Partial<SelectedWarehouseStockItem>): void => {
+    setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
   const handleRemoveItem = (itemId: string): void => {
-    setSelectedItems((prev) =>
-      prev.filter((item) => item.id !== itemId)
-    );
+    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleSave = async (): Promise<void> => {
@@ -129,29 +118,8 @@ export function WarehouseOutboundCreatePage(): ReactElement {
 
   const steps = [
     { label: t('warehouse.create.steps.basicInfo') },
-    {
-      label: t('warehouse.create.steps.orderSelection'),
-    },
+    { label: t('warehouse.create.steps.stockSelection') },
   ];
-
-  const renderStepContent = (): ReactElement => {
-    switch (currentStep) {
-      case 1:
-        return <Step1WarehouseBasicInfo type="outbound" />;
-      case 2:
-        return (
-          <Step2WarehouseOrderSelection
-            type="outbound"
-            selectedItems={selectedItems}
-            onToggleItem={handleToggleItem}
-            onUpdateItem={handleUpdateItem}
-            onRemoveItem={handleRemoveItem}
-          />
-        );
-      default:
-        return <div>{t('warehouse.create.unknownStep')}</div>;
-    }
-  };
 
   return (
     <div className="space-y-6 crm-page">
@@ -167,15 +135,19 @@ export function WarehouseOutboundCreatePage(): ReactElement {
         <CardContent>
           <Form {...form}>
             <form className="space-y-6 crm-page">
-              {renderStepContent()}
+              {currentStep === 1 ? (
+                <Step1WarehouseBasicInfo type="outbound" showOperationUsers={false} />
+              ) : (
+                <Step2WarehouseStockSelection
+                  selectedItems={selectedItems}
+                  onToggleItem={handleToggleItem}
+                  onUpdateItem={handleUpdateItem}
+                  onRemoveItem={handleRemoveItem}
+                />
+              )}
 
               <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
+                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
                   {t('common.previous')}
                 </Button>
                 <div className="flex gap-2">

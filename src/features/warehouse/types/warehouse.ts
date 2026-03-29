@@ -20,17 +20,17 @@ export type WarehouseOutboundTypeValue = typeof WarehouseOutboundType[keyof type
 export type WarehouseInboundTypeValue = typeof WarehouseInboundType[keyof typeof WarehouseInboundType];
 
 export const warehouseOutboundTypeOptions = [
-  { value: WarehouseOutboundType.SHIPPING_INVOICE.toString(), label: 'Sevk İrsaliyesi' },
-  { value: WarehouseOutboundType.WASTE_OUT.toString(), label: 'Fire Çıkışı' },
-  { value: WarehouseOutboundType.CORRECTION_OUT.toString(), label: 'Düzeltme Çıkışı' },
-  { value: WarehouseOutboundType.TRANSFER_OUT.toString(), label: 'Transfer Çıkışı' },
+  { value: WarehouseOutboundType.SHIPPING_INVOICE.toString(), labelKey: 'warehouse.operationTypes.outbound.shippingInvoice' },
+  { value: WarehouseOutboundType.WASTE_OUT.toString(), labelKey: 'warehouse.operationTypes.outbound.wasteOut' },
+  { value: WarehouseOutboundType.CORRECTION_OUT.toString(), labelKey: 'warehouse.operationTypes.outbound.correctionOut' },
+  { value: WarehouseOutboundType.TRANSFER_OUT.toString(), labelKey: 'warehouse.operationTypes.outbound.transferOut' },
 ];
 
 export const warehouseInboundTypeOptions = [
-  { value: WarehouseInboundType.SHIPPING_INVOICE_IN.toString(), label: 'Sevk İrsaliyesi Girişi' },
-  { value: WarehouseInboundType.WASTE_IN.toString(), label: 'Fire Girişi' },
-  { value: WarehouseInboundType.CORRECTION_IN.toString(), label: 'Düzeltme Girişi' },
-  { value: WarehouseInboundType.TRANSFER_IN.toString(), label: 'Transfer Girişi' },
+  { value: WarehouseInboundType.SHIPPING_INVOICE_IN.toString(), labelKey: 'warehouse.operationTypes.inbound.shippingInvoiceIn' },
+  { value: WarehouseInboundType.WASTE_IN.toString(), labelKey: 'warehouse.operationTypes.inbound.wasteIn' },
+  { value: WarehouseInboundType.CORRECTION_IN.toString(), labelKey: 'warehouse.operationTypes.inbound.correctionIn' },
+  { value: WarehouseInboundType.TRANSFER_IN.toString(), labelKey: 'warehouse.operationTypes.inbound.transferIn' },
 ];
 
 export const createWarehouseFormSchema = (t: TFunction, type: 'inbound' | 'outbound') => z.object({
@@ -103,6 +103,25 @@ export interface SelectedWarehouseOrderItem extends WarehouseOrderItem {
   targetCellCode?: string;
 }
 
+export interface WarehouseStockItem {
+  id: string;
+  stockCode: string;
+  stockName: string;
+  unit: string;
+}
+
+export interface SelectedWarehouseStockItem extends WarehouseStockItem {
+  transferQuantity: number;
+  isSelected: boolean;
+  serialNo?: string;
+  serialNo2?: string;
+  lotNo?: string;
+  batchNo?: string;
+  configCode?: string;
+  sourceCellCode?: string;
+  targetCellCode?: string;
+}
+
 export interface WarehouseGenerateRequest {
   header: {
     branchCode: string;
@@ -157,6 +176,84 @@ export interface WarehouseGenerateRequest {
     terminalUserId: number;
   }[];
   userIds?: number[];
+}
+
+export interface WarehouseBulkCreateRequest {
+  header: {
+    branchCode: string;
+    projectCode?: string;
+    orderId?: string;
+    documentType: string;
+    yearCode: string;
+    description1?: string;
+    description2?: string;
+    priorityLevel?: number;
+    plannedDate: string;
+    isPlanned: boolean;
+    isCompleted: boolean;
+    completedDate?: string;
+    documentNo: string;
+    documentDate: string;
+    customerCode?: string;
+    sourceWarehouse?: string;
+    targetWarehouse?: string;
+    outboundType: string;
+    type: number;
+  };
+  lines?: Array<{
+    clientKey: string;
+    clientGuid: string;
+    stockCode: string;
+    yapKod?: string;
+    quantity: number;
+    unit?: string;
+    erpOrderNo?: string;
+    erpOrderId?: string;
+    description?: string;
+  }>;
+  lineSerials?: Array<{
+    quantity: number;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+    lineClientKey: string;
+    lineGroupGuid: string;
+  }>;
+  importLines?: Array<{
+    clientKey: string;
+    clientGroupGuid: string;
+    lineClientKey: string;
+    lineGroupGuid: string;
+    stockCode: string;
+    quantity: number;
+    unit?: string;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    scannedBarkod?: string;
+    erpOrderNumber?: string;
+    erpOrderNo?: string;
+    erpOrderLineNumber?: string;
+  }>;
+  routes?: Array<{
+    lineClientKey: string;
+    lineGroupGuid: string;
+    importLineClientKey: string;
+    importLineGroupGuid: string;
+    stockCode: string;
+    quantity: number;
+    serialNo?: string;
+    serialNo2?: string;
+    sourceWarehouse?: number;
+    targetWarehouse?: number;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+    description?: string;
+  }>;
 }
 
 export type WarehouseOrdersResponse = ApiResponse<WarehouseOrder[]>;

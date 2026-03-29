@@ -272,7 +272,7 @@
     "warehouse": "Warehouse Operations",
     "warehouseInboundCreate": "Warehouse Inbound Order",
     "warehouseInboundList": "Warehouse Inbound List",
-    "warehouseOutboundCreate": "Warehouse Outbound Order",
+    "warehouseOutboundCreate": "Warehouse Outbound Process",
     "warehouseOutboundList": "Warehouse Outbound List"
   },
   "welcome": {
@@ -1732,9 +1732,9 @@
     },
     "outbound": {
       "create": {
-        "title": "New Warehouse Outbound Order",
-        "success": "Warehouse outbound order created successfully",
-        "error": "An error occurred while creating warehouse outbound order"
+        "title": "New Warehouse Outbound Process",
+        "success": "Warehouse outbound process saved successfully",
+        "error": "An error occurred while saving warehouse outbound process"
       },
       "approval": {
         "title": "Warehouse Outbound Orders Awaiting Approval",
@@ -1786,7 +1786,8 @@
     "create": {
       "steps": {
         "basicInfo": "Basic Information",
-        "orderSelection": "Order Selection"
+        "orderSelection": "Order Selection",
+        "stockSelection": "Stock Selection"
       },
       "unknownStep": "Unknown step"
     },
@@ -1890,7 +1891,7 @@
     "step2": {
       "searchItems": "Search by stock code or name...",
       "selectCustomerFirst": "Select Customer First",
-      "customerPrompt": "To view orders, please select a customer from the previous step.",
+      "customerPrompt": "Please select a customer from the previous step to continue.",
       "orders": "Orders",
       "orderContent": "Order Content",
       "noOrderSelected": "Order Selection",
@@ -1901,7 +1902,14 @@
       "ordered": "Ordered",
       "pending": "Pending",
       "completed": "Completed",
-      "remaining": "Remaining"
+      "remaining": "Remaining",
+      "stocks": "Stocks",
+      "selectedItems": "Selected Items",
+      "selectedItemsCount": "{{count}} items",
+      "noSelectedItems": "No selected stock",
+      "searchStocks": "Search by stock code or name...",
+      "enterQuantityToSelect": "Enter quantity to select the item.",
+      "unit": "Unit"
     },
     "details": {
       "configCode": "Configuration Code",
@@ -1911,7 +1919,27 @@
       "serialNoPlaceholder": "Enter serial number",
       "lotNoPlaceholder": "Enter lot number",
       "batchNoPlaceholder": "Enter batch number",
-      "configCodePlaceholder": "Enter configuration code"
+      "configCodePlaceholder": "Enter configuration code",
+      "serialNo2": "Serial No 2",
+      "serialNo2Placeholder": "Enter second serial information",
+      "sourceCellCode": "Source Cell",
+      "sourceCellCodePlaceholder": "Enter source cell code",
+      "targetCellCode": "Target Cell",
+      "targetCellCodePlaceholder": "Enter target cell code"
+    },
+    "operationTypes": {
+      "outbound": {
+        "shippingInvoice": "Shipping Invoice",
+        "wasteOut": "Waste Output",
+        "correctionOut": "Correction Output",
+        "transferOut": "Transfer Output"
+      },
+      "inbound": {
+        "shippingInvoiceIn": "Shipping Invoice Inbound",
+        "wasteIn": "Waste Input",
+        "correctionIn": "Correction Input",
+        "transferIn": "Transfer Input"
+      }
     }
   },
   "advancedFilter": {

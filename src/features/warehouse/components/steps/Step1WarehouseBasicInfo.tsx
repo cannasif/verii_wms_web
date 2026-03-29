@@ -20,9 +20,13 @@ type WarehouseType = 'inbound' | 'outbound';
 
 interface Step1WarehouseBasicInfoProps {
   type: WarehouseType;
+  showOperationUsers?: boolean;
 }
 
-export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps): ReactElement {
+export function Step1WarehouseBasicInfo({
+  type,
+  showOperationUsers = true,
+}: Step1WarehouseBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<WarehouseFormData>();
 
@@ -54,7 +58,7 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
                 <SelectContent>
                   {typeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -201,33 +205,35 @@ export function Step1WarehouseBasicInfo({ type }: Step1WarehouseBasicInfoProps):
         />
       </div>
 
-      <FormField
-        control={form.control}
-        name="userIds"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('warehouse.step1.operationUsers')}</FormLabel>
-            <FormControl>
-              <SearchableMultiSelect<UserDto>
-                value={field.value || []}
-                onValueChange={(values) => field.onChange(values)}
-                options={activeUsers || []}
-                getOptionValue={(opt) => String(opt.id)}
-                getOptionLabel={(opt) => {
-                  const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                  return opt.email ? `${name} (${opt.email})` : name;
-                }}
-                placeholder={t('warehouse.step1.selectOperationUsers')}
-                searchPlaceholder={t('common.search')}
-                emptyText={t('common.notFound')}
-                isLoading={isLoadingUsers}
-                itemLimit={100}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {showOperationUsers && (
+        <FormField
+          control={form.control}
+          name="userIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('warehouse.step1.operationUsers')}</FormLabel>
+              <FormControl>
+                <SearchableMultiSelect<UserDto>
+                  value={field.value || []}
+                  onValueChange={(values) => field.onChange(values)}
+                  options={activeUsers || []}
+                  getOptionValue={(opt) => String(opt.id)}
+                  getOptionLabel={(opt) => {
+                    const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
+                    return opt.email ? `${name} (${opt.email})` : name;
+                  }}
+                  placeholder={t('warehouse.step1.selectOperationUsers')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
+                  isLoading={isLoadingUsers}
+                  itemLimit={100}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
 
       <FormField
         control={form.control}

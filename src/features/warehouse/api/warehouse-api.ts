@@ -4,6 +4,7 @@ import type {
   WarehouseOrderItemsResponse,
   WarehouseFormData,
   SelectedWarehouseOrderItem,
+  SelectedWarehouseStockItem,
   WarehouseHeadersResponse,
   WarehouseLinesResponse,
   WarehouseLineSerialsResponse,
@@ -11,7 +12,10 @@ import type {
   WarehouseLine,
   WarehouseLineSerial,
 } from '../types/warehouse';
-import { buildWarehouseInboundRequest, buildWarehouseOutboundRequest } from '../utils/warehouse-generate';
+import {
+  buildWarehouseInboundRequest,
+  buildWarehouseOutboundBulkRequest,
+} from '../utils/warehouse-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
@@ -57,10 +61,10 @@ export const warehouseApi = {
 
   createWarehouseOutbound: async (
     formData: WarehouseFormData,
-    selectedItems: SelectedWarehouseOrderItem[]
+    selectedItems: SelectedWarehouseStockItem[]
   ): Promise<ApiResponse<unknown>> => {
-    const request = buildWarehouseOutboundRequest(formData, selectedItems);
-    return await api.post<ApiResponse<unknown>>('/api/WoHeader/generate', request);
+    const request = buildWarehouseOutboundBulkRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/WoHeader/bulk-create', request);
   },
 
   getInboundHeaders: async (options?: ApiRequestOptions): Promise<WarehouseHeadersResponse> => {
