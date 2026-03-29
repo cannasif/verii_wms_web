@@ -1,4 +1,5 @@
 import { DocumentType } from '@/types/document-type';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   WarehouseGenerateRequest,
   WarehouseBulkCreateRequest,
@@ -6,6 +7,18 @@ import type {
   SelectedWarehouseOrderItem,
   SelectedWarehouseStockItem,
 } from '../types/warehouse';
+
+function getActiveBranchCode(): string {
+  return useAuthStore.getState().branch?.code?.trim() || '0';
+}
+
+function sanitizeText(value: string | undefined | null, maxLength: number): string {
+  return (value || '').trim().slice(0, maxLength);
+}
+
+function sanitizePositiveItems(selectedItems: SelectedWarehouseStockItem[]): SelectedWarehouseStockItem[] {
+  return selectedItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0);
+}
 
 export function buildWarehouseInboundRequest(
   formData: WarehouseFormData,
@@ -50,7 +63,7 @@ export function buildWarehouseInboundRequest(
 
   const request: WarehouseGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.WI,
@@ -125,7 +138,7 @@ export function buildWarehouseOutboundRequest(
 
   const request: WarehouseGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.WO,
@@ -163,13 +176,14 @@ export function buildWarehouseOutboundBulkRequest(
 ): WarehouseBulkCreateRequest {
   const now = new Date().toISOString();
   const sourceWarehouse = formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined;
+  const positiveItems = sanitizePositiveItems(selectedItems);
 
   const lines: WarehouseBulkCreateRequest['lines'] = [];
   const lineSerials: WarehouseBulkCreateRequest['lineSerials'] = [];
   const importLines: WarehouseBulkCreateRequest['importLines'] = [];
   const routes: WarehouseBulkCreateRequest['routes'] = [];
 
-  selectedItems.forEach((item) => {
+  positiveItems.forEach((item) => {
     const lineClientKey = crypto.randomUUID();
     const lineGroupGuid = crypto.randomUUID();
     const importLineClientKey = crypto.randomUUID();
@@ -181,20 +195,20 @@ export function buildWarehouseOutboundBulkRequest(
       stockCode: item.stockCode,
       yapKod: '',
       quantity: item.transferQuantity,
-      unit: item.unit || '',
+      unit: sanitizeText(item.unit, 10),
       erpOrderNo: '',
       erpOrderId: '',
-      description: item.stockName,
+      description: sanitizeText(item.stockName, 100),
     });
 
     lineSerials.push({
       quantity: item.transferQuantity,
-      serialNo: item.serialNo || '',
-      serialNo2: item.serialNo2 || '',
-      serialNo3: item.lotNo || '',
-      serialNo4: item.batchNo || '',
-      sourceCellCode: item.sourceCellCode || '',
-      targetCellCode: item.targetCellCode || '',
+      serialNo: sanitizeText(item.serialNo, 50),
+      serialNo2: sanitizeText(item.serialNo2, 50),
+      serialNo3: sanitizeText(item.lotNo, 50),
+      serialNo4: sanitizeText(item.batchNo, 50),
+      sourceCellCode: sanitizeText(item.sourceCellCode, 20),
+      targetCellCode: sanitizeText(item.targetCellCode, 20),
       lineClientKey,
       lineGroupGuid,
     });
@@ -206,12 +220,12 @@ export function buildWarehouseOutboundBulkRequest(
       lineGroupGuid,
       stockCode: item.stockCode,
       quantity: item.transferQuantity,
-      unit: item.unit || '',
-      serialNo: item.serialNo || '',
-      serialNo2: item.serialNo2 || '',
-      serialNo3: item.lotNo || '',
-      serialNo4: item.batchNo || '',
-      scannedBarkod: item.stockCode,
+      unit: sanitizeText(item.unit, 10),
+      serialNo: sanitizeText(item.serialNo, 50),
+      serialNo2: sanitizeText(item.serialNo2, 50),
+      serialNo3: sanitizeText(item.lotNo, 50),
+      serialNo4: sanitizeText(item.batchNo, 50),
+      scannedBarkod: sanitizeText(item.stockCode, 100),
       erpOrderNumber: '',
       erpOrderNo: '',
       erpOrderLineNumber: '',
@@ -224,24 +238,24 @@ export function buildWarehouseOutboundBulkRequest(
       importLineGroupGuid,
       stockCode: item.stockCode,
       quantity: item.transferQuantity,
-      serialNo: item.serialNo || '',
-      serialNo2: item.serialNo2 || '',
+      serialNo: sanitizeText(item.serialNo, 50),
+      serialNo2: sanitizeText(item.serialNo2, 50),
       sourceWarehouse,
       targetWarehouse: undefined,
-      sourceCellCode: item.sourceCellCode || '',
-      targetCellCode: item.targetCellCode || '',
-      description: item.configCode || item.stockName,
+      sourceCellCode: sanitizeText(item.sourceCellCode, 20),
+      targetCellCode: sanitizeText(item.targetCellCode, 20),
+      description: sanitizeText(item.configCode || '', 100),
     });
   });
 
   return {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.WO,
       yearCode: new Date().getFullYear().toString(),
-      description1: formData.notes || '',
+      description1: sanitizeText(formData.notes, 255),
       description2: '',
       priorityLevel: 0,
       plannedDate: formData.transferDate,
@@ -262,4 +276,3 @@ export function buildWarehouseOutboundBulkRequest(
     routes,
   };
 }
-

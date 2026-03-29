@@ -27,6 +27,10 @@ export function WarehouseOutboundProcessPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseStockItem[]>([]);
+  const validSelectedItems = useMemo(
+    () => selectedItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedItems],
+  );
 
   useEffect(() => {
     setPageTitle(t('warehouse.outbound.process.title'));
@@ -54,7 +58,7 @@ export function WarehouseOutboundProcessPage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: WarehouseFormData) => {
-      return warehouseApi.processWarehouseOutbound(formData, selectedItems);
+      return warehouseApi.processWarehouseOutbound(formData, validSelectedItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse.outboundHeaders'] });
@@ -73,7 +77,7 @@ export function WarehouseOutboundProcessPage(): ReactElement {
       if (!isValid) return;
     }
 
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && validSelectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -112,6 +116,11 @@ export function WarehouseOutboundProcessPage(): ReactElement {
   };
 
   const handleSave = async (): Promise<void> => {
+    if (validSelectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+
     const formData = form.getValues();
     await createMutation.mutateAsync(formData);
   };
@@ -159,7 +168,7 @@ export function WarehouseOutboundProcessPage(): ReactElement {
                     <Button
                       type="button"
                       onClick={handleSave}
-                      disabled={createMutation.isPending || selectedItems.length === 0}
+                      disabled={createMutation.isPending || validSelectedItems.length === 0}
                     >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
