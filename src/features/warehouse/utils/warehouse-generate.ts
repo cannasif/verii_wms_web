@@ -179,7 +179,6 @@ export function buildWarehouseOutboundBulkRequest(
   const positiveItems = sanitizePositiveItems(selectedItems);
 
   const lines: WarehouseBulkCreateRequest['lines'] = [];
-  const lineSerials: WarehouseBulkCreateRequest['lineSerials'] = [];
   const importLines: WarehouseBulkCreateRequest['importLines'] = [];
   const routes: WarehouseBulkCreateRequest['routes'] = [];
 
@@ -199,18 +198,6 @@ export function buildWarehouseOutboundBulkRequest(
       erpOrderNo: '',
       erpOrderId: '',
       description: sanitizeText(item.stockName, 100),
-    });
-
-    lineSerials.push({
-      quantity: item.transferQuantity,
-      serialNo: sanitizeText(item.serialNo, 50),
-      serialNo2: sanitizeText(item.serialNo2, 50),
-      serialNo3: sanitizeText(item.lotNo, 50),
-      serialNo4: sanitizeText(item.batchNo, 50),
-      sourceCellCode: sanitizeText(item.sourceCellCode, 20),
-      targetCellCode: sanitizeText(item.targetCellCode, 20),
-      lineClientKey,
-      lineGroupGuid,
     });
 
     importLines.push({
@@ -271,7 +258,6 @@ export function buildWarehouseOutboundBulkRequest(
       type: 0,
     },
     lines,
-    lineSerials,
     importLines,
     routes,
   };
