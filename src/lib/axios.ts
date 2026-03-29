@@ -104,13 +104,12 @@ api.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-  }
+    config.headers['X-Language'] = i18n.language || 'tr';
 
-  config.headers['X-Language'] = i18n.language || 'tr';
-
-  const branch = useAuthStore.getState().branch;
-  if (branch?.code) {
-    config.headers['X-Branch-Code'] = branch.code;
+    const branch = useAuthStore.getState().branch;
+    if (branch?.code) {
+      config.headers['X-Branch-Code'] = branch.code;
+    }
   }
 
   return config;
