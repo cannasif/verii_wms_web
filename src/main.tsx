@@ -7,6 +7,16 @@ import './lib/i18n';
 import App from './App.tsx';
 import { queryClient } from './lib/query-client';
 import { ensureApiReady } from './lib/axios';
+import { tryRecoverFromChunkError } from './lib/chunk-recovery';
+
+window.addEventListener('vite:preloadError', (event) => {
+  const customEvent = event as unknown as CustomEvent<{ payload?: unknown }>;
+  const error = customEvent.detail?.payload;
+
+  if (tryRecoverFromChunkError(error)) {
+    customEvent.preventDefault();
+  }
+});
 
 async function bootstrap(): Promise<void> {
   await ensureApiReady();
