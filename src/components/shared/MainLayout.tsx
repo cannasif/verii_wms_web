@@ -323,6 +323,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           href: '/warehouse/outbound/create',
         },
         {
+          title: t('sidebar.warehouseOutboundProcess'),
+          href: '/warehouse/outbound/process',
+        },
+        {
           title: t('sidebar.warehouseOutboundList'),
           href: '/warehouse/outbound/list',
         },

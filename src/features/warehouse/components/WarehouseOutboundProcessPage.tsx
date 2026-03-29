@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 import {
   createWarehouseFormSchema,
-  type SelectedWarehouseOrderItem,
-  type WarehouseOrderItem,
+  type SelectedWarehouseStockItem,
   type WarehouseFormData,
+  type WarehouseStockItem,
 } from '../types/warehouse';
 import { warehouseApi } from '../api/warehouse-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -18,22 +18,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
-import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelection';
+import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 
-export function WarehouseOutboundCreatePage(): ReactElement {
+export function WarehouseOutboundProcessPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SelectedWarehouseStockItem[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('warehouse.outbound.create.title'));
+    setPageTitle(t('warehouse.outbound.process.title'));
     return () => {
       setPageTitle(null);
     };
-  }, [t, setPageTitle]);
+  }, [setPageTitle, t]);
 
   const schema = useMemo(() => createWarehouseFormSchema(t, 'outbound'), [t]);
 
@@ -54,16 +54,16 @@ export function WarehouseOutboundCreatePage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: WarehouseFormData) => {
-      return warehouseApi.createWarehouseOutbound(formData, selectedItems);
+      return warehouseApi.processWarehouseOutbound(formData, selectedItems);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-orders'] });
-      queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-order-items'] });
-      toast.success(t('warehouse.outbound.create.success'));
+      queryClient.invalidateQueries({ queryKey: ['warehouse.outboundHeaders'] });
+      queryClient.invalidateQueries({ queryKey: ['warehouse.outboundHeadersPaged'] });
+      toast.success(t('warehouse.outbound.process.success'));
       navigate('/warehouse/outbound/list');
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('warehouse.outbound.create.error'));
+      toast.error(error.message || t('warehouse.outbound.process.error'));
     },
   });
 
@@ -72,6 +72,7 @@ export function WarehouseOutboundCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
+
     if (currentStep === 2 && selectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
@@ -84,9 +85,9 @@ export function WarehouseOutboundCreatePage(): ReactElement {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleToggleItem = (item: WarehouseOrderItem): void => {
+  const handleToggleItem = (item: WarehouseStockItem): void => {
     setSelectedItems((prev) => {
-      const existingIndex = prev.findIndex((selected) => selected.id === item.id);
+      const existingIndex = prev.findIndex((selected) => selected.stockCode === item.stockCode);
       if (existingIndex >= 0) {
         return prev.filter((_, index) => index !== existingIndex);
       }
@@ -95,14 +96,14 @@ export function WarehouseOutboundCreatePage(): ReactElement {
         ...prev,
         {
           ...item,
-          transferQuantity: item.remainingForImport || 0,
+          transferQuantity: 0,
           isSelected: true,
         },
       ];
     });
   };
 
-  const handleUpdateItem = (itemId: string, updates: Partial<SelectedWarehouseOrderItem>): void => {
+  const handleUpdateItem = (itemId: string, updates: Partial<SelectedWarehouseStockItem>): void => {
     setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
@@ -117,7 +118,7 @@ export function WarehouseOutboundCreatePage(): ReactElement {
 
   const steps = [
     { label: t('warehouse.create.steps.basicInfo') },
-    { label: t('warehouse.create.steps.orderSelection') },
+    { label: t('warehouse.create.steps.stockSelection') },
   ];
 
   return (
@@ -135,10 +136,9 @@ export function WarehouseOutboundCreatePage(): ReactElement {
           <Form {...form}>
             <form className="space-y-6 crm-page">
               {currentStep === 1 ? (
-                <Step1WarehouseBasicInfo type="outbound" />
+                <Step1WarehouseBasicInfo type="outbound" showOperationUsers={false} />
               ) : (
-                <Step2WarehouseOrderSelection
-                  type="outbound"
+                <Step2WarehouseStockSelection
                   selectedItems={selectedItems}
                   onToggleItem={handleToggleItem}
                   onUpdateItem={handleUpdateItem}

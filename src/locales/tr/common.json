@@ -272,8 +272,9 @@
     "warehouse": "Ambar İşlemleri",
     "warehouseInboundCreate": "Ambar Giriş Emri",
     "warehouseInboundList": "Ambar Giriş Listesi",
-    "warehouseOutboundCreate": "Ambar Çıkış İşlemi",
-    "warehouseOutboundList": "Ambar Çıkış Listesi"
+    "warehouseOutboundCreate": "Ambar Çıkış Emri",
+    "warehouseOutboundList": "Ambar Çıkış Listesi",
+    "warehouseOutboundProcess": "Ambar Çıkış İşlemi"
   },
   "welcome": {
     "title": "Hoş geldiniz",
@@ -1732,9 +1733,9 @@
     },
     "outbound": {
       "create": {
-        "title": "Yeni Ambar Çıkış İşlemi",
-        "success": "Ambar çıkış işlemi başarıyla kaydedildi",
-        "error": "Ambar çıkış işlemi kaydedilirken bir hata oluştu"
+        "title": "Yeni Ambar Çıkış Emri",
+        "success": "Ambar çıkış emri başarıyla oluşturuldu",
+        "error": "Ambar çıkış emri oluşturulurken bir hata oluştu"
       },
       "approval": {
         "title": "Onay Bekleyen Ambar Çıkış Emirleri",
@@ -1781,6 +1782,11 @@
         "error": "Veri yüklenirken bir hata oluştu",
         "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
         "noData": "Veri bulunamadı"
+      },
+      "process": {
+        "title": "Yeni Ambar Çıkış İşlemi",
+        "success": "Ambar çıkış işlemi başarıyla kaydedildi",
+        "error": "Ambar çıkış işlemi kaydedilirken bir hata oluştu"
       }
     },
     "create": {

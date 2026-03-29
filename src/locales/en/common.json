@@ -272,8 +272,9 @@
     "warehouse": "Warehouse Operations",
     "warehouseInboundCreate": "Warehouse Inbound Order",
     "warehouseInboundList": "Warehouse Inbound List",
-    "warehouseOutboundCreate": "Warehouse Outbound Process",
-    "warehouseOutboundList": "Warehouse Outbound List"
+    "warehouseOutboundCreate": "Warehouse Outbound Order",
+    "warehouseOutboundList": "Warehouse Outbound List",
+    "warehouseOutboundProcess": "Warehouse Outbound Process"
   },
   "welcome": {
     "title": "Welcome",
@@ -1732,9 +1733,9 @@
     },
     "outbound": {
       "create": {
-        "title": "New Warehouse Outbound Process",
-        "success": "Warehouse outbound process saved successfully",
-        "error": "An error occurred while saving warehouse outbound process"
+        "title": "New Warehouse Outbound Order",
+        "success": "Warehouse outbound order created successfully",
+        "error": "An error occurred while creating warehouse outbound order"
       },
       "approval": {
         "title": "Warehouse Outbound Orders Awaiting Approval",
@@ -1781,6 +1782,11 @@
         "error": "An error occurred while loading data",
         "searchPlaceholder": "Document No, Customer Code, Warehouse...",
         "noData": "No data found"
+      },
+      "process": {
+        "title": "New Warehouse Outbound Process",
+        "success": "Warehouse outbound process saved successfully",
+        "error": "An error occurred while saving warehouse outbound process"
       }
     },
     "create": {

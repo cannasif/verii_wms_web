@@ -15,6 +15,7 @@ import type {
 import {
   buildWarehouseInboundRequest,
   buildWarehouseOutboundBulkRequest,
+  buildWarehouseOutboundRequest,
 } from '../utils/warehouse-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
@@ -60,6 +61,14 @@ export const warehouseApi = {
   },
 
   createWarehouseOutbound: async (
+    formData: WarehouseFormData,
+    selectedItems: SelectedWarehouseOrderItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildWarehouseOutboundRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/WoHeader/generate', request);
+  },
+
+  processWarehouseOutbound: async (
     formData: WarehouseFormData,
     selectedItems: SelectedWarehouseStockItem[]
   ): Promise<ApiResponse<unknown>> => {

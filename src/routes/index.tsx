@@ -36,6 +36,7 @@ import {
 import {
   WarehouseInboundCreatePage,
   WarehouseOutboundCreatePage,
+  WarehouseOutboundProcessPage,
   WarehouseInboundListPage,
   WarehouseOutboundListPage,
   AssignedWarehouseInboundListPage,
@@ -153,6 +154,7 @@ export const router = createBrowserRouter([
             path: 'outbound',
             children: [
               { path: 'create', element: withSuspense(<WarehouseOutboundCreatePage />) },
+              { path: 'process', element: withSuspense(<WarehouseOutboundProcessPage />) },
               { path: 'list', element: withSuspense(<WarehouseOutboundListPage />) },
               { path: 'assigned', element: withSuspense(<AssignedWarehouseOutboundListPage />) },
               { path: 'approval', element: withSuspense(<WarehouseOutboundApprovalPage />) },
