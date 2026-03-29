@@ -10,7 +10,7 @@ export const useWarehouses = () => {
 
   const query = useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.WAREHOUSES],
-    queryFn: () => goodsReceiptApi.getWarehouses(),
+    queryFn: ({ signal }) => goodsReceiptApi.getWarehouses(undefined, { signal }),
     staleTime: 60 * 60 * 1000,
   });
 

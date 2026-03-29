@@ -34,7 +34,7 @@ export function OrderDetailsDialog({
   const { t } = useTranslation();
   const { data: orderItems, isLoading } = useQuery({
     queryKey: ['orderItems', customerCode, orderId],
-    queryFn: () => goodsReceiptApi.getOrderItems(customerCode!, orderId!),
+    queryFn: ({ signal }) => goodsReceiptApi.getOrderItems(customerCode!, orderId!, { signal }),
     enabled: !!customerCode && !!orderId && isOpen,
   });
 

@@ -1,4 +1,4 @@
 {
   "baseUrl": "/",
-  "apiUrl": "https://api.v3rii.com"
+  "apiUrl": "http://localhost:5001"
 }

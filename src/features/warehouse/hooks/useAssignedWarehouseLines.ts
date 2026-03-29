@@ -7,11 +7,11 @@ import type { WarehouseLinesResponse } from '../types/warehouse';
 export function useAssignedWarehouseInboundLines(headerId: number | null): UseQueryResult<WarehouseLinesResponse> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_LINES, headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) {
         throw createRequiredIdError('header');
       }
-      return warehouseApi.getAssignedInboundLines(headerId);
+      return warehouseApi.getAssignedInboundLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,
@@ -21,15 +21,14 @@ export function useAssignedWarehouseInboundLines(headerId: number | null): UseQu
 export function useAssignedWarehouseOutboundLines(headerId: number | null): UseQueryResult<WarehouseLinesResponse> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_LINES, headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) {
         throw createRequiredIdError('header');
       }
-      return warehouseApi.getAssignedOutboundLines(headerId);
+      return warehouseApi.getAssignedOutboundLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,
   });
 }
-
 

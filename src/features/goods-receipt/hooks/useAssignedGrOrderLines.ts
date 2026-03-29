@@ -6,12 +6,11 @@ import { GOODS_RECEIPT_QUERY_KEYS } from '../utils/query-keys';
 export function useAssignedGrOrderLines(headerId: number | null) {
   return useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.ASSIGNED_ORDER_LINES, headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) throw createRequiredIdError('header');
-      return goodsReceiptApi.getAssignedOrderLines(headerId);
+      return goodsReceiptApi.getAssignedOrderLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,
   });
 }
-

@@ -5,7 +5,7 @@ import type { PagedParams } from '@/types/api';
 export function useAwaitingApprovalSitHeaders(params: PagedParams = {}) {
   return useQuery({
     queryKey: ['awaiting-approval-sit-headers', params],
-    queryFn: () => subcontractingApi.getAwaitingApprovalSitHeaders(params),
+    queryFn: ({ signal }) => subcontractingApi.getAwaitingApprovalSitHeaders(params, { signal }),
     staleTime: 30 * 1000,
   });
 }

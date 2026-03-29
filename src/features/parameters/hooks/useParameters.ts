@@ -7,7 +7,7 @@ import type { PagedParams } from '@/types/api';
 export function useParameters(type: ParameterType) {
   return useQuery({
     queryKey: [PARAMETER_QUERY_KEYS.LIST(type)],
-    queryFn: () => parameterApi.getAll(type),
+    queryFn: ({ signal }) => parameterApi.getAll(type, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -15,7 +15,7 @@ export function useParameters(type: ParameterType) {
 export function useParametersPaged(type: ParameterType, params: PagedParams = {}) {
   return useQuery({
     queryKey: [PARAMETER_QUERY_KEYS.LIST(type), params],
-    queryFn: () => parameterApi.getPaged(type, params),
+    queryFn: ({ signal }) => parameterApi.getPaged(type, params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }

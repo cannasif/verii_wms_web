@@ -6,7 +6,7 @@ import { GOODS_RECEIPT_QUERY_KEYS } from '../utils/query-keys';
 export function useGrHeaders(params: PagedParams = {}) {
   return useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.HEADERS, params],
-    queryFn: () => goodsReceiptApi.getGrHeadersPaged(params),
+    queryFn: ({ signal }) => goodsReceiptApi.getGrHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }

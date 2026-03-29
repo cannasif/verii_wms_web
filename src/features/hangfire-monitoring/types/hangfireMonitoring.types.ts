@@ -8,6 +8,7 @@ export interface HangfireStatsDto {
   servers: number;
   queues: number;
   timestamp: string;
+  lastStockSyncAt?: string;
 }
 
 export interface HangfireJobItemDto {

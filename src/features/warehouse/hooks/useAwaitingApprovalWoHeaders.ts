@@ -5,7 +5,7 @@ import type { PagedParams } from '@/types/api';
 export function useAwaitingApprovalWoHeaders(params: PagedParams = {}) {
   return useQuery({
     queryKey: ['awaiting-approval-wo-headers', params],
-    queryFn: () => warehouseApi.getAwaitingApprovalWoHeaders(params),
+    queryFn: ({ signal }) => warehouseApi.getAwaitingApprovalWoHeaders(params, { signal }),
     staleTime: 30 * 1000,
   });
 }

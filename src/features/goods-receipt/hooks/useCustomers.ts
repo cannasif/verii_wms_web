@@ -10,7 +10,7 @@ export const useCustomers = () => {
 
   const query = useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.CUSTOMERS],
-    queryFn: () => goodsReceiptApi.getCustomers(),
+    queryFn: ({ signal }) => goodsReceiptApi.getCustomers({ signal }),
     staleTime: 60 * 60 * 1000,
   });
 

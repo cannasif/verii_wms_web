@@ -8,7 +8,7 @@ import type { PagedParams, PagedResponse } from '@/types/api';
 export function useWarehouseInboundHeaders(): UseQueryResult<WarehouseHeadersResponse> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.INBOUND_HEADERS],
-    queryFn: () => warehouseApi.getInboundHeaders(),
+    queryFn: ({ signal }) => warehouseApi.getInboundHeaders({ signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -16,7 +16,7 @@ export function useWarehouseInboundHeaders(): UseQueryResult<WarehouseHeadersRes
 export function useWarehouseOutboundHeaders(): UseQueryResult<WarehouseHeadersResponse> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.OUTBOUND_HEADERS],
-    queryFn: () => warehouseApi.getOutboundHeaders(),
+    queryFn: ({ signal }) => warehouseApi.getOutboundHeaders({ signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -24,7 +24,7 @@ export function useWarehouseOutboundHeaders(): UseQueryResult<WarehouseHeadersRe
 export function useWarehouseInboundHeadersPaged(params: PagedParams = {}): UseQueryResult<PagedResponse<WarehouseHeader>> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.INBOUND_HEADERS_PAGED, params],
-    queryFn: () => warehouseApi.getInboundHeadersPaged(params),
+    queryFn: ({ signal }) => warehouseApi.getInboundHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -32,7 +32,7 @@ export function useWarehouseInboundHeadersPaged(params: PagedParams = {}): UseQu
 export function useWarehouseOutboundHeadersPaged(params: PagedParams = {}): UseQueryResult<PagedResponse<WarehouseHeader>> {
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.OUTBOUND_HEADERS_PAGED, params],
-    queryFn: () => warehouseApi.getOutboundHeadersPaged(params),
+    queryFn: ({ signal }) => warehouseApi.getOutboundHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -42,11 +42,11 @@ export function useAssignedWarehouseInboundHeaders(): UseQueryResult<WarehouseHe
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_HEADERS, userId],
-    queryFn: async () => ({
+    queryFn: async ({ signal }) => ({
       success: true,
       message: '',
       exceptionMessage: '',
-      data: (await warehouseApi.getAssignedInboundHeaders(userId || 0)).data,
+      data: (await warehouseApi.getAssignedInboundHeaders(userId || 0, undefined, { signal })).data,
       errors: [],
       timestamp: new Date().toISOString(),
       statusCode: 200,
@@ -62,7 +62,7 @@ export function useAssignedWarehouseInboundHeadersPaged(params: PagedParams = {}
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_INBOUND_HEADERS, userId, params],
-    queryFn: () => warehouseApi.getAssignedInboundHeaders(userId || 0, params),
+    queryFn: ({ signal }) => warehouseApi.getAssignedInboundHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
@@ -73,11 +73,11 @@ export function useAssignedWarehouseOutboundHeaders(): UseQueryResult<WarehouseH
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_HEADERS, userId],
-    queryFn: async () => ({
+    queryFn: async ({ signal }) => ({
       success: true,
       message: '',
       exceptionMessage: '',
-      data: (await warehouseApi.getAssignedOutboundHeaders(userId || 0)).data,
+      data: (await warehouseApi.getAssignedOutboundHeaders(userId || 0, undefined, { signal })).data,
       errors: [],
       timestamp: new Date().toISOString(),
       statusCode: 200,
@@ -93,7 +93,7 @@ export function useAssignedWarehouseOutboundHeadersPaged(params: PagedParams = {
 
   return useQuery({
     queryKey: [WAREHOUSE_QUERY_KEYS.ASSIGNED_OUTBOUND_HEADERS, userId, params],
-    queryFn: () => warehouseApi.getAssignedOutboundHeaders(userId || 0, params),
+    queryFn: ({ signal }) => warehouseApi.getAssignedOutboundHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });

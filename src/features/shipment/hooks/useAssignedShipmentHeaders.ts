@@ -9,7 +9,7 @@ export function useAssignedShipmentHeaders(params: PagedParams = {}) {
 
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.ASSIGNED_HEADERS, userId, params],
-    queryFn: () => shipmentApi.getAssignedHeaders(userId || 0, params),
+    queryFn: ({ signal }) => shipmentApi.getAssignedHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });

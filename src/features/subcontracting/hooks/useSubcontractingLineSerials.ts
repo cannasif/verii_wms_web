@@ -5,7 +5,7 @@ import type { SubcontractingLineSerialsResponse } from '../types/subcontracting'
 export function useSubcontractingLineSerials(lineId: number | null, documentType: string | null) {
   return useQuery<SubcontractingLineSerialsResponse>({
     queryKey: ['subcontracting-line-serials', lineId, documentType],
-    queryFn: (): Promise<SubcontractingLineSerialsResponse> => {
+    queryFn: ({ signal }): Promise<SubcontractingLineSerialsResponse> => {
       if (!lineId || !documentType) {
         return Promise.resolve({
           success: true,
@@ -19,12 +19,11 @@ export function useSubcontractingLineSerials(lineId: number | null, documentType
         } as SubcontractingLineSerialsResponse);
       }
       if (documentType === 'SRT') {
-        return subcontractingApi.getReceiptLineSerials(lineId);
+        return subcontractingApi.getReceiptLineSerials(lineId, { signal });
       }
-      return subcontractingApi.getIssueLineSerials(lineId);
+      return subcontractingApi.getIssueLineSerials(lineId, { signal });
     },
     enabled: !!lineId && !!documentType,
     staleTime: 2 * 60 * 1000,
   });
 }
-

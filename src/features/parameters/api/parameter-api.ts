@@ -2,6 +2,7 @@ import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse } from '@/types/api';
 import type { PagedResponse } from '@/types/api';
+import type { ApiRequestOptions } from '@/lib/request-utils';
 import type {
   Parameter,
   ParameterResponse,
@@ -51,12 +52,13 @@ export const parameterApi = {
       sortDirection?: string;
       filters?: Array<{ column: string; operator: string; value: string }>;
       filterLogic?: 'and' | 'or';
-    } = {}
+    } = {},
+    options?: ApiRequestOptions,
   ): Promise<PagedResponse<Parameter>> => {
     const endpoint = getEndpoint(type);
     const requestBody = buildPagedRequest(params, { pageNumber: 1, pageSize: 1000 });
 
-    const response = await api.post<ApiResponse<PagedResponse<Parameter>>>(`/api/${endpoint}/paged`, requestBody);
+    const response = await api.post<ApiResponse<PagedResponse<Parameter>>>(`/api/${endpoint}/paged`, requestBody, options);
     if (response.success && response.data) {
       const normalizedData = normalizePagedData(response.data);
       return { ...response.data, data: normalizedData };
@@ -64,14 +66,14 @@ export const parameterApi = {
     throw new Error(response.message || 'Parametreler yüklenemedi');
   },
 
-  getAll: async (type: ParameterType): Promise<Parameter[]> => {
-    const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1000 });
+  getAll: async (type: ParameterType, options?: ApiRequestOptions): Promise<Parameter[]> => {
+    const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1000 }, options);
     return paged.data ?? [];
   },
 
-  getFirst: async (type: ParameterType): Promise<Parameter | null> => {
+  getFirst: async (type: ParameterType, options?: ApiRequestOptions): Promise<Parameter | null> => {
     try {
-      const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1, sortBy: 'Id', sortDirection: 'desc' });
+      const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1, sortBy: 'Id', sortDirection: 'desc' }, options);
       if (paged.data && paged.data.length > 0) return paged.data[0];
       return null;
     } catch (error) {
@@ -86,9 +88,9 @@ export const parameterApi = {
     }
   },
 
-  getById: async (type: ParameterType, id: number): Promise<Parameter> => {
+  getById: async (type: ParameterType, id: number, options?: ApiRequestOptions): Promise<Parameter> => {
     const endpoint = getEndpoint(type);
-    const response = await api.get<ParameterResponse>(`/api/${endpoint}/${id}`);
+    const response = await api.get<ParameterResponse>(`/api/${endpoint}/${id}`, options);
     if (response.success && response.data) {
       return response.data;
     }

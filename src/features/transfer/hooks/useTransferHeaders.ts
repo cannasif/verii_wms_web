@@ -6,7 +6,7 @@ import type { PagedParams } from '@/types/api';
 export function useTransferHeaders() {
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.HEADERS],
-    queryFn: () => transferApi.getHeaders(),
+    queryFn: ({ signal }) => transferApi.getHeaders({ signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -14,7 +14,7 @@ export function useTransferHeaders() {
 export function useTransferHeadersPaged(params: PagedParams = {}) {
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.HEADERS_PAGED, params],
-    queryFn: () => transferApi.getHeadersPaged(params),
+    queryFn: ({ signal }) => transferApi.getHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }

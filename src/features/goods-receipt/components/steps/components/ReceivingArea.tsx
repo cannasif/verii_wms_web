@@ -32,7 +32,7 @@ export function ReceivingArea({
 
   const { data: orderItems, isLoading } = useQuery({
     queryKey: ['orderItems', customerCode, siparisNo],
-    queryFn: () => goodsReceiptApi.getOrderItems(customerCode!, siparisNo!),
+    queryFn: ({ signal }) => goodsReceiptApi.getOrderItems(customerCode!, siparisNo!, { signal }),
     enabled: !!customerCode && !!siparisNo,
   });
 

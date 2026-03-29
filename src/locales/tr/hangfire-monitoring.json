@@ -3,11 +3,17 @@
   "title": "Hangfire İzleme",
   "description": "Job sağlık durumunu, başarısız işleri ve dead-letter kuyruğunu izleyin.",
   "refresh": "Yenile",
+  "manualSync": {
+    "button": "Stok Sync Çalıştır",
+    "success": "Stok senkronu kuyruğa alındı. JobId: {{jobId}}",
+    "error": "Stok senkronu kuyruğa alınamadı."
+  },
   "stats": {
     "enqueued": "Kuyrukta",
     "processing": "İşleniyor",
     "succeeded": "Başarılı",
-    "failed": "Başarısız"
+    "failed": "Başarısız",
+    "lastStockSync": "Son Stok Sync"
   },
   "table": {
     "jobId": "Job ID",

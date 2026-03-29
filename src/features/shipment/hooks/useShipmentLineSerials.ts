@@ -6,9 +6,9 @@ import { SHIPMENT_QUERY_KEYS } from '../utils/query-keys';
 export function useShipmentLineSerials(lineId: number | null) {
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.LINE_SERIALS, lineId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!lineId) throw createRequiredIdError('line');
-      return shipmentApi.getLineSerials(lineId);
+      return shipmentApi.getLineSerials(lineId, { signal });
     },
     enabled: !!lineId,
     staleTime: 2 * 60 * 1000,

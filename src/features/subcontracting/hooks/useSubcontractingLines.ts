@@ -5,7 +5,7 @@ import type { SubcontractingLinesResponse } from '../types/subcontracting';
 export function useSubcontractingLines(headerId: number | null, documentType: string | null) {
   return useQuery<SubcontractingLinesResponse>({
     queryKey: ['subcontracting-lines', headerId, documentType],
-    queryFn: (): Promise<SubcontractingLinesResponse> => {
+    queryFn: ({ signal }): Promise<SubcontractingLinesResponse> => {
       if (!headerId || !documentType) {
         return Promise.resolve({
           success: true,
@@ -19,12 +19,11 @@ export function useSubcontractingLines(headerId: number | null, documentType: st
         } as SubcontractingLinesResponse);
       }
       if (documentType === 'SRT') {
-        return subcontractingApi.getReceiptLines(headerId);
+        return subcontractingApi.getReceiptLines(headerId, { signal });
       }
-      return subcontractingApi.getIssueLines(headerId);
+      return subcontractingApi.getIssueLines(headerId, { signal });
     },
     enabled: !!headerId && !!documentType,
     staleTime: 2 * 60 * 1000,
   });
 }
-

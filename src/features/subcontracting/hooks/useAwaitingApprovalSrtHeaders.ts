@@ -5,7 +5,7 @@ import type { PagedParams } from '@/types/api';
 export function useAwaitingApprovalSrtHeaders(params: PagedParams = {}) {
   return useQuery({
     queryKey: ['awaiting-approval-srt-headers', params],
-    queryFn: () => subcontractingApi.getAwaitingApprovalSrtHeaders(params),
+    queryFn: ({ signal }) => subcontractingApi.getAwaitingApprovalSrtHeaders(params, { signal }),
     staleTime: 30 * 1000,
   });
 }

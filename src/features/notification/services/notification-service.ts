@@ -15,8 +15,6 @@ async function loadSignalR(): Promise<SignalRModule> {
 
 class NotificationService {
   private hubConnection: SignalR.HubConnection | null = null;
-  private pollingInterval: NodeJS.Timeout | null = null;
-  private isPolling = false;
 
   private async getApiUrl(): Promise<string> {
     await ensureApiReady();
@@ -41,10 +39,12 @@ class NotificationService {
 
     try {
       const apiUrl = await this.getApiUrl();
-      const hubUrl = `${apiUrl}/notificationHub?access_token=${encodeURIComponent(token)}`;
+      const hubUrl = `${apiUrl}/notificationHub`;
 
       this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl(hubUrl)
+        .withUrl(hubUrl, {
+          accessTokenFactory: () => this.getToken() ?? '',
+        })
         .withAutomaticReconnect({
           nextRetryDelayInMilliseconds: (retryContext) => {
             const previousRetryCount = retryContext.previousRetryCount;
@@ -67,7 +67,6 @@ class NotificationService {
 
       this.hubConnection.onreconnected(() => {
         useNotificationStore.getState().setConnectionState('connected');
-        this.stopPolling();
       });
 
       this.hubConnection.onclose((error) => {
@@ -75,23 +74,19 @@ class NotificationService {
           console.error('[NotificationService] SignalR connection closed with error:', error);
         }
         useNotificationStore.getState().setConnectionState('disconnected');
-        this.startPolling();
+        this.hubConnection = null;
       });
 
       await this.hubConnection.start();
       useNotificationStore.getState().setConnectionState('connected');
-      this.stopPolling();
-      
-      await this.fetchNotifications(true);
     } catch (error) {
       console.error('[NotificationService] SignalR connection error:', error);
       useNotificationStore.getState().setConnectionState('disconnected');
-      this.startPolling();
+      this.hubConnection = null;
     }
   }
 
   async disconnect(): Promise<void> {
-    this.stopPolling();
     if (this.hubConnection) {
       await this.hubConnection.stop();
       this.hubConnection = null;
@@ -143,29 +138,6 @@ class NotificationService {
     };
 
     useNotificationStore.getState().addNotification(notification);
-  }
-
-  private startPolling(): void {
-    if (this.isPolling) {
-      return;
-    }
-
-    this.isPolling = true;
-    this.pollingInterval = setInterval(async () => {
-      try {
-        await this.fetchNotifications(false);
-      } catch (error) {
-        console.error('Polling error:', error);
-      }
-    }, 30000);
-  }
-
-  private stopPolling(): void {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-      this.pollingInterval = null;
-    }
-    this.isPolling = false;
   }
 
   async fetchNotifications(resetPagination = true): Promise<void> {

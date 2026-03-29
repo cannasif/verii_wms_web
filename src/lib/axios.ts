@@ -1,6 +1,7 @@
 import axios from 'axios';
 import i18n from './i18n';
 import { useAuthStore } from '@/stores/auth-store';
+import { isRequestCanceled } from './request-utils';
 import {
   loadConfig,
   getApiUrl,
@@ -121,6 +122,10 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    if (isRequestCanceled(error)) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
       sessionStorage.removeItem('access_token');

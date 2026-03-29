@@ -265,6 +265,7 @@ export function UserForm({
                   <FormItem>
                     <FormLabel>
                       {t('userManagement.form.username')}
+                      {!isEditMode && <span className="text-destructive ml-1">*</span>}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -286,6 +287,7 @@ export function UserForm({
                   <FormItem>
                     <FormLabel>
                       {t('userManagement.form.email')}
+                      {!isEditMode && <span className="text-destructive ml-1">*</span>}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -308,6 +310,7 @@ export function UserForm({
                   <FormItem>
                     <FormLabel>
                       {t('userManagement.form.password')}
+                      <span className="text-destructive ml-1">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input

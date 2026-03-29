@@ -6,8 +6,8 @@ import { getLocalizedText } from '@/lib/localized-error';
 export const useActiveUsers = () => {
   return useQuery({
     queryKey: queryKeys.activeUsers(),
-    queryFn: async () => {
-      const response = await authApi.getActiveUsers();
+    queryFn: async ({ signal }) => {
+      const response = await authApi.getActiveUsers({ signal });
       if (response.success && response.data) {
         return response.data;
       }
@@ -16,4 +16,3 @@ export const useActiveUsers = () => {
     staleTime: 5 * 60 * 1000,
   });
 };
-

@@ -19,6 +19,7 @@ function normalizeStats(data: Record<string, unknown>): HangfireStatsDto {
     servers: Number(data.Servers ?? data.servers ?? 0),
     queues: Number(data.Queues ?? data.queues ?? 0),
     timestamp: String(data.Timestamp ?? data.timestamp ?? new Date().toISOString()),
+    lastStockSyncAt: data.LastStockSyncAt ? String(data.LastStockSyncAt) : data.lastStockSyncAt ? String(data.lastStockSyncAt) : undefined,
   };
 }
 
@@ -99,6 +100,15 @@ export const hangfireMonitoringApi = {
         hasNextPage: false,
       }),
       data: normalizeJobs(data?.data),
+    };
+  },
+
+  async triggerStockSync(): Promise<{ jobId: string; queue: string; enqueuedAtUtc: string }> {
+    const response = await api.post<ApiResponse<{ JobId?: string; Queue?: string; EnqueuedAtUtc?: string }>>('/api/hangfire/stock-sync', {});
+    return {
+      jobId: String(response.data?.JobId ?? ''),
+      queue: String(response.data?.Queue ?? 'default'),
+      enqueuedAtUtc: String(response.data?.EnqueuedAtUtc ?? new Date().toISOString()),
     };
   },
 };

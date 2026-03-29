@@ -6,13 +6,12 @@ import { TRANSFER_QUERY_KEYS } from '../utils/query-keys';
 export function useAssignedTransferOrderLines(headerId: number | null) {
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.ASSIGNED_ORDER_LINES, headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) throw createRequiredIdError('header');
-      return transferApi.getAssignedOrderLines(headerId);
+      return transferApi.getAssignedOrderLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,
   });
 }
-
 

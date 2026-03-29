@@ -10,7 +10,7 @@ export const useProjects = () => {
 
   const query = useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.PROJECTS],
-    queryFn: () => goodsReceiptApi.getProjects(),
+    queryFn: ({ signal }) => goodsReceiptApi.getProjects({ signal }),
     staleTime: 20 * 60 * 1000,
   });
 

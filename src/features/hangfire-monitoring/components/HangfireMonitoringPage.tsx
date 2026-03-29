@@ -1,6 +1,7 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
+import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
 import { useHangfireDeadLetterPagedQuery, useHangfireFailedPagedQuery, useHangfireStatsQuery } from '../hooks/useHangfireMonitoring';
 import type { HangfireJobItemDto } from '../types/hangfireMonitoring.types';
 
@@ -184,6 +186,7 @@ function HangfireGrid({
 export function HangfireMonitoringPage(): ReactElement {
   const { t } = useTranslation(['hangfire-monitoring', 'common']);
   const { setPageTitle } = useUIStore();
+  const [isTriggeringSync, setIsTriggeringSync] = useState(false);
 
   const statsQuery = useHangfireStatsQuery();
   const failedGrid = usePagedDataGrid<HangfireColumnKey>({ pageKey: 'hangfire-failed-grid', defaultSortBy: 'jobId', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
@@ -198,6 +201,19 @@ export function HangfireMonitoringPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const handleTriggerStockSync = async (): Promise<void> => {
+    try {
+      setIsTriggeringSync(true);
+      const result = await hangfireMonitoringApi.triggerStockSync();
+      toast.success(t('manualSync.success', { defaultValue: `Stok senkronu kuyruğa alındı. JobId: ${result.jobId}` }));
+      await Promise.all([statsQuery.refetch(), failedQuery.refetch(), deadLetterQuery.refetch()]);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('manualSync.error', { defaultValue: 'Stok senkronu kuyruğa alınamadı.' }));
+    } finally {
+      setIsTriggeringSync(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('common:sidebar.accessControl') }, { label: t('menu'), isActive: true }]} />
@@ -207,17 +223,24 @@ export function HangfireMonitoringPage(): ReactElement {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{t('title')}</h1>
           <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{t('description')}</p>
         </div>
-        <Button variant="outline" onClick={() => void Promise.all([statsQuery.refetch(), failedQuery.refetch(), deadLetterQuery.refetch()])}>
-          <RefreshCw size={18} className="mr-2" />
-          {t('refresh')}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleTriggerStockSync} disabled={isTriggeringSync}>
+            <RefreshCw size={18} className={`mr-2 ${isTriggeringSync ? 'animate-spin' : ''}`} />
+            {t('manualSync.button', { defaultValue: 'Stok Sync Çalıştır' })}
+          </Button>
+          <Button variant="outline" onClick={() => void Promise.all([statsQuery.refetch(), failedQuery.refetch(), deadLetterQuery.refetch()])}>
+            <RefreshCw size={18} className="mr-2" />
+            {t('refresh')}
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
         <Card><CardHeader><CardTitle>{t('stats.enqueued')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.enqueued ?? 0}</CardContent></Card>
         <Card><CardHeader><CardTitle>{t('stats.processing')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.processing ?? 0}</CardContent></Card>
         <Card><CardHeader><CardTitle>{t('stats.succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
         <Card><CardHeader><CardTitle>{t('stats.failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
+        <Card><CardHeader><CardTitle>{t('stats.lastStockSync', { defaultValue: 'Son Stok Sync' })}</CardTitle></CardHeader><CardContent className="text-sm font-medium">{formatDate(statsQuery.data?.lastStockSyncAt)}</CardContent></Card>
       </div>
 
       <HangfireGrid

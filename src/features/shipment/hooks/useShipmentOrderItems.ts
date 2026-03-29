@@ -5,7 +5,7 @@ import { SHIPMENT_QUERY_KEYS } from '../utils/query-keys';
 export const useShipmentOrderItems = (orderNumbers: string | undefined) => {
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.ORDER_ITEMS, orderNumbers],
-    queryFn: () => shipmentApi.getOrderItems(orderNumbers!),
+    queryFn: ({ signal }) => shipmentApi.getOrderItems(orderNumbers!, { signal }),
     enabled: !!orderNumbers,
     staleTime: 5 * 60 * 1000,
   });

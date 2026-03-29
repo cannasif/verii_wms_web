@@ -9,7 +9,7 @@ export function useAssignedTransferHeaders(params: PagedParams = {}) {
 
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.ASSIGNED_HEADERS, userId, params],
-    queryFn: () => transferApi.getAssignedHeaders(userId || 0, params),
+    queryFn: ({ signal }) => transferApi.getAssignedHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });

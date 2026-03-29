@@ -50,7 +50,7 @@ export function Step2StockSelection({
 
   const { data: allOrderItems } = useQuery({
     queryKey: ['allOrderItems', customerCode, allOrderNumbers],
-    queryFn: () => goodsReceiptApi.getOrderItems(customerCode!, allOrderNumbers),
+    queryFn: ({ signal }) => goodsReceiptApi.getOrderItems(customerCode!, allOrderNumbers, { signal }),
     enabled: !!customerCode && !!allOrderNumbers,
     staleTime: 5 * 60 * 1000,
   });

@@ -3,11 +3,17 @@
   "title": "Hangfire Monitoring",
   "description": "Observe job health, failed jobs and dead-letter queue.",
   "refresh": "Refresh",
+  "manualSync": {
+    "button": "Run Stock Sync",
+    "success": "Stock sync queued. JobId: {{jobId}}",
+    "error": "Stock sync could not be queued."
+  },
   "stats": {
     "enqueued": "Enqueued",
     "processing": "Processing",
     "succeeded": "Succeeded",
-    "failed": "Failed"
+    "failed": "Failed",
+    "lastStockSync": "Last Stock Sync"
   },
   "table": {
     "jobId": "Job ID",

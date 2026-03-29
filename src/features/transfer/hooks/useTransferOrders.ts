@@ -5,7 +5,7 @@ import { TRANSFER_QUERY_KEYS } from '../utils/query-keys';
 export const useTransferOrders = (customerCode: string | undefined) => {
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.ORDERS, customerCode],
-    queryFn: () => transferApi.getOrdersByCustomer(customerCode!),
+    queryFn: ({ signal }) => transferApi.getOrdersByCustomer(customerCode!, { signal }),
     enabled: !!customerCode,
     staleTime: 5 * 60 * 1000,
   });

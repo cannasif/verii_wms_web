@@ -20,6 +20,7 @@ import { buildSubcontractingIssueRequest, buildSubcontractingReceiptRequest } fr
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -35,26 +36,27 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const subcontractingApi = {
-  getReceiptOrdersByCustomer: async (customerCode: string): Promise<SubcontractingOrdersResponse> => {
-    return await api.get<SubcontractingOrdersResponse>(`/api/SrtFunction/headers/${customerCode}`);
+  getReceiptOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<SubcontractingOrdersResponse> => {
+    return await api.get<SubcontractingOrdersResponse>(`/api/SrtFunction/headers/${customerCode}`, options);
   },
 
-  getReceiptOrderItems: async (orderNumbers: string): Promise<SubcontractingOrderItemsResponse> => {
-    return await api.get<SubcontractingOrderItemsResponse>(`/api/SrtFunction/lines/${orderNumbers}`);
+  getReceiptOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<SubcontractingOrderItemsResponse> => {
+    return await api.get<SubcontractingOrderItemsResponse>(`/api/SrtFunction/lines/${orderNumbers}`, options);
   },
 
-  getIssueOrdersByCustomer: async (customerCode: string): Promise<SubcontractingOrdersResponse> => {
-    return await api.get<SubcontractingOrdersResponse>(`/api/SitFunction/headers/${customerCode}`);
+  getIssueOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<SubcontractingOrdersResponse> => {
+    return await api.get<SubcontractingOrdersResponse>(`/api/SitFunction/headers/${customerCode}`, options);
   },
 
-  getIssueOrderItems: async (orderNumbers: string): Promise<SubcontractingOrderItemsResponse> => {
-    return await api.get<SubcontractingOrderItemsResponse>(`/api/SitFunction/lines/${orderNumbers}`);
+  getIssueOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<SubcontractingOrderItemsResponse> => {
+    return await api.get<SubcontractingOrderItemsResponse>(`/api/SitFunction/lines/${orderNumbers}`, options);
   },
 
-  getAssignedSitHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getAssignedSitHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       `/api/SitHeader/assigned/${userId}/paged`,
       buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      options,
     );
     if (response.success && response.data) {
       return response.data;
@@ -62,10 +64,11 @@ export const subcontractingApi = {
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedIssueHeadersLoadFailed'));
   },
 
-  getAssignedSrtHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getAssignedSrtHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       `/api/SrtHeader/assigned/${userId}/paged`,
       buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      options,
     );
     if (response.success && response.data) {
       return response.data;
@@ -73,17 +76,18 @@ export const subcontractingApi = {
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingAssignedReceiptHeadersLoadFailed'));
   },
 
-  getAssignedSitOrderLines: async (headerId: number): Promise<AssignedSubcontractingOrderLinesResponse> => {
-    return await api.get<AssignedSubcontractingOrderLinesResponse>(`/api/SitHeader/getAssignedOrderLines/${headerId}`);
+  getAssignedSitOrderLines: async (headerId: number, options?: ApiRequestOptions): Promise<AssignedSubcontractingOrderLinesResponse> => {
+    return await api.get<AssignedSubcontractingOrderLinesResponse>(`/api/SitHeader/getAssignedOrderLines/${headerId}`, options);
   },
 
-  getAssignedSrtOrderLines: async (headerId: number): Promise<AssignedSubcontractingOrderLinesResponse> => {
-    return await api.get<AssignedSubcontractingOrderLinesResponse>(`/api/SrtHeader/getAssignedOrderLines/${headerId}`);
+  getAssignedSrtOrderLines: async (headerId: number, options?: ApiRequestOptions): Promise<AssignedSubcontractingOrderLinesResponse> => {
+    return await api.get<AssignedSubcontractingOrderLinesResponse>(`/api/SrtHeader/getAssignedOrderLines/${headerId}`, options);
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
+  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
     return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup }
+      params: { bar: barcode, barkodGrubu: barcodeGroup },
+      ...options,
     });
   },
 
@@ -95,12 +99,12 @@ export const subcontractingApi = {
     return await api.post<AddBarcodeResponse>('/api/SrtImportLine/addBarcodeBasedonAssignedOrder', request);
   },
 
-  getSitCollectedBarcodes: async (headerId: number): Promise<CollectedBarcodesResponse> => {
-    return await api.get<CollectedBarcodesResponse>(`/api/SitImportLine/warehouseShipmentOrderCollectedBarcodes/${headerId}`);
+  getSitCollectedBarcodes: async (headerId: number, options?: ApiRequestOptions): Promise<CollectedBarcodesResponse> => {
+    return await api.get<CollectedBarcodesResponse>(`/api/SitImportLine/warehouseShipmentOrderCollectedBarcodes/${headerId}`, options);
   },
 
-  getSrtCollectedBarcodes: async (headerId: number): Promise<CollectedBarcodesResponse> => {
-    return await api.get<CollectedBarcodesResponse>(`/api/SrtImportLine/warehouseShipmentOrderCollectedBarcodes/${headerId}`);
+  getSrtCollectedBarcodes: async (headerId: number, options?: ApiRequestOptions): Promise<CollectedBarcodesResponse> => {
+    return await api.get<CollectedBarcodesResponse>(`/api/SrtImportLine/warehouseShipmentOrderCollectedBarcodes/${headerId}`, options);
   },
 
   completeSit: async (headerId: number): Promise<ApiResponse<unknown>> => {
@@ -127,74 +131,75 @@ export const subcontractingApi = {
     return await api.post<ApiResponse<unknown>>('/api/SrtHeader/generate', request);
   },
 
-  getReceiptHeaders: async (): Promise<SubcontractingHeadersResponse> => {
-    const data = await subcontractingApi.getReceiptHeadersPaged();
+  getReceiptHeaders: async (options?: ApiRequestOptions): Promise<SubcontractingHeadersResponse> => {
+    const data = await subcontractingApi.getReceiptHeadersPaged({}, options);
     return toLegacyCollectionResponse(data, 'Taşeron alış listesi yüklendi');
   },
 
-  getIssueHeaders: async (): Promise<SubcontractingHeadersResponse> => {
-    const data = await subcontractingApi.getIssueHeadersPaged();
+  getIssueHeaders: async (options?: ApiRequestOptions): Promise<SubcontractingHeadersResponse> => {
+    const data = await subcontractingApi.getIssueHeadersPaged({}, options);
     return toLegacyCollectionResponse(data, 'Taşeron çıkış listesi yüklendi');
   },
 
-  getReceiptHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getReceiptHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const requestBody = buildPagedRequest(params);
 
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>('/api/SrtHeader/paged', requestBody);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>('/api/SrtHeader/paged', requestBody, options);
     if (response.success && response.data) {
       return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptHeadersLoadFailed'));
   },
 
-  getIssueHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getIssueHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const requestBody = buildPagedRequest(params);
 
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>('/api/SitHeader/paged', requestBody);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>('/api/SitHeader/paged', requestBody, options);
     if (response.success && response.data) {
       return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueHeadersLoadFailed'));
   },
 
-  getReceiptLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getReceiptLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş satırları yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptLinesLoadFailed'));
   },
 
-  getIssueLines: async (headerId: number): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getIssueLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış satırları yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueLinesLoadFailed'));
   },
 
-  getReceiptLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getReceiptLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş seri listesi yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptSerialsLoadFailed'));
   },
 
-  getIssueLineSerials: async (lineId: number): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getIssueLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış seri listesi yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueSerialsLoadFailed'));
   },
 
-  getAwaitingApprovalSitHeaders: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getAwaitingApprovalSitHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       '/api/SitHeader/completed-awaiting-erp-approval',
-      requestBody
+      requestBody,
+      options,
     );
     if (response.success && response.data) {
       return response.data;
@@ -202,12 +207,13 @@ export const subcontractingApi = {
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueApprovalLoadFailed'));
   },
 
-  getAwaitingApprovalSrtHeaders: async (params: PagedParams = {}): Promise<PagedResponse<SubcontractingHeader>> => {
+  getAwaitingApprovalSrtHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       '/api/SrtHeader/completed-awaiting-erp-approval',
-      requestBody
+      requestBody,
+      options,
     );
     if (response.success && response.data) {
       return response.data;

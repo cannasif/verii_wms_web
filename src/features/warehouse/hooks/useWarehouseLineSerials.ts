@@ -6,16 +6,15 @@ import { DocumentType } from '@/types/document-type';
 export function useWarehouseLineSerials(lineId: number | null, documentType: string) {
   return useQuery({
     queryKey: ['warehouse-line-serials', lineId, documentType],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!lineId) throw createRequiredIdError('line');
       if (documentType === DocumentType.WI) {
-        return warehouseApi.getInboundLineSerials(lineId);
+        return warehouseApi.getInboundLineSerials(lineId, { signal });
       } else {
-        return warehouseApi.getOutboundLineSerials(lineId);
+        return warehouseApi.getOutboundLineSerials(lineId, { signal });
       }
     },
     enabled: !!lineId,
     staleTime: 2 * 60 * 1000,
   });
 }
-

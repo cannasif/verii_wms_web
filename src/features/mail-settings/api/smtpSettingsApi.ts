@@ -2,6 +2,7 @@ import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
 import { getLocalizedText } from '@/lib/localized-error';
 import type { SmtpSettingsDto, UpdateSmtpSettingsDto } from '../types/smtpSettings';
+import type { ApiRequestOptions } from '@/lib/request-utils';
 
 const SMTP_SETTINGS_BASE = '/api/SmtpSettings';
 
@@ -12,8 +13,8 @@ function getErrorMessage(response: ApiResponse<unknown>, fallbackKey: string): s
 }
 
 export const smtpSettingsApi = {
-  get: async (): Promise<SmtpSettingsDto> => {
-    const response = await api.get<ApiResponse<SmtpSettingsDto>>(SMTP_SETTINGS_BASE);
+  get: async (options?: ApiRequestOptions): Promise<SmtpSettingsDto> => {
+    const response = await api.get<ApiResponse<SmtpSettingsDto>>(SMTP_SETTINGS_BASE, options);
     if (response.success === true && response.data) {
       return response.data;
     }

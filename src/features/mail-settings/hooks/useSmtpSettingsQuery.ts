@@ -7,7 +7,7 @@ const STALE_TIME_MS = 60 * 1000;
 export function useSmtpSettingsQuery() {
   return useQuery({
     queryKey: SMTP_SETTINGS_QUERY_KEY,
-    queryFn: () => smtpSettingsApi.get(),
+    queryFn: ({ signal }) => smtpSettingsApi.get({ signal }),
     staleTime: STALE_TIME_MS,
   });
 }

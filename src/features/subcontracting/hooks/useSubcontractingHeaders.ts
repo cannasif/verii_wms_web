@@ -6,7 +6,7 @@ import type { PagedParams } from '@/types/api';
 export function useSubcontractingReceiptHeaders() {
   return useQuery({
     queryKey: ['subcontracting-receipt-headers'],
-    queryFn: () => subcontractingApi.getReceiptHeaders(),
+    queryFn: ({ signal }) => subcontractingApi.getReceiptHeaders({ signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -14,7 +14,7 @@ export function useSubcontractingReceiptHeaders() {
 export function useSubcontractingIssueHeaders() {
   return useQuery({
     queryKey: ['subcontracting-issue-headers'],
-    queryFn: () => subcontractingApi.getIssueHeaders(),
+    queryFn: ({ signal }) => subcontractingApi.getIssueHeaders({ signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -22,7 +22,7 @@ export function useSubcontractingIssueHeaders() {
 export function useSubcontractingReceiptHeadersPaged(params: PagedParams = {}) {
   return useQuery({
     queryKey: ['subcontracting-receipt-headers-paged', params],
-    queryFn: () => subcontractingApi.getReceiptHeadersPaged(params),
+    queryFn: ({ signal }) => subcontractingApi.getReceiptHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -30,7 +30,7 @@ export function useSubcontractingReceiptHeadersPaged(params: PagedParams = {}) {
 export function useSubcontractingIssueHeadersPaged(params: PagedParams = {}) {
   return useQuery({
     queryKey: ['subcontracting-issue-headers-paged', params],
-    queryFn: () => subcontractingApi.getIssueHeadersPaged(params),
+    queryFn: ({ signal }) => subcontractingApi.getIssueHeadersPaged(params, { signal }),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -40,7 +40,7 @@ export function useAssignedSitHeaders() {
 
   return useQuery({
     queryKey: ['assigned-sit-headers', userId],
-    queryFn: () => subcontractingApi.getAssignedSitHeaders(userId || 0),
+    queryFn: ({ signal }) => subcontractingApi.getAssignedSitHeaders(userId || 0, undefined, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
@@ -51,7 +51,7 @@ export function useAssignedSitHeadersPaged(params: PagedParams = {}) {
 
   return useQuery({
     queryKey: ['assigned-sit-headers', userId, params],
-    queryFn: () => subcontractingApi.getAssignedSitHeaders(userId || 0, params),
+    queryFn: ({ signal }) => subcontractingApi.getAssignedSitHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
@@ -62,7 +62,7 @@ export function useAssignedSrtHeaders() {
 
   return useQuery({
     queryKey: ['assigned-srt-headers', userId],
-    queryFn: () => subcontractingApi.getAssignedSrtHeaders(userId || 0),
+    queryFn: ({ signal }) => subcontractingApi.getAssignedSrtHeaders(userId || 0, undefined, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });
@@ -73,7 +73,7 @@ export function useAssignedSrtHeadersPaged(params: PagedParams = {}) {
 
   return useQuery({
     queryKey: ['assigned-srt-headers', userId, params],
-    queryFn: () => subcontractingApi.getAssignedSrtHeaders(userId || 0, params),
+    queryFn: ({ signal }) => subcontractingApi.getAssignedSrtHeaders(userId || 0, params, { signal }),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,
   });

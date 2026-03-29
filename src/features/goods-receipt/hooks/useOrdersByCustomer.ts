@@ -9,7 +9,7 @@ export const useOrdersByCustomer = (customerCode: string | null) => {
 
   const query = useQuery({
     queryKey: ['orders', customerCode],
-    queryFn: () => goodsReceiptApi.getOrdersByCustomer(customerCode!),
+    queryFn: ({ signal }) => goodsReceiptApi.getOrdersByCustomer(customerCode!, { signal }),
     enabled: !!customerCode,
     staleTime: 5 * 60 * 1000,
   });

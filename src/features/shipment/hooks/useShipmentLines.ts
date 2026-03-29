@@ -6,9 +6,9 @@ import { SHIPMENT_QUERY_KEYS } from '../utils/query-keys';
 export function useShipmentLines(headerId: number | null) {
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.LINES, headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) throw createRequiredIdError('header');
-      return shipmentApi.getLines(headerId);
+      return shipmentApi.getLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,

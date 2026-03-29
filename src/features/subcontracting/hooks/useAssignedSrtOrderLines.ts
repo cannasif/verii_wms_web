@@ -5,12 +5,11 @@ import { subcontractingApi } from '../api/subcontracting-api';
 export function useAssignedSrtOrderLines(headerId: number | null) {
   return useQuery({
     queryKey: ['assigned-srt-order-lines', headerId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!headerId) throw createRequiredIdError('header');
-      return subcontractingApi.getAssignedSrtOrderLines(headerId);
+      return subcontractingApi.getAssignedSrtOrderLines(headerId, { signal });
     },
     enabled: !!headerId,
     staleTime: 2 * 60 * 1000,
   });
 }
-

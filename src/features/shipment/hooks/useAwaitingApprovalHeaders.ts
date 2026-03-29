@@ -6,7 +6,7 @@ import type { PagedParams } from '@/types/api';
 export function useAwaitingApprovalShipmentHeaders(params: PagedParams = {}) {
   return useQuery({
     queryKey: [SHIPMENT_QUERY_KEYS.AWAITING_APPROVAL_HEADERS, params],
-    queryFn: () => shipmentApi.getAwaitingApprovalHeaders(params),
+    queryFn: ({ signal }) => shipmentApi.getAwaitingApprovalHeaders(params, { signal }),
     staleTime: 30 * 1000,
   });
 }

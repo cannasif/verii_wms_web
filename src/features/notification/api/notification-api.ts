@@ -3,6 +3,7 @@ import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
 import type { ApiResponse, PagedResponse } from '@/types/api';
 import type { NotificationDto, CreateNotificationRequest, GetPagedNotificationsRequest } from '../types/notification';
+import type { ApiRequestOptions } from '@/lib/request-utils';
 
 type NotificationApiRecord = Record<string, unknown>;
 
@@ -54,20 +55,20 @@ const mapNotification = (item: NotificationApiRecord): NotificationDto => ({
 });
 
 export const notificationApi = {
-  getByUserId: async (userId?: number): Promise<NotificationDto[]> => {
+  getByUserId: async (userId?: number, options?: ApiRequestOptions): Promise<NotificationDto[]> => {
     const url = userId ? `/api/notification/user/${userId}` : '/api/notification/user';
-    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url);
+    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url, options);
     if (response.success && response.data) {
       return response.data.map(mapNotification);
     }
     throw new Error(response.message || getLocalizedText('common.errors.notificationsLoadFailed'));
   },
 
-  getByTerminalUserId: async (terminalUserId?: number): Promise<NotificationDto[]> => {
+  getByTerminalUserId: async (terminalUserId?: number, options?: ApiRequestOptions): Promise<NotificationDto[]> => {
     const url = terminalUserId 
       ? `/api/notification/terminal-user/${terminalUserId}` 
       : '/api/notification/terminal-user';
-    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url);
+    const response = await api.get<ApiResponse<NotificationApiRecord[]>>(url, options);
     if (response.success && response.data) {
       return response.data.map(mapNotification);
     }
@@ -90,10 +91,11 @@ export const notificationApi = {
   },
 
   getPagedNotifications: async (
-    params: GetPagedNotificationsRequest = {}
+    params: GetPagedNotificationsRequest = {},
+    options?: ApiRequestOptions,
   ): Promise<PagedResponse<NotificationDto>> => {
     const requestBody = buildPagedRequest(params, { pageNumber: 1 });
-    const response = await api.post<ApiResponse<PagedResponse<NotificationApiRecord>>>('/api/notification/user/paged', requestBody);
+    const response = await api.post<ApiResponse<PagedResponse<NotificationApiRecord>>>('/api/notification/user/paged', requestBody, options);
     if (response.success && response.data) {
       return {
         ...response.data,

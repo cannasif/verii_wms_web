@@ -22,6 +22,7 @@ import { buildTransferGenerateRequest } from '../utils/transfer-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
   return {
@@ -37,15 +38,15 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const transferApi = {
-  getOrdersByCustomer: async (customerCode: string): Promise<TransferOrdersResponse> => {
-    return await api.get<TransferOrdersResponse>(`/api/WtFunction/headers/${customerCode}`);
+  getOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<TransferOrdersResponse> => {
+    return await api.get<TransferOrdersResponse>(`/api/WtFunction/headers/${customerCode}`, options);
   },
 
-  getOrderItems: async (orderNumbers: string): Promise<TransferOrderItemsResponse> => {
-    return await api.get<TransferOrderItemsResponse>(`/api/WtFunction/lines/${orderNumbers}`);
+  getOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<TransferOrderItemsResponse> => {
+    return await api.get<TransferOrderItemsResponse>(`/api/WtFunction/lines/${orderNumbers}`, options);
   },
 
-  getAssignedHeaders: async (userId: number, params: PagedParams = {}): Promise<PagedResponse<TransferHeader>> => {
+  getAssignedHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<TransferHeader>> => {
     const requestBody = buildPagedRequest(params, {
       pageNumber: 0,
       sortBy: 'Id',
@@ -54,7 +55,8 @@ export const transferApi = {
 
     const response = await api.post<ApiResponse<PagedResponse<TransferHeader>>>(
       `/api/WtHeader/assigned/${userId}/paged`,
-      requestBody
+      requestBody,
+      options,
     );
     if (response.success && response.data) {
       return response.data;
@@ -62,8 +64,8 @@ export const transferApi = {
     throw new Error(response.message || getLocalizedText('common.errors.transferAssignedHeadersLoadFailed'));
   },
 
-  getAssignedOrderLines: async (headerId: number): Promise<AssignedTransferOrderLinesResponse> => {
-    return await api.get<AssignedTransferOrderLinesResponse>(`/api/WtHeader/getAssignedTransferOrderLines/${headerId}`);
+  getAssignedOrderLines: async (headerId: number, options?: ApiRequestOptions): Promise<AssignedTransferOrderLinesResponse> => {
+    return await api.get<AssignedTransferOrderLinesResponse>(`/api/WtHeader/getAssignedTransferOrderLines/${headerId}`, options);
   },
 
   createTransfer: async (
@@ -75,40 +77,41 @@ export const transferApi = {
     return await api.post<ApiResponse<unknown>>('/api/WtHeader/generate', request);
   },
 
-  getHeaders: async (): Promise<TransferHeadersResponse> => {
-    const data = await transferApi.getHeadersPaged();
+  getHeaders: async (options?: ApiRequestOptions): Promise<TransferHeadersResponse> => {
+    const data = await transferApi.getHeadersPaged({}, options);
     return toLegacyCollectionResponse(data, 'Transfer listesi yüklendi');
   },
 
-  getHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<TransferHeader>> => {
+  getHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<TransferHeader>> => {
     const requestBody = buildPagedRequest(params);
 
-    const response = await api.post<ApiResponse<PagedResponse<TransferHeader>>>('/api/WtHeader/paged', requestBody);
+    const response = await api.post<ApiResponse<PagedResponse<TransferHeader>>>('/api/WtHeader/paged', requestBody, options);
     if (response.success && response.data) {
       return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferHeadersLoadFailed'));
   },
 
-  getLines: async (headerId: number): Promise<TransferLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getLines: async (headerId: number, options?: ApiRequestOptions): Promise<TransferLinesResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer satırları yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferLinesLoadFailed'));
   },
 
-  getLineSerials: async (lineId: number): Promise<TransferLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }));
+  getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<TransferLineSerialsResponse> => {
+    const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Transfer seri listesi yüklendi');
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferSerialsLoadFailed'));
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
+  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
     return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup }
+      params: { bar: barcode, barkodGrubu: barcodeGroup },
+      ...options,
     });
   },
 
@@ -116,8 +119,8 @@ export const transferApi = {
     return await api.post<AddBarcodeResponse>('/api/WtImportLine/addBarcodeBasedonAssignedOrder', request);
   },
 
-  getCollectedBarcodes: async (headerId: number): Promise<CollectedBarcodesResponse> => {
-    return await api.get<CollectedBarcodesResponse>(`/api/WtImportLine/warehouseTransferOrderCollectedBarcodes/${headerId}`);
+  getCollectedBarcodes: async (headerId: number, options?: ApiRequestOptions): Promise<CollectedBarcodesResponse> => {
+    return await api.get<CollectedBarcodesResponse>(`/api/WtImportLine/warehouseTransferOrderCollectedBarcodes/${headerId}`, options);
   },
 
   deleteRoute: async (routeId: number): Promise<ApiResponse<boolean>> => {
@@ -128,12 +131,13 @@ export const transferApi = {
     return await api.post<ApiResponse<unknown>>(`/api/WtHeader/complete/${headerId}`);
   },
 
-  getAwaitingApprovalHeaders: async (params: PagedParams = {}): Promise<PagedResponse<AwaitingApprovalHeader>> => {
+  getAwaitingApprovalHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<AwaitingApprovalHeader>> => {
     const requestBody = buildPagedRequest(params);
 
     const response = await api.post<ApiResponse<PagedResponse<AwaitingApprovalHeader>>>(
       '/api/WtHeader/completed-awaiting-erp-approval',
-      requestBody
+      requestBody,
+      options,
     );
     if (response.success && response.data) {
       return response.data;

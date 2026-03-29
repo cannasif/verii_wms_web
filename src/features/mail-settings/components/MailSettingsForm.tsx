@@ -142,12 +142,12 @@ export function MailSettingsForm({
                 </FormItem>
               )}
             />
-            <FormField
+              <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Fields.Username')}</FormLabel>
+                  <FormLabel>{t('Fields.Username')} *</FormLabel>
                   <FormControl>
                     <Input type="text" {...field} />
                   </FormControl>

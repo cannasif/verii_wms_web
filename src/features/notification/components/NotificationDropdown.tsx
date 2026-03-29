@@ -11,6 +11,7 @@ import { useNotificationStore } from '../stores/notification-store';
 import { notificationApi } from '../api/notification-api';
 import { NotificationItem } from './NotificationItem';
 import { debounce } from '@/lib/utils/debounce';
+import { notificationService } from '../services/notification-service';
 
 interface NotificationDropdownProps {
   children: ReactElement;
@@ -37,13 +38,14 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
   } = useNotificationStore();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
   const currentLanguageRef = useRef(i18n.language);
+  const hasLoadedForOpenRef = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const loadInitialNotifications = useCallback(async (): Promise<void> => {
-    if (notifications.length > 0 && currentPage > 0) return;
+    if (hasLoadedForOpenRef.current) return;
     
+    hasLoadedForOpenRef.current = true;
     setLoading(true);
     
     try {
@@ -59,10 +61,11 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       setUnreadCount(response.totalCount);
     } catch {
       // Initial load failures are handled by the shared notification connection flow.
+      hasLoadedForOpenRef.current = false;
     } finally {
       setLoading(false);
     }
-  }, [notifications.length, currentPage, setLoading, setNotifications, setPaginationState, setUnreadCount]);
+  }, [setLoading, setNotifications, setPaginationState, setUnreadCount]);
 
   const loadMoreNotifications = useCallback(async (): Promise<void> => {
     if (!hasNextPage || isLoadingMore || isLoading) return;
@@ -125,32 +128,15 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
   }, [isOpen]);
 
   useEffect(() => {
-    const trigger = loadMoreTriggerRef.current;
-    const container = scrollContainerRef.current;
-    if (!trigger || !hasNextPage || !container || !isOpen) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !isLoadingMore && !isLoading) {
-          loadMoreNotifications();
-        }
-      },
-      { root: container, rootMargin: '200px', threshold: 0.1 }
-    );
-    
-    observer.observe(trigger);
-    return () => observer.disconnect();
-  }, [hasNextPage, isLoadingMore, isLoading, loadMoreNotifications, isOpen]);
-
-  useEffect(() => {
-    if (isOpen && notifications.length === 0 && !isLoading) {
+    if (isOpen && !isLoading) {
       loadInitialNotifications();
     }
-  }, [isOpen, notifications.length, isLoading, loadInitialNotifications]);
+  }, [isOpen, isLoading, loadInitialNotifications]);
 
   useEffect(() => {
     if (currentLanguageRef.current !== i18n.language) {
       currentLanguageRef.current = i18n.language;
+      hasLoadedForOpenRef.current = false;
       clearNotifications();
       if (isOpen) {
         loadInitialNotifications();
@@ -160,6 +146,19 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
   const handleOpenChange = (open: boolean): void => {
     setIsOpen(open);
+
+    if (open) {
+      hasLoadedForOpenRef.current = false;
+      notificationService.connect().catch(() => {
+        // Connection failures should not block manual notification loading.
+      });
+      return;
+    }
+
+    hasLoadedForOpenRef.current = false;
+    notificationService.disconnect().catch(() => {
+      // Disconnect failures should not break the dropdown close flow.
+    });
   };
 
   const handleMarkAllAsRead = async (): Promise<void> => {
@@ -222,9 +221,6 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
                   {notifications.map((notification) => (
                     <NotificationItem key={notification.id} notification={notification} />
                   ))}
-                  {hasNextPage && (
-                    <div ref={loadMoreTriggerRef} className="h-4" />
-                  )}
                   {isLoadingMore && (
                     <div className="p-4 text-center text-sm text-muted-foreground">
                       {t('notification.loading')}

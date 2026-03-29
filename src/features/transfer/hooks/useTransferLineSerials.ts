@@ -6,12 +6,11 @@ import { TRANSFER_QUERY_KEYS } from '../utils/query-keys';
 export function useTransferLineSerials(lineId: number | null) {
   return useQuery({
     queryKey: [TRANSFER_QUERY_KEYS.LINE_SERIALS, lineId],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!lineId) throw createRequiredIdError('line');
-      return transferApi.getLineSerials(lineId);
+      return transferApi.getLineSerials(lineId, { signal });
     },
     enabled: !!lineId,
     staleTime: 2 * 60 * 1000,
   });
 }
-
