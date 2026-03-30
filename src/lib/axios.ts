@@ -24,6 +24,48 @@ export const api = axios.create({
   },
 });
 
+function shouldSkipBranchInjection(payload: unknown): boolean {
+  return payload == null
+    || typeof payload !== 'object'
+    || payload instanceof FormData
+    || payload instanceof Blob
+    || payload instanceof ArrayBuffer;
+}
+
+function shouldReplaceBranchCode(value: unknown): boolean {
+  return value == null
+    || (typeof value === 'string' && (value.trim() === '' || value.trim() === '0'))
+    || (typeof value === 'number' && value === 0);
+}
+
+function applyBranchCodeToPayload(payload: unknown, branchCode: string, visited = new WeakSet<object>()): void {
+  if (shouldSkipBranchInjection(payload)) {
+    return;
+  }
+
+  if (Array.isArray(payload)) {
+    for (const item of payload) {
+      applyBranchCodeToPayload(item, branchCode, visited);
+    }
+    return;
+  }
+
+  const target = payload as Record<string, unknown>;
+  if (visited.has(target)) {
+    return;
+  }
+
+  visited.add(target);
+
+  if (Object.prototype.hasOwnProperty.call(target, 'branchCode') && shouldReplaceBranchCode(target.branchCode)) {
+    target.branchCode = branchCode;
+  }
+
+  for (const value of Object.values(target)) {
+    applyBranchCodeToPayload(value, branchCode, visited);
+  }
+}
+
 function normalizeApiEnvelope(payload: unknown): unknown {
   if (
     (typeof Blob !== 'undefined' && payload instanceof Blob) ||
@@ -109,6 +151,7 @@ api.interceptors.request.use((config) => {
     const branch = useAuthStore.getState().branch;
     if (branch?.code) {
       config.headers['X-Branch-Code'] = branch.code;
+      applyBranchCodeToPayload(config.data, branch.code);
     }
   }
 

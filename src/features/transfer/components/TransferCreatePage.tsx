@@ -95,16 +95,11 @@ export function TransferCreatePage(): ReactElement {
 
   const handleToggleItem = (item: TransferOrderItem | Product): void => {
     setSelectedItems((prev) => {
-      const existingIndex = prev.findIndex((si) => {
-        if (transferMode === 'order') {
-          return 'id' in si && si.id === (item as TransferOrderItem).id;
-        }
-        return 'stockCode' in si && si.stockCode === (item as Product).stokKodu;
-      });
-      if (existingIndex >= 0) {
-        return prev.filter((_, idx) => idx !== existingIndex);
-      }
       if (transferMode === 'order') {
+        const existingIndex = prev.findIndex((si) => 'id' in si && si.id === (item as TransferOrderItem).id);
+        if (existingIndex >= 0) {
+          return prev.filter((_, idx) => idx !== existingIndex);
+        }
         const orderItem = item as TransferOrderItem;
         return [
           ...prev,
@@ -119,7 +114,7 @@ export function TransferCreatePage(): ReactElement {
         return [
           ...prev,
           {
-            id: `stock-${product.stokKodu}`,
+            id: `stock-${product.stokKodu}-${crypto.randomUUID()}`,
             stockCode: product.stokKodu,
             stockName: product.stokAdi,
             unit: product.olcuBr1,

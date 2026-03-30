@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/c
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProducts } from '@/features/goods-receipt/hooks/useProducts';
 import type { WarehouseFormData, SelectedWarehouseStockItem, WarehouseStockItem } from '../../types/warehouse';
@@ -62,6 +63,14 @@ export function Step2WarehouseStockSelection({
     });
   }, [searchSelectedQuery, selectedItems]);
 
+  const selectedCountsByStockCode = useMemo(() => {
+    const counts = new Map<string, number>();
+    selectedItems.forEach((item) => {
+      counts.set(item.stockCode, (counts.get(item.stockCode) || 0) + 1);
+    });
+    return counts;
+  }, [selectedItems]);
+
   if (!customerCode) {
     return (
       <Card>
@@ -106,7 +115,7 @@ export function Step2WarehouseStockSelection({
                 setSearchQuery={setSearchQuery}
                 productsLoading={productsLoading}
                 filteredProducts={filteredProducts}
-                selectedItems={selectedItems}
+                selectedCountsByStockCode={selectedCountsByStockCode}
                 onToggleItem={onToggleItem}
               />
             </TabsContent>
@@ -132,7 +141,7 @@ export function Step2WarehouseStockSelection({
               setSearchQuery={setSearchQuery}
               productsLoading={productsLoading}
               filteredProducts={filteredProducts}
-              selectedItems={selectedItems}
+              selectedCountsByStockCode={selectedCountsByStockCode}
               onToggleItem={onToggleItem}
             />
           </div>
@@ -161,7 +170,7 @@ function StockListPane({
   setSearchQuery,
   productsLoading,
   filteredProducts,
-  selectedItems,
+  selectedCountsByStockCode,
   onToggleItem,
 }: {
   t: TranslationFn;
@@ -169,7 +178,7 @@ function StockListPane({
   setSearchQuery: (value: string) => void;
   productsLoading: boolean;
   filteredProducts: WarehouseStockItem[];
-  selectedItems: SelectedWarehouseStockItem[];
+  selectedCountsByStockCode: Map<string, number>;
   onToggleItem: (item: WarehouseStockItem) => void;
 }): ReactElement {
   return (
@@ -195,14 +204,13 @@ function StockListPane({
           <div className="text-center py-8 text-sm text-muted-foreground">{t('common.notFound')}</div>
         ) : (
           filteredProducts.map((product) => {
-            const isSelected = selectedItems.some((item) => item.stockCode === product.stockCode);
+            const selectedCount = selectedCountsByStockCode.get(product.stockCode) || 0;
             return (
               <div
                 key={product.id}
-                className={`p-3 rounded-md border cursor-pointer transition-colors ${
-                  isSelected ? 'bg-primary/10 border-primary' : 'hover:bg-accent'
+                className={`p-3 rounded-md border transition-colors ${
+                  selectedCount > 0 ? 'bg-primary/10 border-primary' : 'hover:bg-accent'
                 }`}
-                onClick={() => onToggleItem(product)}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -214,11 +222,16 @@ function StockListPane({
                     </div>
                     <p className="text-sm font-medium truncate">{product.stockName}</p>
                   </div>
-                  {isSelected && (
-                    <Badge variant="default" className="shrink-0">
-                      {t('common.selected')}
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {selectedCount > 0 && (
+                      <Badge variant="default" className="shrink-0">
+                        {selectedCount}
+                      </Badge>
+                    )}
+                    <Button type="button" size="sm" onClick={() => onToggleItem(product)}>
+                      {t('common.add')}
+                    </Button>
+                  </div>
                 </div>
               </div>
             );

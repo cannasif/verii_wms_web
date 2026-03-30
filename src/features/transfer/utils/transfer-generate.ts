@@ -1,10 +1,15 @@
 import { DocumentType } from '@/types/document-type';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   TransferGenerateRequest,
   TransferFormData,
   SelectedTransferOrderItem,
   SelectedTransferStockItem,
 } from '../types/transfer';
+
+function getActiveBranchCode(): string {
+  return useAuthStore.getState().branch?.code?.trim() || '0';
+}
 
 export function buildTransferGenerateRequest(
   formData: TransferFormData,
@@ -60,7 +65,7 @@ export function buildTransferGenerateRequest(
 
   const request: TransferGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.WT,
@@ -89,5 +94,4 @@ export function buildTransferGenerateRequest(
 
   return request;
 }
-
 

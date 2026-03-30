@@ -745,7 +745,10 @@
       "errorLoadingOrders": "An error occurred while loading orders",
       "stockSelection": "Stock Selection",
       "searchStocks": "Search by stock code or name...",
-      "unit": "Unit"
+      "unit": "Unit",
+      "selectedItems": "Selected Items",
+      "selectedItemsCount": "{{count}} items",
+      "noSelectedItems": "No selected items yet"
     },
     "details": {
       "transferQuantity": "Transfer Quantity",

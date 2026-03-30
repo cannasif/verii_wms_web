@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/c
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProducts } from '../../hooks/useProducts';
 import { useOrdersByCustomer } from '../../hooks/useOrdersByCustomer';
@@ -77,6 +78,14 @@ export function Step2StockSelection({
     });
   }, [products, searchQuery]);
 
+  const selectedCountsByStockCode = useMemo(() => {
+    const counts = new Map<string, number>();
+    selectedItems.forEach((item) => {
+      counts.set(item.stockCode, (counts.get(item.stockCode) || 0) + 1);
+    });
+    return counts;
+  }, [selectedItems]);
+
 
   if (!customerCode) {
     return (
@@ -144,16 +153,15 @@ export function Step2StockSelection({
                     </div>
                   ) : (
                     filteredProducts.map((product) => {
-                      const isSelected = selectedItems.some((item) => item.stockCode === product.stokKodu);
+                      const selectedCount = selectedCountsByStockCode.get(product.stokKodu) || 0;
                       return (
                         <div
                           key={product.stokKodu}
-                          className={`p-3 rounded-md border cursor-pointer transition-colors ${
-                            isSelected
+                          className={`p-3 rounded-md border transition-colors ${
+                            selectedCount > 0
                               ? 'bg-primary/10 border-primary'
                               : 'hover:bg-accent'
                           }`}
-                          onClick={() => onToggleItem(product)}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
@@ -169,11 +177,16 @@ export function Step2StockSelection({
                                 {product.stokAdi}
                               </p>
                             </div>
-                            {isSelected && (
-                              <Badge variant="default" className="shrink-0">
-                                {t('common.selected')}
-                              </Badge>
-                            )}
+                            <div className="flex items-center gap-2 shrink-0">
+                              {selectedCount > 0 && (
+                                <Badge variant="default" className="shrink-0">
+                                  {selectedCount}
+                                </Badge>
+                              )}
+                              <Button type="button" size="sm" onClick={() => onToggleItem(product)}>
+                                {t('common.add')}
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       );
@@ -232,7 +245,7 @@ export function Step2StockSelection({
                         const product = products?.find((p) => p.stokKodu === item.stockCode);
                         const orderQuantity = stockOrderQuantities.get(item.stockCode) || 0;
                         const orderItem: OrderItem | null = product ? {
-                          id: item.stockCode,
+                            id: item.id,
                           mode: 'STOCK',
                           siparisNo: '',
                           orderID: 0,
@@ -259,13 +272,13 @@ export function Step2StockSelection({
                         if (!orderItem) return null;
                         return (
                           <ReceivingItemRow
-                            key={item.stockCode}
+                            key={item.id}
                             item={orderItem}
                             selectedItem={item}
                             warehouses={warehouses}
-                            onUpdateItem={(_, updates) => onUpdateItem(item.stockCode, updates)}
+                            onUpdateItem={(_, updates) => onUpdateItem(item.id, updates)}
                             onToggleItem={() => {}}
-                            onRemoveItem={() => onRemoveItem(item.stockCode)}
+                            onRemoveItem={() => onRemoveItem(item.id)}
                           />
                         );
                       })
@@ -307,16 +320,15 @@ export function Step2StockSelection({
                 </div>
               ) : (
                 filteredProducts.map((product) => {
-                  const isSelected = selectedItems.some((item) => item.stockCode === product.stokKodu);
+                  const selectedCount = selectedCountsByStockCode.get(product.stokKodu) || 0;
                   return (
                     <div
                       key={product.stokKodu}
-                      className={`p-3 rounded-md border cursor-pointer transition-colors ${
-                        isSelected
+                      className={`p-3 rounded-md border transition-colors ${
+                        selectedCount > 0
                           ? 'bg-primary/10 border-primary'
                           : 'hover:bg-accent'
                       }`}
-                      onClick={() => onToggleItem(product)}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
@@ -332,11 +344,16 @@ export function Step2StockSelection({
                             {product.stokAdi}
                           </p>
                         </div>
-                        {isSelected && (
-                          <Badge variant="default" className="shrink-0">
-                            {t('common.selected')}
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {selectedCount > 0 && (
+                            <Badge variant="default" className="shrink-0">
+                              {selectedCount}
+                            </Badge>
+                          )}
+                          <Button type="button" size="sm" onClick={() => onToggleItem(product)}>
+                            {t('common.add')}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -394,7 +411,7 @@ export function Step2StockSelection({
                       const product = products?.find((p) => p.stokKodu === item.stockCode);
                       const orderQuantity = stockOrderQuantities.get(item.stockCode) || 0;
                       const orderItem: OrderItem | null = product ? {
-                        id: item.stockCode,
+                        id: item.id,
                         mode: 'STOCK',
                         siparisNo: '',
                         orderID: 0,
@@ -421,13 +438,13 @@ export function Step2StockSelection({
                       if (!orderItem) return null;
                       return (
                         <ReceivingItemRow
-                          key={item.stockCode}
+                          key={item.id}
                           item={orderItem}
                           selectedItem={item}
                           warehouses={warehouses}
-                          onUpdateItem={(_, updates) => onUpdateItem(item.stockCode, updates)}
+                          onUpdateItem={(_, updates) => onUpdateItem(item.id, updates)}
                           onToggleItem={() => {}}
-                          onRemoveItem={() => onRemoveItem(item.stockCode)}
+                          onRemoveItem={() => onRemoveItem(item.id)}
                         />
                       );
                     })

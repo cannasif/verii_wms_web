@@ -751,7 +751,10 @@
       "errorLoadingOrders": "Siparişler yüklenirken hata oluştu",
       "stockSelection": "Stok Seçimi",
       "searchStocks": "Stok kodu veya adı ile ara...",
-      "unit": "Birim"
+      "unit": "Birim",
+      "selectedItems": "Seçilen Kalemler",
+      "selectedItemsCount": "{{count}} kalem ürün",
+      "noSelectedItems": "Henüz seçili kalem yok"
     },
     "details": {
       "transferQuantity": "Transfer Miktarı",

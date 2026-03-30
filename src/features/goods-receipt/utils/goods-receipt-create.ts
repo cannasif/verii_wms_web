@@ -1,4 +1,5 @@
 import { DocumentType } from '@/types/document-type';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   GoodsReceiptFormData,
   SelectedOrderItem,
@@ -12,6 +13,10 @@ function generateGuid(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+function getActiveBranchCode(): string {
+  return useAuthStore.getState().branch?.code?.trim() || '0';
 }
 
 export function buildGoodsReceiptBulkCreateRequest(
@@ -98,7 +103,7 @@ export function buildGoodsReceiptBulkCreateRequest(
 
   const request: BulkCreateRequest = {
     header: {
-      branchCode: '',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || undefined,
       orderId: isStockBased ? undefined : (selectedItems[0] && 'siparisNo' in selectedItems[0] ? selectedItems[0].siparisNo : undefined),
       documentType: DocumentType.GR,
@@ -124,5 +129,4 @@ export function buildGoodsReceiptBulkCreateRequest(
 
   return request;
 }
-
 

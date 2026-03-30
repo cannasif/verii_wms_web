@@ -26,7 +26,7 @@ export function TransferStockItemRow({
 }: TransferStockItemRowProps): ReactElement {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const itemId = `stock-${product.stokKodu}`;
+  const itemId = selectedItem?.id || `stock-${product.stokKodu}`;
   const quantity = selectedItem?.transferQuantity || 0;
 
   useEffect(() => {

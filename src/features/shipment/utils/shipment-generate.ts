@@ -1,9 +1,14 @@
 import { DocumentType } from '@/types/document-type';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   ShipmentGenerateRequest,
   ShipmentFormData,
   SelectedShipmentOrderItem,
 } from '../types/shipment';
+
+function getActiveBranchCode(): string {
+  return useAuthStore.getState().branch?.code?.trim() || '0';
+}
 
 export function buildShipmentGenerateRequest(
   formData: ShipmentFormData,
@@ -48,7 +53,7 @@ export function buildShipmentGenerateRequest(
 
   const request: ShipmentGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.SH,
@@ -79,5 +84,4 @@ export function buildShipmentGenerateRequest(
 
   return request;
 }
-
 

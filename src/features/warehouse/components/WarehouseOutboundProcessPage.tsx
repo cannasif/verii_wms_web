@@ -90,21 +90,15 @@ export function WarehouseOutboundProcessPage(): ReactElement {
   };
 
   const handleToggleItem = (item: WarehouseStockItem): void => {
-    setSelectedItems((prev) => {
-      const existingIndex = prev.findIndex((selected) => selected.stockCode === item.stockCode);
-      if (existingIndex >= 0) {
-        return prev.filter((_, index) => index !== existingIndex);
-      }
-
-      return [
-        ...prev,
-        {
-          ...item,
-          transferQuantity: 0,
-          isSelected: true,
-        },
-      ];
-    });
+    setSelectedItems((prev) => [
+      ...prev,
+      {
+        ...item,
+        id: `${item.stockCode}-${crypto.randomUUID()}`,
+        transferQuantity: 0,
+        isSelected: true,
+      },
+    ]);
   };
 
   const handleUpdateItem = (itemId: string, updates: Partial<SelectedWarehouseStockItem>): void => {

@@ -1,9 +1,14 @@
 import { DocumentType } from '@/types/document-type';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   SubcontractingGenerateRequest,
   SubcontractingFormData,
   SelectedSubcontractingOrderItem,
 } from '../types/subcontracting';
+
+function getActiveBranchCode(): string {
+  return useAuthStore.getState().branch?.code?.trim() || '0';
+}
 
 export function buildSubcontractingIssueRequest(
   formData: SubcontractingFormData,
@@ -48,7 +53,7 @@ export function buildSubcontractingIssueRequest(
 
   const request: SubcontractingGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.SIT,
@@ -123,7 +128,7 @@ export function buildSubcontractingReceiptRequest(
 
   const request: SubcontractingGenerateRequest = {
     header: {
-      branchCode: '0',
+      branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || '',
       orderId: '',
       documentType: DocumentType.SRT,
@@ -154,5 +159,4 @@ export function buildSubcontractingReceiptRequest(
 
   return request;
 }
-
 

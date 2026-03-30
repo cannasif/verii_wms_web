@@ -89,16 +89,11 @@ export function GoodsReceiptCreatePage(): ReactElement {
 
   const handleToggleItem = (item: OrderItem | Product): void => {
     setSelectedItems((prev) => {
-      const existingIndex = prev.findIndex((si) => {
-        if (receiptMode === 'order') {
-          return 'id' in si && si.id === (item as OrderItem).id;
-        }
-        return 'stockCode' in si && si.stockCode === (item as Product).stokKodu;
-      });
-      if (existingIndex >= 0) {
-        return prev.filter((_, idx) => idx !== existingIndex);
-      }
       if (receiptMode === 'order') {
+        const existingIndex = prev.findIndex((si) => 'id' in si && si.id === (item as OrderItem).id);
+        if (existingIndex >= 0) {
+          return prev.filter((_, idx) => idx !== existingIndex);
+        }
         const orderItem = item as OrderItem;
         return [
           ...prev,
@@ -113,7 +108,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
         return [
           ...prev,
           {
-            id: `stock-${product.stokKodu}`,
+            id: `stock-${product.stokKodu}-${crypto.randomUUID()}`,
             stockCode: product.stokKodu,
             stockName: product.stokAdi,
             unit: product.olcuBr1,
@@ -130,7 +125,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
       prev.map((item) => {
         const itemIdMatch = receiptMode === 'order' 
           ? ('id' in item && item.id === itemId)
-          : ('stockCode' in item && item.stockCode === itemId);
+          : ('id' in item && item.id === itemId);
         return itemIdMatch ? { ...item, ...updates } : item;
       })
     );
@@ -142,7 +137,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
         if (receiptMode === 'order') {
           return !('id' in item && item.id === itemId);
         }
-        return !('stockCode' in item && item.stockCode === itemId);
+        return !('id' in item && item.id === itemId);
       })
     );
   };
