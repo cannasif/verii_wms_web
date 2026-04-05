@@ -35,6 +35,7 @@ export function buildWarehouseInboundRequest(
     lines.push({
       clientKey,
       clientGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
       yapKod: item.yapKod || '',
@@ -77,9 +78,11 @@ export function buildWarehouseInboundRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
       customerName: '',
       sourceWarehouse: '',
+      targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse || '',
       priority: '',
       inboundType: formData.operationType || '',
@@ -110,6 +113,7 @@ export function buildWarehouseOutboundRequest(
     lines.push({
       clientKey,
       clientGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
       yapKod: item.yapKod || '',
@@ -152,8 +156,10 @@ export function buildWarehouseOutboundRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
       customerName: '',
+      sourceWarehouseId: formData.sourceWarehouseId,
       sourceWarehouse: formData.sourceWarehouse || '',
       targetWarehouse: '',
       priority: '',
@@ -181,18 +187,40 @@ export function buildWarehouseOutboundBulkRequest(
   const lines: WarehouseBulkCreateRequest['lines'] = [];
   const importLines: WarehouseBulkCreateRequest['importLines'] = [];
   const routes: WarehouseBulkCreateRequest['routes'] = [];
+  const importLineGroups = new Map<string, { clientKey: string; clientGroupGuid: string }>();
 
   positiveItems.forEach((item) => {
     const lineClientKey = crypto.randomUUID();
     const lineGroupGuid = crypto.randomUUID();
-    const importLineClientKey = crypto.randomUUID();
-    const importLineGroupGuid = crypto.randomUUID();
+    const normalizedYapKod = sanitizeText(item.yapKod || '', 50);
+    const importGroupingKey = `${item.stockCode}__${normalizedYapKod}`;
+    let importLineGroup = importLineGroups.get(importGroupingKey);
+    if (!importLineGroup) {
+      importLineGroup = {
+        clientKey: crypto.randomUUID(),
+        clientGroupGuid: crypto.randomUUID(),
+      };
+      importLineGroups.set(importGroupingKey, importLineGroup);
+      importLines.push({
+        clientKey: importLineGroup.clientKey,
+        clientGroupGuid: importLineGroup.clientGroupGuid,
+        stockId: item.stockId,
+        stockCode: item.stockCode,
+        yapKod: normalizedYapKod,
+        quantity: item.transferQuantity,
+        unit: sanitizeText(item.unit, 10),
+        erpOrderNumber: '',
+        erpOrderNo: '',
+        erpOrderLineNumber: '',
+      });
+    }
 
     lines.push({
       clientKey: lineClientKey,
       clientGuid: lineGroupGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
-      yapKod: '',
+      yapKod: normalizedYapKod,
       quantity: item.transferQuantity,
       unit: sanitizeText(item.unit, 10),
       erpOrderNo: '',
@@ -200,33 +228,17 @@ export function buildWarehouseOutboundBulkRequest(
       description: sanitizeText(item.stockName, 100),
     });
 
-    importLines.push({
-      clientKey: importLineClientKey,
-      clientGroupGuid: importLineGroupGuid,
-      lineClientKey,
-      lineGroupGuid,
+    routes.push({
+      importLineClientKey: importLineGroup.clientKey,
+      importLineGroupGuid: importLineGroup.clientGroupGuid,
       stockCode: item.stockCode,
+      yapKod: normalizedYapKod,
       quantity: item.transferQuantity,
-      unit: sanitizeText(item.unit, 10),
       serialNo: sanitizeText(item.serialNo, 50),
       serialNo2: sanitizeText(item.serialNo2, 50),
       serialNo3: sanitizeText(item.lotNo, 50),
       serialNo4: sanitizeText(item.batchNo, 50),
-      scannedBarkod: sanitizeText(item.stockCode, 100),
-      erpOrderNumber: '',
-      erpOrderNo: '',
-      erpOrderLineNumber: '',
-    });
-
-    routes.push({
-      lineClientKey,
-      lineGroupGuid,
-      importLineClientKey,
-      importLineGroupGuid,
-      stockCode: item.stockCode,
-      quantity: item.transferQuantity,
-      serialNo: sanitizeText(item.serialNo, 50),
-      serialNo2: sanitizeText(item.serialNo2, 50),
+      scannedBarcode: sanitizeText(item.stockCode, 100),
       sourceWarehouse,
       targetWarehouse: undefined,
       sourceCellCode: sanitizeText(item.sourceCellCode, 20),
@@ -251,7 +263,9 @@ export function buildWarehouseOutboundBulkRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
       sourceWarehouse: formData.sourceWarehouse || '',
       targetWarehouse: '',
       outboundType: formData.operationType || '',

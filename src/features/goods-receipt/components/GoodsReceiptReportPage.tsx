@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -33,7 +33,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const [selectedGrHeaderId, setSelectedGrHeaderId] = useState<number | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'goods-receipt-report', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageNumber: 1, pageNumberBase: 1, mapSortBy });
-  const columns = useMemo<DataTableGridColumn<ColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: t('goodsReceipt.report.id') },
     { key: 'orderId', label: t('goodsReceipt.report.orderId') },
     { key: 'customerCode', label: t('goodsReceipt.report.customerCode') },
@@ -58,7 +58,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   return (
     <div className="crm-page space-y-6">
       <Card><CardHeader><CardTitle>{t('goodsReceipt.report.title')}</CardTitle></CardHeader><CardContent>
-        <DataTableGrid<GrHeader, ColumnKey>
+        <PagedDataGrid<GrHeader, ColumnKey>
           columns={columns}
           visibleColumnKeys={['id', 'orderId', 'customerCode', 'projectCode', 'documentType', 'plannedDate', 'status', 'createdDate']}
           rows={data?.data ?? []}

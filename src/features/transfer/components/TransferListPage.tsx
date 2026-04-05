@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -80,7 +80,7 @@ export function TransferListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const columns = useMemo<DataTableGridColumn<TransferColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<TransferColumnKey>[]>(
     () => [
       { key: 'id', label: t('transfer.list.id') },
       { key: 'documentNo', label: t('transfer.list.documentNo') },
@@ -176,7 +176,7 @@ export function TransferListPage(): ReactElement {
           <CardTitle>{t('transfer.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTableGrid<TransferHeader, TransferColumnKey>
+          <PagedDataGrid<TransferHeader, TransferColumnKey>
             columns={columns}
             visibleColumnKeys={visibleColumnKeys}
             rows={data?.data ?? []}

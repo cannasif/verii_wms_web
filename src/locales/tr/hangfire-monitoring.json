@@ -2,11 +2,26 @@
   "menu": "Hangfire İzleme",
   "title": "Hangfire İzleme",
   "description": "Job sağlık durumunu, başarısız işleri ve dead-letter kuyruğunu izleyin.",
+  "hero": {
+    "badge": "Operasyon Kontrol Merkezi"
+  },
   "refresh": "Yenile",
   "manualSync": {
-    "button": "Stok Sync Çalıştır",
-    "success": "Stok senkronu kuyruğa alındı. JobId: {{jobId}}",
-    "error": "Stok senkronu kuyruğa alınamadı."
+    "title": "Manuel Sync Çalıştır",
+    "description": "ERP mirror job'larını kontrollü şekilde tetikleyin. Aynı job, API seviyesinde 5 dakika boyunca tekrar kuyruğa alınmaz.",
+    "selectLabel": "Job Seç",
+    "selectPlaceholder": "Bir sync job seçin",
+    "runButton": "Sync Çalıştır",
+    "lastRun": "Son Çalışma",
+    "nextAvailable": "Tekrar Açılma",
+    "cooldown": "Bekleme Süresi",
+    "cooldownHelp": "Aynı job için 5 dakika boyunca ikinci tetikleme kabul edilmez.",
+    "cooldownActive": "Tekrar çalıştırmak için {{duration}} bekleyin",
+    "cooldownShort": "{{duration}} kaldı",
+    "ready": "Hazır",
+    "status": "Durum",
+    "success": "{{jobName}} kuyruğa alındı. JobId: {{jobId}}",
+    "error": "Sync job kuyruğa alınamadı."
   },
   "stats": {
     "enqueued": "Kuyrukta",

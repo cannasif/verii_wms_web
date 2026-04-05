@@ -6,8 +6,10 @@ import { usePPackagesByHeader } from '../../hooks/usePPackagesByHeader';
 import { usePLinesByHeader } from '../../hooks/usePLinesByHeader';
 import { useCreatePLine } from '../../hooks/useCreatePLine';
 import { useDeletePLine } from '../../hooks/useDeletePLine';
+import { useYapKodlar } from '../../hooks/useYapKodlar';
 import { useStokBarcode } from '../../hooks/useStokBarcode';
 import { pLineFormSchema, type PLineFormData, type StokBarcodeDto } from '../../types/package';
+import { PageActionBar, PageState } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -59,6 +61,7 @@ export function Step3LineForm({
 
   const { data: packagesData } = usePPackagesByHeader(packingHeaderId);
   const { data: linesData, isLoading: isLoadingLines } = usePLinesByHeader(packingHeaderId);
+  const { data: yapKodlar = [] } = useYapKodlar();
   const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
   const createMutation = useCreatePLine();
   const deleteMutation = useDeletePLine();
@@ -75,7 +78,9 @@ export function Step3LineForm({
       packageId: 0,
       barcode: '',
       stockCode: '',
-      yapKod: '',
+      stockId: undefined,
+      yapKodId: undefined,
+      yapAcik: '',
       quantity: 0,
       serialNo: '',
       serialNo2: '',
@@ -85,20 +90,33 @@ export function Step3LineForm({
     },
   });
 
+  const yapKodByCode = useMemo(
+    () => new Map(yapKodlar.map((item) => [item.yapKod.toLowerCase(), item])),
+    [yapKodlar],
+  );
+
+  const selectedYapKodId = form.watch('yapKodId');
+  const selectedYapKod = useMemo(
+    () => yapKodlar.find((item) => item.id === selectedYapKodId),
+    [selectedYapKodId, yapKodlar],
+  );
+
   useEffect(() => {
     if (barcodeData?.success && barcodeData.data && barcodeData.data.length > 0) {
       const stock = barcodeData.data[0];
+      const matchedYapKod = stock.yapKod ? yapKodByCode.get(stock.yapKod.toLowerCase()) : undefined;
       setSelectedStock(stock);
       form.setValue('barcode', stock.barkod);
       form.setValue('stockCode', stock.stokKodu);
-      form.setValue('yapKod', stock.yapKod || '');
+      form.setValue('yapKodId', matchedYapKod?.id);
+      form.setValue('yapAcik', matchedYapKod?.yapAcik || stock.yapAcik || '');
       form.setValue('quantity', stock.cevrim || 1);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
       toast.error(t('package.wizard.step3.stockNotFound'));
       setEnableSearch(false);
     }
-  }, [barcodeData, form, t]);
+  }, [barcodeData, form, t, yapKodByCode]);
 
   const handleBarcodeSearch = useCallback(() => {
     if (!barcodeInput.trim()) {
@@ -216,7 +234,8 @@ export function Step3LineForm({
         packageId: data.packageId,
         barcode: data.barcode || undefined,
         stockCode: data.stockCode,
-        yapKod: data.yapKod || undefined,
+        stockId: data.stockId,
+        yapKodId: data.yapKodId,
         quantity: data.quantity,
         serialNo: data.serialNo || undefined,
         serialNo2: data.serialNo2 || undefined,
@@ -233,7 +252,9 @@ export function Step3LineForm({
         packageId: selectedPackageId || packages[0]?.id || 0,
         barcode: '',
         stockCode: '',
-        yapKod: '',
+        stockId: undefined,
+        yapKodId: undefined,
+        yapAcik: '',
         quantity: 0,
         serialNo: '',
         serialNo2: '',
@@ -272,30 +293,22 @@ export function Step3LineForm({
     <div className="space-y-6 crm-page">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>{t('package.wizard.step3.title')}</CardTitle>
-              <CardDescription>
-                {t('package.wizard.step3.description')}
-              </CardDescription>
-            </div>
-            <Button onClick={handleOpenDialog} disabled={packages.length === 0}>
-              <Plus className="size-4 mr-2" />
-              {t('package.wizard.step3.addLine')}
-            </Button>
-          </div>
+          <PageActionBar
+            title={<CardTitle>{t('package.wizard.step3.title')}</CardTitle>}
+            description={<CardDescription>{t('package.wizard.step3.description')}</CardDescription>}
+            actions={
+              <Button onClick={handleOpenDialog} disabled={packages.length === 0}>
+                <Plus className="size-4 mr-2" />
+                {t('package.wizard.step3.addLine')}
+              </Button>
+            }
+          />
         </CardHeader>
         <CardContent>
           {packages.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                {t('package.wizard.step3.noPackagesMessage')}
-              </p>
-            </div>
+            <PageState tone="empty" title={t('package.wizard.step3.noPackagesMessage')} compact />
           ) : isLoadingLines ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('common.loading')}</p>
-            </div>
+            <PageState tone="loading" title={t('common.loading')} compact />
           ) : lines.length > 0 ? (
             <Table>
               <TableHeader>
@@ -341,11 +354,7 @@ export function Step3LineForm({
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                {t('package.wizard.step3.noLines')}
-              </p>
-            </div>
+            <PageState tone="empty" title={t('package.wizard.step3.noLines')} compact />
           )}
         </CardContent>
       </Card>
@@ -474,12 +483,44 @@ export function Step3LineForm({
 
                 <FormField
                   control={form.control}
-                  name="yapKod"
+                  name="yapKodId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('package.form.yapKod')}</FormLabel>
+                      <Select
+                        value={field.value ? String(field.value) : ''}
+                        onValueChange={(value) => {
+                          const selected = yapKodlar.find((item) => item.id === Number(value));
+                          field.onChange(value ? Number(value) : undefined);
+                          form.setValue('yapAcik', selected?.yapAcik || '');
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('package.form.yapKod')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {yapKodlar.map((item) => (
+                            <SelectItem key={item.id} value={String(item.id)}>
+                              {item.yapKod} - {item.yapAcik}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="yapAcik"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('package.form.yapAcik')}</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ''} />
+                        <Input {...field} value={selectedYapKod?.yapAcik || field.value || ''} readOnly />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -637,4 +678,3 @@ export function Step3LineForm({
     </div>
   );
 }
-

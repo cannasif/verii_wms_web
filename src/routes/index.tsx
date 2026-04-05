@@ -69,6 +69,7 @@ import {
 import { UserManagementPage } from '@/features/user-management';
 import { MailSettingsPage } from '@/features/mail-settings';
 import { HangfireMonitoringPage } from '@/features/hangfire-monitoring';
+import { CustomerReferencePage, StockReferencePage, WarehouseReferencePage, YapKodReferencePage } from '@/features/erp-reference';
 import { RouteErrorPage } from './RouteErrorPage';
 
 function withSuspense(element: ReactElement): ReactElement {
@@ -209,6 +210,15 @@ export const router = createBrowserRouter([
       {
         path: 'hangfire-monitoring',
         element: withSuspense(<HangfireMonitoringPage />),
+      },
+      {
+        path: 'erp',
+        children: [
+          { path: 'customers', element: withSuspense(<CustomerReferencePage />) },
+          { path: 'stocks', element: withSuspense(<StockReferencePage />) },
+          { path: 'warehouses', element: withSuspense(<WarehouseReferencePage />) },
+          { path: 'yapkodlar', element: withSuspense(<YapKodReferencePage />) },
+        ],
       },
       {
         path: 'profile',

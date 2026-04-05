@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -71,7 +71,7 @@ export function UserTable({
     mapSortBy,
   });
 
-  const columns = useMemo<DataTableGridColumn<UserColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<UserColumnKey>[]>(
     () => [
       { key: 'id', label: t('userManagement.table.id') },
       { key: 'username', label: t('userManagement.table.username') },
@@ -145,7 +145,7 @@ export function UserTable({
   });
 
   return (
-    <DataTableGrid<UserDto, UserColumnKey>
+    <PagedDataGrid<UserDto, UserColumnKey>
       columns={columns}
       visibleColumnKeys={visibleColumnKeys}
       rows={data?.data ?? []}

@@ -78,7 +78,11 @@ export function Step1WarehouseBasicInfo({
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      const selected = warehouses?.find((opt) => String(opt.depoKodu) === value);
+                      field.onChange(value);
+                      form.setValue('targetWarehouseId', selected?.id);
+                    }}
                     options={warehouses || []}
                     getOptionValue={(opt) => String(opt.depoKodu)}
                     getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
@@ -103,7 +107,11 @@ export function Step1WarehouseBasicInfo({
                 <FormControl>
                   <SearchableSelect<Warehouse>
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      const selected = warehouses?.find((opt) => String(opt.depoKodu) === value);
+                      field.onChange(value);
+                      form.setValue('sourceWarehouseId', selected?.id);
+                    }}
                     options={warehouses || []}
                     getOptionValue={(opt) => String(opt.depoKodu)}
                     getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
@@ -161,7 +169,11 @@ export function Step1WarehouseBasicInfo({
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    const selected = customers?.find((opt) => opt.cariKod === value);
+                    field.onChange(value);
+                    form.setValue('customerRefId', selected?.id);
+                  }}
                   options={customers || []}
                   getOptionValue={(opt) => opt.cariKod}
                   getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}

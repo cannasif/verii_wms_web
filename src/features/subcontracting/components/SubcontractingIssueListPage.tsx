@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -21,7 +21,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'subcontracting-issue-list', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
-  const columns = useMemo<DataTableGridColumn<ColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'documentNo', label: t('subcontracting.issue.list.documentNo'), sortable: false },
     { key: 'documentDate', label: t('subcontracting.issue.list.documentDate'), sortable: false },
     { key: 'customerCode', label: t('subcontracting.issue.list.customerCode'), sortable: false },
@@ -44,7 +44,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   return (
     <div className="space-y-6">
       <Card><CardHeader><CardTitle>{t('subcontracting.issue.list.title')}</CardTitle></CardHeader><CardContent>
-        <DataTableGrid<SubcontractingHeader, ColumnKey>
+        <PagedDataGrid<SubcontractingHeader, ColumnKey>
           columns={columns}
           visibleColumnKeys={['documentNo', 'documentDate', 'customerCode', 'customerName', 'sourceWarehouse', 'targetWarehouse', 'documentType', 'status', 'createdDate']}
           rows={data?.data ?? []}

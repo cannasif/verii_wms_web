@@ -1,12 +1,13 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, RefreshCw } from 'lucide-react';
+import { Activity, ArrowDown, ArrowUp, Clock3, Play, RefreshCw, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -14,7 +15,12 @@ import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { hangfireMonitoringApi } from '../api/hangfireMonitoring.api';
-import { useHangfireDeadLetterPagedQuery, useHangfireFailedPagedQuery, useHangfireStatsQuery } from '../hooks/useHangfireMonitoring';
+import {
+  useHangfireDeadLetterPagedQuery,
+  useHangfireFailedPagedQuery,
+  useHangfireManualSyncJobsQuery,
+  useHangfireStatsQuery,
+} from '../hooks/useHangfireMonitoring';
 import type { HangfireJobItemDto } from '../types/hangfireMonitoring.types';
 
 type HangfireColumnKey = 'jobId' | 'jobName' | 'state' | 'time' | 'reason';
@@ -26,7 +32,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'reason', type: 'string', labelKey: 'table.reason' },
 ];
 
-const columns = (t: (key: string, options?: Record<string, unknown>) => string): DataTableGridColumn<HangfireColumnKey>[] => [
+const columns = (t: (key: string, options?: Record<string, unknown>) => string): PagedDataGridColumn<HangfireColumnKey>[] => [
   { key: 'jobId', label: t('table.jobId') },
   { key: 'jobName', label: t('table.jobName') },
   { key: 'state', label: t('table.state') },
@@ -50,6 +56,13 @@ function formatDate(value?: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '-';
   return date.toLocaleString();
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds <= 0) return '00:00';
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
 function HangfireGrid({
@@ -104,12 +117,12 @@ function HangfireGrid({
   const renderSortIcon = (columnKey: HangfireColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 
   return (
-    <Card>
+    <Card className="border-slate-200/80 shadow-sm">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <DataTableGrid<HangfireJobItemDto, HangfireColumnKey>
+        <PagedDataGrid<HangfireJobItemDto, HangfireColumnKey>
           columns={tableColumns}
           visibleColumnKeys={visibleColumnKeys}
           rows={rows?.data ?? []}
@@ -120,7 +133,15 @@ function HangfireGrid({
               case 'jobName': return item.jobName;
               case 'state': return <Badge variant={item.state?.toLowerCase() === 'failed' ? 'destructive' : 'secondary'}>{item.state || '-'}</Badge>;
               case 'time': return formatDate(item.failedAt ?? item.enqueuedAt);
-              case 'reason': return <span className="block max-w-[360px] truncate" title={item.reason}>{item.reason || '-'}</span>;
+              case 'reason':
+                return (
+                  <div className="max-w-[420px]">
+                    <span className="block truncate font-medium text-slate-900" title={item.reason}>{item.reason || '-'}</span>
+                    {item.technicalReason && item.technicalReason !== item.reason ? (
+                      <span className="block truncate text-xs text-slate-500" title={item.technicalReason}>{item.technicalReason}</span>
+                    ) : null}
+                  </div>
+                );
               default: return null;
             }
           }}
@@ -186,9 +207,12 @@ function HangfireGrid({
 export function HangfireMonitoringPage(): ReactElement {
   const { t } = useTranslation(['hangfire-monitoring', 'common']);
   const { setPageTitle } = useUIStore();
+  const [selectedJobKey, setSelectedJobKey] = useState<string>('');
   const [isTriggeringSync, setIsTriggeringSync] = useState(false);
+  const [, forceTick] = useState(0);
 
   const statsQuery = useHangfireStatsQuery();
+  const manualJobsQuery = useHangfireManualSyncJobsQuery();
   const failedGrid = usePagedDataGrid<HangfireColumnKey>({ pageKey: 'hangfire-failed-grid', defaultSortBy: 'jobId', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
   const deadGrid = usePagedDataGrid<HangfireColumnKey>({ pageKey: 'hangfire-dead-grid', defaultSortBy: 'jobId', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
   const failedColumnsPref = useColumnPreferences({ pageKey: 'hangfire-failed-grid', columns: columns((key) => t(key)) });
@@ -201,14 +225,52 @@ export function HangfireMonitoringPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const handleTriggerStockSync = async (): Promise<void> => {
+  useEffect(() => {
+    const timer = window.setInterval(() => forceTick((value) => value + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const manualJobs = useMemo(() => {
+    const statsJobs = statsQuery.data?.manualSyncJobs ?? [];
+    return manualJobsQuery.data?.length ? manualJobsQuery.data : statsJobs;
+  }, [manualJobsQuery.data, statsQuery.data?.manualSyncJobs]);
+
+  useEffect(() => {
+    if (!selectedJobKey && manualJobs.length > 0) {
+      setSelectedJobKey(manualJobs[0].jobKey);
+    }
+  }, [manualJobs, selectedJobKey]);
+
+  const selectedJob = useMemo(() => manualJobs.find((job) => job.jobKey === selectedJobKey) ?? null, [manualJobs, selectedJobKey]);
+  const selectedJobCooldown = useMemo(() => {
+    if (!selectedJob?.nextAvailableAtUtc) return 0;
+    const remainingMs = new Date(selectedJob.nextAvailableAtUtc).getTime() - Date.now();
+    return Math.max(0, Math.ceil(remainingMs / 1000));
+  }, [selectedJob?.nextAvailableAtUtc]);
+
+  const refreshAll = async (): Promise<void> => {
+    await Promise.all([
+      statsQuery.refetch(),
+      manualJobsQuery.refetch(),
+      failedQuery.refetch(),
+      deadLetterQuery.refetch(),
+    ]);
+  };
+
+  const handleTriggerManualSync = async (): Promise<void> => {
+    if (!selectedJobKey) return;
     try {
       setIsTriggeringSync(true);
-      const result = await hangfireMonitoringApi.triggerStockSync();
-      toast.success(t('manualSync.success', { defaultValue: `Stok senkronu kuyruğa alındı. JobId: ${result.jobId}` }));
-      await Promise.all([statsQuery.refetch(), failedQuery.refetch(), deadLetterQuery.refetch()]);
+      const result = await hangfireMonitoringApi.triggerManualSync(selectedJobKey);
+      toast.success(t('manualSync.success', {
+        defaultValue: `${result.jobName} kuyruğa alındı. JobId: ${result.jobId}`,
+        jobName: result.jobName,
+        jobId: result.jobId,
+      }));
+      await refreshAll();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('manualSync.error', { defaultValue: 'Stok senkronu kuyruğa alınamadı.' }));
+      toast.error(error instanceof Error ? error.message : t('manualSync.error'));
+      await manualJobsQuery.refetch();
     } finally {
       setIsTriggeringSync(false);
     }
@@ -218,29 +280,155 @@ export function HangfireMonitoringPage(): ReactElement {
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('common:sidebar.accessControl') }, { label: t('menu'), isActive: true }]} />
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{t('title')}</h1>
-          <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{t('description')}</p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            <Activity className="h-3.5 w-3.5" />
+            {t('hero.badge')}
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">{t('title')}</h1>
+            <p className="mt-1 max-w-3xl text-sm font-medium text-slate-500">{t('description')}</p>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleTriggerStockSync} disabled={isTriggeringSync}>
-            <RefreshCw size={18} className={`mr-2 ${isTriggeringSync ? 'animate-spin' : ''}`} />
-            {t('manualSync.button', { defaultValue: 'Stok Sync Çalıştır' })}
-          </Button>
-          <Button variant="outline" onClick={() => void Promise.all([statsQuery.refetch(), failedQuery.refetch(), deadLetterQuery.refetch()])}>
-            <RefreshCw size={18} className="mr-2" />
-            {t('refresh')}
-          </Button>
+        <Button variant="outline" onClick={() => void refreshAll()}>
+          <RefreshCw size={18} className="mr-2" />
+          {t('refresh')}
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.4fr_1fr]">
+        <Card className="overflow-hidden border-0 bg-[linear-gradient(135deg,#0f172a_0%,#0f3d70_55%,#0ea5e9_100%)] text-white shadow-xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Play className="h-5 w-5" />
+              {t('manualSync.title')}
+            </CardTitle>
+            <CardDescription className="text-sky-100">{t('manualSync.description')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-50">{t('manualSync.selectLabel')}</label>
+                <Select value={selectedJobKey} onValueChange={setSelectedJobKey}>
+                  <SelectTrigger className="border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                    <SelectValue placeholder={t('manualSync.selectPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {manualJobs.map((job) => (
+                      <SelectItem key={job.jobKey} value={job.jobKey}>
+                        {job.jobName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                className="bg-white text-slate-900 hover:bg-slate-100"
+                onClick={handleTriggerManualSync}
+                disabled={!selectedJob || isTriggeringSync || selectedJobCooldown > 0}
+              >
+                <RefreshCw size={18} className={`mr-2 ${isTriggeringSync ? 'animate-spin' : ''}`} />
+                {t('manualSync.runButton')}
+              </Button>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">{t('manualSync.lastRun')}</div>
+                <div className="mt-2 text-sm font-medium text-white">{formatDate(selectedJob?.lastTriggeredAtUtc)}</div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">{t('manualSync.nextAvailable')}</div>
+                <div className="mt-2 text-sm font-medium text-white">{formatDate(selectedJob?.nextAvailableAtUtc)}</div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100">{t('manualSync.cooldown')}</div>
+                <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                  <Clock3 className="h-4 w-4 text-sky-200" />
+                  {selectedJobCooldown > 0 ? formatDuration(selectedJobCooldown) : t('manualSync.ready')}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedJobCooldown > 0 ? (
+                <Badge variant="secondary" className="border-amber-200 bg-amber-50 text-amber-700">
+                  {t('manualSync.cooldownActive', { duration: formatDuration(selectedJobCooldown) })}
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                  {t('manualSync.ready')}
+                </Badge>
+              )}
+              <span className="text-xs text-sky-100">{t('manualSync.cooldownHelp')}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-2">
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-500">{t('stats.enqueued')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-semibold text-slate-900">{statsQuery.data?.enqueued ?? 0}</CardContent>
+          </Card>
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-500">{t('stats.processing')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-semibold text-slate-900">{statsQuery.data?.processing ?? 0}</CardContent>
+          </Card>
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-500">{t('stats.succeeded')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-semibold text-emerald-600">{statsQuery.data?.succeeded ?? 0}</CardContent>
+          </Card>
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm text-slate-500">
+                <ShieldAlert className="h-4 w-4 text-red-500" />
+                {t('stats.failed')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-3xl font-semibold text-red-600">{statsQuery.data?.failed ?? 0}</CardContent>
+          </Card>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <Card><CardHeader><CardTitle>{t('stats.enqueued')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.enqueued ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.processing')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{statsQuery.data?.processing ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.succeeded')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-emerald-500">{statsQuery.data?.succeeded ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.failed')}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-red-500">{statsQuery.data?.failed ?? 0}</CardContent></Card>
-        <Card><CardHeader><CardTitle>{t('stats.lastStockSync', { defaultValue: 'Son Stok Sync' })}</CardTitle></CardHeader><CardContent className="text-sm font-medium">{formatDate(statsQuery.data?.lastStockSyncAt)}</CardContent></Card>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+        {manualJobs.map((job) => {
+          const remaining = job.nextAvailableAtUtc
+            ? Math.max(0, Math.ceil((new Date(job.nextAvailableAtUtc).getTime() - Date.now()) / 1000))
+            : 0;
+          return (
+            <Card key={job.jobKey} className="border-slate-200/80 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">{job.jobName}</CardTitle>
+                <CardDescription>{job.jobKey}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">{t('manualSync.lastRun')}</span>
+                  <span className="font-medium text-slate-900">{formatDate(job.lastTriggeredAtUtc)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">{t('manualSync.status')}</span>
+                  {remaining > 0 ? (
+                    <Badge variant="secondary" className="border-amber-200 bg-amber-50 text-amber-700">
+                      {t('manualSync.cooldownShort', { duration: formatDuration(remaining) })}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                      {t('manualSync.ready')}
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <HangfireGrid

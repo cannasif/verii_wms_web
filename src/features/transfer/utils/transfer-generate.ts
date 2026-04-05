@@ -27,6 +27,7 @@ export function buildTransferGenerateRequest(
     lines.push({
       clientKey,
       clientGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
       yapKod: '',
       orderId: 0,
@@ -79,9 +80,12 @@ export function buildTransferGenerateRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: isFreeTransfer ? undefined : formData.customerRefId,
       customerCode: isFreeTransfer ? '' : (formData.customerId || ''),
       customerName: '',
+      sourceWarehouseId: isFreeTransfer ? formData.sourceWarehouseId : undefined,
       sourceWarehouse: isFreeTransfer ? (formData.sourceWarehouse || '') : (firstItemSourceWarehouse ? String(firstItemSourceWarehouse) : ''),
+      targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: isFreeTransfer ? 1 : 0,
@@ -94,4 +98,3 @@ export function buildTransferGenerateRequest(
 
   return request;
 }
-

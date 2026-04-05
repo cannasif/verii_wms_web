@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -23,7 +23,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const approveMutation = useApproveSrtHeader();
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'subcontracting-receipt-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
-  const columns = useMemo<DataTableGridColumn<ColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: t('subcontracting.receipt.approval.id'), sortable: false },
     { key: 'documentNo', label: t('subcontracting.receipt.approval.documentNo'), sortable: false },
     { key: 'documentDate', label: t('subcontracting.receipt.approval.documentDate'), sortable: false },
@@ -47,7 +47,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   return (
     <div className="space-y-6">
       <Card><CardHeader><CardTitle>{t('subcontracting.receipt.approval.title')}</CardTitle></CardHeader><CardContent>
-        <DataTableGrid<SubcontractingHeader, ColumnKey>
+        <PagedDataGrid<SubcontractingHeader, ColumnKey>
           columns={columns}
           visibleColumnKeys={['id', 'documentNo', 'documentDate', 'customerCode', 'customerName', 'sourceWarehouse', 'targetWarehouse', 'completionDate']}
           rows={data?.data ?? []}

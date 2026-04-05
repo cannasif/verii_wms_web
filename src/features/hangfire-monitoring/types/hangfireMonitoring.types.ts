@@ -9,6 +9,26 @@ export interface HangfireStatsDto {
   queues: number;
   timestamp: string;
   lastStockSyncAt?: string;
+  manualSyncJobs: ManualSyncJobStatusDto[];
+}
+
+export interface ManualSyncJobStatusDto {
+  jobKey: string;
+  jobName: string;
+  lastTriggeredAtUtc?: string;
+  nextAvailableAtUtc?: string;
+  isCoolingDown: boolean;
+  cooldownSecondsRemaining: number;
+}
+
+export interface TriggerManualSyncJobResponseDto {
+  jobKey: string;
+  jobName: string;
+  jobId: string;
+  queue: string;
+  enqueuedAtUtc: string;
+  nextAvailableAtUtc?: string;
+  cooldownSecondsRemaining: number;
 }
 
 export interface HangfireJobItemDto {
@@ -18,6 +38,7 @@ export interface HangfireJobItemDto {
   enqueuedAt?: string;
   state: string;
   reason?: string;
+  technicalReason?: string;
 }
 
 export interface HangfireFailedResponseDto {

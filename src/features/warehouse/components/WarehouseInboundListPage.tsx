@@ -5,8 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -74,7 +73,7 @@ export function WarehouseInboundListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const columns = useMemo<DataTableGridColumn<WarehouseInboundColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<WarehouseInboundColumnKey>[]>(
     () => [
       { key: 'documentNo', label: t('warehouse.inbound.list.documentNo') },
       { key: 'documentDate', label: t('warehouse.inbound.list.documentDate') },
@@ -88,11 +87,6 @@ export function WarehouseInboundListPage(): ReactElement {
     ],
     [t],
   );
-
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey: 'warehouse-inbound-list',
-    columns: columns.map(({ key, label }) => ({ key, label })),
-  });
 
   const { data, isLoading, error } = useWarehouseInboundHeadersPaged(pagedGrid.queryParams);
 
@@ -128,18 +122,13 @@ export function WarehouseInboundListPage(): ReactElement {
   };
 
   const exportColumns = useMemo(
-    () => orderedVisibleColumns
-      .filter((key) => key !== 'actions')
-      .map((key) => ({
-        key,
-        label: columns.find((column) => column.key === key)?.label ?? key,
+    () => columns
+      .filter((column) => column.key !== 'actions')
+      .map((column) => ({
+        key: column.key,
+        label: column.label,
       })),
-    [columns, orderedVisibleColumns],
-  );
-
-  const visibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as WarehouseInboundColumnKey[],
-    [orderedVisibleColumns],
+    [columns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
@@ -178,9 +167,9 @@ export function WarehouseInboundListPage(): ReactElement {
           <CardTitle>{t('warehouse.inbound.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTableGrid<WarehouseHeader, WarehouseInboundColumnKey>
+          <PagedDataGrid<WarehouseHeader, WarehouseInboundColumnKey>
+            pageKey="warehouse-inbound-list"
             columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
             rows={data?.data ?? []}
             rowKey={(row) => row.id}
             renderCell={(row, columnKey) => {
@@ -225,7 +214,7 @@ export function WarehouseInboundListPage(): ReactElement {
             emptyText={t('warehouse.inbound.list.noData')}
             rowClassName="cursor-pointer"
             onRowClick={handleRowClick}
-            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            showActionsColumn
             actionsHeaderLabel={t('warehouse.inbound.list.actions')}
             renderActionsCell={(row) => (
               <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)}>
@@ -245,40 +234,31 @@ export function WarehouseInboundListPage(): ReactElement {
             previousLabel={t('common.previous')}
             nextLabel={t('common.next')}
             paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey: 'warehouse-inbound-list',
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'warehouse-inbound-list',
-              exportColumns,
-              exportRows,
-              filterColumns: advancedFilterColumns,
-              defaultFilterColumn: 'documentNo',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              translationNamespace: 'common',
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              search: {
-                ...pagedGrid.searchConfig,
-                placeholder: t('warehouse.inbound.list.searchPlaceholder'),
-                className: 'h-9 w-full md:w-64',
-              },
-              leftSlot: (
-                <VoiceSearchButton
-                  onResult={pagedGrid.handleVoiceSearch}
-                  size="sm"
-                  variant="outline"
-                />
-              ),
+            exportFileName="warehouse-inbound-list"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={advancedFilterColumns}
+            defaultFilterColumn="documentNo"
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            translationNamespace="common"
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+            search={{
+              ...pagedGrid.searchConfig,
+              placeholder: t('warehouse.inbound.list.searchPlaceholder'),
+              className: 'h-9 w-full md:w-64',
             }}
+            leftSlot={(
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="sm"
+                variant="outline"
+              />
+            )}
           />
         </CardContent>
       </Card>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowDown, ArrowUp, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -76,7 +76,7 @@ export function ParameterListPage(): ReactElement {
     mapSortBy,
   });
 
-  const columns = useMemo<DataTableGridColumn<ParameterColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ParameterColumnKey>[]>(() => [
     { key: 'id', label: t('parameters.list.id') },
     { key: 'allowLessQuantityBasedOnOrder', label: t('parameters.list.allowLessQuantity'), sortable: false },
     { key: 'allowMoreQuantityBasedOnOrder', label: t('parameters.list.allowMoreQuantity'), sortable: false },
@@ -154,7 +154,7 @@ export function ParameterListPage(): ReactElement {
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
-        <DataTableGrid<Parameter, ParameterColumnKey>
+        <PagedDataGrid<Parameter, ParameterColumnKey>
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}

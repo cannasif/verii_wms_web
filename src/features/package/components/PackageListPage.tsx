@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -121,7 +121,7 @@ export function PackageListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const columns = useMemo<DataTableGridColumn<PackageColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<PackageColumnKey>[]>(
     () => [
       { key: 'id', label: t('package.list.id') },
       { key: 'packingNo', label: t('package.list.packingNo') },
@@ -227,7 +227,7 @@ export function PackageListPage(): ReactElement {
           <CardTitle>{t('package.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTableGrid<PHeaderDto, PackageColumnKey>
+          <PagedDataGrid<PHeaderDto, PackageColumnKey>
             columns={columns}
             visibleColumnKeys={visibleColumnKeys}
             rows={data?.data ?? []}

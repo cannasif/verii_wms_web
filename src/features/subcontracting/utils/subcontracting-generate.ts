@@ -25,6 +25,7 @@ export function buildSubcontractingIssueRequest(
     lines.push({
       clientKey,
       clientGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
       yapKod: item.yapKod || '',
@@ -67,9 +68,12 @@ export function buildSubcontractingIssueRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
       customerName: '',
+      sourceWarehouseId: formData.sourceWarehouseId,
       sourceWarehouse: formData.sourceWarehouse,
+      targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: 0,
@@ -100,6 +104,7 @@ export function buildSubcontractingReceiptRequest(
     lines.push({
       clientKey,
       clientGuid,
+      stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
       yapKod: item.yapKod || '',
@@ -142,9 +147,12 @@ export function buildSubcontractingReceiptRequest(
       completedDate: now,
       documentNo: formData.documentNo,
       documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
       customerName: '',
+      sourceWarehouseId: formData.sourceWarehouseId,
       sourceWarehouse: formData.sourceWarehouse,
+      targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: 0,
@@ -159,4 +167,3 @@ export function buildSubcontractingReceiptRequest(
 
   return request;
 }
-

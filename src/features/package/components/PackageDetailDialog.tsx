@@ -1,5 +1,6 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PageState } from '@/components/shared';
 import { usePHeader } from '../hooks/usePHeader';
 import { usePPackagesByHeader } from '../hooks/usePPackagesByHeader';
 import { usePLinesByHeader } from '../hooks/usePLinesByHeader';
@@ -69,8 +70,8 @@ export function PackageDetailDialog({
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>{t('package.list.detailTitle')}</DialogTitle>
-            <DialogDescription>{t('common.loading')}</DialogDescription>
           </DialogHeader>
+          <PageState tone="loading" title={t('common.loading')} compact className="m-6" />
         </DialogContent>
       </Dialog>
     );
@@ -82,10 +83,8 @@ export function PackageDetailDialog({
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>{t('package.list.detailTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('package.detail.notFound')}
-            </DialogDescription>
           </DialogHeader>
+          <PageState tone="empty" title={t('package.detail.notFound')} compact className="m-6" />
         </DialogContent>
       </Dialog>
     );
@@ -219,9 +218,7 @@ export function PackageDetailDialog({
 
             <TabsContent value="packages" className="flex-1 overflow-auto mt-4">
               {isLoadingPackages ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('common.loading')}</p>
-                </div>
+                <PageState tone="loading" title={t('common.loading')} compact className="m-3" />
               ) : packages && packages.length > 0 ? (
                 <Table>
                   <TableHeader>
@@ -258,19 +255,13 @@ export function PackageDetailDialog({
                   </TableBody>
                 </Table>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">
-                    {t('package.detail.noPackages')}
-                  </p>
-                </div>
+                <PageState tone="empty" title={t('package.detail.noPackages')} compact className="m-3" />
               )}
             </TabsContent>
 
             <TabsContent value="lines" className="flex-1 overflow-auto mt-4">
               {isLoadingLines ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('common.loading')}</p>
-                </div>
+                <PageState tone="loading" title={t('common.loading')} compact className="m-3" />
               ) : lines && lines.length > 0 ? (
                 <Table>
                   <TableHeader>
@@ -306,9 +297,7 @@ export function PackageDetailDialog({
                   </TableBody>
                 </Table>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">{t('package.detail.noLines')}</p>
-                </div>
+                <PageState tone="empty" title={t('package.detail.noLines')} compact className="m-3" />
               )}
             </TabsContent>
           </Tabs>
@@ -317,4 +306,3 @@ export function PackageDetailDialog({
     </Dialog>
   );
 }
-

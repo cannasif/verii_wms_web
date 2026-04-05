@@ -6,5 +6,5 @@ export const PACKAGE_QUERY_KEYS = {
   LINES: 'package-lines',
   LINE: 'package-line',
   AVAILABLE_HEADERS: 'package-available-headers',
+  YAP_KODS: 'package-yap-kods',
 } as const;
-

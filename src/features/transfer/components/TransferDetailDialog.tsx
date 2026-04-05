@@ -2,6 +2,7 @@ import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PageActionBar, PageState } from '@/components/shared';
 import { useTransferHeaders } from '../hooks/useTransferHeaders';
 import { useAssignedTransferOrderLines } from '../hooks/useAssignedTransferOrderLines';
 import type { AssignedTransferLine, AssignedTransferLineSerial } from '../types/transfer';
@@ -182,9 +183,7 @@ export function TransferDetailDialog({
 
             <div className="flex flex-col flex-1 min-h-0">
               <div className="pb-2 space-y-2 border-b shrink-0 mb-2">
-                <h3 className="text-sm font-semibold">
-                  {t('transfer.list.lines')}
-                </h3>
+                <PageActionBar title={<span className="text-sm">{t('transfer.list.lines')}</span>} contentClassName="space-y-0" />
                 <div className="relative flex items-center">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
@@ -205,15 +204,9 @@ export function TransferDetailDialog({
               </div>
               <div className="flex-1 overflow-y-auto rounded-md border">
                 {isLoadingLines ? (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">{t('common.loading')}</p>
-                  </div>
+                  <PageState tone="loading" title={t('common.loading')} compact className="m-3" />
                 ) : filteredLines.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">
-                      {t('transfer.list.noData')}
-                    </p>
-                  </div>
+                  <PageState tone="empty" title={t('transfer.list.noData')} compact className="m-3" />
                 ) : (
                   <Table>
                     <TableHeader>
@@ -282,4 +275,3 @@ function TransferLineRow({ line, serials }: TransferLineRowProps): ReactElement 
     </TableRow>
   );
 }
-

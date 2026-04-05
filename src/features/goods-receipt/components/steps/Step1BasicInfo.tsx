@@ -17,7 +17,8 @@ import { SearchableSelect } from './components/SearchableSelect';
 
 export function Step1BasicInfo(): ReactElement {
   const { t } = useTranslation();
-  const { control, watch } = useFormContext<GoodsReceiptFormData>();
+  const form = useFormContext<GoodsReceiptFormData>();
+  const { control, watch } = form;
   const { data: customers, isLoading: customersLoading, isError: customersError } = useCustomers();
   const { data: projects, isLoading: projectsLoading, isError: projectsError } = useProjects();
 
@@ -48,7 +49,14 @@ export function Step1BasicInfo(): ReactElement {
             <FormItem>
               <FormLabel>{t('goodsReceipt.step1.documentNo')} *</FormLabel>
               <FormControl>
-                <Input placeholder={t('goodsReceipt.step1.documentNoPlaceholder')} {...field} />
+                <Input
+                  placeholder={t('goodsReceipt.step1.documentNoPlaceholder')}
+                  inputMode="numeric"
+                  maxLength={watch('isInvoice') ? 16 : 15}
+                  {...field}
+                  value={field.value ?? ''}
+                  onChange={(event) => field.onChange(event.target.value.replace(/\D/g, ''))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -66,7 +74,11 @@ export function Step1BasicInfo(): ReactElement {
               <FormControl>
                 <SearchableSelect<Customer>
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    const selected = customers?.find((opt) => opt.cariKod === value);
+                    field.onChange(value);
+                    form.setValue('customerRefId', selected?.id);
+                  }}
                   options={customers || []}
                   getOptionValue={(opt) => opt.cariKod}
                   getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
@@ -162,4 +174,3 @@ export function Step1BasicInfo(): ReactElement {
     </div>
   );
 }
-

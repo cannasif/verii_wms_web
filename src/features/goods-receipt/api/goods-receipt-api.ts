@@ -17,15 +17,15 @@ import type {
   AddBarcodeResponse,
   CollectedBarcodesResponse,
 } from '../types/goods-receipt';
-import { erpCommonApi } from '@/services/erp-common-api';
+import { lookupApi } from '@/services/lookup-api';
 import { buildGoodsReceiptBulkCreateRequest } from '../utils/goods-receipt-create';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 export const goodsReceiptApi = {
-  getCustomers: erpCommonApi.getCustomers,
-  getProjects: erpCommonApi.getProjects,
-  getWarehouses: erpCommonApi.getWarehouses,
-  getProducts: erpCommonApi.getProducts,
+  getCustomers: lookupApi.getCustomers,
+  getProjects: lookupApi.getProjects,
+  getWarehouses: lookupApi.getWarehouses,
+  getProducts: lookupApi.getProducts,
 
   getOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<Order[]> => {
     const response = await api.get<ApiResponse<Order[]>>(`/api/GoodReciptFunctions/headers/customer/${customerCode}`, options);

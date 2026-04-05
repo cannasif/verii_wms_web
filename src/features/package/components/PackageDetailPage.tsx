@@ -10,9 +10,11 @@ import { usePLinesByHeader } from '../hooks/usePLinesByHeader';
 import { useCreatePPackage } from '../hooks/useCreatePPackage';
 import { useCreatePLine } from '../hooks/useCreatePLine';
 import { useMatchPlines } from '../hooks/useMatchPlines';
+import { useYapKodlar } from '../hooks/useYapKodlar';
 import { useStokBarcode } from '../hooks/useStokBarcode';
+import { DetailPageShell, PageState } from '@/components/shared';
 import { pPackageFormSchema, pLineFormSchema, type PPackageFormData, type PLineFormData, type StokBarcodeDto } from '../types/package';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -91,6 +93,7 @@ export function PackageDetailPage(): ReactElement {
   const createPackageMutation = useCreatePPackage();
   const createLineMutation = useCreatePLine();
   const matchPlinesMutation = useMatchPlines();
+  const { data: yapKodlar = [] } = useYapKodlar();
   const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
 
   const packageSchema = useMemo(() => pPackageFormSchema(t), [t]);
@@ -122,7 +125,9 @@ export function PackageDetailPage(): ReactElement {
       packageId: 0,
       barcode: '',
       stockCode: '',
-      yapKod: '',
+      stockId: undefined,
+      yapKodId: undefined,
+      yapAcik: '',
       quantity: 0,
       serialNo: '',
       serialNo2: '',
@@ -149,6 +154,11 @@ export function PackageDetailPage(): ReactElement {
       setPageTitle(null);
     };
   }, [t, setPageTitle, header]);
+
+  const yapKodByCode = useMemo(
+    () => new Map(yapKodlar.map((item) => [item.yapKod.toLowerCase(), item])),
+    [yapKodlar],
+  );
 
   const handlePackageSubmit = async (data: PPackageFormData): Promise<void> => {
     try {
@@ -299,12 +309,13 @@ export function PackageDetailPage(): ReactElement {
     }
 
     try {
+      const matchedYapKod = selectedStock.yapKod ? yapKodByCode.get(selectedStock.yapKod.toLowerCase()) : undefined;
       await createLineMutation.mutateAsync({
         packingHeaderId: headerId || 0,
         packageId: lineForm.getValues('packageId'),
         barcode: selectedStock.barkod,
         stockCode: selectedStock.stokKodu,
-        yapKod: selectedStock.yapKod || undefined,
+        yapKodId: matchedYapKod?.id,
         quantity: quantity,
         serialNo: serialNo || undefined,
         serialNo2: '',
@@ -337,37 +348,23 @@ export function PackageDetailPage(): ReactElement {
     });
   };
 
-  if (isLoadingHeader) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
-
-  if (!header) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.detail.notFound')}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 crm-page">
-      <Card>
-        <CardHeader>
-          <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <CardTitle>{t('package.detail.title')}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">{header.packingNo}</p>
-            </div>
-            <div className="flex items-center gap-2">
+      <DetailPageShell
+        title={t('package.detail.title')}
+        description={!isLoadingHeader && header ? header.packingNo : undefined}
+        isLoading={isLoadingHeader}
+        isEmpty={!isLoadingHeader && !header}
+        loadingTitle={t('common.loading')}
+        emptyTitle={t('package.detail.notFound')}
+        actions={
+          header ? (
+            <>
               <Button variant="outline" onClick={() => navigate('/package/list')}>
                 <ArrowLeft className="size-4 mr-2" />
                 {t('common.back')}
               </Button>
-              {header?.sourceType && header?.sourceHeaderId && (
+              {header.sourceType && header.sourceHeaderId ? (
                 <Button
                   variant={header.isMatched ? 'destructive' : 'default'}
                   onClick={async () => {
@@ -398,15 +395,17 @@ export function PackageDetailPage(): ReactElement {
                       ? t('package.detail.unmatch')
                       : t('package.detail.match')}
                 </Button>
-              )}
+              ) : null}
               <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)}>
                 <Edit className="size-4 mr-2" />
                 {t('common.edit')}
               </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
+            </>
+          ) : undefined
+        }
+      >
+        {header ? (
+          <>
           <div className="space-y-6 mb-6">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <div>
@@ -514,7 +513,7 @@ export function PackageDetailPage(): ReactElement {
                 </Button>
               </div>
               {isLoadingPackages ? (
-                <p className="text-muted-foreground">{t('common.loading')}</p>
+                <PageState tone="loading" title={t('common.loading')} compact />
               ) : packages && packages.length > 0 ? (
                 <>
                   <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
@@ -641,9 +640,7 @@ export function PackageDetailPage(): ReactElement {
                   </div>
                 </>
               ) : (
-                <p className="text-muted-foreground text-center py-8">
-                  {t('package.detail.noPackages')}
-                </p>
+                <PageState tone="empty" title={t('package.detail.noPackages')} compact />
               )}
             </TabsContent>
 
@@ -655,7 +652,7 @@ export function PackageDetailPage(): ReactElement {
                 </Button>
               </div>
               {isLoadingLines ? (
-                <p className="text-muted-foreground">{t('common.loading')}</p>
+                <PageState tone="loading" title={t('common.loading')} compact />
               ) : lines && lines.length > 0 ? (
                 <>
                   <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
@@ -754,14 +751,13 @@ export function PackageDetailPage(): ReactElement {
                   </div>
                 </>
               ) : (
-                <p className="text-muted-foreground text-center py-8">
-                  {t('package.detail.noLines')}
-                </p>
+                <PageState tone="empty" title={t('package.detail.noLines')} compact />
               )}
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
+          </>
+        ) : null}
+      </DetailPageShell>
 
       <Dialog open={packageDialogOpen} onOpenChange={setPackageDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
@@ -1194,4 +1190,3 @@ export function PackageDetailPage(): ReactElement {
     </div>
   );
 }
-

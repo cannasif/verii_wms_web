@@ -1,6 +1,7 @@
 import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
+import { PageState } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useGrHeaderDetail } from '../hooks/useGrHeaderDetail';
 import { useGrLines } from '../hooks/useGrLines';
@@ -140,9 +141,7 @@ function ImportLineDetailDialog({
                       </TableBody>
                     </Table>
                   ) : (
-                    <p className="text-muted-foreground text-center py-4">
-                      {t('goodsReceipt.report.noOrderInfo')}
-                    </p>
+                    <PageState tone="empty" title={t('goodsReceipt.report.noOrderInfo')} compact />
                   )}
                 </CardContent>
               </Card>
@@ -280,16 +279,14 @@ export function GoodsReceiptDetailDialog({
         </DialogHeader>
 
         {isLoading && (
-            <div className="flex items-center justify-center py-12 flex-1">
-            <p className="text-muted-foreground">{t('common.loading')}</p>
+            <div className="flex-1 p-6">
+            <PageState tone="loading" title={t('common.loading')} compact className="h-full" />
           </div>
         )}
 
         {error && (
-            <div className="flex items-center justify-center py-12 flex-1">
-            <p className="text-destructive">
-              {t('goodsReceipt.report.detailError')}
-            </p>
+            <div className="flex-1 p-6">
+            <PageState tone="error" title={t('goodsReceipt.report.detailError')} compact className="h-full" />
           </div>
         )}
 

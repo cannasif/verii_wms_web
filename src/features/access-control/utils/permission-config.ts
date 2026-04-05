@@ -50,6 +50,10 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/user-group-assignments': 'access-control.user-management.view',
   '/users/mail-settings': 'access-control.mail-settings.view',
   '/hangfire-monitoring': 'access-control.hangfire-monitoring.view',
+  '/erp/customers': 'access-control.hangfire-monitoring.view',
+  '/erp/stocks': 'access-control.hangfire-monitoring.view',
+  '/erp/warehouses': 'access-control.hangfire-monitoring.view',
+  '/erp/yapkodlar': 'access-control.hangfire-monitoring.view',
 };
 
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
@@ -86,6 +90,10 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-management.view' },
   { pattern: /^\/users\/mail-settings(\/|$)/, permission: 'access-control.mail-settings.view' },
   { pattern: /^\/hangfire-monitoring(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/erp\/customers(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/erp\/stocks(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/erp\/warehouses(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/erp\/yapkodlar(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
 ];
 
 const PERMISSION_ACTIONS = ['view', 'create', 'update'] as const;

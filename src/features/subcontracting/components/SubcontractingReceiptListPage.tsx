@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -50,7 +50,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const pagedGrid = usePagedDataGrid<SubcontractingReceiptColumnKey>({ pageKey, defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
-  const columns = useMemo<DataTableGridColumn<SubcontractingReceiptColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<SubcontractingReceiptColumnKey>[]>(() => [
     { key: 'documentNo', label: t('subcontracting.receipt.list.documentNo') },
     { key: 'documentDate', label: t('subcontracting.receipt.list.documentDate') },
     { key: 'customerCode', label: t('subcontracting.receipt.list.customerCode') },
@@ -80,7 +80,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   return (
     <div className="space-y-6 crm-page">
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
-        <DataTableGrid<SubcontractingHeader, SubcontractingReceiptColumnKey>
+        <PagedDataGrid<SubcontractingHeader, SubcontractingReceiptColumnKey>
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}

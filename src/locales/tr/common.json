@@ -263,6 +263,11 @@
     "userGroupAssignments": "Kullanıcı Grup Atamaları",
     "mailSettings": "Mail Ayarları",
     "hangfireMonitoring": "Hangfire İzleme",
+    "erp": "ERP",
+    "erpCustomers": "Cariler",
+    "erpStocks": "Stoklar",
+    "erpWarehouses": "Depolar",
+    "erpYapKodlar": "YapKodlar",
     "settings": "Ayarlar",
     "subcontracting": "Fason İşlemleri",
     "subcontractingIssueCreate": "Fason Çıkış Emri",
@@ -275,6 +280,36 @@
     "warehouseOutboundCreate": "Ambar Çıkış Emri",
     "warehouseOutboundList": "Ambar Çıkış Listesi",
     "warehouseOutboundProcess": "Ambar Çıkış İşlemi"
+  },
+  "erpReference": {
+    "badge": "ERP Mirror",
+    "columns": {
+      "code": "Kod",
+      "name": "Ad",
+      "branch": "Şube",
+      "city": "Şehir",
+      "phone": "Telefon",
+      "unit": "Birim",
+      "group": "Grup",
+      "linkedStock": "Bağlı Stok",
+      "lastSyncDate": "Son Sync"
+    },
+    "customer": {
+      "title": "Cari Mirror",
+      "description": "ERP tarafindan senkronlanan cari kayıtlarını görüntüleyin."
+    },
+    "stock": {
+      "title": "Stok Mirror",
+      "description": "ERP tarafindan senkronlanan stok kartlarını görüntüleyin."
+    },
+    "warehouse": {
+      "title": "Depo Mirror",
+      "description": "ERP tarafindan senkronlanan depo kayıtlarını görüntüleyin."
+    },
+    "yapkod": {
+      "title": "YapKod Mirror",
+      "description": "ERP tarafindan senkronlanan yapı kodlarını görüntüleyin."
+    }
   },
   "welcome": {
     "title": "Hoş geldiniz",
@@ -392,6 +427,8 @@
     "validation": {
       "receiptDateRequired": "Tarih zorunludur",
       "documentNoRequired": "Belge No zorunludur",
+      "documentNoLength": "Belge No tam 15 haneli olmalıdır",
+      "documentNoInvoiceLength": "E-İrsaliye için Belge No tam 16 haneli olmalıdır",
       "warehouseRequired": "Depo seçimi zorunludur",
       "customerRequired": "Cari seçimi zorunludur"
     },

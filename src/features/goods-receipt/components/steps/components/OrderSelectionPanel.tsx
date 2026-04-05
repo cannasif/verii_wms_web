@@ -2,6 +2,7 @@ import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/lib/i18n';
 import { Search, Calendar } from 'lucide-react';
+import { PageState } from '@/components/shared';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -49,13 +50,9 @@ export function OrderSelectionPanel({
 
             <div className="flex-1 overflow-y-auto space-y-1.5 p-2">
                 {isLoading ? (
-                    <div className="text-center py-12">
-                        <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
-                    </div>
+                    <PageState tone="loading" title={t('common.loading')} compact />
                 ) : filteredOrders.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-sm text-muted-foreground">{t('common.noResults')}</p>
-                    </div>
+                    <PageState tone="empty" title={t('common.noResults')} compact />
                 ) : (
                     filteredOrders.map((order) => (
                         <div

@@ -6,7 +6,24 @@ import type {
   HangfireFailedResponseDto,
   HangfireJobItemDto,
   HangfireStatsDto,
+  ManualSyncJobStatusDto,
+  TriggerManualSyncJobResponseDto,
 } from '../types/hangfireMonitoring.types';
+
+function normalizeManualSyncJobs(items: unknown): ManualSyncJobStatusDto[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((raw) => {
+    const row = (raw ?? {}) as Record<string, unknown>;
+    return {
+      jobKey: String(row.JobKey ?? row.jobKey ?? ''),
+      jobName: String(row.JobName ?? row.jobName ?? ''),
+      lastTriggeredAtUtc: row.LastTriggeredAtUtc ? String(row.LastTriggeredAtUtc) : row.lastTriggeredAtUtc ? String(row.lastTriggeredAtUtc) : undefined,
+      nextAvailableAtUtc: row.NextAvailableAtUtc ? String(row.NextAvailableAtUtc) : row.nextAvailableAtUtc ? String(row.nextAvailableAtUtc) : undefined,
+      isCoolingDown: Boolean(row.IsCoolingDown ?? row.isCoolingDown ?? false),
+      cooldownSecondsRemaining: Number(row.CooldownSecondsRemaining ?? row.cooldownSecondsRemaining ?? 0),
+    };
+  });
+}
 
 function normalizeStats(data: Record<string, unknown>): HangfireStatsDto {
   return {
@@ -20,6 +37,7 @@ function normalizeStats(data: Record<string, unknown>): HangfireStatsDto {
     queues: Number(data.Queues ?? data.queues ?? 0),
     timestamp: String(data.Timestamp ?? data.timestamp ?? new Date().toISOString()),
     lastStockSyncAt: data.LastStockSyncAt ? String(data.LastStockSyncAt) : data.lastStockSyncAt ? String(data.lastStockSyncAt) : undefined,
+    manualSyncJobs: normalizeManualSyncJobs(data.ManualSyncJobs ?? data.manualSyncJobs),
   };
 }
 
@@ -34,6 +52,7 @@ function normalizeJobs(items: unknown): HangfireFailedResponseDto['items'] {
       enqueuedAt: row.EnqueuedAt ? String(row.EnqueuedAt) : undefined,
       state: String(row.State ?? row.state ?? ''),
       reason: row.Reason ? String(row.Reason) : undefined,
+      technicalReason: row.TechnicalReason ? String(row.TechnicalReason) : row.technicalReason ? String(row.technicalReason) : undefined,
     };
   });
 }
@@ -103,12 +122,21 @@ export const hangfireMonitoringApi = {
     };
   },
 
-  async triggerStockSync(): Promise<{ jobId: string; queue: string; enqueuedAtUtc: string }> {
-    const response = await api.post<ApiResponse<{ JobId?: string; Queue?: string; EnqueuedAtUtc?: string }>>('/api/hangfire/stock-sync', {});
+  async getManualSyncJobs(): Promise<ManualSyncJobStatusDto[]> {
+    const response = await api.get<ApiResponse<ManualSyncJobStatusDto[]>>('/api/hangfire/manual-sync/jobs');
+    return normalizeManualSyncJobs(response.data);
+  },
+
+  async triggerManualSync(jobKey: string): Promise<TriggerManualSyncJobResponseDto> {
+    const response = await api.post<ApiResponse<Record<string, unknown>>>('/api/hangfire/manual-sync/run', { jobKey });
     return {
-      jobId: String(response.data?.JobId ?? ''),
-      queue: String(response.data?.Queue ?? 'default'),
-      enqueuedAtUtc: String(response.data?.EnqueuedAtUtc ?? new Date().toISOString()),
+      jobKey: String(response.data?.JobKey ?? response.data?.jobKey ?? ''),
+      jobName: String(response.data?.JobName ?? response.data?.jobName ?? ''),
+      jobId: String(response.data?.JobId ?? response.data?.jobId ?? ''),
+      queue: String(response.data?.Queue ?? response.data?.queue ?? 'default'),
+      enqueuedAtUtc: String(response.data?.EnqueuedAtUtc ?? response.data?.enqueuedAtUtc ?? new Date().toISOString()),
+      nextAvailableAtUtc: response.data?.NextAvailableAtUtc ? String(response.data.NextAvailableAtUtc) : response.data?.nextAvailableAtUtc ? String(response.data.nextAvailableAtUtc) : undefined,
+      cooldownSecondsRemaining: Number(response.data?.CooldownSecondsRemaining ?? response.data?.cooldownSecondsRemaining ?? 0),
     };
   },
 };

@@ -32,6 +32,7 @@ export function buildGoodsReceiptBulkCreateRequest(
     const orderItem = item as SelectedOrderItem;
     return {
       clientKey,
+      stockId: orderItem.stockId,
       stockCode: orderItem.stockCode || orderItem.productCode || '',
       quantity: orderItem.orderedQty || 0,
       unit: orderItem.unit || undefined,
@@ -52,6 +53,7 @@ export function buildGoodsReceiptBulkCreateRequest(
     return {
       lineClientKey: correspondingLine?.clientKey || null,
       clientKey,
+      stockId: item.stockId,
       stockCode,
       configurationCode: item.configCode || undefined,
       description1: stockName || undefined,
@@ -113,6 +115,7 @@ export function buildGoodsReceiptBulkCreateRequest(
       priorityLevel: 0,
       plannedDate,
       isPlanned: false,
+      customerId: formData.customerRefId,
       customerCode: formData.customerId || '',
       returnCode: false,
       ocrSource: false,
@@ -129,4 +132,3 @@ export function buildGoodsReceiptBulkCreateRequest(
 
   return request;
 }
-

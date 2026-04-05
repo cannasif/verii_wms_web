@@ -1,7 +1,21 @@
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
+import type {
+  BaseDocumentHeaderDto,
+  BaseDocumentLineDto,
+  BaseDocumentLineRequest,
+  BaseSelectedStockItem,
+  BaseWorkflowOrder,
+  BaseWorkflowOrderItem,
+} from '@/types/document-models';
+import type {
+  BaseWorkflowImportLineDetail,
+  BaseWorkflowRouteDetail,
+} from '@/types/detail-models';
 import type { TFunction } from 'i18next';
-import type { ErpCustomer, ErpProject, ErpWarehouse, ErpProduct } from '@/services/erp-types';
+import type { CustomerLookup, ProjectLookup, StockLookup, WarehouseLookup } from '@/services/lookup-types';
+
+const normalizeDocumentNo = (value: string) => value.replace(/\D/g, '');
 
 export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   receiptDate: z.string().min(1, t('goodsReceipt.validation.receiptDateRequired')),
@@ -10,58 +24,45 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   isInvoice: z.boolean(),
   customerId: z.string().min(1, t('goodsReceipt.validation.customerRequired')),
   notes: z.string().optional(),
+  customerRefId: z.number().optional(),
+}).superRefine((data, ctx) => {
+  const documentNo = normalizeDocumentNo(data.documentNo);
+
+  if (documentNo.length === 0) {
+    return;
+  }
+
+  const expectedLength = data.isInvoice ? 16 : 15;
+
+  if (documentNo.length !== expectedLength) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['documentNo'],
+      message: data.isInvoice
+        ? t('goodsReceipt.validation.documentNoInvoiceLength')
+        : t('goodsReceipt.validation.documentNoLength'),
+    });
+  }
 });
 
 export type GoodsReceiptFormData = z.infer<ReturnType<typeof createGoodsReceiptFormSchema>>;
 
-export type Customer = ErpCustomer;
+export type Customer = CustomerLookup;
 
-export type Project = ErpProject;
+export type Project = ProjectLookup;
 
-export type Warehouse = ErpWarehouse;
+export type Warehouse = WarehouseLookup;
 
-export type Product = ErpProduct;
+export type Product = StockLookup;
 
 export type CustomersResponse = ApiResponse<Customer[]>;
 export type ProjectsResponse = ApiResponse<Project[]>;
 export type OrdersResponse = ApiResponse<Order[]>;
 export type OrderItemsResponse = ApiResponse<OrderItem[]>;
 
-export interface Order {
-  mode: string;
-  siparisNo: string;
-  orderID: number | null;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string | null;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
-}
+export interface Order extends BaseWorkflowOrder {}
 
-export interface OrderItem {
-  id?: string;
-  mode: string;
-  siparisNo: string;
-  orderID: number;
-  stockCode: string;
-  stockName: string;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
+export interface OrderItem extends BaseWorkflowOrderItem {
   productCode?: string;
   productName?: string;
   quantity?: number;
@@ -71,6 +72,7 @@ export interface OrderItem {
 }
 
 export interface SelectedOrderItem extends OrderItem {
+  stockId?: number;
   receiptQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -80,11 +82,7 @@ export interface SelectedOrderItem extends OrderItem {
   warehouseId?: number;
 }
 
-export interface SelectedStockItem {
-  id: string;
-  stockCode: string;
-  stockName: string;
-  unit: string;
+export interface SelectedStockItem extends BaseSelectedStockItem {
   receiptQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -104,40 +102,23 @@ export interface GoodsReceiptItem {
   totalPrice: number;
 }
 
-export interface GrHeader {
-  id: number;
-  createdDate: string;
-  updatedDate: string | null;
-  deletedDate: string | null;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number | null;
-  deletedBy: number | null;
-  createdByFullUser: string;
-  updatedByFullUser: string | null;
-  deletedByFullUser: string | null;
-  yearCode: string;
-  branchCode: string;
-  projectCode: string;
+export interface GrHeader extends Omit<
+  BaseDocumentHeaderDto,
+  'description1' | 'description2' | 'approvalStatus' | 'approvedByUserId' | 'approvalDate' | 'erpReferenceNumber' | 'erpIntegrationDate' | 'erpIntegrationStatus' | 'erpErrorMessage'
+> {
   orderId: string;
   plannedDate: string;
   isPlanned: boolean;
-  documentType: string;
   description1: string | null;
   description2: string | null;
   priorityLevel: number;
-  completionDate: string | null;
-  isCompleted: boolean;
-  isPendingApproval: boolean;
   approvalStatus: boolean | null;
   approvedByUserId: number | null;
   approvalDate: string | null;
-  isERPIntegrated: boolean;
   erpReferenceNumber: string | null;
   erpIntegrationDate: string | null;
   erpIntegrationStatus: string | null;
   erpErrorMessage: string | null;
-  customerCode: string;
   returnCode: boolean;
   ocrSource: boolean;
   description3: string | null;
@@ -145,46 +126,15 @@ export interface GrHeader {
   description5: string | null;
 }
 
-export interface GrLine {
-  headerId: number;
+export interface GrLine extends Omit<BaseDocumentLineDto, 'orderId'> {
   orderId: number | null;
-  stockCode: string;
   yapKod: string | null;
-  quantity: number;
-  unit: string;
-  erpOrderNo: string;
-  erpOrderId: string;
-  description: string;
-  id: number;
-  createdDate: string;
-  updatedDate: string | null;
-  deletedDate: string | null;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number | null;
-  deletedBy: number | null;
-  createdByFullUser: string;
-  updatedByFullUser: string | null;
-  deletedByFullUser: string | null;
 }
 
-export interface GrImportRoute {
+export interface GrImportRoute extends BaseWorkflowRouteDetail {
   importLineId: number;
   lineId: number | null;
-  stockCode: string | null;
-  stockName: string | null;
   routeCode: string | null;
-  description: string;
-  scannedBarcode: string;
-  quantity: number;
-  serialNo: string | null;
-  serialNo2: string | null;
-  serialNo3: string | null;
-  serialNo4: string | null;
-  sourceWarehouse: number | null;
-  targetWarehouse: number | null;
-  sourceCellCode: string | null;
-  targetCellCode: string | null;
   id: number;
   createdDate: string;
   updatedDate: string | null;
@@ -198,15 +148,9 @@ export interface GrImportRoute {
   deletedByFullUser: string | null;
 }
 
-export interface GrImportLine {
+export interface GrImportLine extends BaseWorkflowImportLineDetail {
   routes: GrImportRoute[];
   lineId: number;
-  headerId: number;
-  stockCode: string;
-  yapKod: string | null;
-  description1: string | null;
-  description2: string | null;
-  description: string | null;
   id: number;
   createdDate: string;
   updatedDate: string | null;
@@ -232,6 +176,7 @@ export interface BulkCreateRequest {
     priorityLevel?: number;
     plannedDate: string;
     isPlanned: boolean;
+    customerId?: number;
     customerCode: string;
     returnCode: boolean;
     ocrSource: boolean;
@@ -240,18 +185,11 @@ export interface BulkCreateRequest {
     description5?: string;
   };
   documents?: Array<{ base64: string }> | null;
-  lines?: Array<{
-    clientKey: string;
-    stockCode: string;
-    quantity: number;
-    unit?: string;
-    erpOrderNo?: string;
-    erpOrderId?: string;
-    description?: string;
-  }>;
+  lines?: Array<BaseDocumentLineRequest>;
   importLines?: Array<{
     lineClientKey: string | null;
     clientKey: string;
+    stockId?: number;
     stockCode: string;
     configurationCode?: string;
     description1?: string;

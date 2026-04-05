@@ -12,7 +12,7 @@ import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { useAvailableHeaders } from '../hooks/useAvailableHeaders';
 import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type AvailableHeaderDto } from '../types/package';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { FormPageShell } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -152,68 +152,51 @@ export function PackageEditPage(): ReactElement {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
-
-  if (!header) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.edit.notFound')}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 crm-page">
-      <Card>
-        <CardHeader>
-          <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <CardTitle>{t('package.edit.title')}</CardTitle>
-              <CardDescription>
-                {t('package.edit.description')}
-              </CardDescription>
-            </div>
-            {header?.sourceType && header?.sourceHeaderId && (
-              <Button
-                variant={header.isMatched ? 'destructive' : 'default'}
-                onClick={async () => {
-                  if (!headerId) return;
-                  try {
-                    await matchPlinesMutation.mutateAsync({
-                      pHeaderId: headerId,
-                      isMatched: !header.isMatched,
-                    });
-                    toast.success(
-                      header.isMatched
-                        ? t('package.edit.unmatchSuccess')
-                        : t('package.edit.matchSuccess')
-                    );
-                  } catch (error) {
-                    toast.error(
-                      error instanceof Error
-                        ? error.message
-                        : t('package.edit.matchError')
-                    );
-                  }
-                }}
-                disabled={matchPlinesMutation.isPending}
-              >
-                {matchPlinesMutation.isPending
-                  ? t('common.saving')
-                  : header.isMatched
-                    ? t('package.edit.unmatch')
-                    : t('package.edit.match')}
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
+      <FormPageShell
+        title={t('package.edit.title')}
+        description={t('package.edit.description')}
+        isLoading={isLoading}
+        isError={!isLoading && !header}
+        loadingTitle={t('common.loading')}
+        errorTitle={t('package.edit.notFound')}
+        actions={
+          header?.sourceType && header?.sourceHeaderId ? (
+            <Button
+              variant={header.isMatched ? 'destructive' : 'default'}
+              onClick={async () => {
+                if (!headerId) return;
+                try {
+                  await matchPlinesMutation.mutateAsync({
+                    pHeaderId: headerId,
+                    isMatched: !header.isMatched,
+                  });
+                  toast.success(
+                    header.isMatched
+                      ? t('package.edit.unmatchSuccess')
+                      : t('package.edit.matchSuccess')
+                  );
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error
+                      ? error.message
+                      : t('package.edit.matchError')
+                  );
+                }
+              }}
+              disabled={matchPlinesMutation.isPending}
+            >
+              {matchPlinesMutation.isPending
+                ? t('common.saving')
+                : header.isMatched
+                  ? t('package.edit.unmatch')
+                  : t('package.edit.match')}
+            </Button>
+          ) : undefined
+        }
+      >
+        {header ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 crm-page">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -456,9 +439,8 @@ export function PackageEditPage(): ReactElement {
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+        ) : null}
+      </FormPageShell>
     </div>
   );
 }
-

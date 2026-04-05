@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
+import { FormPageShell } from '@/components/shared';
 import {
   createTransferFormSchema,
   type SelectedTransferOrderItem,
@@ -16,7 +17,6 @@ import {
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import { transferApi } from '../api/transfer-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
@@ -53,8 +53,11 @@ export function TransferCreatePage(): ReactElement {
       documentNo: '',
       projectCode: '',
       customerId: '',
+      customerRefId: undefined,
       sourceWarehouse: '',
+      sourceWarehouseId: undefined,
       targetWarehouse: '',
+      targetWarehouseId: undefined,
       notes: '',
       userIds: [],
     },
@@ -115,6 +118,7 @@ export function TransferCreatePage(): ReactElement {
           ...prev,
           {
             id: `stock-${product.stokKodu}-${crypto.randomUUID()}`,
+            stockId: product.id,
             stockCode: product.stokKodu,
             stockName: product.stokAdi,
             unit: product.olcuBr1,
@@ -224,8 +228,10 @@ export function TransferCreatePage(): ReactElement {
         className="mb-4"
       />
 
-      <Card>
-        <CardContent>
+      <FormPageShell
+        title={t('transfer.create.title')}
+        description={t('transfer.create.subtitle')}
+      >
           <Form {...form}>
             <form className="space-y-6 crm-page">
               {renderStepContent()}
@@ -257,8 +263,7 @@ export function TransferCreatePage(): ReactElement {
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+      </FormPageShell>
     </div>
   );
 }

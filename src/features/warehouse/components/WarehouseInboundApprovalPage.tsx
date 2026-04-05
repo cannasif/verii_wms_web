@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -41,7 +41,7 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     mapSortBy: () => 'Id',
   });
 
-  const columns = useMemo<DataTableGridColumn<ColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: t('warehouse.inbound.approval.id'), sortable: false },
     { key: 'documentNo', label: t('warehouse.inbound.approval.documentNo'), sortable: false },
     { key: 'documentDate', label: t('warehouse.inbound.approval.documentDate'), sortable: false },
@@ -115,7 +115,7 @@ export function WarehouseInboundApprovalPage(): ReactElement {
           <CardTitle>{t('warehouse.inbound.approval.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTableGrid<WarehouseHeader, ColumnKey>
+          <PagedDataGrid<WarehouseHeader, ColumnKey>
             columns={columns}
             visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[]}
             rows={data?.data ?? []}

@@ -7,7 +7,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useParameterFirst } from '../hooks/useParameterFirst';
 import { useUpsertParameter } from '../hooks/useUpsertParameter';
 import { parameterFormSchema } from '../types/parameter';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { FormPageShell } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
@@ -106,26 +106,18 @@ export function ParameterFormPage(): ReactElement {
     }
   };
 
-  if (isLoadingParameter) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 crm-page">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t(`parameters.${parameterType}.title`, parameterConfig.name)}</CardTitle>
-          <CardDescription>
-            {parameter
-              ? t('parameters.form.editDescription')
-              : t('parameters.form.createDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <FormPageShell
+        title={t(`parameters.${parameterType}.title`, parameterConfig.name)}
+        description={
+          parameter
+            ? t('parameters.form.editDescription')
+            : t('parameters.form.createDescription')
+        }
+        isLoading={isLoadingParameter}
+        loadingTitle={t('common.loading')}
+      >
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 crm-page">
               <div className="space-y-4">
@@ -293,8 +285,7 @@ export function ParameterFormPage(): ReactElement {
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+      </FormPageShell>
     </div>
   );
 }

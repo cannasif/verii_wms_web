@@ -6,7 +6,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -64,7 +64,7 @@ export function PermissionGroupsPage(): ReactElement {
     mapSortBy,
   });
 
-  const columns = useMemo<DataTableGridColumn<PermissionGroupColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<PermissionGroupColumnKey>[]>(
     () => [
       { key: 'name', label: t('permissionGroups.table.name') },
       { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin'), sortable: false },
@@ -194,7 +194,7 @@ export function PermissionGroupsPage(): ReactElement {
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
-        <DataTableGrid<PermissionGroupDto, PermissionGroupColumnKey>
+        <PagedDataGrid<PermissionGroupDto, PermissionGroupColumnKey>
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}

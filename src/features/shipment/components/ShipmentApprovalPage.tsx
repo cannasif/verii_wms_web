@@ -3,9 +3,9 @@ import { Check, Eye, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PageActionBar, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -34,7 +34,7 @@ export function ShipmentApprovalPage(): ReactElement {
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveShipment();
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'shipment-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
-  const columns = useMemo<DataTableGridColumn<ColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: t('shipment.approval.id'), sortable: false },
     { key: 'documentNo', label: t('shipment.approval.documentNo'), sortable: false },
     { key: 'documentDate', label: t('shipment.approval.documentDate'), sortable: false },
@@ -60,8 +60,8 @@ export function ShipmentApprovalPage(): ReactElement {
   };
   return (
     <div className="crm-page space-y-6">
-      <Card><CardHeader><CardTitle>{t('shipment.approval.title')}</CardTitle></CardHeader><CardContent>
-        <DataTableGrid<ShipmentHeader, ColumnKey>
+      <Card><CardHeader><PageActionBar title={t('shipment.approval.title')} description={t('shipment.approval.searchPlaceholder')} /></CardHeader><CardContent>
+        <PagedDataGrid<ShipmentHeader, ColumnKey>
           columns={columns}
           visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[]}
           rows={data?.data ?? []}

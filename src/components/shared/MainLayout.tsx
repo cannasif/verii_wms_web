@@ -417,6 +417,44 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
     },
     {
+      title: t('sidebar.erp', { defaultValue: 'ERP' }),
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5" />
+          <path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3" />
+        </svg>
+      ),
+      children: [
+        {
+          title: t('sidebar.erpCustomers', { defaultValue: 'Cariler' }),
+          href: '/erp/customers',
+        },
+        {
+          title: t('sidebar.erpStocks', { defaultValue: 'Stoklar' }),
+          href: '/erp/stocks',
+        },
+        {
+          title: t('sidebar.erpWarehouses', { defaultValue: 'Depolar' }),
+          href: '/erp/warehouses',
+        },
+        {
+          title: t('sidebar.erpYapKodlar', { defaultValue: 'YapKodlar' }),
+          href: '/erp/yapkodlar',
+        },
+      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
+    },
+    {
       title: t('sidebar.parameters'),
       icon: (
         <svg

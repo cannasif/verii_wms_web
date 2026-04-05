@@ -1,5 +1,16 @@
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
+import type {
+  BaseDocumentHeaderDto,
+  BaseDocumentHeaderRequest,
+  BaseDocumentLineDto,
+  BaseDocumentLineRequest,
+  BaseDocumentLineSerialDto,
+  BaseDocumentLineSerialRequest,
+  BaseSelectedStockItem,
+  BaseWorkflowOrder,
+  BaseWorkflowOrderItem,
+} from '@/types/document-models';
 import type { TFunction } from 'i18next';
 
 export const WarehouseOutboundType = {
@@ -47,50 +58,24 @@ export const createWarehouseFormSchema = (t: TFunction, type: 'inbound' | 'outbo
     : z.string().optional(),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
+  customerRefId: z.number().optional(),
+  sourceWarehouseId: z.number().optional(),
+  targetWarehouseId: z.number().optional(),
 });
 
 export type WarehouseFormData = z.infer<ReturnType<typeof createWarehouseFormSchema>>;
 
-export interface WarehouseOrder {
-  mode: string;
-  siparisNo: string;
+export interface WarehouseOrder extends BaseWorkflowOrder {
   orderID: number;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string | null;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
 }
 
-export interface WarehouseOrderItem {
-  id?: string;
-  mode: string;
-  siparisNo: string;
-  orderID: number;
-  stockCode: string;
-  stockName: string;
+export interface WarehouseOrderItem extends BaseWorkflowOrderItem {
   yapKod?: string;
   yapAcik?: string;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
 }
 
 export interface SelectedWarehouseOrderItem extends WarehouseOrderItem {
+  stockId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -103,11 +88,9 @@ export interface SelectedWarehouseOrderItem extends WarehouseOrderItem {
   targetCellCode?: string;
 }
 
-export interface WarehouseStockItem {
-  id: string;
-  stockCode: string;
-  stockName: string;
-  unit: string;
+export interface WarehouseStockItem extends BaseSelectedStockItem {
+  yapKod?: string;
+  yapAcik?: string;
 }
 
 export interface SelectedWarehouseStockItem extends WarehouseStockItem {
@@ -123,55 +106,16 @@ export interface SelectedWarehouseStockItem extends WarehouseStockItem {
 }
 
 export interface WarehouseGenerateRequest {
-  header: {
-    branchCode: string;
-    projectCode: string;
-    orderId: string;
-    documentType: string;
-    yearCode: string;
-    description1: string;
-    description2: string;
-    priorityLevel: number;
-    plannedDate: string;
-    isPlanned: boolean;
-    isCompleted: boolean;
-    completedDate: string;
-    documentNo: string;
-    documentDate: string;
-    customerCode: string;
-    customerName: string;
-    sourceWarehouse: string;
-    targetWarehouse: string;
-    priority: string;
+  header: BaseDocumentHeaderRequest & {
     inboundType?: string;
     outboundType?: string;
   };
-  lines: {
-    clientKey: string;
-    clientGuid: string;
-    stockCode: string;
+  lines: Array<BaseDocumentLineRequest & {
     stockName?: string;
     yapKod: string;
     yapAcik?: string;
-    orderId: number;
-    quantity: number;
-    unit: string;
-    erpOrderNo: string;
-    erpOrderId: string;
-    erpLineReference: string;
-    description: string;
-  }[];
-  lineSerials: {
-    quantity: number;
-    serialNo: string;
-    serialNo2: string;
-    serialNo3: string;
-    serialNo4: string;
-    sourceCellCode: string;
-    targetCellCode: string;
-    lineClientKey: string;
-    lineGroupGuid: string;
-  }[];
+  }>;
+  lineSerials: Array<BaseDocumentLineSerialRequest>;
   terminalLines: {
     terminalUserId: number;
   }[];
@@ -179,30 +123,19 @@ export interface WarehouseGenerateRequest {
 }
 
 export interface WarehouseBulkCreateRequest {
-  header: {
-    branchCode: string;
-    projectCode?: string;
-    orderId?: string;
-    documentType: string;
-    yearCode: string;
-    description1?: string;
-    description2?: string;
-    priorityLevel?: number;
-    plannedDate: string;
-    isPlanned: boolean;
+  header: Omit<
+    BaseDocumentHeaderRequest,
+    'customerName' | 'priority'
+  > & {
     isCompleted: boolean;
     completedDate?: string;
-    documentNo: string;
-    documentDate: string;
-    customerCode?: string;
-    sourceWarehouse?: string;
-    targetWarehouse?: string;
     outboundType: string;
     type: number;
   };
   lines?: Array<{
     clientKey: string;
     clientGuid: string;
+    stockId?: number;
     stockCode: string;
     yapKod?: string;
     quantity: number;
@@ -211,23 +144,18 @@ export interface WarehouseBulkCreateRequest {
     erpOrderId?: string;
     description?: string;
   }>;
-  lineSerials?: Array<{
-    quantity: number;
-    serialNo?: string;
-    serialNo2?: string;
-    serialNo3?: string;
-    serialNo4?: string;
-    sourceCellCode?: string;
-    targetCellCode?: string;
+  lineSerials?: Array<BaseDocumentLineSerialRequest & {
     lineClientKey: string;
     lineGroupGuid: string;
   }>;
   importLines?: Array<{
     clientKey: string;
     clientGroupGuid: string;
-    lineClientKey: string;
-    lineGroupGuid: string;
+    lineClientKey?: string;
+    lineGroupGuid?: string;
+    stockId?: number;
     stockCode: string;
+    yapKod?: string;
     quantity: number;
     unit?: string;
     serialNo?: string;
@@ -240,14 +168,18 @@ export interface WarehouseBulkCreateRequest {
     erpOrderLineNumber?: string;
   }>;
   routes?: Array<{
-    lineClientKey: string;
-    lineGroupGuid: string;
+    lineClientKey?: string;
+    lineGroupGuid?: string;
     importLineClientKey: string;
     importLineGroupGuid: string;
     stockCode: string;
+    yapKod?: string;
     quantity: number;
     serialNo?: string;
     serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    scannedBarcode?: string;
     sourceWarehouse?: number;
     targetWarehouse?: number;
     sourceCellCode?: string;
@@ -259,70 +191,25 @@ export interface WarehouseBulkCreateRequest {
 export type WarehouseOrdersResponse = ApiResponse<WarehouseOrder[]>;
 export type WarehouseOrderItemsResponse = ApiResponse<WarehouseOrderItem[]>;
 
-export interface WarehouseHeader {
-  id: number;
-  branchCode: string;
-  projectCode: string;
-  documentNo: string;
-  documentDate: string;
-  documentType: string;
-  customerCode: string;
-  customerName: string;
-  sourceWarehouse: string;
-  targetWarehouse: string;
-  priority: string;
-  yearCode: string;
-  description1: string;
-  description2: string;
+export interface WarehouseHeader extends BaseDocumentHeaderDto {
   priorityLevel: number;
   inboundType?: string;
   outboundType?: string;
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
-  isDeleted: boolean;
-  deletedBy: string;
-  deletedDate: string;
-  completionDate: string;
-  isCompleted: boolean;
-  isPendingApproval: boolean;
-  approvalStatus: boolean;
-  approvedByUserId: number;
-  approvalDate: string;
-  isERPIntegrated: boolean;
-  erpReferenceNumber: string;
-  erpIntegrationDate: string;
-  erpIntegrationStatus: string;
 }
 
-export interface WarehouseLine {
-  id: number;
-  headerId: number;
-  stockCode: string;
+export interface WarehouseLine extends Pick<
+  BaseDocumentLineDto,
+  'id' | 'headerId' | 'stockCode' | 'quantity' | 'unit' | 'erpOrderNo' | 'erpOrderId' | 'erpLineReference' | 'description'
+> {
   stockName: string;
   yapKod?: string;
   yapAcik?: string;
-  quantity: number;
-  unit: string;
-  erpOrderNo: string;
-  erpOrderId: string;
-  erpLineReference: string;
-  description: string;
   clientKey: string;
   clientGuid: string;
 }
 
-export interface WarehouseLineSerial {
-  id: number;
+export interface WarehouseLineSerial extends BaseDocumentLineSerialDto {
   lineId: number;
-  quantity: number;
-  serialNo: string;
-  serialNo2: string;
-  serialNo3: string;
-  serialNo4: string;
-  sourceCellCode: string;
-  targetCellCode: string;
   lineClientKey: string;
   lineGroupGuid: string;
 }

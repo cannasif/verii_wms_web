@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -72,7 +72,7 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
     mapSortBy,
   });
 
-  const columns = useMemo<DataTableGridColumn<AssignedWarehouseInboundColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<AssignedWarehouseInboundColumnKey>[]>(() => [
     { key: 'documentNo', label: t('warehouse.inbound.list.documentNo') },
     { key: 'documentDate', label: t('warehouse.inbound.list.documentDate') },
     { key: 'customerCode', label: t('warehouse.inbound.list.customerCode') },
@@ -125,7 +125,7 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
   return (
     <div className="space-y-6 crm-page">
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
-        <DataTableGrid<WarehouseHeader, AssignedWarehouseInboundColumnKey>
+        <PagedDataGrid<WarehouseHeader, AssignedWarehouseInboundColumnKey>
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}

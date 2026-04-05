@@ -263,6 +263,11 @@
     "userGroupAssignments": "User Group Assignments",
     "mailSettings": "Mail Settings",
     "hangfireMonitoring": "Hangfire Monitoring",
+    "erp": "ERP",
+    "erpCustomers": "Customers",
+    "erpStocks": "Stocks",
+    "erpWarehouses": "Warehouses",
+    "erpYapKodlar": "YapKodlar",
     "settings": "Settings",
     "subcontracting": "Subcontracting",
     "subcontractingIssueCreate": "Subcontracting Issue Order",
@@ -275,6 +280,36 @@
     "warehouseOutboundCreate": "Warehouse Outbound Order",
     "warehouseOutboundList": "Warehouse Outbound List",
     "warehouseOutboundProcess": "Warehouse Outbound Process"
+  },
+  "erpReference": {
+    "badge": "ERP Mirror",
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "branch": "Branch",
+      "city": "City",
+      "phone": "Phone",
+      "unit": "Unit",
+      "group": "Group",
+      "linkedStock": "Linked Stock",
+      "lastSyncDate": "Last Sync"
+    },
+    "customer": {
+      "title": "Customer Mirror",
+      "description": "View customer records synchronized from ERP."
+    },
+    "stock": {
+      "title": "Stock Mirror",
+      "description": "View stock cards synchronized from ERP."
+    },
+    "warehouse": {
+      "title": "Warehouse Mirror",
+      "description": "View warehouse records synchronized from ERP."
+    },
+    "yapkod": {
+      "title": "YapKod Mirror",
+      "description": "View structure codes synchronized from ERP."
+    }
   },
   "welcome": {
     "title": "Welcome",
@@ -392,6 +427,8 @@
     "validation": {
       "receiptDateRequired": "Date is required",
       "documentNoRequired": "Document number is required",
+      "documentNoLength": "Document number must be exactly 15 digits",
+      "documentNoInvoiceLength": "For e-invoice, document number must be exactly 16 digits",
       "warehouseRequired": "Warehouse selection is required",
       "customerRequired": "Customer selection is required"
     },

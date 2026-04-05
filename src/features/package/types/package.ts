@@ -139,8 +139,10 @@ export interface PLineDto {
   packageId: number;
   barcode?: string;
   stockCode: string;
+  stockId?: number;
   stockName?: string;
-  yapKod: string;
+  yapKodId?: number;
+  yapKod?: string;
   yapAcik?: string;
   quantity: number;
   serialNo?: string;
@@ -158,7 +160,8 @@ export interface CreatePLineDto {
   packageId: number;
   barcode?: string;
   stockCode: string;
-  yapKod?: string;
+  stockId?: number;
+  yapKodId?: number;
   quantity: number;
   serialNo?: string;
   serialNo2?: string;
@@ -172,7 +175,8 @@ export interface UpdatePLineDto {
   packageId?: number;
   barcode?: string;
   stockCode?: string;
-  yapKod?: string;
+  stockId?: number;
+  yapKodId?: number;
   quantity?: number;
   serialNo?: string;
   serialNo2?: string;
@@ -289,7 +293,9 @@ export const pLineFormSchema = (t: TFunction) => {
     packageId: z.number().min(1, t('package.form.packageIdRequired')),
     barcode: z.string().optional(),
     stockCode: z.string().min(1, t('package.form.stockCodeRequired')),
-    yapKod: z.string().optional(),
+    stockId: z.number().optional(),
+    yapKodId: z.number().optional(),
+    yapAcik: z.string().optional(),
     quantity: z.number().min(0.01, t('package.form.quantityRequired')),
     serialNo: z.string().optional(),
     serialNo2: z.string().optional(),
@@ -309,4 +315,3 @@ export interface PackageWizardState {
   lines: PLineDto[];
   isDirty: boolean;
 }
-

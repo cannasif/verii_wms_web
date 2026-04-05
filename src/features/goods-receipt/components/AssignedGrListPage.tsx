@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -89,7 +89,7 @@ export function AssignedGrListPage(): ReactElement {
     mapSortBy,
   });
 
-  const columns = useMemo<DataTableGridColumn<AssignedGrColumnKey>[]>(() => [
+  const columns = useMemo<PagedDataGridColumn<AssignedGrColumnKey>[]>(() => [
     { key: 'id', label: t('goodsReceipt.report.id') },
     { key: 'orderId', label: t('goodsReceipt.report.orderId') },
     { key: 'customerCode', label: t('goodsReceipt.report.customerCode') },
@@ -162,7 +162,7 @@ export function AssignedGrListPage(): ReactElement {
   return (
     <div className="space-y-6 crm-page">
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
-        <DataTableGrid<GrHeader, AssignedGrColumnKey>
+        <PagedDataGrid<GrHeader, AssignedGrColumnKey>
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}

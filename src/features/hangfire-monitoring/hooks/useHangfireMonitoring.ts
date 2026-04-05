@@ -6,6 +6,7 @@ const REFRESH_INTERVAL_MS = 60_000;
 
 export const HANGFIRE_QUERY_KEYS = {
   STATS: ['hangfire', 'stats'] as const,
+  MANUAL_SYNC_JOBS: ['hangfire', 'manual-sync-jobs'] as const,
   FAILED: (from: number, count: number) => ['hangfire', 'failed', from, count] as const,
   DEAD_LETTER: (from: number, count: number) => ['hangfire', 'dead-letter', from, count] as const,
 };
@@ -23,6 +24,15 @@ export function useHangfireFailedJobsQuery(from: number, count: number) {
   return useQuery({
     queryKey: HANGFIRE_QUERY_KEYS.FAILED(from, count),
     queryFn: () => hangfireMonitoringApi.getFailed(from, count),
+    refetchInterval: REFRESH_INTERVAL_MS,
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useHangfireManualSyncJobsQuery() {
+  return useQuery({
+    queryKey: HANGFIRE_QUERY_KEYS.MANUAL_SYNC_JOBS,
+    queryFn: () => hangfireMonitoringApi.getManualSyncJobs(),
     refetchInterval: REFRESH_INTERVAL_MS,
     refetchIntervalInBackground: false,
   });

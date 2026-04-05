@@ -1,4 +1,5 @@
-export interface ErpCustomer {
+export interface CustomerLookup {
+  id: number;
   subeKodu: number;
   isletmeKodu: number;
   cariKod: string;
@@ -44,17 +45,19 @@ export interface ErpCustomer {
   dovizLimi: string;
 }
 
-export interface ErpProject {
+export interface ProjectLookup {
   projeKod: string;
   projeAciklama: string;
 }
 
-export interface ErpWarehouse {
+export interface WarehouseLookup {
+  id: number;
   depoKodu: number;
   depoIsmi: string;
 }
 
-export interface ErpProduct {
+export interface StockLookup {
+  id: number;
   subeKodu: number;
   isletmeKodu: number;
   stokKodu: string;
@@ -72,8 +75,14 @@ export interface ErpProduct {
   kod5: string;
 }
 
-export interface BranchErp {
+export interface YapKodLookup {
+  id: number;
+  yapKod: string;
+  yapAcik: string;
+  yplndrStokKod?: string;
+}
+
+export interface BranchLookup {
   subeKodu: number;
   unvan: string;
 }
-

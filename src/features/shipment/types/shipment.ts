@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
+import type {
+  BaseWorkflowImportLineDetail,
+  BaseWorkflowRouteDetail,
+} from '@/types/detail-models';
 import type { TFunction } from 'i18next';
 
 export const createShipmentFormSchema = (t: TFunction) => z.object({
@@ -261,32 +265,10 @@ export interface AssignedShipmentLineSerial {
   lineId: number;
 }
 
-export interface AssignedShipmentImportLine {
-  id: number;
-  createdDate: string;
-  updatedDate: string;
-  deletedDate: string;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number;
-  deletedBy: number;
-  createdByFullUser: string;
-  updatedByFullUser: string;
-  deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
+export interface AssignedShipmentImportLine extends BaseWorkflowImportLineDetail {
   yapAcik: string;
-  description1: string;
-  description2: string;
-  description: string;
-  headerId: number;
   lineId: number;
   routeId: number;
-}
-
-export interface AssignedShipmentRoute {
-  id: number;
   createdDate: string;
   updatedDate: string;
   deletedDate: string;
@@ -297,20 +279,21 @@ export interface AssignedShipmentRoute {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  scannedBarcode: string;
-  quantity: number;
-  serialNo: string;
-  serialNo2: string;
-  serialNo3: string;
-  serialNo4: string;
-  sourceWarehouse: number;
-  targetWarehouse: number;
-  sourceCellCode: string;
-  targetCellCode: string;
+}
+
+export interface AssignedShipmentRoute extends BaseWorkflowRouteDetail {
   importLineId: number;
-  stockCode: string;
   yapKod: string;
-  description: string;
+  createdDate: string;
+  updatedDate: string;
+  deletedDate: string;
+  isDeleted: boolean;
+  createdBy: number;
+  updatedBy: number;
+  deletedBy: number;
+  createdByFullUser: string;
+  updatedByFullUser: string;
+  deletedByFullUser: string;
 }
 
 export interface AssignedShipmentOrderLinesData {

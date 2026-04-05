@@ -6,6 +6,7 @@ import { usePPackagesByHeader } from '../../hooks/usePPackagesByHeader';
 import { useCreatePPackage } from '../../hooks/useCreatePPackage';
 import { useDeletePPackage } from '../../hooks/useDeletePPackage';
 import { pPackageFormSchema, type PPackageFormData, type PPackageDto } from '../../types/package';
+import { PageActionBar, PageState } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -222,24 +223,20 @@ export function Step2PackageForm({
     <div className="space-y-6 crm-page">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>{t('package.wizard.step2.title')}</CardTitle>
-              <CardDescription>
-                {t('package.wizard.step2.description')}
-              </CardDescription>
-            </div>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="size-4 mr-2" />
-              {t('package.wizard.step2.addPackage')}
-            </Button>
-          </div>
+          <PageActionBar
+            title={<CardTitle>{t('package.wizard.step2.title')}</CardTitle>}
+            description={<CardDescription>{t('package.wizard.step2.description')}</CardDescription>}
+            actions={
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="size-4 mr-2" />
+                {t('package.wizard.step2.addPackage')}
+              </Button>
+            }
+          />
         </CardHeader>
         <CardContent>
           {isLoadingPackages ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('common.loading')}</p>
-            </div>
+            <PageState tone="loading" title={t('common.loading')} compact />
           ) : packages.length > 0 ? (
             <Table>
               <TableHeader>
@@ -296,11 +293,7 @@ export function Step2PackageForm({
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                {t('package.wizard.step2.noPackages')}
-              </p>
-            </div>
+            <PageState tone="empty" title={t('package.wizard.step2.noPackages')} compact />
           )}
         </CardContent>
       </Card>

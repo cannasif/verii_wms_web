@@ -1,5 +1,19 @@
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
+import type {
+  BaseDocumentHeaderDto,
+  BaseDocumentHeaderRequest,
+  BaseDocumentLineDto,
+  BaseDocumentLineRequest,
+  BaseDocumentLineSerialRequest,
+  BaseDocumentLineSerialDto,
+  BaseWorkflowOrder,
+  BaseWorkflowOrderItem,
+} from '@/types/document-models';
+import type {
+  BaseWorkflowImportLineDetail,
+  BaseWorkflowRouteDetail,
+} from '@/types/detail-models';
 import type { TFunction } from 'i18next';
 
 export const createSubcontractingFormSchema = (t: TFunction) => z.object({
@@ -11,50 +25,24 @@ export const createSubcontractingFormSchema = (t: TFunction) => z.object({
   targetWarehouse: z.string().min(1, t('subcontracting.validation.targetWarehouseRequired')),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
+  customerRefId: z.number().optional(),
+  sourceWarehouseId: z.number().optional(),
+  targetWarehouseId: z.number().optional(),
 });
 
 export type SubcontractingFormData = z.infer<ReturnType<typeof createSubcontractingFormSchema>>;
 
-export interface SubcontractingOrder {
-  mode: string;
-  siparisNo: string;
+export interface SubcontractingOrder extends BaseWorkflowOrder {
   orderID: number;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string | null;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
 }
 
-export interface SubcontractingOrderItem {
-  id?: string;
-  mode: string;
-  siparisNo: string;
-  orderID: number;
-  stockCode: string;
-  stockName: string;
+export interface SubcontractingOrderItem extends BaseWorkflowOrderItem {
   yapKod?: string;
   yapAcik?: string;
-  customerCode: string;
-  customerName: string;
-  branchCode: number;
-  targetWh: number;
-  projectCode: string;
-  orderDate: string;
-  orderedQty: number;
-  deliveredQty: number;
-  remainingHamax: number;
-  plannedQtyAllocated: number;
-  remainingForImport: number;
 }
 
 export interface SelectedSubcontractingOrderItem extends SubcontractingOrderItem {
+  stockId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -68,54 +56,15 @@ export interface SelectedSubcontractingOrderItem extends SubcontractingOrderItem
 }
 
 export interface SubcontractingGenerateRequest {
-  header: {
-    branchCode: string;
-    projectCode: string;
-    orderId: string;
-    documentType: string;
-    yearCode: string;
-    description1: string;
-    description2: string;
-    priorityLevel: number;
-    plannedDate: string;
-    isPlanned: boolean;
-    isCompleted: boolean;
-    completedDate: string;
-    documentNo: string;
-    documentDate: string;
-    customerCode: string;
-    customerName: string;
-    sourceWarehouse: string;
-    targetWarehouse: string;
-    priority: string;
+  header: BaseDocumentHeaderRequest & {
     type: number;
   };
-  lines: {
-    clientKey: string;
-    clientGuid: string;
-    stockCode: string;
+  lines: Array<BaseDocumentLineRequest & {
     stockName?: string;
     yapKod: string;
     yapAcik?: string;
-    orderId: number;
-    quantity: number;
-    unit: string;
-    erpOrderNo: string;
-    erpOrderId: string;
-    erpLineReference: string;
-    description: string;
-  }[];
-  lineSerials: {
-    quantity: number;
-    serialNo: string;
-    serialNo2: string;
-    serialNo3: string;
-    serialNo4: string;
-    sourceCellCode: string;
-    targetCellCode: string;
-    lineClientKey: string;
-    lineGroupGuid: string;
-  }[];
+  }>;
+  lineSerials: Array<BaseDocumentLineSerialRequest>;
   terminalLines: {
     terminalUserId: number;
   }[];
@@ -125,93 +74,18 @@ export interface SubcontractingGenerateRequest {
 export type SubcontractingOrdersResponse = ApiResponse<SubcontractingOrder[]>;
 export type SubcontractingOrderItemsResponse = ApiResponse<SubcontractingOrderItem[]>;
 
-export interface SubcontractingHeader {
-  id: number;
-  branchCode: string;
-  projectCode: string;
-  documentNo: string;
-  documentDate: string;
-  documentType: string;
-  customerCode: string;
-  customerName: string;
-  sourceWarehouse: string;
-  targetWarehouse: string;
-  priority: string;
-  yearCode: string;
-  description1: string;
-  description2: string;
+export interface SubcontractingHeader extends BaseDocumentHeaderDto {
   priorityLevel: number;
   type: number;
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
-  isDeleted: boolean;
-  deletedBy: string;
-  deletedDate: string;
-  completionDate: string;
-  isCompleted: boolean;
-  isPendingApproval: boolean;
-  approvalStatus: boolean;
-  approvedByUserId: number;
-  approvalDate: string;
-  isERPIntegrated: boolean;
-  erpReferenceNumber: string;
-  erpIntegrationDate: string;
-  erpIntegrationStatus: string;
-  erpErrorMessage: string;
-  createdByFullUser: string;
-  updatedByFullUser: string;
-  deletedByFullUser: string;
 }
 
-export interface SubcontractingLine {
-  id: number;
-  createdDate: string;
-  updatedDate: string;
-  deletedDate: string;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number;
-  deletedBy: number;
-  createdByFullUser: string;
-  updatedByFullUser: string;
-  deletedByFullUser: string;
-  stockCode: string;
+export interface SubcontractingLine extends BaseDocumentLineDto {
   stockName: string;
   yapKod: string;
   yapAcik: string;
-  quantity: number;
-  unit: string;
-  erpOrderNo: string;
-  erpOrderId: string;
-  description: string;
-  headerId: number;
-  orderId: number;
-  erpLineReference: string;
 }
 
-export interface SubcontractingLineSerial {
-  id: number;
-  createdDate: string;
-  updatedDate: string;
-  deletedDate: string;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number;
-  deletedBy: number;
-  createdByFullUser: string;
-  updatedByFullUser: string;
-  deletedByFullUser: string;
-  quantity: number;
-  serialNo: string;
-  serialNo2: string;
-  serialNo3: string;
-  serialNo4: string;
-  sourceCellCode: string;
-  targetCellCode: string;
-  lineId: number;
-}
+export interface SubcontractingLineSerial extends BaseDocumentLineSerialDto {}
 
 export type SubcontractingHeadersResponse = ApiResponse<SubcontractingHeader[]>;
 export type SubcontractingLinesResponse = ApiResponse<SubcontractingLine[]>;
@@ -265,32 +139,9 @@ export interface AssignedSubcontractingLineSerial {
   lineId: number;
 }
 
-export interface AssignedSubcontractingImportLine {
-  id: number;
-  createdDate: string;
-  updatedDate: string;
-  deletedDate: string;
-  isDeleted: boolean;
-  createdBy: number;
-  updatedBy: number;
-  deletedBy: number;
-  createdByFullUser: string;
-  updatedByFullUser: string;
-  deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
-  description1: string;
-  description2: string;
-  description: string;
-  headerId: number;
+export interface AssignedSubcontractingImportLine extends BaseWorkflowImportLineDetail {
   lineId: number;
   routeId: number;
-}
-
-export interface AssignedSubcontractingRoute {
-  id: number;
   createdDate: string;
   updatedDate: string;
   deletedDate: string;
@@ -301,20 +152,21 @@ export interface AssignedSubcontractingRoute {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  scannedBarcode: string;
-  quantity: number;
-  serialNo: string;
-  serialNo2: string;
-  serialNo3: string;
-  serialNo4: string;
-  sourceWarehouse: number;
-  targetWarehouse: number;
-  sourceCellCode: string;
-  targetCellCode: string;
+}
+
+export interface AssignedSubcontractingRoute extends BaseWorkflowRouteDetail {
   importLineId: number;
-  stockCode: string;
   yapKod: string;
-  description: string;
+  createdDate: string;
+  updatedDate: string;
+  deletedDate: string;
+  isDeleted: boolean;
+  createdBy: number;
+  updatedBy: number;
+  deletedBy: number;
+  createdByFullUser: string;
+  updatedByFullUser: string;
+  deletedByFullUser: string;
 }
 
 export interface AssignedSubcontractingOrderLinesData {
@@ -395,4 +247,3 @@ export interface CollectedBarcodeItem {
 }
 
 export type CollectedBarcodesResponse = ApiResponse<CollectedBarcodeItem[]>;
-

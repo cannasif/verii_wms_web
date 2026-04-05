@@ -9,9 +9,11 @@ import { usePLinesByPackage } from '../hooks/usePLinesByPackage';
 import { useDeletePPackage } from '../hooks/useDeletePPackage';
 import { useCreatePLine } from '../hooks/useCreatePLine';
 import { useDeletePLine } from '../hooks/useDeletePLine';
+import { useYapKodlar } from '../hooks/useYapKodlar';
 import { useStokBarcode } from '../hooks/useStokBarcode';
+import { DetailPageShell, PageState } from '@/components/shared';
 import { pLineFormSchema, type PLineFormData, type StokBarcodeDto } from '../types/package';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -71,6 +73,7 @@ export function PackagePackageDetailPage(): ReactElement {
   const deleteMutation = useDeletePPackage();
   const createLineMutation = useCreatePLine();
   const deleteLineMutation = useDeletePLine();
+  const { data: yapKodlar = [] } = useYapKodlar();
   const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
 
   const lineSchema = useMemo(() => pLineFormSchema(t), [t]);
@@ -82,7 +85,9 @@ export function PackagePackageDetailPage(): ReactElement {
       packageId: packageId || 0,
       barcode: '',
       stockCode: '',
-      yapKod: '',
+      stockId: undefined,
+      yapKodId: undefined,
+      yapAcik: '',
       quantity: 0,
       serialNo: '',
       serialNo2: '',
@@ -109,6 +114,11 @@ export function PackagePackageDetailPage(): ReactElement {
       setPageTitle(null);
     };
   }, [t, setPageTitle, packageData]);
+
+  const yapKodByCode = useMemo(
+    () => new Map(yapKodlar.map((item) => [item.yapKod.toLowerCase(), item])),
+    [yapKodlar],
+  );
 
   const handleDelete = async (): Promise<void> => {
     if (!packageId || !packageData) return;
@@ -263,12 +273,13 @@ export function PackagePackageDetailPage(): ReactElement {
     }
 
     try {
+      const matchedYapKod = selectedStock.yapKod ? yapKodByCode.get(selectedStock.yapKod.toLowerCase()) : undefined;
       await createLineMutation.mutateAsync({
         packingHeaderId: packageData.packingHeaderId,
         packageId: packageData.id,
         barcode: selectedStock.barkod,
         stockCode: selectedStock.stokKodu,
-        yapKod: selectedStock.yapKod || undefined,
+        yapKodId: matchedYapKod?.id,
         quantity: quantity,
         serialNo: serialNo || undefined,
         serialNo2: '',
@@ -292,32 +303,18 @@ export function PackagePackageDetailPage(): ReactElement {
     }
   };
 
-  if (isLoadingPackage) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
-      </div>
-    );
-  }
-
-  if (!packageData) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-destructive">{t('package.packageDetail.notFound')}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 crm-page">
-      <Card>
-        <CardHeader>
-          <div className="crm-toolbar flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <CardTitle>{t('package.packageDetail.title')}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">{packageData.packageNo}</p>
-            </div>
-            <div className="flex items-center gap-2">
+      <DetailPageShell
+        title={t('package.packageDetail.title')}
+        description={!isLoadingPackage && packageData ? packageData.packageNo : undefined}
+        isLoading={isLoadingPackage}
+        isEmpty={!isLoadingPackage && !packageData}
+        loadingTitle={t('common.loading')}
+        emptyTitle={t('package.packageDetail.notFound')}
+        actions={
+          packageData ? (
+            <>
               <Button variant="outline" onClick={() => navigate(`/package/detail/${packageData.packingHeaderId}`)}>
                 <ArrowLeft className="size-4 mr-2" />
                 {t('package.packageDetail.backToHeader')}
@@ -326,10 +323,12 @@ export function PackagePackageDetailPage(): ReactElement {
                 <Trash2 className="size-4 mr-2" />
                 {t('common.delete')}
               </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
+            </>
+          ) : undefined
+        }
+      >
+        {packageData ? (
+          <>
           <div className="space-y-6 mb-6">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <div>
@@ -416,7 +415,7 @@ export function PackagePackageDetailPage(): ReactElement {
           </div>
 
           {isLoadingLines ? (
-            <p className="text-muted-foreground">{t('common.loading')}</p>
+            <PageState tone="loading" title={t('common.loading')} compact />
           ) : lines && lines.length > 0 ? (
             <>
               <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
@@ -538,12 +537,11 @@ export function PackagePackageDetailPage(): ReactElement {
               </div>
             </>
           ) : (
-            <p className="text-muted-foreground text-center py-8">
-              {t('package.packageDetail.noLines')}
-            </p>
+            <PageState tone="empty" title={t('package.packageDetail.noLines')} compact />
           )}
-        </CardContent>
-      </Card>
+          </>
+        ) : null}
+      </DetailPageShell>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
@@ -709,4 +707,3 @@ export function PackagePackageDetailPage(): ReactElement {
     </div>
   );
 }
-

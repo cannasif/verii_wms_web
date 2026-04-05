@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -77,7 +77,7 @@ export function ShipmentListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const columns = useMemo<DataTableGridColumn<ShipmentColumnKey>[]>(
+  const columns = useMemo<PagedDataGridColumn<ShipmentColumnKey>[]>(
     () => [
       { key: 'documentNo', label: t('shipment.list.documentNo') },
       { key: 'documentDate', label: t('shipment.list.documentDate') },
@@ -178,7 +178,7 @@ export function ShipmentListPage(): ReactElement {
           <CardTitle>{t('shipment.list.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTableGrid<ShipmentHeader, ShipmentColumnKey>
+          <PagedDataGrid<ShipmentHeader, ShipmentColumnKey>
             columns={columns}
             visibleColumnKeys={visibleColumnKeys}
             rows={data?.data ?? []}
