@@ -55,6 +55,24 @@ export interface SelectedSubcontractingOrderItem extends SubcontractingOrderItem
   targetCellCode?: string;
 }
 
+export interface SelectedSubcontractingStockItem {
+  id: string;
+  stockId?: number;
+  yapKodId?: number;
+  stockCode: string;
+  stockName: string;
+  unit: string;
+  transferQuantity: number;
+  isSelected: boolean;
+  serialNo?: string;
+  serialNo2?: string;
+  lotNo?: string;
+  batchNo?: string;
+  configCode?: string;
+  sourceCellCode?: string;
+  targetCellCode?: string;
+}
+
 export interface SubcontractingGenerateRequest {
   header: BaseDocumentHeaderRequest & {
     type: number;
@@ -69,6 +87,26 @@ export interface SubcontractingGenerateRequest {
     terminalUserId: number;
   }[];
   userIds?: number[];
+}
+
+export interface SubcontractingProcessRequest {
+  header: SubcontractingGenerateRequest['header'];
+  routes: Array<{
+    stockId?: number;
+    stockCode: string;
+    yapKodId?: number;
+    yapKod?: string;
+    quantity: number;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    scannedBarcode?: string;
+    sourceWarehouse?: number;
+    targetWarehouse?: number;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+  }>;
 }
 
 export type SubcontractingOrdersResponse = ApiResponse<SubcontractingOrder[]>;
@@ -103,11 +141,12 @@ export interface AssignedSubcontractingLine {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   quantity: number;
+  siparisMiktar?: number | null;
   unit: string;
   erpOrderNo: string;
   erpOrderId: string;
@@ -134,6 +173,8 @@ export interface AssignedSubcontractingLineSerial {
   serialNo2: string;
   serialNo3: string;
   serialNo4: string;
+  sourceWarehouseId?: number | null;
+  targetWarehouseId?: number | null;
   sourceCellCode: string;
   targetCellCode: string;
   lineId: number;
@@ -200,12 +241,11 @@ export type StokBarcodeResponse = ApiResponse<StokBarcodeDto[]>;
 
 export interface AddBarcodeRequest {
   headerId: number;
-  lineId: number;
   barcode: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   quantity: number;
   serialNo: string;
   serialNo2: string;
@@ -227,10 +267,10 @@ export interface AddBarcodeResponseData {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   description1: string;
   description2: string;
   description: string;

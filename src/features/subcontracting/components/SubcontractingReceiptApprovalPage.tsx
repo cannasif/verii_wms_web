@@ -39,7 +39,7 @@ export function SubcontractingReceiptApprovalPage(): ReactElement {
   const formatDate = (value: string | null): string => value ? new Date(value).toLocaleDateString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, count: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
     try { await approveMutation.mutateAsync({ id, approved }); toast.success(approved ? t('subcontracting.receipt.approval.approveSuccess') : t('subcontracting.receipt.approval.rejectSuccess')); }
     catch (err) { toast.error(err instanceof Error ? err.message : approved ? t('subcontracting.receipt.approval.approveError') : t('subcontracting.receipt.approval.rejectError')); }

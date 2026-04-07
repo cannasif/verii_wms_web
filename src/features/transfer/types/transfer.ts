@@ -84,6 +84,28 @@ export interface TransferGenerateRequest {
   userIds?: number[];
 }
 
+export interface TransferProcessRequest {
+  header: BaseDocumentHeaderRequest & {
+    type: number;
+  };
+  routes: Array<{
+    stockId?: number;
+    stockCode: string;
+    yapKodId?: number;
+    yapKod?: string;
+    quantity: number;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    scannedBarcode?: string;
+    sourceWarehouse?: number;
+    targetWarehouse?: number;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+  }>;
+}
+
 export type TransferOrdersResponse = ApiResponse<TransferOrder[]>;
 export type TransferOrderItemsResponse = ApiResponse<TransferOrderItem[]>;
 
@@ -114,11 +136,12 @@ export interface AssignedTransferLine {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   quantity: number;
+  siparisMiktar?: number | null;
   unit: string;
   erpOrderNo: string;
   erpOrderId: string;
@@ -145,6 +168,10 @@ export interface AssignedTransferLineSerial {
   serialNo2: string;
   serialNo3: string;
   serialNo4: string;
+  sourceWarehouseId?: number | null;
+  targetWarehouseId?: number | null;
+  sourceWarehouseName?: string | null;
+  targetWarehouseName?: string | null;
   sourceCellCode: string;
   targetCellCode: string;
   lineId: number;
@@ -214,12 +241,11 @@ export type StokBarcodeResponse = ApiResponse<StokBarcodeDto[]>;
 
 export interface AddBarcodeRequest {
   headerId: number;
-  lineId: number;
   barcode: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   quantity: number;
   serialNo: string;
   serialNo2: string;
@@ -241,10 +267,10 @@ export interface AddBarcodeResponseData {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   description1: string;
   description2: string;
   description: string;

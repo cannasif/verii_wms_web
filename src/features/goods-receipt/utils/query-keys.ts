@@ -6,4 +6,5 @@ export const GOODS_RECEIPT_QUERY_KEYS = {
   HEADERS: 'goodsReceipt.headers',
   ASSIGNED_HEADERS: 'goodsReceipt.assignedHeaders',
   ASSIGNED_ORDER_LINES: 'goodsReceipt.assignedOrderLines',
+  AWAITING_APPROVAL_HEADERS: 'goodsReceipt.awaitingApprovalHeaders',
 } as const;

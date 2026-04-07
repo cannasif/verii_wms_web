@@ -2,8 +2,10 @@ import { DocumentType } from '@/types/document-type';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   ShipmentGenerateRequest,
+  ShipmentProcessRequest,
   ShipmentFormData,
   SelectedShipmentOrderItem,
+  SelectedShipmentStockItem,
 } from '../types/shipment';
 
 function getActiveBranchCode(): string {
@@ -12,7 +14,8 @@ function getActiveBranchCode(): string {
 
 export function buildShipmentGenerateRequest(
   formData: ShipmentFormData,
-  selectedItems: SelectedShipmentOrderItem[],
+  selectedItems: (SelectedShipmentOrderItem | SelectedShipmentStockItem)[],
+  isStockBased: boolean = false,
 ): ShipmentGenerateRequest {
   const now = new Date().toISOString();
   const lines: ShipmentGenerateRequest['lines'] = [];
@@ -27,13 +30,13 @@ export function buildShipmentGenerateRequest(
       clientGuid,
       stockCode: item.stockCode,
       stockName: item.stockName,
-      yapKod: item.yapKod || '',
-      yapAcik: item.yapAcik || '',
-      orderId: item.orderID || 0,
+      yapKod: ('yapKod' in item ? item.yapKod : item.configCode) || '',
+      yapAcik: ('yapAcik' in item ? item.yapAcik : '') || '',
+      orderId: isStockBased ? 0 : ('orderID' in item ? item.orderID || 0 : 0),
       quantity: item.transferQuantity,
       unit: '',
-      erpOrderNo: item.siparisNo || '',
-      erpOrderId: String(item.orderID || ''),
+      erpOrderNo: isStockBased ? '' : ('siparisNo' in item ? item.siparisNo || '' : ''),
+      erpOrderId: isStockBased ? '' : ('orderID' in item ? String(item.orderID || '') : ''),
       erpLineReference: '',
       description: '',
     });
@@ -72,7 +75,7 @@ export function buildShipmentGenerateRequest(
       sourceWarehouse: formData.sourceWarehouse,
       targetWarehouse: '',
       priority: '',
-      type: 0,
+      type: isStockBased ? 1 : 0,
     },
     lines,
     lineSerials,
@@ -85,3 +88,52 @@ export function buildShipmentGenerateRequest(
   return request;
 }
 
+export function buildShipmentProcessRequest(
+  formData: ShipmentFormData,
+  selectedItems: SelectedShipmentStockItem[],
+): ShipmentProcessRequest {
+  const now = new Date().toISOString();
+
+  return {
+    header: {
+      branchCode: getActiveBranchCode(),
+      projectCode: formData.projectCode || '',
+      orderId: '',
+      documentType: DocumentType.SH,
+      yearCode: new Date().getFullYear().toString(),
+      description1: formData.notes || '',
+      description2: '',
+      priorityLevel: 0,
+      plannedDate: formData.transferDate,
+      isPlanned: true,
+      isCompleted: false,
+      completedDate: now,
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      customerCode: formData.customerId || '',
+      customerName: '',
+      sourceWarehouse: formData.sourceWarehouse,
+      targetWarehouse: '',
+      priority: '',
+      type: 1,
+    },
+    routes: selectedItems
+      .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)
+      .map((item) => ({
+        stockId: item.stockId,
+        stockCode: item.stockCode,
+        yapKodId: item.yapKodId,
+        yapKod: item.configCode || undefined,
+        quantity: item.transferQuantity,
+        serialNo: item.serialNo || '',
+        serialNo2: item.serialNo2 || '',
+        serialNo3: item.lotNo || '',
+        serialNo4: item.batchNo || '',
+        scannedBarcode: item.stockCode,
+        sourceWarehouse: formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined,
+        targetWarehouse: undefined,
+        sourceCellCode: item.sourceCellCode || '',
+        targetCellCode: item.targetCellCode || '',
+      })),
+  };
+}

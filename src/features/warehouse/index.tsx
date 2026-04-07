@@ -1,4 +1,5 @@
 export { WarehouseInboundCreatePage } from './components/WarehouseInboundCreatePage';
+export { WarehouseInboundProcessPage } from './components/WarehouseInboundProcessPage';
 export { WarehouseOutboundCreatePage } from './components/WarehouseOutboundCreatePage';
 export { WarehouseOutboundProcessPage } from './components/WarehouseOutboundProcessPage';
 export { WarehouseInboundListPage } from './components/WarehouseInboundListPage';

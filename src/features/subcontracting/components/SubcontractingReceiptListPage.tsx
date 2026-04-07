@@ -73,7 +73,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ documentNo: item.documentNo || '-', documentDate: formatDate(item.documentDate), customerCode: item.customerCode || '-', customerName: item.customerName || '-', sourceWarehouse: item.sourceWarehouse || '-', targetWarehouse: item.targetWarehouse || '-', documentType: item.documentType || '-', status: item.isCompleted ? t('subcontracting.receipt.list.completed') : item.isPendingApproval ? t('subcontracting.receipt.list.pendingApproval') : t('subcontracting.receipt.list.inProgress'), createdDate: formatDateTime(item.createdDate) })), [data?.data, t]);
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, count: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as SubcontractingReceiptColumnKey[], [orderedVisibleColumns]);
   const renderSortIcon = (columnKey: SubcontractingReceiptColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 

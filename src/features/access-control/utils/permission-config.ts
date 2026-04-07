@@ -1,6 +1,7 @@
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/dashboard': 'dashboard.view',
   '/goods-receipt/create': 'wms.goods-receipt.create',
+  '/goods-receipt/approval': 'wms.goods-receipt.update',
   '/goods-receipt/list': 'wms.goods-receipt.view',
   '/goods-receipt/assigned': 'wms.goods-receipt.view',
   '/transfer/create': 'wms.transfer.create',
@@ -8,10 +9,12 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/transfer/assigned': 'wms.transfer.view',
   '/transfer/approval': 'wms.transfer.update',
   '/subcontracting/issue/create': 'wms.subcontracting.issue.create',
+  '/subcontracting/issue/process': 'wms.subcontracting.issue.create',
   '/subcontracting/issue/list': 'wms.subcontracting.issue.view',
   '/subcontracting/issue/assigned': 'wms.subcontracting.issue.view',
   '/subcontracting/issue/approval': 'wms.subcontracting.issue.update',
   '/subcontracting/receipt/create': 'wms.subcontracting.receipt.create',
+  '/subcontracting/receipt/process': 'wms.subcontracting.receipt.create',
   '/subcontracting/receipt/list': 'wms.subcontracting.receipt.view',
   '/subcontracting/receipt/assigned': 'wms.subcontracting.receipt.view',
   '/subcontracting/receipt/approval': 'wms.subcontracting.receipt.update',
@@ -25,9 +28,24 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/warehouse/outbound/assigned': 'wms.warehouse.outbound.view',
   '/warehouse/outbound/approval': 'wms.warehouse.outbound.update',
   '/shipment/create': 'wms.shipment.create',
+  '/shipment/process': 'wms.shipment.create',
   '/shipment/list': 'wms.shipment.view',
   '/shipment/assigned': 'wms.shipment.view',
   '/shipment/approval': 'wms.shipment.update',
+  '/production/create': 'wms.production.create',
+  '/production/detail': 'wms.production.view',
+  '/production/process': 'wms.production.view',
+  '/production/assigned': 'wms.production.view',
+  '/production/approval': 'wms.production.update',
+  '/production/list': 'wms.production.view',
+  '/production-transfer/create': 'wms.production-transfer.create',
+  '/production-transfer/detail': 'wms.production-transfer.view',
+  '/production-transfer/approval': 'wms.production-transfer.update',
+  '/production-transfer/list': 'wms.production-transfer.view',
+  '/inventory-count/create': 'wms.inventory-count.create',
+  '/inventory-count/process': 'wms.inventory-count.update',
+  '/inventory-count/list': 'wms.inventory-count.view',
+  '/inventory-count/assigned': 'wms.inventory-count.view',
   '/inventory/3d-warehouse': 'wms.inventory-count.view',
   '/inventory/3d-outside-warehouse': 'wms.inventory-count.view',
   '/reports': 'wms.reports.view',
@@ -54,19 +72,23 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/erp/stocks': 'access-control.hangfire-monitoring.view',
   '/erp/warehouses': 'access-control.hangfire-monitoring.view',
   '/erp/yapkodlar': 'access-control.hangfire-monitoring.view',
+  '/erp/barcodes': 'access-control.hangfire-monitoring.view',
 };
 
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
   { pattern: /^\/dashboard(\/|$)/, permission: 'dashboard.view' },
   { pattern: /^\/goods-receipt\/create(\/|$)/, permission: 'wms.goods-receipt.create' },
+  { pattern: /^\/goods-receipt\/approval(\/|$)/, permission: 'wms.goods-receipt.update' },
   { pattern: /^\/goods-receipt(\/|$)/, permission: 'wms.goods-receipt.view' },
   { pattern: /^\/transfer\/create(\/|$)/, permission: 'wms.transfer.create' },
   { pattern: /^\/transfer\/approval(\/|$)/, permission: 'wms.transfer.update' },
   { pattern: /^\/transfer(\/|$)/, permission: 'wms.transfer.view' },
   { pattern: /^\/subcontracting\/issue\/create(\/|$)/, permission: 'wms.subcontracting.issue.create' },
+  { pattern: /^\/subcontracting\/issue\/process(\/|$)/, permission: 'wms.subcontracting.issue.create' },
   { pattern: /^\/subcontracting\/issue\/approval(\/|$)/, permission: 'wms.subcontracting.issue.update' },
   { pattern: /^\/subcontracting\/issue(\/|$)/, permission: 'wms.subcontracting.issue.view' },
   { pattern: /^\/subcontracting\/receipt\/create(\/|$)/, permission: 'wms.subcontracting.receipt.create' },
+  { pattern: /^\/subcontracting\/receipt\/process(\/|$)/, permission: 'wms.subcontracting.receipt.create' },
   { pattern: /^\/subcontracting\/receipt\/approval(\/|$)/, permission: 'wms.subcontracting.receipt.update' },
   { pattern: /^\/subcontracting\/receipt(\/|$)/, permission: 'wms.subcontracting.receipt.view' },
   { pattern: /^\/warehouse\/inbound\/create(\/|$)/, permission: 'wms.warehouse.inbound.create' },
@@ -77,8 +99,18 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/warehouse\/outbound\/approval(\/|$)/, permission: 'wms.warehouse.outbound.update' },
   { pattern: /^\/warehouse\/outbound(\/|$)/, permission: 'wms.warehouse.outbound.view' },
   { pattern: /^\/shipment\/create(\/|$)/, permission: 'wms.shipment.create' },
+  { pattern: /^\/shipment\/process(\/|$)/, permission: 'wms.shipment.create' },
   { pattern: /^\/shipment\/approval(\/|$)/, permission: 'wms.shipment.update' },
   { pattern: /^\/shipment(\/|$)/, permission: 'wms.shipment.view' },
+  { pattern: /^\/production\/create(\/|$)/, permission: 'wms.production.create' },
+  { pattern: /^\/production\/approval(\/|$)/, permission: 'wms.production.update' },
+  { pattern: /^\/production(\/|$)/, permission: 'wms.production.view' },
+  { pattern: /^\/production-transfer\/create(\/|$)/, permission: 'wms.production-transfer.create' },
+  { pattern: /^\/production-transfer\/approval(\/|$)/, permission: 'wms.production-transfer.update' },
+  { pattern: /^\/production-transfer(\/|$)/, permission: 'wms.production-transfer.view' },
+  { pattern: /^\/inventory-count\/create(\/|$)/, permission: 'wms.inventory-count.create' },
+  { pattern: /^\/inventory-count\/process(\/|$)/, permission: 'wms.inventory-count.update' },
+  { pattern: /^\/inventory-count(\/|$)/, permission: 'wms.inventory-count.view' },
   { pattern: /^\/inventory(\/|$)/, permission: 'wms.inventory-count.view' },
   { pattern: /^\/reports(\/|$)/, permission: 'wms.reports.view' },
   { pattern: /^\/parameters(\/|$)/, permission: 'wms.parameters.gr.view' },
@@ -94,11 +126,13 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/erp\/stocks(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
   { pattern: /^\/erp\/warehouses(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
   { pattern: /^\/erp\/yapkodlar(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/erp\/barcodes(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
 ];
 
-const PERMISSION_ACTIONS = ['view', 'create', 'update'] as const;
+const PERMISSION_ACTIONS = ['view', 'create', 'update', 'delete'] as const;
 
 type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
+type PermissionScopeDisplay = { key: string; fallback: string };
 
 export function isLeafPermissionCode(code: string): boolean {
   if (code === 'dashboard.view' || code === 'wms.reports.view') return true;
@@ -119,73 +153,7 @@ export const ACCESS_CONTROL_ADMIN_FALLBACK_TO_SYSTEM_ADMIN = true as const;
 
 export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [];
 
-export const PERMISSION_CODE_DISPLAY: Record<string, { key: string; fallback: string }> = {
-  'dashboard.view': { key: 'sidebar.dashboard', fallback: 'Dashboard' },
-  'wms.goods-receipt.view': { key: 'sidebar.goodsReceiptList', fallback: 'Mal Kabul' },
-  'wms.goods-receipt.create': { key: 'sidebar.goodsReceiptCreate', fallback: 'Mal Kabul Oluştur' },
-  'wms.goods-receipt.update': { key: 'sidebar.goodsReceiptApproval', fallback: 'Mal Kabul Güncelle' },
-  'wms.transfer.view': { key: 'sidebar.transferList', fallback: 'Transfer' },
-  'wms.transfer.create': { key: 'sidebar.transferCreate', fallback: 'Transfer Oluştur' },
-  'wms.transfer.update': { key: 'sidebar.transferApproval', fallback: 'Transfer Güncelle' },
-  'wms.subcontracting.issue.view': { key: 'sidebar.subcontractingIssueList', fallback: 'Fason Çıkış' },
-  'wms.subcontracting.issue.create': { key: 'sidebar.subcontractingIssueCreate', fallback: 'Fason Çıkış Oluştur' },
-  'wms.subcontracting.issue.update': { key: 'sidebar.subcontractingIssueApproval', fallback: 'Fason Çıkış Güncelle' },
-  'wms.subcontracting.receipt.view': { key: 'sidebar.subcontractingReceiptList', fallback: 'Fason Giriş' },
-  'wms.subcontracting.receipt.create': { key: 'sidebar.subcontractingReceiptCreate', fallback: 'Fason Giriş Oluştur' },
-  'wms.subcontracting.receipt.update': { key: 'sidebar.subcontractingReceiptApproval', fallback: 'Fason Giriş Güncelle' },
-  'wms.warehouse.inbound.view': { key: 'sidebar.warehouseInboundList', fallback: 'Ambar Giriş' },
-  'wms.warehouse.inbound.create': { key: 'sidebar.warehouseInboundCreate', fallback: 'Ambar Giriş Oluştur' },
-  'wms.warehouse.inbound.update': { key: 'sidebar.warehouseInboundApproval', fallback: 'Ambar Giriş Güncelle' },
-  'wms.warehouse.outbound.view': { key: 'sidebar.warehouseOutboundList', fallback: 'Ambar Çıkış' },
-  'wms.warehouse.outbound.create': { key: 'sidebar.warehouseOutboundCreate', fallback: 'Ambar Çıkış Oluştur' },
-  'wms.warehouse.outbound.update': { key: 'sidebar.warehouseOutboundApproval', fallback: 'Ambar Çıkış Güncelle' },
-  'wms.shipment.view': { key: 'sidebar.shipmentList', fallback: 'Sevkiyat' },
-  'wms.shipment.create': { key: 'sidebar.shipmentCreate', fallback: 'Sevkiyat Oluştur' },
-  'wms.shipment.update': { key: 'sidebar.shipmentApproval', fallback: 'Sevkiyat Güncelle' },
-  'wms.inventory-count.view': { key: 'sidebar.warehouse3d', fallback: 'Envanter' },
-  'wms.inventory-count.create': { key: 'sidebar.warehouse3d', fallback: 'Envanter Oluştur' },
-  'wms.inventory-count.update': { key: 'sidebar.warehouse3d', fallback: 'Envanter Güncelle' },
-  'wms.reports.view': { key: 'sidebar.reports', fallback: 'Raporlar' },
-  'wms.package.view': { key: 'sidebar.packageList', fallback: 'Paketleme' },
-  'wms.package.create': { key: 'sidebar.packageCreate', fallback: 'Paketleme Oluştur' },
-  'wms.package.update': { key: 'sidebar.packageList', fallback: 'Paketleme Güncelle' },
-  'wms.parameters.gr.view': { key: 'sidebar.parametersGr', fallback: 'Mal Kabul Parametreleri' },
-  'wms.parameters.gr.update': { key: 'sidebar.parametersGr', fallback: 'Mal Kabul Parametrelerini Güncelle' },
-  'wms.parameters.wt.view': { key: 'sidebar.parametersWt', fallback: 'Transfer Parametreleri' },
-  'wms.parameters.wt.update': { key: 'sidebar.parametersWt', fallback: 'Transfer Parametrelerini Güncelle' },
-  'wms.parameters.wo.view': { key: 'sidebar.parametersWo', fallback: 'Depo Çıkış Parametreleri' },
-  'wms.parameters.wo.update': { key: 'sidebar.parametersWo', fallback: 'Depo Çıkış Parametrelerini Güncelle' },
-  'wms.parameters.wi.view': { key: 'sidebar.parametersWi', fallback: 'Depo Giriş Parametreleri' },
-  'wms.parameters.wi.update': { key: 'sidebar.parametersWi', fallback: 'Depo Giriş Parametrelerini Güncelle' },
-  'wms.parameters.sh.view': { key: 'sidebar.parametersSh', fallback: 'Sevkiyat Parametreleri' },
-  'wms.parameters.sh.update': { key: 'sidebar.parametersSh', fallback: 'Sevkiyat Parametrelerini Güncelle' },
-  'wms.parameters.srt.view': { key: 'sidebar.parametersSrt', fallback: 'Taşeron Giriş Parametreleri' },
-  'wms.parameters.srt.update': { key: 'sidebar.parametersSrt', fallback: 'Taşeron Giriş Parametrelerini Güncelle' },
-  'wms.parameters.sit.view': { key: 'sidebar.parametersSit', fallback: 'Taşeron Çıkış Parametreleri' },
-  'wms.parameters.sit.update': { key: 'sidebar.parametersSit', fallback: 'Taşeron Çıkış Parametrelerini Güncelle' },
-  'wms.parameters.pt.view': { key: 'sidebar.parametersPt', fallback: 'Üretim Transfer Parametreleri' },
-  'wms.parameters.pt.update': { key: 'sidebar.parametersPt', fallback: 'Üretim Transfer Parametrelerini Güncelle' },
-  'wms.parameters.pr.view': { key: 'sidebar.parametersPr', fallback: 'Üretim Parametreleri' },
-  'wms.parameters.pr.update': { key: 'sidebar.parametersPr', fallback: 'Üretim Parametrelerini Güncelle' },
-  'wms.parameters.ic.view': { key: 'sidebar.parametersIc', fallback: 'Sayım Parametreleri' },
-  'wms.parameters.ic.update': { key: 'sidebar.parametersIc', fallback: 'Sayım Parametrelerini Güncelle' },
-  'wms.parameters.p.view': { key: 'sidebar.parametersP', fallback: 'Paket Parametreleri' },
-  'wms.parameters.p.update': { key: 'sidebar.parametersP', fallback: 'Paket Parametrelerini Güncelle' },
-  'access-control.user-management.view': { key: 'sidebar.userManagement', fallback: 'Kullanıcı Yönetimi' },
-  'access-control.user-management.create': { key: 'sidebar.userManagement', fallback: 'Kullanıcı Oluştur' },
-  'access-control.user-management.update': { key: 'sidebar.userManagement', fallback: 'Kullanıcı Güncelle' },
-  'access-control.permission-definitions.view': { key: 'sidebar.permissionDefinitions', fallback: 'İzin Tanımları' },
-  'access-control.permission-definitions.create': { key: 'sidebar.permissionDefinitions', fallback: 'İzin Tanımı Oluştur' },
-  'access-control.permission-definitions.update': { key: 'sidebar.permissionDefinitions', fallback: 'İzin Tanımı Güncelle' },
-  'access-control.permission-groups.view': { key: 'sidebar.permissionGroups', fallback: 'İzin Grupları' },
-  'access-control.permission-groups.create': { key: 'sidebar.permissionGroups', fallback: 'İzin Grubu Oluştur' },
-  'access-control.permission-groups.update': { key: 'sidebar.permissionGroups', fallback: 'İzin Grubu Güncelle' },
-  'access-control.mail-settings.view': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarları' },
-  'access-control.mail-settings.update': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarlarını Güncelle' },
-  'access-control.hangfire-monitoring.view': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire İzleme' },
-};
-
-export const PERMISSION_SCOPE_DISPLAY: Record<string, { key: string; fallback: string }> = {
+export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = {
   dashboard: { key: 'sidebar.dashboard', fallback: 'Dashboard' },
   'wms.goods-receipt': { key: 'sidebar.goodsReceipt', fallback: 'Mal Kabul' },
   'wms.transfer': { key: 'sidebar.transfer', fallback: 'Transfer' },
@@ -194,8 +162,10 @@ export const PERMISSION_SCOPE_DISPLAY: Record<string, { key: string; fallback: s
   'wms.warehouse.inbound': { key: 'sidebar.warehouseInboundCreate', fallback: 'Ambar Giriş' },
   'wms.warehouse.outbound': { key: 'sidebar.warehouseOutboundCreate', fallback: 'Ambar Çıkış' },
   'wms.shipment': { key: 'sidebar.shipment', fallback: 'Sevkiyat' },
+  'wms.production': { key: 'sidebar.production', fallback: 'Üretim' },
+  'wms.production-transfer': { key: 'sidebar.productionTransfer', fallback: 'Üretim Transferi' },
   'wms.package': { key: 'sidebar.package', fallback: 'Paketleme' },
-  'wms.inventory-count': { key: 'sidebar.inventory', fallback: 'Envanter' },
+  'wms.inventory-count': { key: 'sidebar.inventoryCount', fallback: 'Sayım' },
   'wms.reports': { key: 'sidebar.reports', fallback: 'Raporlar' },
   'wms.parameters.gr': { key: 'sidebar.parametersGr', fallback: 'Mal Kabul Parametreleri' },
   'wms.parameters.wt': { key: 'sidebar.parametersWt', fallback: 'Transfer Parametreleri' },
@@ -213,6 +183,40 @@ export const PERMISSION_SCOPE_DISPLAY: Record<string, { key: string; fallback: s
   'access-control.permission-groups': { key: 'sidebar.permissionGroups', fallback: 'İzin Grupları' },
   'access-control.mail-settings': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarları' },
   'access-control.hangfire-monitoring': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire İzleme' },
+};
+
+const ACTION_FALLBACKS: Record<PermissionAction, string> = {
+  view: 'Görüntüle',
+  create: 'Oluştur',
+  update: 'Güncelle',
+  delete: 'Sil',
+};
+
+function buildCrudPermissionDisplay(
+  scope: string,
+  meta: PermissionScopeDisplay,
+): Record<string, PermissionScopeDisplay> {
+  return Object.fromEntries(
+    PERMISSION_ACTIONS.map((action) => [
+      `${scope}.${action}`,
+      {
+        key: meta.key,
+        fallback: `${meta.fallback} ${ACTION_FALLBACKS[action]}`,
+      },
+    ]),
+  );
+}
+
+const CRUD_SCOPE_CODES = Object.keys(PERMISSION_SCOPE_DISPLAY).filter(
+  (scope) => scope !== 'dashboard' && scope !== 'wms.reports',
+);
+
+export const PERMISSION_CODE_DISPLAY: Record<string, PermissionScopeDisplay> = {
+  'dashboard.view': { key: 'sidebar.dashboard', fallback: 'Dashboard' },
+  'wms.reports.view': { key: 'sidebar.reports', fallback: 'Raporları Görüntüle' },
+  ...Object.fromEntries(
+    CRUD_SCOPE_CODES.flatMap((scope) => Object.entries(buildCrudPermissionDisplay(scope, PERMISSION_SCOPE_DISPLAY[scope]))),
+  ),
 };
 
 export function getPermissionDisplayMeta(code: string): { key: string; fallback: string } | null {
@@ -253,6 +257,8 @@ export function getPermissionActionLabel(code: string): { key: string; fallback:
       return { key: 'common.create', fallback: 'Create' };
     case 'update':
       return { key: 'common.update', fallback: 'Update' };
+    case 'delete':
+      return { key: 'common.delete', fallback: 'Delete' };
     case 'view':
     default:
       return { key: 'common.view', fallback: 'View' };

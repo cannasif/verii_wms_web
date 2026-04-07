@@ -13,8 +13,9 @@ import type {
   WarehouseLineSerial,
 } from '../types/warehouse';
 import {
+  buildWarehouseInboundProcessRequest,
   buildWarehouseInboundRequest,
-  buildWarehouseOutboundBulkRequest,
+  buildWarehouseOutboundProcessRequest,
   buildWarehouseOutboundRequest,
 } from '../utils/warehouse-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
@@ -60,6 +61,22 @@ export const warehouseApi = {
     return await api.post<ApiResponse<unknown>>('/api/WiHeader/generate', request);
   },
 
+  createStockBasedWarehouseInbound: async (
+    formData: WarehouseFormData,
+    selectedItems: SelectedWarehouseStockItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildWarehouseInboundRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/WiHeader/generate', request);
+  },
+
+  processWarehouseInbound: async (
+    formData: WarehouseFormData,
+    selectedItems: SelectedWarehouseStockItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildWarehouseInboundProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/WiHeader/process', request);
+  },
+
   createWarehouseOutbound: async (
     formData: WarehouseFormData,
     selectedItems: SelectedWarehouseOrderItem[]
@@ -68,12 +85,20 @@ export const warehouseApi = {
     return await api.post<ApiResponse<unknown>>('/api/WoHeader/generate', request);
   },
 
+  createStockBasedWarehouseOutbound: async (
+    formData: WarehouseFormData,
+    selectedItems: SelectedWarehouseStockItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildWarehouseOutboundRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/WoHeader/generate', request);
+  },
+
   processWarehouseOutbound: async (
     formData: WarehouseFormData,
     selectedItems: SelectedWarehouseStockItem[]
   ): Promise<ApiResponse<unknown>> => {
-    const request = buildWarehouseOutboundBulkRequest(formData, selectedItems);
-    return await api.post<ApiResponse<unknown>>('/api/WoHeader/bulk-create', request);
+    const request = buildWarehouseOutboundProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/WoHeader/process', request);
   },
 
   getInboundHeaders: async (options?: ApiRequestOptions): Promise<WarehouseHeadersResponse> => {

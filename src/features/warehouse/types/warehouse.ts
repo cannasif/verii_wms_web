@@ -170,10 +170,10 @@ export interface WarehouseBulkCreateRequest {
   routes?: Array<{
     lineClientKey?: string;
     lineGroupGuid?: string;
-    importLineClientKey: string;
-    importLineGroupGuid: string;
     stockCode: string;
+    stockId?: number;
     yapKod?: string;
+    yapKodId?: number;
     quantity: number;
     serialNo?: string;
     serialNo2?: string;
@@ -188,6 +188,35 @@ export interface WarehouseBulkCreateRequest {
   }>;
 }
 
+export interface WarehouseProcessRequest {
+  header: Omit<
+    BaseDocumentHeaderRequest,
+    'customerName' | 'priority'
+  > & {
+    isCompleted: boolean;
+    completedDate?: string;
+    inboundType?: string;
+    outboundType?: string;
+    type: number;
+  };
+  routes?: Array<{
+    stockCode: string;
+    stockId?: number;
+    yapKod?: string;
+    yapKodId?: number;
+    quantity: number;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    scannedBarcode?: string;
+    sourceWarehouse?: number;
+    targetWarehouse?: number;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+  }>;
+}
+
 export type WarehouseOrdersResponse = ApiResponse<WarehouseOrder[]>;
 export type WarehouseOrderItemsResponse = ApiResponse<WarehouseOrderItem[]>;
 
@@ -199,7 +228,7 @@ export interface WarehouseHeader extends BaseDocumentHeaderDto {
 
 export interface WarehouseLine extends Pick<
   BaseDocumentLineDto,
-  'id' | 'headerId' | 'stockCode' | 'quantity' | 'unit' | 'erpOrderNo' | 'erpOrderId' | 'erpLineReference' | 'description'
+  'id' | 'headerId' | 'stockCode' | 'quantity' | 'siparisMiktar' | 'unit' | 'erpOrderNo' | 'erpOrderId' | 'erpLineReference' | 'description'
 > {
   stockName: string;
   yapKod?: string;

@@ -1,5 +1,6 @@
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
 import {
@@ -74,12 +75,53 @@ export function PermissionDefinitionMultiSelect({
       }
     }
 
+    const actionOrder = ['view', 'create', 'update', 'delete'] as const;
     const sorted = Array.from(buckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-    return sorted.map(([groupLabel, groupItems]) => ({
-      groupLabel,
-      items: groupItems.sort((a, b) => (a.code ?? '').localeCompare(b.code ?? '')),
-    }));
+    return sorted.map(([groupLabel, groupItems]) => {
+      const actionBuckets = new Map<string, typeof groupItems>();
+
+      groupItems.forEach((item) => {
+        const parts = item.code?.split('.').filter(Boolean) ?? [];
+        const action = parts.length > 0 ? parts[parts.length - 1] : 'view';
+        const current = actionBuckets.get(action) ?? [];
+        current.push(item);
+        actionBuckets.set(action, current);
+      });
+
+      const actions = actionOrder
+        .filter((action) => actionBuckets.has(action))
+        .map((action) => ({
+          action,
+          items: (actionBuckets.get(action) ?? []).sort((a, b) => (a.code ?? '').localeCompare(b.code ?? '')),
+        }));
+
+      return {
+        groupLabel,
+        actions,
+      };
+    });
   }, [filteredItems, t]);
+
+  const selectionSummary = useMemo(() => {
+    const selected = new Set<number>(value);
+    const counts = {
+      view: 0,
+      create: 0,
+      update: 0,
+      delete: 0,
+    };
+
+    items.forEach((item) => {
+      if (!selected.has(item.id)) return;
+      const parts = item.code?.split('.').filter(Boolean) ?? [];
+      const action = parts[parts.length - 1] as keyof typeof counts;
+      if (action in counts) {
+        counts[action] += 1;
+      }
+    });
+
+    return counts;
+  }, [items, value]);
 
   const handleToggle = (id: number): void => {
     if (value.includes(id)) {
@@ -100,6 +142,26 @@ export function PermissionDefinitionMultiSelect({
     }
   };
 
+  const isActionFullySelected = useCallback((ids: number[]): boolean => {
+    if (ids.length === 0) return false;
+    const selected = new Set<number>(value);
+    return ids.every((id) => selected.has(id));
+  }, [value]);
+
+  const handleActionToggle = useCallback((ids: number[], checked: boolean): void => {
+    if (ids.length === 0) return;
+
+    if (checked) {
+      const merged = new Set<number>(value);
+      ids.forEach((id) => merged.add(id));
+      onChange(Array.from(merged));
+      return;
+    }
+
+    const blocked = new Set<number>(ids);
+    onChange(value.filter((id) => !blocked.has(id)));
+  }, [onChange, value]);
+
   const allFilteredSelected = useMemo(() => {
     if (filteredItems.length === 0) return false;
     const selected = new Set<number>(value);
@@ -112,10 +174,32 @@ export function PermissionDefinitionMultiSelect({
 
   return (
     <div className="space-y-2">
+      <div className="rounded-lg border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
+        <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+          {t('permissionGroups.permissionsPanel.selectionSummaryTitle', { defaultValue: 'Seçili CRUD özeti' })}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Badge variant="secondary">
+            {t('common.view', { defaultValue: 'Görüntüle' })}: {selectionSummary.view}
+          </Badge>
+          <Badge variant="secondary">
+            {t('common.create', { defaultValue: 'Oluştur' })}: {selectionSummary.create}
+          </Badge>
+          <Badge variant="secondary">
+            {t('common.update', { defaultValue: 'Güncelle' })}: {selectionSummary.update}
+          </Badge>
+          <Badge variant="secondary">
+            {t('common.delete', { defaultValue: 'Sil' })}: {selectionSummary.delete}
+          </Badge>
+        </div>
+        <div className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+          {t('permissionGroups.permissionsPanel.selectionSummaryBody', { defaultValue: 'Bu özet, grubun şu an hangi işlem tiplerinde yetki aldığını hızlıca görmenizi sağlar.' })}
+        </div>
+      </div>
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('permissionGroups.search')}
+        placeholder={t('permissionGroups.permissionsPanel.searchPlaceholder', { defaultValue: 'Modül, işlem veya izin adı ara...' })}
         disabled={disabled}
       />
       <div className="flex items-center gap-2">
@@ -135,32 +219,73 @@ export function PermissionDefinitionMultiSelect({
         {filteredItems.length === 0 ? (
           <p className="text-sm text-slate-500 py-2">{t('permissionGroups.noDefinitions')}</p>
         ) : (
-          groupedItems.map(({ groupLabel, items: group }) => (
+          groupedItems.map(({ groupLabel, actions }) => (
             <div key={groupLabel} className="space-y-2">
-              <div className="text-xs font-semibold text-slate-600 dark:text-slate-300 px-1">
+              <div className="rounded-lg border border-slate-200/70 bg-slate-50/70 px-2 py-1.5 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
                 {groupLabel}
               </div>
-              {group.map((item) => {
-                const display = getDisplayLabel(item.code, item.name);
-                const actionLabel = getPermissionActionLabel(item.code);
+              {actions.map(({ action, items: actionItems }) => {
+                const actionLabel = getPermissionActionLabel(`scope.${action}`);
+                const actionIds = actionItems.map((item) => item.id);
+                const actionSelected = isActionFullySelected(actionIds);
+                const actionDescription = t(`accessControl.permissionActions.${action}.description`, {
+                  defaultValue:
+                    action === 'view'
+                      ? 'Listeleme, detay ve izleme ekranlarini acar.'
+                      : action === 'create'
+                        ? 'Yeni kayit olusturma ve ilk kaydetme islemlerini acar.'
+                        : action === 'update'
+                          ? 'Duzenleme, process ve degisiklik kaydetme islemlerini acar.'
+                          : 'Soft delete, pasife alma veya silme aksiyonlarini acar.',
+                });
                 return (
-                  <div key={item.id} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`perm-${item.id}`}
-                      className="h-4 w-4 rounded border border-input accent-primary"
-                      checked={value.includes(item.id)}
-                      onChange={() => handleToggle(item.id)}
-                      disabled={disabled}
-                    />
-                    <label htmlFor={`perm-${item.id}`} className="text-sm cursor-pointer flex-1">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="truncate">
-                          {t(actionLabel.key, actionLabel.fallback)} - {display}
-                        </span>
-                        <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{item.code}</span>
+                  <div key={`${groupLabel}-${action}`} className="space-y-1 pl-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                          {t(actionLabel.key, actionLabel.fallback)}
+                        </div>
+                        <div className="text-[11px] leading-5 text-slate-500 dark:text-slate-400">
+                          {actionDescription}
+                        </div>
                       </div>
-                    </label>
+                      <label className="flex shrink-0 items-center gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border border-input accent-primary"
+                          checked={actionSelected}
+                          onChange={(e) => handleActionToggle(actionIds, e.target.checked)}
+                          disabled={disabled}
+                        />
+                        <span>
+                          {t('permissionGroups.permissionsPanel.selectActionGroup', {
+                            defaultValue: 'Tüm {{action}} izinlerini seç',
+                            action: t(actionLabel.key, actionLabel.fallback),
+                          })}
+                        </span>
+                      </label>
+                    </div>
+                    {actionItems.map((item) => {
+                      const display = getDisplayLabel(item.code, item.name);
+                      return (
+                        <div key={item.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id={`perm-${item.id}`}
+                            className="h-4 w-4 rounded border border-input accent-primary"
+                            checked={value.includes(item.id)}
+                            onChange={() => handleToggle(item.id)}
+                            disabled={disabled}
+                          />
+                          <label htmlFor={`perm-${item.id}`} className="text-sm cursor-pointer flex-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="truncate">{display}</span>
+                              <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{item.code}</span>
+                            </div>
+                          </label>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}

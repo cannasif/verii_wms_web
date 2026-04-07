@@ -2,8 +2,10 @@ import { DocumentType } from '@/types/document-type';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   SubcontractingGenerateRequest,
+  SubcontractingProcessRequest,
   SubcontractingFormData,
   SelectedSubcontractingOrderItem,
+  SelectedSubcontractingStockItem,
 } from '../types/subcontracting';
 
 function getActiveBranchCode(): string {
@@ -12,7 +14,8 @@ function getActiveBranchCode(): string {
 
 export function buildSubcontractingIssueRequest(
   formData: SubcontractingFormData,
-  selectedItems: SelectedSubcontractingOrderItem[],
+  selectedItems: (SelectedSubcontractingOrderItem | SelectedSubcontractingStockItem)[],
+  isStockBased: boolean = false,
 ): SubcontractingGenerateRequest {
   const now = new Date().toISOString();
   const lines: SubcontractingGenerateRequest['lines'] = [];
@@ -28,13 +31,13 @@ export function buildSubcontractingIssueRequest(
       stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
-      yapKod: item.yapKod || '',
-      yapAcik: item.yapAcik || '',
-      orderId: item.orderID || 0,
+      yapKod: ('yapKod' in item ? item.yapKod : item.configCode) || '',
+      yapAcik: ('yapAcik' in item ? item.yapAcik : '') || '',
+      orderId: isStockBased ? 0 : ('orderID' in item ? item.orderID || 0 : 0),
       quantity: item.transferQuantity,
       unit: '',
-      erpOrderNo: item.siparisNo || '',
-      erpOrderId: String(item.orderID || ''),
+      erpOrderNo: isStockBased ? '' : ('siparisNo' in item ? item.siparisNo || '' : ''),
+      erpOrderId: isStockBased ? '' : ('orderID' in item ? String(item.orderID || '') : ''),
       erpLineReference: '',
       description: '',
     });
@@ -76,7 +79,7 @@ export function buildSubcontractingIssueRequest(
       targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
-      type: 0,
+      type: isStockBased ? 1 : 0,
     },
     lines,
     lineSerials,
@@ -91,7 +94,8 @@ export function buildSubcontractingIssueRequest(
 
 export function buildSubcontractingReceiptRequest(
   formData: SubcontractingFormData,
-  selectedItems: SelectedSubcontractingOrderItem[],
+  selectedItems: (SelectedSubcontractingOrderItem | SelectedSubcontractingStockItem)[],
+  isStockBased: boolean = false,
 ): SubcontractingGenerateRequest {
   const now = new Date().toISOString();
   const lines: SubcontractingGenerateRequest['lines'] = [];
@@ -107,13 +111,13 @@ export function buildSubcontractingReceiptRequest(
       stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
-      yapKod: item.yapKod || '',
-      yapAcik: item.yapAcik || '',
-      orderId: item.orderID || 0,
+      yapKod: ('yapKod' in item ? item.yapKod : item.configCode) || '',
+      yapAcik: ('yapAcik' in item ? item.yapAcik : '') || '',
+      orderId: isStockBased ? 0 : ('orderID' in item ? item.orderID || 0 : 0),
       quantity: item.transferQuantity,
       unit: '',
-      erpOrderNo: item.siparisNo || '',
-      erpOrderId: String(item.orderID || ''),
+      erpOrderNo: isStockBased ? '' : ('siparisNo' in item ? item.siparisNo || '' : ''),
+      erpOrderId: isStockBased ? '' : ('orderID' in item ? String(item.orderID || '') : ''),
       erpLineReference: '',
       description: '',
     });
@@ -155,7 +159,7 @@ export function buildSubcontractingReceiptRequest(
       targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
-      type: 0,
+      type: isStockBased ? 1 : 0,
     },
     lines,
     lineSerials,
@@ -166,4 +170,72 @@ export function buildSubcontractingReceiptRequest(
   };
 
   return request;
+}
+
+function buildSubcontractingProcessRequest(
+  formData: SubcontractingFormData,
+  selectedItems: SelectedSubcontractingStockItem[],
+  documentType: DocumentType,
+): SubcontractingProcessRequest {
+  const now = new Date().toISOString();
+
+  return {
+    header: {
+      branchCode: getActiveBranchCode(),
+      projectCode: formData.projectCode || '',
+      orderId: '',
+      documentType,
+      yearCode: new Date().getFullYear().toString(),
+      description1: formData.notes || '',
+      description2: '',
+      priorityLevel: 0,
+      plannedDate: formData.transferDate,
+      isPlanned: true,
+      isCompleted: false,
+      completedDate: now,
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      customerName: '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse,
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse,
+      priority: '',
+      type: 1,
+    },
+    routes: selectedItems
+      .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)
+      .map((item) => ({
+        stockId: item.stockId,
+        stockCode: item.stockCode,
+        yapKodId: item.yapKodId,
+        yapKod: item.configCode || undefined,
+        quantity: item.transferQuantity,
+        serialNo: item.serialNo || '',
+        serialNo2: item.serialNo2 || '',
+        serialNo3: item.lotNo || '',
+        serialNo4: item.batchNo || '',
+        scannedBarcode: item.stockCode,
+        sourceWarehouse: formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined,
+        targetWarehouse: formData.targetWarehouse ? Number(formData.targetWarehouse) : undefined,
+        sourceCellCode: item.sourceCellCode || '',
+        targetCellCode: item.targetCellCode || '',
+      })),
+  };
+}
+
+export function buildSubcontractingIssueProcessRequest(
+  formData: SubcontractingFormData,
+  selectedItems: SelectedSubcontractingStockItem[],
+): SubcontractingProcessRequest {
+  return buildSubcontractingProcessRequest(formData, selectedItems, DocumentType.SIT);
+}
+
+export function buildSubcontractingReceiptProcessRequest(
+  formData: SubcontractingFormData,
+  selectedItems: SelectedSubcontractingStockItem[],
+): SubcontractingProcessRequest {
+  return buildSubcontractingProcessRequest(formData, selectedItems, DocumentType.SRT);
 }

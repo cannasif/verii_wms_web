@@ -85,7 +85,13 @@
     "permissionsPanel": {
       "title": "Grup İzinlerini Düzenle",
       "description": "Bu grup için izinleri seçin",
-      "currentCodes": "Mevcut izin kodları"
+      "currentCodes": "Mevcut izin kodları",
+      "introTitle": "Bu grup hangi işlemleri yapabilir?",
+      "introBody": "Aşağıda bu grubun hangi modülleri görebileceğini, kayıt açabileceğini, güncelleyebileceğini veya silebileceğini seçersiniz. Bu gruba atanan tüm kullanıcılar aynı yetki setini alır.",
+      "selectionSummaryTitle": "Seçili CRUD özeti",
+      "selectionSummaryBody": "Bu özet, grubun şu an hangi işlem tiplerinde yetki aldığını hızlıca görmenizi sağlar.",
+      "searchPlaceholder": "Modül, işlem veya izin adı ara...",
+      "selectActionGroup": "Tüm {{action}} izinlerini seç"
     },
     "delete": {
       "confirmTitle": "İzin Grubunu Sil",
@@ -93,6 +99,22 @@
     },
     "search": "Ara...",
     "systemAdminLocked": "Sistem yöneticisi grubu değiştirilemez"
+  },
+  "accessControl": {
+    "permissionActions": {
+      "view": {
+        "description": "Listeleme, detay ve sadece izleme amaçlı ekranları açar."
+      },
+      "create": {
+        "description": "Yeni kayıt oluşturma ve ilk kaydetme adımlarını açar."
+      },
+      "update": {
+        "description": "Düzenleme, process ve mevcut kaydı değiştirme adımlarını açar."
+      },
+      "delete": {
+        "description": "Soft delete, pasife alma veya silme yetkisini açar."
+      }
+    }
   },
   "userGroupAssignments": {
     "title": "Kullanıcı Grup Atamaları",

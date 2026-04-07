@@ -88,6 +88,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const permissionAccess = usePermissionAccess();
   const canCreate = permissionAccess.can('access-control.permission-definitions.create');
   const canUpdate = permissionAccess.can('access-control.permission-definitions.update');
+  const canDelete = permissionAccess.can('access-control.permission-definitions.delete');
   const { data: allUsedCodes } = useAllPermissionDefinitionCodesQuery(formOpen);
 
   useEffect(() => {
@@ -151,7 +152,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', {
     current: range.from,
     total: range.to,
-    count: range.total,
+    totalCount: range.total,
     defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
@@ -238,23 +239,27 @@ export function PermissionDefinitionsPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('common.errors.loadFailed', { defaultValue: t('common.errors.permissionDefinitionListLoadFailed', { defaultValue: 'Load failed' }) })}
           emptyText={t('common.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && canUpdate}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
-            canUpdate ? (
+            canUpdate || canDelete ? (
               <>
-                <Button variant="ghost" size="sm" onClick={() => {
-                  setEditingItem(item);
-                  setFormOpen(true);
-                }}>
-                  <span>{t('common.edit')}</span>
-                </Button>
-                <Button variant="ghost" size="sm" className="text-red-600" onClick={() => {
-                  setItemToDelete(item);
-                  setDeleteDialogOpen(true);
-                }}>
-                  <span>{t('common.delete')}</span>
-                </Button>
+                {canUpdate ? (
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    setEditingItem(item);
+                    setFormOpen(true);
+                  }}>
+                    <span>{t('common.edit')}</span>
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button variant="ghost" size="sm" className="text-red-600" onClick={() => {
+                    setItemToDelete(item);
+                    setDeleteDialogOpen(true);
+                  }}>
+                    <span>{t('common.delete')}</span>
+                  </Button>
+                ) : null}
               </>
             ) : null
           )}

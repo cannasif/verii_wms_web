@@ -1,5 +1,7 @@
 export { SubcontractingIssueCreatePage } from './components/SubcontractingIssueCreatePage';
+export { SubcontractingIssueProcessPage } from './components/SubcontractingIssueProcessPage';
 export { SubcontractingReceiptCreatePage } from './components/SubcontractingReceiptCreatePage';
+export { SubcontractingReceiptProcessPage } from './components/SubcontractingReceiptProcessPage';
 export { SubcontractingReceiptListPage } from './components/SubcontractingReceiptListPage';
 export { SubcontractingIssueListPage } from './components/SubcontractingIssueListPage';
 export { AssignedSitListPage } from './components/AssignedSitListPage';
@@ -8,4 +10,3 @@ export { SitCollectionPage } from './components/SitCollectionPage';
 export { SrtCollectionPage } from './components/SrtCollectionPage';
 export { SubcontractingIssueApprovalPage } from './components/SubcontractingIssueApprovalPage';
 export { SubcontractingReceiptApprovalPage } from './components/SubcontractingReceiptApprovalPage';
-

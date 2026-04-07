@@ -17,3 +17,5 @@ export { PageState } from './PageState';
 export { PageActionBar } from './PageActionBar';
 export { DetailPageShell } from './DetailPageShell';
 export { FormPageShell } from './FormPageShell';
+export { ProcessStockSelection } from './ProcessStockSelection';
+export type { ProcessSelectionLabels, ProcessSelectedStockItem } from './ProcessStockSelection';

@@ -9,12 +9,15 @@ import { WelcomePage } from '@/features/welcome';
 import { DashboardPage } from '@/features/dashboard';
 import {
   GoodsReceiptCreatePage,
+  GoodsReceiptProcessPage,
   GoodsReceiptListPage,
   AssignedGrListPage,
   GoodsReceiptCollectionPage,
+  GoodsReceiptApprovalPage,
 } from '@/features/goods-receipt';
 import {
   TransferCreatePage,
+  TransferProcessPage,
   TransferListPage,
   AssignedTransferListPage,
   TransferCollectionPage,
@@ -23,7 +26,9 @@ import {
 } from '@/features/transfer';
 import {
   SubcontractingIssueCreatePage,
+  SubcontractingIssueProcessPage,
   SubcontractingReceiptCreatePage,
+  SubcontractingReceiptProcessPage,
   SubcontractingReceiptListPage,
   SubcontractingIssueListPage,
   AssignedSitListPage,
@@ -35,6 +40,7 @@ import {
 } from '@/features/subcontracting';
 import {
   WarehouseInboundCreatePage,
+  WarehouseInboundProcessPage,
   WarehouseOutboundCreatePage,
   WarehouseOutboundProcessPage,
   WarehouseInboundListPage,
@@ -46,11 +52,32 @@ import {
 } from '@/features/warehouse';
 import {
   ShipmentCreatePage,
+  ShipmentProcessPage,
   ShipmentListPage,
   AssignedShipmentListPage,
   ShipmentCollectionPage,
   ShipmentApprovalPage,
 } from '@/features/shipment';
+import {
+  AssignedProductionListPage,
+  ProductionCreatePage,
+  ProductionDetailPage,
+  ProductionListPage,
+  ProductionProcessPage,
+  ProductionApprovalPage,
+} from '@/features/production';
+import {
+  ProductionTransferCreatePage,
+  ProductionTransferDetailPage,
+  ProductionTransferListPage,
+  ProductionTransferApprovalPage,
+} from '@/features/production-transfer';
+import {
+  AssignedInventoryCountListPage,
+  InventoryCountCreatePage,
+  InventoryCountListPage,
+  InventoryCountProcessPage,
+} from '@/features/inventory-count';
 import { Warehouse3dPage, OutsideWarehousePage } from '@/features/inventory/3d-warehouse';
 import { ParameterFormPage } from '@/features/parameters';
 import { ProfilePage } from '@/features/user-detail';
@@ -70,6 +97,7 @@ import { UserManagementPage } from '@/features/user-management';
 import { MailSettingsPage } from '@/features/mail-settings';
 import { HangfireMonitoringPage } from '@/features/hangfire-monitoring';
 import { CustomerReferencePage, StockReferencePage, WarehouseReferencePage, YapKodReferencePage } from '@/features/erp-reference';
+import { BarcodeDefinitionsPage } from '@/features/barcode-definitions';
 import { RouteErrorPage } from './RouteErrorPage';
 
 function withSuspense(element: ReactElement): ReactElement {
@@ -98,8 +126,10 @@ export const router = createBrowserRouter([
         path: 'goods-receipt',
         children: [
           { path: 'create', element: withSuspense(<GoodsReceiptCreatePage />) },
+          { path: 'process', element: withSuspense(<GoodsReceiptProcessPage />) },
           { path: 'list', element: withSuspense(<GoodsReceiptListPage />) },
           { path: 'assigned', element: withSuspense(<AssignedGrListPage />) },
+          { path: 'approval', element: withSuspense(<GoodsReceiptApprovalPage />) },
           { path: 'collection/:headerId', element: withSuspense(<GoodsReceiptCollectionPage />) },
         ],
       },
@@ -107,6 +137,7 @@ export const router = createBrowserRouter([
         path: 'transfer',
         children: [
           { path: 'create', element: withSuspense(<TransferCreatePage />) },
+          { path: 'process', element: withSuspense(<TransferProcessPage />) },
           { path: 'list', element: withSuspense(<TransferListPage />) },
           { path: 'assigned', element: withSuspense(<AssignedTransferListPage />) },
           { path: 'collection/:headerId', element: withSuspense(<TransferCollectionPage />) },
@@ -121,6 +152,7 @@ export const router = createBrowserRouter([
             path: 'issue',
             children: [
               { path: 'create', element: withSuspense(<SubcontractingIssueCreatePage />) },
+              { path: 'process', element: withSuspense(<SubcontractingIssueProcessPage />) },
               { path: 'list', element: withSuspense(<SubcontractingIssueListPage />) },
               { path: 'assigned', element: withSuspense(<AssignedSitListPage />) },
               { path: 'collection/:headerId', element: withSuspense(<SitCollectionPage />) },
@@ -131,6 +163,7 @@ export const router = createBrowserRouter([
             path: 'receipt',
             children: [
               { path: 'create', element: withSuspense(<SubcontractingReceiptCreatePage />) },
+              { path: 'process', element: withSuspense(<SubcontractingReceiptProcessPage />) },
               { path: 'list', element: withSuspense(<SubcontractingReceiptListPage />) },
               { path: 'assigned', element: withSuspense(<AssignedSrtListPage />) },
               { path: 'collection/:headerId', element: withSuspense(<SrtCollectionPage />) },
@@ -146,6 +179,7 @@ export const router = createBrowserRouter([
             path: 'inbound',
             children: [
               { path: 'create', element: withSuspense(<WarehouseInboundCreatePage />) },
+              { path: 'process', element: withSuspense(<WarehouseInboundProcessPage />) },
               { path: 'list', element: withSuspense(<WarehouseInboundListPage />) },
               { path: 'assigned', element: withSuspense(<AssignedWarehouseInboundListPage />) },
               { path: 'approval', element: withSuspense(<WarehouseInboundApprovalPage />) },
@@ -167,10 +201,40 @@ export const router = createBrowserRouter([
         path: 'shipment',
         children: [
           { path: 'create', element: withSuspense(<ShipmentCreatePage />) },
+          { path: 'process', element: withSuspense(<ShipmentProcessPage />) },
           { path: 'list', element: withSuspense(<ShipmentListPage />) },
           { path: 'assigned', element: withSuspense(<AssignedShipmentListPage />) },
           { path: 'collection/:headerId', element: withSuspense(<ShipmentCollectionPage />) },
           { path: 'approval', element: withSuspense(<ShipmentApprovalPage />) },
+        ],
+      },
+      {
+        path: 'production',
+        children: [
+          { path: 'create', element: withSuspense(<ProductionCreatePage />) },
+          { path: 'detail/:id', element: withSuspense(<ProductionDetailPage />) },
+          { path: 'process/:id', element: withSuspense(<ProductionProcessPage />) },
+          { path: 'list', element: withSuspense(<ProductionListPage />) },
+          { path: 'assigned', element: withSuspense(<AssignedProductionListPage />) },
+          { path: 'approval', element: withSuspense(<ProductionApprovalPage />) },
+        ],
+      },
+      {
+        path: 'production-transfer',
+        children: [
+          { path: 'create', element: withSuspense(<ProductionTransferCreatePage />) },
+          { path: 'detail/:id', element: withSuspense(<ProductionTransferDetailPage />) },
+          { path: 'list', element: withSuspense(<ProductionTransferListPage />) },
+          { path: 'approval', element: withSuspense(<ProductionTransferApprovalPage />) },
+        ],
+      },
+      {
+        path: 'inventory-count',
+        children: [
+          { path: 'create', element: withSuspense(<InventoryCountCreatePage />) },
+          { path: 'process', element: withSuspense(<InventoryCountProcessPage />) },
+          { path: 'list', element: withSuspense(<InventoryCountListPage />) },
+          { path: 'assigned', element: withSuspense(<AssignedInventoryCountListPage />) },
         ],
       },
       {
@@ -218,6 +282,7 @@ export const router = createBrowserRouter([
           { path: 'stocks', element: withSuspense(<StockReferencePage />) },
           { path: 'warehouses', element: withSuspense(<WarehouseReferencePage />) },
           { path: 'yapkodlar', element: withSuspense(<YapKodReferencePage />) },
+          { path: 'barcodes', element: withSuspense(<BarcodeDefinitionsPage />) },
         ],
       },
       {

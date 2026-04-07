@@ -1,6 +1,7 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   PHeaderDto,
@@ -176,10 +177,12 @@ export const packageApi = {
     }
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1'): Promise<StokBarcodeResponse> => {
-    return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup }
-    });
+  getStokBarcode: async (barcode: string): Promise<StokBarcodeResponse> => {
+    const response = await barcodeApi.resolve('product-lookup', barcode);
+    return {
+      ...response,
+      data: response.success && response.data ? [toLegacyBarcodeStock(response.data)] : [],
+    };
   },
 
   getAvailableHeadersForMapping: async (sourceType: string): Promise<AvailableHeaderDto[]> => {

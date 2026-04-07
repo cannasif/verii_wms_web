@@ -17,8 +17,13 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1ShipmentBasicInfo } from './steps/Step1ShipmentBasicInfo';
 import { Step2ShipmentOrderSelection } from './steps/Step2ShipmentOrderSelection';
+import { ProcessStockSelection } from '@/components/shared';
+import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { SelectedShipmentStockItem } from '../types/shipment';
 
 export function ShipmentCreatePage(): ReactElement {
   const { t } = useTranslation();
@@ -26,7 +31,9 @@ export function ShipmentCreatePage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
+  const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedShipmentOrderItem[]>([]);
+  const [selectedStockItems, setSelectedStockItems] = useState<SelectedShipmentStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('shipment.create.title'));
@@ -52,7 +59,9 @@ export function ShipmentCreatePage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: ShipmentFormData) => {
-      return shipmentApi.createShipment(formData, selectedItems);
+      return createMode === 'order'
+        ? shipmentApi.createShipment(formData, selectedItems)
+        : shipmentApi.createStockBasedShipment(formData, selectedStockItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shipment-orders'] });
@@ -72,7 +81,11 @@ export function ShipmentCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -120,6 +133,18 @@ export function ShipmentCreatePage(): ReactElement {
     );
   };
 
+  const handleToggleStockItem = (item: Product): void => {
+    setSelectedStockItems((prev) => [...prev, { id: `stock-${item.stokKodu}-${crypto.randomUUID()}`, stockId: item.id, yapKodId: undefined, stockCode: item.stokKodu, stockName: item.stokAdi, unit: item.olcuBr1, transferQuantity: 0, isSelected: true }]);
+  };
+
+  const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedShipmentStockItem>): void => {
+    setSelectedStockItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  };
+
+  const handleRemoveStockItem = (itemId: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
   const handleSave = async (): Promise<void> => {
     const formData = form.getValues();
     await createMutation.mutateAsync(formData);
@@ -128,9 +153,29 @@ export function ShipmentCreatePage(): ReactElement {
   const steps = [
     { label: t('shipment.create.steps.basicInfo') },
     {
-      label: t('shipment.create.steps.orderSelection'),
+      label: createMode === 'order' ? t('shipment.create.steps.orderSelection') : t('shipment.process.steps.stockSelection', { defaultValue: 'Stok Seçimi' }),
     },
   ];
+
+  const stockLabels = {
+    stocks: t('shipment.process.stocks', { defaultValue: 'Stoklar' }),
+    selectedItems: t('shipment.process.selectedItems', { defaultValue: 'Seçilen Kalemler' }),
+    selectedItemsCount: t('shipment.process.selectedItemsCount', { defaultValue: '{{count}} kalem' }),
+    searchStocks: t('shipment.process.searchStocks', { defaultValue: 'Stok kodu veya adı ile ara...' }),
+    searchItems: t('shipment.process.searchItems', { defaultValue: 'Seçilenleri ara...' }),
+    noSelectedItems: t('shipment.process.noSelectedItems', { defaultValue: 'Seçili stok bulunmamaktadır' }),
+    unit: t('shipment.step2.unit'),
+    serialNo: t('shipment.details.serialNo'),
+    serialNoPlaceholder: t('shipment.details.serialNoPlaceholder'),
+    serialNo2: t('shipment.details.serialNo2'),
+    serialNo2Placeholder: t('shipment.details.serialNo2Placeholder'),
+    lotNo: t('shipment.details.lotNo'),
+    lotNoPlaceholder: t('shipment.details.lotNoPlaceholder'),
+    batchNo: t('shipment.details.batchNo'),
+    batchNoPlaceholder: t('shipment.details.batchNoPlaceholder'),
+    configCode: t('shipment.details.configCode'),
+    configCodePlaceholder: t('shipment.details.configCodePlaceholder'),
+  };
 
   const renderStepContent = (): ReactElement => {
     switch (currentStep) {
@@ -152,6 +197,17 @@ export function ShipmentCreatePage(): ReactElement {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
+          {createMode === 'order' ? t('shipment.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('shipment.create.mode.stock', { defaultValue: 'Stok bazlı' })}
+        </Badge>
+        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
+          <TabsList>
+            <TabsTrigger value="order">{t('shipment.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('shipment.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
@@ -164,7 +220,15 @@ export function ShipmentCreatePage(): ReactElement {
         <CardContent>
           <Form {...form}>
             <form className="space-y-6">
-              {renderStepContent()}
+              {currentStep === 1 ? renderStepContent() : createMode === 'order' ? renderStepContent() : (
+                <ProcessStockSelection
+                  selectedItems={selectedStockItems}
+                  onToggleItem={handleToggleStockItem}
+                  onUpdateItem={handleUpdateStockItem}
+                  onRemoveItem={handleRemoveStockItem}
+                  labels={stockLabels}
+                />
+              )}
 
               <div className="flex justify-between pt-6 border-t">
                 <Button
@@ -184,7 +248,7 @@ export function ShipmentCreatePage(): ReactElement {
                     <Button
                       type="button"
                       onClick={handleSave}
-                      disabled={createMutation.isPending || selectedItems.length === 0}
+                      disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
                     >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
@@ -198,7 +262,6 @@ export function ShipmentCreatePage(): ReactElement {
     </div>
   );
 }
-
 
 
 

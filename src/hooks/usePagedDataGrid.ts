@@ -44,6 +44,7 @@ export function usePagedDataGrid<TSortKey extends string>({
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
   const [filterLogic, setFilterLogic] = useState<FilterLogic>(defaultFilterLogic);
+  const [appliedFilterLogic, setAppliedFilterLogic] = useState<FilterLogic>(defaultFilterLogic);
   const { pageSize, pageSizeOptions: resolvedPageSizeOptions, setPageSize } = usePageSizePreference({
     pageKey,
     defaultPageSize,
@@ -62,9 +63,9 @@ export function usePagedDataGrid<TSortKey extends string>({
       sortDirection,
       search: searchTerm,
       filters: appliedAdvancedFilters,
-      filterLogic,
+      filterLogic: appliedFilterLogic,
     }),
-    [appliedAdvancedFilters, filterLogic, mapSortBy, pageNumber, pageSize, searchTerm, sortBy, sortDirection],
+    [appliedAdvancedFilters, appliedFilterLogic, mapSortBy, pageNumber, pageSize, searchTerm, sortBy, sortDirection],
   );
 
   const handleSort = (columnKey: TSortKey): void => {
@@ -79,6 +80,7 @@ export function usePagedDataGrid<TSortKey extends string>({
 
   const applyAdvancedFilters = (): void => {
     setAppliedAdvancedFilters(rowsToBackendFilters(draftFilterRows));
+    setAppliedFilterLogic(filterLogic);
     resetToFirstPage();
   };
 
@@ -86,6 +88,7 @@ export function usePagedDataGrid<TSortKey extends string>({
     setDraftFilterRows([]);
     setAppliedAdvancedFilters([]);
     setFilterLogic(defaultFilterLogic);
+    setAppliedFilterLogic(defaultFilterLogic);
     resetToFirstPage();
   };
 

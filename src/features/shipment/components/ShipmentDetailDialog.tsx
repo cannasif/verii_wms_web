@@ -219,10 +219,13 @@ export function ShipmentDetailDialog({
                         <TableHead className="w-[120px]">{t('shipment.list.orderNo')}</TableHead>
                         <TableHead className="w-[100px]">{t('shipment.list.stockCode')}</TableHead>
                         <TableHead>{t('shipment.list.stockName')}</TableHead>
+                        <TableHead className="w-[120px]">{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
                         <TableHead className="w-[100px]">{t('shipment.details.configCode')}</TableHead>
                         <TableHead className="w-[120px]">{t('shipment.list.serialNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('shipment.details.lotNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('shipment.details.batchNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.list.sourceWarehouse')}</TableHead>
+                        <TableHead className="w-[120px]">{t('shipment.list.targetWarehouse')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -252,6 +255,8 @@ function ShipmentLineRow({ line }: ShipmentLineRowProps): ReactElement {
   const serialNo = firstSerial?.serialNo || '-';
   const lotNo = firstSerial?.serialNo3 || '-';
   const batchNo = firstSerial?.serialNo4 || '-';
+  const sourceWarehouse = firstSerial?.sourceWarehouseName || firstSerial?.sourceWarehouseId?.toString() || '-';
+  const targetWarehouse = firstSerial?.targetWarehouseName || firstSerial?.targetWarehouseId?.toString() || '-';
 
   return (
     <TableRow>
@@ -269,6 +274,9 @@ function ShipmentLineRow({ line }: ShipmentLineRowProps): ReactElement {
         <span className="text-sm font-medium">{line.stockName || line.description || '-'}</span>
       </TableCell>
       <TableCell>
+        <span className="text-sm">{line.siparisMiktar ?? line.quantity}</span>
+      </TableCell>
+      <TableCell>
         <span className="text-sm">{line.yapKod || '-'}</span>
       </TableCell>
       <TableCell>
@@ -279,6 +287,12 @@ function ShipmentLineRow({ line }: ShipmentLineRowProps): ReactElement {
       </TableCell>
       <TableCell>
         <span className="text-sm">{batchNo}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{sourceWarehouse}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{targetWarehouse}</span>
       </TableCell>
     </TableRow>
   );

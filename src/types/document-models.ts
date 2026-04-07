@@ -31,6 +31,7 @@ export interface BaseDocumentLineRequest {
   yapKodId?: number;
   orderId?: number;
   quantity: number;
+  siparisMiktar?: number;
   unit?: string;
   erpOrderNo?: string;
   erpOrderId?: string;
@@ -44,6 +45,8 @@ export interface BaseDocumentLineSerialRequest {
   serialNo2: string;
   serialNo3: string;
   serialNo4: string;
+  sourceWarehouseId?: number;
+  targetWarehouseId?: number;
   sourceCellCode: string;
   targetCellCode: string;
   lineClientKey: string;
@@ -102,6 +105,7 @@ export interface BaseDocumentLineDto {
   deletedByFullUser: string;
   stockCode: string;
   quantity: number;
+  siparisMiktar?: number | null;
   unit: string;
   erpOrderNo: string;
   erpOrderId: string;
@@ -128,6 +132,10 @@ export interface BaseDocumentLineSerialDto {
   serialNo2: string;
   serialNo3: string;
   serialNo4: string;
+  sourceWarehouseId?: number | null;
+  targetWarehouseId?: number | null;
+  sourceWarehouseName?: string | null;
+  targetWarehouseName?: string | null;
   sourceCellCode: string;
   targetCellCode: string;
   lineId: number;

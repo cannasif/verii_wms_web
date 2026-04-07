@@ -20,6 +20,7 @@ export interface BaseWorkflowLineDetail {
   stockName?: string | null;
   description?: string | null;
   quantity: number;
+  siparisMiktar?: number | null;
   unit?: string | null;
   yapKod?: string | null;
   yapAcik?: string | null;
@@ -32,6 +33,10 @@ export interface BaseWorkflowLineSerialDetail {
   serialNo2?: string | null;
   serialNo3?: string | null;
   serialNo4?: string | null;
+  sourceWarehouseId?: number | null;
+  targetWarehouseId?: number | null;
+  sourceWarehouseName?: string | null;
+  targetWarehouseName?: string | null;
   sourceCellCode?: string | null;
   targetCellCode?: string | null;
 }
@@ -47,6 +52,8 @@ export interface BaseWorkflowRouteDetail {
   serialNo4?: string | null;
   sourceWarehouse?: number | null;
   targetWarehouse?: number | null;
+  sourceWarehouseName?: string | null;
+  targetWarehouseName?: string | null;
   sourceCellCode?: string | null;
   targetCellCode?: string | null;
   scannedBarcode?: string | null;

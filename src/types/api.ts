@@ -2,6 +2,8 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   exceptionMessage: string;
+  errorCode?: string;
+  details?: unknown;
   data: T;
   errors: string[];
   timestamp: string;

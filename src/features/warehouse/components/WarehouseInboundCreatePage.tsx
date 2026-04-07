@@ -17,8 +17,12 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
 import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelection';
+import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
+import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../types/warehouse';
 
 export function WarehouseInboundCreatePage(): ReactElement {
   const { t } = useTranslation();
@@ -26,7 +30,9 @@ export function WarehouseInboundCreatePage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
+  const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
+  const [selectedStockItems, setSelectedStockItems] = useState<SelectedWarehouseStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('warehouse.inbound.create.title'));
@@ -57,7 +63,9 @@ export function WarehouseInboundCreatePage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: WarehouseFormData) => {
-      return warehouseApi.createWarehouseInbound(formData, selectedItems);
+      return createMode === 'order'
+        ? warehouseApi.createWarehouseInbound(formData, selectedItems)
+        : warehouseApi.createStockBasedWarehouseInbound(formData, selectedStockItems);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse-inbound-orders'] });
@@ -77,7 +85,11 @@ export function WarehouseInboundCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -125,6 +137,18 @@ export function WarehouseInboundCreatePage(): ReactElement {
     );
   };
 
+  const handleToggleStockItem = (item: WarehouseStockItem): void => {
+    setSelectedStockItems((prev) => [...prev, { ...item, id: `${item.stockCode}-${crypto.randomUUID()}`, stockId: item.stockId, transferQuantity: 0, isSelected: true }]);
+  };
+
+  const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedWarehouseStockItem>): void => {
+    setSelectedStockItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  };
+
+  const handleRemoveStockItem = (itemId: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
   const handleSave = async (): Promise<void> => {
     const formData = form.getValues();
     await createMutation.mutateAsync(formData);
@@ -133,7 +157,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
   const steps = [
     { label: t('warehouse.create.steps.basicInfo') },
     {
-      label: t('warehouse.create.steps.orderSelection'),
+      label: createMode === 'order' ? t('warehouse.create.steps.orderSelection') : t('warehouse.create.steps.stockSelection'),
     },
   ];
 
@@ -142,13 +166,20 @@ export function WarehouseInboundCreatePage(): ReactElement {
       case 1:
         return <Step1WarehouseBasicInfo type="inbound" />;
       case 2:
-        return (
+        return createMode === 'order' ? (
           <Step2WarehouseOrderSelection
             type="inbound"
             selectedItems={selectedItems}
             onToggleItem={handleToggleItem}
             onUpdateItem={handleUpdateItem}
             onRemoveItem={handleRemoveItem}
+          />
+        ) : (
+          <Step2WarehouseStockSelection
+            selectedItems={selectedStockItems}
+            onToggleItem={handleToggleStockItem}
+            onUpdateItem={handleUpdateStockItem}
+            onRemoveItem={handleRemoveStockItem}
           />
         );
       default:
@@ -158,6 +189,17 @@ export function WarehouseInboundCreatePage(): ReactElement {
 
   return (
     <div className="space-y-6 crm-page">
+      <div className="flex items-center gap-3">
+        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
+          {createMode === 'order' ? t('warehouse.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('warehouse.create.mode.stock', { defaultValue: 'Stok bazlı' })}
+        </Badge>
+        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
+          <TabsList>
+            <TabsTrigger value="order">{t('warehouse.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('warehouse.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
@@ -190,7 +232,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
                     <Button
                       type="button"
                       onClick={handleSave}
-                      disabled={createMutation.isPending || selectedItems.length === 0}
+                      disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
                     >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>

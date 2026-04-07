@@ -4,6 +4,7 @@ import type {
   ShipmentOrderItemsResponse,
   ShipmentFormData,
   SelectedShipmentOrderItem,
+  SelectedShipmentStockItem,
   ShipmentHeadersResponse,
   ShipmentLinesResponse,
   ShipmentLineSerialsResponse,
@@ -17,9 +18,11 @@ import type {
   ShipmentLineSerial,
 } from '../types/shipment';
 import { buildShipmentGenerateRequest } from '../utils/shipment-generate';
+import { buildShipmentProcessRequest } from '../utils/shipment-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
@@ -91,11 +94,12 @@ export const shipmentApi = {
     throw new Error(response.message || getLocalizedText('common.errors.shipmentSerialsLoadFailed'));
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
-    return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup },
-      ...options,
-    });
+  getStokBarcode: async (barcode: string, options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
+    const response = await barcodeApi.resolve('shipping-assigned', barcode, options);
+    return {
+      ...response,
+      data: response.success && response.data ? [toLegacyBarcodeStock(response.data)] : [],
+    };
   },
 
   addBarcodeToOrder: async (request: AddBarcodeRequest): Promise<AddBarcodeResponse> => {
@@ -116,6 +120,22 @@ export const shipmentApi = {
   ): Promise<ApiResponse<unknown>> => {
     const request = buildShipmentGenerateRequest(formData, selectedItems);
     return await api.post<ApiResponse<unknown>>('/api/ShHeader/generate', request);
+  },
+
+  createStockBasedShipment: async (
+    formData: ShipmentFormData,
+    selectedItems: SelectedShipmentStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildShipmentGenerateRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/ShHeader/generate', request);
+  },
+
+  processShipment: async (
+    formData: ShipmentFormData,
+    selectedItems: SelectedShipmentStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildShipmentProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/ShHeader/process', request);
   },
 
   getAwaitingApprovalHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<ShipmentHeader>> => {

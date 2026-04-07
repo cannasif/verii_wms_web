@@ -2,7 +2,7 @@ import { DocumentType } from '@/types/document-type';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   WarehouseGenerateRequest,
-  WarehouseBulkCreateRequest,
+  WarehouseProcessRequest,
   WarehouseFormData,
   SelectedWarehouseOrderItem,
   SelectedWarehouseStockItem,
@@ -22,7 +22,8 @@ function sanitizePositiveItems(selectedItems: SelectedWarehouseStockItem[]): Sel
 
 export function buildWarehouseInboundRequest(
   formData: WarehouseFormData,
-  selectedItems: SelectedWarehouseOrderItem[],
+  selectedItems: (SelectedWarehouseOrderItem | SelectedWarehouseStockItem)[],
+  isStockBased: boolean = false,
 ): WarehouseGenerateRequest {
   const now = new Date().toISOString();
   const lines: WarehouseGenerateRequest['lines'] = [];
@@ -38,13 +39,14 @@ export function buildWarehouseInboundRequest(
       stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
-      yapKod: item.yapKod || '',
-      yapAcik: item.yapAcik || '',
-      orderId: item.orderID || 0,
+      yapKod: ('yapKod' in item ? item.yapKod : item.configCode) || '',
+      yapAcik: ('yapAcik' in item ? item.yapAcik : '') || '',
+      orderId: isStockBased ? 0 : ('orderID' in item ? item.orderID || 0 : 0),
       quantity: item.transferQuantity,
+      siparisMiktar: isStockBased ? item.transferQuantity : ('orderedQty' in item ? item.orderedQty || item.transferQuantity : item.transferQuantity),
       unit: '',
-      erpOrderNo: item.siparisNo || '',
-      erpOrderId: String(item.orderID || ''),
+      erpOrderNo: isStockBased ? '' : ('siparisNo' in item ? item.siparisNo || '' : ''),
+      erpOrderId: isStockBased ? '' : ('orderID' in item ? String(item.orderID || '') : ''),
       erpLineReference: '',
       description: '',
     });
@@ -55,6 +57,8 @@ export function buildWarehouseInboundRequest(
       serialNo2: item.serialNo2 || '',
       serialNo3: item.lotNo || '',
       serialNo4: item.batchNo || '',
+      sourceWarehouseId: undefined,
+      targetWarehouseId: formData.targetWarehouseId,
       sourceCellCode: item.sourceCellCode || '',
       targetCellCode: item.targetCellCode || '',
       lineClientKey: clientKey,
@@ -100,7 +104,8 @@ export function buildWarehouseInboundRequest(
 
 export function buildWarehouseOutboundRequest(
   formData: WarehouseFormData,
-  selectedItems: SelectedWarehouseOrderItem[],
+  selectedItems: (SelectedWarehouseOrderItem | SelectedWarehouseStockItem)[],
+  isStockBased: boolean = false,
 ): WarehouseGenerateRequest {
   const now = new Date().toISOString();
   const lines: WarehouseGenerateRequest['lines'] = [];
@@ -116,13 +121,14 @@ export function buildWarehouseOutboundRequest(
       stockId: item.stockId,
       stockCode: item.stockCode,
       stockName: item.stockName,
-      yapKod: item.yapKod || '',
-      yapAcik: item.yapAcik || '',
-      orderId: item.orderID || 0,
+      yapKod: ('yapKod' in item ? item.yapKod : item.configCode) || '',
+      yapAcik: ('yapAcik' in item ? item.yapAcik : '') || '',
+      orderId: isStockBased ? 0 : ('orderID' in item ? item.orderID || 0 : 0),
       quantity: item.transferQuantity,
+      siparisMiktar: isStockBased ? item.transferQuantity : ('orderedQty' in item ? item.orderedQty || item.transferQuantity : item.transferQuantity),
       unit: '',
-      erpOrderNo: item.siparisNo || '',
-      erpOrderId: String(item.orderID || ''),
+      erpOrderNo: isStockBased ? '' : ('siparisNo' in item ? item.siparisNo || '' : ''),
+      erpOrderId: isStockBased ? '' : ('orderID' in item ? String(item.orderID || '') : ''),
       erpLineReference: '',
       description: '',
     });
@@ -133,6 +139,8 @@ export function buildWarehouseOutboundRequest(
       serialNo2: item.serialNo2 || '',
       serialNo3: item.lotNo || '',
       serialNo4: item.batchNo || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      targetWarehouseId: undefined,
       sourceCellCode: item.sourceCellCode || '',
       targetCellCode: item.targetCellCode || '',
       lineClientKey: clientKey,
@@ -176,63 +184,23 @@ export function buildWarehouseOutboundRequest(
   return request;
 }
 
-export function buildWarehouseOutboundBulkRequest(
+export function buildWarehouseOutboundProcessRequest(
   formData: WarehouseFormData,
   selectedItems: SelectedWarehouseStockItem[],
-): WarehouseBulkCreateRequest {
+): WarehouseProcessRequest {
   const now = new Date().toISOString();
   const sourceWarehouse = formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined;
   const positiveItems = sanitizePositiveItems(selectedItems);
-
-  const lines: WarehouseBulkCreateRequest['lines'] = [];
-  const importLines: WarehouseBulkCreateRequest['importLines'] = [];
-  const routes: WarehouseBulkCreateRequest['routes'] = [];
-  const importLineGroups = new Map<string, { clientKey: string; clientGroupGuid: string }>();
+  const routes: WarehouseProcessRequest['routes'] = [];
 
   positiveItems.forEach((item) => {
-    const lineClientKey = crypto.randomUUID();
-    const lineGroupGuid = crypto.randomUUID();
     const normalizedYapKod = sanitizeText(item.yapKod || '', 50);
-    const importGroupingKey = `${item.stockCode}__${normalizedYapKod}`;
-    let importLineGroup = importLineGroups.get(importGroupingKey);
-    if (!importLineGroup) {
-      importLineGroup = {
-        clientKey: crypto.randomUUID(),
-        clientGroupGuid: crypto.randomUUID(),
-      };
-      importLineGroups.set(importGroupingKey, importLineGroup);
-      importLines.push({
-        clientKey: importLineGroup.clientKey,
-        clientGroupGuid: importLineGroup.clientGroupGuid,
-        stockId: item.stockId,
-        stockCode: item.stockCode,
-        yapKod: normalizedYapKod,
-        quantity: item.transferQuantity,
-        unit: sanitizeText(item.unit, 10),
-        erpOrderNumber: '',
-        erpOrderNo: '',
-        erpOrderLineNumber: '',
-      });
-    }
-
-    lines.push({
-      clientKey: lineClientKey,
-      clientGuid: lineGroupGuid,
-      stockId: item.stockId,
-      stockCode: item.stockCode,
-      yapKod: normalizedYapKod,
-      quantity: item.transferQuantity,
-      unit: sanitizeText(item.unit, 10),
-      erpOrderNo: '',
-      erpOrderId: '',
-      description: sanitizeText(item.stockName, 100),
-    });
 
     routes.push({
-      importLineClientKey: importLineGroup.clientKey,
-      importLineGroupGuid: importLineGroup.clientGroupGuid,
       stockCode: item.stockCode,
+      stockId: item.stockId,
       yapKod: normalizedYapKod,
+      yapKodId: item.yapKodId,
       quantity: item.transferQuantity,
       serialNo: sanitizeText(item.serialNo, 50),
       serialNo2: sanitizeText(item.serialNo2, 50),
@@ -243,7 +211,6 @@ export function buildWarehouseOutboundBulkRequest(
       targetWarehouse: undefined,
       sourceCellCode: sanitizeText(item.sourceCellCode, 20),
       targetCellCode: sanitizeText(item.targetCellCode, 20),
-      description: sanitizeText(item.configCode || '', 100),
     });
   });
 
@@ -271,8 +238,64 @@ export function buildWarehouseOutboundBulkRequest(
       outboundType: formData.operationType || '',
       type: 0,
     },
-    lines,
-    importLines,
+    routes,
+  };
+}
+
+export function buildWarehouseInboundProcessRequest(
+  formData: WarehouseFormData,
+  selectedItems: SelectedWarehouseStockItem[],
+): WarehouseProcessRequest {
+  const now = new Date().toISOString();
+  const targetWarehouse = formData.targetWarehouse ? Number(formData.targetWarehouse) : undefined;
+  const positiveItems = sanitizePositiveItems(selectedItems);
+  const routes: WarehouseProcessRequest['routes'] = [];
+
+  positiveItems.forEach((item) => {
+    const normalizedYapKod = sanitizeText(item.yapKod || '', 50);
+
+    routes.push({
+      stockCode: item.stockCode,
+      stockId: item.stockId,
+      yapKod: normalizedYapKod,
+      yapKodId: item.yapKodId,
+      quantity: item.transferQuantity,
+      serialNo: sanitizeText(item.serialNo, 50),
+      serialNo2: sanitizeText(item.serialNo2, 50),
+      serialNo3: sanitizeText(item.lotNo, 50),
+      serialNo4: sanitizeText(item.batchNo, 50),
+      scannedBarcode: sanitizeText(item.stockCode, 100),
+      sourceWarehouse: undefined,
+      targetWarehouse,
+      sourceCellCode: sanitizeText(item.sourceCellCode, 20),
+      targetCellCode: sanitizeText(item.targetCellCode, 20),
+    });
+  });
+
+  return {
+    header: {
+      branchCode: getActiveBranchCode(),
+      projectCode: formData.projectCode || '',
+      orderId: '',
+      documentType: DocumentType.WI,
+      yearCode: new Date().getFullYear().toString(),
+      description1: sanitizeText(formData.notes, 255),
+      description2: '',
+      priorityLevel: 0,
+      plannedDate: formData.transferDate,
+      isPlanned: true,
+      isCompleted: false,
+      completedDate: now,
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouse: '',
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse || '',
+      inboundType: formData.operationType || '',
+      type: 0,
+    },
     routes,
   };
 }

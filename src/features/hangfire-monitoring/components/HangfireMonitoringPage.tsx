@@ -112,7 +112,7 @@ function HangfireGrid({
     reason: item.reason || '-',
   })), [rows?.data]);
   const range = getPagedRange(rows);
-  const paginationInfoText = t('common:common.paginationInfo', { current: range.from, total: range.to, count: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common:common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const visibleColumnKeys = orderedVisibleColumns as HangfireColumnKey[];
   const renderSortIcon = (columnKey: HangfireColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 

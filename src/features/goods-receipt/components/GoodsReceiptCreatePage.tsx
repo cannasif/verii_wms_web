@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,9 +10,7 @@ import { FormPageShell } from '@/components/shared';
 import {
   createGoodsReceiptFormSchema,
   type SelectedOrderItem,
-  type SelectedStockItem,
   type OrderItem,
-  type Product,
   type GoodsReceiptFormData,
 } from '../types/goods-receipt';
 import { goodsReceiptApi } from '../api/goods-receipt-api';
@@ -20,19 +18,20 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2OrderSelection } from './steps/Step2OrderSelection';
 import { Step2StockSelection } from './steps/Step2StockSelection';
-
-type ReceiptMode = 'order' | 'stock';
+import type { SelectedStockItem, Product } from '../types/goods-receipt';
 
 export function GoodsReceiptCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
-  const [receiptMode, setReceiptMode] = useState<ReceiptMode>('order');
-  const [selectedItems, setSelectedItems] = useState<(SelectedOrderItem | SelectedStockItem)[]>([]);
+  const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
+  const [selectedItems, setSelectedItems] = useState<SelectedOrderItem[]>([]);
+  const [selectedStockItems, setSelectedStockItems] = useState<SelectedStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('goodsReceipt.create.title'));
@@ -58,16 +57,16 @@ export function GoodsReceiptCreatePage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: GoodsReceiptFormData) => {
-      return goodsReceiptApi.createGoodsReceipt(formData, selectedItems, receiptMode === 'stock');
+      return createMode === 'order'
+        ? goodsReceiptApi.createGoodsReceiptOrder(formData, selectedItems)
+        : goodsReceiptApi.createStockBasedGoodsReceiptOrder(formData, selectedStockItems);
     },
     onSuccess: () => {
       toast.success(t('goodsReceipt.create.success'));
       navigate('/goods-receipt/list');
     },
     onError: (error: Error) => {
-      toast.error(
-        error.message || t('goodsReceipt.create.error')
-      );
+      toast.error(error.message || t('goodsReceipt.create.error'));
     },
   });
 
@@ -76,7 +75,11 @@ export function GoodsReceiptCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -88,60 +91,30 @@ export function GoodsReceiptCreatePage(): ReactElement {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleToggleItem = (item: OrderItem | Product): void => {
+  const handleToggleItem = (item: OrderItem): void => {
     setSelectedItems((prev) => {
-      if (receiptMode === 'order') {
-        const existingIndex = prev.findIndex((si) => 'id' in si && si.id === (item as OrderItem).id);
-        if (existingIndex >= 0) {
-          return prev.filter((_, idx) => idx !== existingIndex);
-        }
-        const orderItem = item as OrderItem;
-        return [
-          ...prev,
-          {
-            ...orderItem,
-            receiptQuantity: orderItem.quantity || 0,
-            isSelected: true,
-          } as SelectedOrderItem,
-        ];
-      } else {
-        const product = item as Product;
-        return [
-          ...prev,
-          {
-            id: `stock-${product.stokKodu}-${crypto.randomUUID()}`,
-            stockId: product.id,
-            stockCode: product.stokKodu,
-            stockName: product.stokAdi,
-            unit: product.olcuBr1,
-            receiptQuantity: 0,
-            isSelected: true,
-          } as SelectedStockItem,
-        ];
+      const existingIndex = prev.findIndex((selected) => selected.id === item.id);
+      if (existingIndex >= 0) {
+        return prev.filter((_, idx) => idx !== existingIndex);
       }
+
+      return [
+        ...prev,
+        {
+          ...item,
+          receiptQuantity: item.quantity || 0,
+          isSelected: true,
+        } as SelectedOrderItem,
+      ];
     });
   };
 
-  const handleUpdateItem = (itemId: string, updates: Partial<SelectedOrderItem | SelectedStockItem>): void => {
-    setSelectedItems((prev) =>
-      prev.map((item) => {
-        const itemIdMatch = receiptMode === 'order' 
-          ? ('id' in item && item.id === itemId)
-          : ('id' in item && item.id === itemId);
-        return itemIdMatch ? { ...item, ...updates } : item;
-      })
-    );
+  const handleUpdateItem = (itemId: string, updates: Partial<SelectedOrderItem>): void => {
+    setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
   const handleRemoveItem = (itemId: string): void => {
-    setSelectedItems((prev) => 
-      prev.filter((item) => {
-        if (receiptMode === 'order') {
-          return !('id' in item && item.id === itemId);
-        }
-        return !('id' in item && item.id === itemId);
-      })
-    );
+    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleSave = async (): Promise<void> => {
@@ -149,67 +122,46 @@ export function GoodsReceiptCreatePage(): ReactElement {
     await createMutation.mutateAsync(formData);
   };
 
+  const handleToggleStockItem = (item: Product): void => {
+    setSelectedStockItems((prev) => [
+      ...prev,
+      {
+        id: `stock-${item.stokKodu}-${crypto.randomUUID()}`,
+        stockId: item.id,
+        stockCode: item.stokKodu,
+        stockName: item.stokAdi,
+        unit: item.olcuBr1,
+        receiptQuantity: 0,
+        isSelected: true,
+      } as SelectedStockItem,
+    ]);
+  };
+
+  const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedStockItem>): void => {
+    setSelectedStockItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  };
+
+  const handleRemoveStockItem = (itemId: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
   const steps = [
     { label: t('goodsReceipt.create.steps.basicInfo') },
-    { label: receiptMode === 'order' 
-        ? t('goodsReceipt.create.steps.orderSelection')
-        : t('goodsReceipt.create.steps.stockSelection')
-    },
+    { label: createMode === 'order' ? t('goodsReceipt.create.steps.orderSelection') : t('goodsReceipt.create.steps.stockSelection') },
   ];
-
-  const renderStepContent = (): ReactElement => {
-    switch (currentStep) {
-      case 1:
-        return <Step1BasicInfo />;
-      case 2:
-        if (receiptMode === 'order') {
-          return (
-            <Step2OrderSelection
-              selectedItems={selectedItems as SelectedOrderItem[]}
-              onToggleItem={handleToggleItem}
-              onUpdateItem={handleUpdateItem}
-              onRemoveItem={handleRemoveItem}
-            />
-          );
-        }
-        return (
-          <Step2StockSelection
-            selectedItems={selectedItems as SelectedStockItem[]}
-            onToggleItem={handleToggleItem}
-            onUpdateItem={handleUpdateItem}
-            onRemoveItem={handleRemoveItem}
-          />
-        );
-      default:
-        return <div>{t('goodsReceipt.create.unknownStep')}</div>;
-    }
-  };
 
   return (
     <div className="space-y-6 crm-page">
-      <div className="flex items-center gap-2 mb-4">
-        <Badge
-          variant={receiptMode === 'order' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          onClick={() => {
-            setReceiptMode('order');
-            setSelectedItems([]);
-            if (currentStep > 1) setCurrentStep(1);
-          }}
-        >
-          {t('goodsReceipt.create.mode.order')}
+      <div className="flex items-center gap-3 mb-4">
+        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
+          {createMode === 'order' ? t('goodsReceipt.create.mode.order') : t('goodsReceipt.create.mode.stock')}
         </Badge>
-        <Badge
-          variant={receiptMode === 'stock' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          onClick={() => {
-            setReceiptMode('stock');
-            setSelectedItems([]);
-            if (currentStep > 1) setCurrentStep(1);
-          }}
-        >
-          {t('goodsReceipt.create.mode.stock')}
-        </Badge>
+        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
+          <TabsList>
+            <TabsTrigger value="order">{t('goodsReceipt.create.mode.order')}</TabsTrigger>
+            <TabsTrigger value="stock">{t('goodsReceipt.create.mode.stock')}</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       <Breadcrumb
@@ -224,37 +176,51 @@ export function GoodsReceiptCreatePage(): ReactElement {
         title={t('goodsReceipt.create.title')}
         description={t('goodsReceipt.create.subtitle')}
       >
-          <Form {...form}>
-            <form className="space-y-6 crm-page">
-              {renderStepContent()}
+        <Form {...form}>
+          <form className="space-y-6 crm-page">
+            {currentStep === 1 ? (
+              <Step1BasicInfo />
+            ) : createMode === 'order' ? (
+              <Step2OrderSelection
+                selectedItems={selectedItems}
+                onToggleItem={handleToggleItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
+              />
+            ) : (
+              <Step2StockSelection
+                selectedItems={selectedStockItems}
+                onToggleItem={handleToggleStockItem}
+                onUpdateItem={handleUpdateStockItem}
+                onRemoveItem={handleRemoveStockItem}
+              />
+            )}
 
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={createMutation.isPending || selectedItems.length === 0}
-                    >
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
+            <div className="flex justify-between pt-6 border-t">
+              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+                {t('common.previous')}
+              </Button>
+              <div className="flex gap-2">
+                {currentStep < steps.length ? (
+                  <Button type="button" onClick={handleNext}>
+                    {t('common.next')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={
+                      createMutation.isPending
+                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                    }
+                  >
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                  </Button>
+                )}
               </div>
-            </form>
-          </Form>
+            </div>
+          </form>
+        </Form>
       </FormPageShell>
     </div>
   );

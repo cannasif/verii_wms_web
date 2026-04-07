@@ -1,5 +1,6 @@
-import { type ReactElement, useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
@@ -70,120 +71,79 @@ const toneClassMap: Record<IconTone, { idle: string; active: string }> = {
   },
 };
 
+const normalizeText = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ı/g, 'i')
+    .replace(/ş/g, 's')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/İ/g, 'i')
+    .replace(/Ş/g, 's')
+    .replace(/Ğ/g, 'g')
+    .replace(/Ü/g, 'u')
+    .replace(/Ö/g, 'o')
+    .replace(/Ç/g, 'c');
+};
+
+function matchesQuery(title: string, searchQuery: string): boolean {
+  if (!searchQuery.trim()) return true;
+
+  const normalizedQuery = normalizeText(searchQuery);
+  const queryWords = normalizedQuery.split(/\s+/).filter((word) => word.length > 0);
+  if (queryWords.length === 0) return true;
+
+  const normalizedTitle = normalizeText(title);
+  const titleWords = normalizedTitle.split(/\s+/).filter((word) => word.length > 0);
+
+  return queryWords.every((queryWord) => titleWords.some((titleWord) => titleWord.includes(queryWord)));
+}
+
+function nodeMatchesSearch(node: NavItem, searchQuery: string): boolean {
+  if (matchesQuery(node.title, searchQuery)) {
+    return true;
+  }
+
+  return node.children?.some((child) => nodeMatchesSearch(child, searchQuery)) ?? false;
+}
+
+function nodeHasActiveDescendant(node: NavItem, pathname: string): boolean {
+  if (node.href && pathname === node.href) {
+    return true;
+  }
+
+  return node.children?.some((child) => nodeHasActiveDescendant(child, pathname)) ?? false;
+}
+
 function NavItemComponent({
   item,
   searchQuery,
-  expandedItemKey,
+  expandedItemKeys,
   onToggle,
-  isManualClick,
+  level = 0,
 }: {
   item: NavItem;
   searchQuery: string;
-  expandedItemKey: string | null;
-  onToggle: (key: string | null) => void;
-  isManualClick: boolean;
+  expandedItemKeys: string[];
+  onToggle: (key: string) => void;
+  level?: number;
 }): ReactElement {
   const location = useLocation();
   const { isSidebarOpen, setSidebarOpen } = useUIStore();
-  const hasChildren = item.children && item.children.length > 0;
+  const hasChildren = (item.children?.length ?? 0) > 0;
   const isActive = item.href ? location.pathname === item.href : false;
-  const isChildActive = item.children?.some(
-    (child) => child.href && location.pathname === child.href
-  );
-  const itemKey = item.href || item.title;
-  const isExpanded = expandedItemKey === itemKey;
+  const hasActiveChild = item.children?.some((child) => nodeHasActiveDescendant(child, location.pathname)) ?? false;
+  const itemKey = item.href || `${level}:${item.title}`;
+  const searchMatched = nodeMatchesSearch(item, searchQuery);
+  const isExpanded = expandedItemKeys.includes(itemKey) || hasActiveChild || (Boolean(searchQuery.trim()) && hasChildren && searchMatched);
   const iconTone = getToneByTitle(item.title);
   const toneClasses = toneClassMap[iconTone];
-  const onToggleRef = useRef(onToggle);
-  const lastActiveRef = useRef(false);
-  const lastSearchRef = useRef('');
-  const lastPathnameRef = useRef(location.pathname);
 
-  onToggleRef.current = onToggle;
-
-  const normalizeText = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/ı/g, 'i')
-      .replace(/ş/g, 's')
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c')
-      .replace(/İ/g, 'i')
-      .replace(/Ş/g, 's')
-      .replace(/Ğ/g, 'g')
-      .replace(/Ü/g, 'u')
-      .replace(/Ö/g, 'o')
-      .replace(/Ç/g, 'c');
-  };
-
-  const childMatchesSearch = useCallback((childTitle: string): boolean => {
-    if (!searchQuery.trim()) return true;
-    
-    const normalizedQuery = normalizeText(searchQuery);
-    const queryWords = normalizedQuery.split(/\s+/).filter((word) => word.length > 0);
-    
-    if (queryWords.length === 0) return true;
-    
-    const normalizedChildTitle = normalizeText(childTitle);
-    const childWords = normalizedChildTitle.split(/\s+/).filter((word) => word.length > 0);
-    
-    return queryWords.every((queryWord) =>
-      childWords.some((childWord) => childWord.includes(queryWord))
-    );
-  }, [searchQuery]);
-
-  const matchesSearch = useMemo(() => {
-    if (!searchQuery.trim()) return true;
-    
-    const normalizedQuery = normalizeText(searchQuery);
-    const queryWords = normalizedQuery.split(/\s+/).filter((word) => word.length > 0);
-    
-    if (queryWords.length === 0) return true;
-    
-    const normalizedTitle = normalizeText(item.title);
-    const titleWords = normalizedTitle.split(/\s+/).filter((word) => word.length > 0);
-    
-    const titleMatch = queryWords.every((queryWord) =>
-      titleWords.some((titleWord) => titleWord.includes(queryWord))
-    );
-    
-    if (titleMatch) return true;
-    
-    const childrenMatch = item.children?.some((child) => childMatchesSearch(child.title));
-    
-    return childrenMatch || false;
-  }, [item, searchQuery, childMatchesSearch]);
-
-  useEffect(() => {
-    const pathnameChanged = lastPathnameRef.current !== location.pathname;
-    lastPathnameRef.current = location.pathname;
-    
-    if (pathnameChanged) {
-      lastActiveRef.current = false;
-    }
-    
-    if (isChildActive && hasChildren && !isExpanded && !lastActiveRef.current && !isManualClick) {
-      lastActiveRef.current = true;
-      onToggleRef.current(itemKey);
-    } else if (!isChildActive) {
-      lastActiveRef.current = false;
-    }
-  }, [isChildActive, hasChildren, itemKey, isExpanded, location.pathname, isManualClick]);
-
-  useEffect(() => {
-    const searchChanged = lastSearchRef.current !== searchQuery;
-    lastSearchRef.current = searchQuery;
-
-    if (searchQuery.trim() && matchesSearch && hasChildren && !isExpanded && searchChanged) {
-      onToggleRef.current(itemKey);
-    }
-  }, [searchQuery, matchesSearch, hasChildren, itemKey, isExpanded]);
-
-  if (!matchesSearch) {
+  if (!searchMatched) {
     return <></>;
   }
 
@@ -193,7 +153,7 @@ function NavItemComponent({
       e.stopPropagation();
       setSidebarOpen(true);
       if (hasChildren) {
-        onToggleRef.current(itemKey);
+        onToggle(itemKey);
       }
     }
   };
@@ -206,9 +166,7 @@ function NavItemComponent({
           onClick={() => {
             if (!isSidebarOpen) {
               setSidebarOpen(true);
-              setTimeout(() => {
-                onToggleRef.current(itemKey);
-              }, 100);
+              setTimeout(() => onToggle(itemKey), 100);
             } else {
               onToggle(itemKey);
             }
@@ -216,30 +174,28 @@ function NavItemComponent({
           className={cn(
             'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
             'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
-            isChildActive
+            (hasActiveChild || isActive)
               ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'
               : 'text-slate-500 dark:text-slate-400',
-            !isSidebarOpen && 'justify-center'
+            !isSidebarOpen && 'justify-center',
           )}
         >
-          {item.icon && (
+          {item.icon && level === 0 ? (
             <span
               className={cn(
                 'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
-                isChildActive ? toneClasses.active : toneClasses.idle,
-                !isSidebarOpen && 'mx-auto'
+                (hasActiveChild || isActive) ? toneClasses.active : toneClasses.idle,
+                !isSidebarOpen && 'mx-auto',
               )}
               onClick={handleIconClick}
             >
               {item.icon}
             </span>
-          )}
-          <span
-            className={cn(
-              'flex-1 truncate text-left transition-opacity',
-              !isSidebarOpen && 'hidden'
-            )}
-          >
+          ) : null}
+          {level > 0 && isSidebarOpen ? (
+            <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />
+          ) : null}
+          <span className={cn('flex-1 truncate text-left transition-opacity', !isSidebarOpen && 'hidden')}>
             {item.title}
           </span>
           {isSidebarOpen && (
@@ -253,45 +209,26 @@ function NavItemComponent({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className={cn(
-                'text-slate-400 transition-transform dark:text-slate-500',
-                isExpanded && 'rotate-90'
-              )}
+              className={cn('text-slate-400 transition-transform dark:text-slate-500', isExpanded && 'rotate-90')}
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           )}
         </button>
-        {isExpanded && isSidebarOpen && (
-          <div className="ml-4 space-y-1 border-l border-slate-200 pl-4 dark:border-white/10">
-            {item.children?.map((child) => {
-              const isChildActive = location.pathname === child.href;
-              
-              if (!childMatchesSearch(child.title)) return null;
-              
-              return (
-                <Link
-                  key={child.href}
-                  to={child.href || '#'}
-                  className={cn(
-                    'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
-                    'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
-                    isChildActive
-                      ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'
-                      : 'text-slate-500 dark:text-slate-400'
-                  )}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) {
-                      useUIStore.getState().setSidebarOpen(false);
-                    }
-                  }}
-                >
-                  <span className="truncate">{child.title}</span>
-                </Link>
-              );
-            })}
+        {isExpanded && isSidebarOpen ? (
+          <div className={cn('space-y-1 border-l border-slate-200 dark:border-white/10', level === 0 ? 'ml-4 pl-4' : 'ml-3 pl-3')}>
+            {item.children?.map((child) => (
+              <NavItemComponent
+                key={child.href || `${itemKey}:${child.title}`}
+                item={child}
+                searchQuery={searchQuery}
+                expandedItemKeys={expandedItemKeys}
+                onToggle={onToggle}
+                level={level + 1}
+              />
+            ))}
           </div>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -309,37 +246,31 @@ function NavItemComponent({
         isActive
           ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'
           : 'text-slate-500 dark:text-slate-400',
-        !isSidebarOpen && 'justify-center'
+        !isSidebarOpen && 'justify-center',
       )}
       onClick={(e) => {
         if (!isSidebarOpen) {
           e.preventDefault();
           setSidebarOpen(true);
-        } else {
-          if (window.innerWidth < 1024) {
-            setSidebarOpen(false);
-          }
+        } else if (window.innerWidth < 1024) {
+          setSidebarOpen(false);
         }
       }}
     >
-      {item.icon && (
+      {item.icon && level === 0 ? (
         <span
           className={cn(
             'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
             isActive ? toneClasses.active : toneClasses.idle,
-            !isSidebarOpen && 'mx-auto'
+            !isSidebarOpen && 'mx-auto',
           )}
           onClick={handleIconClick}
         >
           {item.icon}
         </span>
-      )}
-      <span
-        className={cn(
-          'truncate transition-opacity',
-          !isSidebarOpen && 'hidden'
-        )}
-      >
+      ) : null}
+      {level > 0 && isSidebarOpen ? <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" /> : null}
+      <span className={cn('truncate transition-opacity', !isSidebarOpen && 'hidden')}>
         {item.title}
       </span>
     </Link>
@@ -348,28 +279,22 @@ function NavItemComponent({
 
 export function Sidebar({ items }: SidebarProps): ReactElement {
   const { isSidebarOpen, searchQuery } = useUIStore();
-  const [expandedItemKey, setExpandedItemKey] = useState<string | null>(null);
-  const [isManualClick, setIsManualClick] = useState(false);
+  const { t } = useTranslation();
+  const [expandedItemKeys, setExpandedItemKeys] = useState<string[]>([]);
 
   useEffect(() => {
     if (!isSidebarOpen) {
-      setExpandedItemKey(null);
+      setExpandedItemKeys([]);
     }
   }, [isSidebarOpen]);
 
-  const handleToggle = useCallback((key: string | null): void => {
-    setIsManualClick(true);
-    setExpandedItemKey((prev) => {
-      if (key === null) {
-        return null;
-      }
-      if (prev === key) {
-        return null;
-      }
-      return key;
-    });
+  const handleToggle = useCallback((key: string): void => {
+    setExpandedItemKeys((prev) => (
+      prev.includes(key)
+        ? prev.filter((itemKey) => itemKey !== key)
+        : [...prev, key]
+    ));
   }, []);
-
 
   return (
     <>
@@ -384,11 +309,11 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       <aside
         className={cn(
           'custom-scrollbar fixed left-0 top-0 bottom-0 z-50 flex w-[86vw] max-w-[320px] flex-col overflow-y-auto border-r border-slate-200/70 bg-white/80 backdrop-blur-xl transition-transform duration-300 ease-in-out dark:border-white/10 dark:bg-[#130822]/95 lg:w-72 lg:max-w-none lg:translate-x-0',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-20'
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-20',
         )}
       >
         <div className="h-24 shrink-0 border-b border-slate-200/70 dark:border-white/5">
-          <div className={cn("relative flex h-full items-center px-4", isSidebarOpen ? "justify-center" : "justify-center")}>
+          <div className={cn('relative flex h-full items-center px-4', isSidebarOpen ? 'justify-center' : 'justify-center')}>
             {isSidebarOpen ? (
               <>
                 <div className="flex items-center">
@@ -398,36 +323,35 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
                     className="h-30 w-200 object-contain justify-center"
                   />
                 </div>
-                 <button
-                onClick={() => useUIStore.getState().setSidebarOpen(false)}
-                className="absolute right-4 rounded-lg p-2 text-slate-500 transition-colors hover:text-red-500 lg:hidden"
+                <button
+                  onClick={() => useUIStore.getState().setSidebarOpen(false)}
+                  className="absolute right-4 rounded-lg p-2 text-slate-500 transition-colors hover:text-red-500 lg:hidden"
                 >
                   <X size={20} />
                 </button>
               </>
             ) : (
-                 <img
-                  src={v3logo}
-                  alt="V3"
-                  className="h-10 w-auto object-contain scale-200"
-                />
+              <img
+                src={v3logo}
+                alt="V3"
+                className="h-10 w-auto object-contain scale-200"
+              />
             )}
           </div>
         </div>
         <nav className="flex h-full flex-col gap-1 p-4">
-          {isSidebarOpen && searchQuery.trim().length > 0 && (
+          {isSidebarOpen && searchQuery.trim().length > 0 ? (
             <div className="mb-1 rounded-xl border border-pink-200/40 bg-pink-50/70 px-3 py-2 text-xs text-pink-700 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
-              Filtre: {searchQuery}
+              {t('sidebar.filterLabel')}: {searchQuery}
             </div>
-          )}
+          ) : null}
           {items.map((item, index) => (
             <NavItemComponent
               key={item.href || item.title || index}
               item={item}
               searchQuery={searchQuery}
-              expandedItemKey={expandedItemKey}
+              expandedItemKeys={expandedItemKeys}
               onToggle={handleToggle}
-              isManualClick={isManualClick}
             />
           ))}
         </nav>

@@ -53,7 +53,7 @@ export function ShipmentApprovalPage(): ReactElement {
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, documentNo: item.documentNo || '-', documentDate: formatDate(item.documentDate), customerCode: item.customerCode || '-', customerName: item.customerName || '-', sourceWarehouse: item.sourceWarehouse || '-', targetWarehouse: item.targetWarehouse || '-', completionDate: formatDateTime(item.completionDate) })), [data?.data]);
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, count: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
     try { await approveMutation.mutateAsync({ id, approved }); toast.success(approved ? t('shipment.approval.approveSuccess') : t('shipment.approval.rejectSuccess')); }
     catch (err) { toast.error(err instanceof Error ? err.message : approved ? t('shipment.approval.approveError') : t('shipment.approval.rejectError')); }

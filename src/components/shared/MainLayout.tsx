@@ -40,12 +40,16 @@ const normalizeForSort = (text: string): string => {
     .replace(/Ç/g, 'c');
 };
 
+const sortNavItems = (items: NavItem[]): NavItem[] => (
+  [...items].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr'))
+);
+
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const { t } = useTranslation();
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
 
-  const defaultNavItems: NavItem[] = useMemo(() => [
-    {
+  const defaultNavItems: NavItem[] = useMemo(() => {
+    const dashboardItem: NavItem = {
       title: t('sidebar.dashboard'),
       href: '/dashboard',
       icon: (
@@ -66,470 +70,309 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           <rect width="7" height="5" x="3" y="16" rx="1" />
         </svg>
       ),
-    },
-    {
-      title: t('sidebar.goodsReceipt'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.goodsReceiptAssigned'),
-          href: '/goods-receipt/assigned',
-        },
-        {
-          title: t('sidebar.goodsReceiptCreate'),
-          href: '/goods-receipt/create',
-        },
-        {
-          title: t('sidebar.goodsReceiptList'),
-          href: '/goods-receipt/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.inventory'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-          <path d="M3 6h18" />
-          <path d="M16 10a4 4 0 0 1-8 0" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.warehouse3d'),
-          href: '/inventory/3d-warehouse',
-        },
-        {
-          title: t('sidebar.warehouse3dOutside'),
-          href: '/inventory/3d-outside-warehouse',
-        },
-      ],
-    },
-    {
-      title: t('sidebar.reports'),
-      href: '/reports',
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <path d="M14 2v6h6" />
-          <path d="M16 13H8" />
-          <path d="M16 17H8" />
-          <path d="M10 9H8" />
-        </svg>
-      ),
-    },
-    {
-      title: t('sidebar.package'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-          <line x1="12" y1="22.08" x2="12" y2="12" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.packageCreate'),
-          href: '/package/create',
-        },
-        {
-          title: t('sidebar.packageList'),
-          href: '/package/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.transfer'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 8L17 12M17 12L21 16M17 12H3M3 16L7 12M7 12L3 8" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.transferAssigned'),
-          href: '/transfer/assigned',
-        },
-        {
-          title: t('sidebar.transferApproval'),
-          href: '/transfer/approval',
-        },
-        {
-          title: t('sidebar.transferCreate'),
-          href: '/transfer/create',
-        },
-        {
-          title: t('sidebar.transferList'),
-          href: '/transfer/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.subcontracting'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.subcontractingIssueAssigned'),
-          href: '/subcontracting/issue/assigned',
-        },
-        {
-          title: t('sidebar.subcontractingIssueApproval'),
-          href: '/subcontracting/issue/approval',
-        },
-        {
-          title: t('sidebar.subcontractingIssueCreate'),
-          href: '/subcontracting/issue/create',
-        },
-        {
-          title: t('sidebar.subcontractingIssueList'),
-          href: '/subcontracting/issue/list',
-        },
-        {
-          title: t('sidebar.subcontractingReceiptAssigned'),
-          href: '/subcontracting/receipt/assigned',
-        },
-        {
-          title: t('sidebar.subcontractingReceiptApproval'),
-          href: '/subcontracting/receipt/approval',
-        },
-        {
-          title: t('sidebar.subcontractingReceiptCreate'),
-          href: '/subcontracting/receipt/create',
-        },
-        {
-          title: t('sidebar.subcontractingReceiptList'),
-          href: '/subcontracting/receipt/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.warehouse'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35l8 2.8 8-2.8z" />
-          <path d="M6 18h12" />
-          <path d="M6 14h12" />
-          <path d="M22 8.35l-10-3.57L2 8.35" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.warehouseInboundAssigned'),
-          href: '/warehouse/inbound/assigned',
-        },
-        {
-          title: t('sidebar.warehouseInboundApproval'),
-          href: '/warehouse/inbound/approval',
-        },
-        {
-          title: t('sidebar.warehouseInboundCreate'),
-          href: '/warehouse/inbound/create',
-        },
-        {
-          title: t('sidebar.warehouseInboundList'),
-          href: '/warehouse/inbound/list',
-        },
-        {
-          title: t('sidebar.warehouseOutboundAssigned'),
-          href: '/warehouse/outbound/assigned',
-        },
-        {
-          title: t('sidebar.warehouseOutboundApproval'),
-          href: '/warehouse/outbound/approval',
-        },
-        {
-          title: t('sidebar.warehouseOutboundCreate'),
-          href: '/warehouse/outbound/create',
-        },
-        {
-          title: t('sidebar.warehouseOutboundProcess'),
-          href: '/warehouse/outbound/process',
-        },
-        {
-          title: t('sidebar.warehouseOutboundList'),
-          href: '/warehouse/outbound/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.shipment'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M5 18l6-6M5 18v-5a2 2 0 0 1 2-2h5" />
-          <path d="m13 6 4 4-4 4" />
-          <path d="M17 10h5" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.shipmentAssigned'),
-          href: '/shipment/assigned',
-        },
-        {
-          title: t('sidebar.shipmentApproval'),
-          href: '/shipment/approval',
-        },
-        {
-          title: t('sidebar.shipmentCreate'),
-          href: '/shipment/create',
-        },
-        {
-          title: t('sidebar.shipmentList'),
-          href: '/shipment/list',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.accessControl'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 3l7 4v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z" />
-          <path d="M9.5 11.5a2.5 2.5 0 1 1 5 0v1" />
-          <rect x="8.5" y="12.5" width="7" height="5" rx="1" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.userManagement'),
-          href: '/access-control/user-management',
-        },
-        {
-          title: t('sidebar.permissionDefinitions'),
-          href: '/access-control/permission-definitions',
-        },
-        {
-          title: t('sidebar.permissionGroups'),
-          href: '/access-control/permission-groups',
-        },
-        {
-          title: t('sidebar.userGroupAssignments'),
-          href: '/access-control/user-group-assignments',
-        },
-        {
-          title: t('sidebar.mailSettings'),
-          href: '/users/mail-settings',
-        },
-        {
-          title: t('sidebar.hangfireMonitoring'),
-          href: '/hangfire-monitoring',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.erp', { defaultValue: 'ERP' }),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <ellipse cx="12" cy="5" rx="9" ry="3" />
-          <path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5" />
-          <path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.erpCustomers', { defaultValue: 'Cariler' }),
-          href: '/erp/customers',
-        },
-        {
-          title: t('sidebar.erpStocks', { defaultValue: 'Stoklar' }),
-          href: '/erp/stocks',
-        },
-        {
-          title: t('sidebar.erpWarehouses', { defaultValue: 'Depolar' }),
-          href: '/erp/warehouses',
-        },
-        {
-          title: t('sidebar.erpYapKodlar', { defaultValue: 'YapKodlar' }),
-          href: '/erp/yapkodlar',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-    {
-      title: t('sidebar.parameters'),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      ),
-      children: [
-        {
-          title: t('sidebar.parametersGr'),
-          href: '/parameters/gr',
-        },
-        {
-          title: t('sidebar.parametersWt'),
-          href: '/parameters/wt',
-        },
-        {
-          title: t('sidebar.parametersWo'),
-          href: '/parameters/wo',
-        },
-        {
-          title: t('sidebar.parametersWi'),
-          href: '/parameters/wi',
-        },
-        {
-          title: t('sidebar.parametersSh'),
-          href: '/parameters/sh',
-        },
-        {
-          title: t('sidebar.parametersSrt'),
-          href: '/parameters/srt',
-        },
-        {
-          title: t('sidebar.parametersSit'),
-          href: '/parameters/sit',
-        },
-        {
-          title: t('sidebar.parametersPt'),
-          href: '/parameters/pt',
-        },
-        {
-          title: t('sidebar.parametersPr'),
-          href: '/parameters/pr',
-        },
-        {
-          title: t('sidebar.parametersIc'),
-          href: '/parameters/ic',
-        },
-        {
-          title: t('sidebar.parametersP'),
-          href: '/parameters/p',
-        },
-      ].sort((a, b) => normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')),
-    },
-  ], [t]);
+    };
 
-  const sortedNavItems = useMemo(() => {
-    const dashboard = defaultNavItems.find((item) => item.href === '/dashboard');
-    const others = defaultNavItems.filter((item) => item.href !== '/dashboard');
-    
-    const sortedOthers = [...others].sort((a, b) => 
-      normalizeForSort(a.title).localeCompare(normalizeForSort(b.title), 'tr')
-    );
-    
-    return dashboard ? [dashboard, ...sortedOthers] : sortedOthers;
-  }, [defaultNavItems]);
+    const goodsReceiptModule: NavItem = {
+      title: t('sidebar.goodsReceipt'),
+      children: sortNavItems([
+        { title: t('sidebar.goodsReceiptAssigned'), href: '/goods-receipt/assigned' },
+        { title: t('sidebar.goodsReceiptApproval'), href: '/goods-receipt/approval' },
+        { title: t('sidebar.goodsReceiptCreate'), href: '/goods-receipt/create' },
+        { title: t('sidebar.goodsReceiptProcess'), href: '/goods-receipt/process' },
+        { title: t('sidebar.goodsReceiptList'), href: '/goods-receipt/list' },
+      ]),
+    };
+
+    const warehouseInboundModule: NavItem = {
+      title: t('sidebar.warehouseInboundCreate'),
+      children: sortNavItems([
+        { title: t('sidebar.warehouseInboundAssigned'), href: '/warehouse/inbound/assigned' },
+        { title: t('sidebar.warehouseInboundApproval'), href: '/warehouse/inbound/approval' },
+        { title: t('sidebar.warehouseInboundCreate'), href: '/warehouse/inbound/create' },
+        { title: t('sidebar.warehouseInboundProcess'), href: '/warehouse/inbound/process' },
+        { title: t('sidebar.warehouseInboundList'), href: '/warehouse/inbound/list' },
+      ]),
+    };
+
+    const subcontractingReceiptModule: NavItem = {
+      title: t('sidebar.subcontractingReceiptCreate'),
+      children: sortNavItems([
+        { title: t('sidebar.subcontractingReceiptAssigned'), href: '/subcontracting/receipt/assigned' },
+        { title: t('sidebar.subcontractingReceiptApproval'), href: '/subcontracting/receipt/approval' },
+        { title: t('sidebar.subcontractingReceiptCreate'), href: '/subcontracting/receipt/create' },
+        { title: t('sidebar.subcontractingReceiptProcess', { defaultValue: 'Fason Giriş Process' }), href: '/subcontracting/receipt/process' },
+        { title: t('sidebar.subcontractingReceiptList'), href: '/subcontracting/receipt/list' },
+      ]),
+    };
+
+    const transferModule: NavItem = {
+      title: t('sidebar.transfer'),
+      children: sortNavItems([
+        { title: t('sidebar.transferAssigned'), href: '/transfer/assigned' },
+        { title: t('sidebar.transferApproval'), href: '/transfer/approval' },
+        { title: t('sidebar.transferCreate'), href: '/transfer/create' },
+        { title: t('sidebar.transferProcess'), href: '/transfer/process' },
+        { title: t('sidebar.transferList'), href: '/transfer/list' },
+      ]),
+    };
+
+    const subcontractingIssueModule: NavItem = {
+      title: t('sidebar.subcontractingIssueCreate'),
+      children: sortNavItems([
+        { title: t('sidebar.subcontractingIssueAssigned'), href: '/subcontracting/issue/assigned' },
+        { title: t('sidebar.subcontractingIssueApproval'), href: '/subcontracting/issue/approval' },
+        { title: t('sidebar.subcontractingIssueCreate'), href: '/subcontracting/issue/create' },
+        { title: t('sidebar.subcontractingIssueProcess', { defaultValue: 'Fason Çıkış Process' }), href: '/subcontracting/issue/process' },
+        { title: t('sidebar.subcontractingIssueList'), href: '/subcontracting/issue/list' },
+      ]),
+    };
+
+    const productionModule: NavItem = {
+      title: t('sidebar.production'),
+      children: sortNavItems([
+        {
+          title: t('sidebar.productionPlanningGroup', { defaultValue: 'Planlama' }),
+          children: sortNavItems([
+            { title: t('sidebar.productionCreate'), href: '/production/create' },
+            { title: t('sidebar.productionAssigned'), href: '/production/assigned' },
+            { title: t('sidebar.productionApproval'), href: '/production/approval' },
+            { title: t('sidebar.productionList'), href: '/production/list' },
+          ]),
+        },
+      ]),
+    };
+
+    const productionTransferModule: NavItem = {
+      title: t('sidebar.productionTransfer'),
+      children: sortNavItems([
+        { title: t('sidebar.productionTransferApproval'), href: '/production-transfer/approval' },
+        { title: t('sidebar.productionTransferCreate'), href: '/production-transfer/create' },
+        { title: t('sidebar.productionTransferList'), href: '/production-transfer/list' },
+      ]),
+    };
+
+    const warehouseOutboundModule: NavItem = {
+      title: t('sidebar.warehouseOutboundCreate'),
+      children: sortNavItems([
+        { title: t('sidebar.warehouseOutboundAssigned'), href: '/warehouse/outbound/assigned' },
+        { title: t('sidebar.warehouseOutboundApproval'), href: '/warehouse/outbound/approval' },
+        { title: t('sidebar.warehouseOutboundCreate'), href: '/warehouse/outbound/create' },
+        { title: t('sidebar.warehouseOutboundProcess'), href: '/warehouse/outbound/process' },
+        { title: t('sidebar.warehouseOutboundList'), href: '/warehouse/outbound/list' },
+      ]),
+    };
+
+    const shipmentModule: NavItem = {
+      title: t('sidebar.shipment'),
+      children: sortNavItems([
+        { title: t('sidebar.shipmentAssigned'), href: '/shipment/assigned' },
+        { title: t('sidebar.shipmentApproval'), href: '/shipment/approval' },
+        { title: t('sidebar.shipmentCreate'), href: '/shipment/create' },
+        { title: t('sidebar.shipmentProcess', { defaultValue: 'Sevkiyat Process' }), href: '/shipment/process' },
+        { title: t('sidebar.shipmentList'), href: '/shipment/list' },
+      ]),
+    };
+
+    const packageModule: NavItem = {
+      title: t('sidebar.package'),
+      children: sortNavItems([
+        { title: t('sidebar.packageCreate'), href: '/package/create' },
+        { title: t('sidebar.packageList'), href: '/package/list' },
+      ]),
+    };
+
+    const inventoryModule: NavItem = {
+      title: t('sidebar.inventory'),
+      children: sortNavItems([
+        {
+          title: t('sidebar.inventoryCount', { defaultValue: 'Sayım' }),
+          children: sortNavItems([
+            { title: t('sidebar.inventoryCountCreate', { defaultValue: 'Sayım Emrini Oluşturma' }), href: '/inventory-count/create' },
+            { title: t('sidebar.inventoryCountAssigned', { defaultValue: 'Atanmış Sayım Emirleri' }), href: '/inventory-count/assigned' },
+            { title: t('sidebar.inventoryCountProcess', { defaultValue: 'Sayım Direkt Giriş Yap' }), href: '/inventory-count/process' },
+            { title: t('sidebar.inventoryCountList', { defaultValue: 'Sayım Emirleri' }), href: '/inventory-count/list' },
+          ]),
+        },
+        { title: t('sidebar.warehouse3d'), href: '/inventory/3d-warehouse' },
+        { title: t('sidebar.warehouse3dOutside'), href: '/inventory/3d-outside-warehouse' },
+      ]),
+    };
+
+    const reportsModule: NavItem = {
+      title: t('sidebar.reports'),
+      children: [{ title: t('sidebar.reports'), href: '/reports' }],
+    };
+
+    const erpModule: NavItem = {
+      title: t('sidebar.erp', { defaultValue: 'ERP' }),
+      children: sortNavItems([
+        { title: t('sidebar.erpCustomers', { defaultValue: 'Cariler' }), href: '/erp/customers' },
+        { title: t('sidebar.erpStocks', { defaultValue: 'Stoklar' }), href: '/erp/stocks' },
+        { title: t('sidebar.erpWarehouses', { defaultValue: 'Depolar' }), href: '/erp/warehouses' },
+        { title: t('sidebar.erpYapKodlar', { defaultValue: 'YapKodlar' }), href: '/erp/yapkodlar' },
+        { title: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Barkod Tanımları' }), href: '/erp/barcodes' },
+      ]),
+    };
+
+    const parametersModule: NavItem = {
+      title: t('sidebar.parameters'),
+      children: sortNavItems([
+        { title: t('sidebar.parametersGr'), href: '/parameters/gr' },
+        { title: t('sidebar.parametersWt'), href: '/parameters/wt' },
+        { title: t('sidebar.parametersWo'), href: '/parameters/wo' },
+        { title: t('sidebar.parametersWi'), href: '/parameters/wi' },
+        { title: t('sidebar.parametersSh'), href: '/parameters/sh' },
+        { title: t('sidebar.parametersSrt'), href: '/parameters/srt' },
+        { title: t('sidebar.parametersSit'), href: '/parameters/sit' },
+        { title: t('sidebar.parametersPt'), href: '/parameters/pt' },
+        { title: t('sidebar.parametersPr'), href: '/parameters/pr' },
+        { title: t('sidebar.parametersIc'), href: '/parameters/ic' },
+        { title: t('sidebar.parametersP'), href: '/parameters/p' },
+      ]),
+    };
+
+    const accessControlModule: NavItem = {
+      title: t('sidebar.accessControl'),
+      children: sortNavItems([
+        { title: t('sidebar.userManagement'), href: '/access-control/user-management' },
+        { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
+        { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
+        { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
+        { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
+        { title: t('sidebar.hangfireMonitoring'), href: '/hangfire-monitoring' },
+      ]),
+    };
+
+    return [
+      dashboardItem,
+      {
+        title: t('sidebar.operationsGroup', { defaultValue: 'Operasyonlar' }),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4 7h16" />
+            <path d="M4 12h16" />
+            <path d="M4 17h16" />
+          </svg>
+        ),
+        children: sortNavItems([
+          {
+            title: t('sidebar.inboundOperationsGroup', { defaultValue: 'Giriş Operasyonları' }),
+            children: sortNavItems([goodsReceiptModule, warehouseInboundModule, subcontractingReceiptModule]),
+          },
+          {
+            title: t('sidebar.transferOperationsGroup', { defaultValue: 'Transfer Operasyonları' }),
+            children: sortNavItems([transferModule, subcontractingIssueModule, productionTransferModule]),
+          },
+          {
+            title: t('sidebar.outboundOperationsGroup', { defaultValue: 'Çıkış Operasyonları' }),
+            children: sortNavItems([warehouseOutboundModule, shipmentModule, packageModule]),
+          },
+          {
+            title: t('sidebar.productionOperationsGroup', { defaultValue: 'Üretim' }),
+            children: sortNavItems([productionModule]),
+          },
+        ]),
+      },
+      {
+        title: t('sidebar.inventoryGroup', { defaultValue: 'Depo ve Görünüm' }),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        ),
+        children: sortNavItems([inventoryModule]),
+      },
+      {
+        title: t('sidebar.analyticsGroup', { defaultValue: 'Raporlama' }),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <path d="M14 2v6h6" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+            <path d="M10 9H8" />
+          </svg>
+        ),
+        children: sortNavItems([reportsModule]),
+      },
+      {
+        title: t('sidebar.masterDataGroup', { defaultValue: 'Ana Veri ve Tanımlar' }),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5" />
+            <path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3" />
+          </svg>
+        ),
+        children: sortNavItems([erpModule, parametersModule]),
+      },
+      {
+        title: t('sidebar.systemGroup', { defaultValue: 'Sistem ve Yetki' }),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 3l7 4v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z" />
+            <path d="M9.5 11.5a2.5 2.5 0 1 1 5 0v1" />
+            <rect x="8.5" y="12.5" width="7" height="5" rx="1" />
+          </svg>
+        ),
+        children: sortNavItems([accessControlModule]),
+      },
+    ];
+  }, [t]);
+
+  const sortedNavItems = useMemo(() => defaultNavItems, [defaultNavItems]);
 
   const items = useMemo(() => {
     const rawItems = navItems ?? sortedNavItems;

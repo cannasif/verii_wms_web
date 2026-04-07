@@ -74,7 +74,7 @@ export function PackagePackageDetailPage(): ReactElement {
   const createLineMutation = useCreatePLine();
   const deleteLineMutation = useDeletePLine();
   const { data: yapKodlar = [] } = useYapKodlar();
-  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
+  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, enableSearch);
 
   const lineSchema = useMemo(() => pLineFormSchema(t), [t]);
 

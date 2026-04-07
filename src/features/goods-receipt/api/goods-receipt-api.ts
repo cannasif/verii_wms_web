@@ -1,6 +1,7 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   Order,
@@ -18,7 +19,10 @@ import type {
   CollectedBarcodesResponse,
 } from '../types/goods-receipt';
 import { lookupApi } from '@/services/lookup-api';
-import { buildGoodsReceiptBulkCreateRequest } from '../utils/goods-receipt-create';
+import {
+  buildGoodsReceiptGenerateOrderRequest,
+  buildGoodsReceiptProcessRequest,
+} from '../utils/goods-receipt-create';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 export const goodsReceiptApi = {
@@ -43,9 +47,27 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptOrderItemsLoadFailed'));
   },
 
-  createGoodsReceipt: async (formData: GoodsReceiptFormData, selectedItems: (SelectedOrderItem | SelectedStockItem)[], isStockBased: boolean = false): Promise<number> => {
-    const request = buildGoodsReceiptBulkCreateRequest(formData, selectedItems, isStockBased);
-    const response = await api.post<ApiResponse<number>>('/api/GrHeader/bulkCreate', request);
+  createGoodsReceiptOrder: async (formData: GoodsReceiptFormData, selectedItems: SelectedOrderItem[]): Promise<number> => {
+    const request = buildGoodsReceiptGenerateOrderRequest(formData, selectedItems);
+    const response = await api.post<ApiResponse<GrHeader>>('/api/GrHeader/generate', request);
+    if (response.success) {
+      return response.data?.id || 0;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
+  },
+
+  createStockBasedGoodsReceiptOrder: async (formData: GoodsReceiptFormData, selectedItems: SelectedStockItem[]): Promise<number> => {
+    const request = buildGoodsReceiptGenerateOrderRequest(formData, selectedItems, true);
+    const response = await api.post<ApiResponse<GrHeader>>('/api/GrHeader/generate', request);
+    if (response.success) {
+      return response.data?.id || 0;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
+  },
+
+  processGoodsReceipt: async (formData: GoodsReceiptFormData, selectedItems: SelectedStockItem[]): Promise<number> => {
+    const request = buildGoodsReceiptProcessRequest(formData, selectedItems);
+    const response = await api.post<ApiResponse<number>>('/api/GrHeader/process', request);
     if (response.success) {
       return response.data || 0;
     }
@@ -98,15 +120,34 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptAssignedHeadersLoadFailed'));
   },
 
+  getAwaitingApprovalHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<GrHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<GrHeader>>>(
+      '/api/GrHeader/completed-awaiting-erp-approval',
+      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      options,
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptApprovalLoadFailed'));
+  },
+
+  approveGoodsReceipt: async (id: number, approved: boolean): Promise<ApiResponse<unknown>> => {
+    return await api.post<ApiResponse<unknown>>(`/api/GrHeader/approval/${id}`, null, {
+      params: { approved, id },
+    });
+  },
+
   getAssignedOrderLines: async (headerId: number, options?: ApiRequestOptions): Promise<AssignedGrOrderLinesResponse> => {
     return await api.get<AssignedGrOrderLinesResponse>(`/api/GrHeader/assigned-lines/${headerId}`, options);
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
-    return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup },
-      ...options,
-    });
+  getStokBarcode: async (barcode: string, options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
+    const response = await barcodeApi.resolve('goods-receipt-assigned', barcode, options);
+    return {
+      ...response,
+      data: response.success && response.data ? [toLegacyBarcodeStock(response.data)] : [],
+    };
   },
 
   addBarcodeToOrder: async (request: AddBarcodeRequest): Promise<AddBarcodeResponse> => {

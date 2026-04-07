@@ -4,6 +4,7 @@ import type {
   SubcontractingOrderItemsResponse,
   SubcontractingFormData,
   SelectedSubcontractingOrderItem,
+  SelectedSubcontractingStockItem,
   SubcontractingHeadersResponse,
   SubcontractingLinesResponse,
   SubcontractingLineSerialsResponse,
@@ -16,10 +17,16 @@ import type {
   SubcontractingLine,
   SubcontractingLineSerial,
 } from '../types/subcontracting';
-import { buildSubcontractingIssueRequest, buildSubcontractingReceiptRequest } from '../utils/subcontracting-generate';
+import {
+  buildSubcontractingIssueProcessRequest,
+  buildSubcontractingIssueRequest,
+  buildSubcontractingReceiptProcessRequest,
+  buildSubcontractingReceiptRequest,
+} from '../utils/subcontracting-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
@@ -84,11 +91,12 @@ export const subcontractingApi = {
     return await api.get<AssignedSubcontractingOrderLinesResponse>(`/api/SrtHeader/getAssignedOrderLines/${headerId}`, options);
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
-    return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup },
-      ...options,
-    });
+  getStokBarcode: async (moduleKey: string, barcode: string, options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
+    const response = await barcodeApi.resolve(moduleKey, barcode, options);
+    return {
+      ...response,
+      data: response.success && response.data ? [toLegacyBarcodeStock(response.data)] : [],
+    };
   },
 
   addSitBarcodeToOrder: async (request: AddBarcodeRequest): Promise<AddBarcodeResponse> => {
@@ -123,12 +131,44 @@ export const subcontractingApi = {
     return await api.post<ApiResponse<unknown>>('/api/SitHeader/generate', request);
   },
 
+  createStockBasedSubcontractingIssue: async (
+    formData: SubcontractingFormData,
+    selectedItems: SelectedSubcontractingStockItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildSubcontractingIssueRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/SitHeader/generate', request);
+  },
+
   createSubcontractingReceipt: async (
     formData: SubcontractingFormData,
     selectedItems: SelectedSubcontractingOrderItem[]
   ): Promise<ApiResponse<unknown>> => {
     const request = buildSubcontractingReceiptRequest(formData, selectedItems);
     return await api.post<ApiResponse<unknown>>('/api/SrtHeader/generate', request);
+  },
+
+  createStockBasedSubcontractingReceipt: async (
+    formData: SubcontractingFormData,
+    selectedItems: SelectedSubcontractingStockItem[]
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildSubcontractingReceiptRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/SrtHeader/generate', request);
+  },
+
+  processSubcontractingIssue: async (
+    formData: SubcontractingFormData,
+    selectedItems: SelectedSubcontractingStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildSubcontractingIssueProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/SitHeader/process', request);
+  },
+
+  processSubcontractingReceipt: async (
+    formData: SubcontractingFormData,
+    selectedItems: SelectedSubcontractingStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildSubcontractingReceiptProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/SrtHeader/process', request);
   },
 
   getReceiptHeaders: async (options?: ApiRequestOptions): Promise<SubcontractingHeadersResponse> => {

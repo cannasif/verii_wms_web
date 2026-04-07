@@ -1,5 +1,6 @@
 import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +15,11 @@ import { useAssignedTransferOrderLines } from '../hooks/useAssignedTransferOrder
 import { useCompleteTransfer } from '../hooks/useCompleteTransfer';
 import { Barcode, Package, ArrowLeft, Loader2, CheckCircle2, List, Camera, Check } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { barcodeApi } from '@/services/barcode-api';
+import type { BarcodeMatchCandidate } from '@/services/barcode-types';
+import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
+import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
 import {
   createDefaultScannerConfig,
   getPreferredCameraId,
@@ -21,6 +27,7 @@ import {
   stopAndClearScanner,
   type Html5QrcodeInstance,
 } from '@/lib/html5-qrcode';
+
 import type { StokBarcodeDto } from '../types/transfer';
 
 export function TransferCollectionPage(): ReactElement {
@@ -32,6 +39,8 @@ export function TransferCollectionPage(): ReactElement {
   const [searchBarcode, setSearchBarcode] = useState('');
   const [enableSearch, setEnableSearch] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StokBarcodeDto | null>(null);
+  const [ambiguousCandidates, setAmbiguousCandidates] = useState<BarcodeMatchCandidate[]>([]);
+  const [barcodeErrorMessage, setBarcodeErrorMessage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
@@ -41,7 +50,12 @@ export function TransferCollectionPage(): ReactElement {
 
   const { data: orderLinesData, isLoading: isLoadingOrderLines } = useAssignedTransferOrderLines(headerIdNum);
   const { data: collectedData } = useCollectedBarcodes(headerIdNum);
-  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
+  const { data: barcodeData, isLoading: isSearching, error: barcodeError, isError: isBarcodeError } = useStokBarcode(searchBarcode, enableSearch);
+  const barcodeDefinitionQuery = useQuery({
+    queryKey: ['barcode-definition', 'warehouse-transfer-assigned'],
+    queryFn: ({ signal }) => barcodeApi.getDefinition('warehouse-transfer-assigned', { signal }),
+  });
+
   const addBarcodeMutation = useAddBarcode();
   const completeTransferMutation = useCompleteTransfer();
 
@@ -53,8 +67,25 @@ export function TransferCollectionPage(): ReactElement {
   }, [t, setPageTitle]);
 
   useEffect(() => {
+    if (!isBarcodeError) {
+      return;
+    }
+
+    const feedback = extractBarcodeFeedback(barcodeError, t('transfer.collection.stockNotFound'));
+    setBarcodeErrorMessage(feedback.message);
+    if (feedback.candidates.length > 0) {
+      setAmbiguousCandidates(feedback.candidates);
+    } else {
+      toast.error(feedback.message);
+    }
+    setEnableSearch(false);
+  }, [barcodeError, isBarcodeError, t]);
+
+  useEffect(() => {
     if (barcodeData?.success && barcodeData.data && barcodeData.data.length > 0) {
       setSelectedStock(barcodeData.data[0]);
+      setAmbiguousCandidates([]);
+      setBarcodeErrorMessage(null);
       setEnableSearch(false);
     } else if (barcodeData && !barcodeData.success) {
       toast.error(t('transfer.collection.stockNotFound'));
@@ -68,6 +99,9 @@ export function TransferCollectionPage(): ReactElement {
       return;
     }
     setSearchBarcode(barcodeInput);
+    setSelectedStock(null);
+    setAmbiguousCandidates([]);
+    setBarcodeErrorMessage(null);
     setEnableSearch(true);
   }, [barcodeInput, t]);
 
@@ -82,11 +116,13 @@ export function TransferCollectionPage(): ReactElement {
       return;
     }
 
-    const matchingLine = orderLinesData?.data?.lines.find(
-      (line) => line.stockCode === selectedStock.stokKodu
+    const stockExistsInOrder = orderLinesData?.data?.lines.some(
+      (line) =>
+        line.stockCode === selectedStock.stokKodu &&
+        (line.yapKod || '') === (selectedStock.yapKod || '')
     );
 
-    if (!matchingLine) {
+    if (!stockExistsInOrder) {
       toast.error(t('transfer.collection.stockNotInOrder'));
       return;
     }
@@ -94,12 +130,11 @@ export function TransferCollectionPage(): ReactElement {
     addBarcodeMutation.mutate(
       {
         headerId: headerIdNum,
-        lineId: matchingLine.id,
         barcode: selectedStock.barkod,
         stockCode: selectedStock.stokKodu,
         stockName: selectedStock.stokAdi,
-        yapKod: selectedStock.yapKod || '',
-        yapAcik: selectedStock.yapAcik || '',
+        yapKod: selectedStock.yapKod ?? undefined,
+        yapAcik: selectedStock.yapAcik ?? undefined,
         quantity: quantity,
         serialNo: '',
         serialNo2: '',
@@ -120,7 +155,8 @@ export function TransferCollectionPage(): ReactElement {
           }
         },
         onError: (error: Error) => {
-          toast.error(error.message || t('transfer.collection.collectError'));
+          const feedback = extractBarcodeFeedback(error, t('transfer.collection.collectError'));
+          toast.error(feedback.message);
         },
       }
     );
@@ -304,6 +340,11 @@ export function TransferCollectionPage(): ReactElement {
                   onKeyPress={handleKeyPress}
                   className="pl-10 md:pl-9 h-10"
                 />
+                {barcodeDefinitionQuery.data?.data?.hintText ? (
+                  <p className='mt-2 text-xs text-slate-500 dark:text-slate-400'>
+                    {t('common.barcodeFormat', { format: barcodeDefinitionQuery.data.data.hintText })}
+                  </p>
+                ) : null}
               </div>
               <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default" className="w-full sm:w-auto">
                 {isSearching ? (
@@ -314,6 +355,34 @@ export function TransferCollectionPage(): ReactElement {
               </Button>
             </div>
 
+            {ambiguousCandidates.length > 0 ? (
+              <BarcodeCandidatePicker
+                candidates={ambiguousCandidates}
+                message={barcodeErrorMessage || t('common.warning')}
+                onSelect={(candidate) => {
+                  setSelectedStock({
+                    barkod: barcodeInput.trim() || searchBarcode.trim(),
+                    stokKodu: candidate.stockCode ?? '',
+                    stokAdi: candidate.stockName ?? '',
+                    depoKodu: null,
+                    depoAdi: null,
+                    rafKodu: null,
+                    yapilandir: '',
+                    olcuBr: 0,
+                    olcuAdi: '',
+                    yapKod: candidate.yapKod ?? null,
+                    yapAcik: candidate.yapAcik ?? null,
+                    cevrim: 0,
+                    seriBarkodMu: Boolean(candidate.serialNumber),
+                    sktVarmi: null,
+                    isemriNo: null,
+                  });
+                  setAmbiguousCandidates([]);
+                  setBarcodeErrorMessage(null);
+                }}
+              />
+            ) : null}
+
             {selectedStock && (
               <div className="border rounded-lg p-3 space-y-2 bg-muted/50">
                 <div className="flex items-start justify-between gap-2">
@@ -322,6 +391,11 @@ export function TransferCollectionPage(): ReactElement {
                       {selectedStock.stokKodu}
                     </Badge>
                     <p className="text-sm font-medium line-clamp-1">{selectedStock.stokAdi}</p>
+                    {(selectedStock.yapKod || selectedStock.yapAcik) ? (
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                        {selectedStock.yapKod || '-'}{selectedStock.yapAcik ? ` - ${selectedStock.yapAcik}` : ''}
+                      </p>
+                    ) : null}
                   </div>
                   <Badge variant="secondary" className="shrink-0">
                     <Package className="size-3 mr-1" />
@@ -373,7 +447,7 @@ export function TransferCollectionPage(): ReactElement {
                     <p className="text-xs font-medium line-clamp-2 mt-1">{line.stockName}</p>
                     {line.yapKod && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {t('transfer.collection.yapKod')}: {line.yapKod}
+                        {t('transfer.collection.yapKod')}: {line.yapKod}{line.yapAcik ? ` - ${line.yapAcik}` : ''}
                       </p>
                     )}
                   </div>

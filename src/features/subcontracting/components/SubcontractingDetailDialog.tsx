@@ -228,10 +228,13 @@ export function SubcontractingDetailDialog({
                       <TableRow>
                         <TableHead className="w-[100px]">{t('subcontracting.list.stockCode')}</TableHead>
                         <TableHead>{t('subcontracting.list.stockName')}</TableHead>
+                        <TableHead className="w-[120px]">{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
                         <TableHead className="w-[100px]">{t('subcontracting.details.configCode')}</TableHead>
                         <TableHead className="w-[120px]">{t('subcontracting.list.serialNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('subcontracting.details.lotNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('subcontracting.details.batchNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('subcontracting.list.sourceWarehouse')}</TableHead>
+                        <TableHead className="w-[120px]">{t('subcontracting.list.targetWarehouse')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -262,6 +265,8 @@ function SubcontractingLineRow({ line, documentType }: SubcontractingLineRowProp
   const serialNo = firstSerial?.serialNo ?? '-';
   const lotNo = firstSerial?.serialNo3 ?? '-';
   const batchNo = firstSerial?.serialNo4 ?? '-';
+  const sourceWarehouse = firstSerial?.sourceWarehouseName || firstSerial?.sourceWarehouseId?.toString() || '-';
+  const targetWarehouse = firstSerial?.targetWarehouseName || firstSerial?.targetWarehouseId?.toString() || '-';
 
   return (
     <TableRow>
@@ -272,6 +277,9 @@ function SubcontractingLineRow({ line, documentType }: SubcontractingLineRowProp
       </TableCell>
       <TableCell>
         <span className="text-sm font-medium">{line.stockName || line.description || '-'}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{line.siparisMiktar ?? line.quantity}</span>
       </TableCell>
       <TableCell>
         <span className="text-sm">{line.yapKod || '-'}</span>
@@ -285,7 +293,12 @@ function SubcontractingLineRow({ line, documentType }: SubcontractingLineRowProp
       <TableCell>
         <span className="text-sm">{batchNo}</span>
       </TableCell>
+      <TableCell>
+        <span className="text-sm">{sourceWarehouse}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{targetWarehouse}</span>
+      </TableCell>
     </TableRow>
   );
 }
-

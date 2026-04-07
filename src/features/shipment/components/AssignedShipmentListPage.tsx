@@ -160,7 +160,7 @@ export function AssignedShipmentListPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', {
     current: range.from,
     total: range.to,
-    count: range.total,
+    totalCount: range.total,
     defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 

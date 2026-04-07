@@ -1,7 +1,9 @@
 export { GoodsReceiptPage } from './components/GoodsReceiptPage';
 export { GoodsReceiptCreatePage } from './components/GoodsReceiptCreatePage';
+export { GoodsReceiptProcessPage } from './components/GoodsReceiptProcessPage';
 export { GoodsReceiptListPage } from './components/GoodsReceiptListPage';
 export { GoodsReceiptReportPage } from './components/GoodsReceiptReportPage';
 export { GoodsReceiptDetailDialog } from './components/GoodsReceiptDetailDialog';
 export { AssignedGrListPage } from './components/AssignedGrListPage';
 export { GoodsReceiptCollectionPage } from './components/GoodsReceiptCollectionPage';
+export { GoodsReceiptApprovalPage } from './components/GoodsReceiptApprovalPage';

@@ -87,6 +87,7 @@ export function PermissionGroupsPage(): ReactElement {
   const permissionAccess = usePermissionAccess();
   const canCreate = permissionAccess.can('access-control.permission-groups.create');
   const canUpdate = permissionAccess.can('access-control.permission-groups.update');
+  const canDelete = permissionAccess.can('access-control.permission-groups.delete');
 
   useEffect(() => {
     setPageTitle(t('permissionGroups.title'));
@@ -151,7 +152,7 @@ export function PermissionGroupsPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', {
     current: range.from,
     total: range.to,
-    count: range.total,
+    totalCount: range.total,
     defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
@@ -233,54 +234,60 @@ export function PermissionGroupsPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('common.errors.loadFailed', { defaultValue: 'Load failed' })}
           emptyText={t('common.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && canUpdate}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
-            canUpdate ? (
+            canUpdate || canDelete ? (
               <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    if (item.isSystemAdmin) return;
-                    setPermissionsPanelGroupId(item.id);
-                    setPermissionsPanelOpen(true);
-                  }}
-                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
-                  disabled={item.isSystemAdmin}
-                >
-                  <Settings className="size-4" />
-                  <span>{t('permissionGroups.managePermissions')}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    if (item.isSystemAdmin) return;
-                    const main = document.querySelector('main');
-                    if (main) mainScrollTopRef.current = main.scrollTop;
-                    setEditingItem(item);
-                    setFormOpen(true);
-                  }}
-                  disabled={item.isSystemAdmin}
-                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
-                >
-                  <span>{t('common.edit')}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-600"
-                  onClick={() => {
-                    if (item.isSystemAdmin) return;
-                    setItemToDelete(item);
-                    setDeleteDialogOpen(true);
-                  }}
-                  disabled={item.isSystemAdmin}
-                  title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
-                >
-                  <span>{t('common.delete')}</span>
-                </Button>
+                {canUpdate ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (item.isSystemAdmin) return;
+                        setPermissionsPanelGroupId(item.id);
+                        setPermissionsPanelOpen(true);
+                      }}
+                      title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
+                      disabled={item.isSystemAdmin}
+                    >
+                      <Settings className="size-4" />
+                      <span>{t('permissionGroups.managePermissions')}</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (item.isSystemAdmin) return;
+                        const main = document.querySelector('main');
+                        if (main) mainScrollTopRef.current = main.scrollTop;
+                        setEditingItem(item);
+                        setFormOpen(true);
+                      }}
+                      disabled={item.isSystemAdmin}
+                      title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
+                    >
+                      <span>{t('common.edit')}</span>
+                    </Button>
+                  </>
+                ) : null}
+                {canDelete ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600"
+                    onClick={() => {
+                      if (item.isSystemAdmin) return;
+                      setItemToDelete(item);
+                      setDeleteDialogOpen(true);
+                    }}
+                    disabled={item.isSystemAdmin}
+                    title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
+                  >
+                    <span>{t('common.delete')}</span>
+                  </Button>
+                ) : null}
               </>
             ) : null
           )}

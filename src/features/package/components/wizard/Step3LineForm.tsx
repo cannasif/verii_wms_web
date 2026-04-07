@@ -62,7 +62,7 @@ export function Step3LineForm({
   const { data: packagesData } = usePPackagesByHeader(packingHeaderId);
   const { data: linesData, isLoading: isLoadingLines } = usePLinesByHeader(packingHeaderId);
   const { data: yapKodlar = [] } = useYapKodlar();
-  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
+  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, enableSearch);
   const createMutation = useCreatePLine();
   const deleteMutation = useDeletePLine();
 

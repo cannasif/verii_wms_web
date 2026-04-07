@@ -213,10 +213,13 @@ export function TransferDetailDialog({
                       <TableRow>
                         <TableHead className="w-[100px]">{t('transfer.list.stockCode')}</TableHead>
                         <TableHead>{t('transfer.list.stockName')}</TableHead>
+                        <TableHead className="w-[120px]">{t('transfer.orderDetails.orderQuantity')}</TableHead>
                         <TableHead className="w-[100px]">{t('transfer.details.configCode')}</TableHead>
                         <TableHead className="w-[120px]">{t('transfer.list.serialNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('transfer.details.lotNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('transfer.details.batchNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('transfer.list.sourceWarehouse')}</TableHead>
+                        <TableHead className="w-[120px]">{t('transfer.list.targetWarehouse')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -249,6 +252,8 @@ function TransferLineRow({ line, serials }: TransferLineRowProps): ReactElement 
   const serialNo = firstSerial?.serialNo || '-';
   const lotNo = firstSerial?.serialNo3 || '-';
   const batchNo = firstSerial?.serialNo4 || '-';
+  const sourceWarehouse = firstSerial?.sourceWarehouseName || firstSerial?.sourceWarehouseId?.toString() || '-';
+  const targetWarehouse = firstSerial?.targetWarehouseName || firstSerial?.targetWarehouseId?.toString() || '-';
 
   return (
     <TableRow>
@@ -261,6 +266,9 @@ function TransferLineRow({ line, serials }: TransferLineRowProps): ReactElement 
         <span className="text-sm font-medium">{line.stockName || '-'}</span>
       </TableCell>
       <TableCell>
+        <span className="text-sm">{line.siparisMiktar ?? line.quantity}</span>
+      </TableCell>
+      <TableCell>
         <span className="text-sm">{line.yapKod || '-'}</span>
       </TableCell>
       <TableCell>
@@ -271,6 +279,12 @@ function TransferLineRow({ line, serials }: TransferLineRowProps): ReactElement 
       </TableCell>
       <TableCell>
         <span className="text-sm">{batchNo}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{sourceWarehouse}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{targetWarehouse}</span>
       </TableCell>
     </TableRow>
   );

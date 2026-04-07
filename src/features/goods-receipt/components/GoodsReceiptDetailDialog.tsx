@@ -119,6 +119,12 @@ function ImportLineDetailDialog({
                           </TableCell>
                         </TableRow>
                         <TableRow>
+                          <TableHead>{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
+                          <TableCell>
+                            {orderLine.siparisMiktar ?? orderLine.quantity} {orderLine.unit}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
                           <TableHead>{t('goodsReceipt.report.unit')}</TableHead>
                           <TableCell>{orderLine.unit}</TableCell>
                         </TableRow>

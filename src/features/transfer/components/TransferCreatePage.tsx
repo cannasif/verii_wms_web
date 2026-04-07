@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,21 +10,20 @@ import { FormPageShell } from '@/components/shared';
 import {
   createTransferFormSchema,
   type SelectedTransferOrderItem,
-  type SelectedTransferStockItem,
   type TransferOrderItem,
   type TransferFormData,
 } from '../types/transfer';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import { transferApi } from '../api/transfer-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1TransferBasicInfo } from './steps/Step1TransferBasicInfo';
 import { Step2TransferOrderSelection } from './steps/Step2TransferOrderSelection';
 import { Step2TransferStockSelection } from './steps/Step2TransferStockSelection';
-
-type TransferMode = 'order' | 'free';
+import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { SelectedTransferStockItem } from '../types/transfer';
 
 export function TransferCreatePage(): ReactElement {
   const { t } = useTranslation();
@@ -32,10 +31,9 @@ export function TransferCreatePage(): ReactElement {
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const [currentStep, setCurrentStep] = useState(1);
-  const [transferMode, setTransferMode] = useState<TransferMode>('order');
-  const [selectedItems, setSelectedItems] = useState<
-    (SelectedTransferOrderItem | SelectedTransferStockItem)[]
-  >([]);
+  const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
+  const [selectedItems, setSelectedItems] = useState<SelectedTransferOrderItem[]>([]);
+  const [selectedStockItems, setSelectedStockItems] = useState<SelectedTransferStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('transfer.create.title'));
@@ -44,9 +42,9 @@ export function TransferCreatePage(): ReactElement {
     };
   }, [t, setPageTitle]);
 
-  const schema = useMemo(() => createTransferFormSchema(t, transferMode === 'free'), [t, transferMode]);
+  const schema = useMemo(() => createTransferFormSchema(t, false), [t]);
 
-  const form = useForm({
+  const form = useForm<TransferFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
@@ -64,18 +62,17 @@ export function TransferCreatePage(): ReactElement {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (formData: TransferFormData) => {
-      return transferApi.createTransfer(formData, selectedItems, transferMode === 'free');
-    },
+    mutationFn: async (formData: TransferFormData) =>
+      createMode === 'order'
+        ? transferApi.createTransferOrder(formData, selectedItems)
+        : transferApi.createStockBasedTransferOrder(formData, selectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transferHeaders'] });
       toast.success(t('transfer.create.success'));
       navigate('/transfer/list');
     },
     onError: (error: Error) => {
-      toast.error(
-        error.message || t('transfer.create.error')
-      );
+      toast.error(error.message || t('transfer.create.error'));
     },
   });
 
@@ -84,7 +81,11 @@ export function TransferCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -96,130 +97,77 @@ export function TransferCreatePage(): ReactElement {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleToggleItem = (item: TransferOrderItem | Product): void => {
+  const handleToggleItem = (item: TransferOrderItem): void => {
     setSelectedItems((prev) => {
-      if (transferMode === 'order') {
-        const existingIndex = prev.findIndex((si) => 'id' in si && si.id === (item as TransferOrderItem).id);
-        if (existingIndex >= 0) {
-          return prev.filter((_, idx) => idx !== existingIndex);
-        }
-        const orderItem = item as TransferOrderItem;
-        return [
-          ...prev,
-          {
-            ...orderItem,
-            transferQuantity: orderItem.remainingForImport || 0,
-            isSelected: true,
-          } as SelectedTransferOrderItem,
-        ];
-      } else {
-        const product = item as Product;
-        return [
-          ...prev,
-          {
-            id: `stock-${product.stokKodu}-${crypto.randomUUID()}`,
-            stockId: product.id,
-            stockCode: product.stokKodu,
-            stockName: product.stokAdi,
-            unit: product.olcuBr1,
-            transferQuantity: 0,
-            isSelected: true,
-          } as SelectedTransferStockItem,
-        ];
+      const existingIndex = prev.findIndex((selected) => selected.id === item.id);
+      if (existingIndex >= 0) {
+        return prev.filter((_, idx) => idx !== existingIndex);
       }
+
+      return [
+        ...prev,
+        {
+          ...item,
+          transferQuantity: item.remainingForImport || 0,
+          isSelected: true,
+        },
+      ];
     });
   };
 
-  const handleUpdateItem = (
-    itemId: string,
-    updates: Partial<SelectedTransferOrderItem | SelectedTransferStockItem>
-  ): void => {
-    setSelectedItems((prev) =>
-      prev.map((item) => {
-        const itemIdMatch = 'id' in item && item.id === itemId;
-        return itemIdMatch ? { ...item, ...updates } : item;
-      })
-    );
+  const handleUpdateItem = (itemId: string, updates: Partial<SelectedTransferOrderItem>): void => {
+    setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
   const handleRemoveItem = (itemId: string): void => {
-    setSelectedItems((prev) =>
-      prev.filter((item) => {
-        return !('id' in item && item.id === itemId);
-      })
-    );
+    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
+  const handleToggleStockItem = (item: Product): void => {
+    setSelectedStockItems((prev) => [
+      ...prev,
+      {
+        id: `stock-${item.stokKodu}-${crypto.randomUUID()}`,
+        stockId: item.id,
+        stockCode: item.stokKodu,
+        stockName: item.stokAdi,
+        unit: item.olcuBr1,
+        transferQuantity: 0,
+        isSelected: true,
+      },
+    ]);
+  };
+
+  const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedTransferStockItem>): void => {
+    setSelectedStockItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  };
+
+  const handleRemoveStockItem = (itemId: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleSave = async (): Promise<void> => {
-    const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    await createMutation.mutateAsync(form.getValues());
   };
 
   const steps = [
     { label: t('transfer.create.steps.basicInfo') },
-    {
-      label:
-        transferMode === 'order'
-          ? t('transfer.create.steps.orderSelection')
-          : t('transfer.create.steps.stockSelection'),
-    },
+    { label: createMode === 'order' ? t('transfer.create.steps.orderSelection') : t('transfer.create.steps.stockSelection') },
   ];
-
-  const renderStepContent = (): ReactElement => {
-    switch (currentStep) {
-      case 1:
-        return <Step1TransferBasicInfo isFreeTransfer={transferMode === 'free'} />;
-      case 2:
-        if (transferMode === 'order') {
-          return (
-            <Step2TransferOrderSelection
-              selectedItems={selectedItems as SelectedTransferOrderItem[]}
-              onToggleItem={handleToggleItem}
-              onUpdateItem={handleUpdateItem}
-              onRemoveItem={handleRemoveItem}
-            />
-          );
-        }
-        return (
-          <Step2TransferStockSelection
-            selectedItems={selectedItems as SelectedTransferStockItem[]}
-            onToggleItem={handleToggleItem}
-            onUpdateItem={handleUpdateItem}
-            onRemoveItem={handleRemoveItem}
-          />
-        );
-      default:
-        return <div>{t('transfer.create.unknownStep')}</div>;
-    }
-  };
 
   return (
     <div className="space-y-6 crm-page">
-      <div className="flex items-center gap-2 mb-4">
-        <Badge
-          variant={transferMode === 'order' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          onClick={() => {
-            setTransferMode('order');
-            setSelectedItems([]);
-            if (currentStep > 1) setCurrentStep(1);
-          }}
-        >
-          {t('transfer.create.mode.order')}
+      <div className="flex items-center gap-3">
+        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
+          {createMode === 'order' ? t('transfer.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('transfer.create.mode.stock', { defaultValue: 'Stok bazlı' })}
         </Badge>
-        <Badge
-          variant={transferMode === 'free' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          onClick={() => {
-            setTransferMode('free');
-            setSelectedItems([]);
-            if (currentStep > 1) setCurrentStep(1);
-          }}
-        >
-          {t('transfer.create.mode.free')}
-        </Badge>
+        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
+          <TabsList>
+            <TabsTrigger value="order">{t('transfer.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('transfer.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
-
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
@@ -228,41 +176,45 @@ export function TransferCreatePage(): ReactElement {
         className="mb-4"
       />
 
-      <FormPageShell
-        title={t('transfer.create.title')}
-        description={t('transfer.create.subtitle')}
-      >
-          <Form {...form}>
-            <form className="space-y-6 crm-page">
-              {renderStepContent()}
+      <FormPageShell title={t('transfer.create.title')} description={t('transfer.create.subtitle')}>
+        <Form {...form}>
+          <form className="space-y-6 crm-page">
+            {currentStep === 1 ? (
+              <Step1TransferBasicInfo isFreeTransfer={false} />
+            ) : createMode === 'order' ? (
+              <Step2TransferOrderSelection
+                selectedItems={selectedItems}
+                onToggleItem={handleToggleItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
+              />
+            ) : (
+              <Step2TransferStockSelection
+                selectedItems={selectedStockItems}
+                onToggleItem={handleToggleStockItem}
+                onUpdateItem={handleUpdateStockItem}
+                onRemoveItem={handleRemoveStockItem}
+              />
+            )}
 
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={createMutation.isPending || selectedItems.length === 0}
-                    >
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
+            <div className="flex justify-between pt-6 border-t">
+              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+                {t('common.previous')}
+              </Button>
+              <div className="flex gap-2">
+                {currentStep < steps.length ? (
+                  <Button type="button" onClick={handleNext}>
+                    {t('common.next')}
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={handleSave} disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                  </Button>
+                )}
               </div>
-            </form>
-          </Form>
+            </div>
+          </form>
+        </Form>
       </FormPageShell>
     </div>
   );

@@ -5,6 +5,8 @@ import type {
   SelectedOrderItem,
   SelectedStockItem,
   BulkCreateRequest,
+  GenerateGoodsReceiptOrderRequest,
+  ProcessGoodsReceiptRequest,
 } from '../types/goods-receipt';
 
 function generateGuid(): string {
@@ -35,6 +37,7 @@ export function buildGoodsReceiptBulkCreateRequest(
       stockId: orderItem.stockId,
       stockCode: orderItem.stockCode || orderItem.productCode || '',
       quantity: orderItem.orderedQty || 0,
+      siparisMiktar: orderItem.orderedQty || 0,
       unit: orderItem.unit || undefined,
       erpOrderNo: orderItem.siparisNo || undefined,
       erpOrderId: orderItem.orderID?.toString() || undefined,
@@ -49,15 +52,13 @@ export function buildGoodsReceiptBulkCreateRequest(
       return line.stockCode === itemStockCode;
     });
     const stockCode = item.stockCode;
-    const stockName = item.stockName;
     return {
       lineClientKey: correspondingLine?.clientKey || null,
       clientKey,
       stockId: item.stockId,
       stockCode,
-      configurationCode: item.configCode || undefined,
-      description1: stockName || undefined,
-      description2: undefined,
+      yapKodId: item.yapKodId,
+      yapKod: item.configCode || undefined,
     };
   });
 
@@ -69,9 +70,13 @@ export function buildGoodsReceiptBulkCreateRequest(
       const importLine = importLines[index];
       if (!importLine) return null;
       return {
-        importLineClientKey: importLine.clientKey,
+        lineClientKey: importLine.lineClientKey,
+        stockCode: importLine.stockCode,
+        yapKod: importLine.yapKod,
         serialNo: item.serialNo || '',
         quantity: item.receiptQuantity || 0,
+        sourceWarehouseId: undefined,
+        targetWarehouseId: item.warehouseId,
         sourceCellCode: undefined,
         targetCellCode: undefined,
         serialNo2: item.lotNo,
@@ -87,7 +92,9 @@ export function buildGoodsReceiptBulkCreateRequest(
       if (!importLine || !item.receiptQuantity || item.receiptQuantity <= 0) return null;
       const stockName = item.stockName;
       return {
-        importLineClientKey: importLine.clientKey,
+        lineClientKey: importLine.lineClientKey,
+        stockCode: importLine.stockCode,
+        yapKod: importLine.yapKod,
         scannedBarcode: '',
         quantity: item.receiptQuantity,
         description: stockName || undefined,
@@ -131,4 +138,137 @@ export function buildGoodsReceiptBulkCreateRequest(
   };
 
   return request;
+}
+
+export function buildGoodsReceiptGenerateOrderRequest(
+  formData: GoodsReceiptFormData,
+  selectedItems: (SelectedOrderItem | SelectedStockItem)[],
+  isStockBased: boolean = false,
+): GenerateGoodsReceiptOrderRequest {
+  const currentYear = new Date().getFullYear().toString();
+  const plannedDate = formData.receiptDate ? new Date(formData.receiptDate).toISOString() : new Date().toISOString();
+
+  const lines = selectedItems.map((item) => {
+    const clientKey = generateGuid();
+    const quantity = isStockBased
+      ? (item.receiptQuantity || 0)
+      : ((item as SelectedOrderItem).orderedQty || 0);
+    return {
+      clientKey,
+      stockId: item.stockId,
+      stockCode: item.stockCode || ('productCode' in item ? item.productCode : '') || '',
+      quantity,
+      siparisMiktar: quantity,
+      unit: item.unit || undefined,
+      erpOrderNo: isStockBased ? undefined : ('siparisNo' in item ? item.siparisNo : undefined),
+      erpOrderId: isStockBased ? undefined : ('orderID' in item ? item.orderID?.toString() : undefined),
+      description: item.stockName || ('productName' in item ? item.productName : undefined) || undefined,
+      yapKodId: item.yapKodId,
+      yapKod: item.configCode || undefined,
+    };
+  });
+
+  const lineSerials = selectedItems
+    .map((item, index) => {
+      if (!item.serialNo && !item.lotNo && !item.batchNo && !item.configCode) {
+        return null;
+      }
+
+      return {
+        lineClientKey: lines[index]?.clientKey,
+        stockCode: item.stockCode,
+        yapKod: item.configCode || undefined,
+        serialNo: item.serialNo || '',
+        quantity: item.receiptQuantity || 0,
+        sourceWarehouseId: undefined,
+        targetWarehouseId: item.warehouseId,
+        sourceCellCode: undefined,
+        targetCellCode: undefined,
+        serialNo2: item.lotNo,
+        serialNo3: item.batchNo,
+        serialNo4: item.configCode,
+      };
+    })
+    .filter((line): line is NonNullable<typeof line> => line !== null);
+
+  return {
+    header: {
+      branchCode: getActiveBranchCode(),
+      projectCode: formData.projectCode || undefined,
+      orderId: isStockBased ? undefined : ('siparisNo' in (selectedItems[0] ?? {}) ? (selectedItems[0] as SelectedOrderItem).siparisNo : undefined),
+      documentType: DocumentType.GR,
+      yearCode: currentYear,
+      description1: formData.documentNo || undefined,
+      description2: formData.notes || undefined,
+      priorityLevel: 0,
+      plannedDate,
+      isPlanned: false,
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      returnCode: false,
+      ocrSource: false,
+      description3: undefined,
+      description4: undefined,
+      description5: undefined,
+    },
+    lines,
+    lineSerials: lineSerials.length > 0 ? lineSerials : undefined,
+    terminalLines: undefined,
+  };
+}
+
+export function buildGoodsReceiptProcessRequest(
+  formData: GoodsReceiptFormData,
+  selectedItems: SelectedStockItem[],
+): ProcessGoodsReceiptRequest {
+  const currentYear = new Date().getFullYear().toString();
+  const plannedDate = formData.receiptDate ? new Date(formData.receiptDate).toISOString() : new Date().toISOString();
+
+  const routes = selectedItems
+    .map((item) => {
+      if (!item.receiptQuantity || item.receiptQuantity <= 0) {
+        return null;
+      }
+
+      return {
+        stockId: item.stockId,
+        stockCode: item.stockCode,
+        yapKodId: item.yapKodId,
+        yapKod: item.configCode || undefined,
+        scannedBarcode: '',
+        quantity: item.receiptQuantity,
+        serialNo: item.serialNo,
+        serialNo2: item.lotNo,
+        serialNo3: item.batchNo,
+        serialNo4: item.configCode,
+        sourceWarehouse: undefined,
+        targetWarehouse: item.warehouseId,
+        sourceCellCode: undefined,
+        targetCellCode: undefined,
+      };
+    })
+    .filter((route): route is NonNullable<typeof route> => route !== null);
+
+  return {
+    header: {
+      branchCode: getActiveBranchCode(),
+      projectCode: formData.projectCode || undefined,
+      orderId: undefined,
+      documentType: DocumentType.GR,
+      yearCode: currentYear,
+      description1: formData.documentNo || undefined,
+      description2: formData.notes || undefined,
+      priorityLevel: 0,
+      plannedDate,
+      isPlanned: false,
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      returnCode: false,
+      ocrSource: false,
+      description3: undefined,
+      description4: undefined,
+      description5: undefined,
+    },
+    routes: routes.length > 0 ? routes : undefined,
+  };
 }

@@ -69,6 +69,7 @@ export interface OrderItem extends BaseWorkflowOrderItem {
   unit?: string;
   unitPrice?: number;
   totalPrice?: number;
+  yapKodId?: number;
 }
 
 export interface SelectedOrderItem extends OrderItem {
@@ -191,14 +192,17 @@ export interface BulkCreateRequest {
     clientKey: string;
     stockId?: number;
     stockCode: string;
-    configurationCode?: string;
-    description1?: string;
-    description2?: string;
+    yapKodId?: number;
+    yapKod?: string;
   }>;
   serialLines?: Array<{
-    importLineClientKey: string;
+    lineClientKey?: string | null;
+    stockCode?: string;
+    yapKod?: string;
     serialNo: string;
     quantity: number;
+    sourceWarehouseId?: number;
+    targetWarehouseId?: number;
     sourceCellCode?: string;
     targetCellCode?: string;
     serialNo2?: string;
@@ -206,10 +210,39 @@ export interface BulkCreateRequest {
     serialNo4?: string;
   }>;
   routes?: Array<{
-    importLineClientKey: string;
+    lineClientKey?: string | null;
+    stockCode?: string;
+    yapKod?: string;
     scannedBarcode: string;
     quantity: number;
     description?: string;
+    serialNo?: string;
+    serialNo2?: string;
+    serialNo3?: string;
+    serialNo4?: string;
+    sourceWarehouse?: number;
+    targetWarehouse?: number;
+    sourceCellCode?: string;
+    targetCellCode?: string;
+  }>;
+}
+
+export interface GenerateGoodsReceiptOrderRequest {
+  header: BulkCreateRequest['header'];
+  lines?: Array<BaseDocumentLineRequest>;
+  lineSerials?: Array<NonNullable<BulkCreateRequest['serialLines']>[number]>;
+  terminalLines?: Array<{ terminalUserId: number }>;
+}
+
+export interface ProcessGoodsReceiptRequest {
+  header: BulkCreateRequest['header'];
+  routes?: Array<{
+    stockId?: number;
+    stockCode?: string;
+    yapKodId?: number;
+    yapKod?: string;
+    scannedBarcode: string;
+    quantity: number;
     serialNo?: string;
     serialNo2?: string;
     serialNo3?: string;
@@ -238,6 +271,7 @@ export interface AssignedGrLine {
   stockCode: string;
   stockName: string;
   yapKod: string | null;
+  yapAcik?: string | null;
   quantity: number;
   unit: string;
   erpOrderNo: string;
@@ -275,12 +309,11 @@ export type StokBarcodeResponse = ApiResponse<StokBarcodeDto[]>;
 
 export interface AddBarcodeRequest {
   headerId: number;
-  lineId: number;
   barcode: string;
-  stockCode: string;
-  stockName: string;
-  yapKod: string;
-  yapAcik: string;
+  stockCode?: string;
+  stockName?: string;
+  yapKod?: string;
+  yapAcik?: string;
   quantity: number;
   serialNo: string;
   serialNo2: string;

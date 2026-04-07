@@ -18,10 +18,11 @@ import type {
   TransferLine,
   TransferLineSerial,
 } from '../types/transfer';
-import { buildTransferGenerateRequest } from '../utils/transfer-generate';
+import { buildTransferGenerateRequest, buildTransferProcessRequest } from '../utils/transfer-generate';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
+import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
@@ -68,13 +69,28 @@ export const transferApi = {
     return await api.get<AssignedTransferOrderLinesResponse>(`/api/WtHeader/getAssignedTransferOrderLines/${headerId}`, options);
   },
 
-  createTransfer: async (
+  createTransferOrder: async (
     formData: TransferFormData,
-    selectedItems: (SelectedTransferOrderItem | SelectedTransferStockItem)[],
-    isFreeTransfer: boolean
+    selectedItems: SelectedTransferOrderItem[],
   ): Promise<ApiResponse<unknown>> => {
-    const request = buildTransferGenerateRequest(formData, selectedItems, isFreeTransfer);
+    const request = buildTransferGenerateRequest(formData, selectedItems);
     return await api.post<ApiResponse<unknown>>('/api/WtHeader/generate', request);
+  },
+
+  createStockBasedTransferOrder: async (
+    formData: TransferFormData,
+    selectedItems: SelectedTransferStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildTransferGenerateRequest(formData, selectedItems, true);
+    return await api.post<ApiResponse<unknown>>('/api/WtHeader/generate', request);
+  },
+
+  processTransfer: async (
+    formData: TransferFormData,
+    selectedItems: SelectedTransferStockItem[],
+  ): Promise<ApiResponse<unknown>> => {
+    const request = buildTransferProcessRequest(formData, selectedItems);
+    return await api.post<ApiResponse<unknown>>('/api/WtHeader/process', request);
   },
 
   getHeaders: async (options?: ApiRequestOptions): Promise<TransferHeadersResponse> => {
@@ -108,11 +124,12 @@ export const transferApi = {
     throw new Error(response.message || getLocalizedText('common.errors.transferSerialsLoadFailed'));
   },
 
-  getStokBarcode: async (barcode: string, barcodeGroup: string = '1', options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
-    return await api.get<StokBarcodeResponse>('/api/Erp/getStokBarcode', {
-      params: { bar: barcode, barkodGrubu: barcodeGroup },
-      ...options,
-    });
+  getStokBarcode: async (barcode: string, options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
+    const response = await barcodeApi.resolve('warehouse-transfer-assigned', barcode, options);
+    return {
+      ...response,
+      data: response.success && response.data ? [toLegacyBarcodeStock(response.data)] : [],
+    };
   },
 
   addBarcodeToOrder: async (request: AddBarcodeRequest): Promise<AddBarcodeResponse> => {

@@ -85,7 +85,13 @@
     "permissionsPanel": {
       "title": "Edit Group Permissions",
       "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "currentCodes": "Current permission codes",
+      "introTitle": "What can this group do?",
+      "introBody": "Below, you choose which modules this group can view, create, update, or delete. Every user assigned to this group receives the same permission set.",
+      "selectionSummaryTitle": "Selected CRUD summary",
+      "selectionSummaryBody": "This summary helps you quickly see which operation types are currently granted to the group.",
+      "searchPlaceholder": "Search by module, action, or permission name...",
+      "selectActionGroup": "Select all {{action}} permissions"
     },
     "delete": {
       "confirmTitle": "Delete Permission Group",
@@ -93,6 +99,22 @@
     },
     "search": "Search...",
     "systemAdminLocked": "System Admin group cannot be modified"
+  },
+  "accessControl": {
+    "permissionActions": {
+      "view": {
+        "description": "Opens list, detail, and read-only monitoring screens."
+      },
+      "create": {
+        "description": "Opens new record creation and first-save steps."
+      },
+      "update": {
+        "description": "Opens edit, process, and change-saving steps for existing records."
+      },
+      "delete": {
+        "description": "Allows soft delete, deactivation, or delete actions."
+      }
+    }
   },
   "userGroupAssignments": {
     "title": "User Group Assignments",

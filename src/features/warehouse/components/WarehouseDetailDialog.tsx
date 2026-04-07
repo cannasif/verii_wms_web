@@ -224,10 +224,13 @@ export function WarehouseDetailDialog({
                       <TableRow>
                         <TableHead className="w-[100px]">{t('warehouse.list.stockCode')}</TableHead>
                         <TableHead>{t('warehouse.list.stockName')}</TableHead>
+                        <TableHead className="w-[120px]">{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
                         <TableHead className="w-[100px]">{t('warehouse.details.configCode')}</TableHead>
                         <TableHead className="w-[120px]">{t('warehouse.list.serialNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('warehouse.details.lotNo')}</TableHead>
                         <TableHead className="w-[120px]">{t('warehouse.details.batchNo')}</TableHead>
+                        <TableHead className="w-[120px]">{t('warehouse.list.sourceWarehouse')}</TableHead>
+                        <TableHead className="w-[120px]">{t('warehouse.list.targetWarehouse')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -258,6 +261,8 @@ function WarehouseLineRow({ line, documentType }: WarehouseLineRowProps): ReactE
   const serialNo = firstSerial?.serialNo || '-';
   const lotNo = firstSerial?.serialNo3 || '-';
   const batchNo = firstSerial?.serialNo4 || '-';
+  const sourceWarehouse = firstSerial?.sourceWarehouseName || firstSerial?.sourceWarehouseId?.toString() || '-';
+  const targetWarehouse = firstSerial?.targetWarehouseName || firstSerial?.targetWarehouseId?.toString() || '-';
 
   return (
     <TableRow>
@@ -270,6 +275,9 @@ function WarehouseLineRow({ line, documentType }: WarehouseLineRowProps): ReactE
         <span className="text-sm font-medium">{line.stockName || line.description || '-'}</span>
       </TableCell>
       <TableCell>
+        <span className="text-sm">{line.siparisMiktar ?? line.quantity}</span>
+      </TableCell>
+      <TableCell>
         <span className="text-sm">{line.yapKod || '-'}</span>
       </TableCell>
       <TableCell>
@@ -280,6 +288,12 @@ function WarehouseLineRow({ line, documentType }: WarehouseLineRowProps): ReactE
       </TableCell>
       <TableCell>
         <span className="text-sm">{batchNo}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{sourceWarehouse}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm">{targetWarehouse}</span>
       </TableCell>
     </TableRow>
   );

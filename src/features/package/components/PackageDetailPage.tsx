@@ -94,7 +94,7 @@ export function PackageDetailPage(): ReactElement {
   const createLineMutation = useCreatePLine();
   const matchPlinesMutation = useMatchPlines();
   const { data: yapKodlar = [] } = useYapKodlar();
-  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, '1', enableSearch);
+  const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, enableSearch);
 
   const packageSchema = useMemo(() => pPackageFormSchema(t), [t]);
   const lineSchema = useMemo(() => pLineFormSchema(t), [t]);

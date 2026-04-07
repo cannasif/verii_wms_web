@@ -39,7 +39,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
   const getStatus = (item: SubcontractingHeader): ReactElement => item.isCompleted ? <Badge variant="default" className="w-fit">{t('subcontracting.issue.list.completed')}</Badge> : item.isPendingApproval ? <Badge variant="secondary" className="w-fit">{t('subcontracting.issue.list.pendingApproval')}</Badge> : <Badge variant="outline" className="w-fit">{t('subcontracting.issue.list.inProgress')}</Badge>;
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, count: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
 
   return (
     <div className="space-y-6">
