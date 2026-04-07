@@ -59,63 +59,9 @@ export default defineConfig({
             return 'route-shell';
           }
 
-          if (!id.includes('node_modules')) {
-            return undefined;
-          }
-
-          if (
-            id.includes('/react/') ||
-            id.includes('/react-dom/') ||
-            id.includes('/react-router-dom/')
-          ) {
-            return 'react-core-vendor';
-          }
-
-          if (
-            id.includes('@tanstack/react-query') ||
-            id.includes('/axios/') ||
-            id.includes('/i18next/') ||
-            id.includes('/react-i18next/') ||
-            id.includes('/zustand/')
-          ) {
-            return 'app-core-vendor';
-          }
-
-          if (id.includes('@microsoft/signalr')) {
-            return 'signalr-vendor';
-          }
-
-          if (id.includes('html5-qrcode')) {
-            return 'scanner-vendor';
-          }
-
-          if (id.includes('/three/')) {
-            return 'three-vendor';
-          }
-
-          if (id.includes('three-stdlib')) {
-            return 'three-stdlib-vendor';
-          }
-
-          if (
-            id.includes('@react-three/fiber') ||
-            id.includes('@react-three/drei')
-          ) {
-            return 'three-react-vendor';
-          }
-
-          if (
-            id.includes('/jspdf/') ||
-            id.includes('/jspdf-autotable/') ||
-            id.includes('/xlsx/')
-          ) {
-            return 'export-vendor';
-          }
-
-          if (id.includes('@radix-ui')) {
-            return 'radix-vendor';
-          }
-          
+          // Let Rollup group third-party vendor modules naturally. The custom
+          // vendor split was producing circular imports between vendor chunks
+          // at runtime.
           return undefined;
         },
       },
