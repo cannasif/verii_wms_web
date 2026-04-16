@@ -27,6 +27,7 @@ import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { createPermissionGroupSchema, type CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { ShieldCheck, Sparkles } from 'lucide-react';
 
 interface PermissionGroupFormProps {
   open: boolean;
@@ -112,7 +113,11 @@ export function PermissionGroupForm({
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="flex flex-col h-[78vh] max-h-[78vh] min-h-0 overflow-hidden">
-          <DialogHeader className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
+          <DialogHeader className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30">
+            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
+              <Sparkles className="size-4" />
+              {item ? t('permissionGroups.form.editTitle') : t('permissionGroups.form.addTitle')}
+            </div>
             <DialogTitle className="text-xl font-bold">
               {item
                 ? t('permissionGroups.form.editTitle')
@@ -132,6 +137,7 @@ export function PermissionGroupForm({
           >
             <Form {...form}>
             <form id="permission-group-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 crm-page">
+              <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="name"
@@ -175,11 +181,12 @@ export function PermissionGroupForm({
                   </FormItem>
                 )}
               />
+              </div>
               <FormField
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
                     <FormLabel className="inline-flex items-center">
                       {t('permissionGroups.form.isActive')}
                       <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
@@ -195,7 +202,7 @@ export function PermissionGroupForm({
                 control={form.control}
                 name="permissionDefinitionIds"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
                     <FormLabel className="inline-flex items-center">
                       {t('permissionGroups.form.permissions')}
                       <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
@@ -217,7 +224,8 @@ export function PermissionGroupForm({
             </Button>
             <span className="inline-flex items-center gap-1">
               <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-              <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid}>
+              <Button type="submit" form="permission-group-form" disabled={isLoading || !isFormValid} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
+                <ShieldCheck className="mr-2 size-4" />
                 {isLoading ? t('common.saving') : t('common.save')}
               </Button>
             </span>

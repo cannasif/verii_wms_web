@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, KeyRound, Plus, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -90,6 +90,8 @@ export function PermissionDefinitionsPage(): ReactElement {
   const canUpdate = permissionAccess.can('access-control.permission-definitions.update');
   const canDelete = permissionAccess.can('access-control.permission-definitions.delete');
   const { data: allUsedCodes } = useAllPermissionDefinitionCodesQuery(formOpen);
+  const totalCount = data?.totalCount ?? data?.data?.length ?? 0;
+  const activeCount = useMemo(() => (data?.data ?? []).filter((item) => item.isActive).length, [data?.data]);
 
   useEffect(() => {
     setPageTitle(t('permissionDefinitions.title'));
@@ -172,24 +174,69 @@ export function PermissionDefinitionsPage(): ReactElement {
     <div className="w-full space-y-6 crm-page">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionDefinitions'), isActive: true }]} />
 
-      <div className="crm-toolbar flex flex-col gap-5 pt-2 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 transition-colors dark:text-white">
-            {t('permissionDefinitions.title')}
-          </h1>
-          <p className="text-sm font-medium text-slate-500 transition-colors dark:text-slate-400">
-            {t('permissionDefinitions.description')}
-          </p>
+      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-2">
+            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
+              <Sparkles className="size-4" />
+              {t('sidebar.permissionDefinitions')}
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors dark:text-white">
+              {t('permissionDefinitions.title')}
+            </h1>
+            <p className="text-sm font-medium text-slate-600 transition-colors dark:text-slate-300">
+              {t('permissionDefinitions.description')}
+            </p>
+          </div>
+          {canCreate ? (
+            <Button
+              onClick={() => {
+                setEditingItem(null);
+                setFormOpen(true);
+              }}
+              className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-white shadow-lg shadow-pink-500/20 hover:text-white"
+            >
+              <Plus size={18} className="mr-2" />
+              {t('permissionDefinitions.add')}
+            </Button>
+          ) : null}
         </div>
-        {canCreate ? (
-          <Button onClick={() => {
-            setEditingItem(null);
-            setFormOpen(true);
-          }}>
-            <Plus size={18} className="mr-2" />
-            {t('permissionDefinitions.add')}
-          </Button>
-        ) : null}
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
+                <KeyRound className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionDefinitions.title')}</p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                <ShieldCheck className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionDefinitions.table.isActive')}</p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
+                <RefreshCw className="size-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Route Sync</p>
+                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{PERMISSION_CODE_CATALOG.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
@@ -245,7 +292,7 @@ export function PermissionDefinitionsPage(): ReactElement {
             canUpdate || canDelete ? (
               <>
                 {canUpdate ? (
-                  <Button variant="ghost" size="sm" onClick={() => {
+                  <Button variant="ghost" size="sm" className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300" onClick={() => {
                     setEditingItem(item);
                     setFormOpen(true);
                   }}>
@@ -253,7 +300,7 @@ export function PermissionDefinitionsPage(): ReactElement {
                   </Button>
                 ) : null}
                 {canDelete ? (
-                  <Button variant="ghost" size="sm" className="text-red-600" onClick={() => {
+                  <Button variant="ghost" size="sm" className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" onClick={() => {
                     setItemToDelete(item);
                     setDeleteDialogOpen(true);
                   }}>
@@ -331,16 +378,16 @@ export function PermissionDefinitionsPage(): ReactElement {
       />
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('permissionDefinitions.delete.confirmTitle')}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
+          <DialogHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
+            <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">{t('permissionDefinitions.delete.confirmTitle')}</DialogTitle>
+            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
               {t('permissionDefinitions.delete.confirmMessage', {
                 name: itemToDelete?.name ?? '',
               })}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="border-t border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
               {t('common.cancel')}
             </Button>
