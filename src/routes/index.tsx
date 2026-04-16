@@ -98,6 +98,7 @@ import { MailSettingsPage } from '@/features/mail-settings';
 import { HangfireMonitoringPage } from '@/features/hangfire-monitoring';
 import { CustomerReferencePage, StockReferencePage, WarehouseReferencePage, YapKodReferencePage } from '@/features/erp-reference';
 import { BarcodeDefinitionsPage } from '@/features/barcode-definitions';
+import { AllocationQueuePage, DocumentLinksPage, ServiceCaseFormPage, ServiceCaseListPage, ServiceCaseTimelinePage, ServiceReportsPage } from '@/features/service-allocation';
 import { RouteErrorPage } from './RouteErrorPage';
 
 function withSuspense(element: ReactElement): ReactElement {
@@ -206,6 +207,18 @@ export const router = createBrowserRouter([
           { path: 'assigned', element: withSuspense(<AssignedShipmentListPage />) },
           { path: 'collection/:headerId', element: withSuspense(<ShipmentCollectionPage />) },
           { path: 'approval', element: withSuspense(<ShipmentApprovalPage />) },
+        ],
+      },
+      {
+        path: 'service-allocation',
+        children: [
+          { path: 'allocation-queue', element: withSuspense(<AllocationQueuePage />) },
+          { path: 'cases', element: withSuspense(<ServiceCaseListPage />) },
+          { path: 'cases/new', element: withSuspense(<ServiceCaseFormPage />) },
+          { path: 'cases/:id', element: withSuspense(<ServiceCaseTimelinePage />) },
+          { path: 'cases/:id/edit', element: withSuspense(<ServiceCaseFormPage />) },
+          { path: 'document-links', element: withSuspense(<DocumentLinksPage />) },
+          { path: 'reports', element: withSuspense(<ServiceReportsPage />) },
         ],
       },
       {

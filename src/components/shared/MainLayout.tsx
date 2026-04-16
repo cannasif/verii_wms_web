@@ -162,14 +162,25 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ]),
     };
 
-    const shipmentModule: NavItem = {
-      title: t('sidebar.shipment'),
+	    const shipmentModule: NavItem = {
+	      title: t('sidebar.shipment'),
+	      children: sortNavItems([
+	        { title: t('sidebar.shipmentAssigned'), href: '/shipment/assigned' },
+	        { title: t('sidebar.shipmentApproval'), href: '/shipment/approval' },
+	        { title: t('sidebar.shipmentCreate'), href: '/shipment/create' },
+	        { title: t('sidebar.shipmentProcess', { defaultValue: 'Sevkiyat Process' }), href: '/shipment/process' },
+	        { title: t('sidebar.shipmentList'), href: '/shipment/list' },
+	      ]),
+	    };
+
+    const serviceAllocationModule: NavItem = {
+      title: t('sidebar.serviceAllocation', { defaultValue: 'Servis ve Hakediş' }),
       children: sortNavItems([
-        { title: t('sidebar.shipmentAssigned'), href: '/shipment/assigned' },
-        { title: t('sidebar.shipmentApproval'), href: '/shipment/approval' },
-        { title: t('sidebar.shipmentCreate'), href: '/shipment/create' },
-        { title: t('sidebar.shipmentProcess', { defaultValue: 'Sevkiyat Process' }), href: '/shipment/process' },
-        { title: t('sidebar.shipmentList'), href: '/shipment/list' },
+        { title: t('sidebar.serviceAllocationAllocationQueue', { defaultValue: 'Hakediş Kuyruğu' }), href: '/service-allocation/allocation-queue' },
+        { title: t('sidebar.serviceAllocationCreate', { defaultValue: 'Servis Vakası Aç' }), href: '/service-allocation/cases/new' },
+        { title: t('sidebar.serviceAllocationCases', { defaultValue: 'Servis Vakaları' }), href: '/service-allocation/cases' },
+        { title: t('sidebar.serviceAllocationDocumentLinks', { defaultValue: 'Belge Linkleri' }), href: '/service-allocation/document-links' },
+        { title: t('sidebar.serviceAllocationReports', { defaultValue: 'Servis Raporları' }), href: '/service-allocation/reports' },
       ]),
     };
 
@@ -276,6 +287,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           {
             title: t('sidebar.outboundOperationsGroup', { defaultValue: 'Çıkış Operasyonları' }),
             children: sortNavItems([warehouseOutboundModule, shipmentModule, packageModule]),
+          },
+          {
+            title: t('sidebar.serviceOperationsGroup', { defaultValue: 'Servis Operasyonları' }),
+            children: sortNavItems([serviceAllocationModule]),
           },
           {
             title: t('sidebar.productionOperationsGroup', { defaultValue: 'Üretim' }),
