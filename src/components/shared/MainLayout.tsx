@@ -245,12 +245,22 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     const accessControlModule: NavItem = {
       title: t('sidebar.accessControl'),
       children: sortNavItems([
-        { title: t('sidebar.userManagement'), href: '/access-control/user-management' },
-        { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
-        { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
-        { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
-        { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
-        { title: t('sidebar.hangfireMonitoring'), href: '/hangfire-monitoring' },
+        {
+          title: t('sidebar.accessControlManagementGroup', { defaultValue: 'Yetki ve Kullanici Yonetimi' }),
+          children: sortNavItems([
+            { title: t('sidebar.userManagement'), href: '/access-control/user-management' },
+            { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
+            { title: t('sidebar.permissionGroups'), href: '/access-control/permission-groups' },
+            { title: t('sidebar.permissionDefinitions'), href: '/access-control/permission-definitions' },
+          ]),
+        },
+        {
+          title: t('sidebar.accessControlSystemGroup', { defaultValue: 'Sistem Araclari' }),
+          children: sortNavItems([
+            { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
+            { title: t('sidebar.hangfireMonitoring'), href: '/hangfire-monitoring' },
+          ]),
+        },
       ]),
     };
 

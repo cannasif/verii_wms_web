@@ -9,6 +9,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { CheckCircle2, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
 import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQuery';
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
+import { usePermissionAccess } from '../hooks/usePermissionAccess';
 import { PermissionGroupMultiSelect } from './PermissionGroupMultiSelect';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 
@@ -18,6 +19,8 @@ export function UserGroupAssignmentsPage(): ReactElement {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const permissionAccess = usePermissionAccess();
+  const canUpdateAssignments = permissionAccess.can('access-control.user-group-assignments.update');
 
   const { data: users = [], isLoading: usersLoading } = useActiveUsers();
   const { data: userGroups, isLoading: userGroupsLoading } = useUserPermissionGroupsQuery(selectedUserId);
@@ -55,6 +58,11 @@ export function UserGroupAssignmentsPage(): ReactElement {
     label: u.fullName || u.username || u.email || `User ${u.id}`,
   }));
 
+  const selectedUserLabel = useMemo(() => {
+    if (selectedUserId == null) return t('userGroupAssignments.noUserSelected', { defaultValue: 'Henüz kullanıcı seçilmedi' });
+    return userOptions.find((option) => option.value === selectedUserId.toString())?.label ?? `#${selectedUserId}`;
+  }, [selectedUserId, t, userOptions]);
+
   return (
     <div className="w-full space-y-6 crm-page">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
@@ -82,7 +90,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
               </div>
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('userGroupAssignments.selectUser')}</p>
-                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">{selectedUserId != null ? `#${selectedUserId}` : '-'}</p>
+                <p className="mt-1 line-clamp-2 text-sm font-black text-slate-900 dark:text-white">{selectedUserLabel}</p>
               </div>
             </div>
           </div>
@@ -103,8 +111,14 @@ export function UserGroupAssignmentsPage(): ReactElement {
                 <CheckCircle2 className="size-4" />
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Durum</p>
-                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">{hasChanges ? 'Kaydedilmedi' : 'Güncel'}</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                  {t('userGroupAssignments.statusLabel', { defaultValue: 'Durum' })}
+                </p>
+                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">
+                  {hasChanges
+                    ? t('userGroupAssignments.statusPending', { defaultValue: 'Kaydedilmedi' })
+                    : t('userGroupAssignments.statusCurrent', { defaultValue: 'Güncel' })}
+                </p>
               </div>
             </div>
           </div>
@@ -141,6 +155,13 @@ export function UserGroupAssignmentsPage(): ReactElement {
               {t('userGroupAssignments.assignedGroups')}
               <FieldHelpTooltip text={t('help.userAssignment.groups')} />
             </label>
+            {!canUpdateAssignments ? (
+              <div className="mb-3 rounded-2xl border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300">
+                {t('userGroupAssignments.readOnlyInfo', {
+                  defaultValue: 'Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir.',
+                })}
+              </div>
+            ) : null}
             {userGroupsLoading ? (
               <div className="py-8 text-center text-slate-500">{t('common.loading')}</div>
             ) : (
@@ -148,9 +169,9 @@ export function UserGroupAssignmentsPage(): ReactElement {
                 <PermissionGroupMultiSelect
                   value={selectedGroupIds}
                   onChange={handleGroupIdsChange}
-                  disabled={setUserGroups.isPending}
+                  disabled={setUserGroups.isPending || !canUpdateAssignments}
                 />
-                {hasChanges && (
+                {hasChanges && canUpdateAssignments && (
                   <div className="mt-4 flex justify-end items-center gap-1">
                     <FieldHelpTooltip text={t('help.userAssignment.save')} side="top" />
                     <Button onClick={handleSave} disabled={setUserGroups.isPending} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">

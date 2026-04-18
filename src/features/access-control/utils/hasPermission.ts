@@ -1,5 +1,5 @@
 import type { MyPermissionsDto } from '../types/access-control.types';
-import { PATH_TO_PERMISSION_PATTERNS, ACCESS_CONTROL_ADMIN_ONLY_PATTERNS } from './permission-config';
+import { PATH_TO_PERMISSION_PATTERNS, ACCESS_CONTROL_ADMIN_ONLY_PATTERNS, PERMISSION_CODE_ALIASES } from './permission-config';
 
 export function hasPermission(
   permissions: MyPermissionsDto | null | undefined,
@@ -7,7 +7,9 @@ export function hasPermission(
 ): boolean {
   if (!permissions) return false;
   if (permissions.isSystemAdmin === true) return true;
-  return permissions.permissionCodes.includes(requiredCode);
+  if (permissions.permissionCodes.includes(requiredCode)) return true;
+  const aliases = PERMISSION_CODE_ALIASES[requiredCode] ?? [];
+  return aliases.some((alias) => permissions.permissionCodes.includes(alias));
 }
 
 export function resolveRequiredPermission(pathname: string): string | null {

@@ -70,7 +70,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/user-management': 'access-control.user-management.view',
   '/access-control/permission-definitions': 'access-control.permission-definitions.view',
   '/access-control/permission-groups': 'access-control.permission-groups.view',
-  '/access-control/user-group-assignments': 'access-control.user-management.view',
+  '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
   '/users/mail-settings': 'access-control.mail-settings.view',
   '/hangfire-monitoring': 'access-control.hangfire-monitoring.view',
   '/erp/customers': 'access-control.hangfire-monitoring.view',
@@ -126,7 +126,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/user-management(\/|$)/, permission: 'access-control.user-management.view' },
   { pattern: /^\/access-control\/permission-definitions(\/|$)/, permission: 'access-control.permission-definitions.view' },
   { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
-  { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-management.view' },
+  { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
   { pattern: /^\/users\/mail-settings(\/|$)/, permission: 'access-control.mail-settings.view' },
   { pattern: /^\/hangfire-monitoring(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
   { pattern: /^\/erp\/customers(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
@@ -152,6 +152,7 @@ export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
   'access-control.permission-definitions.view',
   'access-control.permission-groups.view',
   'access-control.user-management.view',
+  'access-control.user-group-assignments.view',
 ] as const;
 
 export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.view' as const;
@@ -159,6 +160,11 @@ export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.v
 export const ACCESS_CONTROL_ADMIN_FALLBACK_TO_SYSTEM_ADMIN = true as const;
 
 export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [];
+
+export const PERMISSION_CODE_ALIASES: Record<string, string[]> = {
+  'access-control.user-group-assignments.view': ['access-control.user-management.view'],
+  'access-control.user-group-assignments.update': ['access-control.user-management.update'],
+};
 
 export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = {
   dashboard: { key: 'sidebar.dashboard', fallback: 'Dashboard' },
@@ -189,6 +195,7 @@ export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = 
   'access-control.user-management': { key: 'sidebar.userManagement', fallback: 'Kullanıcı Yönetimi' },
   'access-control.permission-definitions': { key: 'sidebar.permissionDefinitions', fallback: 'İzin Tanımları' },
   'access-control.permission-groups': { key: 'sidebar.permissionGroups', fallback: 'İzin Grupları' },
+  'access-control.user-group-assignments': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanıcı Grup Atamaları' },
   'access-control.mail-settings': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarları' },
   'access-control.hangfire-monitoring': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire İzleme' },
 };
