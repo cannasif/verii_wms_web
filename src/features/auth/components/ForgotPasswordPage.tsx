@@ -47,6 +47,7 @@ export function ForgotPasswordPage(): React.JSX.Element {
           <img
             src={loginImage}
             alt="Forgot Password"
+            decoding="async"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />

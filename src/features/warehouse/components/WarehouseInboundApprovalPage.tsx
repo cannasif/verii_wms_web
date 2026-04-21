@@ -15,6 +15,7 @@ import type { WarehouseHeader } from '../types/warehouse';
 import { useApproveWiHeader } from '../hooks/useApproveWiHeader';
 import { useAwaitingApprovalWiHeaders } from '../hooks/useAwaitingApprovalWiHeaders';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'targetWarehouse' | 'completionDate' | 'actions';
 
@@ -31,6 +32,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
 export function WarehouseInboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.inbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const approveMutation = useApproveWiHeader();
@@ -100,6 +102,10 @@ export function WarehouseInboundApprovalPage(): ReactElement {
   });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try {
       await approveMutation.mutateAsync({ id, approved });
       toast.success(approved ? t('warehouse.inbound.approval.approveSuccess') : t('warehouse.inbound.approval.rejectSuccess'));
@@ -141,15 +147,15 @@ export function WarehouseInboundApprovalPage(): ReactElement {
             iconOnlyActions={false}
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}>
+                <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}>
                   <Eye className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.viewDetails')}</span>
                 </Button>
-                <Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}>
+                <Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}>
                   <Check className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.approve')}</span>
                 </Button>
-                <Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}>
+                <Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}>
                   <X className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.reject')}</span>
                 </Button>

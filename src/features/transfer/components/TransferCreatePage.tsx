@@ -24,12 +24,14 @@ import { Step2TransferOrderSelection } from './steps/Step2TransferOrderSelection
 import { Step2TransferStockSelection } from './steps/Step2TransferStockSelection';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedTransferStockItem } from '../types/transfer';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function TransferCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.transfer');
   const [currentStep, setCurrentStep] = useState(1);
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedTransferOrderItem[]>([]);
@@ -179,6 +181,7 @@ export function TransferCreatePage(): ReactElement {
       <FormPageShell title={t('transfer.create.title')} description={t('transfer.create.subtitle')}>
         <Form {...form}>
           <form className="space-y-6 crm-page">
+            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
               <Step1TransferBasicInfo isFreeTransfer={false} />
             ) : createMode === 'order' ? (
@@ -203,16 +206,17 @@ export function TransferCreatePage(): ReactElement {
               </Button>
               <div className="flex gap-2">
                 {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext}>
+                  <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
                     {t('common.next')}
                   </Button>
                 ) : (
-                  <Button type="button" onClick={handleSave} disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
+                  <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
                     {createMutation.isPending ? t('common.saving') : t('common.save')}
                   </Button>
                 )}
               </div>
             </div>
+            </fieldset>
           </form>
         </Form>
       </FormPageShell>

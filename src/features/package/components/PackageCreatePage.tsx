@@ -25,11 +25,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import type { PHeaderFormData } from '../types/package';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.package');
   const params = useParams<{ headerId?: string }>();
 
   const urlHeaderId = useMemo(() => {
@@ -226,6 +228,8 @@ export function PackageCreatePage(): ReactElement {
         return (
           <Step2PackageForm
             packingHeaderId={headerId}
+            canManagePackages={permission.canCreate || permission.canUpdate}
+            canDeletePackages={permission.canDelete}
             onPrevious={handleStep2Previous}
             onNext={handleStep2Next}
             onSaveAndExit={handleStep2SaveAndExit}
@@ -246,6 +250,8 @@ export function PackageCreatePage(): ReactElement {
         return (
           <Step3LineForm
             packingHeaderId={headerId}
+            canManageLines={permission.canCreate || permission.canUpdate}
+            canDeleteLines={permission.canDelete}
             onPrevious={handleStep3Previous}
             onNext={handleStep3Next}
             onSaveAndExit={handleStep3SaveAndExit}

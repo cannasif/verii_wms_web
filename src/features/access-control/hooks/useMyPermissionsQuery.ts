@@ -15,7 +15,7 @@ export const useMyPermissionsQuery = () => {
     enabled: !!token && !!userId,
     staleTime: STALE_TIME_MS,
     gcTime: 10 * 60 * 1000,
-    refetchOnMount: true,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),

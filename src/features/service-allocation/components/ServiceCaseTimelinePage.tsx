@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { serviceAllocationApi } from '../api/service-allocation.api';
 import { useServiceCaseTimelineQuery } from '../hooks/useServiceCaseTimelineQuery';
 import {
@@ -28,6 +29,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
   const { id } = useParams();
   const parsedId = Number(id);
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.service-allocation');
   const query = useServiceCaseTimelineQuery(parsedId);
   const timeline = query.data;
   const recomputeMutation = useMutation({
@@ -65,12 +67,14 @@ export function ServiceCaseTimelinePage(): ReactElement {
           {t('common.back', { defaultValue: 'Back' })}
         </Button>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(`/service-allocation/cases/${parsedId}/edit`)}>
-            {t('common.edit', { defaultValue: 'Edit' })}
-          </Button>
+          {permission.canUpdate ? (
+            <Button variant="outline" onClick={() => navigate(`/service-allocation/cases/${parsedId}/edit`)}>
+              {t('common.edit', { defaultValue: 'Edit' })}
+            </Button>
+          ) : null}
           <Button
             onClick={() => recomputeMutation.mutate()}
-            disabled={!timeline?.serviceCase.incomingStockId || recomputeMutation.isPending}
+            disabled={!permission.canUpdate || !timeline?.serviceCase.incomingStockId || recomputeMutation.isPending}
           >
             {recomputeMutation.isPending
               ? t('common.loading', { defaultValue: 'Loading...' })

@@ -1,13 +1,18 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Search, X, Mic } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
-import { UserProfileModal } from '@/features/user-detail';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
+
+const UserProfileModal = lazy(() =>
+  import('@/features/user-detail/components/UserProfileModal').then((module) => ({
+    default: module.UserProfileModal,
+  })),
+);
 
 interface NavItem {
   title: string;
@@ -273,14 +278,18 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
         </div>
       </header>
 
-      <UserProfileModal
-        open={userProfileModalOpen}
-        onOpenChange={setUserProfileModalOpen}
-        onOpenProfileDetails={() => {
-          setUserProfileModalOpen(false);
-          navigate('/profile');
-        }}
-      />
+      <Suspense fallback={null}>
+        {userProfileModalOpen ? (
+          <UserProfileModal
+            open={userProfileModalOpen}
+            onOpenChange={setUserProfileModalOpen}
+            onOpenProfileDetails={() => {
+              setUserProfileModalOpen(false);
+              navigate('/profile');
+            }}
+          />
+        ) : null}
+      </Suspense>
     </>
   );
 }

@@ -222,6 +222,14 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.erpWarehouses', { defaultValue: 'Depolar' }), href: '/erp/warehouses' },
         { title: t('sidebar.erpYapKodlar', { defaultValue: 'YapKodlar' }), href: '/erp/yapkodlar' },
         { title: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Barkod Tanımları' }), href: '/erp/barcodes' },
+        {
+          title: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }),
+          children: sortNavItems([
+            { title: t('sidebar.erpBarcodeDesignerList', { defaultValue: 'Template Listesi' }), href: '/erp/barcode-designer' },
+            { title: t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Template Oluştur' }), href: '/erp/barcode-designer/new' },
+            { title: t('sidebar.erpPrinterManagement', { defaultValue: 'Yazıcılar ve Baskı İşleri' }), href: '/erp/printer-management' },
+          ]),
+        },
       ]),
     };
 

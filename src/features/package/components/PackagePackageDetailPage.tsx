@@ -36,6 +36,7 @@ import {
   type Html5QrcodeInstance,
 } from '@/lib/html5-qrcode';
 import type { PLineDto } from '../types/package';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
@@ -55,6 +56,7 @@ export function PackagePackageDetailPage(): ReactElement {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.package');
   const packageId = id ? parseInt(id, 10) : undefined;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
@@ -319,7 +321,7 @@ export function PackagePackageDetailPage(): ReactElement {
                 <ArrowLeft className="size-4 mr-2" />
                 {t('package.packageDetail.backToHeader')}
               </Button>
-              <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+              <Button variant="destructive" onClick={() => permission.canDelete && setDeleteDialogOpen(true)} disabled={!permission.canDelete}>
                 <Trash2 className="size-4 mr-2" />
                 {t('common.delete')}
               </Button>
@@ -408,7 +410,7 @@ export function PackagePackageDetailPage(): ReactElement {
           </div>
 
           <div className="flex justify-end mb-4">
-            <Button onClick={() => setLineDialogOpen(true)}>
+            <Button onClick={() => permission.canUpdate && setLineDialogOpen(true)} disabled={!permission.canUpdate}>
               <Plus className="size-4 mr-2" />
               {t('package.packageDetail.addLine')}
             </Button>
@@ -524,7 +526,7 @@ export function PackagePackageDetailPage(): ReactElement {
                             size="sm"
                             className="w-full"
                             onClick={() => handleDeleteLine(line.id)}
-                            disabled={deleteLineMutation.isPending}
+                            disabled={!permission.canDelete || deleteLineMutation.isPending}
                           >
                             <Trash2 className="size-4 mr-2" />
                             {t('common.delete')}
@@ -543,7 +545,7 @@ export function PackagePackageDetailPage(): ReactElement {
         ) : null}
       </DetailPageShell>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('package.packageDetail.deleteConfirm')}</DialogTitle>
@@ -555,14 +557,14 @@ export function PackagePackageDetailPage(): ReactElement {
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
+            <Button variant="destructive" onClick={handleDelete} disabled={!permission.canDelete || deleteMutation.isPending}>
               {deleteMutation.isPending ? t('common.loading') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={lineDialogOpen} onOpenChange={(open) => {
+      <Dialog open={permission.canUpdate && lineDialogOpen} onOpenChange={(open) => {
         setLineDialogOpen(open);
         if (!open) {
           setBarcodeInput('');
@@ -592,6 +594,7 @@ export function PackagePackageDetailPage(): ReactElement {
                       size="icon"
                       className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
                       onClick={handleOpenCamera}
+                      disabled={!permission.canUpdate}
                     >
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
@@ -601,9 +604,10 @@ export function PackagePackageDetailPage(): ReactElement {
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       className="pl-10 md:pl-9 h-10"
+                      disabled={!permission.canUpdate}
                     />
                   </div>
-                  <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default">
+                  <Button onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching} size="default">
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
@@ -650,6 +654,7 @@ export function PackagePackageDetailPage(): ReactElement {
                           onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                           className="h-9"
                           placeholder={t('package.packageDetail.quantity')}
+                          disabled={!permission.canUpdate}
                         />
                       </div>
                       <div>
@@ -661,13 +666,14 @@ export function PackagePackageDetailPage(): ReactElement {
                           onChange={(e) => setSerialNo(e.target.value)}
                           className="h-9"
                           placeholder={t('package.form.serialNo')}
+                          disabled={!permission.canUpdate}
                         />
                       </div>
                     </div>
                     <div className="pt-2">
                       <Button
                         onClick={handleLineSubmit}
-                        disabled={createLineMutation.isPending}
+                        disabled={!permission.canUpdate || createLineMutation.isPending}
                         className="bg-emerald-500 hover:bg-emerald-600 text-white h-9 w-full"
                       >
                         {createLineMutation.isPending ? (

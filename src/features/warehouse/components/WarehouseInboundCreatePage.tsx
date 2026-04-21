@@ -23,12 +23,14 @@ import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
 import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelection';
 import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../types/warehouse';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function WarehouseInboundCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.inbound');
   const [currentStep, setCurrentStep] = useState(1);
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
@@ -212,6 +214,7 @@ export function WarehouseInboundCreatePage(): ReactElement {
         <CardContent>
           <Form {...form}>
             <form className="space-y-6 crm-page">
+              <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
               {renderStepContent()}
 
               <div className="flex justify-between pt-6 border-t">
@@ -225,20 +228,21 @@ export function WarehouseInboundCreatePage(): ReactElement {
                 </Button>
                 <div className="flex gap-2">
                   {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
+                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
                       {t('common.next')}
                     </Button>
                   ) : (
                     <Button
                       type="button"
                       onClick={handleSave}
-                      disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
+                      disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
                     >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </div>
               </div>
+              </fieldset>
             </form>
           </Form>
         </CardContent>

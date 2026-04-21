@@ -15,6 +15,7 @@ import type { WarehouseHeader } from '../types/warehouse';
 import { useApproveWoHeader } from '../hooks/useApproveWoHeader';
 import { useAwaitingApprovalWoHeaders } from '../hooks/useAwaitingApprovalWoHeaders';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'sourceWarehouse' | 'completionDate' | 'actions';
 const filterColumns: readonly FilterColumnConfig[] = [
@@ -30,6 +31,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
 export function WarehouseOutboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.outbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const approveMutation = useApproveWoHeader();
@@ -57,6 +59,10 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try {
       await approveMutation.mutateAsync({ id, approved });
       toast.success(approved ? t('warehouse.outbound.approval.approveSuccess') : t('warehouse.outbound.approval.rejectSuccess'));
@@ -81,7 +87,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
           showActionsColumn={orderedVisibleColumns.includes('actions')}
           actionsHeaderLabel={t('warehouse.outbound.approval.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.reject')}</span></Button></div>}
+          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('warehouse.outbound.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

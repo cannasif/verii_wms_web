@@ -18,18 +18,14 @@ window.addEventListener('vite:preloadError', (event) => {
   }
 });
 
-async function bootstrap(): Promise<void> {
-  await ensureApiReady();
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <App />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </StrictMode>,
+);
 
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <App />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </StrictMode>,
-  );
-}
-
-void bootstrap();
+void ensureApiReady();

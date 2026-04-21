@@ -15,6 +15,7 @@ import type { ShipmentHeader } from '../types/shipment';
 import { useApproveShipment } from '../hooks/useApproveShipment';
 import { useAwaitingApprovalShipmentHeaders } from '../hooks/useAwaitingApprovalHeaders';
 import { ShipmentDetailDialog } from './ShipmentDetailDialog';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'sourceWarehouse' | 'targetWarehouse' | 'completionDate' | 'actions';
 const filterColumns: readonly FilterColumnConfig[] = [
@@ -31,6 +32,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
 export function ShipmentApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.shipment');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveShipment();
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'shipment-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
@@ -55,6 +57,10 @@ export function ShipmentApprovalPage(): ReactElement {
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try { await approveMutation.mutateAsync({ id, approved }); toast.success(approved ? t('shipment.approval.approveSuccess') : t('shipment.approval.rejectSuccess')); }
     catch (err) { toast.error(err instanceof Error ? err.message : approved ? t('shipment.approval.approveError') : t('shipment.approval.rejectError')); }
   };
@@ -74,7 +80,7 @@ export function ShipmentApprovalPage(): ReactElement {
           showActionsColumn={orderedVisibleColumns.includes('actions')}
           actionsHeaderLabel={t('shipment.approval.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('shipment.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('shipment.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('shipment.approval.reject')}</span></Button></div>}
+          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('shipment.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('shipment.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('shipment.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

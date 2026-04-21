@@ -37,6 +37,8 @@ import {
 
 interface Step3LineFormProps {
   packingHeaderId: number;
+  canManageLines: boolean;
+  canDeleteLines: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onSaveAndExit: () => void;
@@ -44,6 +46,8 @@ interface Step3LineFormProps {
 
 export function Step3LineForm({
   packingHeaderId,
+  canManageLines,
+  canDeleteLines,
   onPrevious,
   onNext,
   onSaveAndExit,
@@ -134,6 +138,7 @@ export function Step3LineForm({
   };
 
   const handleOpenDialog = (): void => {
+    if (!canManageLines) return;
     if (packages.length === 0) {
       toast.error(t('package.wizard.step3.noPackages'));
       return;
@@ -297,7 +302,7 @@ export function Step3LineForm({
             title={<CardTitle>{t('package.wizard.step3.title')}</CardTitle>}
             description={<CardDescription>{t('package.wizard.step3.description')}</CardDescription>}
             actions={
-              <Button onClick={handleOpenDialog} disabled={packages.length === 0}>
+              <Button onClick={handleOpenDialog} disabled={!canManageLines || packages.length === 0}>
                 <Plus className="size-4 mr-2" />
                 {t('package.wizard.step3.addLine')}
               </Button>
@@ -343,7 +348,7 @@ export function Step3LineForm({
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(line.id)}
-                          disabled={deleteMutation.isPending}
+                          disabled={!canDeleteLines || deleteMutation.isPending}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -359,7 +364,7 @@ export function Step3LineForm({
         </CardContent>
       </Card>
 
-      <Dialog open={lineDialogOpen} onOpenChange={setLineDialogOpen}>
+      <Dialog open={canManageLines && lineDialogOpen} onOpenChange={setLineDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('package.wizard.step3.addLine')}</DialogTitle>
@@ -379,6 +384,7 @@ export function Step3LineForm({
                       size="icon"
                       className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
                       onClick={handleOpenCamera}
+                      disabled={!canManageLines}
                     >
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
@@ -388,9 +394,10 @@ export function Step3LineForm({
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       className="pl-10 md:pl-9 h-10"
+                      disabled={!canManageLines}
                     />
                   </div>
-                  <Button type="button" onClick={handleBarcodeSearch} disabled={isSearching} size="default">
+                  <Button type="button" onClick={handleBarcodeSearch} disabled={!canManageLines || isSearching} size="default">
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
@@ -432,6 +439,7 @@ export function Step3LineForm({
                             field.onChange(packageId);
                             setSelectedPackageId(packageId);
                           }}
+                          disabled={!canManageLines}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -474,7 +482,7 @@ export function Step3LineForm({
                         {t('package.form.stockCode')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={!canManageLines} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -494,6 +502,7 @@ export function Step3LineForm({
                           field.onChange(value ? Number(value) : undefined);
                           form.setValue('yapAcik', selected?.yapAcik || '');
                         }}
+                        disabled={!canManageLines}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -542,6 +551,7 @@ export function Step3LineForm({
                           {...field}
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                          disabled={!canManageLines}
                         />
                       </FormControl>
                       <FormMessage />
@@ -561,6 +571,7 @@ export function Step3LineForm({
                           {...field}
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                          disabled={!canManageLines}
                         />
                       </FormControl>
                       <FormMessage />
@@ -575,7 +586,7 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={!canManageLines} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -589,7 +600,7 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo2')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={!canManageLines} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -603,7 +614,7 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo3')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={!canManageLines} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -617,7 +628,7 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo4')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={!canManageLines} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -639,7 +650,7 @@ export function Step3LineForm({
                 >
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={createMutation.isPending}>
+                <Button type="submit" disabled={!canManageLines || createMutation.isPending}>
                   {createMutation.isPending ? t('common.saving') : t('common.save')}
                 </Button>
               </DialogFooter>
@@ -670,7 +681,7 @@ export function Step3LineForm({
           <Button variant="outline" onClick={onSaveAndExit}>
             {t('package.wizard.saveAndExit')}
           </Button>
-          <Button onClick={onNext}>
+          <Button onClick={onNext} disabled={!canManageLines}>
             {t('package.wizard.nextStep')}
           </Button>
         </div>

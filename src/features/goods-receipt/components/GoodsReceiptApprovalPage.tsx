@@ -15,6 +15,7 @@ import type { GrHeader } from '../types/goods-receipt';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 import { useApproveGrHeader } from '../hooks/useApproveGrHeader';
 import { useAwaitingApprovalGrHeaders } from '../hooks/useAwaitingApprovalGrHeaders';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'plannedDate' | 'actions';
 
@@ -30,6 +31,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
 export function GoodsReceiptApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.goods-receipt');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveGrHeader();
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'goods-receipt-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
@@ -54,6 +56,10 @@ export function GoodsReceiptApprovalPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try {
       await approveMutation.mutateAsync({ id, approved });
       toast.success(approved ? t('goodsReceipt.approval.approveSuccess') : t('goodsReceipt.approval.rejectSuccess'));
@@ -78,7 +84,7 @@ export function GoodsReceiptApprovalPage(): ReactElement {
           showActionsColumn={orderedVisibleColumns.includes('actions')}
           actionsHeaderLabel={t('goodsReceipt.approval.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.reject')}</span></Button></div>}
+          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('goodsReceipt.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { serviceAllocationApi } from '../api/service-allocation.api';
 import { useServiceCaseTimelineQuery } from '../hooks/useServiceCaseTimelineQuery';
 import {
@@ -60,7 +61,10 @@ export function ServiceCaseFormPage(): ReactElement {
   const parsedId = Number(id);
   const isEdit = Number.isFinite(parsedId) && parsedId > 0;
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.service-allocation');
   const timelineQuery = useServiceCaseTimelineQuery(isEdit ? parsedId : undefined);
+  const canSubmit = isEdit ? permission.canUpdate : permission.canCreate;
+  const isReadOnly = !canSubmit;
 
   const form = useForm<ServiceCaseFormValues>({
     defaultValues: {
@@ -199,6 +203,7 @@ export function ServiceCaseFormPage(): ReactElement {
 
       <Form {...form}>
         <form className="space-y-6" onSubmit={onSubmit}>
+          <fieldset disabled={isReadOnly} className={isReadOnly ? 'pointer-events-none opacity-75' : undefined}>
           <Card>
             <CardHeader>
               <CardTitle>
@@ -401,12 +406,13 @@ export function ServiceCaseFormPage(): ReactElement {
           ) : null}
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={saveMutation.isPending || timelineQuery.isLoading}>
+            <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
               {saveMutation.isPending
                 ? t('common.loading', { defaultValue: 'Loading...' })
                 : t('common.save', { defaultValue: 'Save' })}
             </Button>
           </div>
+          </fieldset>
         </form>
       </Form>
     </div>

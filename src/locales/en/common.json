@@ -331,7 +331,12 @@
     "inventoryCountCreate": "Create Count Order",
     "inventoryCountAssigned": "Assigned Count Orders",
     "inventoryCountProcess": "Count Direct Entry",
-    "inventoryCountList": "Count Orders"
+    "inventoryCountList": "Count Orders",
+    "erpBarcodeDesigner": "Barcode Designer",
+    "erpBarcodeDesignerCreate": "Create Barcode Design",
+    "erpBarcodeDesignerEdit": "Edit Barcode Design",
+    "erpBarcodePrint": "Print Label",
+    "printerManagement": "Printer Management"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -2811,6 +2816,209 @@
       "selectLine": "Select count line",
       "enterQuantity": "Example: 12",
       "enterNote": "Leave a short note if needed"
+    }
+  },
+  "noPermission": "You do not have permission for this action.",
+  "active": "Active",
+  "passive": "Passive",
+  "default": "Default",
+  "activate": "Activate",
+  "deactivate": "Deactivate",
+  "clearForm": "Clear Form",
+  "description": "Description",
+  "date": "Date",
+  "error": "Error",
+  "barcodeDesigner": {
+    "list": {
+      "badge": "List",
+      "description": "List barcode templates, create a new design, edit existing templates, or jump directly to the label printing screen.",
+      "create": "New Template",
+      "tableTitle": "Template List",
+      "code": "Code",
+      "name": "Name",
+      "type": "Type",
+      "size": "Size",
+      "draft": "Draft",
+      "empty": "No barcode templates yet.",
+      "deleteSuccess": "Template deleted.",
+      "deleteError": "Template could not be deleted.",
+      "statusUpdateSuccess": "Template status updated.",
+      "statusUpdateError": "Template status could not be updated."
+    }
+  },
+  "printerManagement": {
+    "badges": {
+      "serverPrinting": "Server-side Printing",
+      "queue": "Queue"
+    },
+    "description": "Manage printers defined on the server, queue print jobs, and monitor centralized print flows handled by the agent or server.",
+    "messages": {
+      "printerUpdated": "Printer updated.",
+      "printerCreated": "Printer created.",
+      "printerSaveError": "Printer could not be saved.",
+      "profileUpdated": "Profile updated.",
+      "profileCreated": "Profile created.",
+      "profileSaveError": "Profile could not be saved.",
+      "templateRequired": "No template selected.",
+      "mappingSaved": "Template-printer profile mapping saved.",
+      "mappingSaveError": "Template-printer profile mapping could not be saved.",
+      "retryQueued": "Print job queued again."
+    },
+    "printerForm": {
+      "title": "Printer Form",
+      "code": "Kod",
+      "displayName": "Display Name",
+      "connectionType": "Connection Type",
+      "outputType": "Output Type",
+      "host": "Host",
+      "queue": "Queue",
+      "rawCommand": "Raw Command",
+      "create": "Create Printer",
+      "update": "Update Printer"
+    },
+    "profileForm": {
+      "title": "Printer Profile Form",
+      "printer": "Linked Printer",
+      "selectPrinter": "Select printer",
+      "code": "Profile Code",
+      "displayName": "Profile Name",
+      "width": "Width (mm)",
+      "height": "Height (mm)",
+      "outputType": "Output Type",
+      "transportType": "Transport Type",
+      "defaultProfile": "Default Profile",
+      "create": "Create Profile",
+      "update": "Update Profile",
+      "clear": "Clear Profile Form"
+    },
+    "tables": {
+      "printers": "Defined Printers",
+      "profiles": "Printer Profiles",
+      "mappings": "Template - Printer Profile Mappings",
+      "jobs": "Recent Print Jobs"
+    },
+    "table": {
+      "code": "Kod",
+      "name": "Ad",
+      "connection": "Connection",
+      "output": "Output",
+      "profile": "Profile",
+      "printer": "Printer",
+      "size": "Size",
+      "format": "Format"
+    },
+    "mappingForm": {
+      "template": "Template",
+      "selectTemplate": "Select template",
+      "profile": "Printer Profile",
+      "selectProfile": "Select profile",
+      "add": "Add Mapping",
+      "addDefault": "Add as Default",
+      "attached": "Attached",
+      "makeDefault": "Make Default",
+      "empty": "No mapping exists for the selected template yet."
+    },
+    "jobs": {
+      "jobName": "Job Name"
+    }
+  },
+  "serviceAllocation": {
+    "caseNo": "Case No",
+    "customerCode": "Customer",
+    "customerId": "Customer Id",
+    "stockCode": "Stock Code",
+    "stockId": "Stock Id",
+    "serialNo": "Serial No",
+    "status": "Status",
+    "receivedAt": "Received At",
+    "closedAt": "Closed At",
+    "lines": "Service Lines",
+    "lineType": "Line Type",
+    "processType": "Process Type",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "erpOrderNo": "ERP Order No",
+    "erpOrderId": "ERP Order Id",
+    "description": "Description",
+    "intakeWarehouseId": "Intake Warehouse Id",
+    "currentWarehouseId": "Current Warehouse Id",
+    "diagnosisNote": "Diagnosis Note",
+    "allocatedQuantity": "Allocated",
+    "priority": "Priority",
+    "documentModule": "Module",
+    "documentHeaderId": "Document Id",
+    "linkPurpose": "Link Purpose",
+    "sequence": "Seq",
+    "serviceCaseId": "Service Case",
+    "orderAllocationLineId": "Allocation Line",
+    "linkedAt": "Linked At",
+    "fromWarehouse": "From Wh",
+    "toWarehouse": "To Wh",
+    "createCase": "Create Service Case",
+    "caseList": {
+      "title": "Service Cases",
+      "error": "Service cases could not be loaded.",
+      "empty": "No service cases found.",
+      "search": "Search service cases..."
+    },
+    "allocationQueue": {
+      "title": "Allocation Queue",
+      "error": "Allocation queue could not be loaded.",
+      "empty": "No allocation rows found.",
+      "search": "Search allocation queue..."
+    },
+    "documentLinks": {
+      "title": "Document Links",
+      "error": "Document links could not be loaded.",
+      "empty": "No document links found.",
+      "search": "Search document links..."
+    },
+    "timeline": {
+      "title": "Service Case Timeline",
+      "events": "Warehouse Timeline",
+      "linkCount": "Linked Documents",
+      "lastMovement": "Last Movement"
+    },
+    "recompute": {
+      "missingStock": "Incoming stock is not defined for this case.",
+      "success": "Allocation recomputed. {{count}} line(s) processed.",
+      "error": "Allocation recompute failed.",
+      "action": "Recompute Allocation"
+    },
+    "form": {
+      "createTitle": "Create Service Case",
+      "editTitle": "Edit Service Case",
+      "createSuccess": "Service case created.",
+      "updateSuccess": "Service case updated.",
+      "saveError": "Service case could not be saved.",
+      "initialLine": "Initial / Additional Service Line"
+    },
+    "reports": {
+      "title": "Service Reports",
+      "totalCases": "Total Service Cases",
+      "openCases": "Open cases",
+      "waitingParts": "Waiting For Parts",
+      "reviewWaitingCases": "Review waiting cases",
+      "partialAllocations": "Partial Allocations",
+      "openPartialAllocations": "Open allocation queue",
+      "documentLinks": "Document Links",
+      "openDocumentLinks": "Open document links",
+      "criticalQueue": "Critical Queue",
+      "openQueue": "Open Queue",
+      "waitingCasesTable": "Cases Waiting For Parts",
+      "noWaitingCases": "No cases waiting for parts.",
+      "partialAllocationTable": "Partial Allocation Rows",
+      "noPartialAllocations": "No partial allocations found.",
+      "caseDistribution": "Case Status Distribution",
+      "linkDistribution": "Link Purpose Distribution",
+      "noDistribution": "No distribution data.",
+      "recentMovements": "Recent Warehouse Movements",
+      "shipmentLinks": "shipment links",
+      "openLinks": "Open Links",
+      "noRecentMovements": "No recent warehouse movements found.",
+      "allocationRows": "Allocation Rows",
+      "activeRepairCases": "Active Repair Cases",
+      "shipmentLinksCount": "Shipment Link Count"
     }
   }
 }

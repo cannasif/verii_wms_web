@@ -331,7 +331,12 @@
     "inventoryCountCreate": "Sayım Emrini Oluşturma",
     "inventoryCountAssigned": "Atanmış Sayım Emirleri",
     "inventoryCountProcess": "Sayım Direkt Giriş Yap",
-    "inventoryCountList": "Sayım Emirleri"
+    "inventoryCountList": "Sayım Emirleri",
+    "erpBarcodeDesigner": "Barkod Tasarımcısı",
+    "erpBarcodeDesignerCreate": "Barkod Tasarımı Oluştur",
+    "erpBarcodeDesignerEdit": "Barkod Tasarımını Düzenle",
+    "erpBarcodePrint": "Etiket Bas",
+    "printerManagement": "Yazıcı Yönetimi"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -2811,6 +2816,209 @@
       "selectLine": "Sayım satırı seç",
       "enterQuantity": "Örnek: 12",
       "enterNote": "Gerekirse kısa not düş"
+    }
+  },
+  "noPermission": "Bu işlem için yetkiniz yok.",
+  "active": "Aktif",
+  "passive": "Pasif",
+  "default": "Varsayılan",
+  "activate": "Aktifleştir",
+  "deactivate": "Pasife Al",
+  "clearForm": "Formu Temizle",
+  "description": "Açıklama",
+  "date": "Tarih",
+  "error": "Hata",
+  "barcodeDesigner": {
+    "list": {
+      "badge": "Liste",
+      "description": "Barkod şablonlarını listeleyin, yeni tasarım oluşturun, mevcut şablonları düzenleyin veya doğrudan etiket bas ekranına geçin.",
+      "create": "Yeni Şablon",
+      "tableTitle": "Şablon Listesi",
+      "code": "Kod",
+      "name": "Ad",
+      "type": "Tip",
+      "size": "Boyut",
+      "draft": "Taslak",
+      "empty": "Henüz barkod şablonu bulunmuyor.",
+      "deleteSuccess": "Şablon silindi.",
+      "deleteError": "Şablon silinemedi.",
+      "statusUpdateSuccess": "Şablon durumu güncellendi.",
+      "statusUpdateError": "Şablon durumu güncellenemedi."
+    }
+  },
+  "printerManagement": {
+    "badges": {
+      "serverPrinting": "Sunucu Tabanlı Baskı",
+      "queue": "Kuyruk"
+    },
+    "description": "Sunucuda tanımlı yazıcıları yönetin, baskı işlerini kuyruğa alın ve agent veya sunucu tarafından işlenecek merkezi baskı akışlarını izleyin.",
+    "messages": {
+      "printerUpdated": "Yazıcı güncellendi.",
+      "printerCreated": "Yazıcı oluşturuldu.",
+      "printerSaveError": "Yazıcı kaydedilemedi.",
+      "profileUpdated": "Profil güncellendi.",
+      "profileCreated": "Profil oluşturuldu.",
+      "profileSaveError": "Profil kaydedilemedi.",
+      "templateRequired": "Şablon seçilmedi.",
+      "mappingSaved": "Şablon-yazıcı profili eşlemesi kaydedildi.",
+      "mappingSaveError": "Şablon-yazıcı profili eşlemesi kaydedilemedi.",
+      "retryQueued": "Baskı işi yeniden kuyruğa alındı."
+    },
+    "printerForm": {
+      "title": "Yazıcı Formu",
+      "code": "Kod",
+      "displayName": "Görünen Ad",
+      "connectionType": "Bağlantı Tipi",
+      "outputType": "Çıktı Tipi",
+      "host": "Host",
+      "queue": "Kuyruk",
+      "rawCommand": "Raw Komut",
+      "create": "Yazıcı Oluştur",
+      "update": "Yazıcıyı Güncelle"
+    },
+    "profileForm": {
+      "title": "Yazıcı Profil Formu",
+      "printer": "Bağlı Yazıcı",
+      "selectPrinter": "Yazıcı seç",
+      "code": "Profil Kodu",
+      "displayName": "Profil Adı",
+      "width": "Genişlik (mm)",
+      "height": "Yükseklik (mm)",
+      "outputType": "Çıktı Tipi",
+      "transportType": "Taşıma Tipi",
+      "defaultProfile": "Varsayılan Profil",
+      "create": "Profil Oluştur",
+      "update": "Profili Güncelle",
+      "clear": "Profil Formunu Temizle"
+    },
+    "tables": {
+      "printers": "Tanımlı Yazıcılar",
+      "profiles": "Yazıcı Profilleri",
+      "mappings": "Şablon - Yazıcı Profil Eşlemeleri",
+      "jobs": "Son Baskı İşleri"
+    },
+    "table": {
+      "code": "Kod",
+      "name": "Ad",
+      "connection": "Bağlantı",
+      "output": "Çıktı",
+      "profile": "Profil",
+      "printer": "Yazıcı",
+      "size": "Ölçü",
+      "format": "Format"
+    },
+    "mappingForm": {
+      "template": "Şablon",
+      "selectTemplate": "Şablon seç",
+      "profile": "Yazıcı Profili",
+      "selectProfile": "Profil seç",
+      "add": "Eşleme Ekle",
+      "addDefault": "Varsayılan Ekle",
+      "attached": "Ekli",
+      "makeDefault": "Varsayılan Yap",
+      "empty": "Seçili şablon için henüz eşleme yok."
+    },
+    "jobs": {
+      "jobName": "İş Adı"
+    }
+  },
+  "serviceAllocation": {
+    "caseNo": "Vaka No",
+    "customerCode": "Müşteri",
+    "customerId": "Müşteri Id",
+    "stockCode": "Stok Kodu",
+    "stockId": "Stok Id",
+    "serialNo": "Seri No",
+    "status": "Durum",
+    "receivedAt": "Alınma Tarihi",
+    "closedAt": "Kapanış Tarihi",
+    "lines": "Servis Satırları",
+    "lineType": "Satır Tipi",
+    "processType": "Süreç Tipi",
+    "quantity": "Miktar",
+    "unit": "Birim",
+    "erpOrderNo": "ERP Sipariş No",
+    "erpOrderId": "ERP Sipariş Id",
+    "description": "Açıklama",
+    "intakeWarehouseId": "Kabul Depo Id",
+    "currentWarehouseId": "Güncel Depo Id",
+    "diagnosisNote": "Teşhis Notu",
+    "allocatedQuantity": "Tahsis Edilen",
+    "priority": "Öncelik",
+    "documentModule": "Modül",
+    "documentHeaderId": "Belge Id",
+    "linkPurpose": "Bağlantı Amacı",
+    "sequence": "Sıra",
+    "serviceCaseId": "Servis Vakası",
+    "orderAllocationLineId": "Tahsis Satırı",
+    "linkedAt": "Bağlanma Tarihi",
+    "fromWarehouse": "Çıkış Deposu",
+    "toWarehouse": "Varış Deposu",
+    "createCase": "Servis Vakası Oluştur",
+    "caseList": {
+      "title": "Servis Vakaları",
+      "error": "Servis vakaları yüklenemedi.",
+      "empty": "Servis vakası bulunamadı.",
+      "search": "Servis vakalarında ara..."
+    },
+    "allocationQueue": {
+      "title": "Tahsis Kuyruğu",
+      "error": "Tahsis kuyruğu yüklenemedi.",
+      "empty": "Tahsis satırı bulunamadı.",
+      "search": "Tahsis kuyruğunda ara..."
+    },
+    "documentLinks": {
+      "title": "Belge Bağlantıları",
+      "error": "Belge bağlantıları yüklenemedi.",
+      "empty": "Belge bağlantısı bulunamadı.",
+      "search": "Belge bağlantılarında ara..."
+    },
+    "timeline": {
+      "title": "Servis Vaka Zaman Çizelgesi",
+      "events": "Depo Zaman Çizelgesi",
+      "linkCount": "Bağlı Belge Sayısı",
+      "lastMovement": "Son Hareket"
+    },
+    "recompute": {
+      "missingStock": "Bu vaka için giriş stoku tanımlı değil.",
+      "success": "Tahsis yeniden hesaplandı. {{count}} satır işlendi.",
+      "error": "Tahsis yeniden hesaplanamadı.",
+      "action": "Tahsisi Yeniden Hesapla"
+    },
+    "form": {
+      "createTitle": "Servis Vakası Oluştur",
+      "editTitle": "Servis Vakasını Düzenle",
+      "createSuccess": "Servis vakası oluşturuldu.",
+      "updateSuccess": "Servis vakası güncellendi.",
+      "saveError": "Servis vakası kaydedilemedi.",
+      "initialLine": "İlk / Ek Servis Satırı"
+    },
+    "reports": {
+      "title": "Servis Raporları",
+      "totalCases": "Toplam Servis Vakası",
+      "openCases": "Açık vakalar",
+      "waitingParts": "Parça Bekleyenler",
+      "reviewWaitingCases": "Bekleyen vakaları incele",
+      "partialAllocations": "Kısmi Tahsisler",
+      "openPartialAllocations": "Tahsis kuyruğunu aç",
+      "documentLinks": "Belge Bağlantıları",
+      "openDocumentLinks": "Belge bağlantılarını aç",
+      "criticalQueue": "Kritik Kuyruk",
+      "openQueue": "Kuyruğu Aç",
+      "waitingCasesTable": "Parça Bekleyen Vakalar",
+      "noWaitingCases": "Parça bekleyen vaka yok.",
+      "partialAllocationTable": "Kısmi Tahsis Satırları",
+      "noPartialAllocations": "Kısmi tahsis bulunamadı.",
+      "caseDistribution": "Vaka Durum Dağılımı",
+      "linkDistribution": "Bağlantı Amaç Dağılımı",
+      "noDistribution": "Dağılım verisi yok.",
+      "recentMovements": "Son Depo Hareketleri",
+      "shipmentLinks": "sevk bağlantısı",
+      "openLinks": "Bağlantıları Aç",
+      "noRecentMovements": "Son depo hareketi bulunamadı.",
+      "allocationRows": "Tahsis Satırları",
+      "activeRepairCases": "Aktif Tamir Vakaları",
+      "shipmentLinksCount": "Sevkiyat Bağlantı Sayısı"
     }
   }
 }

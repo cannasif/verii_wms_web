@@ -15,6 +15,7 @@ import type { AwaitingApprovalHeader } from '../types/transfer';
 import { useApproveTransfer } from '../hooks/useApproveTransfer';
 import { useAwaitingApprovalHeaders } from '../hooks/useAwaitingApprovalHeaders';
 import { TransferDetailDialog } from './TransferDetailDialog';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'sourceWarehouse' | 'targetWarehouse' | 'completionDate' | 'actions';
 const filterColumns: readonly FilterColumnConfig[] = [
@@ -31,6 +32,7 @@ const filterColumns: readonly FilterColumnConfig[] = [
 export function TransferApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.transfer');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveTransfer();
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'transfer-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
@@ -57,6 +59,10 @@ export function TransferApprovalPage(): ReactElement {
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try {
       await approveMutation.mutateAsync({ id, approved });
       toast.success(approved ? t('transfer.approval.approveSuccess') : t('transfer.approval.rejectSuccess'));
@@ -81,7 +87,7 @@ export function TransferApprovalPage(): ReactElement {
           showActionsColumn={orderedVisibleColumns.includes('actions')}
           actionsHeaderLabel={t('transfer.approval.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('transfer.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('transfer.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('transfer.approval.reject')}</span></Button></div>}
+          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('transfer.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('transfer.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('transfer.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

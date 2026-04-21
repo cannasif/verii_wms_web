@@ -20,12 +20,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageEditPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.package');
   const headerId = id ? parseInt(id, 10) : undefined;
   const { data: header, isLoading } = usePHeader(headerId);
   const updateMutation = useUpdatePHeader();
@@ -62,6 +64,7 @@ export function PackageEditPage(): ReactElement {
   });
 
   const sourceType = form.watch('sourceType');
+  const isReadOnly = !permission.canUpdate;
   const { data: availableHeaders, isLoading: isLoadingHeaders } = useAvailableHeaders(sourceType);
 
   useEffect(() => {
@@ -166,6 +169,7 @@ export function PackageEditPage(): ReactElement {
             <Button
               variant={header.isMatched ? 'destructive' : 'default'}
               onClick={async () => {
+                if (!permission.canUpdate) return;
                 if (!headerId) return;
                 try {
                   await matchPlinesMutation.mutateAsync({
@@ -185,7 +189,7 @@ export function PackageEditPage(): ReactElement {
                   );
                 }
               }}
-              disabled={matchPlinesMutation.isPending}
+              disabled={!permission.canUpdate || matchPlinesMutation.isPending}
             >
               {matchPlinesMutation.isPending
                 ? t('common.saving')
@@ -199,6 +203,7 @@ export function PackageEditPage(): ReactElement {
         {header ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 crm-page">
+              <fieldset disabled={isReadOnly} className={isReadOnly ? 'pointer-events-none opacity-75' : undefined}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -433,10 +438,11 @@ export function PackageEditPage(): ReactElement {
                 <Button type="button" variant="outline" onClick={() => navigate(`/package/detail/${headerId}`)}>
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={updateMutation.isPending}>
+                <Button type="submit" disabled={isReadOnly || updateMutation.isPending}>
                   {updateMutation.isPending ? t('common.saving') : t('common.save')}
                 </Button>
               </div>
+              </fieldset>
             </form>
           </Form>
         ) : null}

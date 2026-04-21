@@ -23,40 +23,28 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
+          if (id.includes('/node_modules/@react-three/') || id.includes('/node_modules/three/')) {
+            return 'vendor-3d';
+          }
+
+          if (id.includes('/node_modules/jspdf') || id.includes('/node_modules/jspdf-autotable') || id.includes('/node_modules/xlsx/')) {
+            return 'vendor-export';
+          }
+
+          if (id.includes('/node_modules/bwip-js/')) {
+            return 'vendor-barcode-render';
+          }
+
+          if (id.includes('/node_modules/konva/') || id.includes('/node_modules/react-konva/')) {
+            return 'vendor-barcode-canvas';
+          }
+
+          if (id.includes('/node_modules/@microsoft/signalr/')) {
+            return 'vendor-signalr';
+          }
+
           if (id.includes('/src/features/inventory/3d-warehouse/')) {
             return 'warehouse-3d-feature';
-          }
-
-          if (id.includes('/src/features/goods-receipt/')) {
-            return 'goods-receipt-feature';
-          }
-
-          if (id.includes('/src/features/transfer/')) {
-            return 'transfer-feature';
-          }
-
-          if (id.includes('/src/features/shipment/')) {
-            return 'shipment-feature';
-          }
-
-          if (id.includes('/src/features/package/')) {
-            return 'package-feature';
-          }
-
-          if (id.includes('/src/features/warehouse/')) {
-            return 'warehouse-feature';
-          }
-
-          if (id.includes('/src/features/access-control/')) {
-            return 'access-control-feature';
-          }
-
-          if (id.includes('/src/locales/')) {
-            return 'locale-messages';
-          }
-
-          if (id.includes('/src/routes/')) {
-            return 'route-shell';
           }
 
           // Let Rollup group third-party vendor modules naturally. The custom

@@ -24,12 +24,14 @@ import { Step2ShipmentOrderSelection } from './steps/Step2ShipmentOrderSelection
 import { ProcessStockSelection } from '@/components/shared';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedShipmentStockItem } from '../types/shipment';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function ShipmentCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.shipment');
   const [currentStep, setCurrentStep] = useState(1);
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedShipmentOrderItem[]>([]);
@@ -220,6 +222,7 @@ export function ShipmentCreatePage(): ReactElement {
         <CardContent>
           <Form {...form}>
             <form className="space-y-6">
+              <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
               {currentStep === 1 ? renderStepContent() : createMode === 'order' ? renderStepContent() : (
                 <ProcessStockSelection
                   selectedItems={selectedStockItems}
@@ -241,20 +244,21 @@ export function ShipmentCreatePage(): ReactElement {
                 </Button>
                 <div className="flex gap-2">
                   {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
+                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
                       {t('common.next')}
                     </Button>
                   ) : (
                     <Button
                       type="button"
                       onClick={handleSave}
-                      disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
+                      disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
                     >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </div>
               </div>
+              </fieldset>
             </form>
           </Form>
         </CardContent>
@@ -262,7 +266,6 @@ export function ShipmentCreatePage(): ReactElement {
     </div>
   );
 }
-
 
 
 

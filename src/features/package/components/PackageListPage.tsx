@@ -23,6 +23,7 @@ import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import type { PHeaderDto } from '../types/package';
 
 type PackageColumnKey =
@@ -102,6 +103,7 @@ export function PackageListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.package');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PHeaderDto | null>(null);
 
@@ -294,9 +296,11 @@ export function PackageListPage(): ReactElement {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
+                    if (!permission.canDelete) return;
                     setSelectedHeader(row);
                     setDeleteDialogOpen(true);
                   }}
+                  disabled={!permission.canDelete}
                 >
                   <Trash2 className="size-4" />
                 </Button>
@@ -347,10 +351,12 @@ export function PackageListPage(): ReactElement {
                     size="sm"
                     variant="outline"
                   />
-                  <Button onClick={() => navigate('/package/create')}>
-                    <Plus className="mr-2 size-4" />
-                    {t('package.list.createNew')}
-                  </Button>
+                  {permission.canCreate ? (
+                    <Button onClick={() => navigate('/package/create')}>
+                      <Plus className="mr-2 size-4" />
+                      {t('package.list.createNew')}
+                    </Button>
+                  ) : null}
                 </div>
               ),
             }}
@@ -358,7 +364,7 @@ export function PackageListPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('package.list.deleteConfirm')}</DialogTitle>
@@ -368,7 +374,7 @@ export function PackageListPage(): ReactElement {
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
+            <Button variant="destructive" onClick={handleDelete} disabled={!permission.canDelete || deleteMutation.isPending}>
               {deleteMutation.isPending ? t('common.loading') : t('common.delete')}
             </Button>
           </DialogFooter>

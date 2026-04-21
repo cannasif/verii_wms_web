@@ -40,6 +40,7 @@ import {
   type Html5QrcodeInstance,
 } from '@/lib/html5-qrcode';
 import type { PPackageDto, PLineDto } from '../types/package';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
@@ -69,6 +70,7 @@ export function PackageDetailPage(): ReactElement {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.package');
   
   const headerId = useMemo(() => {
     if (!id) return undefined;
@@ -387,7 +389,7 @@ export function PackageDetailPage(): ReactElement {
                       );
                     }
                   }}
-                  disabled={matchPlinesMutation.isPending}
+                  disabled={!permission.canUpdate || matchPlinesMutation.isPending}
                 >
                   {matchPlinesMutation.isPending
                     ? t('common.saving')
@@ -396,7 +398,7 @@ export function PackageDetailPage(): ReactElement {
                       : t('package.detail.match')}
                 </Button>
               ) : null}
-              <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)}>
+              <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)} disabled={!permission.canUpdate}>
                 <Edit className="size-4 mr-2" />
                 {t('common.edit')}
               </Button>
@@ -507,7 +509,7 @@ export function PackageDetailPage(): ReactElement {
 
             <TabsContent value="packages" className="mt-4">
               <div className="flex justify-end mb-4">
-                <Button onClick={() => setPackageDialogOpen(true)}>
+                <Button onClick={() => permission.canUpdate && setPackageDialogOpen(true)} disabled={!permission.canUpdate}>
                   <Plus className="size-4 mr-2" />
                   {t('package.detail.addPackage')}
                 </Button>
@@ -646,7 +648,7 @@ export function PackageDetailPage(): ReactElement {
 
             <TabsContent value="lines" className="mt-4">
               <div className="flex justify-end mb-4">
-                <Button onClick={() => setLineDialogOpen(true)}>
+                <Button onClick={() => permission.canUpdate && setLineDialogOpen(true)} disabled={!permission.canUpdate}>
                   <Plus className="size-4 mr-2" />
                   {t('package.detail.addLine')}
                 </Button>
@@ -759,7 +761,7 @@ export function PackageDetailPage(): ReactElement {
         ) : null}
       </DetailPageShell>
 
-      <Dialog open={packageDialogOpen} onOpenChange={setPackageDialogOpen}>
+      <Dialog open={permission.canUpdate && packageDialogOpen} onOpenChange={setPackageDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
             <DialogTitle>{t('package.detail.addPackage')}</DialogTitle>
@@ -769,6 +771,7 @@ export function PackageDetailPage(): ReactElement {
           </DialogHeader>
           <Form {...packageForm}>
             <form onSubmit={packageForm.handleSubmit(handlePackageSubmit)} className="space-y-6 crm-page">
+              <fieldset disabled={!permission.canUpdate} className={!permission.canUpdate ? 'pointer-events-none opacity-75' : undefined}>
               <div className="space-y-4">
                 <FormField
                   control={packageForm.control}
@@ -1004,16 +1007,17 @@ export function PackageDetailPage(): ReactElement {
                 >
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={createPackageMutation.isPending} className="w-full sm:w-auto">
+                <Button type="submit" disabled={!permission.canUpdate || createPackageMutation.isPending} className="w-full sm:w-auto">
                   {createPackageMutation.isPending ? t('common.saving') : t('common.save')}
                 </Button>
               </DialogFooter>
+              </fieldset>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={lineDialogOpen} onOpenChange={(open) => {
+      <Dialog open={permission.canUpdate && lineDialogOpen} onOpenChange={(open) => {
         setLineDialogOpen(open);
         if (!open) {
           setBarcodeInput('');
@@ -1044,6 +1048,7 @@ export function PackageDetailPage(): ReactElement {
                     <Select
                       value={field.value ? field.value.toString() : ''}
                       onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                      disabled={!permission.canUpdate}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -1074,6 +1079,7 @@ export function PackageDetailPage(): ReactElement {
                       size="icon"
                       className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
                       onClick={handleOpenCamera}
+                      disabled={!permission.canUpdate}
                     >
                       <Camera className="size-4 text-muted-foreground" />
                     </Button>
@@ -1083,9 +1089,10 @@ export function PackageDetailPage(): ReactElement {
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       className="pl-10 md:pl-9 h-10"
+                      disabled={!permission.canUpdate}
                     />
                   </div>
-                  <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default">
+                  <Button onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching} size="default">
                     {isSearching ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
@@ -1132,6 +1139,7 @@ export function PackageDetailPage(): ReactElement {
                           onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                           className="h-9"
                           placeholder={t('package.detail.quantity')}
+                          disabled={!permission.canUpdate}
                         />
                       </div>
                       <div>
@@ -1143,13 +1151,14 @@ export function PackageDetailPage(): ReactElement {
                           onChange={(e) => setSerialNo(e.target.value)}
                           className="h-9"
                           placeholder={t('package.form.serialNo')}
+                          disabled={!permission.canUpdate}
                         />
                       </div>
                     </div>
                     <div className="pt-2">
                       <Button
                         onClick={handleLineSubmit}
-                        disabled={createLineMutation.isPending}
+                        disabled={!permission.canUpdate || createLineMutation.isPending}
                         className="bg-emerald-500 hover:bg-emerald-600 text-white h-9 w-full"
                       >
                         {createLineMutation.isPending ? (

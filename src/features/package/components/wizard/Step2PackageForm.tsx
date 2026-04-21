@@ -27,6 +27,8 @@ import { toast } from 'sonner';
 
 interface Step2PackageFormProps {
   packingHeaderId: number;
+  canManagePackages: boolean;
+  canDeletePackages: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onSaveAndExit: () => void;
@@ -47,6 +49,8 @@ const getStatusBadgeColor = (status: string): string => {
 
 export function Step2PackageForm({
   packingHeaderId,
+  canManagePackages,
+  canDeletePackages,
   onPrevious,
   onNext,
   onSaveAndExit,
@@ -89,6 +93,7 @@ export function Step2PackageForm({
   }, [form, packingHeaderId]);
 
   const handleOpenDialog = (pkg?: PPackageDto): void => {
+    if (!canManagePackages) return;
     if (pkg) {
       setEditingPackage(pkg);
       const packageNoValue = pkg.packageNo || pkg.barcode || '';
@@ -227,7 +232,7 @@ export function Step2PackageForm({
             title={<CardTitle>{t('package.wizard.step2.title')}</CardTitle>}
             description={<CardDescription>{t('package.wizard.step2.description')}</CardDescription>}
             actions={
-              <Button onClick={() => handleOpenDialog()}>
+              <Button onClick={() => handleOpenDialog()} disabled={!canManagePackages}>
                 <Plus className="size-4 mr-2" />
                 {t('package.wizard.step2.addPackage')}
               </Button>
@@ -275,6 +280,7 @@ export function Step2PackageForm({
                           variant="ghost"
                           size="sm"
                           onClick={() => handleOpenDialog(pkg)}
+                          disabled={!canManagePackages}
                         >
                           <Edit className="size-4" />
                         </Button>
@@ -282,7 +288,7 @@ export function Step2PackageForm({
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(pkg.id)}
-                          disabled={deleteMutation.isPending}
+                          disabled={!canDeletePackages || deleteMutation.isPending}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -298,7 +304,7 @@ export function Step2PackageForm({
         </CardContent>
       </Card>
 
-      <Dialog open={packageDialogOpen} onOpenChange={setPackageDialogOpen}>
+      <Dialog open={canManagePackages && packageDialogOpen} onOpenChange={setPackageDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -314,6 +320,7 @@ export function Step2PackageForm({
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <fieldset disabled={!canManagePackages} className={!canManagePackages ? 'pointer-events-none opacity-75' : undefined}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -538,10 +545,11 @@ export function Step2PackageForm({
                 >
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={createMutation.isPending}>
+                <Button type="submit" disabled={!canManagePackages || createMutation.isPending}>
                   {createMutation.isPending ? t('common.saving') : t('common.save')}
                 </Button>
               </DialogFooter>
+              </fieldset>
             </form>
           </Form>
         </DialogContent>
@@ -555,7 +563,7 @@ export function Step2PackageForm({
           <Button variant="outline" onClick={onSaveAndExit}>
             {t('package.wizard.saveAndExit')}
           </Button>
-          <Button onClick={handleNextStep} disabled={packages.length === 0}>
+          <Button onClick={handleNextStep} disabled={packages.length === 0 || !canManagePackages}>
             {t('package.wizard.saveAndContinue')}
           </Button>
         </div>

@@ -23,11 +23,13 @@ import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2OrderSelection } from './steps/Step2OrderSelection';
 import { Step2StockSelection } from './steps/Step2StockSelection';
 import type { SelectedStockItem, Product } from '../types/goods-receipt';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function GoodsReceiptCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.goods-receipt');
   const [currentStep, setCurrentStep] = useState(1);
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedOrderItem[]>([]);
@@ -178,6 +180,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
       >
         <Form {...form}>
           <form className="space-y-6 crm-page">
+            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
               <Step1BasicInfo />
             ) : createMode === 'order' ? (
@@ -202,7 +205,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
               </Button>
               <div className="flex gap-2">
                 {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext}>
+                  <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
                     {t('common.next')}
                   </Button>
                 ) : (
@@ -210,6 +213,8 @@ export function GoodsReceiptCreatePage(): ReactElement {
                     type="button"
                     onClick={handleSave}
                     disabled={
+                      !permission.canCreate
+                      ||
                       createMutation.isPending
                       || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
                     }
@@ -219,6 +224,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
                 )}
               </div>
             </div>
+            </fieldset>
           </form>
         </Form>
       </FormPageShell>

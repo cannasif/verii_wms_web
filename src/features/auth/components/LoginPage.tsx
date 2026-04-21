@@ -97,7 +97,13 @@ export function LoginPage(): React.JSX.Element {
       <div className="relative z-10 flex h-full w-full items-center justify-center px-4 py-8">
         <div className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1228]/70 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:grid-cols-[44%_56%]">
           <div className="relative hidden min-h-[620px] lg:block">
-            <img src={loginImage} alt="WMS Login" className="h-full w-full object-cover" />
+            <img
+              src={loginImage}
+              alt="WMS Login"
+              decoding="async"
+              fetchPriority="high"
+              className="h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-linear-to-t from-[#070d1f] via-[#070d1f]/45 to-transparent" />
             <div className="absolute bottom-8 left-8 right-8">
               

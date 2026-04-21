@@ -8,6 +8,7 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import type { ServiceCaseRow } from '../types/service-allocation.types';
 import { useServiceCasesQuery } from '../hooks/useServiceCasesQuery';
@@ -60,6 +61,7 @@ export function ServiceCaseListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.service-allocation');
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
     pageKey: 'service-allocation-case-list',
@@ -157,9 +159,11 @@ export function ServiceCaseListPage(): ReactElement {
                 <Button variant="ghost" size="sm" onClick={() => navigate(`/service-allocation/cases/${row.id}`)}>
                   <Eye className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => navigate(`/service-allocation/cases/${row.id}/edit`)}>
-                  <Edit className="size-4" />
-                </Button>
+                {permission.canUpdate ? (
+                  <Button variant="ghost" size="sm" onClick={() => navigate(`/service-allocation/cases/${row.id}/edit`)}>
+                    <Edit className="size-4" />
+                  </Button>
+                ) : null}
               </div>
             )}
             pageSize={pagedGrid.pageSize}
@@ -189,12 +193,12 @@ export function ServiceCaseListPage(): ReactElement {
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('serviceAllocation.caseList.search', { defaultValue: 'Search service cases...' }),
             }}
-            leftSlot={
+            leftSlot={permission.canCreate ? (
               <Button onClick={() => navigate('/service-allocation/cases/new')}>
                 <Plus className="mr-2 size-4" />
                 {t('serviceAllocation.createCase', { defaultValue: 'Create Service Case' })}
               </Button>
-            }
+            ) : undefined}
             refresh={{
               onRefresh: () => {
                 void refetch();

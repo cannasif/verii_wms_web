@@ -32,6 +32,8 @@ import type {
   AddProductionOperationLineRequest,
   ProductionOperation,
   ProductionOrderDetail,
+  ProductionOrderConsumptionItem,
+  ProductionOrderOutputItem,
   ProductionOperationEventRequest,
 } from '../types/production';
 
@@ -58,6 +60,20 @@ function formatDateTime(value?: string | null): string {
 function formatQuantity(value?: number | null): string {
   if (value == null) return '0';
   return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 3 }).format(value);
+}
+
+type QuickEntryRow = ProductionOrderConsumptionItem | ProductionOrderOutputItem;
+
+function isConsumptionQuickEntryRow(row: QuickEntryRow): row is ProductionOrderConsumptionItem {
+  return 'consumedQuantity' in row;
+}
+
+function getQuickEntryCompletedQuantity(row: QuickEntryRow): number {
+  return isConsumptionQuickEntryRow(row) ? (row.consumedQuantity ?? 0) : (row.producedQuantity ?? 0);
+}
+
+function getQuickEntryRemainingQuantity(row: QuickEntryRow): number {
+  return Math.max(row.plannedQuantity - getQuickEntryCompletedQuantity(row), 0);
 }
 
 export function ProductionProcessPage(): ReactElement {
@@ -572,10 +588,7 @@ export function ProductionProcessPage(): ReactElement {
   }, [quickEntryCandidates, quickEntryValue]);
 
   const quickEntryPrimaryMatch = quickEntryMatches.find((row) => {
-    const remaining = quickEntryMode === 'Consumption'
-      ? Math.max(row.plannedQuantity - (row.consumedQuantity ?? 0), 0)
-      : Math.max(row.plannedQuantity - (row.producedQuantity ?? 0), 0);
-    return remaining > 0;
+    return getQuickEntryRemainingQuantity(row) > 0;
   }) ?? quickEntryMatches[0];
 
   const applyQuickEntryMatch = (): void => {
@@ -848,17 +861,13 @@ export function ProductionProcessPage(): ReactElement {
                     <div className="rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-white/5">
                       <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.list.completedQuantity')}</div>
                       <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">
-                        {'consumedQuantity' in quickEntryPrimaryMatch
-                          ? formatQuantity(quickEntryPrimaryMatch.consumedQuantity)
-                          : formatQuantity(quickEntryPrimaryMatch.producedQuantity)}
+                        {formatQuantity(getQuickEntryCompletedQuantity(quickEntryPrimaryMatch))}
                       </div>
                     </div>
                     <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
                       <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Kalan' })}</div>
                       <div className="mt-1 font-semibold text-sky-900 dark:text-sky-100">
-                        {'consumedQuantity' in quickEntryPrimaryMatch
-                          ? formatQuantity(Math.max(quickEntryPrimaryMatch.plannedQuantity - (quickEntryPrimaryMatch.consumedQuantity ?? 0), 0))
-                          : formatQuantity(Math.max(quickEntryPrimaryMatch.plannedQuantity - (quickEntryPrimaryMatch.producedQuantity ?? 0), 0))}
+                        {formatQuantity(getQuickEntryRemainingQuantity(quickEntryPrimaryMatch))}
                       </div>
                     </div>
                   </div>

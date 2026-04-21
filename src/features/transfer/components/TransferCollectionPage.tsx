@@ -20,6 +20,7 @@ import { barcodeApi } from '@/services/barcode-api';
 import type { BarcodeMatchCandidate } from '@/services/barcode-types';
 import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
 import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import {
   createDefaultScannerConfig,
   getPreferredCameraId,
@@ -35,6 +36,7 @@ export function TransferCollectionPage(): ReactElement {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.transfer');
   const [barcodeInput, setBarcodeInput] = useState('');
   const [searchBarcode, setSearchBarcode] = useState('');
   const [enableSearch, setEnableSearch] = useState(false);
@@ -94,6 +96,11 @@ export function TransferCollectionPage(): ReactElement {
   }, [barcodeData, t]);
 
   const handleBarcodeSearch = useCallback(() => {
+    if (!permission.canUpdate) {
+      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      return;
+    }
+
     if (!barcodeInput.trim()) {
       toast.error(t('transfer.collection.enterBarcode'));
       return;
@@ -103,9 +110,14 @@ export function TransferCollectionPage(): ReactElement {
     setAmbiguousCandidates([]);
     setBarcodeErrorMessage(null);
     setEnableSearch(true);
-  }, [barcodeInput, t]);
+  }, [barcodeInput, permission.canUpdate, t]);
 
   const handleCollect = () => {
+    if (!permission.canUpdate) {
+      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      return;
+    }
+
     if (!selectedStock) {
       toast.error(t('transfer.collection.noStockSelected'));
       return;
@@ -169,6 +181,11 @@ export function TransferCollectionPage(): ReactElement {
   };
 
   const handleComplete = () => {
+    if (!permission.canUpdate) {
+      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      return;
+    }
+
     if (!headerIdNum) {
       toast.error(t('transfer.collection.invalidHeaderId'));
       return;
@@ -190,6 +207,9 @@ export function TransferCollectionPage(): ReactElement {
   };
 
   const handleOpenCamera = () => {
+    if (!permission.canUpdate) {
+      return;
+    }
     setIsCameraOpen(true);
   };
 
@@ -329,6 +349,7 @@ export function TransferCollectionPage(): ReactElement {
                   variant="ghost"
                   size="icon"
                   className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
+                  disabled={!permission.canUpdate}
                   onClick={handleOpenCamera}
                 >
                   <Camera className="size-4 text-muted-foreground" />
@@ -338,6 +359,7 @@ export function TransferCollectionPage(): ReactElement {
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   onKeyPress={handleKeyPress}
+                  disabled={!permission.canUpdate}
                   className="pl-10 md:pl-9 h-10"
                 />
                 {barcodeDefinitionQuery.data?.data?.hintText ? (
@@ -346,7 +368,7 @@ export function TransferCollectionPage(): ReactElement {
                   </p>
                 ) : null}
               </div>
-              <Button onClick={handleBarcodeSearch} disabled={isSearching} size="default" className="w-full sm:w-auto">
+              <Button onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching} size="default" className="w-full sm:w-auto">
                 {isSearching ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
@@ -409,13 +431,14 @@ export function TransferCollectionPage(): ReactElement {
                       min="1"
                       value={quantity}
                       onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                      disabled={!permission.canUpdate}
                       className="h-9"
                       placeholder={t('transfer.collection.quantity')}
                     />
                   </div>
                   <Button
                     onClick={handleCollect}
-                    disabled={addBarcodeMutation.isPending}
+                    disabled={!permission.canUpdate || addBarcodeMutation.isPending}
                     className="h-9 w-full bg-emerald-500 text-white hover:bg-emerald-600 sm:w-auto"
                   >
                     {addBarcodeMutation.isPending ? (
@@ -504,7 +527,7 @@ export function TransferCollectionPage(): ReactElement {
       <div className="shrink-0 border-t border-slate-200/80 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
         <Button
           onClick={handleComplete}
-          disabled={completeTransferMutation.isPending}
+          disabled={!permission.canUpdate || completeTransferMutation.isPending}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           size="lg"
         >
