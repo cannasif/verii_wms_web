@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/select';
 import { Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { normalizeLanguage, setAppLanguage } from '@/lib/i18n';
 
 const languages = [
   { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
@@ -24,11 +25,11 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps): ReactElement {
   const { i18n } = useTranslation();
 
-  const normalizedLanguage = i18n.language?.split('-')[0] || 'tr';
+  const normalizedLanguage = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
   const currentLanguage = languages.find((lang) => lang.code === normalizedLanguage) || languages[0];
 
   const handleLanguageChange = (value: string): void => {
-    i18n.changeLanguage(value);
+    void setAppLanguage(value);
   };
 
   return (

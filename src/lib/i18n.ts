@@ -33,14 +33,30 @@ const COMMON_RESOURCES = {
 
 type SupportedLanguage = keyof typeof COMMON_RESOURCES;
 
+export const SUPPORTED_LANGUAGES = Object.keys(COMMON_RESOURCES) as SupportedLanguage[];
+
+export function normalizeLanguage(language: string | null | undefined): SupportedLanguage {
+  const normalized = language?.split('-')[0]?.toLowerCase();
+  if (normalized && normalized in COMMON_RESOURCES) {
+    return normalized as SupportedLanguage;
+  }
+  return DEFAULT_LANGUAGE;
+}
+
 function getInitialLanguage(): SupportedLanguage {
   if (typeof window === 'undefined') {
     return DEFAULT_LANGUAGE;
   }
 
   const persisted = window.localStorage.getItem(STORAGE_KEY);
-  if (persisted && persisted in COMMON_RESOURCES) {
-    return persisted as SupportedLanguage;
+  const normalizedPersisted = normalizeLanguage(persisted);
+
+  if (persisted && normalizedPersisted !== persisted) {
+    window.localStorage.setItem(STORAGE_KEY, normalizedPersisted);
+  }
+
+  if (persisted) {
+    return normalizedPersisted;
   }
 
   return DEFAULT_LANGUAGE;
@@ -65,10 +81,11 @@ async function loadLocaleNamespace(language: string, namespace: string): Promise
 
 export async function ensureNamespaces(
   namespaces: string[] | readonly string[],
-  language = i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LANGUAGE,
+  language?: string,
 ): Promise<void> {
+  const resolvedLanguage = normalizeLanguage(language ?? i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LANGUAGE);
   const filteredNamespaces = Array.from(new Set(namespaces.filter(Boolean)));
-  const missingNamespaces = filteredNamespaces.filter((namespace) => !i18n.hasResourceBundle(language, namespace));
+  const missingNamespaces = filteredNamespaces.filter((namespace) => !i18n.hasResourceBundle(resolvedLanguage, namespace));
 
   if (missingNamespaces.length === 0) {
     return;
@@ -76,8 +93,8 @@ export async function ensureNamespaces(
 
   await Promise.all(
     missingNamespaces.map(async (namespace) => {
-      const resource = await loadLocaleNamespace(language, namespace);
-      i18n.addResourceBundle(language, namespace, resource, true, true);
+      const resource = await loadLocaleNamespace(resolvedLanguage, namespace);
+      i18n.addResourceBundle(resolvedLanguage, namespace, resource, true, true);
     }),
   );
 }
@@ -105,9 +122,21 @@ i18n
 
 i18n.on('languageChanged', (language) => {
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(STORAGE_KEY, language);
+    window.localStorage.setItem(STORAGE_KEY, normalizeLanguage(language));
   }
 });
+
+export async function setAppLanguage(language: string): Promise<void> {
+  const normalizedLanguage = normalizeLanguage(language);
+
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, normalizedLanguage);
+  }
+
+  if (i18n.language !== normalizedLanguage && i18n.resolvedLanguage !== normalizedLanguage) {
+    await i18n.changeLanguage(normalizedLanguage);
+  }
+}
 
 export { COMMON_NAMESPACE, DEFAULT_NAMESPACE, PRELOADED_NAMESPACES };
 export default i18n;

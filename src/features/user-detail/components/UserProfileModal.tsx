@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { getFullProfileImageUrl } from '../utils/profile-image';
 import { cn } from '@/lib/utils';
+import { normalizeLanguage, setAppLanguage } from '@/lib/i18n';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'tr', name: 'Türkçe', flag: 'TR' },
@@ -41,10 +42,11 @@ export function UserProfileModal({
   const imageUrl = getFullProfileImageUrl(userDetail?.profilePictureUrl);
   const isDark = theme === 'dark';
   const currentLanguage =
-    SUPPORTED_LANGUAGES.find((lang) => lang.code === i18n.language) ?? SUPPORTED_LANGUAGES[0];
+    SUPPORTED_LANGUAGES.find((lang) => lang.code === normalizeLanguage(i18n.resolvedLanguage ?? i18n.language))
+    ?? SUPPORTED_LANGUAGES[0];
 
   const handleLanguageChange = (value: string): void => {
-    i18n.changeLanguage(value);
+    void setAppLanguage(value);
   };
 
   const handleLogout = (): void => {

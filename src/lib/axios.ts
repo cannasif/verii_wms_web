@@ -1,5 +1,6 @@
 import axios from 'axios';
 import i18n from './i18n';
+import { normalizeLanguage } from './i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import { isRequestCanceled } from './request-utils';
 import {
@@ -152,7 +153,7 @@ api.interceptors.request.use(async (config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    config.headers['X-Language'] = i18n.language || 'tr';
+    config.headers['X-Language'] = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
 
     const branch = useAuthStore.getState().branch;
     if (branch?.code) {
