@@ -78,18 +78,18 @@ export function AssignedInventoryCountListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.assigned.title', { defaultValue: 'Atanmis Sayim Emirleri' }));
+    setPageTitle(t('inventoryCount.assigned.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<AssignedInventoryCountColumnKey>[]>(() => [
-    { key: 'documentNo', label: t('common.documentNo', { defaultValue: 'Belge No' }) },
-    { key: 'countType', label: t('inventoryCount.fields.countType', { defaultValue: 'Sayim tipi' }) },
-    { key: 'countMode', label: t('inventoryCount.fields.countMode', { defaultValue: 'Mod' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
-    { key: 'lineCount', label: t('inventoryCount.fields.lineCount', { defaultValue: 'Satir' }) },
-    { key: 'differenceLineCount', label: t('inventoryCount.fields.differenceLineCount', { defaultValue: 'Fark' }) },
-    { key: 'actions', label: t('common.actions', { defaultValue: 'Islemler' }), sortable: false },
+    { key: 'documentNo', label: t('common.documentNo') },
+    { key: 'countType', label: t('inventoryCount.fields.countType') },
+    { key: 'countMode', label: t('inventoryCount.fields.countMode') },
+    { key: 'status', label: t('common.status') },
+    { key: 'lineCount', label: t('inventoryCount.fields.lineCount') },
+    { key: 'differenceLineCount', label: t('inventoryCount.fields.differenceLineCount') },
+    { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -133,7 +133,6 @@ export function AssignedInventoryCountListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   const renderSortIcon = (columnKey: AssignedInventoryCountColumnKey): ReactElement | null => {
@@ -176,14 +175,14 @@ export function AssignedInventoryCountListPage(): ReactElement {
         renderSortIcon={renderSortIcon}
         isLoading={isLoading}
         isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('inventoryCount.assigned.error', { defaultValue: 'Atanmis sayim emirleri yuklenemedi.' })}
-        emptyText={t('inventoryCount.assigned.noData', { defaultValue: 'Size atanmis aktif sayim emri bulunmuyor.' })}
+        errorText={error instanceof Error ? error.message : t('inventoryCount.assigned.error')}
+        emptyText={t('inventoryCount.assigned.noData')}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Islemler' })}
+        actionsHeaderLabel={t('common.actions')}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))}>
-              {t('inventoryCount.actions.process', { defaultValue: 'Direkt Giris' })}
+              {t('inventoryCount.actions.process')}
             </Button>
           </div>
         )}
@@ -196,8 +195,8 @@ export function AssignedInventoryCountListPage(): ReactElement {
         hasNextPage={Boolean(data?.hasNextPage)}
         onPreviousPage={pagedGrid.goToPreviousPage}
         onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
-        nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
         paginationInfoText={paginationInfoText}
         actionBar={{
           pageKey,
@@ -223,7 +222,7 @@ export function AssignedInventoryCountListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('inventoryCount.assigned.searchPlaceholder', { defaultValue: 'Belge no ya da sayim tipi ara' }),
+            placeholder: t('inventoryCount.assigned.searchPlaceholder'),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}

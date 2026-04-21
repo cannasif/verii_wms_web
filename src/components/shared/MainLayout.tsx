@@ -100,7 +100,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.subcontractingReceiptAssigned'), href: '/subcontracting/receipt/assigned' },
         { title: t('sidebar.subcontractingReceiptApproval'), href: '/subcontracting/receipt/approval' },
         { title: t('sidebar.subcontractingReceiptCreate'), href: '/subcontracting/receipt/create' },
-        { title: t('sidebar.subcontractingReceiptProcess', { defaultValue: 'Fason Giriş Process' }), href: '/subcontracting/receipt/process' },
+        { title: t('sidebar.subcontractingReceiptProcess'), href: '/subcontracting/receipt/process' },
         { title: t('sidebar.subcontractingReceiptList'), href: '/subcontracting/receipt/list' },
       ]),
     };
@@ -122,7 +122,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.subcontractingIssueAssigned'), href: '/subcontracting/issue/assigned' },
         { title: t('sidebar.subcontractingIssueApproval'), href: '/subcontracting/issue/approval' },
         { title: t('sidebar.subcontractingIssueCreate'), href: '/subcontracting/issue/create' },
-        { title: t('sidebar.subcontractingIssueProcess', { defaultValue: 'Fason Çıkış Process' }), href: '/subcontracting/issue/process' },
+        { title: t('sidebar.subcontractingIssueProcess'), href: '/subcontracting/issue/process' },
         { title: t('sidebar.subcontractingIssueList'), href: '/subcontracting/issue/list' },
       ]),
     };
@@ -131,7 +131,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       title: t('sidebar.production'),
       children: sortNavItems([
         {
-          title: t('sidebar.productionPlanningGroup', { defaultValue: 'Planlama' }),
+          title: t('sidebar.productionPlanningGroup'),
           children: sortNavItems([
             { title: t('sidebar.productionCreate'), href: '/production/create' },
             { title: t('sidebar.productionAssigned'), href: '/production/assigned' },
@@ -168,19 +168,19 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
 	        { title: t('sidebar.shipmentAssigned'), href: '/shipment/assigned' },
 	        { title: t('sidebar.shipmentApproval'), href: '/shipment/approval' },
 	        { title: t('sidebar.shipmentCreate'), href: '/shipment/create' },
-	        { title: t('sidebar.shipmentProcess', { defaultValue: 'Sevkiyat Process' }), href: '/shipment/process' },
+	        { title: t('sidebar.shipmentProcess'), href: '/shipment/process' },
 	        { title: t('sidebar.shipmentList'), href: '/shipment/list' },
 	      ]),
 	    };
 
     const serviceAllocationModule: NavItem = {
-      title: t('sidebar.serviceAllocation', { defaultValue: 'Servis ve Hakediş' }),
+      title: t('sidebar.serviceAllocation'),
       children: sortNavItems([
-        { title: t('sidebar.serviceAllocationAllocationQueue', { defaultValue: 'Hakediş Kuyruğu' }), href: '/service-allocation/allocation-queue' },
-        { title: t('sidebar.serviceAllocationCreate', { defaultValue: 'Servis Vakası Aç' }), href: '/service-allocation/cases/new' },
-        { title: t('sidebar.serviceAllocationCases', { defaultValue: 'Servis Vakaları' }), href: '/service-allocation/cases' },
-        { title: t('sidebar.serviceAllocationDocumentLinks', { defaultValue: 'Belge Linkleri' }), href: '/service-allocation/document-links' },
-        { title: t('sidebar.serviceAllocationReports', { defaultValue: 'Servis Raporları' }), href: '/service-allocation/reports' },
+        { title: t('sidebar.serviceAllocationAllocationQueue'), href: '/service-allocation/allocation-queue' },
+        { title: t('sidebar.serviceAllocationCreate'), href: '/service-allocation/cases/new' },
+        { title: t('sidebar.serviceAllocationCases'), href: '/service-allocation/cases' },
+        { title: t('sidebar.serviceAllocationDocumentLinks'), href: '/service-allocation/document-links' },
+        { title: t('sidebar.serviceAllocationReports'), href: '/service-allocation/reports' },
       ]),
     };
 
@@ -196,12 +196,12 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       title: t('sidebar.inventory'),
       children: sortNavItems([
         {
-          title: t('sidebar.inventoryCount', { defaultValue: 'Sayım' }),
+          title: t('sidebar.inventoryCount'),
           children: sortNavItems([
-            { title: t('sidebar.inventoryCountCreate', { defaultValue: 'Sayım Emrini Oluşturma' }), href: '/inventory-count/create' },
-            { title: t('sidebar.inventoryCountAssigned', { defaultValue: 'Atanmış Sayım Emirleri' }), href: '/inventory-count/assigned' },
-            { title: t('sidebar.inventoryCountProcess', { defaultValue: 'Sayım Direkt Giriş Yap' }), href: '/inventory-count/process' },
-            { title: t('sidebar.inventoryCountList', { defaultValue: 'Sayım Emirleri' }), href: '/inventory-count/list' },
+            { title: t('sidebar.inventoryCountCreate'), href: '/inventory-count/create' },
+            { title: t('sidebar.inventoryCountAssigned'), href: '/inventory-count/assigned' },
+            { title: t('sidebar.inventoryCountProcess'), href: '/inventory-count/process' },
+            { title: t('sidebar.inventoryCountList'), href: '/inventory-count/list' },
           ]),
         },
         { title: t('sidebar.warehouse3d'), href: '/inventory/3d-warehouse' },
@@ -215,19 +215,19 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     };
 
     const erpModule: NavItem = {
-      title: t('sidebar.erp', { defaultValue: 'ERP' }),
+      title: t('sidebar.erp'),
       children: sortNavItems([
-        { title: t('sidebar.erpCustomers', { defaultValue: 'Cariler' }), href: '/erp/customers' },
-        { title: t('sidebar.erpStocks', { defaultValue: 'Stoklar' }), href: '/erp/stocks' },
-        { title: t('sidebar.erpWarehouses', { defaultValue: 'Depolar' }), href: '/erp/warehouses' },
-        { title: t('sidebar.erpYapKodlar', { defaultValue: 'YapKodlar' }), href: '/erp/yapkodlar' },
-        { title: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Barkod Tanımları' }), href: '/erp/barcodes' },
+        { title: t('sidebar.erpCustomers'), href: '/erp/customers' },
+        { title: t('sidebar.erpStocks'), href: '/erp/stocks' },
+        { title: t('sidebar.erpWarehouses'), href: '/erp/warehouses' },
+        { title: t('sidebar.erpYapKodlar'), href: '/erp/yapkodlar' },
+        { title: t('sidebar.erpBarcodeDefinitions'), href: '/erp/barcodes' },
         {
-          title: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }),
+          title: t('sidebar.erpBarcodeDesigner'),
           children: sortNavItems([
-            { title: t('sidebar.erpBarcodeDesignerList', { defaultValue: 'Template Listesi' }), href: '/erp/barcode-designer' },
-            { title: t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Template Oluştur' }), href: '/erp/barcode-designer/new' },
-            { title: t('sidebar.erpPrinterManagement', { defaultValue: 'Yazıcılar ve Baskı İşleri' }), href: '/erp/printer-management' },
+            { title: t('sidebar.erpBarcodeDesignerList'), href: '/erp/barcode-designer' },
+            { title: t('sidebar.erpBarcodeDesignerCreate'), href: '/erp/barcode-designer/new' },
+            { title: t('sidebar.erpPrinterManagement'), href: '/erp/printer-management' },
           ]),
         },
       ]),
@@ -254,7 +254,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       title: t('sidebar.accessControl'),
       children: sortNavItems([
         {
-          title: t('sidebar.accessControlManagementGroup', { defaultValue: 'Yetki ve Kullanici Yonetimi' }),
+          title: t('sidebar.accessControlManagementGroup'),
           children: sortNavItems([
             { title: t('sidebar.userManagement'), href: '/access-control/user-management' },
             { title: t('sidebar.userGroupAssignments'), href: '/access-control/user-group-assignments' },
@@ -263,7 +263,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           ]),
         },
         {
-          title: t('sidebar.accessControlSystemGroup', { defaultValue: 'Sistem Araclari' }),
+          title: t('sidebar.accessControlSystemGroup'),
           children: sortNavItems([
             { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
             { title: t('sidebar.hangfireMonitoring'), href: '/hangfire-monitoring' },
@@ -275,7 +275,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     return [
       dashboardItem,
       {
-        title: t('sidebar.operationsGroup', { defaultValue: 'Operasyonlar' }),
+        title: t('sidebar.operationsGroup'),
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -295,29 +295,29 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ),
         children: sortNavItems([
           {
-            title: t('sidebar.inboundOperationsGroup', { defaultValue: 'Giriş Operasyonları' }),
+            title: t('sidebar.inboundOperationsGroup'),
             children: sortNavItems([goodsReceiptModule, warehouseInboundModule, subcontractingReceiptModule]),
           },
           {
-            title: t('sidebar.transferOperationsGroup', { defaultValue: 'Transfer Operasyonları' }),
+            title: t('sidebar.transferOperationsGroup'),
             children: sortNavItems([transferModule, subcontractingIssueModule, productionTransferModule]),
           },
           {
-            title: t('sidebar.outboundOperationsGroup', { defaultValue: 'Çıkış Operasyonları' }),
+            title: t('sidebar.outboundOperationsGroup'),
             children: sortNavItems([warehouseOutboundModule, shipmentModule, packageModule]),
           },
           {
-            title: t('sidebar.serviceOperationsGroup', { defaultValue: 'Servis Operasyonları' }),
+            title: t('sidebar.serviceOperationsGroup'),
             children: sortNavItems([serviceAllocationModule]),
           },
           {
-            title: t('sidebar.productionOperationsGroup', { defaultValue: 'Üretim' }),
+            title: t('sidebar.productionOperationsGroup'),
             children: sortNavItems([productionModule]),
           },
         ]),
       },
       {
-        title: t('sidebar.inventoryGroup', { defaultValue: 'Depo ve Görünüm' }),
+        title: t('sidebar.inventoryGroup'),
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -338,7 +338,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         children: sortNavItems([inventoryModule]),
       },
       {
-        title: t('sidebar.analyticsGroup', { defaultValue: 'Raporlama' }),
+        title: t('sidebar.analyticsGroup'),
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -361,7 +361,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         children: sortNavItems([reportsModule]),
       },
       {
-        title: t('sidebar.masterDataGroup', { defaultValue: 'Ana Veri ve Tanımlar' }),
+        title: t('sidebar.masterDataGroup'),
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -382,7 +382,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         children: sortNavItems([erpModule, parametersModule]),
       },
       {
-        title: t('sidebar.systemGroup', { defaultValue: 'Sistem ve Yetki' }),
+        title: t('sidebar.systemGroup'),
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -29,7 +29,7 @@ export function ShipmentProcessPage(): ReactElement {
   const [selectedItems, setSelectedItems] = useState<SelectedShipmentStockItem[]>([]);
 
   useEffect(() => {
-    setPageTitle(t('shipment.process.title', { defaultValue: 'Emirsiz Sevkiyat İşlemi' }));
+    setPageTitle(t('shipment.process.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -58,11 +58,11 @@ export function ShipmentProcessPage(): ReactElement {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shipmentHeaders'] });
       queryClient.invalidateQueries({ queryKey: ['shipmentHeadersPaged'] });
-      toast.success(t('shipment.process.success', { defaultValue: 'Sevkiyat işlemi oluşturuldu' }));
+      toast.success(t('shipment.process.success'));
       navigate('/shipment/list');
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('shipment.process.error', { defaultValue: 'Sevkiyat işlemi oluşturulamadı' }));
+      toast.error(error.message || t('shipment.process.error'));
     },
   });
 
@@ -119,16 +119,16 @@ export function ShipmentProcessPage(): ReactElement {
 
   const steps = [
     { label: t('shipment.create.steps.basicInfo') },
-    { label: t('shipment.process.steps.stockSelection', { defaultValue: 'Stok Seçimi' }) },
+    { label: t('shipment.process.steps.stockSelection') },
   ];
 
   const labels = {
-    stocks: t('shipment.process.stocks', { defaultValue: 'Stoklar' }),
-    selectedItems: t('shipment.process.selectedItems', { defaultValue: 'Seçilen Kalemler' }),
-    selectedItemsCount: t('shipment.process.selectedItemsCount', { defaultValue: '{{count}} kalem' }),
-    searchStocks: t('shipment.process.searchStocks', { defaultValue: 'Stok kodu veya adı ile ara...' }),
-    searchItems: t('shipment.process.searchItems', { defaultValue: 'Seçilenleri ara...' }),
-    noSelectedItems: t('shipment.process.noSelectedItems', { defaultValue: 'Seçili stok bulunmamaktadır' }),
+    stocks: t('shipment.process.stocks'),
+    selectedItems: t('shipment.process.selectedItems'),
+    selectedItemsCount: t('shipment.process.selectedItemsCount'),
+    searchStocks: t('shipment.process.searchStocks'),
+    searchItems: t('shipment.process.searchItems'),
+    noSelectedItems: t('shipment.process.noSelectedItems'),
     unit: t('shipment.step2.unit'),
     serialNo: t('shipment.details.serialNo'),
     serialNoPlaceholder: t('shipment.details.serialNoPlaceholder'),
@@ -145,7 +145,7 @@ export function ShipmentProcessPage(): ReactElement {
   return (
     <div className="crm-page space-y-6">
       <Badge variant="secondary" className="mb-4">
-        {t('shipment.process.badge', { defaultValue: 'Emirsiz Process' })}
+        {t('shipment.process.badge')}
       </Badge>
 
       <Breadcrumb
@@ -157,8 +157,8 @@ export function ShipmentProcessPage(): ReactElement {
       />
 
       <FormPageShell
-        title={t('shipment.process.title', { defaultValue: 'Emirsiz Sevkiyat İşlemi' })}
-        description={t('shipment.process.subtitle', { defaultValue: 'Header + ImportLine + Route mantığında sevkiyat işlemi oluşturun.' })}
+        title={t('shipment.process.title')}
+        description={t('shipment.process.subtitle')}
       >
         <Form {...form}>
           <form className="crm-page space-y-6">

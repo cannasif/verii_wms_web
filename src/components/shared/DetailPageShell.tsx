@@ -1,4 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { PageActionBar } from './PageActionBar';
 import { PageState } from './PageState';
@@ -40,13 +41,14 @@ export function DetailPageShell({
   onAction,
   className,
 }: DetailPageShellProps): ReactElement {
+  const { t } = useTranslation();
   let content = children;
 
   if (isLoading) {
     content = (
       <PageState
         tone="loading"
-        title={loadingTitle ?? 'Loading'}
+        title={loadingTitle ?? t('detailPage.loadingTitle')}
         description={loadingDescription}
         compact
       />
@@ -55,7 +57,7 @@ export function DetailPageShell({
     content = (
       <PageState
         tone="error"
-        title={errorTitle ?? 'Something went wrong'}
+        title={errorTitle ?? t('detailPage.errorTitle')}
         description={errorDescription}
         actionLabel={actionLabel}
         onAction={onAction}
@@ -66,7 +68,7 @@ export function DetailPageShell({
     content = (
       <PageState
         tone="empty"
-        title={emptyTitle ?? 'No data'}
+        title={emptyTitle ?? t('detailPage.emptyTitle')}
         description={emptyDescription}
         actionLabel={actionLabel}
         onAction={onAction}

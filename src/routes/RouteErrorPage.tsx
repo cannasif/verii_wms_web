@@ -1,10 +1,12 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export function RouteErrorPage() {
+  const { t } = useTranslation();
   const error = useRouteError();
 
-  let title = 'Beklenmeyen bir hata oluştu';
-  let description = 'Uygulama yeni sürüme geçmiş olabilir. Sayfayı yenileyip tekrar deneyin.';
+  let title = t('routeError.title');
+  let description = t('routeError.description');
 
   if (isRouteErrorResponse(error)) {
     title = `${error.status} ${error.statusText}`;
@@ -26,14 +28,14 @@ export function RouteErrorPage() {
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
             onClick={() => window.location.reload()}
           >
-            Sayfayi yenile
+            {t('routeError.refresh')}
           </button>
           <button
             type="button"
             className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground"
             onClick={() => window.location.assign('/')}
           >
-            Anasayfa
+            {t('routeError.home')}
           </button>
         </div>
       </div>
