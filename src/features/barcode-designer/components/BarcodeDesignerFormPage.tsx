@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Barcode, ChevronDown, ChevronRight, Download, FileJson2, Image as ImageIcon, Layers3, Package2, Plus, Save, ScanLine, Sparkles, Type } from 'lucide-react';
+import { Barcode, ChevronDown, ChevronRight, Copy, Download, FileJson2, Image as ImageIcon, Layers3, Package2, Plus, Save, ScanLine, Sparkles, Trash2, Type } from 'lucide-react';
 import type { Stage as KonvaStage } from 'konva/lib/Stage';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -77,6 +77,15 @@ const DEFAULT_RECOMMENDATION_CONTEXT = {
   customerType: 'standard',
   processType: 'warehouse-inbound',
 };
+
+const QUICK_INSERT_FIELDS = [
+  { key: 'stockCode', label: 'Stok Kodu', path: 'stock > identity > stockCode', sampleValue: 'STK-2026-001', targetType: 'text' as const },
+  { key: 'stockName', label: 'Stok Adi', path: 'stock > identity > stockName', sampleValue: 'Camasir Makinesi Motor', targetType: 'text' as const },
+  { key: 'stock.barcode', label: 'Stok Barkodu', path: 'stock > barcode > primary', sampleValue: '{{stockCode}}', targetType: 'barcode' as const },
+  { key: 'customerName', label: 'Musteri Adi', path: 'customer > identity > customerName', sampleValue: 'V3rii Musteri', targetType: 'text' as const },
+  { key: 'companyName', label: 'Firma Adi', path: 'company > identity > companyName', sampleValue: 'V3rii A.S.', targetType: 'text' as const },
+  { key: 'stockMainImageUrl', label: 'Stok Gorseli', path: 'stock > media > mainImageUrl', sampleValue: 'https://placehold.co/320x200/png', targetType: 'image' as const },
+];
 
 function describeElement(element: BarcodeDesignerElement | undefined): string {
   if (!element) return 'Eleman secili degil';
@@ -221,6 +230,39 @@ function getElementBox(element: BarcodeDesignerElement): { x: number; y: number;
   }
 
   return { x: 0, y: 0, width: 120, height: 48 };
+}
+
+function getSmartPlacementFromSelection(
+  document: BarcodeDesignerTemplateDocument,
+  selectedElement: BarcodeDesignerElement | undefined,
+  targetType: 'text' | 'barcode' | 'image',
+): { x?: number; y?: number } {
+  if (!selectedElement) {
+    return {};
+  }
+
+  const selectedBox = getElementBox(selectedElement);
+  const suggestion = getSuggestedElementLayout(document, targetType);
+  const canvasWidth = cmToPx(mmToCm(document.canvas.width));
+  const canvasHeight = cmToPx(mmToCm(document.canvas.height));
+
+  const preferBelowY = selectedBox.y + selectedBox.height + cmToPx(0.4);
+  if (preferBelowY + suggestion.height <= canvasHeight - cmToPx(0.2)) {
+    return {
+      x: selectedBox.x,
+      y: preferBelowY,
+    };
+  }
+
+  const preferRightX = selectedBox.x + selectedBox.width + cmToPx(0.4);
+  if (preferRightX + suggestion.width <= canvasWidth - cmToPx(0.2)) {
+    return {
+      x: preferRightX,
+      y: selectedBox.y,
+    };
+  }
+
+  return {};
 }
 
 interface SchemaFieldNodeProps {
@@ -444,6 +486,30 @@ export function BarcodeDesignerFormPage(): ReactElement {
       isActive: template.isActive,
     });
   }, [templateQuery.data?.data]);
+
+  useEffect(() => {
+    setDocumentState((current) => {
+      if (
+        current.canvas.width === templateRequest.width
+        && current.canvas.height === templateRequest.height
+        && current.canvas.dpi === templateRequest.dpi
+      ) {
+        return current;
+      }
+
+      const nextDocument = {
+        ...current,
+        canvas: {
+          ...current.canvas,
+          width: templateRequest.width,
+          height: templateRequest.height,
+          dpi: templateRequest.dpi,
+        },
+      };
+      setJsonValue(stringifyTemplateDocument(nextDocument));
+      return nextDocument;
+    });
+  }, [templateRequest.dpi, templateRequest.height, templateRequest.width]);
 
   useEffect(() => {
     const draftJson = draftQuery.data?.data?.templateJson;
@@ -919,6 +985,214 @@ export function BarcodeDesignerFormPage(): ReactElement {
     setJsonValue(stringifyTemplateDocument(nextDocument));
   };
 
+  const handleResizeElement = (elementId: string, width: number, height: number, x: number, y: number): void => {
+    const nextDocument: BarcodeDesignerTemplateDocument = {
+      ...documentState,
+      elements: documentState.elements.map((item) => {
+        if (item.id !== elementId) {
+          return item;
+        }
+
+        if (item.type === 'line') {
+          return {
+            ...item,
+            x: snapToGridPx(x),
+            y: snapToGridPx(y),
+            points: [0, 0, snapToGridPx(width), 0],
+          };
+        }
+
+        if ('width' in item && 'height' in item) {
+          return {
+            ...item,
+            x: snapToGridPx(x),
+            y: snapToGridPx(y),
+            width: snapToGridPx(width),
+            height: snapToGridPx(height),
+          };
+        }
+
+        return item;
+      }),
+    };
+
+    updateDocumentState(nextDocument);
+  };
+
+  const handleDeleteSelectedElement = (): void => {
+    if (!selectedElementId) {
+      return;
+    }
+
+    const nextElements = documentState.elements.filter((item) => item.id !== selectedElementId);
+    const nextSelectedId = nextElements[0]?.id ?? null;
+    const nextDocument = {
+      ...documentState,
+      elements: nextElements,
+    };
+
+    updateDocumentState(nextDocument);
+    setSelectedElementId(nextSelectedId);
+    setSelectedElementIds(nextSelectedId ? [nextSelectedId] : []);
+    toast.success('Secili eleman silindi');
+  };
+
+  const handleDuplicateSelectedElement = (): void => {
+    if (!selectedElement) {
+      return;
+    }
+
+    const duplicateId = `${selectedElement.type}-copy-${Date.now()}`;
+    const nextX = snapToGridPx(selectedElement.x + cmToPx(0.5));
+    const nextY = snapToGridPx(selectedElement.y + cmToPx(0.5));
+    const duplicate = { ...selectedElement, id: duplicateId, x: nextX, y: nextY };
+    const nextDocument = {
+      ...documentState,
+      elements: [...documentState.elements, duplicate],
+    };
+
+    updateDocumentState(nextDocument);
+    setSelectedElementId(duplicateId);
+    setSelectedElementIds([duplicateId]);
+    toast.success('Secili eleman kopyalandi');
+  };
+
+  const handleNudgeSelectedElement = (xDeltaCm: number, yDeltaCm: number): void => {
+    if (!selectedElement) {
+      return;
+    }
+
+    const canvasWidth = cmToPx(mmToCm(documentState.canvas.width));
+    const canvasHeight = cmToPx(mmToCm(documentState.canvas.height));
+    handleUpdateSelectedElement((element) => {
+      const box = getElementBox(element);
+      const maxX = Math.max(0, canvasWidth - box.width);
+      const maxY = Math.max(0, canvasHeight - box.height);
+      return {
+        ...element,
+        x: snapToGridPx(Math.min(Math.max(element.x + cmToPx(xDeltaCm), 0), maxX)),
+        y: snapToGridPx(Math.min(Math.max(element.y + cmToPx(yDeltaCm), 0), maxY)),
+      };
+    });
+  };
+
+  const handleCenterSelectedElement = (axis: 'horizontal' | 'vertical'): void => {
+    if (!selectedElement) {
+      return;
+    }
+
+    const canvasWidth = cmToPx(mmToCm(documentState.canvas.width));
+    const canvasHeight = cmToPx(mmToCm(documentState.canvas.height));
+    handleUpdateSelectedElement((element) => {
+      const box = getElementBox(element);
+      if (axis === 'horizontal') {
+        return {
+          ...element,
+          x: snapToGridPx((canvasWidth - box.width) / 2),
+        };
+      }
+
+      return {
+        ...element,
+        y: snapToGridPx((canvasHeight - box.height) / 2),
+      };
+    });
+  };
+
+  const handleApplyTextPreset = (preset: 'title' | 'body' | 'caption'): void => {
+    handleUpdateSelectedElement((element) => {
+      if (element.type !== 'text') {
+        return element;
+      }
+
+      if (preset === 'title') {
+        return {
+          ...element,
+          fontSize: 20,
+          width: cmToPx(8),
+          height: cmToPx(1),
+          text: element.text.startsWith('{{') ? element.text : 'Ana Baslik',
+        };
+      }
+
+      if (preset === 'caption') {
+        return {
+          ...element,
+          fontSize: 10,
+          width: cmToPx(5),
+          height: cmToPx(0.7),
+          text: element.text.startsWith('{{') ? element.text : 'Kucuk Etiket',
+        };
+      }
+
+      return {
+        ...element,
+        fontSize: 14,
+        width: cmToPx(6.5),
+        height: cmToPx(0.8),
+        text: element.text.startsWith('{{') ? element.text : 'Aciklama Alani',
+      };
+    });
+    toast.success('Text preset uygulandi');
+  };
+
+  const handleApplyBarcodePreset = (preset: 'code128' | 'qrcode' | 'datamatrix'): void => {
+    handleUpdateSelectedElement((element) => {
+      if (element.type !== 'barcode') {
+        return element;
+      }
+
+      if (preset === 'qrcode') {
+        return {
+          ...element,
+          barcodeType: 'qrcode',
+          width: cmToPx(3),
+          height: cmToPx(3),
+        };
+      }
+
+      if (preset === 'datamatrix') {
+        return {
+          ...element,
+          barcodeType: 'datamatrix',
+          width: cmToPx(2.8),
+          height: cmToPx(2.8),
+        };
+      }
+
+      return {
+        ...element,
+        barcodeType: 'code128',
+        width: cmToPx(6),
+        height: cmToPx(1.8),
+      };
+    });
+    toast.success('Barcode preset uygulandi');
+  };
+
+  const handleApplyImagePreset = (preset: 'logo' | 'product'): void => {
+    handleUpdateSelectedElement((element) => {
+      if (element.type !== 'image') {
+        return element;
+      }
+
+      if (preset === 'logo') {
+        return {
+          ...element,
+          width: cmToPx(2.5),
+          height: cmToPx(1.4),
+        };
+      }
+
+      return {
+        ...element,
+        width: cmToPx(4),
+        height: cmToPx(3),
+      };
+    });
+    toast.success('Image preset uygulandi');
+  };
+
   const renderSchemaEntityIcon = (iconKey: string): ReactElement => {
     switch (iconKey) {
       case 'package':
@@ -1181,13 +1455,14 @@ export function BarcodeDesignerFormPage(): ReactElement {
       return;
     }
 
+    const placement = getSmartPlacementFromSelection(documentState, selectedElement, target);
     const nextElement = createBoundElementFromField(documentState, {
       key: bindingKey,
       label: fieldMeta?.label ?? bindingKey,
       path: fieldMeta?.path ?? bindingKey,
       sampleValue: sample,
       targetType: target,
-    });
+    }, placement.x, placement.y);
 
     const nextDocument = {
       ...documentState,
@@ -1220,6 +1495,32 @@ export function BarcodeDesignerFormPage(): ReactElement {
     toast.success("Alan surukle-birak ile canvas'a eklendi");
   };
 
+  const handleCreateFieldElement = (
+    field: Pick<BarcodeBindingField, 'key' | 'label' | 'path' | 'sampleValue' | 'targetType'>,
+    targetType?: 'text' | 'barcode' | 'image',
+  ): void => {
+    const effectiveTarget = targetType ?? field.targetType;
+    const placement = getSmartPlacementFromSelection(documentState, selectedElement, effectiveTarget);
+    const nextElement = createBoundElementFromField(documentState, {
+      ...field,
+      targetType: effectiveTarget,
+    }, placement.x, placement.y);
+
+    const nextDocument = {
+      ...documentState,
+      bindings: {
+        ...documentState.bindings,
+        [field.key]: field.sampleValue,
+      },
+      elements: [...documentState.elements, nextElement],
+    };
+
+    updateDocumentState(nextDocument);
+    setSelectedElementId(nextElement.id);
+    setSelectedElementIds([nextElement.id]);
+    toast.success(`${field.label} alani eklendi ve secildi`);
+  };
+
   const handleBindingPickerConfirm = (payload: {
     header: BarcodeSourceHeaderOption;
     line?: BarcodeSourceLineOption | null;
@@ -1238,25 +1539,37 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
   const handleAddElement = (type: 'text' | 'barcode' | 'rect' | 'line' | 'image' | 'qrcode' | 'datamatrix'): void => {
     const nextId = `${type}-${Date.now()}`;
+    const effectiveTarget: 'text' | 'barcode' | 'image' =
+      type === 'text' ? 'text' : type === 'image' ? 'image' : 'barcode';
+    const placement = getSmartPlacementFromSelection(documentState, selectedElement, effectiveTarget);
     const nextElement: BarcodeDesignerElement =
       type === 'text'
-        ? { id: nextId, type, x: 24, y: 24, width: 180, height: 24, fontSize: 14, text: 'Yeni Text' }
+        ? {
+            id: nextId,
+            type,
+            x: placement.x ?? 24,
+            y: placement.y ?? 24,
+            width: 180,
+            height: 24,
+            fontSize: 14,
+            text: 'Yeni Text',
+          }
         : type === 'barcode' || type === 'qrcode' || type === 'datamatrix'
           ? {
               id: nextId,
               type: 'barcode',
-              x: 24,
-              y: 64,
+              x: placement.x ?? 24,
+              y: placement.y ?? 64,
               width: type === 'barcode' ? 240 : 120,
               height: type === 'barcode' ? 72 : 120,
               barcodeType: type === 'barcode' ? 'code128' : type,
               binding: 'stock.barcode',
             }
           : type === 'image'
-            ? { id: nextId, type: 'image', x: 24, y: 24, width: 120, height: 80, src: 'https://placehold.co/240x160/png' }
+            ? { id: nextId, type: 'image', x: placement.x ?? 24, y: placement.y ?? 24, width: 120, height: 80, src: 'https://placehold.co/240x160/png' }
           : type === 'rect'
-            ? { id: nextId, type, x: 16, y: 16, width: 280, height: 180 }
-            : { id: nextId, type, x: 20, y: 20, points: [0, 0, 180, 0] };
+            ? { id: nextId, type, x: placement.x ?? 16, y: placement.y ?? 16, width: 280, height: 180 }
+            : { id: nextId, type, x: placement.x ?? 20, y: placement.y ?? 20, points: [0, 0, 180, 0] };
 
     const nextDocument = {
       ...documentState,
@@ -1607,6 +1920,46 @@ export function BarcodeDesignerFormPage(): ReactElement {
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
               <div className="font-medium text-slate-900 dark:text-white">Secili Eleman</div>
               <div className="mt-2 text-slate-600 dark:text-slate-300">{describeElement(selectedElement)}</div>
+              {selectedElement ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="outline">X: {pxToCm(selectedElement.x)} cm</Badge>
+                  <Badge variant="outline">Y: {pxToCm(selectedElement.y)} cm</Badge>
+                  {'width' in selectedElement ? <Badge variant="outline">W: {pxToCm(selectedElement.width)} cm</Badge> : null}
+                  {'height' in selectedElement ? <Badge variant="outline">H: {pxToCm(selectedElement.height)} cm</Badge> : null}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-slate-900 dark:text-white">Eleman Listesi</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Koordinat vermeden once elemani buradan da secebilirsin.</div>
+                </div>
+                <Badge variant="secondary">{documentState.elements.length} eleman</Badge>
+              </div>
+              <div className="mt-4 space-y-2">
+                {documentState.elements.map((element) => (
+                  <button
+                    key={element.id}
+                    type="button"
+                    onClick={() => handleSelectElement(element.id)}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition ${
+                      selectedElementId === element.id
+                        ? 'border-sky-400 bg-sky-50/80 dark:border-sky-500 dark:bg-sky-500/10'
+                        : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03]'
+                    }`}
+                  >
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">{describeElement(element)}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {pxToCm(element.x)} cm / {pxToCm(element.y)} cm
+                      </div>
+                    </div>
+                    <Badge variant="outline">{element.type}</Badge>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
@@ -1758,6 +2111,33 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="mt-4 text-[11px] text-slate-500 dark:text-slate-400">
                 Tree node seviyesinde ac/kapa kullanabilir, leaf alanlari cift tiklayabilir veya dogrudan canvas'a surukleyebilirsin.
               </div>
+              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-medium text-slate-900 dark:text-white">Hizli Alan Yerlestir</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      Suruklemeden de kullan. Tikladiginda alan canvas'a eklenir ve otomatik secilir.
+                    </div>
+                  </div>
+                  <Badge variant="secondary">Quick Insert</Badge>
+                </div>
+                <div className="mt-3 space-y-2">
+                  {QUICK_INSERT_FIELDS.map((field) => (
+                    <div key={`quick-${field.key}`} className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-slate-900/30">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-slate-900 dark:text-white">{field.label}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">{field.path}</div>
+                      </div>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleCreateFieldElement(field, 'text')} disabled={!canManageTemplate}>
+                        Text Ekle
+                      </Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleCreateFieldElement(field, field.targetType)} disabled={!canManageTemplate}>
+                        {field.targetType === 'barcode' ? 'Barcode Ekle' : field.targetType === 'image' ? 'Gorsel Ekle' : 'Onerilen Ekle'}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="mt-4 space-y-3">
                 {bindingExplorerTrees.map((group) => {
                   const expanded = expandedBindingGroups[group.groupKey] ?? true;
@@ -1798,6 +2178,32 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="font-medium text-slate-900 dark:text-white">Element Property Panel</div>
               {selectedElement ? (
                 <div className="mt-4 space-y-4">
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button type="button" variant="outline" onClick={handleDuplicateSelectedElement} disabled={!canManageTemplate}>
+                      <Copy className="mr-2 size-4" />
+                      Kopyala
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleDeleteSelectedElement} disabled={!canManageTemplate}>
+                      <Trash2 className="mr-2 size-4" />
+                      Sil
+                    </Button>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                    <div className="mb-2 text-sm font-medium text-slate-900 dark:text-white">Hizli Konumlandirma</div>
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0, -0.1)} disabled={!canManageTemplate}>Yukari</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleCenterSelectedElement('horizontal')} disabled={!canManageTemplate}>Yatay Ortala</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0, 0.1)} disabled={!canManageTemplate}>Asagi</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(-0.1, 0)} disabled={!canManageTemplate}>Sola</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleCenterSelectedElement('vertical')} disabled={!canManageTemplate}>Dikey Ortala</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0.1, 0)} disabled={!canManageTemplate}>Saga</Button>
+                    </div>
+                    <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                      Butonlar elemani 0.1 cm adimlarla tasir. Daha net konum icin alttaki X/Y alanlarini kullan.
+                    </div>
+                  </div>
+
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label>X (cm)</Label>
@@ -1806,6 +2212,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                         step="0.1"
                         value={pxToCm(selectedElement.x)}
                         onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, x: cmToPx(toNumber(event.target.value, pxToCm(element.x))) }))}
+                        disabled={!canManageTemplate}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1815,6 +2222,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                         step="0.1"
                         value={pxToCm(selectedElement.y)}
                         onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, y: cmToPx(toNumber(event.target.value, pxToCm(element.y))) }))}
+                        disabled={!canManageTemplate}
                       />
                     </div>
                   </div>
@@ -1830,6 +2238,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                           onChange={(event) => handleUpdateSelectedElement((element) => (
                             'width' in element ? { ...element, width: cmToPx(toNumber(event.target.value, pxToCm(element.width))) } : element
                           ))}
+                          disabled={!canManageTemplate}
                         />
                       </div>
                       <div className="space-y-2">
@@ -1841,6 +2250,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                           onChange={(event) => handleUpdateSelectedElement((element) => (
                             'height' in element ? { ...element, height: cmToPx(toNumber(event.target.value, pxToCm(element.height))) } : element
                           ))}
+                          disabled={!canManageTemplate}
                         />
                       </div>
                     </div>
@@ -1856,6 +2266,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                             element.type === 'text' ? { ...element, text: event.target.value } : element
                           ))}
                           className="min-h-[96px]"
+                          disabled={!canManageTemplate}
                         />
                       </div>
                       <div className="space-y-2">
@@ -1866,6 +2277,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                           onChange={(event) => handleUpdateSelectedElement((element) => (
                             element.type === 'text' ? { ...element, fontSize: toNumber(event.target.value, element.fontSize) } : element
                           ))}
+                          disabled={!canManageTemplate}
                         />
                       </div>
                     </>
@@ -1882,6 +2294,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                               ? { ...element, barcodeType: value as 'code128' | 'qrcode' | 'datamatrix' }
                               : element
                           ))}
+                          disabled={!canManageTemplate}
                         >
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -1898,6 +2311,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                           onChange={(event) => handleUpdateSelectedElement((element) => (
                             element.type === 'barcode' ? { ...element, binding: event.target.value } : element
                           ))}
+                          disabled={!canManageTemplate}
                         />
                       </div>
                       <div className="space-y-2">
@@ -1905,6 +2319,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                         <Input
                           value={documentState.bindings[selectedElement.binding] ?? ''}
                           onChange={(event) => handleBindingValueChange(selectedElement.binding, event.target.value)}
+                          disabled={!canManageTemplate}
                         />
                       </div>
                     </>
@@ -1918,6 +2333,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                         onChange={(event) => handleUpdateSelectedElement((element) => (
                           element.type === 'image' ? { ...element, src: event.target.value } : element
                         ))}
+                        disabled={!canManageTemplate}
                       />
                     </div>
                   ) : null}
@@ -1936,6 +2352,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                             element.type === 'line' ? { ...element, points: values.length >= 4 ? values : element.points } : element
                           ));
                         }}
+                        disabled={!canManageTemplate}
                       />
                     </div>
                   ) : null}
@@ -2096,6 +2513,20 @@ export function BarcodeDesignerFormPage(): ReactElement {
             </div>
 
             <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+              <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+                <div>
+                  <div className="font-medium text-slate-900 dark:text-white">
+                    Canvas: {mmToCm(documentState.canvas.width)} cm × {mmToCm(documentState.canvas.height)} cm
+                  </div>
+                  <div className="mt-1 text-slate-500 dark:text-slate-400">
+                    Sagdan alan ekle, canvas uzerinden surukle veya eleman listesinden secip X/Y ver. Boyut degistirdikce goruntu aninda guncellenir.
+                  </div>
+                </div>
+                <Badge variant="outline">{documentState.canvas.dpi} DPI</Badge>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
               <CardContent className="flex flex-wrap items-center gap-2 p-4">
                 <Badge variant="secondary">{selectedElementIds.length} secili</Badge>
                 <Button variant="outline" size="sm" disabled={selectedElementIds.length < 2} onClick={() => handleAlignHorizontalSelection('left')}>
@@ -2150,6 +2581,12 @@ export function BarcodeDesignerFormPage(): ReactElement {
               onSelectElement={handleSelectElement}
               onClearSelection={handleClearSelection}
               onMoveElement={canManageTemplate ? handleMoveElement : () => {}}
+              onResizeElement={canManageTemplate ? handleResizeElement : () => {}}
+              onDuplicateSelected={canManageTemplate ? handleDuplicateSelectedElement : undefined}
+              onDeleteSelected={canManageTemplate ? handleDeleteSelectedElement : undefined}
+              onApplyTextPreset={canManageTemplate ? handleApplyTextPreset : undefined}
+              onApplyBarcodePreset={canManageTemplate ? handleApplyBarcodePreset : undefined}
+              onApplyImagePreset={canManageTemplate ? handleApplyImagePreset : undefined}
               onDropBindingField={canManageTemplate ? handleDropBindingField : () => {}}
               arrangementGuides={arrangementGuides}
               stageRef={stageRef}

@@ -1,11 +1,10 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Download, Printer, RefreshCcw, Search, Sparkles } from 'lucide-react';
-import type { Stage as KonvaStage } from 'konva/lib/Stage';
-import { flushSync } from 'react-dom';
+import { Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,126 +12,195 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useUIStore } from '@/stores/ui-store';
-import { loadJsPdfModule } from '@/lib/lazy-vendors';
-import { packageApi } from '@/features/package/api/package-api';
-import { printerManagementApi } from '@/features/printer-management/api/printer-management.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { printerManagementApi } from '@/features/printer-management/api/printer-management.api';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
+import { useUIStore } from '@/stores/ui-store';
+import type { PrinterProfile } from '@/features/printer-management/types/printer-management.types';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
-import { BarcodePrintSourcePickerDialog } from './BarcodePrintSourcePickerDialog';
-import { BarcodeDesignerCanvas } from './BarcodeDesignerCanvas';
+import { barcodePrintSourceBrowserApi } from '../api/barcode-print-source-browser.api';
 import type {
-  BarcodeDesignerTemplateDocument,
-  BarcodePrintSourceItem,
   BarcodePrintSourceModule,
   BarcodeSourceHeaderOption,
   BarcodeSourceLineOption,
-  BarcodeSourcePackageOption,
+  BarcodeTemplate,
 } from '../types/barcode-designer-editor.types';
-import { DEFAULT_TEMPLATE_DOCUMENT, parseTemplateDocument } from '../utils/barcode-designer-document';
-import {
-  connectBarcodePrinter,
-  discoverBarcodePrinters,
-  openBrowserPrintWindow,
-  type BarcodePrinterTarget,
-} from '../utils/printer-client';
+import { DEFAULT_TEMPLATE_DOCUMENT } from '../utils/barcode-designer-document';
+
+type HeaderColumnKey = 'select' | 'documentNo' | 'subtitle' | 'status' | 'documentDate';
+type HeaderSortKey = 'id';
+
+interface OperationOption {
+  value: BarcodePrintSourceModule;
+  label: string;
+  description: string;
+}
+
+const operationOptions: OperationOption[] = [
+  { value: 'goods-receipt', label: 'Mal Kabul', description: 'Tüm mal kabuller' },
+  { value: 'transfer', label: 'Transfer', description: 'Depolar arası transferler' },
+  { value: 'warehouse-inbound', label: 'Ambar Giriş', description: 'Ambar giriş belgeleri' },
+  { value: 'warehouse-outbound', label: 'Ambar Çıkış', description: 'Ambar çıkış belgeleri' },
+  { value: 'shipment', label: 'Sevkiyat', description: 'Sevkiyat belgeleri' },
+  { value: 'subcontracting-issue', label: 'Fason Çıkış', description: 'Fasona çıkış belgeleri' },
+  { value: 'subcontracting-receipt', label: 'Fason Giriş', description: 'Fasondan giriş belgeleri' },
+  { value: 'package', label: 'Paketleme', description: 'Paket ve koli belgeleri' },
+  { value: 'production-transfer', label: 'Üretim Transfer', description: 'Üretim transfer belgeleri' },
+];
+
+function mapSortBy(_: HeaderSortKey): string {
+  return 'Id';
+}
+
+function getOperationLabel(sourceModule: BarcodePrintSourceModule): string {
+  return operationOptions.find((item) => item.value === sourceModule)?.label ?? sourceModule;
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short' }).format(date);
+}
 
 export function BarcodePrintPage(): ReactElement {
   const { t } = useTranslation('common');
   const { id } = useParams();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.print-management');
-  const stageRef = useRef<KonvaStage | null>(null);
-  const templateId = id ? Number(id) : null;
+  const initialTemplateId = id ? Number(id) : null;
 
-  const [printQuantity, setPrintQuantity] = useState(1);
-  const [printMode, setPrintMode] = useState<'manual' | 'document-line' | 'document-all'>('manual');
   const [sourceModule, setSourceModule] = useState<BarcodePrintSourceModule>('goods-receipt');
-  const [sourceHeaderId, setSourceHeaderId] = useState('');
-  const [sourceLineId, setSourceLineId] = useState('');
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [selectedHeader, setSelectedHeader] = useState<BarcodeSourceHeaderOption | null>(null);
-  const [selectedLine, setSelectedLine] = useState<BarcodeSourceLineOption | null>(null);
-  const [selectedPackage, setSelectedPackage] = useState<BarcodeSourcePackageOption | null>(null);
-  const [availablePrinters, setAvailablePrinters] = useState<BarcodePrinterTarget[]>([]);
-  const [selectedPrinterId, setSelectedPrinterId] = useState('browser-print');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(initialTemplateId);
+  const [selectedHeaderMap, setSelectedHeaderMap] = useState<Record<number, BarcodeSourceHeaderOption>>({});
+  const [selectedLineMap, setSelectedLineMap] = useState<Record<number, BarcodeSourceLineOption>>({});
   const [selectedServerPrinterId, setSelectedServerPrinterId] = useState('');
   const [selectedServerPrinterProfileId, setSelectedServerPrinterProfileId] = useState('');
-  const [sampleData, setSampleData] = useState({
-    stockCode: 'STK-2026-001',
-    stockName: 'Camasir Makinesi Motor',
-    serialNo: 'SN-000245',
-  });
-  const [batchInput, setBatchInput] = useState('STK-2026-001|Camasir Makinesi Motor|SN-000245');
-  const [resolvedSourceItems, setResolvedSourceItems] = useState<BarcodePrintSourceItem[]>([]);
+  const [copies, setCopies] = useState(1);
 
-  const templateQuery = useQuery({
-    queryKey: ['barcode-designer-template', templateId],
-    queryFn: ({ signal }) => barcodeDesignerApi.getTemplate(templateId!, { signal }),
-    enabled: !!templateId,
-  });
-
-  const draftQuery = useQuery({
-    queryKey: ['barcode-designer-draft', templateId],
-    queryFn: ({ signal }) => barcodeDesignerApi.getDraft(templateId!, { signal }),
-    enabled: !!templateId,
-  });
-
-  const serverPrintersQuery = useQuery({
-    queryKey: ['printer-management-printers-for-barcode-print'],
-    queryFn: ({ signal }) => printerManagementApi.getPrinters({ signal }),
-  });
-
-  const templatePrinterProfilesQuery = useQuery({
-    queryKey: ['barcode-designer-template-printer-profiles-for-print', templateId],
-    queryFn: ({ signal }) => printerManagementApi.getTemplatePrinterProfiles(templateId!, { signal }),
-    enabled: !!templateId,
-  });
-
-  const printerProfilesQuery = useQuery({
-    queryKey: ['printer-management-profiles-for-barcode-print'],
-    queryFn: ({ signal }) => printerManagementApi.getProfiles(undefined, { signal }),
+  const pagedGrid = usePagedDataGrid<HeaderSortKey>({
+    pageKey: `barcode-print-${sourceModule}`,
+    defaultSortBy: 'id',
+    defaultSortDirection: 'desc',
+    defaultPageNumber: 0,
+    defaultPageSize: 10,
+    mapSortBy,
   });
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpBarcodePrint', { defaultValue: 'Etiket Bas' }));
+    setPageTitle(t('sidebar.erpBarcodePrint', { defaultValue: 'Barkod Yazdır' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   useEffect(() => {
-    setSelectedHeader(null);
-    setSelectedLine(null);
-    setSelectedPackage(null);
-    setSourceHeaderId('');
-    setSourceLineId('');
-  }, [sourceModule, printMode]);
+    setSelectedHeaderMap({});
+    setSelectedLineMap({});
+    pagedGrid.setPageNumber(0);
+  }, [sourceModule]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const templatesQuery = useQuery({
+    queryKey: ['barcode-designer-templates-for-print-operations'],
+    queryFn: ({ signal }) => barcodeDesignerApi.getTemplates({ signal }),
+  });
 
   useEffect(() => {
-    void discoverBarcodePrinters().then(setAvailablePrinters).catch(() => setAvailablePrinters([]));
-  }, []);
+    if (selectedTemplateId) {
+      return;
+    }
+
+    const templates = templatesQuery.data?.data ?? [];
+    if (templates.length === 0) {
+      return;
+    }
+
+    const preferredTemplate = templates.find((item) => item.id === initialTemplateId) ?? templates.find((item) => item.isActive) ?? templates[0];
+    if (preferredTemplate?.id) {
+      setSelectedTemplateId(preferredTemplate.id);
+    }
+  }, [initialTemplateId, selectedTemplateId, templatesQuery.data?.data]);
+
+  const selectedTemplate = useMemo<BarcodeTemplate | null>(() => {
+    const templates = templatesQuery.data?.data ?? [];
+    return templates.find((item) => item.id === selectedTemplateId) ?? null;
+  }, [selectedTemplateId, templatesQuery.data?.data]);
+
+  const draftQuery = useQuery({
+    queryKey: ['barcode-designer-draft-for-print-operations', selectedTemplateId],
+    queryFn: ({ signal }) => barcodeDesignerApi.getDraft(selectedTemplateId!, { signal }),
+    enabled: !!selectedTemplateId,
+  });
+
+  const headersQuery = useQuery({
+    queryKey: ['barcode-print-headers-paged', sourceModule, pagedGrid.queryParams],
+    queryFn: () => barcodePrintSourceBrowserApi.getHeadersPaged(sourceModule, pagedGrid.queryParams),
+  });
+
+  const selectedHeaderIds = useMemo(
+    () => Object.keys(selectedHeaderMap).map(Number).sort((left, right) => left - right),
+    [selectedHeaderMap],
+  );
+
+  const singleSelectedHeaderId = selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
+  const singleSelectedHeader = singleSelectedHeaderId ? selectedHeaderMap[singleSelectedHeaderId] : null;
 
   useEffect(() => {
-    const firstActivePrinter = serverPrintersQuery.data?.data?.find((item) => item.isActive);
-    if (firstActivePrinter?.id && !selectedServerPrinterId) {
-      setSelectedServerPrinterId(String(firstActivePrinter.id));
+    if (!singleSelectedHeaderId) {
+      setSelectedLineMap({});
+    }
+  }, [singleSelectedHeaderId]);
+
+  const linesQuery = useQuery({
+    queryKey: ['barcode-print-lines', sourceModule, singleSelectedHeaderId],
+    queryFn: () => barcodePrintSourceBrowserApi.getLines(sourceModule, singleSelectedHeaderId!),
+    enabled: singleSelectedHeaderId != null,
+  });
+
+  const serverPrintersQuery = useQuery({
+    queryKey: ['printer-management-printers-for-barcode-print-operations'],
+    queryFn: ({ signal }) => printerManagementApi.getPrinters({ signal }),
+  });
+
+  const templatePrinterProfilesQuery = useQuery({
+    queryKey: ['barcode-designer-template-printer-profiles-for-print-operations', selectedTemplateId],
+    queryFn: ({ signal }) => printerManagementApi.getTemplatePrinterProfiles(selectedTemplateId!, { signal }),
+    enabled: !!selectedTemplateId,
+  });
+
+  const printerProfilesQuery = useQuery({
+    queryKey: ['printer-management-profiles-for-barcode-print-operations'],
+    queryFn: ({ signal }) => printerManagementApi.getProfiles(undefined, { signal }),
+  });
+
+  useEffect(() => {
+    const activePrinter = serverPrintersQuery.data?.data?.find((item) => item.isActive && item.isDefault)
+      ?? serverPrintersQuery.data?.data?.find((item) => item.isActive);
+
+    if (activePrinter?.id && !selectedServerPrinterId) {
+      setSelectedServerPrinterId(String(activePrinter.id));
     }
   }, [selectedServerPrinterId, serverPrintersQuery.data?.data]);
 
   useEffect(() => {
-    const defaultMapping = templatePrinterProfilesQuery.data?.data?.find((item) => item.isDefault);
+    const defaultMapping = templatePrinterProfilesQuery.data?.data?.find((item) => item.isDefault)
+      ?? templatePrinterProfilesQuery.data?.data?.[0];
+
     if (!defaultMapping) {
+      setSelectedServerPrinterProfileId('');
       return;
     }
 
-    const matchedPrinter = serverPrintersQuery.data?.data?.find((item) => item.code === defaultMapping.printerCode && item.isActive);
-    if (matchedPrinter?.id) {
-      setSelectedServerPrinterId(String(matchedPrinter.id));
-    }
     setSelectedServerPrinterProfileId(String(defaultMapping.printerProfileId));
+
+    const matchingPrinter = (serverPrintersQuery.data?.data ?? []).find((item) => item.code === defaultMapping.printerCode && item.isActive);
+    if (matchingPrinter?.id) {
+      setSelectedServerPrinterId(String(matchingPrinter.id));
+    }
   }, [serverPrintersQuery.data?.data, templatePrinterProfilesQuery.data?.data]);
 
-  const availableServerProfiles = useMemo(() => {
+  const availableServerProfiles = useMemo<PrinterProfile[]>(() => {
     const selectedPrinter = (serverPrintersQuery.data?.data ?? []).find((item) => String(item.id) === selectedServerPrinterId);
     const templateMappings = templatePrinterProfilesQuery.data?.data ?? [];
     const allProfiles = printerProfilesQuery.data?.data ?? [];
@@ -143,523 +211,546 @@ export function BarcodePrintPage(): ReactElement {
       }
 
       const printerMatches = !selectedPrinter || profile.printerCode === selectedPrinter.code;
-      const mappedToTemplate = !templateId || templateMappings.some((mapping) => mapping.printerProfileId === profile.id);
+      const mappedToTemplate = !selectedTemplateId || templateMappings.some((mapping) => mapping.printerProfileId === profile.id);
 
       return printerMatches && mappedToTemplate;
     });
-  }, [printerProfilesQuery.data?.data, selectedServerPrinterId, serverPrintersQuery.data?.data, templateId, templatePrinterProfilesQuery.data?.data]);
+  }, [printerProfilesQuery.data?.data, selectedServerPrinterId, selectedTemplateId, serverPrintersQuery.data?.data, templatePrinterProfilesQuery.data?.data]);
 
-  const documentState = useMemo<BarcodeDesignerTemplateDocument>(() => {
-    try {
-      if (draftQuery.data?.data?.templateJson) {
-        const parsed = parseTemplateDocument(draftQuery.data.data.templateJson);
-        return {
-          ...parsed,
-          bindings: {
-            ...parsed.bindings,
-            ...sampleData,
-            'stock.barcode': sampleData.stockCode,
-          },
-        };
-      }
-    } catch {
-      return DEFAULT_TEMPLATE_DOCUMENT;
-    }
+  const selectedLineIds = useMemo(
+    () => Object.keys(selectedLineMap).map(Number).sort((left, right) => left - right),
+    [selectedLineMap],
+  );
 
-    return {
-      ...DEFAULT_TEMPLATE_DOCUMENT,
-      bindings: {
-        ...DEFAULT_TEMPLATE_DOCUMENT.bindings,
-        ...sampleData,
-        'stock.barcode': sampleData.stockCode,
-      },
-    };
-  }, [draftQuery.data?.data?.templateJson, sampleData]);
+  const currentPageRows = headersQuery.data?.data ?? [];
+  const allVisibleRowsSelected = currentPageRows.length > 0 && currentPageRows.every((row) => selectedHeaderMap[row.id] != null);
 
-  const previewMutation = useMutation({
-    mutationFn: async () => await barcodeDesignerApi.preview({
-      templateId,
-      templateJson: draftQuery.data?.data?.templateJson ?? JSON.stringify(documentState),
-      sourceModule,
-      sourceHeaderId: sourceHeaderId.trim() ? Number(sourceHeaderId) : null,
-      sourceLineId: sourceLineId.trim() ? Number(sourceLineId) : null,
-      printMode,
-      sampleData,
-    }),
-    onSuccess: (response) => {
-      toast.success(response.message || 'Print preview hazirlandi');
-    },
-    onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Print preview hazirlanamadi');
-    },
+  const paginationRange = getPagedRange(headersQuery.data, 0);
+  const paginationInfoText = t('common.paginationInfo', {
+    current: paginationRange.from,
+    total: paginationRange.to,
+    totalCount: paginationRange.total,
+    defaultValue: `${paginationRange.from}-${paginationRange.to} / ${paginationRange.total}`,
   });
 
-  const resolveSourceMutation = useMutation({
-    mutationFn: async () => {
-      if (sourceModule === 'package' && selectedPackage) {
-        const lines = await packageApi.getPLinesByPackage(selectedPackage.id);
-        const packageItems: BarcodePrintSourceItem[] = lines.map((line) => ({
-          sourceModule,
-          sourceHeaderId: selectedPackage.headerId,
-          sourceLineId: line.id,
-          stockCode: line.stockCode,
-          stockName: line.stockName ?? `Paket ${selectedPackage.title}`,
-          serialNo: line.serialNo ?? selectedPackage.barcode ?? null,
-          yapKod: line.yapKod ?? null,
-          quantity: line.quantity,
-          description: selectedPackage.title,
-        }));
-        return {
-          success: true,
-          message: 'Paket icerigi cozuldu',
-          exceptionMessage: '',
-          data: packageItems,
-          errors: [],
-          timestamp: new Date().toISOString(),
-          statusCode: 200,
-          className: 'ApiResponse',
-        };
+  const columns = useMemo<PagedDataGridColumn<HeaderColumnKey>[]>(
+    () => [
+      { key: 'select', label: '' },
+      { key: 'documentNo', label: t('common.documentNo', { defaultValue: 'Belge No' }) },
+      { key: 'subtitle', label: t('common.description', { defaultValue: 'Açıklama' }) },
+      { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
+      { key: 'documentDate', label: t('common.date', { defaultValue: 'Tarih' }) },
+    ],
+    [t],
+  );
+
+  const toggleHeaderSelection = (header: BarcodeSourceHeaderOption): void => {
+    setSelectedHeaderMap((current) => {
+      if (current[header.id]) {
+        const next = { ...current };
+        delete next[header.id];
+        return next;
       }
 
-      return await barcodeDesignerApi.resolvePrintSource({
-        sourceModule,
-        sourceHeaderId: sourceHeaderId.trim() ? Number(sourceHeaderId) : null,
-        sourceLineId: sourceLineId.trim() ? Number(sourceLineId) : null,
-        printMode,
-      });
-    },
-    onSuccess: (response) => {
-      const items = response.data ?? [];
-      setResolvedSourceItems(items);
-      if (items.length > 0) {
-        const first = items[0];
-        setSampleData({
-          stockCode: first.stockCode ?? sampleData.stockCode,
-          stockName: first.stockName ?? sampleData.stockName,
-          serialNo: first.serialNo ?? sampleData.serialNo,
+      return {
+        ...current,
+        [header.id]: header,
+      };
+    });
+  };
+
+  const toggleAllVisibleRows = (): void => {
+    setSelectedHeaderMap((current) => {
+      const next = { ...current };
+
+      if (allVisibleRowsSelected) {
+        currentPageRows.forEach((row) => {
+          delete next[row.id];
         });
-        setBatchInput(items.map((item) => `${item.stockCode ?? ''}|${item.stockName ?? ''}|${item.serialNo ?? ''}`).join('\n'));
+        return next;
       }
-      toast.success(response.message || 'Kaynak belge çözüldü');
-    },
-    onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Kaynak belge çözümlenemedi');
-    },
-  });
 
-  const connectPrinterMutation = useMutation({
-    mutationFn: async (type: 'usb' | 'serial') => await connectBarcodePrinter(type),
-    onSuccess: async (printer) => {
-      const next = await discoverBarcodePrinters();
-      setAvailablePrinters(next);
-      setSelectedPrinterId(printer.id);
-      toast.success(`${printer.name} baglandi`);
-    },
-    onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Yazici baglanamadi');
-    },
-  });
+      currentPageRows.forEach((row) => {
+        next[row.id] = row;
+      });
+      return next;
+    });
+  };
 
-  const refreshPrintersMutation = useMutation({
-    mutationFn: async () => await discoverBarcodePrinters(),
-    onSuccess: (printers) => {
-      setAvailablePrinters(printers);
-      toast.success('Yazici hedefleri yenilendi');
-    },
-    onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Yazici hedefleri okunamadi');
-    },
-  });
+  const toggleLineSelection = (line: BarcodeSourceLineOption): void => {
+    setSelectedLineMap((current) => {
+      if (current[line.id]) {
+        const next = { ...current };
+        delete next[line.id];
+        return next;
+      }
 
-  const serverPrintMutation = useMutation({
+      return {
+        ...current,
+        [line.id]: line,
+      };
+    });
+  };
+
+  const clearSelection = (): void => {
+    setSelectedHeaderMap({});
+    setSelectedLineMap({});
+  };
+
+  const printMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedServerPrinterId) {
-        throw new Error('Sunucu yazicisi secilmedi');
+      if (!permission.canCreate && !permission.canUpdate) {
+        throw new Error('Yazdırma yetkiniz yok');
       }
 
-      const rows = batchInput
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean);
+      if (!selectedTemplateId) {
+        throw new Error('Önce bir barkod tasarımı seçin');
+      }
 
-      const records = rows.length > 0
-        ? rows.map((row) => {
-            const [stockCode = sampleData.stockCode, stockName = sampleData.stockName, serialNo = sampleData.serialNo] = row.split('|');
-            return { stockCode, stockName, serialNo };
-          })
-        : Array.from({ length: printQuantity }, () => sampleData);
+      if (!selectedServerPrinterId) {
+        throw new Error('Önce bir yazıcı seçin');
+      }
+
+      if (!selectedServerPrinterProfileId) {
+        throw new Error('Önce bir printer profile seçin');
+      }
+
+      if (selectedHeaderIds.length === 0) {
+        throw new Error('Yazdırmak için en az bir belge seçin');
+      }
+
+      const resolveRequests = selectedLineIds.length > 0 && singleSelectedHeaderId
+        ? selectedLineIds.map((lineId) => ({
+            sourceModule,
+            sourceHeaderId: singleSelectedHeaderId,
+            sourceLineId: lineId,
+            printMode: 'document-line' as const,
+          }))
+        : selectedHeaderIds.map((headerId) => ({
+            sourceModule,
+            sourceHeaderId: headerId,
+            sourceLineId: null,
+            printMode: 'document-all' as const,
+          }));
+
+      const resolvedGroups = await Promise.all(resolveRequests.map((request) => barcodeDesignerApi.resolvePrintSource(request)));
+      const resolvedSourceItems = resolvedGroups.flatMap((response) => response.data ?? []);
+
+      if (resolvedSourceItems.length === 0) {
+        throw new Error('Seçili belge için yazdırılabilir satır bulunamadı');
+      }
+
+      const records = resolvedSourceItems.map((item) => ({
+        stockCode: item.stockCode ?? '',
+        stockName: item.stockName ?? '',
+        serialNo: item.serialNo ?? '',
+        quantity: item.quantity ?? 0,
+        documentNo: item.documentNo ?? '',
+        customerCode: item.customerCode ?? '',
+      }));
+
+      const selectedProfile = availableServerProfiles.find((item) => String(item.id) === selectedServerPrinterProfileId);
 
       return await printerManagementApi.createPrintJob({
         printerDefinitionId: Number(selectedServerPrinterId),
-        printerProfileId: selectedServerPrinterProfileId ? Number(selectedServerPrinterProfileId) : null,
-        barcodeTemplateId: templateId,
-        jobName: `${templateQuery.data?.data?.templateCode ?? 'BARCODE'}-${new Date().toISOString()}`,
-        outputFormat: 'Pdf',
-        copies: Math.max(1, printQuantity),
+        printerProfileId: Number(selectedServerPrinterProfileId),
+        barcodeTemplateId: selectedTemplateId,
+        jobName: `${getOperationLabel(sourceModule)}-${selectedTemplate?.templateCode ?? 'BARCODE'}-${new Date().toISOString()}`,
+        outputFormat: selectedProfile?.outputType ?? 'Pdf',
+        copies: Math.max(1, copies),
         payloadJson: JSON.stringify({
-          templateJson: draftQuery.data?.data?.templateJson ?? JSON.stringify(documentState),
-          sampleData,
+          templateJson: draftQuery.data?.data?.templateJson ?? JSON.stringify(DEFAULT_TEMPLATE_DOCUMENT),
+          sourceModule,
+          selectedHeaderIds,
+          selectedLineIds,
           records,
           resolvedSourceItems,
         }),
-        previewPayload: draftQuery.data?.data?.templateJson ?? JSON.stringify(documentState),
+        previewPayload: draftQuery.data?.data?.templateJson ?? JSON.stringify(DEFAULT_TEMPLATE_DOCUMENT),
         sourceModule,
-        sourceHeaderId: sourceHeaderId.trim() ? Number(sourceHeaderId) : null,
-        sourceLineId: sourceLineId.trim() ? Number(sourceLineId) : null,
+        sourceHeaderId: selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null,
+        sourceLineId: selectedLineIds.length === 1 ? selectedLineIds[0] : null,
       });
     },
     onSuccess: (response) => {
-      toast.success(response.message || 'Baski isi kuyruga alindi');
+      toast.success(response.message || 'Baskı işi kuyruğa alındı');
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Baski isi olusturulamadi');
+      toast.error(error instanceof Error ? error.message : 'Baskı işi oluşturulamadı');
     },
   });
-
-  const buildStageImage = (): string => {
-    const stage = stageRef.current;
-    if (!stage) {
-      throw new Error('Canvas hazir degil');
-    }
-
-    return stage.toDataURL({ pixelRatio: 2 });
-  };
-
-  const handleExportPdf = async (): Promise<void> => {
-    if (!permission.canCreate && !permission.canUpdate) {
-      toast.error('Yazdirma yetkiniz yok');
-      return;
-    }
-    const rows = batchInput
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    const batchRecords = rows.length > 0
-      ? rows.map((row) => {
-          const [stockCode = sampleData.stockCode, stockName = sampleData.stockName, serialNo = sampleData.serialNo] = row.split('|');
-          return { stockCode, stockName, serialNo };
-        })
-      : Array.from({ length: printQuantity }, () => sampleData);
-
-    const { jsPDF } = await loadJsPdfModule();
-    const pdf = new jsPDF({
-      orientation: documentState.canvas.width > documentState.canvas.height ? 'landscape' : 'portrait',
-      unit: 'mm',
-      format: [documentState.canvas.width, documentState.canvas.height],
-    });
-
-    batchRecords.forEach((record, index) => {
-      flushSync(() => {
-        setSampleData(record);
-      });
-      const image = buildStageImage();
-      if (index > 0) {
-        pdf.addPage([documentState.canvas.width, documentState.canvas.height], documentState.canvas.width > documentState.canvas.height ? 'landscape' : 'portrait');
-      }
-      pdf.addImage(image, 'PNG', 0, 0, documentState.canvas.width, documentState.canvas.height);
-    });
-
-    pdf.save(`${templateQuery.data?.data?.templateCode ?? 'barcode-template'}-batch.pdf`);
-  };
-
-  const handleDirectPrint = (): void => {
-    try {
-      const image = buildStageImage();
-      openBrowserPrintWindow(image, documentState.canvas.width, documentState.canvas.height);
-      toast.success('Tarayici yazdir penceresi acildi');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Yazdirma baslatilamadi');
-    }
-  };
 
   return (
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
           { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }) },
-          { label: t('sidebar.erpBarcodePrint', { defaultValue: 'Etiket Bas' }), isActive: true },
+          { label: t('sidebar.erpBarcodePrint', { defaultValue: 'Barkod Yazdır' }), isActive: true },
         ]}
       />
 
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(52,211,153,0.16),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
+      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.12),_transparent_30%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'ERP' })}</Badge>
-              <Badge variant="secondary">Print</Badge>
+              <Badge variant="secondary">WMS Print</Badge>
             </div>
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('sidebar.erpBarcodePrint', { defaultValue: 'Etiket Bas' })}</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
+                {t('sidebar.erpBarcodePrint', { defaultValue: 'Barkod Yazdır' })}
+              </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                Seçilen template için örnek veriyi doldurun, baskı önizlemesini görün ve PDF çıktısı üretin.
+                İşlem seçin, paged listeden belge veya belge satırı seçin, tasarım ve yazıcı belirleyip doğrudan baskı kuyruğuna gönderin.
               </p>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Button variant="outline" onClick={() => previewMutation.mutate()}>
-              <Sparkles className="mr-2 size-4" />
-              Preview
-            </Button>
-            <Button onClick={handleExportPdf} disabled={!permission.canCreate && !permission.canUpdate}>
-              <Download className="mr-2 size-4" />
-              PDF Bas
-            </Button>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+              <CardContent className="p-4">
+                <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
+                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+              <CardContent className="p-4">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Belge</div>
+                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+              <CardContent className="p-4">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Satır</div>
+                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedLineIds.length}</div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[0.34fr_0.66fr]">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
-          <CardHeader>
-            <CardTitle>Baski Parametreleri</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">Template</div>
-              <div className="mt-2 text-slate-600 dark:text-slate-300">{templateQuery.data?.data?.displayName ?? '-'}</div>
-            </div>
-            <div className="space-y-2">
-              <Label>Baskı Modu</Label>
-              <Select value={printMode} onValueChange={(value) => setPrintMode(value as 'manual' | 'document-line' | 'document-all')}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Baski modu sec" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manual">Manuel</SelectItem>
-                  <SelectItem value="document-line">Belirli Belge Satırı</SelectItem>
-                  <SelectItem value="document-all">Belgedeki Tum Kalemler</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Kaynak Modül</Label>
-              <Select value={sourceModule} onValueChange={(value) => setSourceModule(value as BarcodePrintSourceModule)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Kaynak modül seç" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="goods-receipt">Mal Kabul</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="shipment">Sevkiyat</SelectItem>
-                  <SelectItem value="warehouse-inbound">Ambar Giriş</SelectItem>
-                  <SelectItem value="warehouse-outbound">Ambar Çıkış</SelectItem>
-                  <SelectItem value="subcontracting-issue">Fason Çıkış</SelectItem>
-                  <SelectItem value="subcontracting-receipt">Fason Giriş</SelectItem>
-                  <SelectItem value="package">Paketleme</SelectItem>
-                  <SelectItem value="production-transfer">Üretim Transfer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {printMode === 'manual' ? null : (
-              <>
-                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
-                  <div className="font-medium text-slate-900 dark:text-white">
-                    {selectedHeader ? selectedHeader.title : 'Belge secilmedi'}
-                  </div>
-                  <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                    {selectedPackage
-                      ? `Paket: ${selectedPackage.title}${selectedPackage.barcode ? ` | Barkod ${selectedPackage.barcode}` : ''}`
-                      : selectedLine
-                      ? `Satir: ${selectedLine.title}${selectedLine.quantity != null ? ` | Qty ${selectedLine.quantity}` : ''}`
-                      : printMode === 'document-all'
-                        ? 'Tum belge kalemleri basim hazirligina alinacak.'
-                        : 'Henuz satir secilmedi.'}
-                  </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    <Button variant="outline" onClick={() => setPickerOpen(true)} disabled={!permission.canCreate && !permission.canUpdate}>
-                      {printMode === 'document-all' ? 'Belge Sec' : 'Belge Satiri Sec'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => resolveSourceMutation.mutate()}
-                      disabled={(!permission.canCreate && !permission.canUpdate) || !sourceHeaderId || (printMode === 'document-line' && !sourceLineId && !selectedPackage)}
-                    >
-                      Kaynak Belgeden Doldur
-                    </Button>
+      <div className="grid gap-6 xl:grid-cols-[0.72fr_0.28fr]">
+        <div className="space-y-6">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <CardHeader>
+              <CardTitle>İşlem ve Belge Listesi</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="grid gap-4 lg:grid-cols-[0.35fr_0.65fr]">
+                <div className="space-y-2">
+                  <Label>İşlem</Label>
+                  <Select value={sourceModule} onValueChange={(value) => setSourceModule(value as BarcodePrintSourceModule)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="İşlem seç" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {operationOptions.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
+                  <div className="font-medium text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
+                  <div className="mt-1 text-slate-600 dark:text-slate-300">
+                    {operationOptions.find((item) => item.value === sourceModule)?.description}
                   </div>
                 </div>
-              </>
-            )}
-            <div className="space-y-2">
-              <Label>Stok Kodu</Label>
-              <Input value={sampleData.stockCode} onChange={(event) => setSampleData((current) => ({ ...current, stockCode: event.target.value }))} disabled={!permission.canCreate && !permission.canUpdate} />
-            </div>
-            <div className="space-y-2">
-              <Label>Stok Adı</Label>
-              <Input value={sampleData.stockName} onChange={(event) => setSampleData((current) => ({ ...current, stockName: event.target.value }))} disabled={!permission.canCreate && !permission.canUpdate} />
-            </div>
-            <div className="space-y-2">
-              <Label>Seri No</Label>
-              <Input value={sampleData.serialNo} onChange={(event) => setSampleData((current) => ({ ...current, serialNo: event.target.value }))} disabled={!permission.canCreate && !permission.canUpdate} />
-            </div>
-            <div className="space-y-2">
-              <Label>Adet</Label>
-              <Input type="number" value={printQuantity} onChange={(event) => setPrintQuantity(Math.max(1, Number(event.target.value) || 1))} disabled={!permission.canCreate && !permission.canUpdate} />
-            </div>
-            <div className="space-y-2">
-              <Label>Batch Print Satırları</Label>
-              <Textarea
-                value={batchInput}
-                onChange={(event) => setBatchInput(event.target.value)}
-                className="min-h-[120px] text-xs"
-                disabled={!permission.canCreate && !permission.canUpdate}
-              />
-              <div className="text-xs text-slate-500">Her satır: `stokKodu|stokAdi|seriNo`</div>
-              <div className="text-xs text-slate-500">Bu alan özellikle barkodu kaybolmuş ürünler için veya belge içindeki çoklu satır baskı hazırlığı için kullanılabilir.</div>
-            </div>
-            <Button className="w-full" onClick={handleExportPdf} disabled={!permission.canCreate && !permission.canUpdate}>
-              <Printer className="mr-2 size-4" />
-              Etiket Bas
-            </Button>
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="font-medium text-slate-900 dark:text-white">Yazici ve Yazdir</div>
-                <Button variant="outline" size="sm" onClick={() => refreshPrintersMutation.mutate()} disabled={!permission.canCreate && !permission.canUpdate}>
-                  <Search className="mr-2 size-4" />
-                  Yazici Bul
-                </Button>
               </div>
+
+              <PagedDataGrid<BarcodeSourceHeaderOption, HeaderColumnKey>
+                pageKey={`barcode-print-grid-${sourceModule}`}
+                columns={columns}
+                rows={currentPageRows}
+                rowKey={(row) => row.id}
+                renderCell={(row, columnKey) => {
+                  switch (columnKey) {
+                    case 'select':
+                      return (
+                        <input
+                          type="checkbox"
+                          checked={selectedHeaderMap[row.id] != null}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={() => toggleHeaderSelection(row)}
+                          className="h-4 w-4 rounded border-slate-300"
+                        />
+                      );
+                    case 'documentNo':
+                      return <span className="font-medium">{row.title}</span>;
+                    case 'subtitle':
+                      return row.subtitle ?? '-';
+                    case 'status':
+                      return <Badge variant="outline">{row.status ?? '-'}</Badge>;
+                    case 'documentDate':
+                      return formatDate(row.documentDate);
+                    default:
+                      return null;
+                  }
+                }}
+                onRowClick={(row) => toggleHeaderSelection(row)}
+                isLoading={headersQuery.isLoading}
+                isError={headersQuery.isError}
+                errorText="Belge listesi yüklenemedi."
+                emptyText="Bu işlem için belge bulunamadı."
+                pageSize={pagedGrid.pageSize}
+                pageSizeOptions={pagedGrid.pageSizeOptions}
+                onPageSizeChange={pagedGrid.handlePageSizeChange}
+                pageNumber={pagedGrid.getDisplayPageNumber(headersQuery.data)}
+                totalPages={headersQuery.data?.totalPages ?? 1}
+                hasPreviousPage={headersQuery.data?.hasPreviousPage ?? false}
+                hasNextPage={headersQuery.data?.hasNextPage ?? false}
+                onPreviousPage={pagedGrid.goToPreviousPage}
+                onNextPage={pagedGrid.goToNextPage}
+                previousLabel={t('common.previous', { defaultValue: 'Önceki' })}
+                nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+                paginationInfoText={paginationInfoText}
+                search={{
+                  value: pagedGrid.searchInput,
+                  onValueChange: pagedGrid.searchConfig.onValueChange,
+                  onSearchChange: pagedGrid.searchConfig.onSearchChange,
+                  placeholder: `${getOperationLabel(sourceModule)} içinde ara...`,
+                }}
+                leftSlot={(
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={toggleAllVisibleRows}>
+                      {allVisibleRowsSelected ? 'Görünenleri Kaldır' : 'Görünenleri Seç'}
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={clearSelection} disabled={selectedHeaderIds.length === 0 && selectedLineIds.length === 0}>
+                      <Trash2 className="mr-2 size-4" />
+                      Seçimi Temizle
+                    </Button>
+                  </div>
+                )}
+                refresh={{
+                  onRefresh: () => {
+                    void headersQuery.refetch();
+                  },
+                  isLoading: headersQuery.isFetching,
+                  label: t('common.refresh', { defaultValue: 'Yenile' }),
+                }}
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <CardHeader>
+              <CardTitle>Belge Satırları</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {singleSelectedHeader ? (
+                <>
+                  <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
+                    <div className="font-medium text-slate-900 dark:text-white">{singleSelectedHeader.title}</div>
+                    <div className="mt-1 text-slate-600 dark:text-slate-300">
+                      Satır seçersen sadece o satırlar basılır. Seçmezsen belgenin tüm satırları yazdırılır.
+                    </div>
+                  </div>
+
+                  <div className="max-h-[360px] overflow-auto rounded-2xl border border-slate-200/80 dark:border-white/10">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-slate-50/80 dark:bg-slate-900/50">
+                        <tr>
+                          <th className="w-12 px-3 py-3 text-left">
+                            <input
+                              type="checkbox"
+                              checked={(linesQuery.data ?? []).length > 0 && (linesQuery.data ?? []).every((line) => selectedLineMap[line.id] != null)}
+                              onClick={(event) => event.stopPropagation()}
+                              onChange={() => {
+                                const lines = linesQuery.data ?? [];
+                                const allSelected = lines.length > 0 && lines.every((line) => selectedLineMap[line.id] != null);
+                                setSelectedLineMap((current) => {
+                                  const next = { ...current };
+                                  if (allSelected) {
+                                    lines.forEach((line) => {
+                                      delete next[line.id];
+                                    });
+                                    return next;
+                                  }
+
+                                  lines.forEach((line) => {
+                                    next[line.id] = line;
+                                  });
+                                  return next;
+                                });
+                              }}
+                              className="h-4 w-4 rounded border-slate-300"
+                            />
+                          </th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Stok</th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Açıklama</th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Miktar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(linesQuery.data ?? []).map((line) => (
+                          <tr
+                            key={line.id}
+                            className="cursor-pointer border-t border-slate-200/70 hover:bg-slate-50/70 dark:border-white/10 dark:hover:bg-white/[0.03]"
+                            onClick={() => toggleLineSelection(line)}
+                          >
+                            <td className="px-3 py-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedLineMap[line.id] != null}
+                                onClick={(event) => event.stopPropagation()}
+                                onChange={() => toggleLineSelection(line)}
+                                className="h-4 w-4 rounded border-slate-300"
+                              />
+                            </td>
+                            <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">{line.title}</td>
+                            <td className="px-3 py-3 text-slate-600 dark:text-slate-300">{line.subtitle ?? '-'}</td>
+                            <td className="px-3 py-3 text-slate-600 dark:text-slate-300">{line.quantity ?? '-'}</td>
+                          </tr>
+                        ))}
+                        {linesQuery.isLoading ? (
+                          <tr>
+                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">Satırlar yükleniyor...</td>
+                          </tr>
+                        ) : null}
+                        {!linesQuery.isLoading && (linesQuery.data ?? []).length === 0 ? (
+                          <tr>
+                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">Bu belge için satır bulunamadı.</td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300/80 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                  Satır bazlı baskı için listeden tek bir belge seç.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <CardHeader>
+              <CardTitle>Baskı Ayarları</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Yazdirma Hedefi</Label>
-                <Select value={selectedPrinterId} onValueChange={setSelectedPrinterId}>
+                <Label>Tasarım</Label>
+                <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Yazici hedefi sec" />
+                    <SelectValue placeholder="Barkod tasarımı seç" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availablePrinters.map((printer) => (
-                      <SelectItem key={printer.id} value={printer.id}>
-                        {printer.name}
+                    {(templatesQuery.data?.data ?? []).map((template) => (
+                      <SelectItem key={template.id} value={String(template.id)}>
+                        {template.displayName}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="mt-3 space-y-2 text-xs text-slate-500">
-                <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-3 py-2 dark:border-emerald-400/20 dark:bg-emerald-500/10">
-                  <div className="font-medium text-emerald-900 dark:text-emerald-100">Sunucu Yazicilari</div>
-                  <div className="mt-2 space-y-2">
-                    <Label>Sunucu Yazici Sec</Label>
-                    <Select value={selectedServerPrinterId} onValueChange={setSelectedServerPrinterId}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sunucu yazicisi sec" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(serverPrintersQuery.data?.data ?? []).map((printer) => (
-                          <SelectItem key={printer.id} value={String(printer.id)}>
-                            {printer.displayName} ({printer.connectionType})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Label>Sunucu Printer Profile</Label>
-                    <Select value={selectedServerPrinterProfileId} onValueChange={setSelectedServerPrinterProfileId}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Printer profile sec" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableServerProfiles.map((profile) => (
-                          <SelectItem key={profile.id} value={String(profile.id)}>
-                            {profile.displayName} ({profile.outputType} / {profile.transportType})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {availableServerProfiles.length === 0 ? (
-                      <div className="text-[11px] text-amber-700 dark:text-amber-300">
-                        Secili template ve yazici icin uygun printer profile bulunamadi.
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    <Button onClick={() => serverPrintMutation.mutate()} disabled={(!permission.canCreate && !permission.canUpdate) || !selectedServerPrinterId || !selectedServerPrinterProfileId}>
-                      <Printer className="mr-2 size-4" />
-                      Sunucuya Baski Gonder
-                    </Button>
-                    <Button variant="outline" onClick={() => void serverPrintersQuery.refetch()}>
-                      <RefreshCcw className="mr-2 size-4" />
-                      Sunucu Yazicilarini Yenile
-                    </Button>
-                  </div>
+
+              <div className="space-y-2">
+                <Label>Yazıcı</Label>
+                <Select value={selectedServerPrinterId} onValueChange={setSelectedServerPrinterId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sunucu yazıcısı seç" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(serverPrintersQuery.data?.data ?? []).filter((item) => item.isActive).map((printer) => (
+                      <SelectItem key={printer.id} value={String(printer.id)}>
+                        {printer.displayName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Printer Profile</Label>
+                <Select value={selectedServerPrinterProfileId} onValueChange={setSelectedServerPrinterProfileId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Printer profile seç" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableServerProfiles.map((profile) => (
+                      <SelectItem key={profile.id} value={String(profile.id)}>
+                        {profile.displayName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Kopya</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={copies}
+                  onChange={(event) => setCopies(Math.max(1, Number(event.target.value) || 1))}
+                  disabled={!permission.canCreate && !permission.canUpdate}
+                />
+              </div>
+
+              <Button
+                className="w-full"
+                onClick={() => printMutation.mutate()}
+                disabled={printMutation.isPending || (!permission.canCreate && !permission.canUpdate)}
+              >
+                <Printer className="mr-2 size-4" />
+                {selectedLineIds.length > 0 ? 'Seçili Satırları Yazdır' : 'Seçili Belgeleri Yazdır'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  void serverPrintersQuery.refetch();
+                  void printerProfilesQuery.refetch();
+                }}
+              >
+                <RefreshCcw className="mr-2 size-4" />
+                Yazıcıları Yenile
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <CardHeader>
+              <CardTitle>Seçim Özeti</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
+                <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Belgeler</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Satırlar</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedLineIds.length}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Tasarım</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedTemplate?.displayName ?? '-'}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
+                <div className="text-xs text-slate-500 dark:text-slate-400">Baskı Kapsamı</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {selectedLineIds.length > 0 && singleSelectedHeader
+                    ? `${singleSelectedHeader.title} içinden ${selectedLineIds.length} satır`
+                    : `${selectedHeaderIds.length} belge`}
                 </div>
-                {availablePrinters.map((printer) => (
-                  <div key={printer.id} className="rounded-xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="font-medium text-slate-700 dark:text-slate-200">{printer.name}</span>
-                      <Badge variant={printer.ready ? 'secondary' : 'outline'}>{printer.type}</Badge>
-                    </div>
-                    <div className="mt-1">{printer.description}</div>
-                    {!printer.ready && printer.type !== 'browser' ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => connectPrinterMutation.mutate(printer.type === 'usb' ? 'usb' : 'serial')}
-                      >
-                        Baglan
-                      </Button>
-                    ) : null}
-                  </div>
-                ))}
               </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                <Button variant="outline" onClick={handleExportPdf} disabled={!permission.canCreate && !permission.canUpdate}>
-                  <Download className="mr-2 size-4" />
-                  PDF Olustur
-                </Button>
-                <Button onClick={handleDirectPrint}>
-                  <Printer className="mr-2 size-4" />
-                  Yazdir
-                </Button>
+              <div className="text-xs leading-6 text-slate-500 dark:text-slate-400">
+                Bu ekran operasyon içindir. Tasarım seçimi yapılır, belge grid’den seçilir ve baskı işi doğrudan kuyruklanır.
               </div>
-              <div className="mt-2 text-[11px] text-slate-500">
-                Birincil akış sunucu kuyruguna baski işi gondermektir. Tarayici yazdir ise lokal/fallback senaryo için korunur.
-              </div>
-            </div>
-            {resolvedSourceItems.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-xs text-slate-600 dark:border-white/10 dark:bg-slate-900/30 dark:text-slate-300">
-                Çözümlenen satır sayısı: {resolvedSourceItems.length}
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
-          <CardHeader>
-            <CardTitle>Baski Onizleme</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <BarcodeDesignerCanvas
-              document={documentState}
-              selectedElementId={null}
-              selectedElementIds={[]}
-              onSelectElement={() => undefined}
-              onClearSelection={() => undefined}
-              onMoveElement={() => undefined}
-              arrangementGuides={{ x: [], y: [] }}
-              stageRef={stageRef}
-            />
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <BarcodePrintSourcePickerDialog
-        open={pickerOpen}
-        onOpenChange={setPickerOpen}
-        sourceModule={sourceModule}
-        printMode={printMode}
-        selectedHeaderId={sourceHeaderId.trim() ? Number(sourceHeaderId) : null}
-        selectedLineId={sourceLineId.trim() ? Number(sourceLineId) : null}
-        selectedPackageId={selectedPackage?.id ?? null}
-        onConfirm={({ header, line, packageItem }) => {
-          setSelectedHeader(header);
-          setSelectedLine(line ?? null);
-          setSelectedPackage(packageItem ?? null);
-          setSourceHeaderId(String(header.id));
-          setSourceLineId(line?.id ? String(line.id) : '');
-        }}
-      />
     </div>
   );
 }

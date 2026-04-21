@@ -5,6 +5,7 @@ import { shipmentApi } from '@/features/shipment/api/shipment-api';
 import { subcontractingApi } from '@/features/subcontracting/api/subcontracting-api';
 import { transferApi } from '@/features/transfer/api/transfer-api';
 import { warehouseApi } from '@/features/warehouse/api/warehouse-api';
+import type { PagedParams, PagedResponse } from '@/types/api';
 import type {
   BarcodePrintSourceModule,
   BarcodeSourceHeaderOption,
@@ -24,111 +25,182 @@ function filterHeaders(items: BarcodeSourceHeaderOption[], search: string): Barc
   return items.filter((item) => includesSearch(item.title, search) || includesSearch(item.subtitle, search) || includesSearch(item.status, search));
 }
 
+function mapPagedHeaders(
+  sourceModule: BarcodePrintSourceModule,
+  response: PagedResponse<BarcodeSourceHeaderOption>,
+): PagedResponse<BarcodeSourceHeaderOption> {
+  return {
+    ...response,
+    data: response.data.map((item) => ({
+      ...item,
+      sourceModule,
+    })),
+  };
+}
+
+function normalizeToZeroBasedPage<T>(response: PagedResponse<T>, pageBase: 0 | 1): PagedResponse<T> {
+  return {
+    ...response,
+    pageNumber: pageBase === 1 ? Math.max((response.pageNumber ?? 1) - 1, 0) : response.pageNumber,
+  };
+}
+
 export const barcodePrintSourceBrowserApi = {
-  async getHeaders(sourceModule: BarcodePrintSourceModule, search = ''): Promise<BarcodeSourceHeaderOption[]> {
+  async getHeadersPaged(sourceModule: BarcodePrintSourceModule, params: PagedParams = {}): Promise<PagedResponse<BarcodeSourceHeaderOption>> {
     switch (sourceModule) {
       case 'goods-receipt': {
-        const headers = await goodsReceiptApi.getGrHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await goodsReceiptApi.getGrHeadersPaged({
+          pageNumber: Math.max(1, (params.pageNumber ?? 0) + 1),
+          pageSize: params.pageSize ?? 20,
+          search: params.search,
+          sortBy: params.sortBy,
+          sortDirection: params.sortDirection,
+          filters: params.filters,
+          filterLogic: params.filterLogic,
+        });
+        return mapPagedHeaders(sourceModule, {
+          ...normalizeToZeroBasedPage(headers, 1),
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'transfer': {
-        const headers = await transferApi.getHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await transferApi.getHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'warehouse-inbound': {
-        const headers = await warehouseApi.getInboundHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.sourceWarehouse, header.customerCode].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await warehouseApi.getInboundHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.sourceWarehouse, header.customerCode].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'warehouse-outbound': {
-        const headers = await warehouseApi.getOutboundHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.targetWarehouse, header.customerCode].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await warehouseApi.getOutboundHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.targetWarehouse, header.customerCode].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'shipment': {
-        const headers = await shipmentApi.getHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await shipmentApi.getHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'subcontracting-issue': {
-        const headers = await subcontractingApi.getIssueHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await subcontractingApi.getIssueHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'subcontracting-receipt': {
-        const headers = await subcontractingApi.getReceiptHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await subcontractingApi.getReceiptHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.customerCode, header.customerName].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       case 'package': {
-        const headers = await packageApi.getPHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.packingNo,
-          subtitle: [header.customerCode, header.sourceType].filter(Boolean).join(' - '),
-          status: header.status,
-          documentDate: header.packingDate,
-        })), search);
+        const headers = await packageApi.getPHeadersPaged({
+          ...params,
+          pageNumber: (params.pageNumber ?? 0) + 1,
+        });
+        return mapPagedHeaders(sourceModule, {
+          ...normalizeToZeroBasedPage(headers, 1),
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.packingNo,
+            subtitle: [header.customerCode, header.sourceType].filter(Boolean).join(' - '),
+            status: header.status,
+            documentDate: header.packingDate,
+          })), params.search ?? ''),
+        });
       }
       case 'production-transfer': {
-        const headers = await productionTransferApi.getHeadersPaged({ pageNumber: 1, pageSize: 50, search });
-        return filterHeaders(headers.data.map((header) => ({
-          id: header.id,
-          sourceModule,
-          title: header.documentNo,
-          subtitle: [header.productionOrderId ? `Uretim #${header.productionOrderId}` : null, header.transferPurpose].filter(Boolean).join(' - '),
-          status: header.isCompleted ? 'Tamamlandi' : 'Acik',
-          documentDate: header.documentDate,
-        })), search);
+        const headers = await productionTransferApi.getHeadersPaged(params);
+        return mapPagedHeaders(sourceModule, {
+          ...headers,
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.documentNo,
+            subtitle: [header.productionOrderId ? `Uretim #${header.productionOrderId}` : null, header.transferPurpose].filter(Boolean).join(' - '),
+            status: header.isCompleted ? 'Tamamlandi' : 'Acik',
+            documentDate: header.documentDate,
+          })), params.search ?? ''),
+        });
       }
       default:
-        return [];
+        return {
+          data: [],
+          totalCount: 0,
+          pageNumber: params.pageNumber ?? 0,
+          pageSize: params.pageSize ?? 20,
+          totalPages: 1,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        };
     }
+  },
+
+  async getHeaders(sourceModule: BarcodePrintSourceModule, search = ''): Promise<BarcodeSourceHeaderOption[]> {
+    const paged = await barcodePrintSourceBrowserApi.getHeadersPaged(sourceModule, { pageNumber: 0, pageSize: 50, search });
+    return paged.data;
   },
 
   async getLines(sourceModule: BarcodePrintSourceModule, headerId: number): Promise<BarcodeSourceLineOption[]> {
