@@ -220,6 +220,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.erpCustomers'), href: '/erp/customers' },
         { title: t('sidebar.erpStocks'), href: '/erp/stocks' },
         { title: t('sidebar.erpWarehouses'), href: '/erp/warehouses' },
+        { title: t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' }), href: '/erp/shelves' },
         { title: t('sidebar.erpYapKodlar'), href: '/erp/yapkodlar' },
         { title: t('sidebar.erpBarcodeDefinitions'), href: '/erp/barcodes' },
         {

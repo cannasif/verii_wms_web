@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useGrStokBarcode } from '../hooks/useGrStokBarcode';
 import { useAddGrBarcode } from '../hooks/useAddGrBarcode';
 import { useCollectedGrBarcodes } from '../hooks/useCollectedGrBarcodes';
@@ -21,6 +22,7 @@ import type { BarcodeMatchCandidate } from '@/services/barcode-types';
 import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
 import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import {
   createDefaultScannerConfig,
   getPreferredCameraId,
@@ -44,6 +46,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   const [ambiguousCandidates, setAmbiguousCandidates] = useState<BarcodeMatchCandidate[]>([]);
   const [barcodeErrorMessage, setBarcodeErrorMessage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [targetCellCode, setTargetCellCode] = useState('');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -86,6 +89,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   useEffect(() => {
     if (barcodeData?.success && barcodeData.data && barcodeData.data.length > 0) {
       setSelectedStock(barcodeData.data[0]);
+      setTargetCellCode(barcodeData.data[0]?.rafKodu ?? '');
       setAmbiguousCandidates([]);
       setBarcodeErrorMessage(null);
       setEnableSearch(false);
@@ -153,7 +157,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
         serialNo3: '',
         serialNo4: '',
         sourceCellCode: '',
-        targetCellCode: '',
+        targetCellCode,
       },
       {
         onSuccess: (response) => {
@@ -161,6 +165,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
             toast.success(t('goodsReceipt.collection.collected'));
             setBarcodeInput('');
             setSelectedStock(null);
+            setTargetCellCode('');
             setQuantity(1);
           } else {
             toast.error(response.message || t('goodsReceipt.collection.collectError'));
@@ -394,6 +399,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                     sktVarmi: null,
                     isemriNo: null,
                   });
+                  setTargetCellCode('');
                   setAmbiguousCandidates([]);
                   setBarcodeErrorMessage(null);
                 }}
@@ -420,6 +426,18 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                   </Badge>
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('warehouse.details.targetCellCode', { defaultValue: 'Hedef Hücre' })}</Label>
+                    <ShelfLookupCombobox
+                      warehouseCode={selectedStock.depoKodu}
+                      value={targetCellCode}
+                      onValueChange={setTargetCellCode}
+                      disabled={!permission.canUpdate}
+                      placeholder={t('warehouse.details.targetCellCodePlaceholder', { defaultValue: 'Hedef hücre seçin' })}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Hücrelerde ara' })}
+                      emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Bu seçim için hedef hücre yok' })}
+                    />
+                  </div>
                   <div className="flex-1">
                     <Input
                       type="number"

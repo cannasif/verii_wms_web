@@ -6,11 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../../../types/warehouse';
 
 interface WarehouseBulkItemRowProps {
   item: WarehouseStockItem;
   selectedItem?: SelectedWarehouseStockItem;
+  sourceWarehouseCode?: string;
+  targetWarehouseCode?: string;
   onUpdateItem: (itemId: string, updates: Partial<SelectedWarehouseStockItem>) => void;
   onToggleItem: (item: WarehouseStockItem) => void;
   onRemoveItem: (itemId: string) => void;
@@ -19,6 +22,8 @@ interface WarehouseBulkItemRowProps {
 export function WarehouseBulkItemRow({
   item,
   selectedItem,
+  sourceWarehouseCode,
+  targetWarehouseCode,
   onUpdateItem,
   onToggleItem,
   onRemoveItem,
@@ -118,11 +123,10 @@ export function WarehouseBulkItemRow({
               <Label htmlFor={`source-cell-${item.id}`} className="text-sm font-medium">
                 {t('warehouse.details.sourceCellCode')}
               </Label>
-              <Input
-                id={`source-cell-${item.id}`}
+              <ShelfLookupCombobox
+                warehouseCode={sourceWarehouseCode}
                 value={selectedItem?.sourceCellCode || ''}
-                onChange={(e) => handleDetailChange('sourceCellCode', e.target.value)}
-                className="h-9 text-sm"
+                onValueChange={(value) => handleDetailChange('sourceCellCode', value)}
                 placeholder={t('warehouse.details.sourceCellCodePlaceholder')}
               />
             </div>
@@ -130,11 +134,10 @@ export function WarehouseBulkItemRow({
               <Label htmlFor={`target-cell-${item.id}`} className="text-sm font-medium">
                 {t('warehouse.details.targetCellCode')}
               </Label>
-              <Input
-                id={`target-cell-${item.id}`}
+              <ShelfLookupCombobox
+                warehouseCode={targetWarehouseCode}
                 value={selectedItem?.targetCellCode || ''}
-                onChange={(e) => handleDetailChange('targetCellCode', e.target.value)}
-                className="h-9 text-sm"
+                onValueChange={(value) => handleDetailChange('targetCellCode', value)}
                 placeholder={t('warehouse.details.targetCellCodePlaceholder')}
               />
             </div>

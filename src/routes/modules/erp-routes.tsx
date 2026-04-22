@@ -4,6 +4,7 @@ import { lazyNamed, withRoute } from '../route-utils';
 const CustomerReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'CustomerReferencePage');
 const StockReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'StockReferencePage');
 const WarehouseReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'WarehouseReferencePage');
+const ShelfManagementPage = lazyNamed(() => import('@/features/shelf-management'), 'ShelfManagementPage');
 const YapKodReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'YapKodReferencePage');
 const BarcodeDefinitionsPage = lazyNamed(() => import('@/features/barcode-definitions'), 'BarcodeDefinitionsPage');
 
@@ -19,6 +20,7 @@ export const erpChildRoutes: RouteObject[] = [
       { path: 'customers', element: withRoute(CustomerReferencePage, { routeName: 'erp-customers' }) },
       { path: 'stocks', element: withRoute(StockReferencePage, { routeName: 'erp-stocks' }) },
       { path: 'warehouses', element: withRoute(WarehouseReferencePage, { routeName: 'erp-warehouses' }) },
+      { path: 'shelves', element: withRoute(ShelfManagementPage, { routeName: 'erp-shelves' }) },
       { path: 'yapkodlar', element: withRoute(YapKodReferencePage, { routeName: 'erp-yapkodlar' }) },
       { path: 'barcodes', element: withRoute(BarcodeDefinitionsPage, { routeName: 'erp-barcode-definitions' }) },
       { path: 'barcode-designer', element: withRoute(BarcodeDesignerListPage, { routeName: 'erp-barcode-designer-list' }) },

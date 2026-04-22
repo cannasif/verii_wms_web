@@ -28,6 +28,8 @@ export function Step2WarehouseStockSelection({
   const { t } = useTranslation();
   const { watch } = useFormContext<WarehouseFormData>();
   const customerCode = watch('customerId');
+  const sourceWarehouseCode = watch('sourceWarehouse');
+  const targetWarehouseCode = watch('targetWarehouse');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
@@ -120,14 +122,16 @@ export function Step2WarehouseStockSelection({
               />
             </TabsContent>
             <TabsContent value="selected" className="m-0 min-h-0 flex-1 overflow-hidden">
-              <SelectedListPane
-                t={t}
-                searchSelectedQuery={searchSelectedQuery}
-                setSearchSelectedQuery={setSearchSelectedQuery}
-                filteredSelectedItems={filteredSelectedItems}
-                onToggleItem={onToggleItem}
-                onUpdateItem={onUpdateItem}
-                onRemoveItem={onRemoveItem}
+	              <SelectedListPane
+	                t={t}
+	                searchSelectedQuery={searchSelectedQuery}
+	                setSearchSelectedQuery={setSearchSelectedQuery}
+	                filteredSelectedItems={filteredSelectedItems}
+	                sourceWarehouseCode={sourceWarehouseCode}
+	                targetWarehouseCode={targetWarehouseCode}
+	                onToggleItem={onToggleItem}
+	                onUpdateItem={onUpdateItem}
+	                onRemoveItem={onRemoveItem}
               />
             </TabsContent>
           </Tabs>
@@ -146,14 +150,16 @@ export function Step2WarehouseStockSelection({
             />
           </div>
           <div className="flex-1 min-h-0 flex flex-col">
-            <SelectedListPane
-              t={t}
-              searchSelectedQuery={searchSelectedQuery}
-              setSearchSelectedQuery={setSearchSelectedQuery}
-              filteredSelectedItems={filteredSelectedItems}
-              onToggleItem={onToggleItem}
-              onUpdateItem={onUpdateItem}
-              onRemoveItem={onRemoveItem}
+	            <SelectedListPane
+	              t={t}
+	              searchSelectedQuery={searchSelectedQuery}
+	              setSearchSelectedQuery={setSearchSelectedQuery}
+	              filteredSelectedItems={filteredSelectedItems}
+	              sourceWarehouseCode={sourceWarehouseCode}
+	              targetWarehouseCode={targetWarehouseCode}
+	              onToggleItem={onToggleItem}
+	              onUpdateItem={onUpdateItem}
+	              onRemoveItem={onRemoveItem}
             />
           </div>
         </div>
@@ -247,6 +253,8 @@ function SelectedListPane({
   searchSelectedQuery,
   setSearchSelectedQuery,
   filteredSelectedItems,
+  sourceWarehouseCode,
+  targetWarehouseCode,
   onToggleItem,
   onUpdateItem,
   onRemoveItem,
@@ -255,6 +263,8 @@ function SelectedListPane({
   searchSelectedQuery: string;
   setSearchSelectedQuery: (value: string) => void;
   filteredSelectedItems: SelectedWarehouseStockItem[];
+  sourceWarehouseCode?: string;
+  targetWarehouseCode?: string;
   onToggleItem: (item: WarehouseStockItem) => void;
   onUpdateItem: (itemId: string, updates: Partial<SelectedWarehouseStockItem>) => void;
   onRemoveItem: (itemId: string) => void;
@@ -299,6 +309,8 @@ function SelectedListPane({
               key={item.id}
               item={item}
               selectedItem={item}
+              sourceWarehouseCode={sourceWarehouseCode}
+              targetWarehouseCode={targetWarehouseCode}
               onUpdateItem={onUpdateItem}
               onToggleItem={onToggleItem}
               onRemoveItem={onRemoveItem}

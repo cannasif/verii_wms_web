@@ -1,7 +1,7 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse } from '@/types/api';
 import { getLocalizedText } from '@/lib/localized-error';
-import type { BranchLookup, CustomerLookup, ProjectLookup, StockLookup, WarehouseLookup, YapKodLookup } from './lookup-types';
+import type { BranchLookup, CustomerLookup, ProjectLookup, ShelfLookup, StockLookup, WarehouseLookup, YapKodLookup } from './lookup-types';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 import { buildPagedRequest } from '@/lib/paged';
 
@@ -31,6 +31,17 @@ interface WmsWarehouseLookupDto {
   id: number;
   warehouseCode: number;
   warehouseName: string;
+}
+
+interface WmsShelfLookupDto {
+  id: number;
+  warehouseId: number;
+  warehouseCode?: number | null;
+  warehouseName?: string | null;
+  code: string;
+  name: string;
+  locationType: string;
+  barcode?: string | null;
 }
 
 interface WmsStockLookupDto {
@@ -130,6 +141,43 @@ export const lookupApi = {
         }));
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpWarehousesLoadFailed'));
+    }
+  },
+
+  getShelves: async (warehouseCode?: number | string, options?: ApiRequestOptions): Promise<ShelfLookup[]> => {
+    try {
+      const normalizedWarehouseCode = typeof warehouseCode === 'string' ? Number(warehouseCode) : warehouseCode;
+      if (!normalizedWarehouseCode || Number.isNaN(normalizedWarehouseCode)) {
+        return [];
+      }
+
+      const warehouses = await lookupApi.getWarehouses(normalizedWarehouseCode, options);
+      const warehouse = warehouses[0];
+      if (!warehouse) {
+        return [];
+      }
+
+      const response = await api.get<ApiResponse<WmsShelfLookupDto[]>>('/api/Shelf/lookup', {
+        ...options,
+        params: { warehouseId: warehouse.id, includeInactive: false },
+      });
+
+      if (response.success && response.data) {
+        return response.data.map((item) => ({
+          id: item.id,
+          warehouseId: item.warehouseId,
+          depoKodu: item.warehouseCode ?? undefined,
+          depoIsmi: item.warehouseName ?? undefined,
+          rafKodu: item.code,
+          rafAdi: item.name,
+          lokasyonTipi: item.locationType,
+          barkod: item.barcode ?? undefined,
+        }));
+      }
+
+      throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.unknown'));
     }
   },
 

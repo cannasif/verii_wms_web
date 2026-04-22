@@ -27,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { productionApi } from '../api/production-api';
 import type {
   AddProductionOperationLineRequest,
@@ -358,30 +359,6 @@ export function ProductionProcessPage(): ReactElement {
         value: String(row.id),
         label: `${row.stockCode}${row.yapKod ? ` / ${row.yapKod}` : ''} • kalan ${Math.max(row.plannedQuantity - (row.producedQuantity ?? 0), 0)}`,
       })),
-    [selectedOrder],
-  );
-
-  const consumptionCellOptions = useMemo<ComboboxOption[]>(
-    () =>
-      Array.from(
-        new Set(
-          (selectedOrder?.consumptions ?? [])
-            .map((row) => row.sourceCellCode?.trim())
-            .filter((value): value is string => Boolean(value)),
-        ),
-      ).map((value) => ({ value, label: value })),
-    [selectedOrder],
-  );
-
-  const outputCellOptions = useMemo<ComboboxOption[]>(
-    () =>
-      Array.from(
-        new Set(
-          (selectedOrder?.outputs ?? [])
-            .map((row) => row.targetCellCode?.trim())
-            .filter((value): value is string => Boolean(value)),
-        ),
-      ).map((value) => ({ value, label: value })),
     [selectedOrder],
   );
 
@@ -1478,8 +1455,8 @@ export function ProductionProcessPage(): ReactElement {
                     <div className="font-medium">{consumptionLine.sourceWarehouseCode || '-'}</div>
                   </div>
 
-                  <Combobox
-                    options={consumptionCellOptions}
+                  <ShelfLookupCombobox
+                    warehouseCode={consumptionLine.sourceWarehouseCode}
                     value={consumptionLine.sourceCellCode ?? ''}
                     onValueChange={(value) => setConsumptionLine((prev) => ({ ...prev, sourceCellCode: value }))}
                     placeholder={t('production.process.sourceCellSelect')}
@@ -1561,8 +1538,8 @@ export function ProductionProcessPage(): ReactElement {
                     <div className="font-medium">{outputLine.targetWarehouseCode || '-'}</div>
                   </div>
 
-                  <Combobox
-                    options={outputCellOptions}
+                  <ShelfLookupCombobox
+                    warehouseCode={outputLine.targetWarehouseCode}
                     value={outputLine.targetCellCode ?? ''}
                     onValueChange={(value) => setOutputLine((prev) => ({ ...prev, targetCellCode: value }))}
                     placeholder={t('production.process.targetCellSelect')}

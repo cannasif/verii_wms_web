@@ -56,6 +56,17 @@ export interface WarehouseLookup {
   depoIsmi: string;
 }
 
+export interface ShelfLookup {
+  id: number;
+  warehouseId: number;
+  depoKodu?: number;
+  depoIsmi?: string;
+  rafKodu: string;
+  rafAdi: string;
+  lokasyonTipi: string;
+  barkod?: string;
+}
+
 export interface StockLookup {
   id: number;
   subeKodu: number;

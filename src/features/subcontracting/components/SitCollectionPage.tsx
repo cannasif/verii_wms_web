@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useSitStokBarcode } from '../hooks/useSitStokBarcode';
 import { useAddSitBarcode } from '../hooks/useAddSitBarcode';
 import { useSitCollectedBarcodes } from '../hooks/useSitCollectedBarcodes';
@@ -20,6 +21,7 @@ import { barcodeApi } from '@/services/barcode-api';
 import type { BarcodeMatchCandidate } from '@/services/barcode-types';
 import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
 import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import {
   createDefaultScannerConfig,
   getPreferredCameraId,
@@ -42,6 +44,7 @@ export function SitCollectionPage(): ReactElement {
   const [ambiguousCandidates, setAmbiguousCandidates] = useState<BarcodeMatchCandidate[]>([]);
   const [barcodeErrorMessage, setBarcodeErrorMessage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [sourceCellCode, setSourceCellCode] = useState('');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +87,7 @@ export function SitCollectionPage(): ReactElement {
   useEffect(() => {
     if (barcodeData?.success && barcodeData.data && barcodeData.data.length > 0) {
       setSelectedStock(barcodeData.data[0]);
+      setSourceCellCode(barcodeData.data[0]?.rafKodu ?? '');
       setAmbiguousCandidates([]);
       setBarcodeErrorMessage(null);
       setEnableSearch(false);
@@ -140,7 +144,7 @@ export function SitCollectionPage(): ReactElement {
         serialNo2: '',
         serialNo3: '',
         serialNo4: '',
-        sourceCellCode: '',
+        sourceCellCode,
         targetCellCode: '',
       },
       {
@@ -149,6 +153,7 @@ export function SitCollectionPage(): ReactElement {
             toast.success(t('subcontracting.sit.collection.collected'));
             setBarcodeInput('');
             setSelectedStock(null);
+            setSourceCellCode('');
             setQuantity(1);
           } else {
             toast.error(response.message || t('subcontracting.sit.collection.collectError'));
@@ -372,6 +377,7 @@ export function SitCollectionPage(): ReactElement {
                     sktVarmi: null,
                     isemriNo: null,
                   });
+                  setSourceCellCode('');
                   setAmbiguousCandidates([]);
                   setBarcodeErrorMessage(null);
                 }}
@@ -398,6 +404,17 @@ export function SitCollectionPage(): ReactElement {
                   </Badge>
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('warehouse.details.sourceCellCode', { defaultValue: 'Kaynak Hücre' })}</Label>
+                    <ShelfLookupCombobox
+                      warehouseCode={selectedStock.depoKodu}
+                      value={sourceCellCode}
+                      onValueChange={setSourceCellCode}
+                      placeholder={t('warehouse.details.sourceCellCodePlaceholder', { defaultValue: 'Kaynak hücre seçin' })}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Hücrelerde ara' })}
+                      emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Bu seçim için kaynak hücre yok' })}
+                    />
+                  </div>
                   <div className="flex-1">
                     <Input
                       type="number"

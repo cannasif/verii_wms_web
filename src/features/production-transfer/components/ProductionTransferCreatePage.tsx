@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { lookupApi } from '@/services/lookup-api';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { productionTransferApi } from '../api/production-transfer-api';
 import { createEmptyProductionTransferDraft, createEmptyProductionTransferLineDraft, type ProductionTransferDraft } from '../types/production-transfer';
 import { ProductionTransferSuggestPanel } from './ProductionTransferSuggestPanel';
@@ -264,31 +265,6 @@ export function ProductionTransferCreatePage(): ReactElement {
 
     return map;
   }, [suggestedLines]);
-  const cellOptionsByOrderAndStock = useMemo(() => {
-    const sourceMap = new Map<string, ComboboxOption[]>();
-    const targetMap = new Map<string, ComboboxOption[]>();
-
-    for (const line of suggestedLines) {
-      const key = `${line.productionOrderNo || '__all__'}::${line.stockCode || '__all__'}`;
-
-      const sourceCurrent = sourceMap.get(key) ?? [];
-      const sourceCell = line.sourceCellCode?.trim();
-      if (sourceCell && !sourceCurrent.some((option) => option.value === sourceCell)) {
-        sourceCurrent.push({ value: sourceCell, label: sourceCell });
-      }
-      sourceMap.set(key, sourceCurrent);
-
-      const targetCurrent = targetMap.get(key) ?? [];
-      const targetCell = line.targetCellCode?.trim();
-      if (targetCell && !targetCurrent.some((option) => option.value === targetCell)) {
-        targetCurrent.push({ value: targetCell, label: targetCell });
-      }
-      targetMap.set(key, targetCurrent);
-    }
-
-    return { sourceMap, targetMap };
-  }, [suggestedLines]);
-
   return (
     <FormPageShell
       title={
@@ -597,12 +573,8 @@ export function ProductionTransferCreatePage(): ReactElement {
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <Label>{t('productionTransfer.create.sourceCell', { defaultValue: 'Kaynak Hucre' })}</Label>
-                        <Combobox
-                          options={
-                            cellOptionsByOrderAndStock.sourceMap.get(`${line.productionOrderNo || '__all__'}::${line.stockCode || '__all__'}`)
-                            ?? cellOptionsByOrderAndStock.sourceMap.get(`${line.productionOrderNo || '__all__'}::__all__`)
-                            ?? []
-                          }
+                        <ShelfLookupCombobox
+                          warehouseCode={draft.sourceWarehouseCode}
                           value={line.sourceCellCode}
                           onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, sourceCellCode: value } : current) }))}
                           placeholder={t('productionTransfer.create.sourceCell', { defaultValue: 'Kaynak Hucre secin' })}
@@ -612,12 +584,8 @@ export function ProductionTransferCreatePage(): ReactElement {
                       </div>
                       <div className="space-y-2">
                         <Label>{t('productionTransfer.create.targetCell', { defaultValue: 'Hedef Hucre' })}</Label>
-                        <Combobox
-                          options={
-                            cellOptionsByOrderAndStock.targetMap.get(`${line.productionOrderNo || '__all__'}::${line.stockCode || '__all__'}`)
-                            ?? cellOptionsByOrderAndStock.targetMap.get(`${line.productionOrderNo || '__all__'}::__all__`)
-                            ?? []
-                          }
+                        <ShelfLookupCombobox
+                          warehouseCode={draft.targetWarehouseCode}
                           value={line.targetCellCode}
                           onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, targetCellCode: value } : current) }))}
                           placeholder={t('productionTransfer.create.targetCell', { defaultValue: 'Hedef Hucre secin' })}
