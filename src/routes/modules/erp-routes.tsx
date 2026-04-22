@@ -5,6 +5,8 @@ const CustomerReferencePage = lazyNamed(() => import('@/features/erp-reference')
 const StockReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'StockReferencePage');
 const WarehouseReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'WarehouseReferencePage');
 const ShelfManagementPage = lazyNamed(() => import('@/features/shelf-management'), 'ShelfManagementPage');
+const WarehouseStockBalancePage = lazyNamed(() => import('@/features/warehouse-balance'), 'WarehouseStockBalancePage');
+const WarehouseStockSerialBalancePage = lazyNamed(() => import('@/features/warehouse-balance'), 'WarehouseStockSerialBalancePage');
 const YapKodReferencePage = lazyNamed(() => import('@/features/erp-reference'), 'YapKodReferencePage');
 const BarcodeDefinitionsPage = lazyNamed(() => import('@/features/barcode-definitions'), 'BarcodeDefinitionsPage');
 
@@ -21,6 +23,8 @@ export const erpChildRoutes: RouteObject[] = [
       { path: 'stocks', element: withRoute(StockReferencePage, { routeName: 'erp-stocks' }) },
       { path: 'warehouses', element: withRoute(WarehouseReferencePage, { routeName: 'erp-warehouses' }) },
       { path: 'shelves', element: withRoute(ShelfManagementPage, { routeName: 'erp-shelves' }) },
+      { path: 'warehouse-stock-balance', element: withRoute(WarehouseStockBalancePage, { routeName: 'erp-warehouse-stock-balance' }) },
+      { path: 'warehouse-serial-balance', element: withRoute(WarehouseStockSerialBalancePage, { routeName: 'erp-warehouse-serial-balance' }) },
       { path: 'yapkodlar', element: withRoute(YapKodReferencePage, { routeName: 'erp-yapkodlar' }) },
       { path: 'barcodes', element: withRoute(BarcodeDefinitionsPage, { routeName: 'erp-barcode-definitions' }) },
       { path: 'barcode-designer', element: withRoute(BarcodeDesignerListPage, { routeName: 'erp-barcode-designer-list' }) },
