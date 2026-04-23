@@ -1,7 +1,18 @@
 import type { ApiResponse, PagedResponse } from '@/types/api';
 
+export interface ProductionOrderLookup {
+  id: number;
+  orderNo: string;
+  producedStockCode: string;
+  producedYapKod?: string | null;
+  sourceWarehouseCode?: string | null;
+  targetWarehouseCode?: string | null;
+  headerDocumentNo?: string | null;
+}
+
 export interface ProductionTransferLineDraft {
   localId: string;
+  stockId?: number;
   stockCode: string;
   yapKod: string;
   quantity: number;
@@ -39,6 +50,7 @@ export interface ProductionTransferListItem {
 
 export interface ProductionTransferDetailLine {
   id: number;
+  stockId?: number | null;
   stockCode: string;
   yapKod?: string | null;
   quantity: number;
@@ -104,6 +116,7 @@ export function createEmptyProductionTransferDraft(): ProductionTransferDraft {
 export function createEmptyProductionTransferLineDraft(): ProductionTransferLineDraft {
   return {
     localId: `pt-line-${Date.now()}-${transferSequence++}`,
+    stockId: undefined,
     stockCode: '',
     yapKod: '',
     quantity: 1,

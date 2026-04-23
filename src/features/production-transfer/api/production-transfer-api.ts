@@ -6,6 +6,7 @@ import type {
   ProductionTransferDetail,
   ProductionTransferDraft,
   ProductionTransferListItem,
+  ProductionOrderLookup,
   ProductionTransferSuggestedLine,
   ProductionTransferSuggestionRequest,
 } from '../types/production-transfer';
@@ -81,5 +82,20 @@ export const productionTransferApi = {
       return response.data;
     }
     throw new Error(response.message || 'Uretim transfer detayi yuklenemedi');
+  },
+
+  getProductionOrderLookupPaged: async (
+    params: PagedParams = {},
+    options?: { signal?: AbortSignal },
+  ): Promise<PagedResponse<ProductionOrderLookup>> => {
+    const response = await api.post<ApiResponse<PagedResponse<ProductionOrderLookup>>>(
+      '/api/PtHeader/production-order-lookup/paged',
+      buildPagedRequest(params),
+      options,
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Uretim emirleri yuklenemedi');
   },
 };

@@ -59,6 +59,7 @@ export interface ShipmentOrderItem {
 
 export interface SelectedShipmentOrderItem extends ShipmentOrderItem {
   stockId?: number;
+  yapKodId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;

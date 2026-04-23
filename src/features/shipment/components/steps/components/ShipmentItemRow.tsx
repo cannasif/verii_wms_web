@@ -1,10 +1,13 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { lookupApi } from '@/services/lookup-api';
+import type { YapKodLookup } from '@/services/lookup-types';
 import { cn } from '@/lib/utils';
 import type { ShipmentOrderItem, SelectedShipmentOrderItem } from '../../../types/shipment';
 
@@ -26,6 +29,7 @@ export function ShipmentItemRow({
   const { t } = useTranslation();
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
 
   useEffect(() => {
     setValue(selectedItem?.transferQuantity?.toString() || '');
@@ -168,13 +172,52 @@ export function ShipmentItemRow({
               <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
                 {t('shipment.details.configCode')}
               </Label>
-              <Input
-                id={`config-${item.id || ''}`}
-                value={selectedItem?.configCode || ''}
-                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                className="h-9 text-sm"
-                placeholder={t('shipment.details.configCodePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <PagedLookupDialog<YapKodLookup>
+                    open={yapKodLookupOpen}
+                    onOpenChange={setYapKodLookupOpen}
+                    title={t('shipment.details.configCode')}
+                    description={item.stockName || item.stockCode || ''}
+                    value={selectedItem?.configCode || ''}
+                    placeholder={
+                      selectedItem?.stockId
+                        ? t('shipment.details.configCodePlaceholder')
+                        : t('common.selectStockFirst', { defaultValue: 'Önce stok seçin' })
+                    }
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    disabled={!selectedItem?.stockId}
+                    queryKey={['shipment', 'yapkod', selectedItem?.stockId ?? item.id ?? 'new']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getYapKodlarPaged(
+                        { pageNumber, pageSize, search },
+                        { stockId: selectedItem?.stockId },
+                        { signal },
+                      )
+                    }
+                    getKey={(yapKod) => yapKod.id.toString()}
+                    getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                    onSelect={(yapKod) => onUpdateItem(item.id || '', { configCode: yapKod.yapKod, yapKodId: yapKod.id })}
+                  />
+                </div>
+                {selectedItem?.configCode ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 shrink-0"
+                    onClick={() => onUpdateItem(item.id || '', { configCode: '', yapKodId: undefined })}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedItem?.stockId
+                  ? (selectedItem?.configCode || t('shipment.details.configCodePlaceholder'))
+                  : t('common.selectStockFirst', { defaultValue: 'Önce stok seçin' })}
+              </p>
             </div>
           </div>
         </div>
@@ -182,8 +225,6 @@ export function ShipmentItemRow({
     </div>
   );
 }
-
-
 
 
 

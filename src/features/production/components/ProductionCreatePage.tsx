@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, GripVertical, Info } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { FormPageShell } from '@/components/shared';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,6 +22,7 @@ import { Stepper } from '@/components/ui/stepper';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { lookupApi } from '@/services/lookup-api';
+import type { StockLookup, WarehouseLookup, YapKodLookup } from '@/services/lookup-types';
 import { userApi } from '@/features/user-management/api/user-api';
 import { permissionGroupApi } from '@/features/access-control/api/permissionGroupApi';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
@@ -109,6 +111,7 @@ const stagePresetOptions = [
 
 interface ErpTemplateInput {
   orderNo: string;
+  stockId?: number | null;
   stockCode: string;
   quantity: number;
   yapKod: string;
@@ -188,6 +191,7 @@ function mapDetailToDraft(detail: ProductionHeaderDetail): ProductionPlanDraft {
       localId,
       orderNo: order.orderNo,
       orderType: (order.orderType as ProductionOrderDraft['orderType']) || 'Production',
+      producedStockId: undefined,
       producedStockCode: order.producedStockCode,
       producedYapKod: order.producedYapKod ?? '',
       plannedQuantity: order.plannedQuantity,
@@ -219,6 +223,7 @@ function mapDetailToDraft(detail: ProductionHeaderDetail): ProductionPlanDraft {
       priority: detail.header.priority ?? 20,
       projectCode: detail.header.projectCode ?? '',
       customerCode: '',
+      mainStockId: undefined,
       mainStockCode: detail.header.mainStockCode ?? '',
       mainYapKod: detail.header.mainYapKod ?? '',
       plannedQuantity: detail.header.plannedQuantity ?? 1,
@@ -237,6 +242,7 @@ function mapDetailToDraft(detail: ProductionHeaderDetail): ProductionPlanDraft {
       order.outputs.map((row, rowIndex) => ({
         localId: `output-existing-${row.id}-${rowIndex}`,
         orderLocalId: orderLocalIdById.get(order.id) ?? `order-existing-${order.id}-${orderIndex}`,
+        stockId: undefined,
         stockCode: row.stockCode,
         yapKod: row.yapKod ?? '',
         plannedQuantity: row.plannedQuantity,
@@ -251,6 +257,7 @@ function mapDetailToDraft(detail: ProductionHeaderDetail): ProductionPlanDraft {
       order.consumptions.map((row, rowIndex) => ({
         localId: `consumption-existing-${row.id}-${rowIndex}`,
         orderLocalId: orderLocalIdById.get(order.id) ?? `order-existing-${order.id}-${orderIndex}`,
+        stockId: undefined,
         stockCode: row.stockCode,
         yapKod: row.yapKod ?? '',
         plannedQuantity: row.plannedQuantity,
@@ -291,12 +298,26 @@ export function ProductionCreatePage(): ReactElement {
   const [erpFetchMode, setErpFetchMode] = useState<'workOrder' | 'stock'>('workOrder');
   const [editorMode, setEditorMode] = useState<'planner' | 'advanced'>('planner');
   const [plannerStep, setPlannerStep] = useState(1);
-  const [erpInput, setErpInput] = useState<ErpTemplateInput>({ orderNo: '', stockCode: '', quantity: 1, yapKod: '' });
+  const [erpInput, setErpInput] = useState<ErpTemplateInput>({ orderNo: '', stockId: undefined, stockCode: '', quantity: 1, yapKod: '' });
   const [plannerDragOrderIndex, setPlannerDragOrderIndex] = useState<number | null>(null);
   const [plannerDropTargetIndex, setPlannerDropTargetIndex] = useState<number | null>(null);
   const [stagePanelsOpen, setStagePanelsOpen] = useState<Record<string, boolean>>({});
+  const [mainStockLookupOpen, setMainStockLookupOpen] = useState(false);
+  const [mainYapKodLookupOpen, setMainYapKodLookupOpen] = useState(false);
+  const [erpStockLookupOpen, setErpStockLookupOpen] = useState(false);
+  const [erpYapKodLookupOpen, setErpYapKodLookupOpen] = useState(false);
+  const [selectedMainStockLabel, setSelectedMainStockLabel] = useState('');
+  const [selectedMainYapKodLabel, setSelectedMainYapKodLabel] = useState('');
+  const [selectedErpStockLabel, setSelectedErpStockLabel] = useState('');
+  const [selectedErpYapKodLabel, setSelectedErpYapKodLabel] = useState('');
+  const [lookupLabels, setLookupLabels] = useState<Record<string, string>>({});
+  const [activeLookupKey, setActiveLookupKey] = useState<string | null>(null);
 
   const isStagePanelExpanded = (localId: string): boolean => stagePanelsOpen[localId] !== false;
+  const getLookupLabel = (key: string, fallback?: string): string => lookupLabels[key] || fallback || '';
+  const setLookupLabel = (key: string, value: string): void => {
+    setLookupLabels((prev) => ({ ...prev, [key]: value }));
+  };
 
   const toggleStagePanel = (localId: string): void => {
     setStagePanelsOpen((prev) => {
@@ -305,21 +326,6 @@ export function ProductionCreatePage(): ReactElement {
     });
   };
 
-  const productsQuery = useQuery({
-    queryKey: ['production-create-products'],
-    queryFn: () => lookupApi.getProducts(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const yapKodlarQuery = useQuery({
-    queryKey: ['production-create-yapkodlar'],
-    queryFn: () => lookupApi.getYapKodlar(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const warehousesQuery = useQuery({
-    queryKey: ['production-create-warehouses'],
-    queryFn: () => lookupApi.getWarehouses(),
-    staleTime: 5 * 60 * 1000,
-  });
   const usersQuery = useQuery({
     queryKey: ['production-create-users'],
     queryFn: () => userApi.getList({ pageNumber: 0, pageSize: 200, sortBy: 'Username', sortDirection: 'asc' }),
@@ -372,25 +378,6 @@ export function ProductionCreatePage(): ReactElement {
     () => orderOptions.map((option) => ({ value: option.value, label: option.label })),
     [orderOptions],
   );
-  const productOptions = useMemo<ComboboxOption[]>(
-    () =>
-      (productsQuery.data ?? []).map((item) => ({
-        value: item.stokKodu,
-        label: `${item.stokKodu} - ${item.stokAdi}`,
-      })),
-    [productsQuery.data],
-  );
-  const selectedMainStockCode = draft.header.mainStockCode || erpInput.stockCode;
-  const yapKodOptions = useMemo<ComboboxOption[]>(
-    () =>
-      (yapKodlarQuery.data ?? [])
-        .filter((item) => !selectedMainStockCode || !item.yplndrStokKod || item.yplndrStokKod === selectedMainStockCode)
-        .map((item) => ({
-          value: item.yapKod,
-          label: `${item.yapKod} - ${item.yapAcik}`,
-        })),
-    [selectedMainStockCode, yapKodlarQuery.data],
-  );
   const plannerSteps = useMemo(
     () => ([
       { label: t('production.create.planner.steps.header', { defaultValue: 'Plan Temeli' }), description: t('production.create.planner.steps.headerDesc', { defaultValue: 'Ne uretecegini ve kac adet olacagini belirle' }) },
@@ -399,14 +386,6 @@ export function ProductionCreatePage(): ReactElement {
       { label: t('production.create.planner.steps.flow', { defaultValue: 'Akis ve Atama' }), description: t('production.create.planner.steps.flowDesc', { defaultValue: 'Seri, paralel ve sorumlu dagilimini netlestir' }) },
     ]),
     [t],
-  );
-  const warehouseOptions = useMemo<ComboboxOption[]>(
-    () =>
-      (warehousesQuery.data ?? []).map((item) => ({
-        value: String(item.depoKodu),
-        label: `${item.depoKodu} - ${item.depoIsmi}`,
-      })),
-    [warehousesQuery.data],
   );
   const userOptions = useMemo<ComboboxOption[]>(
     () =>
@@ -424,14 +403,6 @@ export function ProductionCreatePage(): ReactElement {
       })),
     [rolesQuery.data],
   );
-  const getYapKodOptionsForStock = (stockCode?: string): ComboboxOption[] =>
-    (yapKodlarQuery.data ?? [])
-      .filter((item) => !stockCode || !item.yplndrStokKod || item.yplndrStokKod === stockCode)
-      .map((item) => ({
-        value: item.yapKod,
-        label: `${item.yapKod} - ${item.yapAcik}`,
-      }));
-
   const canFetchErpTemplate = erpFetchMode === 'workOrder'
     ? erpInput.orderNo.trim().length > 0
     : erpInput.stockCode.trim().length > 0;
@@ -887,23 +858,56 @@ export function ProductionCreatePage(): ReactElement {
           />
           <div className="grid gap-3 md:grid-cols-4">
             <Field label={t('production.create.mainStockCode')}>
-              <Combobox
-                options={productOptions}
-                value={erpInput.stockCode}
-                onValueChange={(value) => setErpInput((prev) => ({ ...prev, stockCode: value, yapKod: prev.stockCode === value ? prev.yapKod : '' }))}
+              <PagedLookupDialog<StockLookup>
+                open={erpStockLookupOpen}
+                onOpenChange={setErpStockLookupOpen}
+                title={t('production.create.mainStockCode')}
+                description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                value={selectedErpStockLabel || erpInput.stockCode}
                 placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
                 searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                 emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                queryKey={['production-create', 'erp-stock']}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                }
+                getKey={(item) => item.id.toString()}
+                getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                onSelect={(item) => {
+                  setErpInput((prev) => ({
+                    ...prev,
+                    stockId: item.id,
+                    stockCode: item.stokKodu,
+                    yapKod: prev.stockId === item.id ? prev.yapKod : '',
+                  }));
+                  setSelectedErpStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
+                  if (erpInput.stockId !== item.id) {
+                    setSelectedErpYapKodLabel('');
+                  }
+                }}
               />
             </Field>
             <Field label={t('production.create.mainYapKod')}>
-              <Combobox
-                options={getYapKodOptionsForStock(erpInput.stockCode)}
-                value={erpInput.yapKod}
-                onValueChange={(value) => setErpInput((prev) => ({ ...prev, yapKod: value }))}
+              <PagedLookupDialog<YapKodLookup>
+                open={erpYapKodLookupOpen}
+                onOpenChange={setErpYapKodLookupOpen}
+                title={t('production.create.mainYapKod')}
+                description={erpInput.stockCode || t('production.create.mainStockCode')}
+                value={selectedErpYapKodLabel || erpInput.yapKod}
                 placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
                 searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
                 emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                disabled={!erpInput.stockId}
+                queryKey={['production-create', 'erp-yapkod', erpInput.stockId ?? 'none']}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: erpInput.stockId ?? undefined }, { signal })
+                }
+                getKey={(item) => item.id.toString()}
+                getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                onSelect={(item) => {
+                  setErpInput((prev) => ({ ...prev, yapKod: item.yapKod }));
+                  setSelectedErpYapKodLabel(`${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                }}
               />
             </Field>
             <Field label={t('production.create.plannedQuantity')}>
@@ -1057,23 +1061,53 @@ export function ProductionCreatePage(): ReactElement {
                         <Field label={t('common.documentDate')}><Input type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
                         <Field label={t('common.projectCode')}><Input value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
                         <Field label={<>{t('production.create.mainStockCode')}<RequiredMark /></>}>
-                          <Combobox
-                            options={productOptions}
-                            value={draft.header.mainStockCode}
-                            onValueChange={(value) => updateHeader('mainStockCode', value)}
+                          <PagedLookupDialog<StockLookup>
+                            open={mainStockLookupOpen}
+                            onOpenChange={setMainStockLookupOpen}
+                            title={t('production.create.mainStockCode')}
+                            description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                            value={selectedMainStockLabel || draft.header.mainStockCode}
                             placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
                             searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                             emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                            queryKey={['production-create', 'main-stock']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                            }
+                            getKey={(item) => item.id.toString()}
+                            getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                            onSelect={(item) => {
+                              updateHeader('mainStockId', item.id);
+                              updateHeader('mainStockCode', item.stokKodu);
+                              if (draft.header.mainStockId !== item.id) {
+                                updateHeader('mainYapKod', '');
+                                setSelectedMainYapKodLabel('');
+                              }
+                              setSelectedMainStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
+                            }}
                           />
                         </Field>
                         <Field label={t('production.create.mainYapKod')}>
-                          <Combobox
-                            options={yapKodOptions}
-                            value={draft.header.mainYapKod}
-                            onValueChange={(value) => updateHeader('mainYapKod', value)}
+                          <PagedLookupDialog<YapKodLookup>
+                            open={mainYapKodLookupOpen}
+                            onOpenChange={setMainYapKodLookupOpen}
+                            title={t('production.create.mainYapKod')}
+                            description={draft.header.mainStockCode || t('production.create.mainStockCode')}
+                            value={selectedMainYapKodLabel || draft.header.mainYapKod}
                             placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
                             searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
                             emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                            disabled={!draft.header.mainStockId}
+                            queryKey={['production-create', 'main-yapkod', draft.header.mainStockId ?? 'none']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: draft.header.mainStockId ?? undefined }, { signal })
+                            }
+                            getKey={(item) => item.id.toString()}
+                            getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                            onSelect={(item) => {
+                              updateHeader('mainYapKod', item.yapKod);
+                              setSelectedMainYapKodLabel(`${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                            }}
                           />
                         </Field>
                         <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}><Input type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
@@ -1286,32 +1320,56 @@ export function ProductionCreatePage(): ReactElement {
                                 <Input value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} placeholder={t('production.create.planner.stageNamePlaceholder', { defaultValue: 'Ornek: Govde Hazirlama, Son Montaj' })} />
                               </Field>
                               <Field label={<>{t('production.create.producedStockCode')}<RequiredMark /></>}>
-                                <Combobox
-                                  options={productOptions}
-                                  value={order.producedStockCode}
-                                  onValueChange={(value) =>
-                                    updateOrder(order.localId, (current) => ({
-                                      ...current,
-                                      producedStockCode: value,
-                                      producedYapKod:
-                                        current.producedStockCode === value ||
-                                        getYapKodOptionsForStock(value).some((item) => item.value === current.producedYapKod)
-                                          ? current.producedYapKod
-                                          : '',
-                                    }))}
+                                <PagedLookupDialog<StockLookup>
+                                  open={activeLookupKey === `planner-order-stock-${order.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-stock-${order.localId}` : null)}
+                                  title={t('production.create.producedStockCode')}
+                                  description={order.orderNo || t('production.create.orderPlaceholder')}
+                                  value={getLookupLabel(`planner-order-stock-${order.localId}`, order.producedStockCode)}
                                   placeholder={t('production.create.productSelect', { defaultValue: 'Uretilecek stok secin' })}
                                   searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                   emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  queryKey={['production-create', 'planner-order-stock', order.localId]}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                  onSelect={(item) => {
+                                    updateOrder(order.localId, (current) => ({
+                                      ...current,
+                                      producedStockId: item.id,
+                                      producedStockCode: item.stokKodu,
+                                      producedYapKod: current.producedStockId === item.id ? current.producedYapKod : '',
+                                    }));
+                                    if (order.producedStockId !== item.id) {
+                                      setLookupLabel(`planner-order-yapkod-${order.localId}`, '');
+                                    }
+                                    setLookupLabel(`planner-order-stock-${order.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                  }}
                                 />
                               </Field>
                               <Field label={t('production.create.producedYapKod')}>
-                                <Combobox
-                                  options={getYapKodOptionsForStock(order.producedStockCode)}
-                                  value={order.producedYapKod}
-                                  onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, producedYapKod: value }))}
+                                <PagedLookupDialog<YapKodLookup>
+                                  open={activeLookupKey === `planner-order-yapkod-${order.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-yapkod-${order.localId}` : null)}
+                                  title={t('production.create.producedYapKod')}
+                                  description={order.producedStockCode || t('production.create.producedStockCode')}
+                                  value={getLookupLabel(`planner-order-yapkod-${order.localId}`, order.producedYapKod)}
                                   placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                   searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                   emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  disabled={!order.producedStockId}
+                                  queryKey={['production-create', 'planner-order-yapkod', order.localId, order.producedStockId ?? 'none']}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: order.producedStockId ?? undefined }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                  onSelect={(item) => {
+                                    updateOrder(order.localId, (current) => ({ ...current, producedYapKod: item.yapKod }));
+                                    setLookupLabel(`planner-order-yapkod-${order.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                  }}
                                 />
                               </Field>
                               <Field label={t('production.create.orderType')}>
@@ -1322,23 +1380,47 @@ export function ProductionCreatePage(): ReactElement {
                               </Field>
                             </div>
                             <Field label={t('production.create.sourceWarehouse')}>
-                              <Combobox
-                                options={warehouseOptions}
-                                value={order.sourceWarehouseCode}
-                                onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, sourceWarehouseCode: value }))}
+                              <PagedLookupDialog<WarehouseLookup>
+                                open={activeLookupKey === `planner-order-source-warehouse-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-source-warehouse-${order.localId}` : null)}
+                                title={t('production.create.sourceWarehouse')}
+                                description={order.orderNo || t('production.create.orderPlaceholder')}
+                                value={getLookupLabel(`planner-order-source-warehouse-${order.localId}`, order.sourceWarehouseCode)}
                                 placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
                                 searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                                 emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                queryKey={['production-create', 'planner-order-source-warehouse', order.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({ ...current, sourceWarehouseCode: String(item.depoKodu) }));
+                                  setLookupLabel(`planner-order-source-warehouse-${order.localId}`, `${item.depoKodu} - ${item.depoIsmi}`);
+                                }}
                               />
                             </Field>
                             <Field label={t('production.create.targetWarehouse')}>
-                              <Combobox
-                                options={warehouseOptions}
-                                value={order.targetWarehouseCode}
-                                onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, targetWarehouseCode: value }))}
+                              <PagedLookupDialog<WarehouseLookup>
+                                open={activeLookupKey === `planner-order-target-warehouse-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-target-warehouse-${order.localId}` : null)}
+                                title={t('production.create.targetWarehouse')}
+                                description={order.orderNo || t('production.create.orderPlaceholder')}
+                                value={getLookupLabel(`planner-order-target-warehouse-${order.localId}`, order.targetWarehouseCode)}
                                 placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
                                 searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                                 emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                queryKey={['production-create', 'planner-order-target-warehouse', order.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({ ...current, targetWarehouseCode: String(item.depoKodu) }));
+                                  setLookupLabel(`planner-order-target-warehouse-${order.localId}`, `${item.depoKodu} - ${item.depoIsmi}`);
+                                }}
                               />
                             </Field>
                             {(() => {
@@ -1404,30 +1486,54 @@ export function ProductionCreatePage(): ReactElement {
                           <div className="space-y-2">
                             {rows.map((row) => (
                               <div key={row.localId} className="grid gap-2 md:grid-cols-5">
-                                <Combobox
-                                  options={productOptions}
-                                  value={row.stockCode}
-                                  onValueChange={(value) =>
-                                    updateOutput(row.localId, (current) => ({
-                                      ...current,
-                                      stockCode: value,
-                                      yapKod:
-                                        current.stockCode === value ||
-                                        getYapKodOptionsForStock(value).some((item) => item.value === current.yapKod)
-                                          ? current.yapKod
-                                          : '',
-                                    }))}
+                                <PagedLookupDialog<StockLookup>
+                                  open={activeLookupKey === `planner-output-stock-${row.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-output-stock-${row.localId}` : null)}
+                                  title={t('production.create.columns.stock')}
+                                  description={order.orderNo || t('production.create.orderPlaceholder')}
+                                  value={getLookupLabel(`planner-output-stock-${row.localId}`, row.stockCode)}
                                   placeholder={t('production.create.productSelect', { defaultValue: 'Urun secin' })}
                                   searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                   emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  queryKey={['production-create', 'planner-output-stock', row.localId]}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                  onSelect={(item) => {
+                                    updateOutput(row.localId, (current) => ({
+                                      ...current,
+                                      stockId: item.id,
+                                      stockCode: item.stokKodu,
+                                      yapKod: current.stockId === item.id ? current.yapKod : '',
+                                    }));
+                                    if (row.stockId !== item.id) {
+                                      setLookupLabel(`planner-output-yapkod-${row.localId}`, '');
+                                    }
+                                    setLookupLabel(`planner-output-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                  }}
                                 />
-                                <Combobox
-                                  options={getYapKodOptionsForStock(row.stockCode)}
-                                  value={row.yapKod}
-                                  onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, yapKod: value }))}
+                                <PagedLookupDialog<YapKodLookup>
+                                  open={activeLookupKey === `planner-output-yapkod-${row.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-output-yapkod-${row.localId}` : null)}
+                                  title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                  description={row.stockCode || t('production.create.columns.stock')}
+                                  value={getLookupLabel(`planner-output-yapkod-${row.localId}`, row.yapKod)}
                                   placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                   searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                   emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  disabled={!row.stockId}
+                                  queryKey={['production-create', 'planner-output-yapkod', row.localId, row.stockId ?? 'none']}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: row.stockId ?? undefined }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                  onSelect={(item) => {
+                                    updateOutput(row.localId, (current) => ({ ...current, yapKod: item.yapKod }));
+                                    setLookupLabel(`planner-output-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                  }}
                                 />
                                 <Input type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
                                 <Select value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
@@ -1472,30 +1578,54 @@ export function ProductionCreatePage(): ReactElement {
                           <div className="space-y-2">
                             {rows.map((row) => (
                               <div key={row.localId} className="grid gap-2 md:grid-cols-6">
-                                <Combobox
-                                  options={productOptions}
-                                  value={row.stockCode}
-                                  onValueChange={(value) =>
-                                    updateConsumption(row.localId, (current) => ({
-                                      ...current,
-                                      stockCode: value,
-                                      yapKod:
-                                        current.stockCode === value ||
-                                        getYapKodOptionsForStock(value).some((item) => item.value === current.yapKod)
-                                          ? current.yapKod
-                                          : '',
-                                    }))}
+                                <PagedLookupDialog<StockLookup>
+                                  open={activeLookupKey === `planner-consumption-stock-${row.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-consumption-stock-${row.localId}` : null)}
+                                  title={t('production.create.sourceStock')}
+                                  description={order.orderNo || t('production.create.orderPlaceholder')}
+                                  value={getLookupLabel(`planner-consumption-stock-${row.localId}`, row.stockCode)}
                                   placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Tuketilecek stok secin' })}
                                   searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                   emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  queryKey={['production-create', 'planner-consumption-stock', row.localId]}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                  onSelect={(item) => {
+                                    updateConsumption(row.localId, (current) => ({
+                                      ...current,
+                                      stockId: item.id,
+                                      stockCode: item.stokKodu,
+                                      yapKod: current.stockId === item.id ? current.yapKod : '',
+                                    }));
+                                    if (row.stockId !== item.id) {
+                                      setLookupLabel(`planner-consumption-yapkod-${row.localId}`, '');
+                                    }
+                                    setLookupLabel(`planner-consumption-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                  }}
                                 />
-                                <Combobox
-                                  options={getYapKodOptionsForStock(row.stockCode)}
-                                  value={row.yapKod}
-                                  onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, yapKod: value }))}
+                                <PagedLookupDialog<YapKodLookup>
+                                  open={activeLookupKey === `planner-consumption-yapkod-${row.localId}`}
+                                  onOpenChange={(open) => setActiveLookupKey(open ? `planner-consumption-yapkod-${row.localId}` : null)}
+                                  title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                  description={row.stockCode || t('production.create.sourceStock')}
+                                  value={getLookupLabel(`planner-consumption-yapkod-${row.localId}`, row.yapKod)}
                                   placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                   searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                   emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  disabled={!row.stockId}
+                                  queryKey={['production-create', 'planner-consumption-yapkod', row.localId, row.stockId ?? 'none']}
+                                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: row.stockId ?? undefined }, { signal })
+                                  }
+                                  getKey={(item) => item.id.toString()}
+                                  getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                  onSelect={(item) => {
+                                    updateConsumption(row.localId, (current) => ({ ...current, yapKod: item.yapKod }));
+                                    setLookupLabel(`planner-consumption-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                  }}
                                 />
                                 <Input type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
                                 <Select value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
@@ -1734,23 +1864,53 @@ export function ProductionCreatePage(): ReactElement {
                     </Select>
                   </Field>
                   <Field label={t('production.create.mainStockCode')}>
-                    <Combobox
-                      options={productOptions}
-                      value={draft.header.mainStockCode}
-                      onValueChange={(value) => updateHeader('mainStockCode', value)}
+                    <PagedLookupDialog<StockLookup>
+                      open={mainStockLookupOpen}
+                      onOpenChange={setMainStockLookupOpen}
+                      title={t('production.create.mainStockCode')}
+                      description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                      value={selectedMainStockLabel || draft.header.mainStockCode}
                       placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
                       searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                       emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                      queryKey={['production-create', 'advanced-main-stock']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                      onSelect={(item) => {
+                        updateHeader('mainStockId', item.id);
+                        updateHeader('mainStockCode', item.stokKodu);
+                        if (draft.header.mainStockId !== item.id) {
+                          updateHeader('mainYapKod', '');
+                          setSelectedMainYapKodLabel('');
+                        }
+                        setSelectedMainStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
+                      }}
                     />
                   </Field>
                   <Field label={t('production.create.mainYapKod')}>
-                    <Combobox
-                      options={yapKodOptions}
-                      value={draft.header.mainYapKod}
-                      onValueChange={(value) => updateHeader('mainYapKod', value)}
+                    <PagedLookupDialog<YapKodLookup>
+                      open={mainYapKodLookupOpen}
+                      onOpenChange={setMainYapKodLookupOpen}
+                      title={t('production.create.mainYapKod')}
+                      description={draft.header.mainStockCode || t('production.create.mainStockCode')}
+                      value={selectedMainYapKodLabel || draft.header.mainYapKod}
                       placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
                       searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
                       emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                      disabled={!draft.header.mainStockId}
+                      queryKey={['production-create', 'advanced-main-yapkod', draft.header.mainStockId ?? 'none']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: draft.header.mainStockId ?? undefined }, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                      onSelect={(item) => {
+                        updateHeader('mainYapKod', item.yapKod);
+                        setSelectedMainYapKodLabel(`${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                      }}
                     />
                   </Field>
                   <Field label={t('production.create.plannedQuantity')}><Input type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
@@ -1794,53 +1954,101 @@ export function ProductionCreatePage(): ReactElement {
                             </Field>
                             <Field label={t('production.create.producedStockCode')}><Input value={order.producedStockCode} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, producedStockCode: e.target.value }))} /></Field>
                             <Field label={t('production.create.producedStockCode')}>
-                              <Combobox
-                                options={productOptions}
-                                value={order.producedStockCode}
-                                onValueChange={(value) =>
-                                  updateOrder(order.localId, (current) => ({
-                                    ...current,
-                                    producedStockCode: value,
-                                    producedYapKod:
-                                      current.producedStockCode === value ||
-                                      getYapKodOptionsForStock(value).some((item) => item.value === current.producedYapKod)
-                                        ? current.producedYapKod
-                                        : '',
-                                  }))}
+                              <PagedLookupDialog<StockLookup>
+                                open={activeLookupKey === `advanced-order-stock-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-stock-${order.localId}` : null)}
+                                title={t('production.create.producedStockCode')}
+                                description={order.orderNo || t('production.create.orderPlaceholder')}
+                                value={getLookupLabel(`advanced-order-stock-${order.localId}`, order.producedStockCode)}
                                 placeholder={t('production.create.productSelect', { defaultValue: 'Uretilecek stok secin' })}
                                 searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                 emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                queryKey={['production-create', 'advanced-order-stock', order.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({
+                                    ...current,
+                                    producedStockId: item.id,
+                                    producedStockCode: item.stokKodu,
+                                    producedYapKod: current.producedStockId === item.id ? current.producedYapKod : '',
+                                  }));
+                                  if (order.producedStockId !== item.id) {
+                                    setLookupLabel(`advanced-order-yapkod-${order.localId}`, '');
+                                  }
+                                  setLookupLabel(`advanced-order-stock-${order.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                }}
                               />
                             </Field>
                             <Field label={t('production.create.producedYapKod')}>
-                              <Combobox
-                                options={getYapKodOptionsForStock(order.producedStockCode)}
-                                value={order.producedYapKod}
-                                onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, producedYapKod: value }))}
+                              <PagedLookupDialog<YapKodLookup>
+                                open={activeLookupKey === `advanced-order-yapkod-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-yapkod-${order.localId}` : null)}
+                                title={t('production.create.producedYapKod')}
+                                description={order.producedStockCode || t('production.create.producedStockCode')}
+                                value={getLookupLabel(`advanced-order-yapkod-${order.localId}`, order.producedYapKod)}
                                 placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                 searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                 emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                disabled={!order.producedStockId}
+                                queryKey={['production-create', 'advanced-order-yapkod', order.localId, order.producedStockId ?? 'none']}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: order.producedStockId ?? undefined }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({ ...current, producedYapKod: item.yapKod }));
+                                  setLookupLabel(`advanced-order-yapkod-${order.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                }}
                               />
                             </Field>
                             <Field label={t('production.create.plannedQuantity')}><Input type="number" min="0" step="0.001" value={order.plannedQuantity} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></Field>
                             <Field label={t('production.create.sourceWarehouse')}>
-                              <Combobox
-                                options={warehouseOptions}
-                                value={order.sourceWarehouseCode}
-                                onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, sourceWarehouseCode: value }))}
+                              <PagedLookupDialog<WarehouseLookup>
+                                open={activeLookupKey === `advanced-order-source-warehouse-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-source-warehouse-${order.localId}` : null)}
+                                title={t('production.create.sourceWarehouse')}
+                                description={order.orderNo || t('production.create.orderPlaceholder')}
+                                value={getLookupLabel(`advanced-order-source-warehouse-${order.localId}`, order.sourceWarehouseCode)}
                                 placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
                                 searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                                 emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                queryKey={['production-create', 'advanced-order-source-warehouse', order.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({ ...current, sourceWarehouseCode: String(item.depoKodu) }));
+                                  setLookupLabel(`advanced-order-source-warehouse-${order.localId}`, `${item.depoKodu} - ${item.depoIsmi}`);
+                                }}
                               />
                             </Field>
                             <Field label={t('production.create.targetWarehouse')}>
-                              <Combobox
-                                options={warehouseOptions}
-                                value={order.targetWarehouseCode}
-                                onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, targetWarehouseCode: value }))}
+                              <PagedLookupDialog<WarehouseLookup>
+                                open={activeLookupKey === `advanced-order-target-warehouse-${order.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-target-warehouse-${order.localId}` : null)}
+                                title={t('production.create.targetWarehouse')}
+                                description={order.orderNo || t('production.create.orderPlaceholder')}
+                                value={getLookupLabel(`advanced-order-target-warehouse-${order.localId}`, order.targetWarehouseCode)}
                                 placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
                                 searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                                 emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                queryKey={['production-create', 'advanced-order-target-warehouse', order.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                                onSelect={(item) => {
+                                  updateOrder(order.localId, (current) => ({ ...current, targetWarehouseCode: String(item.depoKodu) }));
+                                  setLookupLabel(`advanced-order-target-warehouse-${order.localId}`, `${item.depoKodu} - ${item.depoIsmi}`);
+                                }}
                               />
                             </Field>
                             <Field label={t('production.create.sequenceNo')}><Input type="number" value={order.sequenceNo ?? ''} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, sequenceNo: e.target.value === '' ? undefined : Number(e.target.value) }))} /></Field>
@@ -1899,32 +2107,56 @@ export function ProductionCreatePage(): ReactElement {
                               <Combobox options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
                             </TableCell>
                             <TableCell>
-                              <Combobox
-                                options={productOptions}
-                                value={row.stockCode}
-                                onValueChange={(value) =>
-                                  updateOutput(row.localId, (current) => ({
-                                    ...current,
-                                    stockCode: value,
-                                    yapKod:
-                                      current.stockCode === value ||
-                                      getYapKodOptionsForStock(value).some((item) => item.value === current.yapKod)
-                                        ? current.yapKod
-                                        : '',
-                                  }))}
+                              <PagedLookupDialog<StockLookup>
+                                open={activeLookupKey === `advanced-output-stock-${row.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-output-stock-${row.localId}` : null)}
+                                title={t('production.create.columns.stock')}
+                                description={t('production.create.outputs.title')}
+                                value={getLookupLabel(`advanced-output-stock-${row.localId}`, row.stockCode)}
                                 placeholder={t('production.create.productSelect', { defaultValue: 'Urun secin' })}
                                 searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                 emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                queryKey={['production-create', 'advanced-output-stock', row.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                onSelect={(item) => {
+                                  updateOutput(row.localId, (current) => ({
+                                    ...current,
+                                    stockId: item.id,
+                                    stockCode: item.stokKodu,
+                                    yapKod: current.stockId === item.id ? current.yapKod : '',
+                                  }));
+                                  if (row.stockId !== item.id) {
+                                    setLookupLabel(`advanced-output-yapkod-${row.localId}`, '');
+                                  }
+                                  setLookupLabel(`advanced-output-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                }}
                               />
                             </TableCell>
                             <TableCell>
-                              <Combobox
-                                options={getYapKodOptionsForStock(row.stockCode)}
-                                value={row.yapKod}
-                                onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, yapKod: value }))}
+                              <PagedLookupDialog<YapKodLookup>
+                                open={activeLookupKey === `advanced-output-yapkod-${row.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-output-yapkod-${row.localId}` : null)}
+                                title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                description={row.stockCode || t('production.create.columns.stock')}
+                                value={getLookupLabel(`advanced-output-yapkod-${row.localId}`, row.yapKod)}
                                 placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                 searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                 emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                disabled={!row.stockId}
+                                queryKey={['production-create', 'advanced-output-yapkod', row.localId, row.stockId ?? 'none']}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: row.stockId ?? undefined }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                onSelect={(item) => {
+                                  updateOutput(row.localId, (current) => ({ ...current, yapKod: item.yapKod }));
+                                  setLookupLabel(`advanced-output-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                }}
                               />
                             </TableCell>
                             <TableCell><Input type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
@@ -1969,32 +2201,56 @@ export function ProductionCreatePage(): ReactElement {
                               <Combobox options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
                             </TableCell>
                             <TableCell>
-                              <Combobox
-                                options={productOptions}
-                                value={row.stockCode}
-                                onValueChange={(value) =>
-                                  updateConsumption(row.localId, (current) => ({
-                                    ...current,
-                                    stockCode: value,
-                                    yapKod:
-                                      current.stockCode === value ||
-                                      getYapKodOptionsForStock(value).some((item) => item.value === current.yapKod)
-                                        ? current.yapKod
-                                        : '',
-                                  }))}
+                              <PagedLookupDialog<StockLookup>
+                                open={activeLookupKey === `advanced-consumption-stock-${row.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-consumption-stock-${row.localId}` : null)}
+                                title={t('production.create.sourceStock')}
+                                description={t('production.create.consumptions.title')}
+                                value={getLookupLabel(`advanced-consumption-stock-${row.localId}`, row.stockCode)}
                                 placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Tuketilecek stok secin' })}
                                 searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
                                 emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                queryKey={['production-create', 'advanced-consumption-stock', row.localId]}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                                onSelect={(item) => {
+                                  updateConsumption(row.localId, (current) => ({
+                                    ...current,
+                                    stockId: item.id,
+                                    stockCode: item.stokKodu,
+                                    yapKod: current.stockId === item.id ? current.yapKod : '',
+                                  }));
+                                  if (row.stockId !== item.id) {
+                                    setLookupLabel(`advanced-consumption-yapkod-${row.localId}`, '');
+                                  }
+                                  setLookupLabel(`advanced-consumption-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
+                                }}
                               />
                             </TableCell>
                             <TableCell>
-                              <Combobox
-                                options={getYapKodOptionsForStock(row.stockCode)}
-                                value={row.yapKod}
-                                onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, yapKod: value }))}
+                              <PagedLookupDialog<YapKodLookup>
+                                open={activeLookupKey === `advanced-consumption-yapkod-${row.localId}`}
+                                onOpenChange={(open) => setActiveLookupKey(open ? `advanced-consumption-yapkod-${row.localId}` : null)}
+                                title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                description={row.stockCode || t('production.create.sourceStock')}
+                                value={getLookupLabel(`advanced-consumption-yapkod-${row.localId}`, row.yapKod)}
                                 placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
                                 searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
                                 emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                disabled={!row.stockId}
+                                queryKey={['production-create', 'advanced-consumption-yapkod', row.localId, row.stockId ?? 'none']}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                  lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: row.stockId ?? undefined }, { signal })
+                                }
+                                getKey={(item) => item.id.toString()}
+                                getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                                onSelect={(item) => {
+                                  updateConsumption(row.localId, (current) => ({ ...current, yapKod: item.yapKod }));
+                                  setLookupLabel(`advanced-consumption-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
+                                }}
                               />
                             </TableCell>
                             <TableCell><Input type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>

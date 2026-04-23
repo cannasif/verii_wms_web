@@ -6,20 +6,27 @@ import { useTranslation } from 'react-i18next';
 import { Info } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { FormPageShell } from '@/components/shared';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { lookupApi } from '@/services/lookup-api';
+import type { StockLookup } from '@/services/lookup-types';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { productionTransferApi } from '../api/production-transfer-api';
-import { createEmptyProductionTransferDraft, createEmptyProductionTransferLineDraft, type ProductionTransferDraft } from '../types/production-transfer';
+import {
+  createEmptyProductionTransferDraft,
+  createEmptyProductionTransferLineDraft,
+  type ProductionOrderLookup,
+  type ProductionTransferDraft,
+} from '../types/production-transfer';
 import { ProductionTransferSuggestPanel } from './ProductionTransferSuggestPanel';
+import type { Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 
 const transferPurposes = ['MaterialSupply', 'SemiFinishedMove', 'FinishedGoodsPutaway', 'ScrapMove', 'ReturnToStock'] as const;
 const lineRoles = ['ConsumptionSupply', 'SemiFinishedMove', 'OutputMove'] as const;
@@ -54,11 +61,16 @@ export function ProductionTransferCreatePage(): ReactElement {
   const [draft, setDraft] = useState<ProductionTransferDraft>(() => createEmptyProductionTransferDraft());
   const [suggestedLines, setSuggestedLines] = useState<Awaited<ReturnType<typeof productionTransferApi.getSuggestedLines>>>([]);
   const [applyMode, setApplyMode] = useState<'append' | 'replace'>('append');
-  const warehousesQuery = useQuery({
-    queryKey: ['production-transfer-warehouses'],
-    queryFn: () => lookupApi.getWarehouses(),
-    staleTime: 5 * 60 * 1000,
-  });
+  const [sourceWarehouseLookupOpen, setSourceWarehouseLookupOpen] = useState(false);
+  const [targetWarehouseLookupOpen, setTargetWarehouseLookupOpen] = useState(false);
+  const [selectedSourceWarehouseLabel, setSelectedSourceWarehouseLabel] = useState('');
+  const [selectedTargetWarehouseLabel, setSelectedTargetWarehouseLabel] = useState('');
+  const [productionOrderLookupOpen, setProductionOrderLookupOpen] = useState(false);
+  const [activeLineOrderLookupId, setActiveLineOrderLookupId] = useState<string | null>(null);
+  const [activeLineStockLookupId, setActiveLineStockLookupId] = useState<string | null>(null);
+  const [selectedProductionOrderLabel, setSelectedProductionOrderLabel] = useState('');
+  const [lineOrderLabels, setLineOrderLabels] = useState<Record<string, string>>({});
+  const [lineStockLabels, setLineStockLabels] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setPageTitle(
@@ -110,6 +122,7 @@ export function ProductionTransferCreatePage(): ReactElement {
       lines: detailQuery.data.lines.length > 0
         ? detailQuery.data.lines.map((line, index) => ({
             localId: `${isCloneMode ? 'pt-clone' : 'pt-edit'}-line-${line.id}-${index}`,
+            stockId: line.stockId ?? undefined,
             stockCode: line.stockCode,
             yapKod: line.yapKod ?? '',
             quantity: line.quantity,
@@ -121,6 +134,10 @@ export function ProductionTransferCreatePage(): ReactElement {
         : [createEmptyProductionTransferLineDraft()],
     });
   }, [detailQuery.data, isCloneMode]);
+
+  const getProductionOrderLabel = (item: ProductionOrderLookup): string => (
+    `${item.orderNo} · ${item.producedStockCode}${item.producedYapKod ? ` / ${item.producedYapKod}` : ''}`
+  );
 
   const createMutation = useMutation({
     mutationFn: () => (isEditMode ? productionTransferApi.updateProductionTransfer(editId, draft) : productionTransferApi.createProductionTransfer(draft)),
@@ -170,6 +187,7 @@ export function ProductionTransferCreatePage(): ReactElement {
 
     const mappedLines = linesToApply.map((line) => ({
       ...createEmptyProductionTransferLineDraft(),
+      stockId: undefined,
       stockCode: line.stockCode,
       yapKod: line.yapKod ?? '',
       quantity: line.quantity,
@@ -206,14 +224,6 @@ export function ProductionTransferCreatePage(): ReactElement {
     }),
     [draft.lines],
   );
-  const warehouseOptions = useMemo<ComboboxOption[]>(
-    () =>
-      (warehousesQuery.data ?? []).map((item) => ({
-        value: String(item.depoKodu),
-        label: `${item.depoKodu} - ${item.depoIsmi}`,
-      })),
-    [warehousesQuery.data],
-  );
   const transferPurposeLabel = (value: (typeof transferPurposes)[number]): string =>
     ({
       MaterialSupply: t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Malzeme Besleme' }),
@@ -229,42 +239,6 @@ export function ProductionTransferCreatePage(): ReactElement {
       OutputMove: t('productionTransfer.create.lineRoleOutput', { defaultValue: 'Ciktiyi Tasi' }),
     })[value];
 
-  const productionOrderOptions = useMemo<ComboboxOption[]>(() => {
-    const values = new Set<string>();
-    const options: ComboboxOption[] = [];
-
-    for (const line of suggestedLines) {
-      if (!line.productionOrderNo || values.has(line.productionOrderNo)) {
-        continue;
-      }
-      values.add(line.productionOrderNo);
-      options.push({ value: line.productionOrderNo, label: line.productionOrderNo });
-    }
-
-    if (draft.productionOrderNo && !values.has(draft.productionOrderNo)) {
-      options.unshift({ value: draft.productionOrderNo, label: draft.productionOrderNo });
-    }
-
-    return options;
-  }, [draft.productionOrderNo, suggestedLines]);
-
-  const stockOptionsByOrder = useMemo(() => {
-    const map = new Map<string, ComboboxOption[]>();
-
-    for (const line of suggestedLines) {
-      const key = line.productionOrderNo || '__all__';
-      const current = map.get(key) ?? [];
-      if (!current.some((option) => option.value === line.stockCode)) {
-        current.push({
-          value: line.stockCode,
-          label: `${line.stockCode}${line.yapKod ? ` / ${line.yapKod}` : ''}`,
-        });
-      }
-      map.set(key, current);
-    }
-
-    return map;
-  }, [suggestedLines]);
   return (
     <FormPageShell
       title={
@@ -303,6 +277,7 @@ export function ProductionTransferCreatePage(): ReactElement {
               lines: detailQuery.data.lines.length > 0
                 ? detailQuery.data.lines.map((line, index) => ({
                     localId: `${isCloneMode ? 'pt-clone' : 'pt-edit'}-line-${line.id}-${index}`,
+                    stockId: line.stockId ?? undefined,
                     stockCode: line.stockCode,
                     yapKod: line.yapKod ?? '',
                     quantity: line.quantity,
@@ -420,35 +395,81 @@ export function ProductionTransferCreatePage(): ReactElement {
               <div className="space-y-2"><Label>{t('productionTransfer.create.productionDocument', { defaultValue: 'Uretim Plani No' })}</Label><Input value={draft.productionDocumentNo} onChange={(e) => setDraft((prev) => ({ ...prev, productionDocumentNo: e.target.value }))} /></div>
               <div className="space-y-2">
                 <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri No' })}</Label>
-                <Combobox
-                  options={productionOrderOptions}
-                  value={draft.productionOrderNo}
-                  onValueChange={(value) => setDraft((prev) => ({ ...prev, productionOrderNo: value }))}
+                <PagedLookupDialog<ProductionOrderLookup>
+                  open={productionOrderLookupOpen}
+                  onOpenChange={setProductionOrderLookupOpen}
+                  title={t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri No' })}
+                  description={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Bagli emri secin' })}
+                  value={selectedProductionOrderLabel || draft.productionOrderNo}
                   placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Bagli emri secin' })}
                   searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Uretim emirlerinde ara' })}
-                  emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Once onerileri getirerek emir listesini olusturun' })}
+                  emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Uretim emri bulunamadi' })}
+                  queryKey={['production-transfer', 'production-order-lookup']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
+                  }
+                  getKey={(item) => item.id.toString()}
+                  getLabel={getProductionOrderLabel}
+                  onSelect={(item) => {
+                    setDraft((prev) => ({ ...prev, productionOrderNo: item.orderNo }));
+                    setSelectedProductionOrderLabel(getProductionOrderLabel(item));
+                  }}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' })}</Label>
-                <Combobox
-                  options={warehouseOptions}
-                  value={draft.sourceWarehouseCode}
-                  onValueChange={(value) => setDraft((prev) => ({ ...prev, sourceWarehouseCode: value }))}
+                <PagedLookupDialog<Warehouse>
+                  open={sourceWarehouseLookupOpen}
+                  onOpenChange={setSourceWarehouseLookupOpen}
+                  title={t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' })}
+                  description={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
+                  value={selectedSourceWarehouseLabel || draft.sourceWarehouseCode}
                   placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
                   searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                   emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                  queryKey={['production-transfer', 'source-warehouse']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: {
+                    pageNumber: number;
+                    pageSize: number;
+                    search: string;
+                    signal?: AbortSignal;
+                  }) =>
+                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                  }
+                  getKey={(warehouse: Warehouse) => warehouse.id.toString()}
+                  getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
+                  onSelect={(warehouse: Warehouse) => {
+                    setDraft((prev) => ({ ...prev, sourceWarehouseCode: String(warehouse.depoKodu) }));
+                    setSelectedSourceWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
+                  }}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' })}</Label>
-                <Combobox
-                  options={warehouseOptions}
-                  value={draft.targetWarehouseCode}
-                  onValueChange={(value) => setDraft((prev) => ({ ...prev, targetWarehouseCode: value }))}
+                <PagedLookupDialog<Warehouse>
+                  open={targetWarehouseLookupOpen}
+                  onOpenChange={setTargetWarehouseLookupOpen}
+                  title={t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' })}
+                  description={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
+                  value={selectedTargetWarehouseLabel || draft.targetWarehouseCode}
                   placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
                   searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
                   emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                  queryKey={['production-transfer', 'target-warehouse']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: {
+                    pageNumber: number;
+                    pageSize: number;
+                    search: string;
+                    signal?: AbortSignal;
+                  }) =>
+                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                  }
+                  getKey={(warehouse: Warehouse) => warehouse.id.toString()}
+                  getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
+                  onSelect={(warehouse: Warehouse) => {
+                    setDraft((prev) => ({ ...prev, targetWarehouseCode: String(warehouse.depoKodu) }));
+                    setSelectedTargetWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
+                  }}
                 />
               </div>
               <div className="space-y-2 md:col-span-3"><Label>{t('common.description')}</Label><Textarea rows={3} value={draft.description} onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))} /></div>
@@ -537,13 +558,39 @@ export function ProductionTransferCreatePage(): ReactElement {
                     <div className="grid gap-4 md:grid-cols-4">
                       <div className="space-y-2">
                         <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri' })}</Label>
-                        <Combobox
-                          options={productionOrderOptions}
-                          value={line.productionOrderNo}
-                          onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, productionOrderNo: value, stockCode: current.productionOrderNo === value ? current.stockCode : '' } : current) }))}
+                        <PagedLookupDialog<ProductionOrderLookup>
+                          open={activeLineOrderLookupId === line.localId}
+                          onOpenChange={(open) => setActiveLineOrderLookupId(open ? line.localId : null)}
+                          title={t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri' })}
+                          description={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Transfer Kalemi {{index}}', index: index + 1 })}
+                          value={lineOrderLabels[line.localId] || line.productionOrderNo}
                           placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Emir secin' })}
                           searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Uretim emirlerinde ara' })}
-                          emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Once onerileri getirerek emir listesini olusturun' })}
+                          emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Uretim emri bulunamadi' })}
+                          queryKey={['production-transfer', 'line-production-order-lookup', line.localId]}
+                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                            productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
+                          }
+                          getKey={(item) => item.id.toString()}
+                          getLabel={getProductionOrderLabel}
+                          onSelect={(item) => {
+                            setDraft((prev) => ({
+                              ...prev,
+                              lines: prev.lines.map((current) =>
+                                current.localId === line.localId
+                                  ? {
+                                      ...current,
+                                      productionOrderNo: item.orderNo,
+                                      stockId: current.productionOrderNo === item.orderNo ? current.stockId : undefined,
+                                      stockCode: current.productionOrderNo === item.orderNo ? current.stockCode : '',
+                                    }
+                                  : current),
+                            }));
+                            setLineOrderLabels((prev) => ({ ...prev, [line.localId]: getProductionOrderLabel(item) }));
+                            if (line.productionOrderNo !== item.orderNo) {
+                              setLineStockLabels((prev) => ({ ...prev, [line.localId]: '' }));
+                            }
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -555,13 +602,29 @@ export function ProductionTransferCreatePage(): ReactElement {
                       </div>
                       <div className="space-y-2">
                         <Label>{t('production.create.producedStockCode', { defaultValue: 'Stok' })}</Label>
-                        <Combobox
-                          options={stockOptionsByOrder.get(line.productionOrderNo || '__all__') ?? Array.from(stockOptionsByOrder.values()).flat()}
-                          value={line.stockCode}
-                          onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, stockCode: value } : current) }))}
+                        <PagedLookupDialog<StockLookup>
+                          open={activeLineStockLookupId === line.localId}
+                          onOpenChange={(open) => setActiveLineStockLookupId(open ? line.localId : null)}
+                          title={t('production.create.producedStockCode', { defaultValue: 'Stok' })}
+                          description={line.productionOrderNo || t('productionTransfer.create.lineCardHint', { defaultValue: 'Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin.' })}
+                          value={lineStockLabels[line.localId] || line.stockCode}
                           placeholder={t('productionTransfer.create.stockSelect', { defaultValue: 'Stok secin' })}
                           searchPlaceholder={t('productionTransfer.create.stockSearch', { defaultValue: 'Transfer stoklarinda ara' })}
-                          emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Bu emre bagli onerili stok bulunmuyor' })}
+                          emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Stok bulunamadi' })}
+                          queryKey={['production-transfer', 'line-stock-lookup', line.localId, line.productionOrderNo || 'all']}
+                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                            lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                          }
+                          getKey={(item) => item.id.toString()}
+                          getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                          onSelect={(item) => {
+                            setDraft((prev) => ({
+                              ...prev,
+                              lines: prev.lines.map((current) =>
+                                current.localId === line.localId ? { ...current, stockId: item.id, stockCode: item.stokKodu } : current),
+                            }));
+                            setLineStockLabels((prev) => ({ ...prev, [line.localId]: `${item.stokKodu} - ${item.stokAdi}` }));
+                          }}
                         />
                       </div>
                       <div className="space-y-2">

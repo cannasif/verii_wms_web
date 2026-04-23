@@ -11,6 +11,7 @@ export interface ProductionHeaderDraft {
   priority: number;
   projectCode: string;
   customerCode: string;
+  mainStockId?: number | null;
   mainStockCode: string;
   mainYapKod: string;
   plannedQuantity: number;
@@ -23,6 +24,7 @@ export interface ProductionOrderDraft {
   localId: string;
   orderNo: string;
   orderType: 'Production' | 'SemiFinished' | 'Assembly' | 'Packaging' | 'Rework';
+  producedStockId?: number | null;
   producedStockCode: string;
   producedYapKod: string;
   plannedQuantity: number;
@@ -55,6 +57,7 @@ export interface ProductionOrderAssignmentDraft {
 export interface ProductionOutputDraft {
   localId: string;
   orderLocalId: string;
+  stockId?: number | null;
   stockCode: string;
   yapKod: string;
   plannedQuantity: number;
@@ -68,6 +71,7 @@ export interface ProductionOutputDraft {
 export interface ProductionConsumptionDraft {
   localId: string;
   orderLocalId: string;
+  stockId?: number | null;
   stockCode: string;
   yapKod: string;
   plannedQuantity: number;
@@ -101,6 +105,7 @@ export interface ProductionPlanDraft {
 
 export interface ProductionErpTemplateRequest {
   orderNo?: string;
+  stockId?: number | null;
   stockCode: string;
   quantity: number;
   yapKod?: string;
@@ -314,6 +319,7 @@ export function createEmptyOrderDraft(): ProductionOrderDraft {
     localId,
     orderNo: '',
     orderType: 'Production',
+    producedStockId: undefined,
     producedStockCode: '',
     producedYapKod: '',
     plannedQuantity: 1,
@@ -346,6 +352,7 @@ export function createEmptyOutputDraft(orderLocalId = ''): ProductionOutputDraft
   return {
     localId: nextId('output'),
     orderLocalId,
+    stockId: undefined,
     stockCode: '',
     yapKod: '',
     plannedQuantity: 1,
@@ -361,6 +368,7 @@ export function createEmptyConsumptionDraft(orderLocalId = ''): ProductionConsum
   return {
     localId: nextId('consumption'),
     orderLocalId,
+    stockId: undefined,
     stockCode: '',
     yapKod: '',
     plannedQuantity: 1,
@@ -399,6 +407,7 @@ export function createEmptyProductionPlanDraft(): ProductionPlanDraft {
       priority: 0,
       projectCode: '',
       customerCode: '',
+      mainStockId: undefined,
       mainStockCode: '',
       mainYapKod: '',
       plannedQuantity: 1,
