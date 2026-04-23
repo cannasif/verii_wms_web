@@ -1,11 +1,10 @@
-import { type ReactElement, useMemo, useEffect } from 'react';
+import { type ReactElement, useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCustomers } from '@/features/goods-receipt/hooks/useCustomers';
-import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
-import { useAvailableHeaders } from '../../hooks/useAvailableHeaders';
+import { packageApi } from '../../api/package-api';
 import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type PHeaderDto, type AvailableHeaderDto } from '../../types/package';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -13,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { lookupApi } from '@/services/lookup-api';
 import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 
 interface Step1HeaderFormProps {
@@ -29,8 +29,12 @@ export function Step1HeaderForm({
   isLoading = false,
 }: Step1HeaderFormProps): ReactElement {
   const { t } = useTranslation();
-  const { data: customers, isLoading: isLoadingCustomers } = useCustomers();
-  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [sourceHeaderLookupOpen, setSourceHeaderLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
+  const [selectedWarehouseLabel, setSelectedWarehouseLabel] = useState('');
+  const [selectedSourceHeaderLabel, setSelectedSourceHeaderLabel] = useState('');
 
   const schema = useMemo(() => pHeaderFormSchema(t), [t]);
 
@@ -75,11 +79,11 @@ export function Step1HeaderForm({
   });
 
   const sourceType = form.watch('sourceType');
-  const { data: availableHeaders, isLoading: isLoadingHeaders } = useAvailableHeaders(sourceType);
 
   useEffect(() => {
     if (!sourceType) {
       form.setValue('sourceHeaderId', undefined);
+      setSelectedSourceHeaderLabel('');
     }
   }, [sourceType, form]);
 
@@ -189,12 +193,12 @@ export function Step1HeaderForm({
                   <FormItem>
                     <FormLabel>{t('package.form.sourceHeaderId')}</FormLabel>
                     <FormControl>
-                      <SearchableSelect<AvailableHeaderDto>
-                        value={field.value?.toString() || ''}
-                        onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : undefined)}
-                        options={availableHeaders || []}
-                        getOptionValue={(opt) => opt.id.toString()}
-                        getOptionLabel={getHeaderDisplayLabel}
+                      <PagedLookupDialog<AvailableHeaderDto>
+                        open={sourceHeaderLookupOpen}
+                        onOpenChange={setSourceHeaderLookupOpen}
+                        title={t('package.form.sourceHeaderId')}
+                        description={sourceType ? t(`package.sourceType.${sourceType}`) : t('package.form.selectSourceTypeFirst')}
+                        value={selectedSourceHeaderLabel || (field.value ? `#${field.value}` : '')}
                         placeholder={t('package.form.selectSourceHeader')}
                         searchPlaceholder={t('common.search')}
                         emptyText={
@@ -202,9 +206,17 @@ export function Step1HeaderForm({
                             ? t('package.form.noAvailableHeaders')
                             : t('package.form.selectSourceTypeFirst')
                         }
-                        isLoading={isLoadingHeaders}
                         disabled={!sourceType}
-                        itemLimit={100}
+                        queryKey={['package', 'available-headers', sourceType || 'none']}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          packageApi.getAvailableHeadersForMappingPaged(sourceType!, { pageNumber, pageSize, search }, { signal })
+                        }
+                        getKey={(header) => header.id.toString()}
+                        getLabel={getHeaderDisplayLabel}
+                        onSelect={(header) => {
+                          field.onChange(header.id);
+                          setSelectedSourceHeaderLabel(getHeaderDisplayLabel(header));
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -219,17 +231,25 @@ export function Step1HeaderForm({
                   <FormItem>
                     <FormLabel>{t('package.form.warehouseCode')}</FormLabel>
                     <FormControl>
-                      <SearchableSelect<Warehouse>
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        options={warehouses || []}
-                        getOptionValue={(opt) => opt.depoKodu.toString()}
-                        getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                      <PagedLookupDialog<Warehouse>
+                        open={warehouseLookupOpen}
+                        onOpenChange={setWarehouseLookupOpen}
+                        title={t('package.form.selectWarehouse')}
+                        description={t('package.form.warehouseCode')}
+                        value={selectedWarehouseLabel || field.value}
                         placeholder={t('package.form.selectWarehouse')}
                         searchPlaceholder={t('common.search')}
                         emptyText={t('common.notFound')}
-                        isLoading={isLoadingWarehouses}
-                        itemLimit={100}
+                        queryKey={['package', 'warehouse']}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                        }
+                        getKey={(warehouse) => warehouse.id.toString()}
+                        getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                        onSelect={(warehouse) => {
+                          field.onChange(warehouse.depoKodu.toString());
+                          setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -244,17 +264,25 @@ export function Step1HeaderForm({
                   <FormItem>
                     <FormLabel>{t('package.form.customerCode')}</FormLabel>
                     <FormControl>
-                      <SearchableSelect<Customer>
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        options={customers || []}
-                        getOptionValue={(opt) => opt.cariKod}
-                        getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                      <PagedLookupDialog<Customer>
+                        open={customerLookupOpen}
+                        onOpenChange={setCustomerLookupOpen}
+                        title={t('package.form.selectCustomer')}
+                        description={t('package.form.customerCode')}
+                        value={selectedCustomerLabel || field.value}
                         placeholder={t('package.form.selectCustomer')}
                         searchPlaceholder={t('common.search')}
                         emptyText={t('common.notFound')}
-                        isLoading={isLoadingCustomers}
-                        itemLimit={100}
+                        queryKey={['package', 'customer']}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                        }
+                        getKey={(customer) => customer.id.toString()}
+                        getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                        onSelect={(customer) => {
+                          field.onChange(customer.cariKod);
+                          setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

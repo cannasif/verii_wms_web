@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -47,6 +47,10 @@ export function InventoryCountProcessPage(): ReactElement {
   const headerIdFromQuery = Number(searchParams.get('headerId') ?? '');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(Number.isFinite(headerIdFromQuery) && headerIdFromQuery > 0 ? headerIdFromQuery : null);
   const [selectedLineId, setSelectedLineId] = useState<number | null>(null);
+  const [headerLookupOpen, setHeaderLookupOpen] = useState(false);
+  const [lineLookupOpen, setLineLookupOpen] = useState(false);
+  const [selectedHeaderLabel, setSelectedHeaderLabel] = useState('');
+  const [selectedLineLabel, setSelectedLineLabel] = useState('');
   const [enteredQuantity, setEnteredQuantity] = useState('');
   const [note, setNote] = useState('');
 
@@ -114,15 +118,17 @@ export function InventoryCountProcessPage(): ReactElement {
     [lineRows, selectedLineId],
   );
 
-  const headerOptions = useMemo<ComboboxOption[]>(
-    () => headerRows.map((item) => ({ value: String(item.id), label: buildHeaderLabel(item) })),
-    [headerRows],
-  );
+  useEffect(() => {
+    if (selectedHeader) {
+      setSelectedHeaderLabel(buildHeaderLabel(selectedHeader));
+    }
+  }, [selectedHeader]);
 
-  const lineOptions = useMemo<ComboboxOption[]>(
-    () => lineRows.map((item) => ({ value: String(item.id), label: buildLineLabel(item) })),
-    [lineRows],
-  );
+  useEffect(() => {
+    if (selectedLine) {
+      setSelectedLineLabel(buildLineLabel(selectedLine));
+    }
+  }, [selectedLine]);
 
   const saveEntryMutation = useMutation({
     mutationFn: async () => {
@@ -194,14 +200,36 @@ export function InventoryCountProcessPage(): ReactElement {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>{t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}</Label>
-                  <Combobox
-                    options={headerOptions}
-                    value={selectedHeaderId ? String(selectedHeaderId) : ''}
-                    onValueChange={(value) => {
-                      setSelectedHeaderId(Number(value));
-                      setSelectedLineId(null);
-                    }}
+                  <PagedLookupDialog<InventoryCountHeader>
+                    open={headerLookupOpen}
+                    onOpenChange={setHeaderLookupOpen}
+                    title={t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}
+                    description={t('inventoryCount.process.pickHeaderDescription', {
+                      defaultValue: 'Sana atanmis ya da aktif olan bir sayim emrini sec ve asagidaki satirlara gec.',
+                    })}
+                    value={selectedHeaderLabel || (selectedHeaderId ? `#${selectedHeaderId}` : '')}
                     placeholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Sayim emri sec' })}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Sayim emri sec' })}
+                    emptyText={t('inventoryCount.process.emptyHeaderMessage', { defaultValue: 'Aktif sayim emri bulunamadi.' })}
+                    queryKey={['inventory-count-process-header-lookup', authUserId || 'all']}
+                    fetchPage={({ pageNumber, pageSize, search }) =>
+                      authUserId
+                        ? inventoryCountApi.getAssignedHeadersPaged(authUserId, { pageNumber, pageSize, search })
+                        : inventoryCountApi.getHeadersPaged({
+                            pageNumber,
+                            pageSize,
+                            search,
+                            filters: [{ column: 'Status', operator: 'neq', value: 'Completed' }],
+                          })
+                    }
+                    getKey={(header) => header.id.toString()}
+                    getLabel={buildHeaderLabel}
+                    onSelect={(header) => {
+                      setSelectedHeaderId(header.id);
+                      setSelectedHeaderLabel(buildHeaderLabel(header));
+                      setSelectedLineId(null);
+                      setSelectedLineLabel('');
+                    }}
                   />
                 </div>
 
@@ -242,12 +270,26 @@ export function InventoryCountProcessPage(): ReactElement {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>{t('inventoryCount.fields.line', { defaultValue: 'Sayim satiri' })}</Label>
-                  <Combobox
-                    options={lineOptions}
-                    value={selectedLineId ? String(selectedLineId) : ''}
-                    onValueChange={(value) => setSelectedLineId(Number(value))}
+                  <PagedLookupDialog<InventoryCountLine>
+                    open={lineLookupOpen}
+                    onOpenChange={setLineLookupOpen}
+                    title={t('inventoryCount.fields.line', { defaultValue: 'Sayim satiri' })}
+                    description={selectedHeaderLabel || t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}
+                    value={selectedLineLabel || (selectedLineId ? `#${selectedLineId}` : '')}
                     placeholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Sayim satiri sec' })}
-                    disabled={lineOptions.length === 0}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Sayim satiri sec' })}
+                    emptyText={t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Sayim girisi icin once bir satir secin.' })}
+                    disabled={!selectedHeaderId}
+                    queryKey={['inventory-count-process-line-lookup', selectedHeaderId || 'none']}
+                    fetchPage={({ pageNumber, pageSize, search }) =>
+                      inventoryCountApi.getLinesByHeaderPaged(selectedHeaderId || 0, { pageNumber, pageSize, search })
+                    }
+                    getKey={(line) => line.id.toString()}
+                    getLabel={buildLineLabel}
+                    onSelect={(line) => {
+                      setSelectedLineId(line.id);
+                      setSelectedLineLabel(buildLineLabel(line));
+                    }}
                   />
                 </div>
 

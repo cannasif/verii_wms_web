@@ -1,13 +1,15 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { lookupApi } from '@/services/lookup-api';
 import { cn } from '@/lib/utils';
 import type { OrderItem, SelectedOrderItem, SelectedStockItem, Warehouse } from '../../../types/goods-receipt';
-import { SearchableSelect } from './SearchableSelect';
+import type { YapKodLookup } from '@/services/lookup-types';
 
 interface ReceivingItemRowProps {
     item: OrderItem;
@@ -29,6 +31,8 @@ export function ReceivingItemRow({
     const { t } = useTranslation();
     const [value, setValue] = useState(selectedItem?.receiptQuantity?.toString() || '');
     const [isExpanded, setIsExpanded] = useState(false);
+    const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+    const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
 
     useEffect(() => {
         setValue(selectedItem?.receiptQuantity?.toString() || '');
@@ -63,6 +67,13 @@ export function ReceivingItemRow({
     const itemQuantity = item.quantity ?? 0;
     const progress = Math.min((quantity / itemQuantity) * 100, 100);
     const isOver = quantity > itemQuantity;
+    const selectedWarehouseLabel =
+        warehouses.find((warehouse) => warehouse.depoKodu === selectedItem?.warehouseId)?.depoIsmi
+        && selectedItem?.warehouseId
+            ? `${warehouses.find((warehouse) => warehouse.depoKodu === selectedItem?.warehouseId)?.depoIsmi} (${selectedItem.warehouseId})`
+            : selectedItem?.warehouseId
+                ? String(selectedItem.warehouseId)
+                : '';
 
     return (
         <div
@@ -105,25 +116,37 @@ export function ReceivingItemRow({
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between sm:justify-end gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 sm:flex-initial">
                         <div className="w-full sm:w-32 shrink-0">
-                            <SearchableSelect<Warehouse>
-                                value={selectedItem?.warehouseId?.toString() || ''}
-                                onValueChange={(val) => {
-                                    const itemId = item.id || '';
-                                    if (!selectedItem) {
-                                        onToggleItem(item);
-                                        setTimeout(() => {
-                                            onUpdateItem(itemId, { warehouseId: val ? Number(val) : undefined });
-                                        }, 0);
-                                    } else {
-                                        onUpdateItem(itemId, { warehouseId: val ? Number(val) : undefined });
-                                    }
-                                }}
-                                options={warehouses}
-                                getOptionValue={(opt) => opt.depoKodu.toString()}
-                                getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                            <PagedLookupDialog<Warehouse>
+                                open={warehouseLookupOpen}
+                                onOpenChange={setWarehouseLookupOpen}
+                                title={t('goodsReceipt.step1.selectWarehouse')}
+                                description={item.productName || item.productCode || ''}
+                                value={selectedWarehouseLabel}
                                 placeholder={t('goodsReceipt.step1.selectWarehouse')}
                                 searchPlaceholder={t('common.search')}
                                 emptyText={t('common.notFound')}
+                                queryKey={['goods-receipt', 'warehouses', item.id || 'new']}
+                                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                    lookupApi.getWarehousesPaged(
+                                        { pageNumber, pageSize, search },
+                                        undefined,
+                                        { signal },
+                                    )
+                                }
+                                getKey={(warehouse) => warehouse.id.toString()}
+                                getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                                onSelect={(warehouse) => {
+                                    const itemId = item.id || '';
+                                    const warehouseCode = warehouse.depoKodu;
+                                    if (!selectedItem) {
+                                        onToggleItem(item);
+                                        setTimeout(() => {
+                                            onUpdateItem(itemId, { warehouseId: warehouseCode });
+                                        }, 0);
+                                    } else {
+                                        onUpdateItem(itemId, { warehouseId: warehouseCode });
+                                    }
+                                }}
                             />
                         </div>
                         <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
@@ -195,13 +218,65 @@ export function ReceivingItemRow({
                             <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
                                 {t('goodsReceipt.details.configCode')}
                             </Label>
-                            <Input
-                                id={`config-${item.id || ''}`}
-                                value={selectedItem?.configCode || ''}
-                                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                                className="h-9 text-sm"
-                                placeholder={t('goodsReceipt.details.configCodePlaceholder')}
-                            />
+                            <div className="flex gap-2">
+                                <div className="flex-1">
+                                    <PagedLookupDialog<YapKodLookup>
+                                        open={yapKodLookupOpen}
+                                        onOpenChange={setYapKodLookupOpen}
+                                        title={t('goodsReceipt.details.configCode')}
+                                        description={item.productName || item.productCode || ''}
+                                        value={selectedItem?.configCode || ''}
+                                        placeholder={t('goodsReceipt.details.configCodePlaceholder')}
+                                        searchPlaceholder={t('common.search')}
+                                        emptyText={t('common.notFound')}
+                                        queryKey={['goods-receipt', 'yapkod', item.productCode || item.stockCode || item.id || 'new']}
+                                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                                            lookupApi.getYapKodlarPaged(
+                                                { pageNumber, pageSize, search },
+                                                { stockId: selectedItem?.stockId, stockCode: item.productCode || item.stockCode },
+                                                { signal },
+                                            )
+                                        }
+                                        getKey={(yapKod) => yapKod.id.toString()}
+                                        getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                                        onSelect={(yapKod) => {
+                                            if (!selectedItem) {
+                                                return;
+                                            }
+
+                                            const itemId = item.id || '';
+                                            onUpdateItem(itemId, {
+                                                configCode: yapKod.yapKod,
+                                                yapKodId: yapKod.id,
+                                            });
+                                        }}
+                                    />
+                                </div>
+                                {selectedItem?.configCode ? (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 shrink-0"
+                                        onClick={() => {
+                                            if (!selectedItem) {
+                                                return;
+                                            }
+
+                                            const itemId = item.id || '';
+                                            onUpdateItem(itemId, {
+                                                configCode: '',
+                                                yapKodId: undefined,
+                                            });
+                                        }}
+                                    >
+                                        {t('common.clear')}
+                                    </Button>
+                                ) : null}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {selectedItem?.configCode || t('goodsReceipt.details.configCodePlaceholder')}
+                            </p>
                         </div>
                     </div>
                 </div>

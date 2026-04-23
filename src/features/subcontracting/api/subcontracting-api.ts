@@ -43,18 +43,22 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const subcontractingApi = {
+  // RII_FN-backed source: receipt order headers stay full-read function results.
   getReceiptOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<SubcontractingOrdersResponse> => {
     return await api.get<SubcontractingOrdersResponse>(`/api/SrtFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: receipt item list remains function-based.
   getReceiptOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<SubcontractingOrderItemsResponse> => {
     return await api.get<SubcontractingOrderItemsResponse>(`/api/SrtFunction/lines/${orderNumbers}`, options);
   },
 
+  // RII_FN-backed source: issue order headers stay full-read function results.
   getIssueOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<SubcontractingOrdersResponse> => {
     return await api.get<SubcontractingOrdersResponse>(`/api/SitFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: issue item list remains function-based.
   getIssueOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<SubcontractingOrderItemsResponse> => {
     return await api.get<SubcontractingOrderItemsResponse>(`/api/SitFunction/lines/${orderNumbers}`, options);
   },

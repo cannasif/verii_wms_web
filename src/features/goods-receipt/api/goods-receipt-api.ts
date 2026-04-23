@@ -31,6 +31,7 @@ export const goodsReceiptApi = {
   getWarehouses: lookupApi.getWarehouses,
   getProducts: lookupApi.getProducts,
 
+  // RII_FN-backed source: keep this as a full-read function call, not a fake server-paged lookup.
   getOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<Order[]> => {
     const response = await api.get<ApiResponse<Order[]>>(`/api/GoodReciptFunctions/headers/customer/${customerCode}`, options);
     if (response.success && response.data) {
@@ -39,6 +40,7 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptOrdersLoadFailed'));
   },
 
+  // RII_FN-backed source: item loading remains function-based and should not be wrapped as true API paging.
   getOrderItems: async (customerCode: string, siparisNoCsv: string, options?: ApiRequestOptions): Promise<OrderItem[]> => {
     const response = await api.get<ApiResponse<OrderItem[]>>(`/api/GoodReciptFunctions/lines/customer/${customerCode}/orders/${siparisNoCsv}`, options);
     if (response.success && response.data) {

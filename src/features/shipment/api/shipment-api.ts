@@ -39,10 +39,12 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const shipmentApi = {
+  // RII_FN-backed source: keep order header lookup as a function read, not a fake paged endpoint.
   getOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<ShipmentOrdersResponse> => {
     return await api.get<ShipmentOrdersResponse>(`/api/ShFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: item loading stays function-based.
   getOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<ShipmentOrderItemsResponse> => {
     return await api.get<ShipmentOrderItemsResponse>(`/api/ShFunction/lines/${orderNumbers}`, options);
   },

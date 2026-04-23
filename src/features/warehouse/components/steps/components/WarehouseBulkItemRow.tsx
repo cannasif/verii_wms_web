@@ -1,12 +1,15 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
+import { lookupApi } from '@/services/lookup-api';
+import type { YapKodLookup } from '@/services/lookup-types';
 import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../../../types/warehouse';
 
 interface WarehouseBulkItemRowProps {
@@ -31,6 +34,7 @@ export function WarehouseBulkItemRow({
   const { t } = useTranslation();
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
 
   useEffect(() => {
     setValue(selectedItem?.transferQuantity?.toString() || '');
@@ -193,13 +197,50 @@ export function WarehouseBulkItemRow({
               <Label htmlFor={`config-${item.id}`} className="text-sm font-medium">
                 {t('warehouse.details.configCode')}
               </Label>
-              <Input
-                id={`config-${item.id}`}
-                value={selectedItem?.configCode || ''}
-                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                className="h-9 text-sm"
-                placeholder={t('warehouse.details.configCodePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <PagedLookupDialog<YapKodLookup>
+                    open={yapKodLookupOpen}
+                    onOpenChange={setYapKodLookupOpen}
+                    title={t('warehouse.details.configCode')}
+                    description={item.stockName || item.stockCode || ''}
+                    value={selectedItem?.configCode || ''}
+                    placeholder={t('warehouse.details.configCodePlaceholder')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    queryKey={['warehouse', 'yapkod', item.stockCode || item.id]}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getYapKodlarPaged(
+                        { pageNumber, pageSize, search },
+                        { stockId: selectedItem?.stockId, stockCode: item.stockCode },
+                        { signal },
+                      )
+                    }
+                    getKey={(yapKod) => yapKod.id.toString()}
+                    getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                    onSelect={(yapKod) =>
+                      onUpdateItem(item.id, {
+                        configCode: yapKod.yapKod,
+                        yapKodId: yapKod.id,
+                      })
+                    }
+                  />
+                </div>
+                {selectedItem?.configCode ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 shrink-0"
+                    onClick={() => onUpdateItem(item.id, { configCode: '', yapKodId: undefined })}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedItem?.configCode || t('warehouse.details.configCodePlaceholder')}
+              </p>
             </div>
           </div>
           {!selectedItem && (

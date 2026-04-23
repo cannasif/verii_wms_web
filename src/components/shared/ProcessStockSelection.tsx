@@ -1,18 +1,22 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, Loader2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useProducts } from '@/features/goods-receipt/hooks/useProducts';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { lookupApi } from '@/services/lookup-api';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { YapKodLookup } from '@/services/lookup-types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { cn } from '@/lib/utils';
 import type { BaseSelectedStockItem } from '@/types/document-models';
 
 export interface ProcessSelectedStockItem extends BaseSelectedStockItem {
+  yapKodId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -63,17 +67,27 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
   const [searchStocks, setSearchStocks] = useState('');
   const [searchSelected, setSearchSelected] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
-  const { data: products = [], isLoading: isLoadingProducts } = useProducts();
+  const stockListRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const productsQuery = useInfiniteQuery({
+    queryKey: ['process-stock-selection', 'products', searchStocks],
+    initialPageParam: 1,
+    queryFn: ({ pageParam, signal }) =>
+      lookupApi.getProductsPaged(
+        {
+          pageNumber: pageParam,
+          pageSize: 20,
+          search: searchStocks.trim(),
+        },
+        { signal },
+      ),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const filteredProducts = useMemo(() => {
-    if (!searchStocks.trim()) return products;
-    const term = searchStocks.toLowerCase();
-    return products.filter(
-      (product) =>
-        product.stokKodu.toLowerCase().includes(term) ||
-        product.stokAdi.toLowerCase().includes(term),
-    );
-  }, [products, searchStocks]);
+  const products = useMemo(
+    () => productsQuery.data?.pages.flatMap((page) => page.data ?? []) ?? [],
+    [productsQuery.data?.pages],
+  );
 
   const filteredSelectedItems = useMemo(() => {
     if (!searchSelected.trim()) return selectedItems;
@@ -92,6 +106,18 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
     });
     return counts;
   }, [selectedItems]);
+
+  const handleStockListScroll = (index: number): void => {
+    const element = stockListRefs.current[index];
+    if (!element || productsQuery.isFetchingNextPage || !productsQuery.hasNextPage) {
+      return;
+    }
+
+    const remaining = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (remaining < 120) {
+      void productsQuery.fetchNextPage();
+    }
+  };
 
   return (
     <Card className="flex flex-col">
@@ -114,10 +140,15 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
             </div>
             <TabsContent value="stocks" className="m-0 min-h-0 flex-1 overflow-hidden">
               <StockListPane
+                listRef={(element) => {
+                  stockListRefs.current[0] = element;
+                }}
+                onScroll={() => handleStockListScroll(0)}
                 searchStocks={searchStocks}
                 setSearchStocks={setSearchStocks}
-                isLoadingProducts={isLoadingProducts}
-                filteredProducts={filteredProducts}
+                isLoadingProducts={productsQuery.isLoading}
+                filteredProducts={products}
+                isFetchingNextPage={productsQuery.isFetchingNextPage}
                 selectedCountsByStockCode={selectedCountsByStockCode}
                 onToggleItem={onToggleItem}
                 stocksLabel={labels.searchStocks}
@@ -128,7 +159,6 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
                 searchSelected={searchSelected}
                 setSearchSelected={setSearchSelected}
                 filteredSelectedItems={filteredSelectedItems}
-                products={products}
                 onToggleItem={onToggleItem}
                 onUpdateItem={onUpdateItem}
                 onRemoveItem={onRemoveItem}
@@ -141,10 +171,15 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
         <div className="hidden min-h-[560px] lg:grid lg:grid-cols-[32%_1fr]">
           <div className="flex min-h-0 flex-col border-r">
             <StockListPane
+              listRef={(element) => {
+                stockListRefs.current[1] = element;
+              }}
+              onScroll={() => handleStockListScroll(1)}
               searchStocks={searchStocks}
               setSearchStocks={setSearchStocks}
-              isLoadingProducts={isLoadingProducts}
-              filteredProducts={filteredProducts}
+              isLoadingProducts={productsQuery.isLoading}
+              filteredProducts={products}
+              isFetchingNextPage={productsQuery.isFetchingNextPage}
               selectedCountsByStockCode={selectedCountsByStockCode}
               onToggleItem={onToggleItem}
               stocksLabel={labels.searchStocks}
@@ -156,7 +191,6 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
               searchSelected={searchSelected}
               setSearchSelected={setSearchSelected}
               filteredSelectedItems={filteredSelectedItems}
-              products={products}
               onToggleItem={onToggleItem}
               onUpdateItem={onUpdateItem}
               onRemoveItem={onRemoveItem}
@@ -170,18 +204,24 @@ export function ProcessStockSelection<TItem extends ProcessSelectedStockItem>({
 }
 
 function StockListPane({
+  listRef,
+  onScroll,
   searchStocks,
   setSearchStocks,
   isLoadingProducts,
   filteredProducts,
+  isFetchingNextPage,
   selectedCountsByStockCode,
   onToggleItem,
   stocksLabel,
 }: {
+  listRef: (element: HTMLDivElement | null) => void;
+  onScroll: () => void;
   searchStocks: string;
   setSearchStocks: (value: string) => void;
   isLoadingProducts: boolean;
   filteredProducts: Product[];
+  isFetchingNextPage: boolean;
   selectedCountsByStockCode: Map<string, number>;
   onToggleItem: (item: Product) => void;
   stocksLabel: string;
@@ -202,9 +242,14 @@ function StockListPane({
         </div>
       </div>
 
-      <div className="flex-1 space-y-1 overflow-y-auto p-2">
+      <div ref={listRef} onScroll={onScroll} className="flex-1 space-y-1 overflow-y-auto p-2">
         {isLoadingProducts ? (
-          <div className="py-4 text-center text-sm text-muted-foreground">{t('common.loading')}</div>
+          <div className="py-4 text-center text-sm text-muted-foreground">
+            <span className="inline-flex items-center">
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              {t('common.loading')}
+            </span>
+          </div>
         ) : filteredProducts.length === 0 ? (
           <div className="py-4 text-center text-sm text-muted-foreground">{t('common.notFound')}</div>
         ) : (
@@ -239,6 +284,12 @@ function StockListPane({
             );
           })
         )}
+        {isFetchingNextPage ? (
+          <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            {t('common.loading')}
+          </div>
+        ) : null}
       </div>
     </>
   );
@@ -248,7 +299,6 @@ function SelectedListPane<TItem extends ProcessSelectedStockItem>({
   searchSelected,
   setSearchSelected,
   filteredSelectedItems,
-  products,
   onToggleItem,
   onUpdateItem,
   onRemoveItem,
@@ -257,7 +307,6 @@ function SelectedListPane<TItem extends ProcessSelectedStockItem>({
   searchSelected: string;
   setSearchSelected: (value: string) => void;
   filteredSelectedItems: TItem[];
-  products: Product[];
   onToggleItem: (item: Product) => void;
   onUpdateItem: (itemId: string, updates: Partial<TItem>) => void;
   onRemoveItem: (itemId: string) => void;
@@ -288,8 +337,24 @@ function SelectedListPane<TItem extends ProcessSelectedStockItem>({
           <div className="py-12 text-center text-sm text-muted-foreground">{labels.noSelectedItems}</div>
         ) : (
           filteredSelectedItems.map((selectedItem) => {
-            const product = products.find((entry) => entry.stokKodu === selectedItem.stockCode);
-            if (!product) return null;
+            const product: Product = {
+              id: selectedItem.stockId ?? 0,
+              subeKodu: 0,
+              isletmeKodu: 0,
+              stokKodu: selectedItem.stockCode,
+              ureticiKodu: '',
+              stokAdi: selectedItem.stockName,
+              grupKodu: '',
+              saticiKodu: '',
+              olcuBr1: selectedItem.unit,
+              olcuBr2: '',
+              pay1: 0,
+              kod1: '',
+              kod2: '',
+              kod3: '',
+              kod4: '',
+              kod5: '',
+            };
 
             return (
               <ProcessStockItemRow<TItem>
@@ -325,6 +390,7 @@ function ProcessStockItemRow<TItem extends ProcessSelectedStockItem>({
   labels: ProcessSelectionLabels;
 }): ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
   const itemId = selectedItem?.id || `stock-${product.stokKodu}`;
   const quantity = selectedItem?.transferQuantity || 0;
 
@@ -450,6 +516,14 @@ function ProcessStockItemRow<TItem extends ProcessSelectedStockItem>({
               placeholder={labels.configCodePlaceholder}
               value={selectedItem.configCode || ''}
               onChange={(v) => handleDetailChange('configCode' as keyof TItem, v)}
+              stockId={selectedItem.stockId}
+              stockCode={product.stokKodu}
+              yapKodLookupOpen={yapKodLookupOpen}
+              onYapKodLookupOpenChange={setYapKodLookupOpen}
+              onYapKodSelect={(item) =>
+                onUpdateItem(itemId, { configCode: item.yapKod, yapKodId: item.id } as Partial<TItem>)
+              }
+              onClear={() => onUpdateItem(itemId, { configCode: '', yapKodId: undefined } as Partial<TItem>)}
             />
           </div>
         </div>
@@ -464,25 +538,71 @@ function Field({
   value,
   placeholder,
   onChange,
+  stockId,
+  stockCode,
+  yapKodLookupOpen,
+  onYapKodLookupOpenChange,
+  onYapKodSelect,
+  onClear,
 }: {
   id: string;
   label: string;
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
+  stockId?: number;
+  stockCode?: string;
+  yapKodLookupOpen?: boolean;
+  onYapKodLookupOpenChange?: (open: boolean) => void;
+  onYapKodSelect?: (item: YapKodLookup) => void;
+  onClear?: () => void;
 }): ReactElement {
+  const isYapKodField = Boolean(stockCode && onYapKodLookupOpenChange && onYapKodSelect);
+
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium">
         {label}
       </Label>
-      <Input
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-9 text-sm"
-        placeholder={placeholder}
-      />
+      {isYapKodField ? (
+        <>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <PagedLookupDialog<YapKodLookup>
+                open={Boolean(yapKodLookupOpen)}
+                onOpenChange={onYapKodLookupOpenChange!}
+                title={label}
+                description={stockCode}
+                value={value}
+                placeholder={placeholder}
+                searchPlaceholder="Ara"
+                emptyText="Kayıt bulunamadı"
+                queryKey={['process-stock-selection', 'yapkod', stockCode]}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId }, { signal })
+                }
+                getKey={(item) => item.id.toString()}
+                getLabel={(item) => `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`}
+                onSelect={onYapKodSelect!}
+              />
+            </div>
+            {value ? (
+              <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={onClear}>
+                Temizle
+              </Button>
+            ) : null}
+          </div>
+          <p className="text-xs text-muted-foreground">{value || placeholder}</p>
+        </>
+      ) : (
+        <Input
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 text-sm"
+          placeholder={placeholder}
+        />
+      )}
     </div>
   );
 }

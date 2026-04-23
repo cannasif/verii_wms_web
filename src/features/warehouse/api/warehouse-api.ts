@@ -37,18 +37,22 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const warehouseApi = {
+  // RII_FN-backed source: inbound order headers are function reads and should not be represented as true server paging.
   getInboundOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<WarehouseOrdersResponse> => {
     return await api.get<WarehouseOrdersResponse>(`/api/WiFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: inbound item list remains function-based.
   getInboundOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<WarehouseOrderItemsResponse> => {
     return await api.get<WarehouseOrderItemsResponse>(`/api/WiFunction/lines/${orderNumbers}`, options);
   },
 
+  // RII_FN-backed source: outbound order headers are function reads and should not be represented as true server paging.
   getOutboundOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<WarehouseOrdersResponse> => {
     return await api.get<WarehouseOrdersResponse>(`/api/WoFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: outbound item list remains function-based.
   getOutboundOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<WarehouseOrderItemsResponse> => {
     return await api.get<WarehouseOrderItemsResponse>(`/api/WoFunction/lines/${orderNumbers}`, options);
   },

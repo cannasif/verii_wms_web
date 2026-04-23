@@ -1,13 +1,16 @@
 import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { lookupApi } from '@/services/lookup-api';
 import { cn } from '@/lib/utils';
 import type { SelectedTransferStockItem } from '../../../types/transfer';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { YapKodLookup } from '@/services/lookup-types';
 
 interface TransferStockItemRowProps {
   product: Product;
@@ -26,6 +29,7 @@ export function TransferStockItemRow({
 }: TransferStockItemRowProps): ReactElement {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
   const itemId = selectedItem?.id || `stock-${product.stokKodu}`;
   const quantity = selectedItem?.transferQuantity || 0;
 
@@ -175,13 +179,45 @@ export function TransferStockItemRow({
               <Label htmlFor={`config-${itemId}`} className="text-sm font-medium">
                 {t('transfer.details.configCode')}
               </Label>
-              <Input
-                id={`config-${itemId}`}
-                value={selectedItem.configCode || ''}
-                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                className="h-9 text-sm"
-                placeholder={t('transfer.details.configCodePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <PagedLookupDialog<YapKodLookup>
+                    open={yapKodLookupOpen}
+                    onOpenChange={setYapKodLookupOpen}
+                    title={t('transfer.details.configCode')}
+                    description={product.stokAdi || product.stokKodu || ''}
+                    value={selectedItem.configCode || ''}
+                    placeholder={t('transfer.details.configCodePlaceholder')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    queryKey={['transfer', 'stock-yapkod', product.stokKodu || itemId]}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getYapKodlarPaged(
+                        { pageNumber, pageSize, search },
+                        { stockId: selectedItem.stockId, stockCode: product.stokKodu },
+                        { signal },
+                      )
+                    }
+                    getKey={(yapKod) => yapKod.id.toString()}
+                    getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                    onSelect={(yapKod) => onUpdateItem(itemId, { configCode: yapKod.yapKod, yapKodId: yapKod.id })}
+                  />
+                </div>
+                {selectedItem.configCode ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 shrink-0"
+                    onClick={() => onUpdateItem(itemId, { configCode: '', yapKodId: undefined })}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedItem.configCode || t('transfer.details.configCodePlaceholder')}
+              </p>
             </div>
           </div>
         </div>

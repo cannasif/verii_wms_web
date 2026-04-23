@@ -1,6 +1,6 @@
 import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search } from 'lucide-react';
+import { Search, PackagePlus } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PageActionBar, PageState } from '@/components/shared';
 import { useTransferHeaders } from '../hooks/useTransferHeaders';
@@ -18,6 +18,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PackageMoveToSourceDialog } from '@/features/package/components/PackageMoveToSourceDialog';
 
 interface TransferDetailDialogProps {
   headerId: number;
@@ -31,9 +34,11 @@ export function TransferDetailDialog({
   onClose,
 }: TransferDetailDialogProps): ReactElement {
   const { t } = useTranslation();
+  const packagePermission = useCrudPermission('wms.package');
   const { data: headersData } = useTransferHeaders();
   const { data: assignedData, isLoading: isLoadingLines } = useAssignedTransferOrderLines(headerId);
   const [searchQuery, setSearchQuery] = useState('');
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
 
   const header = headersData?.data?.find((h) => h.id === headerId);
 
@@ -90,12 +95,25 @@ export function TransferDetailDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
-          <DialogTitle className="text-xl">
-            {t('transfer.list.detailTitle')} - #{headerId}
-          </DialogTitle>
-          <DialogDescription>
-            {t('transfer.list.detailDescription')}
-          </DialogDescription>
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <DialogTitle className="text-xl">
+                {t('transfer.list.detailTitle')} - #{headerId}
+              </DialogTitle>
+              <DialogDescription>
+                {t('transfer.list.detailDescription')}
+              </DialogDescription>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setMoveDialogOpen(true)}
+              disabled={!packagePermission.canUpdate}
+            >
+              <PackagePlus className="mr-2 size-4" />
+              Paketi Taşı
+            </Button>
+          </div>
         </DialogHeader>
 
         {header && (
@@ -238,6 +256,15 @@ export function TransferDetailDialog({
           </div>
         )}
       </DialogContent>
+
+      <PackageMoveToSourceDialog
+        open={moveDialogOpen}
+        onOpenChange={setMoveDialogOpen}
+        targetSourceType="WT"
+        targetSourceHeaderId={headerId}
+        targetLabel={`Transfer #${headerId}`}
+        targetPackageStatus="Transferred"
+      />
     </Dialog>
   );
 }

@@ -1,17 +1,17 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
-import { useQuery } from '@tanstack/react-query';
-import { Search } from 'lucide-react';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { Loader2, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProducts } from '../../hooks/useProducts';
 import { useOrdersByCustomer } from '../../hooks/useOrdersByCustomer';
 import { goodsReceiptApi } from '../../api/goods-receipt-api';
+import { lookupApi } from '@/services/lookup-api';
 import type {
   GoodsReceiptFormData,
   SelectedStockItem,
@@ -40,9 +40,24 @@ export function Step2StockSelection({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
-  const { data: products, isLoading: productsLoading } = useProducts();
+  const stockListRefs = useRef<Array<HTMLDivElement | null>>([]);
   const { data: warehouses = [] } = useWarehouses();
   const { data: orders } = useOrdersByCustomer(customerCode);
+  const productsQuery = useInfiniteQuery({
+    queryKey: ['goods-receipt', 'products', searchQuery],
+    initialPageParam: 1,
+    queryFn: ({ pageParam, signal }) =>
+      lookupApi.getProductsPaged(
+        {
+          pageNumber: pageParam,
+          pageSize: 20,
+          search: searchQuery.trim(),
+        },
+        { signal },
+      ),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const allOrderNumbers = useMemo(() => {
     if (!orders || orders.length === 0) return '';
@@ -66,17 +81,10 @@ export function Step2StockSelection({
     return quantities;
   }, [allOrderItems]);
 
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-    if (!searchQuery.trim()) return products;
-    
-    const query = searchQuery.toLowerCase();
-    return products.filter((product) => {
-      const stockCode = product.stokKodu.toLowerCase();
-      const stockName = product.stokAdi.toLowerCase();
-      return stockCode.includes(query) || stockName.includes(query);
-    });
-  }, [products, searchQuery]);
+  const products = useMemo(
+    () => productsQuery.data?.pages.flatMap((page) => page.data ?? []) ?? [],
+    [productsQuery.data?.pages],
+  );
 
   const selectedCountsByStockCode = useMemo(() => {
     const counts = new Map<string, number>();
@@ -85,6 +93,18 @@ export function Step2StockSelection({
     });
     return counts;
   }, [selectedItems]);
+
+  const handleStockListScroll = (index: number): void => {
+    const element = stockListRefs.current[index];
+    if (!element || productsQuery.isFetchingNextPage || !productsQuery.hasNextPage) {
+      return;
+    }
+
+    const remaining = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (remaining < 120) {
+      void productsQuery.fetchNextPage();
+    }
+  };
 
 
   if (!customerCode) {
@@ -142,17 +162,26 @@ export function Step2StockSelection({
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                  {productsLoading ? (
+                <div
+                  ref={(element) => {
+                    stockListRefs.current[0] = element;
+                  }}
+                  onScroll={() => handleStockListScroll(0)}
+                  className="flex-1 overflow-y-auto p-2 space-y-1"
+                >
+                  {productsQuery.isLoading ? (
                     <div className="text-center py-8 text-sm text-muted-foreground">
-                      {t('common.loading')}
+                      <span className="inline-flex items-center">
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        {t('common.loading')}
+                      </span>
                     </div>
-                  ) : filteredProducts.length === 0 ? (
+                  ) : products.length === 0 ? (
                     <div className="text-center py-8 text-sm text-muted-foreground">
                       {t('common.notFound')}
                     </div>
                   ) : (
-                    filteredProducts.map((product) => {
+                    products.map((product) => {
                       const selectedCount = selectedCountsByStockCode.get(product.stokKodu) || 0;
                       return (
                         <div
@@ -192,6 +221,12 @@ export function Step2StockSelection({
                       );
                     })
                   )}
+                  {productsQuery.isFetchingNextPage ? (
+                    <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      {t('common.loading')}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </TabsContent>
@@ -242,10 +277,9 @@ export function Step2StockSelection({
                                item.stockName.toLowerCase().includes(query);
                       })
                       .map((item) => {
-                        const product = products?.find((p) => p.stokKodu === item.stockCode);
                         const orderQuantity = stockOrderQuantities.get(item.stockCode) || 0;
-                        const orderItem: OrderItem | null = product ? {
-                            id: item.id,
+                        const orderItem: OrderItem = {
+                          id: item.id,
                           mode: 'STOCK',
                           siparisNo: '',
                           orderID: 0,
@@ -268,8 +302,7 @@ export function Step2StockSelection({
                           unit: item.unit,
                           unitPrice: 0,
                           totalPrice: 0,
-                        } : null;
-                        if (!orderItem) return null;
+                        };
                         return (
                           <ReceivingItemRow
                             key={item.id}
@@ -309,17 +342,26 @@ export function Step2StockSelection({
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
-              {productsLoading ? (
+            <div
+              ref={(element) => {
+                stockListRefs.current[1] = element;
+              }}
+              onScroll={() => handleStockListScroll(1)}
+              className="flex-1 overflow-y-auto p-2 space-y-1"
+            >
+              {productsQuery.isLoading ? (
                 <div className="text-center py-8 text-sm text-muted-foreground">
-                  {t('common.loading')}
+                  <span className="inline-flex items-center">
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    {t('common.loading')}
+                  </span>
                 </div>
-              ) : filteredProducts.length === 0 ? (
+              ) : products.length === 0 ? (
                 <div className="text-center py-8 text-sm text-muted-foreground">
                   {t('common.notFound')}
                 </div>
-              ) : (
-                filteredProducts.map((product) => {
+                  ) : (
+                products.map((product) => {
                   const selectedCount = selectedCountsByStockCode.get(product.stokKodu) || 0;
                   return (
                     <div
@@ -359,6 +401,12 @@ export function Step2StockSelection({
                   );
                 })
               )}
+              {productsQuery.isFetchingNextPage ? (
+                <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  {t('common.loading')}
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="flex-1 overflow-hidden min-w-0 flex flex-col">
@@ -408,9 +456,8 @@ export function Step2StockSelection({
                              item.stockName.toLowerCase().includes(query);
                     })
                     .map((item) => {
-                      const product = products?.find((p) => p.stokKodu === item.stockCode);
                       const orderQuantity = stockOrderQuantities.get(item.stockCode) || 0;
-                      const orderItem: OrderItem | null = product ? {
+                      const orderItem: OrderItem = {
                         id: item.id,
                         mode: 'STOCK',
                         siparisNo: '',
@@ -434,8 +481,7 @@ export function Step2StockSelection({
                         unit: item.unit,
                         unitPrice: 0,
                         totalPrice: 0,
-                      } : null;
-                      if (!orderItem) return null;
+                      };
                       return (
                         <ReceivingItemRow
                           key={item.id}

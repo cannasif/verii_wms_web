@@ -90,6 +90,7 @@ export interface YapKodLookup {
   id: number;
   yapKod: string;
   yapAcik: string;
+  stockId?: number;
   yplndrStokKod?: string;
 }
 

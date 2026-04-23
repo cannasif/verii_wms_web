@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DatabaseZap, RefreshCcw, Rows3, ScanSearch } from 'lucide-react';
+import { AlertTriangle, DatabaseZap, RefreshCcw, Rows3, ScanSearch } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -12,7 +12,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import type { WarehouseStockBalanceDto } from '../types/warehouse-balance.types';
+import type { WarehouseBalanceConsistencyIssueDto, WarehouseStockBalanceDto } from '../types/warehouse-balance.types';
 import { warehouseBalanceApi } from '../api/warehouse-balance.api';
 
 type StockColumnKey =
@@ -25,6 +25,15 @@ type StockColumnKey =
   | 'shelfCount'
   | 'updatedAt'
   | 'actions';
+
+type ConsistencyColumnKey =
+  | 'issueType'
+  | 'warehouse'
+  | 'stock'
+  | 'yapKod'
+  | 'quantityDelta'
+  | 'availableDelta'
+  | 'serialDelta';
 
 function mapSortBy(value: StockColumnKey): string {
   switch (value) {
@@ -80,8 +89,46 @@ export function WarehouseStockBalancePage(): ReactElement {
     queryFn: ({ signal }) => warehouseBalanceApi.getStockPaged(pagedGrid.queryParams, { signal }),
   });
 
+  const consistencyGrid = usePagedDataGrid<ConsistencyColumnKey>({
+    pageKey: 'warehouse-balance-consistency-grid',
+    defaultSortBy: 'warehouse',
+    defaultSortDirection: 'asc',
+    defaultPageSize: 10,
+    mapSortBy: (value) => {
+      switch (value) {
+        case 'issueType':
+          return 'IssueType';
+        case 'warehouse':
+          return 'WarehouseName';
+        case 'stock':
+          return 'StockCode';
+        case 'yapKod':
+          return 'YapKodCode';
+        case 'quantityDelta':
+          return 'DetailQuantity';
+        case 'availableDelta':
+          return 'DetailAvailableQuantity';
+        case 'serialDelta':
+        default:
+          return 'DetailDistinctSerialCount';
+      }
+    },
+  });
+
+  const consistencySummaryQuery = useQuery({
+    queryKey: ['warehouse-balance', 'consistency-summary'],
+    queryFn: ({ signal }) => warehouseBalanceApi.getConsistencySummary({ signal }),
+  });
+
+  const consistencyIssuesQuery = useQuery({
+    queryKey: ['warehouse-balance', 'consistency-issues', consistencyGrid.queryParams],
+    queryFn: ({ signal }) => warehouseBalanceApi.getConsistencyIssuesPaged(consistencyGrid.queryParams, { signal }),
+  });
+
   const rows = query.data?.data?.data ?? [];
   const range = getPagedRange(query.data?.data);
+  const consistencyRows = consistencyIssuesQuery.data?.data?.data ?? [];
+  const consistencyRange = getPagedRange(consistencyIssuesQuery.data?.data);
 
   const rebuildAllMutation = useMutation({
     mutationFn: async () => await warehouseBalanceApi.rebuild(),
@@ -133,6 +180,42 @@ export function WarehouseStockBalancePage(): ReactElement {
 
   const totalQuantity = useMemo(() => rows.reduce((sum, row) => sum + row.quantity, 0), [rows]);
   const totalSerials = useMemo(() => rows.reduce((sum, row) => sum + row.distinctSerialCount, 0), [rows]);
+  const consistencyColumns = useMemo<PagedDataGridColumn<ConsistencyColumnKey>[]>(
+    () => [
+      { key: 'issueType', label: t('warehouseBalance.consistency.columns.issueType', { defaultValue: 'Sorun Tipi' }) },
+      { key: 'warehouse', label: t('warehouseBalance.consistency.columns.warehouse', { defaultValue: 'Depo' }) },
+      { key: 'stock', label: t('warehouseBalance.consistency.columns.stock', { defaultValue: 'Stok' }) },
+      { key: 'yapKod', label: t('warehouseBalance.consistency.columns.yapKod', { defaultValue: 'YapKod' }) },
+      { key: 'quantityDelta', label: t('warehouseBalance.consistency.columns.quantityDelta', { defaultValue: 'Miktar Farki' }) },
+      { key: 'availableDelta', label: t('warehouseBalance.consistency.columns.availableDelta', { defaultValue: 'Kullanilabilir Farki' }) },
+      { key: 'serialDelta', label: t('warehouseBalance.consistency.columns.serialDelta', { defaultValue: 'Seri Farki' }) },
+    ],
+    [t],
+  );
+
+  const consistencySummary = consistencySummaryQuery.data?.data;
+
+  const renderConsistencyIssueType = (issueType: string): string => {
+    switch (issueType) {
+      case 'MissingSummary':
+        return t('warehouseBalance.consistency.issueTypes.missingSummary', { defaultValue: 'Summary Eksik' });
+      case 'ExtraSummary':
+        return t('warehouseBalance.consistency.issueTypes.extraSummary', { defaultValue: 'Fazla Summary' });
+      case 'MetricMismatch':
+        return t('warehouseBalance.consistency.issueTypes.metricMismatch', { defaultValue: 'Deger Uyusmazligi' });
+      default:
+        return issueType;
+    }
+  };
+
+  const renderQuantityDelta = (row: WarehouseBalanceConsistencyIssueDto): string =>
+    formatNumber(row.detailQuantity - row.summaryQuantity);
+
+  const renderAvailableDelta = (row: WarehouseBalanceConsistencyIssueDto): string =>
+    formatNumber(row.detailAvailableQuantity - row.summaryAvailableQuantity);
+
+  const renderSerialDelta = (row: WarehouseBalanceConsistencyIssueDto): string =>
+    formatNumber(row.detailDistinctSerialCount - row.summaryDistinctSerialCount);
 
   return (
     <div className="crm-page space-y-6">
@@ -305,6 +388,106 @@ export function WarehouseStockBalancePage(): ReactElement {
           />
         </CardContent>
       </Card>
+
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="size-5 text-amber-600" />
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
+              {t('warehouseBalance.consistency.title', { defaultValue: 'Bakiye Tutarlilik Kontrolu' })}
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              {t('warehouseBalance.consistency.description', { defaultValue: 'Detail ve summary bakiye arasindaki farklari izleyin.' })}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-5">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.summaryRows', { defaultValue: 'Summary Satir' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.summaryRowCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.detailGroups', { defaultValue: 'Detail Grup' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.detailGroupCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.mismatch', { defaultValue: 'Toplam Sorun' })}</div><div className="mt-2 text-2xl font-semibold text-amber-600">{consistencySummary?.mismatchCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.missingSummary', { defaultValue: 'Eksik Summary' })}</div><div className="mt-2 text-2xl font-semibold text-rose-600">{consistencySummary?.missingSummaryCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.extraSummary', { defaultValue: 'Fazla Summary' })}</div><div className="mt-2 text-2xl font-semibold text-fuchsia-600">{consistencySummary?.extraSummaryCount ?? 0}</div></CardContent></Card>
+        </div>
+
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <CardContent className="p-5">
+            <PagedDataGrid<WarehouseBalanceConsistencyIssueDto, ConsistencyColumnKey>
+              pageKey="warehouse-balance-consistency-grid"
+              columns={consistencyColumns}
+              rows={consistencyRows}
+              rowKey={(row) => `${row.branchCode}-${row.warehouseId}-${row.stockId}-${row.yapKodId ?? 0}-${row.issueType}`}
+              renderCell={(row, columnKey) => {
+                switch (columnKey) {
+                  case 'issueType':
+                    return renderConsistencyIssueType(row.issueType);
+                  case 'warehouse':
+                    return (
+                      <div className="flex flex-col">
+                        <span className="font-medium">{row.warehouseCode ?? '-'}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{row.warehouseName ?? '-'}</span>
+                      </div>
+                    );
+                  case 'stock':
+                    return (
+                      <div className="flex flex-col">
+                        <span className="font-medium">{row.stockCode ?? '-'}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{row.stockName ?? '-'}</span>
+                      </div>
+                    );
+                  case 'yapKod':
+                    return row.yapKodCode || row.yapKodName
+                      ? (
+                        <div className="flex flex-col">
+                          <span className="font-medium">{row.yapKodCode ?? '-'}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">{row.yapKodName ?? '-'}</span>
+                        </div>
+                      )
+                      : '-';
+                  case 'quantityDelta':
+                    return renderQuantityDelta(row);
+                  case 'availableDelta':
+                    return renderAvailableDelta(row);
+                  case 'serialDelta':
+                    return renderSerialDelta(row);
+                  default:
+                    return '-';
+                }
+              }}
+              sortBy={consistencyGrid.sortBy}
+              sortDirection={consistencyGrid.sortDirection}
+              onSort={consistencyGrid.handleSort}
+              isLoading={consistencyIssuesQuery.isLoading || consistencySummaryQuery.isLoading}
+              isError={consistencyIssuesQuery.isError || consistencySummaryQuery.isError}
+              errorText={(consistencyIssuesQuery.error instanceof Error ? consistencyIssuesQuery.error.message : undefined) ?? (consistencySummaryQuery.error instanceof Error ? consistencySummaryQuery.error.message : t('common.error', { defaultValue: 'Bir hata olustu' }))}
+              emptyText={t('warehouseBalance.consistency.empty', { defaultValue: 'Tutarsizlik bulunamadi' })}
+              pageSize={consistencyIssuesQuery.data?.data?.pageSize ?? consistencyGrid.pageSize}
+              pageSizeOptions={consistencyGrid.pageSizeOptions}
+              onPageSizeChange={consistencyGrid.handlePageSizeChange}
+              pageNumber={consistencyGrid.getDisplayPageNumber(consistencyIssuesQuery.data?.data)}
+              totalPages={consistencyIssuesQuery.data?.data?.totalPages ?? 0}
+              hasPreviousPage={consistencyIssuesQuery.data?.data?.hasPreviousPage ?? false}
+              hasNextPage={consistencyIssuesQuery.data?.data?.hasNextPage ?? false}
+              onPreviousPage={consistencyGrid.goToPreviousPage}
+              onNextPage={consistencyGrid.goToNextPage}
+              previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
+              nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+              paginationInfoText={t('common.paginationInfo', {
+                current: consistencyRange.from,
+                total: consistencyRange.to,
+                totalCount: consistencyRange.total,
+                defaultValue: `${consistencyRange.from}-${consistencyRange.to} / ${consistencyRange.total}`,
+              })}
+              search={{
+                value: consistencyGrid.searchConfig.value,
+                onValueChange: consistencyGrid.searchConfig.onValueChange,
+                onSearchChange: consistencyGrid.searchConfig.onSearchChange,
+                placeholder: t('warehouseBalance.consistency.searchPlaceholder', { defaultValue: 'Depo, stok, yapkod veya sorun tipi ara...' }),
+              }}
+            />
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
 }

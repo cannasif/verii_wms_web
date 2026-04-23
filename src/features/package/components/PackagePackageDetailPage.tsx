@@ -26,7 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus, ArrowLeft, Barcode, Camera, Loader2, Package } from 'lucide-react';
+import { Trash2, Plus, ArrowLeft, Barcode, Camera, Loader2, Package, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   createDefaultScannerConfig,
@@ -37,15 +37,27 @@ import {
 } from '@/lib/html5-qrcode';
 import type { PLineDto } from '../types/package';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PackageLabelPrintDialog } from './PackageLabelPrintDialog';
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case 'Open':
       return 'bg-yellow-100 text-yellow-800';
-    case 'Closed':
-      return 'bg-gray-100 text-gray-800';
+    case 'Draft':
+      return 'bg-slate-100 text-slate-800';
+    case 'Packed':
+      return 'bg-emerald-100 text-emerald-800';
+    case 'Sealed':
+      return 'bg-cyan-100 text-cyan-800';
     case 'Loaded':
       return 'bg-blue-100 text-blue-800';
+    case 'Transferred':
+      return 'bg-amber-100 text-amber-800';
+    case 'Shipped':
+      return 'bg-violet-100 text-violet-800';
+    case 'Cancelled':
+      return 'bg-rose-100 text-rose-800';
+    case 'Closed':
     default:
       return 'bg-gray-100 text-gray-800';
   }
@@ -67,6 +79,7 @@ export function PackagePackageDetailPage(): ReactElement {
   const [quantity, setQuantity] = useState<number>(1);
   const [serialNo, setSerialNo] = useState<string>('');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
 
@@ -321,6 +334,14 @@ export function PackagePackageDetailPage(): ReactElement {
                 <ArrowLeft className="size-4 mr-2" />
                 {t('package.packageDetail.backToHeader')}
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => setPrintDialogOpen(true)}
+                disabled={!permission.canCreate && !permission.canUpdate}
+              >
+                <Printer className="size-4 mr-2" />
+                Etiket Yazdır
+              </Button>
               <Button variant="destructive" onClick={() => permission.canDelete && setDeleteDialogOpen(true)} disabled={!permission.canDelete}>
                 <Trash2 className="size-4 mr-2" />
                 {t('common.delete')}
@@ -544,6 +565,17 @@ export function PackagePackageDetailPage(): ReactElement {
           </>
         ) : null}
       </DetailPageShell>
+
+      {packageData ? (
+        <PackageLabelPrintDialog
+          open={printDialogOpen}
+          onOpenChange={setPrintDialogOpen}
+          packingHeaderId={packageData.packingHeaderId}
+          initialPackageIds={[packageData.id]}
+          title={`${packageData.packageNo} etiketi`}
+          description="Seçili koli veya palet için barkod etiketini yazdırın."
+        />
+      ) : null}
 
       <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

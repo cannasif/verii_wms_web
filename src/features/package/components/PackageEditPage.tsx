@@ -1,16 +1,15 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUIStore } from '@/stores/ui-store';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { packageApi } from '../api/package-api';
 import { usePHeader } from '../hooks/usePHeader';
 import { useUpdatePHeader } from '../hooks/useUpdatePHeader';
 import { useMatchPlines } from '../hooks/useMatchPlines';
-import { useCustomers } from '@/features/goods-receipt/hooks/useCustomers';
-import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
-import { useAvailableHeaders } from '../hooks/useAvailableHeaders';
 import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type AvailableHeaderDto } from '../types/package';
 import { FormPageShell } from '@/components/shared';
 import { Button } from '@/components/ui/button';
@@ -18,12 +17,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { lookupApi } from '@/services/lookup-api';
 import { toast } from 'sonner';
 import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageEditPage(): ReactElement {
   const { t } = useTranslation();
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [sourceHeaderLookupOpen, setSourceHeaderLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
+  const [selectedWarehouseLabel, setSelectedWarehouseLabel] = useState('');
+  const [selectedSourceHeaderLabel, setSelectedSourceHeaderLabel] = useState('');
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
@@ -32,9 +38,6 @@ export function PackageEditPage(): ReactElement {
   const { data: header, isLoading } = usePHeader(headerId);
   const updateMutation = useUpdatePHeader();
   const matchPlinesMutation = useMatchPlines();
-  const { data: customers, isLoading: isLoadingCustomers } = useCustomers();
-  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
-
   const cargoCompanyOptions = useMemo(() => {
     return Object.entries(CargoCompany)
       .filter(([key]) => isNaN(Number(key)))
@@ -65,11 +68,11 @@ export function PackageEditPage(): ReactElement {
 
   const sourceType = form.watch('sourceType');
   const isReadOnly = !permission.canUpdate;
-  const { data: availableHeaders, isLoading: isLoadingHeaders } = useAvailableHeaders(sourceType);
 
   useEffect(() => {
     if (!sourceType) {
       form.setValue('sourceHeaderId', undefined);
+      setSelectedSourceHeaderLabel('');
     }
   }, [sourceType, form]);
 
@@ -114,6 +117,11 @@ export function PackageEditPage(): ReactElement {
         carrierServiceType: header.carrierServiceType || '',
         trackingNo: header.trackingNo || '',
       });
+      setSelectedSourceHeaderLabel(
+        header.sourceHeaderId
+          ? [ `#${header.sourceHeaderId}`, header.customerCode ].filter(Boolean).join(' - ')
+          : '',
+      );
     }
   }, [header, form]);
 
@@ -269,12 +277,12 @@ export function PackageEditPage(): ReactElement {
                     <FormItem>
                       <FormLabel>{t('package.form.sourceHeaderId')}</FormLabel>
                       <FormControl>
-                        <SearchableSelect<AvailableHeaderDto>
-                          value={field.value?.toString() || ''}
-                          onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : undefined)}
-                          options={availableHeaders || []}
-                          getOptionValue={(opt) => opt.id.toString()}
-                          getOptionLabel={getHeaderDisplayLabel}
+                        <PagedLookupDialog<AvailableHeaderDto>
+                          open={sourceHeaderLookupOpen}
+                          onOpenChange={setSourceHeaderLookupOpen}
+                          title={t('package.form.sourceHeaderId')}
+                          description={sourceType ? t(`package.sourceType.${sourceType}`) : t('package.form.selectSourceTypeFirst')}
+                          value={selectedSourceHeaderLabel || (field.value ? `#${field.value}` : '')}
                           placeholder={t('package.form.selectSourceHeader')}
                           searchPlaceholder={t('common.search')}
                           emptyText={
@@ -282,9 +290,17 @@ export function PackageEditPage(): ReactElement {
                               ? t('package.form.noAvailableHeaders')
                               : t('package.form.selectSourceTypeFirst')
                           }
-                          isLoading={isLoadingHeaders}
                           disabled={!sourceType}
-                          itemLimit={100}
+                          queryKey={['package-edit', 'available-headers', sourceType || 'none']}
+                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                            packageApi.getAvailableHeadersForMappingPaged(sourceType!, { pageNumber, pageSize, search }, { signal })
+                          }
+                          getKey={(headerItem) => headerItem.id.toString()}
+                          getLabel={getHeaderDisplayLabel}
+                          onSelect={(headerItem) => {
+                            field.onChange(headerItem.id);
+                            setSelectedSourceHeaderLabel(getHeaderDisplayLabel(headerItem));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -299,17 +315,25 @@ export function PackageEditPage(): ReactElement {
                     <FormItem>
                       <FormLabel>{t('package.form.warehouseCode')}</FormLabel>
                       <FormControl>
-                        <SearchableSelect<Warehouse>
-                          value={field.value}
-                          onValueChange={field.onChange}
-                          options={warehouses || []}
-                          getOptionValue={(opt) => opt.depoKodu.toString()}
-                          getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                        <PagedLookupDialog<Warehouse>
+                          open={warehouseLookupOpen}
+                          onOpenChange={setWarehouseLookupOpen}
+                          title={t('package.form.selectWarehouse')}
+                          description={t('package.form.warehouseCode')}
+                          value={selectedWarehouseLabel || field.value}
                           placeholder={t('package.form.selectWarehouse')}
                           searchPlaceholder={t('common.search')}
                           emptyText={t('common.notFound')}
-                          isLoading={isLoadingWarehouses}
-                          itemLimit={100}
+                          queryKey={['package-edit', 'warehouse']}
+                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                            lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                          }
+                          getKey={(warehouse) => warehouse.id.toString()}
+                          getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                          onSelect={(warehouse) => {
+                            field.onChange(warehouse.depoKodu.toString());
+                            setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -324,17 +348,25 @@ export function PackageEditPage(): ReactElement {
                     <FormItem>
                       <FormLabel>{t('package.form.customerCode')}</FormLabel>
                       <FormControl>
-                        <SearchableSelect<Customer>
-                          value={field.value}
-                          onValueChange={field.onChange}
-                          options={customers || []}
-                          getOptionValue={(opt) => opt.cariKod}
-                          getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                        <PagedLookupDialog<Customer>
+                          open={customerLookupOpen}
+                          onOpenChange={setCustomerLookupOpen}
+                          title={t('package.form.selectCustomer')}
+                          description={t('package.form.customerCode')}
+                          value={selectedCustomerLabel || field.value}
                           placeholder={t('package.form.selectCustomer')}
                           searchPlaceholder={t('common.search')}
                           emptyText={t('common.notFound')}
-                          isLoading={isLoadingCustomers}
-                          itemLimit={100}
+                          queryKey={['package-edit', 'customer']}
+                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                            lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                          }
+                          getKey={(customer) => customer.id.toString()}
+                          getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                          onSelect={(customer) => {
+                            field.onChange(customer.cariKod);
+                            setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />

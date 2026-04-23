@@ -1,15 +1,15 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCustomers } from '@/features/goods-receipt/hooks/useCustomers';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
-import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
+import { lookupApi } from '@/services/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { ShipmentFormData } from '../../types/shipment';
@@ -17,10 +17,12 @@ import type { ShipmentFormData } from '../../types/shipment';
 export function Step1ShipmentBasicInfo(): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<ShipmentFormData>();
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
+  const [selectedWarehouseLabel, setSelectedWarehouseLabel] = useState('');
 
-  const { data: customers, isLoading: isLoadingCustomers } = useCustomers();
   const { data: projects, isLoading: isLoadingProjects } = useProjects();
-  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
   const { data: activeUsers, isLoading: isLoadingUsers } = useActiveUsers();
 
   return (
@@ -63,17 +65,25 @@ export function Step1ShipmentBasicInfo(): ReactElement {
             <FormItem>
               <FormLabel>{t('shipment.step1.customer')} *</FormLabel>
               <FormControl>
-                <SearchableSelect<Customer>
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  options={customers || []}
-                  getOptionValue={(opt) => opt.cariKod}
-                  getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                <PagedLookupDialog<Customer>
+                  open={customerLookupOpen}
+                  onOpenChange={setCustomerLookupOpen}
+                  title={t('shipment.step1.selectCustomer')}
+                  description={t('shipment.step1.customer')}
+                  value={selectedCustomerLabel || field.value}
                   placeholder={t('shipment.step1.selectCustomer')}
                   searchPlaceholder={t('common.search')}
                   emptyText={t('common.notFound')}
-                  isLoading={isLoadingCustomers}
-                  itemLimit={100}
+                  queryKey={['shipment', 'customers']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                  }
+                  getKey={(customer) => customer.id.toString()}
+                  getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                  onSelect={(customer) => {
+                    field.onChange(customer.cariKod);
+                    setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -116,17 +126,25 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           <FormItem>
             <FormLabel>{t('shipment.step1.sourceWarehouse')} *</FormLabel>
             <FormControl>
-              <SearchableSelect<Warehouse>
-                value={field.value}
-                onValueChange={field.onChange}
-                options={warehouses || []}
-                getOptionValue={(opt) => String(opt.depoKodu)}
-                getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+              <PagedLookupDialog<Warehouse>
+                open={warehouseLookupOpen}
+                onOpenChange={setWarehouseLookupOpen}
+                title={t('shipment.step1.selectSourceWarehouse')}
+                description={t('shipment.step1.sourceWarehouse')}
+                value={selectedWarehouseLabel || field.value}
                 placeholder={t('shipment.step1.selectSourceWarehouse')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('common.notFound')}
-                isLoading={isLoadingWarehouses}
-                itemLimit={100}
+                queryKey={['shipment', 'source-warehouse']}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                }
+                getKey={(warehouse) => warehouse.id.toString()}
+                getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                onSelect={(warehouse) => {
+                  field.onChange(String(warehouse.depoKodu));
+                  setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -178,7 +196,6 @@ export function Step1ShipmentBasicInfo(): ReactElement {
     </div>
   );
 }
-
 
 
 

@@ -25,21 +25,24 @@ interface PackageDetailDialogProps {
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case 'Draft':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-slate-100 text-slate-800';
     case 'Packing':
       return 'bg-blue-100 text-blue-800';
-    case 'Packed':
-      return 'bg-green-100 text-green-800';
-    case 'Shipped':
-      return 'bg-purple-100 text-purple-800';
-    case 'Cancelled':
-      return 'bg-red-100 text-red-800';
     case 'Open':
       return 'bg-yellow-100 text-yellow-800';
-    case 'Closed':
-      return 'bg-gray-100 text-gray-800';
+    case 'Packed':
+      return 'bg-emerald-100 text-emerald-800';
+    case 'Sealed':
+      return 'bg-cyan-100 text-cyan-800';
     case 'Loaded':
       return 'bg-blue-100 text-blue-800';
+    case 'Transferred':
+      return 'bg-amber-100 text-amber-800';
+    case 'Shipped':
+      return 'bg-violet-100 text-violet-800';
+    case 'Cancelled':
+      return 'bg-rose-100 text-rose-800';
+    case 'Closed':
     default:
       return 'bg-gray-100 text-gray-800';
   }

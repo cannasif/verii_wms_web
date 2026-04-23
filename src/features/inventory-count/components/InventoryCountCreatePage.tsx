@@ -1,13 +1,13 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Plus, Trash2 } from 'lucide-react';
 import { FormPageShell } from '@/components/shared/FormPageShell';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,6 +17,7 @@ import { usePermissionAccess } from '@/features/access-control/hooks/usePermissi
 import { lookupApi } from '@/services/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
 import { inventoryCountApi } from '../api/inventory-count-api';
+import type { StockLookup, WarehouseLookup, YapKodLookup } from '@/services/lookup-types';
 import {
   createEmptyInventoryCountDraft,
   createEmptyInventoryCountScopeDraft,
@@ -25,6 +26,11 @@ import {
   type InventoryCountCreateDraft,
   type InventoryCountScopeDraft,
 } from '../types/inventory-count';
+
+type LookupTarget =
+  | { type: 'warehouse'; scopeIndex?: number }
+  | { type: 'stock'; scopeIndex?: number }
+  | { type: 'yapkod'; scopeIndex?: number };
 
 function toNullable(value: string): string | null {
   const trimmed = value.trim();
@@ -168,6 +174,7 @@ export function InventoryCountCreatePage(): ReactElement {
   const permissionAccess = usePermissionAccess();
   const canCreate = permissionAccess.can('wms.inventory-count.create');
   const [draft, setDraft] = useState<InventoryCountCreateDraft>(() => createEmptyInventoryCountDraft());
+  const [lookupTarget, setLookupTarget] = useState<LookupTarget | null>(null);
 
   const countTypeOptions = useMemo(
     () => [
@@ -212,59 +219,6 @@ export function InventoryCountCreatePage(): ReactElement {
     setPageTitle(t('inventoryCount.create.title', { defaultValue: 'Sayim Emrini Olusturma' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
-
-  const warehousesQuery = useQuery({
-    queryKey: ['inventory-count-create-warehouses'],
-    queryFn: () => lookupApi.getWarehouses(),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const stocksQuery = useQuery({
-    queryKey: ['inventory-count-create-stocks'],
-    queryFn: () => lookupApi.getProducts(),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const yapKodQuery = useQuery({
-    queryKey: ['inventory-count-create-yapkodlar'],
-    queryFn: () => lookupApi.getYapKodlar(),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const warehouseOptions = useMemo<ComboboxOption[]>(
-    () => (warehousesQuery.data ?? []).map((item) => ({
-      value: String(item.depoKodu),
-      label: item.depoKodu + ' - ' + item.depoIsmi,
-    })),
-    [warehousesQuery.data],
-  );
-
-  const stockOptions = useMemo<ComboboxOption[]>(
-    () => (stocksQuery.data ?? []).map((item) => ({
-      value: item.stokKodu,
-      label: item.stokKodu + ' - ' + item.stokAdi,
-    })),
-    [stocksQuery.data],
-  );
-
-  const yapKodOptions = useMemo<ComboboxOption[]>(
-    () => (yapKodQuery.data ?? [])
-      .filter((item) => !draft.stockCode || item.yplndrStokKod === draft.stockCode)
-      .map((item) => ({
-        value: item.yapKod,
-        label: item.yapKod + ' - ' + item.yapAcik,
-      })),
-    [draft.stockCode, yapKodQuery.data],
-  );
-
-  const getScopeYapKodOptions = (stockCode: string): ComboboxOption[] => (
-    (yapKodQuery.data ?? [])
-      .filter((item) => !stockCode || item.yplndrStokKod === stockCode)
-      .map((item) => ({
-        value: item.yapKod,
-        label: item.yapKod + ' - ' + item.yapAcik,
-      }))
-  );
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -338,6 +292,48 @@ export function InventoryCountCreatePage(): ReactElement {
     }
     return t('inventoryCount.create.summary.scoped');
   }, [draft.countType, draft.scopes.length, t]);
+
+  const handleWarehouseSelect = (item: WarehouseLookup): void => {
+    if (!lookupTarget || lookupTarget.type !== 'warehouse') {
+      return;
+    }
+
+    if (typeof lookupTarget.scopeIndex === 'number') {
+      updateScope(lookupTarget.scopeIndex, (current) => ({ ...current, warehouseCode: String(item.depoKodu) }));
+    } else {
+      setDraft((prev) => ({ ...prev, warehouseCode: String(item.depoKodu) }));
+    }
+
+    setLookupTarget(null);
+  };
+
+  const handleStockSelect = (item: StockLookup): void => {
+    if (!lookupTarget || lookupTarget.type !== 'stock') {
+      return;
+    }
+
+    if (typeof lookupTarget.scopeIndex === 'number') {
+      updateScope(lookupTarget.scopeIndex, (current) => ({ ...current, stockId: item.id, stockCode: item.stokKodu, yapKod: '' }));
+    } else {
+      setDraft((prev) => ({ ...prev, stockId: item.id, stockCode: item.stokKodu, yapKod: '' }));
+    }
+
+    setLookupTarget(null);
+  };
+
+  const handleYapKodSelect = (item: YapKodLookup): void => {
+    if (!lookupTarget || lookupTarget.type !== 'yapkod') {
+      return;
+    }
+
+    if (typeof lookupTarget.scopeIndex === 'number') {
+      updateScope(lookupTarget.scopeIndex, (current) => ({ ...current, yapKod: item.yapKod }));
+    } else {
+      setDraft((prev) => ({ ...prev, yapKod: item.yapKod }));
+    }
+
+    setLookupTarget(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -510,15 +506,55 @@ export function InventoryCountCreatePage(): ReactElement {
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}</Label>
-                    <Combobox options={warehouseOptions} value={draft.warehouseCode} onValueChange={(value) => setDraft((prev) => ({ ...prev, warehouseCode: value }))} placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })} />
+                    <PagedLookupDialog
+                      open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === undefined}
+                      onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse' } : null)}
+                      title={t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}
+                      value={draft.warehouseCode || null}
+                      placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      queryKey={['inventory-count-create', 'warehouse-paged']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                      getKey={(item) => String(item.id)}
+                      getLabel={(item) => item.depoKodu + ' - ' + item.depoIsmi}
+                      onSelect={handleWarehouseSelect}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}</Label>
-                    <Combobox options={stockOptions} value={draft.stockCode} onValueChange={(value) => setDraft((prev) => ({ ...prev, stockCode: value, yapKod: '' }))} placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })} />
+                    <PagedLookupDialog
+                      open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === undefined}
+                      onOpenChange={(open) => setLookupTarget(open ? { type: 'stock' } : null)}
+                      title={t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}
+                      value={draft.stockCode || null}
+                      placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      queryKey={['inventory-count-create', 'stock-paged']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
+                      getKey={(item) => String(item.id)}
+                      getLabel={(item) => item.stokKodu + ' - ' + item.stokAdi}
+                      onSelect={handleStockSelect}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}</Label>
-                    <Combobox options={yapKodOptions} value={draft.yapKod} onValueChange={(value) => setDraft((prev) => ({ ...prev, yapKod: value }))} placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })} disabled={yapKodOptions.length === 0} />
+                    <PagedLookupDialog
+                      open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === undefined}
+                      onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod' } : null)}
+                      title={t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}
+                      value={draft.yapKod || null}
+                      placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      disabled={!draft.stockCode}
+                      queryKey={['inventory-count-create', 'yapkod-paged', draft.stockCode]}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: draft.stockId ?? undefined }, { signal })}
+                      getKey={(item) => String(item.id)}
+                      getLabel={(item) => item.yapKod + ' - ' + item.yapAcik}
+                      onSelect={handleYapKodSelect}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Raf' })}</Label>
@@ -575,20 +611,54 @@ export function InventoryCountCreatePage(): ReactElement {
                         </div>
                         <div className="space-y-2">
                           <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}</Label>
-                          <Combobox options={warehouseOptions} value={scope.warehouseCode} onValueChange={(value) => updateScope(index, (current) => ({ ...current, warehouseCode: value }))} placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })} />
+                          <PagedLookupDialog
+                            open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === index}
+                            onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse', scopeIndex: index } : null)}
+                            title={t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}
+                            value={scope.warehouseCode || null}
+                            placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            queryKey={['inventory-count-create', 'scope-warehouse-paged', index]}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                            getKey={(item) => String(item.id)}
+                            getLabel={(item) => item.depoKodu + ' - ' + item.depoIsmi}
+                            onSelect={handleWarehouseSelect}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}</Label>
-                          <Combobox options={stockOptions} value={scope.stockCode} onValueChange={(value) => updateScope(index, (current) => ({ ...current, stockCode: value, yapKod: '' }))} placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })} />
+                          <PagedLookupDialog
+                            open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === index}
+                            onOpenChange={(open) => setLookupTarget(open ? { type: 'stock', scopeIndex: index } : null)}
+                            title={t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}
+                            value={scope.stockCode || null}
+                            placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            queryKey={['inventory-count-create', 'scope-stock-paged', index]}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
+                            getKey={(item) => String(item.id)}
+                            getLabel={(item) => item.stokKodu + ' - ' + item.stokAdi}
+                            onSelect={handleStockSelect}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}</Label>
-                          <Combobox
-                            options={getScopeYapKodOptions(scope.stockCode)}
-                            value={scope.yapKod}
-                            onValueChange={(value) => updateScope(index, (current) => ({ ...current, yapKod: value }))}
+                          <PagedLookupDialog
+                            open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === index}
+                            onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod', scopeIndex: index } : null)}
+                            title={t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}
+                            value={scope.yapKod || null}
                             placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
-                            disabled={getScopeYapKodOptions(scope.stockCode).length === 0}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            disabled={!scope.stockCode}
+                            queryKey={['inventory-count-create', 'scope-yapkod-paged', index, scope.stockCode]}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: scope.stockId ?? undefined }, { signal })}
+                            getKey={(item) => String(item.id)}
+                            getLabel={(item) => item.yapKod + ' - ' + item.yapAcik}
+                            onSelect={handleYapKodSelect}
                           />
                         </div>
                         <div className="space-y-2">

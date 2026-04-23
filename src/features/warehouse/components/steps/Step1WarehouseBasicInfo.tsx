@@ -1,16 +1,16 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCustomers } from '@/features/goods-receipt/hooks/useCustomers';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
-import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
+import { lookupApi } from '@/services/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { WarehouseFormData } from '../../types/warehouse';
@@ -29,10 +29,12 @@ export function Step1WarehouseBasicInfo({
 }: Step1WarehouseBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<WarehouseFormData>();
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
+  const [selectedWarehouseLabel, setSelectedWarehouseLabel] = useState('');
 
-  const { data: customers, isLoading: isLoadingCustomers } = useCustomers();
   const { data: projects, isLoading: isLoadingProjects } = useProjects();
-  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
   const { data: activeUsers, isLoading: isLoadingUsers } = useActiveUsers();
 
   const typeOptions = type === 'inbound' ? warehouseInboundTypeOptions : warehouseOutboundTypeOptions;
@@ -76,21 +78,26 @@ export function Step1WarehouseBasicInfo({
               <FormItem>
                 <FormLabel>{t('warehouse.step1.entryWarehouse')} *</FormLabel>
                 <FormControl>
-                  <SearchableSelect<Warehouse>
-                    value={field.value}
-                    onValueChange={(value) => {
-                      const selected = warehouses?.find((opt) => String(opt.depoKodu) === value);
-                      field.onChange(value);
-                      form.setValue('targetWarehouseId', selected?.id);
-                    }}
-                    options={warehouses || []}
-                    getOptionValue={(opt) => String(opt.depoKodu)}
-                    getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                  <PagedLookupDialog<Warehouse>
+                    open={warehouseLookupOpen}
+                    onOpenChange={setWarehouseLookupOpen}
+                    title={t('warehouse.step1.selectEntryWarehouse')}
+                    description={t('warehouse.step1.entryWarehouse')}
+                    value={selectedWarehouseLabel || field.value}
                     placeholder={t('warehouse.step1.selectEntryWarehouse')}
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}
-                    isLoading={isLoadingWarehouses}
-                    itemLimit={100}
+                    queryKey={['warehouse', type, 'target-warehouse']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                    }
+                    getKey={(warehouse) => warehouse.id.toString()}
+                    getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                    onSelect={(warehouse) => {
+                      field.onChange(String(warehouse.depoKodu));
+                      form.setValue('targetWarehouseId', warehouse.id);
+                      setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -105,21 +112,26 @@ export function Step1WarehouseBasicInfo({
               <FormItem>
                 <FormLabel>{t('warehouse.step1.sourceWarehouse')} *</FormLabel>
                 <FormControl>
-                  <SearchableSelect<Warehouse>
-                    value={field.value}
-                    onValueChange={(value) => {
-                      const selected = warehouses?.find((opt) => String(opt.depoKodu) === value);
-                      field.onChange(value);
-                      form.setValue('sourceWarehouseId', selected?.id);
-                    }}
-                    options={warehouses || []}
-                    getOptionValue={(opt) => String(opt.depoKodu)}
-                    getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+                  <PagedLookupDialog<Warehouse>
+                    open={warehouseLookupOpen}
+                    onOpenChange={setWarehouseLookupOpen}
+                    title={t('warehouse.step1.selectSourceWarehouse')}
+                    description={t('warehouse.step1.sourceWarehouse')}
+                    value={selectedWarehouseLabel || field.value}
                     placeholder={t('warehouse.step1.selectSourceWarehouse')}
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}
-                    isLoading={isLoadingWarehouses}
-                    itemLimit={100}
+                    queryKey={['warehouse', type, 'source-warehouse']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                    }
+                    getKey={(warehouse) => warehouse.id.toString()}
+                    getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                    onSelect={(warehouse) => {
+                      field.onChange(String(warehouse.depoKodu));
+                      form.setValue('sourceWarehouseId', warehouse.id);
+                      setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -167,21 +179,26 @@ export function Step1WarehouseBasicInfo({
             <FormItem>
               <FormLabel>{t('warehouse.step1.customer')} *</FormLabel>
               <FormControl>
-                <SearchableSelect<Customer>
-                  value={field.value}
-                  onValueChange={(value) => {
-                    const selected = customers?.find((opt) => opt.cariKod === value);
-                    field.onChange(value);
-                    form.setValue('customerRefId', selected?.id);
-                  }}
-                  options={customers || []}
-                  getOptionValue={(opt) => opt.cariKod}
-                  getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                <PagedLookupDialog<Customer>
+                  open={customerLookupOpen}
+                  onOpenChange={setCustomerLookupOpen}
+                  title={t('warehouse.step1.selectCustomer')}
+                  description={t('warehouse.step1.customer')}
+                  value={selectedCustomerLabel || field.value}
                   placeholder={t('warehouse.step1.selectCustomer')}
                   searchPlaceholder={t('common.search')}
                   emptyText={t('common.notFound')}
-                  isLoading={isLoadingCustomers}
-                  itemLimit={100}
+                  queryKey={['warehouse', type, 'customers']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                  }
+                  getKey={(customer) => customer.id.toString()}
+                  getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                  onSelect={(customer) => {
+                    field.onChange(customer.cariKod);
+                    form.setValue('customerRefId', customer.id);
+                    setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                  }}
                 />
               </FormControl>
               <FormMessage />

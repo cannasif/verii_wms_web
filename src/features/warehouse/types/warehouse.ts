@@ -76,6 +76,7 @@ export interface WarehouseOrderItem extends BaseWorkflowOrderItem {
 
 export interface SelectedWarehouseOrderItem extends WarehouseOrderItem {
   stockId?: number;
+  yapKodId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;
@@ -94,6 +95,7 @@ export interface WarehouseStockItem extends BaseSelectedStockItem {
 }
 
 export interface SelectedWarehouseStockItem extends WarehouseStockItem {
+  yapKodId?: number;
   transferQuantity: number;
   isSelected: boolean;
   serialNo?: string;

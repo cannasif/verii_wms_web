@@ -39,10 +39,12 @@ function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string):
 }
 
 export const transferApi = {
+  // RII_FN-backed source: keep order header lookup as full-read and let UI handle client slicing if needed.
   getOrdersByCustomer: async (customerCode: string, options?: ApiRequestOptions): Promise<TransferOrdersResponse> => {
     return await api.get<TransferOrdersResponse>(`/api/WtFunction/headers/${customerCode}`, options);
   },
 
+  // RII_FN-backed source: do not model this as true server paging.
   getOrderItems: async (orderNumbers: string, options?: ApiRequestOptions): Promise<TransferOrderItemsResponse> => {
     return await api.get<TransferOrderItemsResponse>(`/api/WtFunction/lines/${orderNumbers}`, options);
   },

@@ -1,12 +1,13 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProducts } from '@/features/goods-receipt/hooks/useProducts';
+import { lookupApi } from '@/services/lookup-api';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedTransferStockItem } from '../../types/transfer';
 import { TransferStockItemRow } from './components/TransferStockItemRow';
@@ -28,17 +29,27 @@ export function Step2TransferStockSelection({
   const [searchStocks, setSearchStocks] = useState('');
   const [searchSelected, setSearchSelected] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
-  const { data: products = [], isLoading: isLoadingProducts } = useProducts();
+  const stockListRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const productsQuery = useInfiniteQuery({
+    queryKey: ['transfer', 'products', searchStocks],
+    initialPageParam: 1,
+    queryFn: ({ pageParam, signal }) =>
+      lookupApi.getProductsPaged(
+        {
+          pageNumber: pageParam,
+          pageSize: 20,
+          search: searchStocks.trim(),
+        },
+        { signal },
+      ),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const filteredProducts = useMemo(() => {
-    if (!searchStocks.trim()) return products;
-    const term = searchStocks.toLowerCase();
-    return products.filter(
-      (product) =>
-        product.stokKodu.toLowerCase().includes(term) ||
-        product.stokAdi.toLowerCase().includes(term),
-    );
-  }, [products, searchStocks]);
+  const products = useMemo(
+    () => productsQuery.data?.pages.flatMap((page) => page.data ?? []) ?? [],
+    [productsQuery.data?.pages],
+  );
 
   const filteredSelectedItems = useMemo(() => {
     if (!searchSelected.trim()) return selectedItems;
@@ -57,6 +68,18 @@ export function Step2TransferStockSelection({
     });
     return counts;
   }, [selectedItems]);
+
+  const handleStockListScroll = (index: number): void => {
+    const element = stockListRefs.current[index];
+    if (!element || productsQuery.isFetchingNextPage || !productsQuery.hasNextPage) {
+      return;
+    }
+
+    const remaining = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (remaining < 120) {
+      void productsQuery.fetchNextPage();
+    }
+  };
 
   return (
     <Card className="flex flex-col">
@@ -80,10 +103,15 @@ export function Step2TransferStockSelection({
             <TabsContent value="stocks" className="m-0 min-h-0 flex-1 overflow-hidden">
               <StockListPane
                 t={t}
+                listRef={(element) => {
+                  stockListRefs.current[0] = element;
+                }}
+                onScroll={() => handleStockListScroll(0)}
                 searchStocks={searchStocks}
                 setSearchStocks={setSearchStocks}
-                isLoadingProducts={isLoadingProducts}
-                filteredProducts={filteredProducts}
+                isLoadingProducts={productsQuery.isLoading}
+                filteredProducts={products}
+                isFetchingNextPage={productsQuery.isFetchingNextPage}
                 selectedCountsByStockCode={selectedCountsByStockCode}
                 onToggleItem={onToggleItem}
               />
@@ -94,7 +122,6 @@ export function Step2TransferStockSelection({
                 searchSelected={searchSelected}
                 setSearchSelected={setSearchSelected}
                 filteredSelectedItems={filteredSelectedItems}
-                products={products}
                 onToggleItem={onToggleItem}
                 onUpdateItem={onUpdateItem}
                 onRemoveItem={onRemoveItem}
@@ -107,10 +134,15 @@ export function Step2TransferStockSelection({
           <div className="flex min-h-0 flex-col border-r">
             <StockListPane
               t={t}
+              listRef={(element) => {
+                stockListRefs.current[1] = element;
+              }}
+              onScroll={() => handleStockListScroll(1)}
               searchStocks={searchStocks}
               setSearchStocks={setSearchStocks}
-              isLoadingProducts={isLoadingProducts}
-              filteredProducts={filteredProducts}
+              isLoadingProducts={productsQuery.isLoading}
+              filteredProducts={products}
+              isFetchingNextPage={productsQuery.isFetchingNextPage}
               selectedCountsByStockCode={selectedCountsByStockCode}
               onToggleItem={onToggleItem}
             />
@@ -122,7 +154,6 @@ export function Step2TransferStockSelection({
               searchSelected={searchSelected}
               setSearchSelected={setSearchSelected}
               filteredSelectedItems={filteredSelectedItems}
-              products={products}
               onToggleItem={onToggleItem}
               onUpdateItem={onUpdateItem}
               onRemoveItem={onRemoveItem}
@@ -138,18 +169,24 @@ type TranslationFn = ReturnType<typeof useTranslation>['t'];
 
 function StockListPane({
   t,
+  listRef,
+  onScroll,
   searchStocks,
   setSearchStocks,
   isLoadingProducts,
   filteredProducts,
+  isFetchingNextPage,
   selectedCountsByStockCode,
   onToggleItem,
 }: {
   t: TranslationFn;
+  listRef: (element: HTMLDivElement | null) => void;
+  onScroll: () => void;
   searchStocks: string;
   setSearchStocks: (value: string) => void;
   isLoadingProducts: boolean;
   filteredProducts: Product[];
+  isFetchingNextPage: boolean;
   selectedCountsByStockCode: Map<string, number>;
   onToggleItem: (item: Product) => void;
 }): ReactElement {
@@ -167,9 +204,14 @@ function StockListPane({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div ref={listRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-2 space-y-1">
         {isLoadingProducts ? (
-          <div className="text-center py-4 text-sm text-muted-foreground">{t('common.loading')}</div>
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            <span className="inline-flex items-center">
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              {t('common.loading')}
+            </span>
+          </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-4 text-sm text-muted-foreground">{t('common.notFound')}</div>
         ) : (
@@ -204,6 +246,12 @@ function StockListPane({
             );
           })
         )}
+        {isFetchingNextPage ? (
+          <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            {t('common.loading')}
+          </div>
+        ) : null}
       </div>
     </>
   );
@@ -214,7 +262,6 @@ function SelectedListPane({
   searchSelected,
   setSearchSelected,
   filteredSelectedItems,
-  products,
   onToggleItem,
   onUpdateItem,
   onRemoveItem,
@@ -223,7 +270,6 @@ function SelectedListPane({
   searchSelected: string;
   setSearchSelected: (value: string) => void;
   filteredSelectedItems: SelectedTransferStockItem[];
-  products: Product[];
   onToggleItem: (item: Product) => void;
   onUpdateItem: (itemId: string, updates: Partial<SelectedTransferStockItem>) => void;
   onRemoveItem: (itemId: string) => void;
@@ -255,8 +301,24 @@ function SelectedListPane({
           </div>
         ) : (
           filteredSelectedItems.map((selectedItem) => {
-            const product = products.find((entry) => entry.stokKodu === selectedItem.stockCode);
-            if (!product) return null;
+            const product: Product = {
+              id: selectedItem.stockId ?? 0,
+              subeKodu: 0,
+              isletmeKodu: 0,
+              stokKodu: selectedItem.stockCode,
+              ureticiKodu: '',
+              stokAdi: selectedItem.stockName,
+              grupKodu: '',
+              saticiKodu: '',
+              olcuBr1: selectedItem.unit,
+              olcuBr2: '',
+              pay1: 0,
+              kod1: '',
+              kod2: '',
+              kod3: '',
+              kod4: '',
+              kod5: '',
+            };
 
             return (
               <TransferStockItemRow

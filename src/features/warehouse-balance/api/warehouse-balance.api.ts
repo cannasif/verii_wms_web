@@ -1,8 +1,10 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import type { ApiRequestOptions } from '@/lib/request-utils';
-import type { ApiResponse, PagedParams } from '@/types/api';
+import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
+  WarehouseBalanceConsistencyIssueDto,
+  WarehouseBalanceConsistencySummaryDto,
   WarehouseBalanceRebuildResultDto,
   WarehouseStockBalanceDto,
   WarehouseStockBalancePagedResponse,
@@ -55,5 +57,22 @@ export const warehouseBalanceApi = {
 
   async rebuildByStock(stockId: number, options?: ApiRequestOptions): Promise<ApiResponse<WarehouseBalanceRebuildResultDto>> {
     return await api.post<ApiResponse<WarehouseBalanceRebuildResultDto>>(`/api/WarehouseBalance/rebuild/stock/${stockId}`, {}, options);
+  },
+
+  async getConsistencySummary(options?: ApiRequestOptions): Promise<ApiResponse<WarehouseBalanceConsistencySummaryDto>> {
+    return await api.get<ApiResponse<WarehouseBalanceConsistencySummaryDto>>('/api/WarehouseBalance/reconciliation/summary', options);
+  },
+
+  async getConsistencyIssuesPaged(params?: PagedParams, options?: ApiRequestOptions): Promise<ApiResponse<PagedResponse<WarehouseBalanceConsistencyIssueDto>>> {
+    return await api.post<ApiResponse<PagedResponse<WarehouseBalanceConsistencyIssueDto>>>(
+      '/api/WarehouseBalance/reconciliation/issues-paged',
+      buildPagedRequest(params, {
+        pageNumber: 0,
+        pageSize: 10,
+        sortBy: 'WarehouseName',
+        sortDirection: 'asc',
+      }),
+      options,
+    );
   },
 };

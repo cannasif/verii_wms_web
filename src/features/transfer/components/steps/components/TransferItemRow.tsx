@@ -1,14 +1,16 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { lookupApi } from '@/services/lookup-api';
 import { cn } from '@/lib/utils';
 import type { TransferOrderItem, SelectedTransferOrderItem } from '../../../types/transfer';
 import type { Warehouse } from '@/features/goods-receipt/types/goods-receipt';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import type { YapKodLookup } from '@/services/lookup-types';
 
 interface TransferItemRowProps {
   item: TransferOrderItem;
@@ -30,6 +32,8 @@ export function TransferItemRow({
   const { t } = useTranslation();
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
 
   useEffect(() => {
     setValue(selectedItem?.transferQuantity?.toString() || '');
@@ -67,6 +71,13 @@ export function TransferItemRow({
   const itemQuantity = item.remainingForImport ?? 0;
   const progress = Math.min((quantity / itemQuantity) * 100, 100);
   const isOver = quantity > itemQuantity;
+  const selectedWarehouseLabel =
+    warehouses.find((warehouse) => warehouse.depoKodu === selectedItem?.sourceWarehouse)?.depoIsmi
+    && selectedItem?.sourceWarehouse
+      ? `${warehouses.find((warehouse) => warehouse.depoKodu === selectedItem?.sourceWarehouse)?.depoIsmi} (${selectedItem.sourceWarehouse})`
+      : selectedItem?.sourceWarehouse
+        ? String(selectedItem.sourceWarehouse)
+        : '';
 
   return (
     <div
@@ -139,15 +150,22 @@ export function TransferItemRow({
               <Label htmlFor={`sourceWarehouse-${item.id || ''}`} className="text-sm font-medium">
                 {t('transfer.details.sourceWarehouse')}
               </Label>
-              <SearchableSelect<Warehouse>
-                value={selectedItem?.sourceWarehouse?.toString() || ''}
-                onValueChange={(val) => handleDetailChange('sourceWarehouse', val ? Number(val) : 0)}
-                options={warehouses}
-                getOptionValue={(opt) => String(opt.depoKodu)}
-                getOptionLabel={(opt) => `${opt.depoIsmi} (${opt.depoKodu})`}
+              <PagedLookupDialog<Warehouse>
+                open={warehouseLookupOpen}
+                onOpenChange={setWarehouseLookupOpen}
+                title={t('transfer.step1.selectSourceWarehouse')}
+                description={item.stockName || item.stockCode || ''}
+                value={selectedWarehouseLabel}
                 placeholder={t('transfer.step1.selectSourceWarehouse')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('common.notFound')}
+                queryKey={['transfer', 'item-source-warehouse', item.id || 'new']}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                }
+                getKey={(warehouse) => warehouse.id.toString()}
+                getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                onSelect={(warehouse) => handleDetailChange('sourceWarehouse', warehouse.depoKodu)}
               />
             </div>
             <div className="space-y-2">
@@ -190,13 +208,45 @@ export function TransferItemRow({
               <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
                 {t('transfer.details.configCode')}
               </Label>
-              <Input
-                id={`config-${item.id || ''}`}
-                value={selectedItem?.configCode || ''}
-                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                className="h-9 text-sm"
-                placeholder={t('transfer.details.configCodePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <PagedLookupDialog<YapKodLookup>
+                    open={yapKodLookupOpen}
+                    onOpenChange={setYapKodLookupOpen}
+                    title={t('transfer.details.configCode')}
+                    description={item.stockName || item.stockCode || ''}
+                    value={selectedItem?.configCode || ''}
+                    placeholder={t('transfer.details.configCodePlaceholder')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    queryKey={['transfer', 'yapkod', item.stockCode || item.id || 'new']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getYapKodlarPaged(
+                        { pageNumber, pageSize, search },
+                        { stockId: selectedItem?.stockId, stockCode: item.stockCode },
+                        { signal },
+                      )
+                    }
+                    getKey={(yapKod) => yapKod.id.toString()}
+                    getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                    onSelect={(yapKod) => onUpdateItem(item.id || '', { configCode: yapKod.yapKod, yapKodId: yapKod.id })}
+                  />
+                </div>
+                {selectedItem?.configCode ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 shrink-0"
+                    onClick={() => onUpdateItem(item.id || '', { configCode: '', yapKodId: undefined })}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedItem?.configCode || t('transfer.details.configCodePlaceholder')}
+              </p>
             </div>
           </div>
         </div>

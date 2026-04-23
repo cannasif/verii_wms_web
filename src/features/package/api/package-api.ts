@@ -16,18 +16,28 @@ import type {
   PHeadersPagedResponse,
   PPackagesPagedResponse,
   PPackagesResponse,
+  PPackageTreeDto,
+  PPackageTreeResponse,
   PLinesPagedResponse,
   PLinesResponse,
   StokBarcodeResponse,
   AvailableHeaderDto,
   AvailableHeadersResponse,
+  AvailableHeadersPagedResponse,
+  PackageLabelPrintRequestDto,
+  PackageLabelPrintResultDto,
+  PackageMoveResultDto,
+  MovePackagesToSourceHeaderDto,
 } from '../types/package';
 
 export const packageApi = {
-  getPHeadersPaged: async (params: PagedParams = {}): Promise<PagedResponse<PHeaderDto>> => {
+  getPHeadersPaged: async (
+    params: PagedParams = {},
+    options?: { signal?: AbortSignal },
+  ): Promise<PagedResponse<PHeaderDto>> => {
     const requestBody = buildPagedRequest(params, { pageNumber: 1 });
 
-    const response = await api.post<PHeadersPagedResponse>('/api/PHeader/paged', requestBody);
+    const response = await api.post<PHeadersPagedResponse>('/api/PHeader/paged', requestBody, options);
     if (response.success && response.data) {
       return response.data;
     }
@@ -93,6 +103,14 @@ export const packageApi = {
 
   getPPackagesByHeader: async (packingHeaderId: number): Promise<PPackageDto[]> => {
     const response = await api.get<PPackagesResponse>(`/api/PPackage/header/${packingHeaderId}`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagesByHeaderLoadFailed'));
+  },
+
+  getPPackageTreeByHeader: async (packingHeaderId: number): Promise<PPackageTreeDto[]> => {
+    const response = await api.get<PPackageTreeResponse>(`/api/PPackage/header/${packingHeaderId}/tree`);
     if (response.success && response.data) {
       return response.data;
     }
@@ -193,6 +211,23 @@ export const packageApi = {
     throw new Error(response.message || getLocalizedText('common.errors.availableHeadersLoadFailed'));
   },
 
+  getAvailableHeadersForMappingPaged: async (
+    sourceType: string,
+    params: PagedParams = {},
+    options?: { signal?: AbortSignal },
+  ): Promise<PagedResponse<AvailableHeaderDto>> => {
+    const requestBody = buildPagedRequest(params, { pageNumber: 1 });
+    const response = await api.post<AvailableHeadersPagedResponse>(
+      `/api/PHeader/available-for-mapping/${sourceType}/paged`,
+      requestBody,
+      options,
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.availableHeadersLoadFailed'));
+  },
+
   matchPlines: async (pHeaderId: number, isMatched: boolean): Promise<boolean> => {
     const response = await api.post<ApiResponse<boolean>>(`/api/PHeader/${pHeaderId}/match-plines`, {
       isMatched,
@@ -201,5 +236,13 @@ export const packageApi = {
       return response.data ?? false;
     }
     throw new Error(response.message || getLocalizedText('common.errors.packageMatchFailed'));
+  },
+
+  printLabels: async (payload: PackageLabelPrintRequestDto): Promise<ApiResponse<PackageLabelPrintResultDto>> => {
+    return await api.post<ApiResponse<PackageLabelPrintResultDto>>('/api/PackageOperations/print-labels', payload);
+  },
+
+  movePackagesToSourceHeader: async (payload: MovePackagesToSourceHeaderDto): Promise<ApiResponse<PackageMoveResultDto>> => {
+    return await api.post<ApiResponse<PackageMoveResultDto>>('/api/PackageOperations/move-to-source-header', payload);
   },
 };

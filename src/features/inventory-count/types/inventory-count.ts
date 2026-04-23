@@ -110,6 +110,7 @@ export interface InventoryCountCreateDraft {
   plannedEndDate: string;
   isFirstCount: boolean;
   warehouseCode: string;
+  stockId?: number | null;
   stockCode: string;
   yapKod: string;
   rackCode: string;
@@ -121,6 +122,7 @@ export interface InventoryCountScopeDraft {
   sequenceNo: number;
   scopeType: InventoryScopeType;
   warehouseCode: string;
+  stockId?: number | null;
   stockCode: string;
   yapKod: string;
   rackCode: string;

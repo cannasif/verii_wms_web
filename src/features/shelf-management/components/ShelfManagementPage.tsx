@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -45,6 +46,7 @@ export function ShelfManagementPage(): ReactElement {
   const [form, setForm] = useState<ShelfUpsertRequest>(EMPTY_FORM);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [search, setSearch] = useState('');
+  const [warehousePickerOpen, setWarehousePickerOpen] = useState(false);
 
   useEffect(() => {
     setPageTitle(t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' }));
@@ -140,14 +142,28 @@ export function ShelfManagementPage(): ReactElement {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Depo</Label>
-                  <Select value={form.warehouseId ? String(form.warehouseId) : ''} onValueChange={(value) => setForm((current) => ({ ...current, warehouseId: Number(value), parentShelfId: null }))}>
-                    <SelectTrigger><SelectValue placeholder="Depo secin" /></SelectTrigger>
-                    <SelectContent>
-                      {(warehousesQuery.data ?? []).map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>{item.depoKodu} · {item.depoIsmi}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PagedLookupDialog
+                    open={warehousePickerOpen}
+                    onOpenChange={setWarehousePickerOpen}
+                    value={
+                      warehousesQuery.data?.find((item) => item.id === form.warehouseId)
+                        ? `${warehousesQuery.data.find((item) => item.id === form.warehouseId)?.depoKodu} · ${warehousesQuery.data.find((item) => item.id === form.warehouseId)?.depoIsmi}`
+                        : ''
+                    }
+                    placeholder="Depo secin"
+                    title="Depo Sec"
+                    description="Depo kayitlari server-side arama ve 20li sayfalama ile listelenir."
+                    queryKey={['shelf-management', 'warehouse-picker']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                    }
+                    getKey={(item) => String(item.id)}
+                    getLabel={(item) => `${item.depoKodu} · ${item.depoIsmi}`}
+                    onSelect={(item) =>
+                      setForm((current) => ({ ...current, warehouseId: item.id, parentShelfId: null }))
+                    }
+                    disabled={formReadOnly}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Ust Raf</Label>

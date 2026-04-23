@@ -1,14 +1,15 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
-import { Search } from 'lucide-react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { Loader2, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProducts } from '@/features/goods-receipt/hooks/useProducts';
+import { lookupApi } from '@/services/lookup-api';
 import type { WarehouseFormData, SelectedWarehouseStockItem, WarehouseStockItem } from '../../types/warehouse';
 import { WarehouseBulkItemRow } from './components/WarehouseBulkItemRow';
 
@@ -33,11 +34,31 @@ export function Step2WarehouseStockSelection({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
-  const { data: products, isLoading: productsLoading } = useProducts();
+  const stockListRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const productsQuery = useInfiniteQuery({
+    queryKey: ['warehouse', 'products', searchQuery],
+    initialPageParam: 1,
+    queryFn: ({ pageParam, signal }) =>
+      lookupApi.getProductsPaged(
+        {
+          pageNumber: pageParam,
+          pageSize: 20,
+          search: searchQuery.trim(),
+        },
+        { signal },
+      ),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined),
+    staleTime: 5 * 60 * 1000,
+  });
+  const products = useMemo(
+    () => productsQuery.data?.pages.flatMap((page) => page.data ?? []) ?? [],
+    [productsQuery.data?.pages],
+  );
 
   const mappedProducts = useMemo<WarehouseStockItem[]>(() => {
     return (products || []).map((product) => ({
       id: `stock-${product.stokKodu}`,
+      stockId: product.id,
       stockCode: product.stokKodu,
       stockName: product.stokAdi,
       unit: product.olcuBr1,
@@ -72,6 +93,18 @@ export function Step2WarehouseStockSelection({
     });
     return counts;
   }, [selectedItems]);
+
+  const handleStockListScroll = (index: number): void => {
+    const element = stockListRefs.current[index];
+    if (!element || productsQuery.isFetchingNextPage || !productsQuery.hasNextPage) {
+      return;
+    }
+
+    const remaining = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (remaining < 120) {
+      void productsQuery.fetchNextPage();
+    }
+  };
 
   if (!customerCode) {
     return (
@@ -113,10 +146,15 @@ export function Step2WarehouseStockSelection({
             <TabsContent value="stocks" className="m-0 min-h-0 flex-1 overflow-hidden">
               <StockListPane
                 t={t}
+                listRef={(element) => {
+                  stockListRefs.current[0] = element;
+                }}
+                onScroll={() => handleStockListScroll(0)}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
-                productsLoading={productsLoading}
+                productsLoading={productsQuery.isLoading}
                 filteredProducts={filteredProducts}
+                isFetchingNextPage={productsQuery.isFetchingNextPage}
                 selectedCountsByStockCode={selectedCountsByStockCode}
                 onToggleItem={onToggleItem}
               />
@@ -141,10 +179,15 @@ export function Step2WarehouseStockSelection({
           <div className="lg:w-[32%] xl:w-[30%] overflow-hidden min-w-0 flex h-full flex-col border-r">
             <StockListPane
               t={t}
+              listRef={(element) => {
+                stockListRefs.current[1] = element;
+              }}
+              onScroll={() => handleStockListScroll(1)}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              productsLoading={productsLoading}
+              productsLoading={productsQuery.isLoading}
               filteredProducts={filteredProducts}
+              isFetchingNextPage={productsQuery.isFetchingNextPage}
               selectedCountsByStockCode={selectedCountsByStockCode}
               onToggleItem={onToggleItem}
             />
@@ -172,18 +215,24 @@ type TranslationFn = ReturnType<typeof useTranslation>['t'];
 
 function StockListPane({
   t,
+  listRef,
+  onScroll,
   searchQuery,
   setSearchQuery,
   productsLoading,
   filteredProducts,
+  isFetchingNextPage,
   selectedCountsByStockCode,
   onToggleItem,
 }: {
   t: TranslationFn;
+  listRef: (element: HTMLDivElement | null) => void;
+  onScroll: () => void;
   searchQuery: string;
   setSearchQuery: (value: string) => void;
   productsLoading: boolean;
   filteredProducts: WarehouseStockItem[];
+  isFetchingNextPage: boolean;
   selectedCountsByStockCode: Map<string, number>;
   onToggleItem: (item: WarehouseStockItem) => void;
 }): ReactElement {
@@ -203,9 +252,14 @@ function StockListPane({
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div ref={listRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-2 space-y-1">
         {productsLoading ? (
-          <div className="text-center py-8 text-sm text-muted-foreground">{t('common.loading')}</div>
+          <div className="text-center py-8 text-sm text-muted-foreground">
+            <span className="inline-flex items-center">
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              {t('common.loading')}
+            </span>
+          </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-8 text-sm text-muted-foreground">{t('common.notFound')}</div>
         ) : (
@@ -243,6 +297,12 @@ function StockListPane({
             );
           })
         )}
+        {isFetchingNextPage ? (
+          <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            {t('common.loading')}
+          </div>
+        ) : null}
       </div>
     </div>
   );

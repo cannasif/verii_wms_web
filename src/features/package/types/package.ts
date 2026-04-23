@@ -84,6 +84,17 @@ export interface UpdatePHeaderDto {
 export interface PPackageDto {
   id: number;
   packingHeaderId: number;
+  parentPackageId?: number | null;
+  parentPackageNo?: string | null;
+  packagingMaterialId?: number | null;
+  packagingMaterialCode?: string | null;
+  packagingMaterialName?: string | null;
+  currentWarehouseId?: number | null;
+  currentWarehouseCode?: number | null;
+  currentWarehouseName?: string | null;
+  currentShelfId?: number | null;
+  currentShelfCode?: string | null;
+  currentShelfName?: string | null;
   packageNo: string;
   packageType: 'Box' | 'Pallet' | 'Bag' | 'Custom';
   barcode?: string;
@@ -94,8 +105,13 @@ export interface PPackageDto {
   netWeight?: number;
   tareWeight?: number;
   grossWeight?: number;
+  totalChildPackageCount?: number;
+  totalProductQuantity?: number;
+  totalNetWeight?: number;
+  totalGrossWeight?: number;
+  totalVolume?: number;
   isMixed: boolean;
-  status: 'Open' | 'Closed' | 'Loaded';
+  status: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
   createdDate?: string;
   updatedDate?: string;
   isDeleted: boolean;
@@ -103,6 +119,10 @@ export interface PPackageDto {
 
 export interface CreatePPackageDto {
   packingHeaderId: number;
+  parentPackageId?: number | null;
+  packagingMaterialId?: number | null;
+  currentWarehouseId?: number | null;
+  currentShelfId?: number | null;
   packageNo: string;
   packageType?: 'Box' | 'Pallet' | 'Bag' | 'Custom';
   barcode?: string;
@@ -114,12 +134,15 @@ export interface CreatePPackageDto {
   tareWeight?: number;
   grossWeight?: number;
   isMixed?: boolean;
-  status?: 'Open' | 'Closed' | 'Loaded';
+  status?: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
 }
 
 export interface UpdatePPackageDto {
-  packingHeaderId?: number;
   packageNo?: string;
+  parentPackageId?: number | null;
+  packagingMaterialId?: number | null;
+  currentWarehouseId?: number | null;
+  currentShelfId?: number | null;
   packageType?: 'Box' | 'Pallet' | 'Bag' | 'Custom';
   barcode?: string;
   length?: number;
@@ -130,7 +153,51 @@ export interface UpdatePPackageDto {
   tareWeight?: number;
   grossWeight?: number;
   isMixed?: boolean;
-  status?: 'Open' | 'Closed' | 'Loaded';
+  status?: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
+}
+
+export interface PPackageTreeDto {
+  package: PPackageDto;
+  children: PPackageTreeDto[];
+}
+
+export interface PackageLabelPrintRequestDto {
+  printerDefinitionId: number;
+  printerProfileId?: number | null;
+  barcodeTemplateId: number;
+  packageId?: number | null;
+  packingHeaderId?: number | null;
+  packageIds?: number[];
+  printMode?: string;
+  copies?: number;
+  includeChildren?: boolean;
+  useGs1SsccForPallets?: boolean;
+}
+
+export interface PackageLabelPrintResultDto {
+  printJobId?: number | null;
+  printedPackageCount: number;
+  printedPackageIds: number[];
+  packingHeaderId?: number | null;
+}
+
+export interface MovePackagesToSourceHeaderDto {
+  targetSourceType: 'WT' | 'SH';
+  targetSourceHeaderId: number;
+  packageIds: number[];
+  targetWarehouseId?: number | null;
+  targetShelfId?: number | null;
+  targetPackageStatus?: string | null;
+  note?: string | null;
+}
+
+export interface PackageMoveResultDto {
+  targetPackingHeaderId: number;
+  targetWarehouseId?: number | null;
+  targetShelfId?: number | null;
+  packageCount: number;
+  lineCount: number;
+  movedPackageIds: number[];
 }
 
 export interface PLineDto {
@@ -190,6 +257,7 @@ export type PHeadersPagedResponse = ApiResponse<PagedResponse<PHeaderDto>>;
 export type PPackageResponse = ApiResponse<PPackageDto>;
 export type PPackagesPagedResponse = ApiResponse<PagedResponse<PPackageDto>>;
 export type PPackagesResponse = ApiResponse<PPackageDto[]>;
+export type PPackageTreeResponse = ApiResponse<PPackageTreeDto[]>;
 export type PLineResponse = ApiResponse<PLineDto>;
 export type PLinesPagedResponse = ApiResponse<PagedResponse<PLineDto>>;
 export type PLinesResponse = ApiResponse<PLineDto[]>;
@@ -221,6 +289,7 @@ export interface AvailableHeaderDto {
 }
 
 export type AvailableHeadersResponse = ApiResponse<AvailableHeaderDto[]>;
+export type AvailableHeadersPagedResponse = ApiResponse<PagedResponse<AvailableHeaderDto>>;
 
 export const pHeaderFormSchema = (t: TFunction) => {
   void t;
@@ -280,7 +349,7 @@ export const pPackageFormSchema = (t: TFunction) => {
     tareWeight: z.number().optional(),
     grossWeight: z.number().optional(),
     isMixed: z.boolean().optional(),
-    status: z.enum(['Open', 'Closed', 'Loaded']).optional(),
+    status: z.enum(['Draft', 'Packed', 'Sealed', 'Loaded', 'Transferred', 'Shipped', 'Cancelled', 'Open', 'Closed']).optional(),
   });
 };
 

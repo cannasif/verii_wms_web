@@ -75,6 +75,15 @@ export const inventoryCountApi = {
     throw new Error(response.message || 'Sayim satirlari yuklenemedi');
   },
 
+  getLinesByHeaderPaged: async (headerId: number, params: PagedParams = {}): Promise<PagedResponse<InventoryCountLine>> => {
+    const response = await api.post<ApiResponse<PagedResponse<InventoryCountLine>>>(
+      `/api/IcLine/by-header/${headerId}/paged`,
+      buildPagedRequest(params),
+    );
+    if (response.success && response.data) return response.data;
+    throw new Error(response.message || 'Sayim satirlari yuklenemedi');
+  },
+
   addCountEntry: async (request: CreateInventoryCountEntryRequest): Promise<InventoryCountEntry> => {
     const response = await api.post<ApiResponse<InventoryCountEntry>>('/api/IcCountEntry', request);
     if (response.success && response.data) return response.data;

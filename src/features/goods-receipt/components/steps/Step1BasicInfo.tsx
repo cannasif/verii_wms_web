@@ -1,6 +1,7 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import {
   FormField,
   FormItem,
@@ -10,8 +11,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { lookupApi } from '@/services/lookup-api';
 import type { GoodsReceiptFormData, Customer, Project } from '../../types/goods-receipt';
-import { useCustomers } from '../../hooks/useCustomers';
 import { useProjects } from '../../hooks/useProjects';
 import { SearchableSelect } from './components/SearchableSelect';
 
@@ -19,11 +20,12 @@ export function Step1BasicInfo(): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<GoodsReceiptFormData>();
   const { control, watch } = form;
-  const { data: customers, isLoading: customersLoading, isError: customersError } = useCustomers();
   const { data: projects, isLoading: projectsLoading, isError: projectsError } = useProjects();
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
 
   const selectedCustomerId = watch('customerId');
-  const selectedCustomer = customers?.find((c) => c.cariKod === selectedCustomerId);
+  const selectedCustomerText = selectedCustomerLabel || selectedCustomerId || '';
 
   return (
     <div className="space-y-6 crm-page">
@@ -72,22 +74,29 @@ export function Step1BasicInfo(): ReactElement {
             <FormItem>
               <FormLabel>{t('goodsReceipt.step1.customer')} *</FormLabel>
               <FormControl>
-                <SearchableSelect<Customer>
-                  value={field.value}
-                  onValueChange={(value) => {
-                    const selected = customers?.find((opt) => opt.cariKod === value);
-                    field.onChange(value);
-                    form.setValue('customerRefId', selected?.id);
-                  }}
-                  options={customers || []}
-                  getOptionValue={(opt) => opt.cariKod}
-                  getOptionLabel={(opt) => `${opt.cariIsim} (${opt.cariKod})`}
+                <PagedLookupDialog<Customer>
+                  open={customerLookupOpen}
+                  onOpenChange={setCustomerLookupOpen}
+                  title={t('goodsReceipt.step1.selectCustomer')}
+                  description={t('goodsReceipt.step1.customer')}
+                  value={selectedCustomerText}
                   placeholder={t('goodsReceipt.step1.selectCustomer')}
                   searchPlaceholder={t('common.search')}
                   emptyText={t('common.notFound')}
-                  isLoading={customersLoading}
-                  disabled={customersError}
-                  itemLimit={100}
+                  queryKey={['goods-receipt', 'customers']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    lookupApi.getCustomersPaged(
+                      { pageNumber, pageSize, search },
+                      { signal },
+                    )
+                  }
+                  getKey={(customer) => customer.id.toString()}
+                  getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                  onSelect={(customer) => {
+                    field.onChange(customer.cariKod);
+                    form.setValue('customerRefId', customer.id);
+                    setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -147,12 +156,12 @@ export function Step1BasicInfo(): ReactElement {
         )}
       />
 
-      {selectedCustomer && (
+      {selectedCustomerId && (
         <Card>
           <CardHeader>
             <CardTitle>{t('goodsReceipt.step1.selectedCustomer')}</CardTitle>
             <CardDescription>
-              {selectedCustomer.cariIsim} - {selectedCustomer.cariKod}
+              {selectedCustomerText}
             </CardDescription>
           </CardHeader>
         </Card>

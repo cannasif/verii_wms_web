@@ -1,12 +1,15 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { lookupApi } from '@/services/lookup-api';
 import { cn } from '@/lib/utils';
 import type { SubcontractingOrderItem, SelectedSubcontractingOrderItem } from '../../../types/subcontracting';
+import type { YapKodLookup } from '@/services/lookup-types';
 
 interface SubcontractingItemRowProps {
   item: SubcontractingOrderItem;
@@ -26,6 +29,7 @@ export function SubcontractingItemRow({
   const { t } = useTranslation();
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
 
   useEffect(() => {
     setValue(selectedItem?.transferQuantity?.toString() || '');
@@ -168,13 +172,49 @@ export function SubcontractingItemRow({
               <Label htmlFor={`config-${item.id || ''}`} className="text-sm font-medium">
                 {t('subcontracting.details.configCode')}
               </Label>
-              <Input
-                id={`config-${item.id || ''}`}
-                value={selectedItem?.configCode || ''}
-                onChange={(e) => handleDetailChange('configCode', e.target.value)}
-                className="h-9 text-sm"
-                placeholder={t('subcontracting.details.configCodePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <PagedLookupDialog<YapKodLookup>
+                    open={yapKodLookupOpen}
+                    onOpenChange={setYapKodLookupOpen}
+                    title={t('subcontracting.details.configCode')}
+                    description={item.stockName || item.stockCode || ''}
+                    value={selectedItem?.configCode || ''}
+                    placeholder={t('subcontracting.details.configCodePlaceholder')}
+                    searchPlaceholder={t('common.search')}
+                    emptyText={t('common.notFound')}
+                    queryKey={['subcontracting', 'yapkod', item.stockCode || item.id || 'new']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      lookupApi.getYapKodlarPaged(
+                        { pageNumber, pageSize, search },
+                        { stockId: selectedItem?.stockId, stockCode: item.stockCode },
+                        { signal },
+                      )
+                    }
+                    getKey={(yapKod) => yapKod.id.toString()}
+                    getLabel={(yapKod) => `${yapKod.yapKod}${yapKod.yapAcik ? ` - ${yapKod.yapAcik}` : ''}`}
+                    onSelect={(yapKod) =>
+                      onUpdateItem(item.id || '', {
+                        configCode: yapKod.yapKod,
+                      })
+                    }
+                  />
+                </div>
+                {selectedItem?.configCode ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 shrink-0"
+                    onClick={() => onUpdateItem(item.id || '', { configCode: '' })}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedItem?.configCode || t('subcontracting.details.configCodePlaceholder')}
+              </p>
             </div>
           </div>
         </div>

@@ -53,5 +53,38 @@ export interface WarehouseBalanceRebuildResultDto {
   rebuiltAt: string;
 }
 
+export interface WarehouseBalanceConsistencySummaryDto {
+  summaryRowCount: number;
+  detailGroupCount: number;
+  mismatchCount: number;
+  missingSummaryCount: number;
+  extraSummaryCount: number;
+  checkedAt: string;
+}
+
+export interface WarehouseBalanceConsistencyIssueDto {
+  branchCode: string;
+  warehouseId: number;
+  warehouseCode?: number | null;
+  warehouseName?: string | null;
+  stockId: number;
+  stockCode?: string | null;
+  stockName?: string | null;
+  yapKodId?: number | null;
+  yapKodCode?: string | null;
+  yapKodName?: string | null;
+  issueType: string;
+  summaryQuantity: number;
+  detailQuantity: number;
+  summaryReservedQuantity: number;
+  detailReservedQuantity: number;
+  summaryAvailableQuantity: number;
+  detailAvailableQuantity: number;
+  summaryDistinctSerialCount: number;
+  detailDistinctSerialCount: number;
+  summaryDistinctShelfCount: number;
+  detailDistinctShelfCount: number;
+}
+
 export type WarehouseStockBalancePagedResponse = ApiResponse<PagedResponse<WarehouseStockBalanceDto>>;
 export type WarehouseStockSerialBalancePagedResponse = ApiResponse<PagedResponse<WarehouseStockSerialBalanceDto>>;
