@@ -14,6 +14,11 @@ const BarcodeDesignerFormPage = lazyNamed(() => import('@/features/barcode-desig
 const BarcodeDesignerListPage = lazyNamed(() => import('@/features/barcode-designer'), 'BarcodeDesignerListPage');
 const BarcodePrintPage = lazyNamed(() => import('@/features/barcode-designer'), 'BarcodePrintPage');
 const PrinterManagementPage = lazyNamed(() => import('@/features/printer-management'), 'PrinterManagementPage');
+const KkdEmployeePage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeePage');
+const KkdEmployeeDepartmentPage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeeDepartmentPage');
+const KkdEmployeeRolePage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeeRolePage');
+const KkdEntitlementPolicyPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementPolicyPage');
+const KkdAdditionalEntitlementPage = lazyNamed(() => import('@/features/kkd'), 'KkdAdditionalEntitlementPage');
 
 export const erpChildRoutes: RouteObject[] = [
   {
@@ -32,6 +37,11 @@ export const erpChildRoutes: RouteObject[] = [
       { path: 'barcode-designer/:id/edit', element: withRoute(BarcodeDesignerFormPage, { routeName: 'erp-barcode-designer-edit' }) },
       { path: 'barcode-designer/:id/print', element: withRoute(BarcodePrintPage, { routeName: 'erp-barcode-designer-print' }) },
       { path: 'printer-management', element: withRoute(PrinterManagementPage, { routeName: 'erp-printer-management' }) },
+      { path: 'kkd/employees', element: withRoute(KkdEmployeePage, { routeName: 'erp-kkd-employees' }) },
+      { path: 'kkd/departments', element: withRoute(KkdEmployeeDepartmentPage, { routeName: 'erp-kkd-departments' }) },
+      { path: 'kkd/roles', element: withRoute(KkdEmployeeRolePage, { routeName: 'erp-kkd-roles' }) },
+      { path: 'kkd/entitlements', element: withRoute(KkdEntitlementPolicyPage, { routeName: 'erp-kkd-entitlements' }) },
+      { path: 'kkd/additional-entitlements', element: withRoute(KkdAdditionalEntitlementPage, { routeName: 'erp-kkd-additional-entitlements' }) },
     ],
   },
 ];

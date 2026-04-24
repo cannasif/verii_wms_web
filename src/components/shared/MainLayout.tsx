@@ -184,6 +184,13 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ]),
     };
 
+    const kkdModule: NavItem = {
+      title: t('sidebar.kkd'),
+      children: sortNavItems([
+        { title: t('sidebar.kkdDistribution'), href: '/kkd/distribution' },
+      ]),
+    };
+
     const packageModule: NavItem = {
       title: t('sidebar.package'),
       children: sortNavItems([
@@ -231,6 +238,16 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             { title: t('sidebar.erpBarcodeDesignerList'), href: '/erp/barcode-designer' },
             { title: t('sidebar.erpBarcodeDesignerCreate'), href: '/erp/barcode-designer/new' },
             { title: t('sidebar.erpPrinterManagement'), href: '/erp/printer-management' },
+          ]),
+        },
+        {
+          title: t('sidebar.kkd'),
+          children: sortNavItems([
+            { title: t('sidebar.kkdEmployees'), href: '/erp/kkd/employees' },
+            { title: t('sidebar.kkdDepartments'), href: '/erp/kkd/departments' },
+            { title: t('sidebar.kkdRoles'), href: '/erp/kkd/roles' },
+            { title: t('sidebar.kkdEntitlements'), href: '/erp/kkd/entitlements' },
+            { title: t('sidebar.kkdAdditionalEntitlements'), href: '/erp/kkd/additional-entitlements' },
           ]),
         },
       ]),
@@ -311,7 +328,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           },
           {
             title: t('sidebar.serviceOperationsGroup'),
-            children: sortNavItems([serviceAllocationModule]),
+            children: sortNavItems([serviceAllocationModule, kkdModule]),
           },
           {
             title: t('sidebar.productionOperationsGroup'),

@@ -181,8 +181,15 @@ const ServiceCaseFormPage = lazyNamed(() => import('@/features/service-allocatio
 const ServiceCaseListPage = lazyNamed(() => import('@/features/service-allocation'), 'ServiceCaseListPage');
 const ServiceCaseTimelinePage = lazyNamed(() => import('@/features/service-allocation'), 'ServiceCaseTimelinePage');
 const ServiceReportsPage = lazyNamed(() => import('@/features/service-allocation'), 'ServiceReportsPage');
+const KkdDistributionPage = lazyNamed(() => import('@/features/kkd'), 'KkdDistributionPage');
 
 export const operationsChildRoutes: RouteObject[] = [
+  {
+    path: 'kkd',
+    children: [
+      { path: 'distribution', element: withRoute(KkdDistributionPage, { routeName: 'kkd-distribution' }) },
+    ],
+  },
   {
     path: 'goods-receipt',
     children: [

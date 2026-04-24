@@ -1,0 +1,298 @@
+interface BaseEntityDto {
+  id: number;
+  branchCode?: string;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+}
+
+interface BaseHeaderEntityDto extends BaseEntityDto {
+  documentNo?: string | null;
+  documentDate?: string | null;
+  documentType?: string | null;
+  yearCode?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  isCompleted?: boolean;
+  completionDate?: string | null;
+  isERPIntegrated?: boolean;
+  erpReferenceNumber?: string | null;
+  erpIntegrationDate?: string | null;
+  erpIntegrationStatus?: string | null;
+  erpErrorMessage?: string | null;
+}
+
+interface BaseLineEntityDto extends BaseEntityDto {
+  stockCode: string;
+  stockId?: number | null;
+  yapKod?: string | null;
+  yapKodId?: number | null;
+  quantity: number;
+  siparisMiktar?: number | null;
+  unit?: string | null;
+  erpOrderNo?: string | null;
+  erpOrderId?: string | null;
+  description?: string | null;
+}
+
+export interface KkdEmployeeDepartmentDto extends BaseEntityDto {
+  departmentCode: string;
+  departmentName: string;
+  isActive: boolean;
+}
+
+export interface CreateKkdEmployeeDepartmentDto {
+  departmentCode: string;
+  departmentName: string;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEmployeeDepartmentDto {
+  departmentCode?: string;
+  departmentName?: string;
+  isActive?: boolean;
+  branchCode?: string;
+}
+
+export interface KkdEmployeeRoleDto extends BaseEntityDto {
+  roleCode: string;
+  roleName: string;
+  isActive: boolean;
+}
+
+export interface CreateKkdEmployeeRoleDto {
+  roleCode: string;
+  roleName: string;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEmployeeRoleDto {
+  roleCode?: string;
+  roleName?: string;
+  isActive?: boolean;
+  branchCode?: string;
+}
+
+export interface KkdEmployeeDto extends BaseEntityDto {
+  customerId: number;
+  customerCode: string;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  departmentId?: number | null;
+  departmentCode?: string | null;
+  departmentName?: string | null;
+  roleId?: number | null;
+  roleCode?: string | null;
+  roleName?: string | null;
+  qrCode: string;
+  isActive: boolean;
+  lastSyncDate?: string | null;
+}
+
+export interface CreateKkdEmployeeDto {
+  customerId: number;
+  customerCode: string;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  departmentId?: number | null;
+  departmentCode?: string | null;
+  departmentName?: string | null;
+  roleId?: number | null;
+  roleCode?: string | null;
+  roleName?: string | null;
+  qrCode: string;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEmployeeDto extends Partial<CreateKkdEmployeeDto> {}
+
+export interface ResolveKkdEmployeeQrDto {
+  qrCode: string;
+}
+
+export interface KkdResolvedEmployeeDto {
+  employeeId: number;
+  employeeCode: string;
+  fullName: string;
+  customerId: number;
+  customerCode: string;
+  departmentCode?: string | null;
+  departmentName?: string | null;
+  roleCode?: string | null;
+  roleName?: string | null;
+  isActive: boolean;
+}
+
+export interface KkdEntitlementPolicyDto extends BaseEntityDto {
+  customerId: number;
+  employeeId?: number | null;
+  departmentId?: number | null;
+  roleId?: number | null;
+  groupCode: string;
+  groupName?: string | null;
+  totalQuantity: number;
+  periodType: string;
+  periodStartDate?: string | null;
+  periodEndDate?: string | null;
+  hasFrequencyRule: boolean;
+  frequencyDays?: number | null;
+  quantityPerFrequency?: number | null;
+  allowBulkIssue: boolean;
+  isActive: boolean;
+}
+
+export interface CreateKkdEntitlementPolicyDto {
+  customerId: number;
+  employeeId?: number | null;
+  departmentId?: number | null;
+  roleId?: number | null;
+  groupCode: string;
+  groupName?: string | null;
+  totalQuantity: number;
+  periodType: string;
+  periodStartDate?: string | null;
+  periodEndDate?: string | null;
+  hasFrequencyRule: boolean;
+  frequencyDays?: number | null;
+  quantityPerFrequency?: number | null;
+  allowBulkIssue: boolean;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEntitlementPolicyDto extends Partial<CreateKkdEntitlementPolicyDto> {}
+
+export interface KkdAdditionalEntitlementDto extends BaseEntityDto {
+  customerId: number;
+  employeeId: number;
+  groupCode: string;
+  groupName?: string | null;
+  extraQuantity: number;
+  consumedQuantity: number;
+  validFrom: string;
+  validTo?: string | null;
+  description?: string | null;
+  approvedByUserId?: number | null;
+  isActive: boolean;
+}
+
+export interface CreateKkdAdditionalEntitlementDto {
+  customerId: number;
+  employeeId: number;
+  groupCode: string;
+  groupName?: string | null;
+  extraQuantity: number;
+  validFrom: string;
+  validTo?: string | null;
+  description?: string | null;
+  approvedByUserId?: number | null;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdAdditionalEntitlementDto extends Partial<CreateKkdAdditionalEntitlementDto> {
+  consumedQuantity?: number | null;
+}
+
+export interface KkdEntitlementCheckRequestDto {
+  employeeId: number;
+  customerId: number;
+  groupCode: string;
+  stockId?: number | null;
+  quantity: number;
+  transactionDate?: string | null;
+}
+
+export interface KkdEntitlementCheckResultDto {
+  allowed: boolean;
+  remainingMainQuantity: number;
+  remainingAdditionalQuantity: number;
+  totalRemainingQuantity: number;
+  frequencyRuleSatisfied: boolean;
+  message?: string | null;
+  suggestedEntitlementType?: string | null;
+  entitlementPolicyId?: number | null;
+  additionalEntitlementId?: number | null;
+  nextEligibleDate?: string | null;
+}
+
+export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
+  customerCode: string;
+  employeeId: number;
+  warehouseId: number;
+  status: string;
+  sourceChannel: string;
+  lines: KkdDistributionLineDto[];
+}
+
+export interface KkdDistributionLineDto extends BaseLineEntityDto {
+  headerId: number;
+  barcode?: string | null;
+  groupCode?: string | null;
+  groupName?: string | null;
+  entitlementType: string;
+  entitlementPolicyId?: number | null;
+  additionalEntitlementId?: number | null;
+  warehouseId: number;
+  shelfId?: number | null;
+  stockTransactionRef?: string | null;
+  serialNo?: string | null;
+  serialNo2?: string | null;
+  serialNo3?: string | null;
+}
+
+export interface CreateKkdDistributionDraftDto {
+  employeeId: number;
+  customerId: number;
+  customerCode: string;
+  warehouseId: number;
+  distributionDate?: string | null;
+  description?: string | null;
+  sourceChannel?: string;
+  branchCode?: string;
+}
+
+export interface AddKkdDistributionLineDto {
+  barcode?: string | null;
+  stockId?: number | null;
+  quantity: number;
+  shelfId?: number | null;
+  serialNo?: string | null;
+  serialNo2?: string | null;
+  serialNo3?: string | null;
+}
+
+export interface UpdateKkdDistributionLineDto {
+  quantity: number;
+  shelfId?: number | null;
+  serialNo?: string | null;
+  serialNo2?: string | null;
+  serialNo3?: string | null;
+}
+
+export interface ResolveKkdStockBarcodeDto {
+  barcode: string;
+  warehouseId: number;
+}
+
+export interface KkdResolvedStockDto {
+  stockId: number;
+  stockCode: string;
+  stockName: string;
+  yapKodId?: number | null;
+  yapKod?: string | null;
+  groupCode?: string | null;
+  groupName?: string | null;
+  availableQuantity: number;
+  warehouseId: number;
+}
+
+export interface KkdStockGroupOption {
+  subeKodu: number;
+  groupCode: string;
+  groupName?: string | null;
+}
