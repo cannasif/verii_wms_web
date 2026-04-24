@@ -229,6 +229,18 @@ export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
   lines: KkdDistributionLineDto[];
 }
 
+export interface KkdDistributionListItemDto extends BaseHeaderEntityDto {
+  customerCode: string;
+  employeeId: number;
+  employeeCode?: string | null;
+  employeeName?: string | null;
+  warehouseId: number;
+  status: string;
+  sourceChannel: string;
+  lineCount: number;
+  totalQuantity: number;
+}
+
 export interface KkdDistributionLineDto extends BaseLineEntityDto {
   headerId: number;
   barcode?: string | null;
@@ -295,4 +307,42 @@ export interface KkdStockGroupOption {
   subeKodu: number;
   groupCode: string;
   groupName?: string | null;
+}
+
+export interface KkdRemainingEntitlementDto {
+  employeeId: number;
+  employeeCode: string;
+  employeeName: string;
+  customerId: number;
+  customerCode: string;
+  groupCode: string;
+  groupName?: string | null;
+  periodType?: string | null;
+  remainingMainQuantity: number;
+  remainingAdditionalQuantity: number;
+  totalRemainingQuantity: number;
+  frequencyRuleSatisfied: boolean;
+  suggestedEntitlementType?: string | null;
+  lastUsageDate?: string | null;
+  nextEligibleDate?: string | null;
+  message?: string | null;
+}
+
+export interface KkdValidationLogDto extends BaseEntityDto {
+  customerId?: number | null;
+  customerCode?: string | null;
+  employeeId?: number | null;
+  employeeCode?: string | null;
+  employeeName?: string | null;
+  stockId?: number | null;
+  stockCode?: string | null;
+  stockName?: string | null;
+  groupCode?: string | null;
+  warehouseId?: number | null;
+  scannedQr?: string | null;
+  scannedBarcode?: string | null;
+  attemptedQuantity: number;
+  reasonCode: string;
+  reasonMessage?: string | null;
+  deviceInfo?: string | null;
 }

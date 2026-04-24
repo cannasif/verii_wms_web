@@ -187,7 +187,12 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     const kkdModule: NavItem = {
       title: t('sidebar.kkd'),
       children: sortNavItems([
+        { title: t('sidebar.kkdOverview'), href: '/kkd' },
         { title: t('sidebar.kkdDistribution'), href: '/kkd/distribution' },
+        { title: t('sidebar.kkdDistributionList'), href: '/kkd/distribution-list' },
+        { title: t('sidebar.kkdRemainingEntitlements'), href: '/kkd/remaining-entitlements' },
+        { title: t('sidebar.kkdEntitlementCheck'), href: '/kkd/entitlement-check' },
+        { title: t('sidebar.kkdValidationLogs'), href: '/kkd/validation-logs' },
       ]),
     };
 

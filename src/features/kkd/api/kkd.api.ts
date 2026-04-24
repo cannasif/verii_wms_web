@@ -12,6 +12,7 @@ import type {
   CreateKkdEntitlementPolicyDto,
   KkdAdditionalEntitlementDto,
   KkdDistributionHeaderDto,
+  KkdDistributionListItemDto,
   KkdDistributionLineDto,
   KkdEmployeeDepartmentDto,
   KkdEmployeeDto,
@@ -19,9 +20,11 @@ import type {
   KkdEntitlementCheckRequestDto,
   KkdEntitlementCheckResultDto,
   KkdEntitlementPolicyDto,
+  KkdRemainingEntitlementDto,
   KkdResolvedEmployeeDto,
   KkdResolvedStockDto,
   KkdStockGroupOption,
+  KkdValidationLogDto,
   ResolveKkdEmployeeQrDto,
   ResolveKkdStockBarcodeDto,
   UpdateKkdAdditionalEntitlementDto,
@@ -168,6 +171,14 @@ export const kkdApi = {
     const response = await api.post<ApiResponse<KkdDistributionHeaderDto>>('/api/KkdDistribution/draft', dto);
     return extractData(response);
   },
+  getDistributions: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDistributionListItemDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdDistributionListItemDto>>>(
+      '/api/KkdDistribution/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'DocumentDate', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
   getDistributionById: async (id: number): Promise<KkdDistributionHeaderDto> => {
     const response = await api.get<ApiResponse<KkdDistributionHeaderDto>>(`/api/KkdDistribution/${id}`);
     return extractData(response);
@@ -199,5 +210,22 @@ export const kkdApi = {
   cancelDistribution: async (headerId: number): Promise<void> => {
     const response = await api.post<ApiResponse<boolean>>(`/api/KkdDistribution/${headerId}/cancel`);
     extractData(response);
+  },
+  getRemainingEntitlements: async (employeeId: number, transactionDate?: string | null): Promise<KkdRemainingEntitlementDto[]> => {
+    const response = await api.get<ApiResponse<KkdRemainingEntitlementDto[]>>('/api/KkdReport/remaining-entitlements', {
+      params: {
+        employeeId,
+        transactionDate: transactionDate || undefined,
+      },
+    });
+    return extractData(response);
+  },
+  getValidationLogs: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdValidationLogDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdValidationLogDto>>>(
+      '/api/KkdReport/validation-logs/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'CreatedDate', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
   },
 };
