@@ -1,5 +1,12 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import trCommon from '../locales/tr/common.json';
+import enCommon from '../locales/en/common.json';
+import deCommon from '../locales/de/common.json';
+import frCommon from '../locales/fr/common.json';
+import arCommon from '../locales/ar/common.json';
+import esCommon from '../locales/es/common.json';
+import itCommon from '../locales/it/common.json';
 
 const i18n = i18next.createInstance();
 
@@ -74,7 +81,16 @@ const DEFAULT_NAMESPACE = 'translation';
 const COMMON_NAMESPACE = 'common';
 const STORAGE_KEY = 'i18nextLng';
 const fallbackLng = DEFAULT_LANGUAGE;
-const supportedLngs = Object.keys(loaders);
+const COMMON_RESOURCES = {
+  tr: trCommon,
+  en: enCommon,
+  de: deCommon,
+  fr: frCommon,
+  ar: arCommon,
+  es: esCommon,
+  it: itCommon,
+} as const;
+const supportedLngs = Object.keys(COMMON_RESOURCES);
 const PRELOADED_NAMESPACES = [DEFAULT_NAMESPACE, COMMON_NAMESPACE] as const;
 const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unknown>>> = {};
 
@@ -130,8 +146,26 @@ export function normalizeLanguage(language: string | null | undefined): Supporte
 
 export const SUPPORTED_LANGUAGES = supportedLngs as SupportedLanguage[];
 
-const storedLng = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-const initialLng = storedLng ? normalizeLanguage(storedLng) : DEFAULT_LANGUAGE;
+function getInitialLanguage(): SupportedLanguage {
+  if (typeof window === 'undefined') {
+    return DEFAULT_LANGUAGE;
+  }
+
+  const persisted = window.localStorage.getItem(STORAGE_KEY);
+  const normalizedPersisted = normalizeLanguage(persisted);
+
+  if (persisted && normalizedPersisted !== persisted) {
+    window.localStorage.setItem(STORAGE_KEY, normalizedPersisted);
+  }
+
+  if (persisted) {
+    return normalizedPersisted;
+  }
+
+  return DEFAULT_LANGUAGE;
+}
+
+const initialLng = getInitialLanguage();
 
 function rebuildLanguageResources(lang: string): void {
   const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
@@ -208,6 +242,15 @@ const initPromise = (async () => {
     : namespaces[0] ?? DEFAULT_NAMESPACE;
 
   await i18n.use(initReactI18next).init({
+    resources: Object.fromEntries(
+      Object.entries(COMMON_RESOURCES).map(([language, common]) => [
+        language,
+        {
+          [DEFAULT_NAMESPACE]: common,
+          [COMMON_NAMESPACE]: common,
+        },
+      ]),
+    ),
     lng: initialLng,
     fallbackLng,
     supportedLngs,
@@ -215,7 +258,6 @@ const initPromise = (async () => {
     nonExplicitSupportedLngs: true,
     ns: namespaces.length > 0 ? namespaces : [defaultNS],
     defaultNS,
-    resources: {},
     interpolation: { escapeValue: false },
     parseMissingKeyHandler: () => formatMissingKey(),
     returnEmptyString: false,
@@ -246,12 +288,14 @@ export async function ensureI18nReady(): Promise<void> {
 export async function setAppLanguage(language: string): Promise<void> {
   const normalizedLanguage = normalizeLanguage(language);
 
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(STORAGE_KEY, normalizedLanguage);
+  await loadLanguage(normalizedLanguage);
+
+  if (i18n.language !== normalizedLanguage || i18n.resolvedLanguage !== normalizedLanguage) {
+    await i18n.changeLanguage(normalizedLanguage);
   }
 
-  if (i18n.language !== normalizedLanguage && i18n.resolvedLanguage !== normalizedLanguage) {
-    await i18n.changeLanguage(normalizedLanguage);
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, normalizedLanguage);
   }
 }
 
