@@ -73,12 +73,14 @@ export function KkdDistributionListPage(): ReactElement {
   const query = useQuery({
     queryKey: ['kkd', 'distribution-list', pagedGrid.queryParams],
     queryFn: ({ signal }) => kkdApi.getDistributions(pagedGrid.queryParams, { signal }),
+    retry: false,
   });
 
   const detailQuery = useQuery({
     queryKey: ['kkd', 'distribution-detail', selectedHeader?.id],
     queryFn: () => kkdApi.getDistributionById(selectedHeader!.id),
     enabled: Boolean(selectedHeader?.id),
+    retry: false,
   });
 
   const rows = query.data?.data ?? [];

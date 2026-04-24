@@ -67,6 +67,7 @@ export function KkdValidationLogPage(): ReactElement {
   const query = useQuery({
     queryKey: ['kkd', 'validation-logs', pagedGrid.queryParams],
     queryFn: ({ signal }) => kkdApi.getValidationLogs(pagedGrid.queryParams, { signal }),
+    retry: false,
   });
 
   const rows = query.data?.data ?? [];

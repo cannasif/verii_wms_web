@@ -43,6 +43,7 @@ function EntitlementPolicyForm({
   const stockGroupsQuery = useQuery({
     queryKey: ['kkd', 'stock-groups'],
     queryFn: () => kkdApi.getStockGroups(),
+    retry: false,
   });
 
   const stockGroups = stockGroupsQuery.data ?? [];

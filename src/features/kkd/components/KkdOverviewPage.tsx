@@ -23,9 +23,9 @@ const quickActions = [
     icon: ShieldCheck,
   },
   {
-    title: 'Belge Sorgulama',
-    description: 'Oluşmuş bir KKD belgesini header id ile açıp satırları, durumunu ve ERP bilgisini izle.',
-    href: '/kkd/distribution-lookup',
+    title: 'Dağıtım Listesi',
+    description: 'Oluşmuş KKD belgelerini listele, filtrele ve detaylarını aç.',
+    href: '/kkd/distribution-list',
     icon: FileSearch,
   },
   {
@@ -55,31 +55,37 @@ export function KkdOverviewPage(): ReactElement {
   const employeesQuery = useQuery({
     queryKey: ['kkd', 'overview', 'employees'],
     queryFn: () => kkdApi.getEmployees({ pageNumber: 0, pageSize: 1 }),
+    retry: false,
   });
 
   const departmentsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'departments'],
     queryFn: () => kkdApi.getDepartments({ pageNumber: 0, pageSize: 1 }),
+    retry: false,
   });
 
   const rolesQuery = useQuery({
     queryKey: ['kkd', 'overview', 'roles'],
     queryFn: () => kkdApi.getRoles({ pageNumber: 0, pageSize: 1 }),
+    retry: false,
   });
 
   const entitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'entitlements'],
     queryFn: () => kkdApi.getEntitlementPolicies({ pageNumber: 0, pageSize: 1 }),
+    retry: false,
   });
 
   const additionalEntitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'additional-entitlements'],
     queryFn: () => kkdApi.getAdditionalEntitlements({ pageNumber: 0, pageSize: 1 }),
+    retry: false,
   });
 
   const stockGroupsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'stock-groups'],
     queryFn: () => kkdApi.getStockGroups(),
+    retry: false,
   });
 
   const summaryCards = [

@@ -30,6 +30,7 @@ export function KkdEntitlementCheckPage(): ReactElement {
   const stockGroupsQuery = useQuery({
     queryKey: ['kkd', 'entitlement-check', 'stock-groups'],
     queryFn: () => kkdApi.getStockGroups(),
+    retry: false,
   });
 
   const selectedGroup = useMemo(
