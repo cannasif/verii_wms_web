@@ -1,4 +1,5 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
@@ -10,6 +11,7 @@ import type { PagedDataGridColumn } from '@/components/shared';
 import type { CustomerLookup } from '@/services/lookup-types';
 import { userApi } from '@/features/user-management/api/user-api';
 import type { UserDto } from '@/features/user-management/types/user-types';
+import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 
 type ColumnKey = 'employeeCode' | 'firstName' | 'lastName' | 'customerCode' | 'departmentName' | 'roleName' | 'isActive';
 
@@ -20,15 +22,23 @@ function EmployeeForm({
   formState: CreateKkdEmployeeDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEmployeeDto>>;
 }): ReactElement {
+  const { t } = useTranslation();
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
 
+  const labelWithHelp = (label: string, helpKey: string): ReactElement => (
+    <div className="flex items-center">
+      <Label>{label}</Label>
+      <FieldHelpTooltip text={t(helpKey)} />
+    </div>
+  );
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2 md:col-span-2">
-        <Label>Sistem Kullanıcısı *</Label>
+        {labelWithHelp('Sistem Kullanıcısı *', 'help.kkd.employee.user')}
         <PagedLookupDialog<UserDto>
           open={userDialogOpen}
           onOpenChange={setUserDialogOpen}
@@ -56,7 +66,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Cari *</Label>
+        {labelWithHelp('Cari *', 'help.kkd.employee.customer')}
         <PagedLookupDialog<CustomerLookup>
           open={customerDialogOpen}
           onOpenChange={setCustomerDialogOpen}
@@ -78,7 +88,10 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="employeeCode">Personel Kodu *</Label>
+        <div className="flex items-center">
+          <Label htmlFor="employeeCode">Personel Kodu *</Label>
+          <FieldHelpTooltip text={t('help.kkd.employee.employeeCode')} />
+        </div>
         <Input
           id="employeeCode"
           value={formState.employeeCode}
@@ -105,7 +118,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Bölüm</Label>
+        {labelWithHelp('Bölüm', 'help.kkd.employee.department')}
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
@@ -131,7 +144,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Görev</Label>
+        {labelWithHelp('Görev', 'help.kkd.employee.role')}
         <PagedLookupDialog<KkdEmployeeRoleDto>
           open={roleDialogOpen}
           onOpenChange={(open) => {
@@ -168,7 +181,10 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2 md:col-span-2">
-        <Label htmlFor="employmentStartDate">İşe Giriş Tarihi *</Label>
+        <div className="flex items-center">
+          <Label htmlFor="employmentStartDate">İşe Giriş Tarihi *</Label>
+          <FieldHelpTooltip text={t('help.kkd.employee.employmentStartDate')} />
+        </div>
         <Input
           id="employmentStartDate"
           type="date"
@@ -178,7 +194,10 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2 md:col-span-2">
-        <Label htmlFor="qrCode">QR Kod *</Label>
+        <div className="flex items-center">
+          <Label htmlFor="qrCode">QR Kod *</Label>
+          <FieldHelpTooltip text={t('help.kkd.employee.qrCode')} />
+        </div>
         <Input
           id="qrCode"
           value={formState.qrCode}

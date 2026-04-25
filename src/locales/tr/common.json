@@ -3483,5 +3483,39 @@
     "linesEmpty": "Bu belge için satır bulunamadı.",
     "selectSingleDocument": "Satır bazlı baskı için listeden tek bir belge seç.",
     "printSettings": "Baskı Ayarları"
+  },
+  "help": {
+    "kkd": {
+      "employee": {
+        "user": "Bu alan, KKD kartının hangi sistem kullanıcısına bağlandığını belirler. Ad ve soyad otomatik olarak bu kullanıcıdan alınır.",
+        "customer": "Çalışanın bağlı olduğu cari kaydı seçilir. KKD operasyonlarında bu bilgi belge ve raporlarda görünür.",
+        "employeeCode": "Şirket içindeki personel veya sicil kodunu girin. Operasyonda çalışanı ayırt etmek için kullanılır.",
+        "department": "Çalışanın bağlı olduğu bölümü seçin. Görev listesi bu seçime göre filtrelenir.",
+        "role": "Çalışanın fiilen yaptığı görev tanımını seçin. KKD hakkı bu görev ve grup kodu üzerinden hesaplanır.",
+        "employmentStartDate": "İlk giriş ve 3 ay sonrası hakları bu tarihe göre hesaplanır. Yanlış tarih girilirse hak hesabı da yanlış olur.",
+        "qrCode": "Sahada çalışanın hızlı seçilebilmesi için okutulacak benzersiz QR değeridir."
+      },
+      "matrix": {
+        "department": "Hak tanımının geçerli olacağı bölümü seçin.",
+        "role": "Hak tanımının bağlı olduğu görev tanımını seçin. Sistem hakkı her zaman görev ve grup kodu üzerinden arar.",
+        "groupCode": "Stok kartındaki grup kodu ile birebir eşleşmelidir. Dağıtım sırasında ürün bu grup üzerinden hak kontrolüne girer.",
+        "initialQuantity": "Çalışan işe başladığında bu grup için toplam kaç adet alabileceğini belirtir.",
+        "initialFrequencyDays": "İlk giriş hakkı parçalı kullanılacaksa iki alım arasındaki minimum gün aralığını girin. Boş bırakılırsa frekans kuralı uygulanmaz.",
+        "initialBulk": "Açık ise çalışan ilk giriş hakkının tamamını tek seferde alabilir. Kapalı ise frekans kuralına göre parçalı alır.",
+        "initialFrequencyQuantity": "Frekans kuralı varsa, her frekans penceresinde en fazla kaç adet alınabileceğini belirtir.",
+        "threeMonthQuantity": "İşe girişten 3 ay sonra açılan ek hak miktarıdır.",
+        "threeMonthFrequencyDays": "3 ay sonrası hak parçalı kullanılacaksa iki alım arasındaki minimum gün aralığıdır.",
+        "threeMonthBulk": "Açık ise 3 ay sonrası hakkın tamamı tek seferde alınabilir.",
+        "threeMonthFrequencyQuantity": "3 ay sonrası hakta, her frekans penceresinde kullanılabilecek adet sınırıdır.",
+        "routineQuantity": "İlk giriş ve 3 ay sonrası tamamlandıktan sonra her rutin dönemde tekrar tanımlanan miktardır.",
+        "routinePeriodType": "Rutin hakkın gün, ay veya yıl bazında çalışacağını belirtir.",
+        "routinePeriodInterval": "Rutin dönemin kaç birimde tekrar edeceğini belirtir. Örn. yıl + 1 = her 1 yıl, gün + 20 = her 20 gün.",
+        "routineFrequencyDays": "Rutin dönem içinde alımlar parçalı olacaksa iki alım arasındaki minimum gün aralığıdır.",
+        "routineBulk": "Açık ise çalışan rutin dönem hakkının tamamını tek seferde alabilir.",
+        "routineFrequencyQuantity": "Rutin dönemde, her frekans penceresinde en fazla kaç adet alınabileceğini belirtir.",
+        "isActive": "Kapalı kayıtlar hak hesabına dahil edilmez.",
+        "isMandatory": "Bu grup iş güvenliği açısından zorunlu ise işaretlenebilir; raporlama ve kontrol için kullanılır."
+      }
+    }
   }
 }

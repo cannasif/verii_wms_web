@@ -1,10 +1,12 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
 import type {
@@ -45,6 +47,7 @@ function KkdEntitlementMatrixForm({
   formState: CreateKkdEntitlementMatrixRowDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEntitlementMatrixRowDto>>;
 }): ReactElement {
+  const { t } = useTranslation();
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const stockGroupsQuery = useQuery({
@@ -55,6 +58,13 @@ function KkdEntitlementMatrixForm({
 
   const stockGroups = stockGroupsQuery.data ?? [];
 
+  const labelWithHelp = (label: string, helpKey: string): ReactElement => (
+    <div className="flex items-center">
+      <Label>{label}</Label>
+      <FieldHelpTooltip text={t(helpKey)} />
+    </div>
+  );
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
@@ -62,7 +72,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Bölüm *</Label>
+        {labelWithHelp('Bölüm *', 'help.kkd.matrix.department')}
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
@@ -85,7 +95,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Görev *</Label>
+        {labelWithHelp('Görev *', 'help.kkd.matrix.role')}
         <PagedLookupDialog<KkdEmployeeRoleDto>
           open={roleDialogOpen}
           onOpenChange={setRoleDialogOpen}
@@ -115,7 +125,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Grup Kodu *</Label>
+        {labelWithHelp('Grup Kodu *', 'help.kkd.matrix.groupCode')}
         <SearchableSelect<KkdStockGroupOption>
           value={formState.groupCode}
           onValueChange={(value) => {
@@ -133,12 +143,12 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>İlk Giriş Adedi *</Label>
+        {labelWithHelp('İlk Giriş Adedi *', 'help.kkd.matrix.initialQuantity')}
         <Input type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
       </div>
 
       <div className="space-y-2">
-        <Label>İlk Giriş Frekans (Gün)</Label>
+        {labelWithHelp('İlk Giriş Frekans (Gün)', 'help.kkd.matrix.initialFrequencyDays')}
         <Input
           type="number"
           value={formState.initialFrequencyDays ?? ''}
@@ -147,14 +157,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        <Label>İlk Giriş Toplu Alım</Label>
+        {labelWithHelp('İlk Giriş Toplu Alım', 'help.kkd.matrix.initialBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.initialAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, initialAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label>İlk Giriş Frekans Adedi</Label>
+        {labelWithHelp('İlk Giriş Frekans Adedi', 'help.kkd.matrix.initialFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -164,7 +174,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>3. Ay Sonrası Adedi *</Label>
+        {labelWithHelp('3. Ay Sonrası Adedi *', 'help.kkd.matrix.threeMonthQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -178,7 +188,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>3. Ay Frekans (Gün)</Label>
+        {labelWithHelp('3. Ay Frekans (Gün)', 'help.kkd.matrix.threeMonthFrequencyDays')}
         <Input
           type="number"
           value={formState.threeMonthFrequencyDays ?? ''}
@@ -187,14 +197,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        <Label>3. Ay Toplu Alım</Label>
+        {labelWithHelp('3. Ay Toplu Alım', 'help.kkd.matrix.threeMonthBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.threeMonthAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, threeMonthAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label>3. Ay Frekans Adedi</Label>
+        {labelWithHelp('3. Ay Frekans Adedi', 'help.kkd.matrix.threeMonthFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -204,7 +214,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Dönem Adedi *</Label>
+        {labelWithHelp('Rutin Dönem Adedi *', 'help.kkd.matrix.routineQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -214,7 +224,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Dönem Tipi *</Label>
+        {labelWithHelp('Rutin Dönem Tipi *', 'help.kkd.matrix.routinePeriodType')}
         <Input
           value={formState.routinePeriodType}
           onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodType: event.target.value || 'Year' }))}
@@ -223,7 +233,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Dönem Aralığı *</Label>
+        {labelWithHelp('Rutin Dönem Aralığı *', 'help.kkd.matrix.routinePeriodInterval')}
         <Input
           type="number"
           value={formState.routinePeriodInterval}
@@ -232,7 +242,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Frekans (Gün)</Label>
+        {labelWithHelp('Rutin Frekans (Gün)', 'help.kkd.matrix.routineFrequencyDays')}
         <Input
           type="number"
           value={formState.routineFrequencyDays ?? ''}
@@ -241,14 +251,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        <Label>Rutin Toplu Alım</Label>
+        {labelWithHelp('Rutin Toplu Alım', 'help.kkd.matrix.routineBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.routineAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, routineAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Frekans Adedi</Label>
+        {labelWithHelp('Rutin Frekans Adedi', 'help.kkd.matrix.routineFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -258,14 +268,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        <Label>Aktif</Label>
+        {labelWithHelp('Aktif', 'help.kkd.matrix.isActive')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
         </div>
       </div>
 
       <div className="space-y-3">
-        <Label>Zorunlu</Label>
+        {labelWithHelp('Zorunlu', 'help.kkd.matrix.isMandatory')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.isMandatory} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isMandatory: checked }))} />
         </div>

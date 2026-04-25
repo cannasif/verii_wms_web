@@ -296,63 +296,65 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent className="w-[calc(100vw-1rem)] max-h-[90vh] max-w-3xl gap-0 overflow-hidden p-0">
           <DialogHeader>
-            <DialogTitle>{editingItem ? t('common.edit') : t('common.add')}</DialogTitle>
+            <DialogTitle className="px-4 pt-4 sm:px-6 sm:pt-6">{editingItem ? t('common.edit') : t('common.add')}</DialogTitle>
           </DialogHeader>
-          {renderForm ? (
-            renderForm({ formState, setFormState, editingItem })
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {fields.map((field) => {
-                const rawValue = formState[field.key];
-                return (
-                  <div key={field.key} className={field.type === 'textarea' ? 'md:col-span-2 space-y-2' : 'space-y-2'}>
-                    <Label htmlFor={field.key}>
-                      {field.label}
-                      {field.required ? ' *' : ''}
-                    </Label>
-                    {field.type === 'textarea' ? (
-                      <Textarea
-                        id={field.key}
-                        value={typeof rawValue === 'string' ? rawValue : ''}
-                        placeholder={field.placeholder}
-                        onChange={(event) => setFormState((prev) => ({ ...prev, [field.key]: event.target.value }))}
-                      />
-                    ) : field.type === 'boolean' ? (
-                      <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
-                        <Switch
-                          checked={Boolean(rawValue)}
-                          onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field.key]: checked }))}
+          <div className="max-h-[calc(90vh-9rem)] overflow-y-auto px-4 py-4 sm:px-6">
+            {renderForm ? (
+              renderForm({ formState, setFormState, editingItem })
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {fields.map((field) => {
+                  const rawValue = formState[field.key];
+                  return (
+                    <div key={field.key} className={field.type === 'textarea' ? 'md:col-span-2 space-y-2' : 'space-y-2'}>
+                      <Label htmlFor={field.key}>
+                        {field.label}
+                        {field.required ? ' *' : ''}
+                      </Label>
+                      {field.type === 'textarea' ? (
+                        <Textarea
+                          id={field.key}
+                          value={typeof rawValue === 'string' ? rawValue : ''}
+                          placeholder={field.placeholder}
+                          onChange={(event) => setFormState((prev) => ({ ...prev, [field.key]: event.target.value }))}
                         />
-                      </div>
-                    ) : (
-                      <Input
-                        id={field.key}
-                        type={field.type}
-                        step={field.step}
-                        value={
-                          field.type === 'date'
-                            ? formatDateInput(rawValue)
-                            : rawValue == null
-                              ? ''
-                              : String(rawValue)
-                        }
-                        placeholder={field.placeholder}
-                        onChange={(event) => {
-                          const nextValue = field.type === 'number'
-                            ? (event.target.value === '' ? null : Number(event.target.value))
-                            : event.target.value;
-                          setFormState((prev) => ({ ...prev, [field.key]: nextValue }));
-                        }}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          <DialogFooter>
+                      ) : field.type === 'boolean' ? (
+                        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
+                          <Switch
+                            checked={Boolean(rawValue)}
+                            onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field.key]: checked }))}
+                          />
+                        </div>
+                      ) : (
+                        <Input
+                          id={field.key}
+                          type={field.type}
+                          step={field.step}
+                          value={
+                            field.type === 'date'
+                              ? formatDateInput(rawValue)
+                              : rawValue == null
+                                ? ''
+                                : String(rawValue)
+                          }
+                          placeholder={field.placeholder}
+                          onChange={(event) => {
+                            const nextValue = field.type === 'number'
+                              ? (event.target.value === '' ? null : Number(event.target.value))
+                              : event.target.value;
+                            setFormState((prev) => ({ ...prev, [field.key]: nextValue }));
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="border-t px-4 py-3 sm:px-6">
             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
               {t('common.cancel')}
             </Button>

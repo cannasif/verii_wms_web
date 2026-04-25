@@ -3483,5 +3483,39 @@
     "linesEmpty": "No lines found for this document.",
     "selectSingleDocument": "Select one document for line-based printing.",
     "printSettings": "Print settings"
+  },
+  "help": {
+    "kkd": {
+      "employee": {
+        "user": "This links the PPE card to a system user. First name and last name are filled from the selected user.",
+        "customer": "Select the customer/company the employee belongs to. This is shown on documents and reports.",
+        "employeeCode": "Enter the internal personnel or registry code used to identify the employee.",
+        "department": "Select the employee's department. The role list is filtered by this selection.",
+        "role": "Select the employee's actual role definition. PPE entitlement is calculated from role plus group code.",
+        "employmentStartDate": "Initial and 3-month entitlements are calculated from this date. A wrong date means a wrong entitlement result.",
+        "qrCode": "Unique QR value scanned in the field to select the employee quickly."
+      },
+      "matrix": {
+        "department": "Select the department this entitlement rule belongs to.",
+        "role": "Select the role definition the entitlement belongs to. The system always resolves entitlement by role and group code.",
+        "groupCode": "This must match the stock card group code exactly. Distribution checks entitlement through this group.",
+        "initialQuantity": "Total quantity the employee can receive for this group when first joining.",
+        "initialFrequencyDays": "If the initial entitlement is used in parts, enter the minimum day gap between issues. Leave empty for no frequency rule.",
+        "initialBulk": "When enabled, the full initial entitlement can be received in one issue. Otherwise it is limited by the frequency rule.",
+        "initialFrequencyQuantity": "If a frequency rule exists, this is the maximum quantity allowed in each frequency window.",
+        "threeMonthQuantity": "Extra entitlement that becomes available 3 months after employment start.",
+        "threeMonthFrequencyDays": "Minimum day gap between issues for the 3-month entitlement when used in parts.",
+        "threeMonthBulk": "When enabled, the full 3-month entitlement can be taken in one issue.",
+        "threeMonthFrequencyQuantity": "Maximum quantity allowed per frequency window for the 3-month entitlement.",
+        "routineQuantity": "Quantity granted in every recurring period after the initial and 3-month phases.",
+        "routinePeriodType": "Defines whether the recurring entitlement runs by day, month or year.",
+        "routinePeriodInterval": "Defines how often the recurring entitlement repeats. Example: year + 1 means every year, day + 20 means every 20 days.",
+        "routineFrequencyDays": "Minimum day gap between issues inside the recurring period when usage is partial.",
+        "routineBulk": "When enabled, the full recurring entitlement can be taken in one issue.",
+        "routineFrequencyQuantity": "Maximum quantity allowed per frequency window in the recurring period.",
+        "isActive": "Inactive rows are ignored by entitlement calculation.",
+        "isMandatory": "Enable this if the group is mandatory for occupational safety; it can be used in controls and reporting."
+      }
+    }
   }
 }
