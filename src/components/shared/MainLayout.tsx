@@ -278,26 +278,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             { title: t('sidebar.erpPrinterManagement'), href: '/erp/printer-management' },
           ]),
         },
-        {
-          title: t('sidebar.kkd'),
-          children: sortNavItems([
-            {
-              title: t('sidebar.kkdOrganizationGroup'),
-              children: sortNavItems([
-                { title: t('sidebar.kkdDepartments'), href: '/erp/kkd/departments' },
-                { title: t('sidebar.kkdRoles'), href: '/erp/kkd/roles' },
-                { title: t('sidebar.kkdEmployees'), href: '/erp/kkd/employees' },
-              ]),
-            },
-            {
-              title: t('sidebar.kkdRulesGroup'),
-              children: sortNavItems([
-                { title: t('sidebar.kkdEntitlements'), href: '/erp/kkd/entitlement-matrix' },
-                { title: t('sidebar.kkdAdditionalEntitlements'), href: '/erp/kkd/manual-overrides' },
-              ]),
-            },
-          ]),
-        },
       ]),
     };
 

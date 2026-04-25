@@ -149,6 +149,19 @@ export function PagedDataGrid<TRow, TKey extends string>({
     () => visibleColumnKeys ?? (orderedVisibleColumns.filter((key) => key !== 'actions') as TKey[]),
     [orderedVisibleColumns, visibleColumnKeys],
   );
+  const derivedFilterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () => columns
+      .filter((column) => column.key !== 'actions')
+      .map((column) => ({
+        value: column.key,
+        type: 'string',
+        labelKey: column.key,
+        label: column.label,
+      })),
+    [columns],
+  );
+  const resolvedFilterColumns = filterColumns ?? derivedFilterColumns;
+  const resolvedDefaultFilterColumn = defaultFilterColumn ?? resolvedFilterColumns[0]?.value ?? '';
 
   const resolvedActionBar = useMemo<DataTableActionBarProps | undefined>(
     () => actionBar ?? {
@@ -163,8 +176,8 @@ export function PagedDataGrid<TRow, TKey extends string>({
       exportColumns: exportColumns ?? [],
       exportRows: exportRows ?? [],
       getExportData,
-      filterColumns: filterColumns ?? [],
-      defaultFilterColumn: defaultFilterColumn ?? columns[0]?.key ?? '',
+      filterColumns: resolvedFilterColumns,
+      defaultFilterColumn: resolvedDefaultFilterColumn,
       draftFilterRows: draftFilterRows ?? [],
       onDraftFilterRowsChange: onDraftFilterRowsChange ?? (() => undefined),
       filterLogic,
@@ -188,6 +201,8 @@ export function PagedDataGrid<TRow, TKey extends string>({
       exportFileName,
       exportRows,
       filterColumns,
+      resolvedDefaultFilterColumn,
+      resolvedFilterColumns,
       filterLogic,
       getExportData,
       leftSlot,

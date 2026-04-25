@@ -11,6 +11,7 @@ export type FilterColumnConfig = {
   value: string;
   type: 'string' | 'number' | 'date' | 'boolean';
   labelKey: string;
+  label?: string;
 };
 
 export const STRING_OPERATORS = ['Contains', 'StartsWith', 'EndsWith', 'Equals'] as const;

@@ -210,15 +210,16 @@ function EmployeeForm({
 }
 
 export function KkdEmployeePage(): ReactElement {
+  const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'employeeCode', label: 'Personel Kodu' },
-    { key: 'firstName', label: 'Ad' },
-    { key: 'lastName', label: 'Soyad' },
-    { key: 'customerCode', label: 'Cari Kodu' },
-    { key: 'departmentName', label: 'Bölüm' },
-    { key: 'roleName', label: 'Görev' },
-    { key: 'isActive', label: 'Aktif' },
-  ], []);
+    { key: 'employeeCode', label: t('kkd.columns.employeeCode') },
+    { key: 'firstName', label: t('kkd.columns.firstName') },
+    { key: 'lastName', label: t('kkd.columns.lastName') },
+    { key: 'customerCode', label: t('kkd.columns.customerCode') },
+    { key: 'departmentName', label: t('kkd.columns.department') },
+    { key: 'roleName', label: t('kkd.columns.role') },
+    { key: 'isActive', label: t('common.active') },
+  ], [t]);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeDto>[] = [
     { key: 'userId', label: 'Sistem Kullanıcısı', type: 'number', required: true },
@@ -241,10 +242,10 @@ export function KkdEmployeePage(): ReactElement {
   return (
     <KkdCrudPage<KkdEmployeeDto, CreateKkdEmployeeDto, ColumnKey>
       pageKey="kkd-employees"
-      title="KKD Çalışan Kartları"
-      description="Çalışan kartlarını yönetin."
-      breadcrumbGroup="KKD"
-      breadcrumbCurrent="Çalışan Kartları"
+      title={t('kkd.pages.employeeCardsTitle')}
+      description={t('kkd.pages.employeeCardsDescription')}
+      breadcrumbGroup={t('sidebar.kkd')}
+      breadcrumbCurrent={t('kkd.pages.employeeCardsBreadcrumb')}
       columns={columns}
       fields={fields}
       initialForm={{

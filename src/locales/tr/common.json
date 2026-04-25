@@ -3517,5 +3517,64 @@
         "isMandatory": "Bu grup iş güvenliği açısından zorunlu ise işaretlenebilir; raporlama ve kontrol için kullanılır."
       }
     }
+  },
+  "kkd": {
+    "columns": {
+      "departmentCode": "Bölüm Kodu",
+      "departmentName": "Bölüm Adı",
+      "department": "Bölüm",
+      "roleCode": "Görev Kodu",
+      "roleName": "Görev Adı",
+      "role": "Görev",
+      "employeeCode": "Personel Kodu",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "customerCode": "Cari Kodu",
+      "groupCode": "Grup Kodu",
+      "initialIssue": "İlk Giriş",
+      "afterThreeMonths": "3. Ay",
+      "routine": "Rutin",
+      "period": "Dönem",
+      "employee": "Çalışan",
+      "extraEntitlement": "Ek Hak",
+      "consumed": "Kullanılan",
+      "startDate": "Başlangıç",
+      "endDate": "Bitiş",
+      "approver": "Onaylayan"
+    },
+    "pages": {
+      "departmentDefinitionsTitle": "KKD Bölüm Tanımları",
+      "departmentDefinitionsDescription": "Bölüm kayıtlarını yönetin.",
+      "departmentDefinitionsBreadcrumb": "Bölüm Tanımları",
+      "roleDefinitionsTitle": "KKD Görev Tanımları",
+      "roleDefinitionsDescription": "Görev kayıtlarını yönetin.",
+      "roleDefinitionsBreadcrumb": "Görev Tanımları",
+      "employeeCardsTitle": "KKD Çalışan Kartları",
+      "employeeCardsDescription": "Çalışan kartlarını yönetin.",
+      "employeeCardsBreadcrumb": "Çalışan Kartları",
+      "entitlementMatrixTitle": "KKD Görev Bazlı Hak Matrisi",
+      "entitlementMatrixDescription": "Görev ve grup bazında ilk giriş, 3 ay sonrası ve rutin dönem haklarını tanımlayın.",
+      "entitlementMatrixBreadcrumb": "Görev Bazlı Hak Matrisi",
+      "manualOverridesTitle": "KKD Manuel İstisnalar",
+      "manualOverridesDescription": "İstisnai çalışan ihtiyaçları için manuel ek hak kayıtlarını yönetin.",
+      "manualOverridesBreadcrumb": "Manuel İstisnalar"
+    },
+    "dialogs": {
+      "selectDepartment": "Bölüm Seç",
+      "selectEmployee": "Çalışan Seç",
+      "selectApprover": "Onaylayan Seç"
+    },
+    "placeholders": {
+      "selectDepartment": "Bölüm seçiniz",
+      "enterRoleCode": "Görev kodu giriniz",
+      "enterRoleName": "Görev adı giriniz",
+      "selectEmployee": "Çalışan seçiniz",
+      "selectStockGroup": "Stok grubu seçiniz",
+      "searchGroup": "Grup ara",
+      "selectUser": "Kullanıcı seçiniz"
+    },
+    "messages": {
+      "groupNotFound": "Grup bulunamadı"
+    }
   }
 }

@@ -285,28 +285,29 @@ function KkdEntitlementMatrixForm({
 }
 
 export function KkdEntitlementMatrixPage(): ReactElement {
+  const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'departmentName', label: 'Bölüm' },
-    { key: 'roleName', label: 'Görev' },
-    { key: 'groupCode', label: 'Grup Kodu' },
-    { key: 'initialIssueQuantity', label: 'İlk Giriş' },
-    { key: 'additionalAfterMonthsQuantity', label: '3. Ay' },
-    { key: 'routineQuantity', label: 'Rutin' },
-    { key: 'routinePeriodType', label: 'Dönem' },
-    { key: 'isActive', label: 'Aktif' },
-  ], []);
+    { key: 'departmentName', label: t('kkd.columns.department') },
+    { key: 'roleName', label: t('kkd.columns.role') },
+    { key: 'groupCode', label: t('kkd.columns.groupCode') },
+    { key: 'initialIssueQuantity', label: t('kkd.columns.initialIssue') },
+    { key: 'additionalAfterMonthsQuantity', label: t('kkd.columns.afterThreeMonths') },
+    { key: 'routineQuantity', label: t('kkd.columns.routine') },
+    { key: 'routinePeriodType', label: t('kkd.columns.period') },
+    { key: 'isActive', label: t('common.active') },
+  ], [t]);
 
   const fields: readonly KkdCrudField<CreateKkdEntitlementMatrixRowDto>[] = [
-    { key: 'groupCode', label: 'Grup Kodu', type: 'text', required: true },
+    { key: 'groupCode', label: t('kkd.columns.groupCode'), type: 'text', required: true },
   ];
 
   return (
     <KkdCrudPage<KkdEntitlementMatrixRowDto, CreateKkdEntitlementMatrixRowDto, ColumnKey>
       pageKey="kkd-entitlement-matrix"
-      title="KKD Görev Bazlı Hak Matrisi"
-      description="Görev ve grup bazında ilk giriş, 3 ay sonrası ve rutin dönem haklarını tanımlayın."
-      breadcrumbGroup="KKD"
-      breadcrumbCurrent="Görev Bazlı Hak Matrisi"
+      title={t('kkd.pages.entitlementMatrixTitle')}
+      description={t('kkd.pages.entitlementMatrixDescription')}
+      breadcrumbGroup={t('sidebar.kkd')}
+      breadcrumbCurrent={t('kkd.pages.entitlementMatrixBreadcrumb')}
       columns={columns}
       fields={fields}
       initialForm={{

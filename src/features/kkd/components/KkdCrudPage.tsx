@@ -18,6 +18,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
 import { toast } from 'sonner';
 import type { PagedParams, PagedResponse } from '@/types/api';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 
 type CrudFieldType = 'text' | 'number' | 'date' | 'textarea' | 'boolean';
 
@@ -159,6 +160,16 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     totalCount: range.total,
     defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
+  const filterColumns = useMemo<readonly FilterColumnConfig[]>(
+    () =>
+      columns.map((column) => ({
+        value: column.key,
+        type: 'string',
+        labelKey: column.key,
+        label: column.label,
+      })),
+    [columns],
+  );
 
   const renderSortIcon = (columnKey: TColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -283,6 +294,15 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('common.search'),
             }}
+            filterColumns={filterColumns}
+            defaultFilterColumn={filterColumns[0]?.value ?? ''}
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
             leftSlot={<VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" />}
             refresh={{
               onRefresh: () => {

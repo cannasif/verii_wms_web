@@ -3517,5 +3517,64 @@
         "isMandatory": "Enable this if the group is mandatory for occupational safety; it can be used in controls and reporting."
       }
     }
+  },
+  "kkd": {
+    "columns": {
+      "departmentCode": "Department code",
+      "departmentName": "Department name",
+      "department": "Department",
+      "roleCode": "Role code",
+      "roleName": "Role name",
+      "role": "Role",
+      "employeeCode": "Employee code",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "customerCode": "Customer code",
+      "groupCode": "Group code",
+      "initialIssue": "Initial issue",
+      "afterThreeMonths": "After 3 months",
+      "routine": "Routine",
+      "period": "Period",
+      "employee": "Employee",
+      "extraEntitlement": "Extra entitlement",
+      "consumed": "Consumed",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "approver": "Approver"
+    },
+    "pages": {
+      "departmentDefinitionsTitle": "PPE Department Definitions",
+      "departmentDefinitionsDescription": "Manage department records.",
+      "departmentDefinitionsBreadcrumb": "Department Definitions",
+      "roleDefinitionsTitle": "PPE Role Definitions",
+      "roleDefinitionsDescription": "Manage role records.",
+      "roleDefinitionsBreadcrumb": "Role Definitions",
+      "employeeCardsTitle": "PPE Employee Cards",
+      "employeeCardsDescription": "Manage employee cards.",
+      "employeeCardsBreadcrumb": "Employee Cards",
+      "entitlementMatrixTitle": "PPE Role Entitlement Matrix",
+      "entitlementMatrixDescription": "Define initial, 3-month and routine entitlements by role and group.",
+      "entitlementMatrixBreadcrumb": "Role Entitlement Matrix",
+      "manualOverridesTitle": "PPE Manual Overrides",
+      "manualOverridesDescription": "Manage manual extra entitlements for exceptional employee needs.",
+      "manualOverridesBreadcrumb": "Manual Overrides"
+    },
+    "dialogs": {
+      "selectDepartment": "Select department",
+      "selectEmployee": "Select employee",
+      "selectApprover": "Select approver"
+    },
+    "placeholders": {
+      "selectDepartment": "Select department",
+      "enterRoleCode": "Enter role code",
+      "enterRoleName": "Enter role name",
+      "selectEmployee": "Select employee",
+      "selectStockGroup": "Select stock group",
+      "searchGroup": "Search group",
+      "selectUser": "Select user"
+    },
+    "messages": {
+      "groupNotFound": "Group not found"
+    }
   }
 }

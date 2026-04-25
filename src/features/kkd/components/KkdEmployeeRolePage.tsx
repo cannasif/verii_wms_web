@@ -1,4 +1,5 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
@@ -16,18 +17,19 @@ function RoleForm({
   formState: CreateKkdEmployeeRoleDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEmployeeRoleDto>>;
 }): ReactElement {
+  const { t } = useTranslation('common');
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2 md:col-span-2">
-        <Label>Bölüm *</Label>
+        <Label>{t('kkd.columns.department')} *</Label>
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
-          title="Bölüm Seç"
+          title={t('kkd.dialogs.selectDepartment')}
           value={formState.departmentId ? `${formState.departmentId}` : null}
-          placeholder="Bölüm seçiniz"
+          placeholder={t('kkd.placeholders.selectDepartment')}
           queryKey={['kkd', 'role-form', 'departments']}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             kkdApi.getDepartments({ pageNumber, pageSize, search }, { signal })
@@ -39,22 +41,22 @@ function RoleForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="roleCode">Görev Kodu *</Label>
+        <Label htmlFor="roleCode">{t('kkd.columns.roleCode')} *</Label>
         <Input
           id="roleCode"
           value={formState.roleCode}
           onChange={(event) => setFormState((prev) => ({ ...prev, roleCode: event.target.value }))}
-          placeholder="Görev kodu giriniz"
+          placeholder={t('kkd.placeholders.enterRoleCode')}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="roleName">Görev Adı *</Label>
+        <Label htmlFor="roleName">{t('kkd.columns.roleName')} *</Label>
         <Input
           id="roleName"
           value={formState.roleName}
           onChange={(event) => setFormState((prev) => ({ ...prev, roleName: event.target.value }))}
-          placeholder="Görev adı giriniz"
+          placeholder={t('kkd.placeholders.enterRoleName')}
         />
       </div>
     </div>
@@ -62,27 +64,28 @@ function RoleForm({
 }
 
 export function KkdEmployeeRolePage(): ReactElement {
+  const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'departmentName', label: 'Bölüm' },
-    { key: 'roleCode', label: 'Görev Kodu' },
-    { key: 'roleName', label: 'Görev Adı' },
-    { key: 'isActive', label: 'Aktif' },
-  ], []);
+    { key: 'departmentName', label: t('kkd.columns.department') },
+    { key: 'roleCode', label: t('kkd.columns.roleCode') },
+    { key: 'roleName', label: t('kkd.columns.roleName') },
+    { key: 'isActive', label: t('common.active') },
+  ], [t]);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeRoleDto>[] = [
-    { key: 'departmentId', label: 'Bölüm', type: 'number', required: true },
-    { key: 'roleCode', label: 'Görev Kodu', type: 'text', required: true },
-    { key: 'roleName', label: 'Görev Adı', type: 'text', required: true },
-    { key: 'isActive', label: 'Aktif', type: 'boolean' },
+    { key: 'departmentId', label: t('kkd.columns.department'), type: 'number', required: true },
+    { key: 'roleCode', label: t('kkd.columns.roleCode'), type: 'text', required: true },
+    { key: 'roleName', label: t('kkd.columns.roleName'), type: 'text', required: true },
+    { key: 'isActive', label: t('common.active'), type: 'boolean' },
   ];
 
   return (
     <KkdCrudPage<KkdEmployeeRoleDto, CreateKkdEmployeeRoleDto, ColumnKey>
       pageKey="kkd-roles"
-      title="KKD Görev Tanımları"
-      description="Görev kayıtlarını yönetin."
-      breadcrumbGroup="KKD"
-      breadcrumbCurrent="Görev Tanımları"
+      title={t('kkd.pages.roleDefinitionsTitle')}
+      description={t('kkd.pages.roleDefinitionsDescription')}
+      breadcrumbGroup={t('sidebar.kkd')}
+      breadcrumbCurrent={t('kkd.pages.roleDefinitionsBreadcrumb')}
       columns={columns}
       fields={fields}
       initialForm={{ departmentId: 0, roleCode: '', roleName: '', isActive: true }}

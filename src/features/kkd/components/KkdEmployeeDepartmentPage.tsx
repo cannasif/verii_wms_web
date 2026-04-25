@@ -1,4 +1,5 @@
 import { type ReactElement, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeDepartmentDto, KkdEmployeeDepartmentDto, UpdateKkdEmployeeDepartmentDto } from '../types/kkd.types';
@@ -7,25 +8,26 @@ import type { PagedDataGridColumn } from '@/components/shared';
 type ColumnKey = 'departmentCode' | 'departmentName' | 'isActive';
 
 export function KkdEmployeeDepartmentPage(): ReactElement {
+  const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'departmentCode', label: 'Bölüm Kodu' },
-    { key: 'departmentName', label: 'Bölüm Adı' },
-    { key: 'isActive', label: 'Aktif' },
-  ], []);
+    { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
+    { key: 'departmentName', label: t('kkd.columns.departmentName') },
+    { key: 'isActive', label: t('common.active') },
+  ], [t]);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeDepartmentDto>[] = [
-    { key: 'departmentCode', label: 'Bölüm Kodu', type: 'text', required: true },
-    { key: 'departmentName', label: 'Bölüm Adı', type: 'text', required: true },
-    { key: 'isActive', label: 'Aktif', type: 'boolean' },
+    { key: 'departmentCode', label: t('kkd.columns.departmentCode'), type: 'text', required: true },
+    { key: 'departmentName', label: t('kkd.columns.departmentName'), type: 'text', required: true },
+    { key: 'isActive', label: t('common.active'), type: 'boolean' },
   ];
 
   return (
     <KkdCrudPage<KkdEmployeeDepartmentDto, CreateKkdEmployeeDepartmentDto, ColumnKey>
       pageKey="kkd-departments"
-      title="KKD Bölüm Tanımları"
-      description="Bölüm kayıtlarını yönetin."
-      breadcrumbGroup="KKD"
-      breadcrumbCurrent="Bölüm Tanımları"
+      title={t('kkd.pages.departmentDefinitionsTitle')}
+      description={t('kkd.pages.departmentDefinitionsDescription')}
+      breadcrumbGroup={t('sidebar.kkd')}
+      breadcrumbCurrent={t('kkd.pages.departmentDefinitionsBreadcrumb')}
       columns={columns}
       fields={fields}
       initialForm={{ departmentCode: '', departmentName: '', isActive: true }}
