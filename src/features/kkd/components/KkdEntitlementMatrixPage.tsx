@@ -27,11 +27,16 @@ type ColumnKey =
   | 'additionalAfterMonthsQuantity'
   | 'isActive';
 
-const PERIOD_OPTIONS = [
-  { value: 'Day', label: 'Günlük' },
-  { value: 'Month', label: 'Aylık' },
-  { value: 'Year', label: 'Yıllık' },
-] as const;
+function buildMatrixDefaults(departmentId: number, roleId: number): Pick<CreateKkdEntitlementMatrixRowDto, 'matrixCode' | 'matrixName'> {
+  if (!departmentId || !roleId) {
+    return { matrixCode: '', matrixName: '' };
+  }
+
+  return {
+    matrixCode: `KKD-${departmentId}-${roleId}`,
+    matrixName: `KKD ${departmentId}/${roleId}`,
+  };
+}
 
 function KkdEntitlementMatrixForm({
   formState,
@@ -53,16 +58,7 @@ function KkdEntitlementMatrixForm({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
-        Bu ekranda haklar kişi için değil, bölüm ve görev tanımı için tanımlanır. Çalışanlar bağlı oldukları görev matrisinden hak alır.
-      </div>
-      <div className="space-y-2">
-        <Label>Matris Kodu *</Label>
-        <Input value={formState.matrixCode} onChange={(event) => setFormState((prev) => ({ ...prev, matrixCode: event.target.value }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Matris Adı *</Label>
-        <Input value={formState.matrixName} onChange={(event) => setFormState((prev) => ({ ...prev, matrixName: event.target.value }))} />
+        Bu ekranda görev tanımı için sadece iki ana hak kuralı girilir: ilk alım adedi ve sonraki yıl adedi. Çalışan, bağlı olduğu bölüm ve görev üzerinden bu genel grup hakkını kullanır.
       </div>
 
       <div className="space-y-2">
@@ -83,6 +79,7 @@ function KkdEntitlementMatrixForm({
             ...prev,
             departmentId: item.id,
             roleId: 0,
+            ...buildMatrixDefaults(item.id, 0),
           }))}
         />
       </div>
@@ -108,7 +105,12 @@ function KkdEntitlementMatrixForm({
           }
           getKey={(item) => String(item.id)}
           getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
-          onSelect={(item) => setFormState((prev) => ({ ...prev, roleId: item.id }))}
+          disabled={!formState.departmentId}
+          onSelect={(item) => setFormState((prev) => ({
+            ...prev,
+            roleId: item.id,
+            ...buildMatrixDefaults(prev.departmentId, item.id),
+          }))}
         />
       </div>
 
@@ -131,60 +133,27 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Standart</Label>
-        <Input value={formState.standardCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, standardCode: event.target.value }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>İlk Giriş *</Label>
+        <Label>İlk Alım Adedi *</Label>
         <Input type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
       </div>
 
       <div className="space-y-2">
-        <Label>Rutin Dönem *</Label>
-        <SearchableSelect<{ value: string; label: string }>
-          value={formState.routinePeriodType}
-          onValueChange={(value) => setFormState((prev) => ({ ...prev, routinePeriodType: value }))}
-          options={PERIOD_OPTIONS.map((item) => ({ ...item }))}
-          getOptionValue={(item) => item.value}
-          getOptionLabel={(item) => item.label}
-          placeholder="Dönem seçiniz"
+        <Label>Sonraki Yıl Adedi *</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.routineQuantity}
+          onChange={(event) => setFormState((prev) => ({
+            ...prev,
+            routinePeriodType: 'Year',
+            routinePeriodInterval: 1,
+            routineQuantity: Number(event.target.value) || 0,
+            additionalAfterMonths: null,
+            additionalAfterMonthsQuantity: null,
+            annualIssueCount: null,
+            annualQuantity: null,
+          }))}
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Dönem Aralığı *</Label>
-        <Input type="number" value={formState.routinePeriodInterval} onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodInterval: Number(event.target.value) || 1 }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Rutin Adet *</Label>
-        <Input type="number" step="0.01" value={formState.routineQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantity: Number(event.target.value) || 0 }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Kaç Ay Sonra İlave</Label>
-        <Input type="number" value={formState.additionalAfterMonths ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, additionalAfterMonths: event.target.value ? Number(event.target.value) : null }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>İlave Adet</Label>
-        <Input type="number" step="0.01" value={formState.additionalAfterMonthsQuantity ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, additionalAfterMonthsQuantity: event.target.value ? Number(event.target.value) : null }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Yıllık Tekrar Sayısı</Label>
-        <Input type="number" value={formState.annualIssueCount ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, annualIssueCount: event.target.value ? Number(event.target.value) : null }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Yıllık Toplam Adet</Label>
-        <Input type="number" step="0.01" value={formState.annualQuantity ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, annualQuantity: event.target.value ? Number(event.target.value) : null }))} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Sıra</Label>
-        <Input type="number" value={formState.sortOrder} onChange={(event) => setFormState((prev) => ({ ...prev, sortOrder: Number(event.target.value) || 0 }))} />
       </div>
 
       <div className="space-y-3">
@@ -216,10 +185,10 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     { key: 'departmentName', label: 'Bölüm' },
     { key: 'roleName', label: 'Görev' },
     { key: 'groupCode', label: 'Grup Kodu' },
-    { key: 'initialIssueQuantity', label: 'İlk Giriş' },
-    { key: 'routinePeriodType', label: 'Rutin Dönem' },
-    { key: 'routineQuantity', label: 'Rutin Adet' },
-    { key: 'additionalAfterMonthsQuantity', label: 'İlave Adet' },
+    { key: 'initialIssueQuantity', label: 'İlk Alım' },
+    { key: 'routinePeriodType', label: 'Dönem' },
+    { key: 'routineQuantity', label: 'Sonraki Yıl' },
+    { key: 'additionalAfterMonthsQuantity', label: 'Ek Hak' },
     { key: 'isActive', label: 'Aktif' },
   ], []);
 
@@ -231,7 +200,7 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     <KkdCrudPage<KkdEntitlementMatrixRowDto, CreateKkdEntitlementMatrixRowDto, ColumnKey>
       pageKey="kkd-entitlement-matrix"
       title="KKD Görev Bazlı Hak Matrisi"
-      description="Bölüm ve görev tanımına göre KKD kurallarını yönetin."
+      description="Görev için ilk alım ve sonraki yıl hak adetlerini tanımlayın."
       breadcrumbGroup="KKD"
       breadcrumbCurrent="Görev Bazlı Hak Matrisi"
       columns={columns}
