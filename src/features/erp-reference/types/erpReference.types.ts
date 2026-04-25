@@ -20,7 +20,50 @@ export interface StockReferenceDto {
   unit?: string;
   grupKodu?: string;
   grupAdi?: string;
+  ureticiKodu?: string;
+  kod1?: string;
+  kod1Adi?: string;
+  kod2?: string;
+  kod2Adi?: string;
+  kod3?: string;
+  kod3Adi?: string;
+  kod4?: string;
+  kod4Adi?: string;
+  kod5?: string;
+  kod5Adi?: string;
   lastSyncDate?: string;
+}
+
+export interface StockDetailDto {
+  id: number;
+  stockId: number;
+  erpStockCode: string;
+  stockName: string;
+  htmlDescription: string;
+  technicalSpecsJson?: string;
+}
+
+export interface CreateStockDetailDto {
+  stockId: number;
+  htmlDescription: string;
+  technicalSpecsJson?: string;
+}
+
+export interface UpdateStockDetailDto {
+  stockId: number;
+  htmlDescription: string;
+  technicalSpecsJson?: string;
+}
+
+export interface StockImageDto {
+  id: number;
+  stockId: number;
+  erpStockCode: string;
+  stockName: string;
+  filePath: string;
+  altText?: string;
+  sortOrder: number;
+  isPrimary: boolean;
 }
 
 export interface WarehouseReferenceDto {

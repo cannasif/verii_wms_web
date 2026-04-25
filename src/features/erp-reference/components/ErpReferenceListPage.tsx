@@ -1,5 +1,5 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
-import { ArrowDown, ArrowUp, Database, RefreshCw } from 'lucide-react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Database, Eye, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { useErpReferenceQuery } from '../hooks/useErpReferenceQuery';
+import { StockMirrorDetailDialog } from './StockMirrorDetailDialog';
 import type {
   CustomerReferenceDto,
   ErpReferenceKind,
@@ -217,6 +218,7 @@ export function ErpReferenceListPage({ kind }: { kind: ErpReferenceKind }): Reac
   });
 
   const { data, isLoading, error, refetch } = useErpReferenceQuery(kind, pagedGrid.queryParams);
+  const [selectedStockId, setSelectedStockId] = useState<number | null>(null);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
     pageKey: config.pageKey,
     columns: config.columns.map(({ key, label }) => ({ key, label })),
@@ -308,6 +310,15 @@ export function ErpReferenceListPage({ kind }: { kind: ErpReferenceKind }): Reac
             rows={rows}
             rowKey={(row) => row.id}
             renderCell={config.renderCell}
+            onRowClick={kind === 'stock' ? (row) => setSelectedStockId(row.id) : undefined}
+            renderActionsCell={kind === 'stock' ? (row) => (
+              <div className="flex justify-end">
+                <Button type="button" variant="ghost" size="sm" onClick={(event) => { event.stopPropagation(); setSelectedStockId(row.id); }}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  Detay
+                </Button>
+              </div>
+            ) : undefined}
             sortBy={pagedGrid.sortBy}
             sortDirection={pagedGrid.sortDirection}
             onSort={pagedGrid.handleSort}
@@ -364,6 +375,16 @@ export function ErpReferenceListPage({ kind }: { kind: ErpReferenceKind }): Reac
           />
         </CardContent>
       </Card>
+
+      {kind === 'stock' ? (
+        <StockMirrorDetailDialog
+          stockId={selectedStockId}
+          open={selectedStockId !== null}
+          onOpenChange={(nextOpen) => {
+            if (!nextOpen) setSelectedStockId(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
