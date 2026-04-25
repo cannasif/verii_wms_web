@@ -85,20 +85,20 @@ export function AssignedProductionListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('production.assigned.title', { defaultValue: 'Atanmis Uretim Emirleri' }));
+    setPageTitle(t('production.assigned.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<AssignedProductionColumnKey>[]>(() => [
     { key: 'documentNo', label: t('common.documentNo') },
-    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Belge Tarihi' }) },
-    { key: 'mainStockCode', label: t('production.create.mainStockCode', { defaultValue: 'Ana Stok' }) },
-    { key: 'mainYapKod', label: t('production.create.mainYapKod', { defaultValue: 'Ana YapKod' }) },
-    { key: 'executionMode', label: t('production.create.executionMode', { defaultValue: 'Mod' }) },
-    { key: 'plannedQuantity', label: t('production.create.plannedQuantity', { defaultValue: 'Planlanan' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
-    { key: 'projectCode', label: t('common.projectCode', { defaultValue: 'Proje' }) },
-    { key: 'actions', label: t('common.actions', { defaultValue: 'Islem' }), sortable: false },
+    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }) },
+    { key: 'mainStockCode', label: t('production.create.mainStockCode', { defaultValue: 'Missing translation' }) },
+    { key: 'mainYapKod', label: t('production.create.mainYapKod', { defaultValue: 'Missing translation' }) },
+    { key: 'executionMode', label: t('production.create.executionMode', { defaultValue: 'Missing translation' }) },
+    { key: 'plannedQuantity', label: t('production.create.plannedQuantity', { defaultValue: 'Missing translation' }) },
+    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }) },
+    { key: 'projectCode', label: t('common.projectCode', { defaultValue: 'Missing translation' }) },
+    { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -201,17 +201,17 @@ export function AssignedProductionListPage(): ReactElement {
         renderSortIcon={renderSortIcon}
         isLoading={isLoading}
         isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('production.assigned.error', { defaultValue: 'Atanmis uretim emirleri yuklenemedi' })}
-        emptyText={t('production.assigned.noData', { defaultValue: 'Size atanmis bekleyen uretim emri bulunamadi' })}
+        errorText={error instanceof Error ? error.message : t('production.assigned.error', { defaultValue: 'Missing translation' })}
+        emptyText={t('production.assigned.noData', { defaultValue: 'Missing translation' })}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Islem' })}
+        actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)}>
-              {t('production.list.openDetail', { defaultValue: 'Detay' })}
+              {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
             </Button>
             <Button type="button" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/production/process/${row.id}`)}>
-              {t('common.start', { defaultValue: 'Baslat' })}
+              {t('common.start', { defaultValue: 'Missing translation' })}
             </Button>
           </div>
         )}
@@ -251,7 +251,7 @@ export function AssignedProductionListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('production.assigned.searchPlaceholder', { defaultValue: 'Belge no veya ana stok ara' }),
+            placeholder: t('production.assigned.searchPlaceholder', { defaultValue: 'Missing translation' }),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}

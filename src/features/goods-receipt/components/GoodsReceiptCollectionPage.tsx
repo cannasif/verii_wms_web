@@ -101,7 +101,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
   const handleBarcodeSearch = useCallback(() => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
       return;
     }
 
@@ -118,7 +118,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
   const handleCollect = (): void => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
       return;
     }
 
@@ -187,7 +187,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
   const handleComplete = (): void => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Bu işlem için yetkiniz yok.' }));
+      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
       return;
     }
 
@@ -427,15 +427,15 @@ export function GoodsReceiptCollectionPage(): ReactElement {
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
                   <div className="flex-1 space-y-2">
-                    <Label>{t('warehouse.details.targetCellCode', { defaultValue: 'Hedef Hücre' })}</Label>
+                    <Label>{t('warehouse.details.targetCellCode', { defaultValue: 'Missing translation' })}</Label>
                     <ShelfLookupCombobox
                       warehouseCode={selectedStock.depoKodu}
                       value={targetCellCode}
                       onValueChange={setTargetCellCode}
                       disabled={!permission.canUpdate}
-                      placeholder={t('warehouse.details.targetCellCodePlaceholder', { defaultValue: 'Hedef hücre seçin' })}
-                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Hücrelerde ara' })}
-                      emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Bu seçim için hedef hücre yok' })}
+                      placeholder={t('warehouse.details.targetCellCodePlaceholder', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
+                      emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Missing translation' })}
                     />
                   </div>
                   <div className="flex-1">

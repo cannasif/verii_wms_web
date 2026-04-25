@@ -35,7 +35,7 @@ export function ProductionDetailPage(): ReactElement {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    setPageTitle(t('production.detail.title', { defaultValue: 'Uretim Detayi' }));
+    setPageTitle(t('production.detail.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -95,52 +95,52 @@ export function ProductionDetailPage(): ReactElement {
 
   return (
     <FormPageShell
-      title={t('production.detail.title', { defaultValue: 'Uretim Detayi' })}
-      description={t('production.detail.subtitle', { defaultValue: 'Plan, emir, dependency ve bagli transferleri yonetim gorunumunde izleyin.' })}
+      title={t('production.detail.title', { defaultValue: 'Missing translation' })}
+      description={t('production.detail.subtitle', { defaultValue: 'Missing translation' })}
       actions={(
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Geri' })}</Button>
+          <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Missing translation' })}</Button>
           {canDeleteCurrentPlan ? (
             <Button
               variant="destructive"
               onClick={() => setDeleteDialogOpen(true)}
               disabled={deleteMutation.isPending}
             >
-              {t('common.delete', { defaultValue: 'Sil' })}
+              {t('common.delete', { defaultValue: 'Missing translation' })}
             </Button>
           ) : null}
           {headerId > 0 ? (
-            <Button onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Process Ekranina Git' })}</Button>
+            <Button onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Missing translation' })}</Button>
           ) : null}
         </div>
       )}
       isLoading={detailQuery.isLoading || transfersQuery.isLoading}
       isError={detailQuery.isError}
-      errorTitle={t('common.error', { defaultValue: 'Hata' })}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.detail.error', { defaultValue: 'Uretim detayi yuklenemedi' })}
+      errorTitle={t('common.error', { defaultValue: 'Missing translation' })}
+      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.detail.error', { defaultValue: 'Missing translation' })}
     >
       {detailQuery.data ? (
         <div className="space-y-6">
           <InfoCallout
-            title={t('production.detail.statusInfoTitle', { defaultValue: 'Durum ve izin bilgisi' })}
+            title={t('production.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
             body={
               !canUpdateProduction
                 ? t('production.detail.statusInfoNoUpdate')
                 : detailQuery.data.header.canDelete
-                  ? t('production.detail.statusInfoDraft', { defaultValue: 'Bu plan taslak durumda. Henüz sahada işlenmediyse düzenleme ekranına dönüp planı güncelleyebilirsiniz.' })
-                : (detailQuery.data.header.deleteBlockedReason || t('production.detail.statusInfoLocked', { defaultValue: 'Bu plan operasyonel akışa girmiş olabilir. Bu yüzden detail ekranı yalnızca izleme içindir; düzenleme kilitli tutulur.' }))
+                  ? t('production.detail.statusInfoDraft', { defaultValue: 'Missing translation' })
+                : (detailQuery.data.header.deleteBlockedReason || t('production.detail.statusInfoLocked', { defaultValue: 'Missing translation' }))
             }
           />
           <div className="grid gap-4 md:grid-cols-4">
             <Card><CardHeader><CardDescription>{t('common.documentNo')}</CardDescription><CardTitle>{detailQuery.data.header.documentNo}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('common.status', { defaultValue: 'Durum' })}</CardDescription><CardTitle>{detailQuery.data.header.status || '-'}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('production.create.executionMode', { defaultValue: 'Mod' })}</CardDescription><CardTitle>{detailQuery.data.header.executionMode || '-'}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('production.create.mainStockCode', { defaultValue: 'Ana Stok' })}</CardDescription><CardTitle>{detailQuery.data.header.mainStockCode || '-'}</CardTitle></CardHeader></Card>
+            <Card><CardHeader><CardDescription>{t('common.status', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.status || '-'}</CardTitle></CardHeader></Card>
+            <Card><CardHeader><CardDescription>{t('production.create.executionMode', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.executionMode || '-'}</CardTitle></CardHeader></Card>
+            <Card><CardHeader><CardDescription>{t('production.create.mainStockCode', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.mainStockCode || '-'}</CardTitle></CardHeader></Card>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('production.detail.headerAssignments', { defaultValue: 'Plan Atamalari' })}</CardTitle>
+              <CardTitle>{t('production.detail.headerAssignments', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               {detailQuery.data.headerAssignments.length === 0 ? <span className="text-sm text-slate-500">-</span> : null}
@@ -154,8 +154,8 @@ export function ProductionDetailPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('production.detail.orders', { defaultValue: 'Uretim Emirleri' })}</CardTitle>
-              <CardDescription>{t('production.detail.ordersSubtitle', { defaultValue: 'Emir, miktar, atama ve gerceklesen ozetini okuyun.' })}</CardDescription>
+              <CardTitle>{t('production.detail.orders', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('production.detail.ordersSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -194,8 +194,8 @@ export function ProductionDetailPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('production.detail.orderVariance', { defaultValue: 'Order Bazli Sapma Ozeti' })}</CardTitle>
-              <CardDescription>{t('production.detail.orderVarianceSubtitle', { defaultValue: 'Her emir icin output ve consumption plan-gerceklesen farkini izleyin.' })}</CardDescription>
+              <CardTitle>{t('production.detail.orderVariance', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('production.detail.orderVarianceSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {detailQuery.data.orders.map((order) => {
@@ -221,8 +221,8 @@ export function ProductionDetailPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('production.detail.orderTransferBreakdown', { defaultValue: 'Order Bazli Linked Transferler' })}</CardTitle>
-              <CardDescription>{t('production.detail.orderTransferBreakdownSubtitle', { defaultValue: 'Her emre bagli production transferleri ayri ayri izleyin.' })}</CardDescription>
+              <CardTitle>{t('production.detail.orderTransferBreakdown', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('production.detail.orderTransferBreakdownSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {detailQuery.data.orders.map((order) => {
@@ -272,7 +272,7 @@ export function ProductionDetailPage(): ReactElement {
           <div className="grid gap-6 xl:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>{t('production.detail.dependencies', { defaultValue: 'Dependency Haritasi' })}</CardTitle>
+                <CardTitle>{t('production.detail.dependencies', { defaultValue: 'Missing translation' })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -307,7 +307,7 @@ export function ProductionDetailPage(): ReactElement {
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('production.detail.transferLinks', { defaultValue: 'Bagli Production Transferler' })}</CardTitle>
+                <CardTitle>{t('production.detail.transferLinks', { defaultValue: 'Missing translation' })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -355,7 +355,7 @@ export function ProductionDetailPage(): ReactElement {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel', { defaultValue: 'Vazgec' })}
+              {t('common.cancel', { defaultValue: 'Missing translation' })}
             </Button>
             <Button
               variant="destructive"
@@ -365,7 +365,7 @@ export function ProductionDetailPage(): ReactElement {
               }}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? t('common.loading', { defaultValue: 'Yukleniyor...' }) : t('common.delete', { defaultValue: 'Sil' })}
+              {deleteMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('common.delete', { defaultValue: 'Missing translation' })}
             </Button>
           </DialogFooter>
         </DialogContent>

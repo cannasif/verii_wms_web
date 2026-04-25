@@ -465,8 +465,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
   useEffect(() => {
     setPageTitle(
       isEditMode
-        ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Barkod Designer Düzenle' })
-        : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Barkod Designer Oluştur' }),
+        ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
+        : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' }),
     );
     return () => setPageTitle(null);
   }, [isEditMode, setPageTitle, t]);
@@ -1644,12 +1644,12 @@ export function BarcodeDesignerFormPage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }) },
+          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
+          { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' }) },
           {
             label: isEditMode
-              ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Düzenle' })
-              : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Oluştur' }),
+              ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
+              : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' }),
             isActive: true,
           },
         ]}
@@ -1659,15 +1659,15 @@ export function BarcodeDesignerFormPage(): ReactElement {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'ERP' })}</Badge>
+              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
               <Badge variant="secondary">{isEditMode ? 'Update' : 'Create'}</Badge>
               <Badge variant="secondary">Designer</Badge>
             </div>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
                 {isEditMode
-                  ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Barkod Designer Düzenle' })
-                  : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Barkod Designer Oluştur' })}
+                  ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
+                  : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' })}
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 Template bilgisini yönetin, canvas üzerinde label tasarlayın, JSON draft saklayın ve preview/export akışını tek yerden yönetin.

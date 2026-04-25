@@ -277,7 +277,7 @@ export function PermissionGroupsPage(): ReactElement {
           renderSortIcon={renderSortIcon}
           isLoading={isLoading}
           isError={Boolean(error)}
-          errorText={t('common.errors.loadFailed', { defaultValue: 'Load failed' })}
+          errorText={t('common.errors.loadFailed', { defaultValue: 'Missing translation' })}
           emptyText={t('common.noData')}
           showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}

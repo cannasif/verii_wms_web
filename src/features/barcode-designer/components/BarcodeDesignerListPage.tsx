@@ -26,7 +26,7 @@ export function BarcodeDesignerListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }));
+    setPageTitle(t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -56,17 +56,17 @@ export function BarcodeDesignerListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.erp', { defaultValue: 'ERP' }) }, { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' }), isActive: true }]} />
+      <Breadcrumb items={[{ label: t('sidebar.erp', { defaultValue: 'Missing translation' }) }, { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' }), isActive: true }]} />
 
       <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'ERP' })}</Badge>
+              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
               <Badge variant="secondary">{t('barcodeDesigner.list.badge')}</Badge>
             </div>
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('sidebar.erpBarcodeDesigner', { defaultValue: 'Barkod Designer' })}</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' })}</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 {t('barcodeDesigner.list.description')}
               </p>

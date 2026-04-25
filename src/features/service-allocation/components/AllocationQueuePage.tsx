@@ -67,20 +67,20 @@ export function AllocationQueuePage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('serviceAllocation.allocationQueue.title', { defaultValue: 'Allocation Queue' }));
+    setPageTitle(t('serviceAllocation.allocationQueue.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'stockCode', label: t('serviceAllocation.stockCode', { defaultValue: 'Stock Code' }) },
-      { key: 'erpOrderNo', label: t('serviceAllocation.erpOrderNo', { defaultValue: 'ERP Order No' }) },
-      { key: 'erpOrderId', label: t('serviceAllocation.erpOrderId', { defaultValue: 'ERP Order Id' }) },
-      { key: 'customerCode', label: t('serviceAllocation.customerCode', { defaultValue: 'Customer' }) },
-      { key: 'requestedQuantity', label: t('serviceAllocation.quantity', { defaultValue: 'Requested' }) },
-      { key: 'allocatedQuantity', label: t('serviceAllocation.allocatedQuantity', { defaultValue: 'Allocated' }) },
-      { key: 'priorityNo', label: t('serviceAllocation.priority', { defaultValue: 'Priority' }) },
-      { key: 'status', label: t('serviceAllocation.status', { defaultValue: 'Status' }) },
+      { key: 'stockCode', label: t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' }) },
+      { key: 'erpOrderNo', label: t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' }) },
+      { key: 'erpOrderId', label: t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' }) },
+      { key: 'customerCode', label: t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' }) },
+      { key: 'requestedQuantity', label: t('serviceAllocation.quantity', { defaultValue: 'Missing translation' }) },
+      { key: 'allocatedQuantity', label: t('serviceAllocation.allocatedQuantity', { defaultValue: 'Missing translation' }) },
+      { key: 'priorityNo', label: t('serviceAllocation.priority', { defaultValue: 'Missing translation' }) },
+      { key: 'status', label: t('serviceAllocation.status', { defaultValue: 'Missing translation' }) },
     ],
     [t],
   );
@@ -107,7 +107,7 @@ export function AllocationQueuePage(): ReactElement {
     <div className="crm-page space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t('serviceAllocation.allocationQueue.title', { defaultValue: 'Allocation Queue' })}</CardTitle>
+          <CardTitle>{t('serviceAllocation.allocationQueue.title', { defaultValue: 'Missing translation' })}</CardTitle>
         </CardHeader>
         <CardContent>
           <PagedDataGrid<AllocationQueueRow, ColumnKey>
@@ -143,8 +143,8 @@ export function AllocationQueuePage(): ReactElement {
             renderSortIcon={renderSortIcon}
             isLoading={isLoading}
             isError={Boolean(error)}
-            errorText={t('serviceAllocation.allocationQueue.error', { defaultValue: 'Allocation queue could not be loaded.' })}
-            emptyText={t('serviceAllocation.allocationQueue.empty', { defaultValue: 'No allocation rows found.' })}
+            errorText={t('serviceAllocation.allocationQueue.error', { defaultValue: 'Missing translation' })}
+            emptyText={t('serviceAllocation.allocationQueue.empty', { defaultValue: 'Missing translation' })}
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -170,14 +170,14 @@ export function AllocationQueuePage(): ReactElement {
               value: pagedGrid.searchInput,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.allocationQueue.search', { defaultValue: 'Search allocation queue...' }),
+              placeholder: t('serviceAllocation.allocationQueue.search', { defaultValue: 'Missing translation' }),
             }}
             refresh={{
               onRefresh: () => {
                 void refetch();
               },
               isLoading: isFetching,
-              label: t('common.refresh', { defaultValue: 'Refresh' }),
+              label: t('common.refresh', { defaultValue: 'Missing translation' }),
             }}
           />
         </CardContent>

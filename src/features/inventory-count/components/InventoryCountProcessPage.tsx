@@ -55,7 +55,7 @@ export function InventoryCountProcessPage(): ReactElement {
   const [note, setNote] = useState('');
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.process.title', { defaultValue: 'Sayim Direkt Giris Yap' }));
+    setPageTitle(t('inventoryCount.process.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -133,12 +133,12 @@ export function InventoryCountProcessPage(): ReactElement {
   const saveEntryMutation = useMutation({
     mutationFn: async () => {
       if (!selectedLine) {
-        throw new Error(t('inventoryCount.process.errors.lineRequired', { defaultValue: 'Once sayim satiri secilmelidir.' }));
+        throw new Error(t('inventoryCount.process.errors.lineRequired', { defaultValue: 'Missing translation' }));
       }
 
       const quantity = Number(enteredQuantity);
       if (!Number.isFinite(quantity) || quantity < 0) {
-        throw new Error(t('inventoryCount.process.errors.quantityRequired', { defaultValue: 'Gecerli bir sayim miktari girin.' }));
+        throw new Error(t('inventoryCount.process.errors.quantityRequired', { defaultValue: 'Missing translation' }));
       }
 
       return await inventoryCountApi.addCountEntry({
@@ -152,7 +152,7 @@ export function InventoryCountProcessPage(): ReactElement {
       });
     },
     onSuccess: async () => {
-      toast.success(t('inventoryCount.process.success', { defaultValue: 'Sayim girisi kaydedildi.' }));
+      toast.success(t('inventoryCount.process.success', { defaultValue: 'Missing translation' }));
       setEnteredQuantity('');
       setNote('');
       await linesQuery.refetch();
@@ -160,7 +160,7 @@ export function InventoryCountProcessPage(): ReactElement {
       await allHeadersQuery.refetch();
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : t('inventoryCount.process.error', { defaultValue: 'Sayim girisi kaydedilemedi.' }));
+      toast.error(error instanceof Error ? error.message : t('inventoryCount.process.error', { defaultValue: 'Missing translation' }));
     },
   });
 
@@ -169,20 +169,20 @@ export function InventoryCountProcessPage(): ReactElement {
   return (
     <div className="space-y-6">
       <DetailPageShell
-        title={t('inventoryCount.process.title', { defaultValue: 'Sayim Direkt Giris Yap' })}
+        title={t('inventoryCount.process.title', { defaultValue: 'Missing translation' })}
         description={t('inventoryCount.process.description', {
-          defaultValue: 'Emri sec, sayacagin kalemi sec, miktari gir ve kaydet.',
+          defaultValue: 'Missing translation',
         })}
         isLoading={assignedHeadersQuery.isLoading || allHeadersQuery.isLoading}
         isError={Boolean(assignedHeadersQuery.error) || Boolean(allHeadersQuery.error)}
-        errorTitle={t('inventoryCount.process.loadErrorTitle', { defaultValue: 'Sayim ekranı yuklenemedi' })}
+        errorTitle={t('inventoryCount.process.loadErrorTitle', { defaultValue: 'Missing translation' })}
         errorDescription={(assignedHeadersQuery.error as Error)?.message || (allHeadersQuery.error as Error)?.message}
       >
         {!canUpdate ? (
           <Card className="mb-6 border-amber-200 bg-amber-50/80">
             <CardContent className="py-4 text-sm text-amber-900">
               {t('inventoryCount.process.permissionInfo', {
-                defaultValue: 'Bu sayimlari gorebiliyorsunuz ama sayim girisi yapma yetkiniz yok.',
+                defaultValue: 'Missing translation',
               })}
             </CardContent>
           </Card>
@@ -192,25 +192,25 @@ export function InventoryCountProcessPage(): ReactElement {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.process.pickHeaderTitle', { defaultValue: 'Sayim emrini sec' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.process.pickHeaderTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.process.pickHeaderDescription', {
-                  defaultValue: 'Sana atanmis ya da aktif olan bir sayim emrini sec ve asagidaki satirlara gec.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}</Label>
+                  <Label>{t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}</Label>
                   <PagedLookupDialog<InventoryCountHeader>
                     open={headerLookupOpen}
                     onOpenChange={setHeaderLookupOpen}
-                    title={t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}
+                    title={t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}
                     description={t('inventoryCount.process.pickHeaderDescription', {
-                      defaultValue: 'Sana atanmis ya da aktif olan bir sayim emrini sec ve asagidaki satirlara gec.',
+                      defaultValue: 'Missing translation',
                     })}
                     value={selectedHeaderLabel || (selectedHeaderId ? `#${selectedHeaderId}` : '')}
-                    placeholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Sayim emri sec' })}
-                    searchPlaceholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Sayim emri sec' })}
-                    emptyText={t('inventoryCount.process.emptyHeaderMessage', { defaultValue: 'Aktif sayim emri bulunamadi.' })}
+                    placeholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Missing translation' })}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Missing translation' })}
+                    emptyText={t('inventoryCount.process.emptyHeaderMessage', { defaultValue: 'Missing translation' })}
                     queryKey={['inventory-count-process-header-lookup', authUserId || 'all']}
                     fetchPage={({ pageNumber, pageSize, search }) =>
                       authUserId
@@ -236,11 +236,11 @@ export function InventoryCountProcessPage(): ReactElement {
                 {selectedHeader ? (
                   <div className="grid gap-3 rounded-xl border p-4 md:grid-cols-2">
                     <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countType', { defaultValue: 'Sayim tipi' })}</div>
+                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countType', { defaultValue: 'Missing translation' })}</div>
                       <div className="font-medium">{selectedHeader.countType}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countMode', { defaultValue: 'Sayim modu' })}</div>
+                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countMode', { defaultValue: 'Missing translation' })}</div>
                       <div className="font-medium">
                         {isBlindCount
                           ? t('inventoryCount.create.options.countMode.blind')
@@ -248,11 +248,11 @@ export function InventoryCountProcessPage(): ReactElement {
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lineCount', { defaultValue: 'Toplam satir' })}</div>
+                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lineCount', { defaultValue: 'Missing translation' })}</div>
                       <div className="font-medium">{selectedHeader.lineCount ?? 0}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.status', { defaultValue: 'Durum' })}</div>
+                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.status', { defaultValue: 'Missing translation' })}</div>
                       <div><Badge variant={statusTone(selectedHeader.status)}>{selectedHeader.status || 'Draft'}</Badge></div>
                     </div>
                   </div>
@@ -262,23 +262,23 @@ export function InventoryCountProcessPage(): ReactElement {
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.process.entryTitle', { defaultValue: 'Sayim girisi' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.process.entryTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.process.entryDescription', {
-                  defaultValue: 'Depocu icin kural basit: kalemi sec, saydigin miktari yaz, kaydet.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.line', { defaultValue: 'Sayim satiri' })}</Label>
+                  <Label>{t('inventoryCount.fields.line', { defaultValue: 'Missing translation' })}</Label>
                   <PagedLookupDialog<InventoryCountLine>
                     open={lineLookupOpen}
                     onOpenChange={setLineLookupOpen}
-                    title={t('inventoryCount.fields.line', { defaultValue: 'Sayim satiri' })}
-                    description={selectedHeaderLabel || t('inventoryCount.fields.header', { defaultValue: 'Sayim emri' })}
+                    title={t('inventoryCount.fields.line', { defaultValue: 'Missing translation' })}
+                    description={selectedHeaderLabel || t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}
                     value={selectedLineLabel || (selectedLineId ? `#${selectedLineId}` : '')}
-                    placeholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Sayim satiri sec' })}
-                    searchPlaceholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Sayim satiri sec' })}
-                    emptyText={t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Sayim girisi icin once bir satir secin.' })}
+                    placeholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Missing translation' })}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Missing translation' })}
+                    emptyText={t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Missing translation' })}
                     disabled={!selectedHeaderId}
                     queryKey={['inventory-count-process-line-lookup', selectedHeaderId || 'none']}
                     fetchPage={({ pageNumber, pageSize, search }) =>
@@ -301,53 +301,53 @@ export function InventoryCountProcessPage(): ReactElement {
                     </div>
                     <div className="mt-3 grid gap-3 md:grid-cols-3">
                       <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Beklenen' })}</div>
+                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Missing translation' })}</div>
                         <div className="font-medium">{isBlindCount ? '-' : formatNumber(selectedLine.expectedQuantity)}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lastCountedQuantity', { defaultValue: 'Son sayilan' })}</div>
+                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lastCountedQuantity', { defaultValue: 'Missing translation' })}</div>
                         <div className="font-medium">{formatNumber(selectedLine.countedQuantity)}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.unit', { defaultValue: 'Birim' })}</div>
+                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.unit', { defaultValue: 'Missing translation' })}</div>
                         <div className="font-medium">{selectedLine.unit || '-'}</div>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-                    {t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Sayim girisi icin once bir satir secin.' })}
+                    {t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Missing translation' })}
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.enteredQuantity', { defaultValue: 'Sayilan miktar' })}</Label>
+                  <Label>{t('inventoryCount.fields.enteredQuantity', { defaultValue: 'Missing translation' })}</Label>
                   <Input
                     type="number"
                     min="0"
                     step="0.001"
                     value={enteredQuantity}
                     onChange={(event) => setEnteredQuantity(event.target.value)}
-                    placeholder={t('inventoryCount.placeholders.enterQuantity', { defaultValue: 'Ornek: 12' })}
+                    placeholder={t('inventoryCount.placeholders.enterQuantity', { defaultValue: 'Missing translation' })}
                     disabled={!selectedLine || !canUpdate}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.note', { defaultValue: 'Not' })}</Label>
+                  <Label>{t('common.note', { defaultValue: 'Missing translation' })}</Label>
                   <Textarea
                     value={note}
                     onChange={(event) => setNote(event.target.value)}
                     rows={3}
-                    placeholder={t('inventoryCount.placeholders.enterNote', { defaultValue: 'Gerekirse kisa not dus' })}
+                    placeholder={t('inventoryCount.placeholders.enterNote', { defaultValue: 'Missing translation' })}
                     disabled={!selectedLine || !canUpdate}
                   />
                 </div>
 
                 <Button type="button" onClick={() => saveEntryMutation.mutate()} disabled={!selectedLine || !canUpdate || saveEntryMutation.isPending}>
                   {saveEntryMutation.isPending
-                    ? t('common.saving', { defaultValue: 'Kaydediliyor...' })
-                    : t('inventoryCount.process.saveEntry', { defaultValue: 'Sayim Girisini Kaydet' })}
+                    ? t('common.saving', { defaultValue: 'Missing translation' })
+                    : t('inventoryCount.process.saveEntry', { defaultValue: 'Missing translation' })}
                 </Button>
               </CardContent>
             </Card>
@@ -356,19 +356,19 @@ export function InventoryCountProcessPage(): ReactElement {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.process.lineListTitle', { defaultValue: 'Sayim satirlari' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.process.lineListTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.process.lineListDescription', {
-                  defaultValue: 'Kirmizi satirlar fark var demektir. Sistem otomatik tekrar sayim isteyebilir.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {linesQuery.isLoading ? (
                   <div className="rounded-xl border p-4 text-sm text-muted-foreground">
-                    {t('common.loading', { defaultValue: 'Yukleniyor...' })}
+                    {t('common.loading', { defaultValue: 'Missing translation' })}
                   </div>
                 ) : lineRows.length === 0 ? (
                   <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-                    {t('inventoryCount.process.noLines', { defaultValue: 'Bu sayim emrinde henuz satir bulunmuyor.' })}
+                    {t('inventoryCount.process.noLines', { defaultValue: 'Missing translation' })}
                   </div>
                 ) : (
                   lineRows.map((line) => {
@@ -391,15 +391,15 @@ export function InventoryCountProcessPage(): ReactElement {
                         </div>
                         <div className="mt-3 grid gap-3 md:grid-cols-3">
                           <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Beklenen' })}</div>
+                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Missing translation' })}</div>
                             <div className="font-medium">{isBlindCount ? '-' : formatNumber(line.expectedQuantity)}</div>
                           </div>
                           <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countedQuantity', { defaultValue: 'Sayilan' })}</div>
+                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countedQuantity', { defaultValue: 'Missing translation' })}</div>
                             <div className="font-medium">{formatNumber(line.countedQuantity)}</div>
                           </div>
                           <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.difference', { defaultValue: 'Fark' })}</div>
+                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.difference', { defaultValue: 'Missing translation' })}</div>
                             <div className="font-medium">{isBlindCount ? '-' : formatNumber(line.differenceQuantity)}</div>
                           </div>
                         </div>

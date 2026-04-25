@@ -216,7 +216,7 @@ export function InventoryCountCreatePage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.create.title', { defaultValue: 'Sayim Emrini Olusturma' }));
+    setPageTitle(t('inventoryCount.create.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -250,12 +250,12 @@ export function InventoryCountCreatePage(): ReactElement {
     },
     onSuccess: (header) => {
       toast.success(t('inventoryCount.create.success', {
-        defaultValue: 'Sayim emri kaydedildi. Satirlar hazirlandi, simdi direkt girise geciyorsunuz.',
+        defaultValue: 'Missing translation',
       }));
       navigate('/inventory-count/process?headerId=' + String(header.id));
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : t('inventoryCount.create.error', { defaultValue: 'Sayim emri kaydedilemedi.' }));
+      toast.error(error instanceof Error ? error.message : t('inventoryCount.create.error', { defaultValue: 'Missing translation' }));
     },
   });
 
@@ -338,19 +338,19 @@ export function InventoryCountCreatePage(): ReactElement {
   return (
     <div className="space-y-6">
       <FormPageShell
-        title={t('inventoryCount.create.title', { defaultValue: 'Sayim Emrini Olusturma' })}
+        title={t('inventoryCount.create.title', { defaultValue: 'Missing translation' })}
         description={t('inventoryCount.create.description', {
-          defaultValue: 'Ne sayacagini sec, emri kaydet, sonra direkt giris ekraninda miktarlari okut ya da yaz.',
+          defaultValue: 'Missing translation',
         })}
         actions={(
           <div className="flex items-center gap-2">
             <Button type="button" variant="outline" onClick={() => navigate('/inventory-count/list')}>
-              {t('common.cancel', { defaultValue: 'Vazgec' })}
+              {t('common.cancel', { defaultValue: 'Missing translation' })}
             </Button>
             <Button type="button" onClick={() => createMutation.mutate()} disabled={!canCreate || createMutation.isPending}>
               {createMutation.isPending
-                ? t('common.saving', { defaultValue: 'Kaydediliyor...' })
-                : t('inventoryCount.create.saveAndPrepare', { defaultValue: 'Kaydet ve Satirlari Hazirla' })}
+                ? t('common.saving', { defaultValue: 'Missing translation' })
+                : t('inventoryCount.create.saveAndPrepare', { defaultValue: 'Missing translation' })}
             </Button>
           </div>
         )}
@@ -359,7 +359,7 @@ export function InventoryCountCreatePage(): ReactElement {
           <Card className="mb-6 border-amber-200 bg-amber-50/80">
             <CardContent className="py-4 text-sm text-amber-900">
               {t('inventoryCount.create.permissionInfo', {
-                defaultValue: 'Bu ekrani gorebiliyorsunuz ama yeni sayim emri acma yetkiniz yok.',
+                defaultValue: 'Missing translation',
               })}
             </CardContent>
           </Card>
@@ -369,15 +369,15 @@ export function InventoryCountCreatePage(): ReactElement {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.whatToCountTitle', { defaultValue: 'Ne sayacagiz?' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.create.whatToCountTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.create.whatToCountDescription', {
-                  defaultValue: 'Depocunun en basta sadece sayimin turunu anlamasi yeterli.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.countType', { defaultValue: 'Sayim tipi' })}</Label>
+                    <Label>{t('inventoryCount.fields.countType', { defaultValue: 'Missing translation' })}</Label>
                     <Select
                       value={draft.countType}
                       onValueChange={(value) => setDraft((prev) => ({
@@ -397,7 +397,7 @@ export function InventoryCountCreatePage(): ReactElement {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.countMode', { defaultValue: 'Sayim modu' })}</Label>
+                    <Label>{t('inventoryCount.fields.countMode', { defaultValue: 'Missing translation' })}</Label>
                     <Select
                       value={draft.countMode}
                       onValueChange={(value) => setDraft((prev) => ({
@@ -428,42 +428,42 @@ export function InventoryCountCreatePage(): ReactElement {
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.headerInfoTitle', { defaultValue: 'Emir bilgileri' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.create.headerInfoTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.create.headerInfoDescription', {
-                  defaultValue: 'Belgeyi isimlendir, sonra hangi kapsamda sayacagini sec.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('common.documentNo', { defaultValue: 'Belge No' })}</Label>
+                    <Label>{t('common.documentNo', { defaultValue: 'Missing translation' })}</Label>
                     <Input value={draft.documentNo} onChange={(event) => setDraft((prev) => ({ ...prev, documentNo: event.target.value }))} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('common.documentDate', { defaultValue: 'Belge Tarihi' })}</Label>
+                    <Label>{t('common.documentDate', { defaultValue: 'Missing translation' })}</Label>
                     <Input type="date" value={draft.documentDate} onChange={(event) => setDraft((prev) => ({ ...prev, documentDate: event.target.value }))} />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.plannedStartDate', { defaultValue: 'Planlanan baslangic' })}</Label>
+                    <Label>{t('inventoryCount.fields.plannedStartDate', { defaultValue: 'Missing translation' })}</Label>
                     <Input type="date" value={draft.plannedStartDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedStartDate: event.target.value }))} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.plannedEndDate', { defaultValue: 'Planlanan bitis' })}</Label>
+                    <Label>{t('inventoryCount.fields.plannedEndDate', { defaultValue: 'Missing translation' })}</Label>
                     <Input type="date" value={draft.plannedEndDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedEndDate: event.target.value }))} />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.description', { defaultValue: 'Aciklama' })}</Label>
+                  <Label>{t('common.description', { defaultValue: 'Missing translation' })}</Label>
                   <Textarea value={draft.description1} onChange={(event) => setDraft((prev) => ({ ...prev, description1: event.target.value }))} rows={3} />
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.freezeMode', { defaultValue: 'Hareket kurali' })}</Label>
+                    <Label>{t('inventoryCount.fields.freezeMode', { defaultValue: 'Missing translation' })}</Label>
                     <Select
                       value={draft.freezeMode}
                       onValueChange={(value) => setDraft((prev) => ({
@@ -484,9 +484,9 @@ export function InventoryCountCreatePage(): ReactElement {
 
                   <div className="flex items-center justify-between rounded-xl border px-4 py-3">
                     <div className="space-y-1">
-                      <div className="text-sm font-medium">{t('inventoryCount.fields.isFirstCount', { defaultValue: 'Ilk sayim olarak ac' })}</div>
+                      <div className="text-sm font-medium">{t('inventoryCount.fields.isFirstCount', { defaultValue: 'Missing translation' })}</div>
                       <div className="text-xs text-muted-foreground">
-                        {t('inventoryCount.create.firstCountHint', { defaultValue: 'Genel acilis sayimiysa bunu acik birak.' })}
+                        {t('inventoryCount.create.firstCountHint', { defaultValue: 'Missing translation' })}
                       </div>
                     </div>
                     <Switch checked={draft.isFirstCount} onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, isFirstCount: checked }))} />
@@ -498,22 +498,22 @@ export function InventoryCountCreatePage(): ReactElement {
             {draft.countType !== 'Combined' ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('inventoryCount.create.scopeTitle', { defaultValue: 'Kapsami sec' })}</CardTitle>
+                  <CardTitle>{t('inventoryCount.create.scopeTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                   <CardDescription>{t('inventoryCount.create.scopeDescription', {
-                    defaultValue: 'Bu alanlar sayim turune gore otomatik anlam kazanir. Bos birakmaniz gereken alanlari sistem yok sayar.',
+                    defaultValue: 'Missing translation',
                   })}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}</Label>
+                    <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}</Label>
                     <PagedLookupDialog
                       open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse' } : null)}
-                      title={t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}
+                      title={t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}
                       value={draft.warehouseCode || null}
-                      placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
-                      searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
-                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Missing translation' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                       queryKey={['inventory-count-create', 'warehouse-paged']}
                       fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
                       getKey={(item) => String(item.id)}
@@ -522,15 +522,15 @@ export function InventoryCountCreatePage(): ReactElement {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}</Label>
+                    <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}</Label>
                     <PagedLookupDialog
                       open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'stock' } : null)}
-                      title={t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}
+                      title={t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}
                       value={draft.stockCode || null}
-                      placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
-                      searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
-                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Missing translation' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                       queryKey={['inventory-count-create', 'stock-paged']}
                       fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
                       getKey={(item) => String(item.id)}
@@ -539,15 +539,15 @@ export function InventoryCountCreatePage(): ReactElement {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}</Label>
+                    <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}</Label>
                     <PagedLookupDialog
                       open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod' } : null)}
-                      title={t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}
+                      title={t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}
                       value={draft.yapKod || null}
-                      placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
-                      searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
-                      emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                      placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'Missing translation' })}
+                      emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                       disabled={!draft.stockCode}
                       queryKey={['inventory-count-create', 'yapkod-paged', draft.stockCode]}
                       fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: draft.stockId ?? undefined }, { signal })}
@@ -557,12 +557,12 @@ export function InventoryCountCreatePage(): ReactElement {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Raf' })}</Label>
-                    <Input value={draft.rackCode} onChange={(event) => setDraft((prev) => ({ ...prev, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Raf kodu gir' })} />
+                    <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Missing translation' })}</Label>
+                    <Input value={draft.rackCode} onChange={(event) => setDraft((prev) => ({ ...prev, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Missing translation' })} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Hucre' })}</Label>
-                    <Input value={draft.cellCode} onChange={(event) => setDraft((prev) => ({ ...prev, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Hucre kodu gir' })} />
+                    <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Missing translation' })}</Label>
+                    <Input value={draft.cellCode} onChange={(event) => setDraft((prev) => ({ ...prev, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Missing translation' })} />
                   </div>
                 </CardContent>
               </Card>
@@ -570,12 +570,12 @@ export function InventoryCountCreatePage(): ReactElement {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-4">
                   <div>
-                    <CardTitle>{t('inventoryCount.create.combinedScopeTitle', { defaultValue: 'Birlesik kapsam satirlari' })}</CardTitle>
+                    <CardTitle>{t('inventoryCount.create.combinedScopeTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                     <CardDescription>{t('inventoryCount.create.combinedScopeDescription')}</CardDescription>
                   </div>
                   <Button type="button" variant="outline" onClick={addScope}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {t('inventoryCount.create.addScope', { defaultValue: 'Kapsam ekle' })}
+                    {t('inventoryCount.create.addScope', { defaultValue: 'Missing translation' })}
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -583,7 +583,7 @@ export function InventoryCountCreatePage(): ReactElement {
                     <div key={index} className="rounded-xl border p-4">
                       <div className="mb-4 flex items-center justify-between">
                         <div className="text-sm font-semibold">
-                          {t('inventoryCount.create.scopeRow', { defaultValue: 'Kapsam satiri {{index}}', index: index + 1 })}
+                          {t('inventoryCount.create.scopeRow', { defaultValue: 'Missing translation', index: index + 1 })}
                         </div>
                         {draft.scopes.length > 1 ? (
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeScope(index)}>
@@ -594,7 +594,7 @@ export function InventoryCountCreatePage(): ReactElement {
 
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.scopeType', { defaultValue: 'Kapsam tipi' })}</Label>
+                          <Label>{t('inventoryCount.fields.scopeType', { defaultValue: 'Missing translation' })}</Label>
                           <Select
                             value={scope.scopeType}
                             onValueChange={(value) => updateScope(index, (current) => ({ ...current, scopeType: value as InventoryCountScopeDraft['scopeType'] }))}
@@ -610,15 +610,15 @@ export function InventoryCountCreatePage(): ReactElement {
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}</Label>
+                          <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}</Label>
                           <PagedLookupDialog
                             open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse', scopeIndex: index } : null)}
-                            title={t('inventoryCount.fields.warehouse', { defaultValue: 'Depo' })}
+                            title={t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}
                             value={scope.warehouseCode || null}
-                            placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
-                            searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Depo sec' })}
-                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            placeholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Missing translation' })}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectWarehouse', { defaultValue: 'Missing translation' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                             queryKey={['inventory-count-create', 'scope-warehouse-paged', index]}
                             fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
                             getKey={(item) => String(item.id)}
@@ -627,15 +627,15 @@ export function InventoryCountCreatePage(): ReactElement {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}</Label>
+                          <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}</Label>
                           <PagedLookupDialog
                             open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'stock', scopeIndex: index } : null)}
-                            title={t('inventoryCount.fields.stock', { defaultValue: 'Stok' })}
+                            title={t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}
                             value={scope.stockCode || null}
-                            placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
-                            searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Stok sec' })}
-                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            placeholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Missing translation' })}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectStock', { defaultValue: 'Missing translation' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                             queryKey={['inventory-count-create', 'scope-stock-paged', index]}
                             fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
                             getKey={(item) => String(item.id)}
@@ -644,15 +644,15 @@ export function InventoryCountCreatePage(): ReactElement {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}</Label>
+                          <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}</Label>
                           <PagedLookupDialog
                             open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod', scopeIndex: index } : null)}
-                            title={t('inventoryCount.fields.yapKod', { defaultValue: 'YapKod' })}
+                            title={t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}
                             value={scope.yapKod || null}
-                            placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
-                            searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'YapKod sec' })}
-                            emptyText={t('common.noResults', { defaultValue: 'Kayit bulunamadi' })}
+                            placeholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'Missing translation' })}
+                            searchPlaceholder={t('inventoryCount.placeholders.selectYapKod', { defaultValue: 'Missing translation' })}
+                            emptyText={t('common.noResults', { defaultValue: 'Missing translation' })}
                             disabled={!scope.stockCode}
                             queryKey={['inventory-count-create', 'scope-yapkod-paged', index, scope.stockCode]}
                             fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId: scope.stockId ?? undefined }, { signal })}
@@ -662,12 +662,12 @@ export function InventoryCountCreatePage(): ReactElement {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Raf' })}</Label>
-                          <Input value={scope.rackCode} onChange={(event) => updateScope(index, (current) => ({ ...current, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Raf kodu gir' })} />
+                          <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Missing translation' })}</Label>
+                          <Input value={scope.rackCode} onChange={(event) => updateScope(index, (current) => ({ ...current, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Missing translation' })} />
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Hucre' })}</Label>
-                          <Input value={scope.cellCode} onChange={(event) => updateScope(index, (current) => ({ ...current, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Hucre kodu gir' })} />
+                          <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Missing translation' })}</Label>
+                          <Input value={scope.cellCode} onChange={(event) => updateScope(index, (current) => ({ ...current, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Missing translation' })} />
                         </div>
                       </div>
                     </div>
@@ -680,19 +680,19 @@ export function InventoryCountCreatePage(): ReactElement {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.readyTitle', { defaultValue: 'Emir hazirligi' })}</CardTitle>
+                <CardTitle>{t('inventoryCount.create.readyTitle', { defaultValue: 'Missing translation' })}</CardTitle>
                 <CardDescription>{t('inventoryCount.create.readyDescription', {
-                  defaultValue: 'Sistemin ne hazirlayacagini kaydetmeden once burada gorursun.',
+                  defaultValue: 'Missing translation',
                 })}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-950">
-                  <div className="font-semibold">{t('inventoryCount.create.summaryTitle', { defaultValue: 'Kayit ozetiniz' })}</div>
+                  <div className="font-semibold">{t('inventoryCount.create.summaryTitle', { defaultValue: 'Missing translation' })}</div>
                   <div className="mt-2 leading-6">{summaryText}</div>
                 </div>
 
                 <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-950">
-                  <div className="font-semibold">{t('inventoryCount.create.modeHintTitle', { defaultValue: 'Sayim modu neyi degistirir?' })}</div>
+                  <div className="font-semibold">{t('inventoryCount.create.modeHintTitle', { defaultValue: 'Missing translation' })}</div>
                   <ul className="mt-2 list-disc space-y-1 pl-4 leading-6">
                     <li>{draft.countMode === 'Blind' ? 'Depocu sistem miktarini gormez, sadece saydigini girer.' : 'Depocu beklenen miktari da gorur.'}</li>
                     <li>{draft.freezeMode === 'Hard' ? 'Sayim kapsami sirasinda hareketler sert sekilde engellenir.' : 'Hareketler tamamen durdurulmaz.'}</li>
@@ -700,11 +700,11 @@ export function InventoryCountCreatePage(): ReactElement {
                 </div>
 
                 <div className="rounded-xl border p-4 text-sm">
-                  <div className="font-semibold">{t('inventoryCount.create.nextStepTitle', { defaultValue: 'Kaydettikten sonra ne olacak?' })}</div>
+                  <div className="font-semibold">{t('inventoryCount.create.nextStepTitle', { defaultValue: 'Missing translation' })}</div>
                   <ol className="mt-2 list-decimal space-y-1 pl-4 leading-6 text-muted-foreground">
-                    <li>{t('inventoryCount.create.nextStepOne', { defaultValue: 'Sayim emri acilir.' })}</li>
-                    <li>{t('inventoryCount.create.nextStepTwo', { defaultValue: 'Satirlar otomatik hazirlanir.' })}</li>
-                    <li>{t('inventoryCount.create.nextStepThree', { defaultValue: 'Direkt giris ekranina gecip miktarlari kaydedersin.' })}</li>
+                    <li>{t('inventoryCount.create.nextStepOne', { defaultValue: 'Missing translation' })}</li>
+                    <li>{t('inventoryCount.create.nextStepTwo', { defaultValue: 'Missing translation' })}</li>
+                    <li>{t('inventoryCount.create.nextStepThree', { defaultValue: 'Missing translation' })}</li>
                   </ol>
                 </div>
               </CardContent>

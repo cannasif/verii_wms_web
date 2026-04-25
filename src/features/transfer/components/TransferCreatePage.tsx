@@ -161,12 +161,12 @@ export function TransferCreatePage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('transfer.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('transfer.create.mode.stock', { defaultValue: 'Stok bazlı' })}
+          {createMode === 'order' ? t('transfer.create.mode.order', { defaultValue: 'Missing translation' }) : t('transfer.create.mode.stock', { defaultValue: 'Missing translation' })}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('transfer.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('transfer.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('transfer.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('transfer.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

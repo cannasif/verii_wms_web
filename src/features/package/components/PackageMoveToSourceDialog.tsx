@@ -238,7 +238,7 @@ export function PackageMoveToSourceDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel', { defaultValue: 'Vazgeç' })}
+            {t('common.cancel', { defaultValue: 'Missing translation' })}
           </Button>
           <Button type="button" onClick={() => moveMutation.mutate()} disabled={moveMutation.isPending || selectedIds.size === 0}>
             {moveMutation.isPending

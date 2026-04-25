@@ -353,7 +353,7 @@ export function ProductionCreatePage(): ReactElement {
   const priorityLabel = (value: number): string => priorityOptions.find((item) => item.value === value)?.label ?? 'Normal';
 
   useEffect(() => {
-    setPageTitle(isEditMode ? t('production.create.editTitle', { defaultValue: 'Uretim Planini Duzenle' }) : t('production.create.title'));
+    setPageTitle(isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title'));
     return () => setPageTitle(null);
   }, [isEditMode, setPageTitle, t]);
 
@@ -380,10 +380,10 @@ export function ProductionCreatePage(): ReactElement {
   );
   const plannerSteps = useMemo(
     () => ([
-      { label: t('production.create.planner.steps.header', { defaultValue: 'Plan Temeli' }), description: t('production.create.planner.steps.headerDesc', { defaultValue: 'Ne uretecegini ve kac adet olacagini belirle' }) },
-      { label: t('production.create.planner.steps.stages', { defaultValue: 'Asamalar' }), description: t('production.create.planner.steps.stagesDesc', { defaultValue: 'Uretimi hangi asamalara bolecegini kurgula' }) },
-      { label: t('production.create.planner.steps.materials', { defaultValue: 'Cikti ve Tuketim' }), description: t('production.create.planner.steps.materialsDesc', { defaultValue: 'Her asama icin ne uretilip ne tuketilecegini yaz' }) },
-      { label: t('production.create.planner.steps.flow', { defaultValue: 'Akis ve Atama' }), description: t('production.create.planner.steps.flowDesc', { defaultValue: 'Seri, paralel ve sorumlu dagilimini netlestir' }) },
+      { label: t('production.create.planner.steps.header', { defaultValue: 'Missing translation' }), description: t('production.create.planner.steps.headerDesc', { defaultValue: 'Missing translation' }) },
+      { label: t('production.create.planner.steps.stages', { defaultValue: 'Missing translation' }), description: t('production.create.planner.steps.stagesDesc', { defaultValue: 'Missing translation' }) },
+      { label: t('production.create.planner.steps.materials', { defaultValue: 'Missing translation' }), description: t('production.create.planner.steps.materialsDesc', { defaultValue: 'Missing translation' }) },
+      { label: t('production.create.planner.steps.flow', { defaultValue: 'Missing translation' }), description: t('production.create.planner.steps.flowDesc', { defaultValue: 'Missing translation' }) },
     ]),
     [t],
   );
@@ -434,7 +434,7 @@ export function ProductionCreatePage(): ReactElement {
     mutationFn: () => (isEditMode ? productionApi.updateProductionPlan(editId, draft) : productionApi.createProductionPlan(draft)),
     onSuccess: () => {
       toast.success(isEditMode
-        ? t('production.create.updateSuccess', { defaultValue: 'Uretim plani guncellendi' })
+        ? t('production.create.updateSuccess', { defaultValue: 'Missing translation' })
         : t('production.create.success'));
       navigate('/production/list');
     },
@@ -811,27 +811,27 @@ export function ProductionCreatePage(): ReactElement {
       <Tabs value={erpFetchMode} onValueChange={(value) => setErpFetchMode(value as 'workOrder' | 'stock')} className="gap-2">
         <TabsList className="grid h-9 grid-cols-2 p-0.5">
           <TabsTrigger className="px-2.5 text-xs" value="workOrder">
-            {t('production.create.erp.fetchByWorkOrder', { defaultValue: 'Is emrinden getir' })}
+            {t('production.create.erp.fetchByWorkOrder', { defaultValue: 'Missing translation' })}
           </TabsTrigger>
           <TabsTrigger className="px-2.5 text-xs" value="stock">
-            {t('production.create.erp.fetchByStock', { defaultValue: 'Stok bilgisinden getir' })}
+            {t('production.create.erp.fetchByStock', { defaultValue: 'Missing translation' })}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="workOrder" className="space-y-3">
           <PlannerHintCard
-            title={t('production.create.erp.fetchByWorkOrder', { defaultValue: 'Is emrinden getir' })}
+            title={t('production.create.erp.fetchByWorkOrder', { defaultValue: 'Missing translation' })}
             body={t('production.create.erp.fetchByWorkOrderDescription', {
-              defaultValue: 'ERP tarafinda hazir bir is emri varsa sadece is emrini secin. Sistem gerekli alt kirilimlari taslak olarak forma getirir.',
+              defaultValue: 'Missing translation',
             })}
             tone="sky"
           />
           <div className="grid gap-3 md:grid-cols-[1.3fr_0.7fr]">
-            <Field label={t('production.create.mainOrderNo', { defaultValue: 'Ana Is Emri No' })}>
+            <Field label={t('production.create.mainOrderNo', { defaultValue: 'Missing translation' })}>
               <Input
                 value={erpInput.orderNo}
                 onChange={(e) => setErpInput((prev) => ({ ...prev, orderNo: e.target.value }))}
-                placeholder={t('production.create.mainOrderNoPlaceholder', { defaultValue: 'Is emri no ile alanlari doldurun' })}
+                placeholder={t('production.create.mainOrderNoPlaceholder', { defaultValue: 'Missing translation' })}
               />
             </Field>
             <div className="flex items-end">
@@ -850,9 +850,9 @@ export function ProductionCreatePage(): ReactElement {
 
         <TabsContent value="stock" className="space-y-3">
           <PlannerHintCard
-            title={t('production.create.erp.fetchByStock', { defaultValue: 'Stok bilgisinden getir' })}
+            title={t('production.create.erp.fetchByStock', { defaultValue: 'Missing translation' })}
             body={t('production.create.erp.fetchByStockDescription', {
-              defaultValue: 'Hazir bir is emri yoksa ana urunu, varsa yapkodunu ve miktari secin. Sistem stok bilgisinden uygun uretim taslagini getirir.',
+              defaultValue: 'Missing translation',
             })}
             tone="sky"
           />
@@ -862,11 +862,11 @@ export function ProductionCreatePage(): ReactElement {
                 open={erpStockLookupOpen}
                 onOpenChange={setErpStockLookupOpen}
                 title={t('production.create.mainStockCode')}
-                description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                description={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
                 value={selectedErpStockLabel || erpInput.stockCode}
-                placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
-                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                 queryKey={['production-create', 'erp-stock']}
                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                   lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -894,9 +894,9 @@ export function ProductionCreatePage(): ReactElement {
                 title={t('production.create.mainYapKod')}
                 description={erpInput.stockCode || t('production.create.mainStockCode')}
                 value={selectedErpYapKodLabel || erpInput.yapKod}
-                placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
-                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
-                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                 disabled={!erpInput.stockId}
                 queryKey={['production-create', 'erp-yapkod', erpInput.stockId ?? 'none']}
                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -935,8 +935,8 @@ export function ProductionCreatePage(): ReactElement {
   return (
     <div className="space-y-4">
       <FormPageShell
-        title={isEditMode ? t('production.create.editTitle', { defaultValue: 'Uretim Planini Duzenle' }) : t('production.create.title')}
-        description={isEditMode ? t('production.create.editSubtitle', { defaultValue: 'Sadece draft durumundaki ve islem gormemis planlari guncelleyebilirsiniz.' }) : t('production.create.subtitle')}
+        title={isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title')}
+        description={isEditMode ? t('production.create.editSubtitle', { defaultValue: 'Missing translation' }) : t('production.create.subtitle')}
         isLoading={editDetailQuery.isLoading}
         isError={editDetailQuery.isError}
         errorTitle={t('common.error')}
@@ -951,7 +951,7 @@ export function ProductionCreatePage(): ReactElement {
               {t('common.clear')}
             </Button>
             <Button type="button" size="sm" onClick={() => createMutation.mutate()} disabled={!canSaveProduction || createMutation.isPending || draft.orders.length === 0}>
-              {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Guncelle' }) : t('common.save')}
+              {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : t('common.save')}
             </Button>
           </div>
         )}
@@ -965,8 +965,8 @@ export function ProductionCreatePage(): ReactElement {
           ) : null}
           {isEditMode ? (
             <InfoCallout
-              title={t('production.create.editModeTitle', { defaultValue: 'Kayit guncelleme modu' })}
-              body={t('production.create.editModeBody', { defaultValue: 'Bu plan daha once kaydedildi, burada guncelliyorsunuz. Kaydettiginizde draft plani yeni bir kayit acmadan mevcut haliyle guncelleyecegiz.' })}
+              title={t('production.create.editModeTitle', { defaultValue: 'Missing translation' })}
+              body={t('production.create.editModeBody', { defaultValue: 'Missing translation' })}
             />
           ) : null}
           <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
@@ -980,8 +980,8 @@ export function ProductionCreatePage(): ReactElement {
           <Tabs value={editorMode} onValueChange={(value) => setEditorMode(value as 'planner' | 'advanced')} className="gap-3 space-y-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <TabsList className="h-8 p-0.5">
-                <TabsTrigger className="px-2.5 text-xs" value="planner">{t('production.create.plannerTab', { defaultValue: 'Planlamaci Modu' })}</TabsTrigger>
-                <TabsTrigger className="px-2.5 text-xs" value="advanced">{t('production.create.advancedTab', { defaultValue: 'Gelismis Teknik Mod' })}</TabsTrigger>
+                <TabsTrigger className="px-2.5 text-xs" value="planner">{t('production.create.plannerTab', { defaultValue: 'Missing translation' })}</TabsTrigger>
+                <TabsTrigger className="px-2.5 text-xs" value="advanced">{t('production.create.advancedTab', { defaultValue: 'Missing translation' })}</TabsTrigger>
               </TabsList>
               <Badge className="text-xs font-normal" variant="secondary">
                 {t('production.create.review.source')}: {draft.source === 'erp' ? t('production.create.review.sourceErp') : t('production.create.review.sourceManual')}
@@ -991,24 +991,24 @@ export function ProductionCreatePage(): ReactElement {
             <TabsContent value="planner" className="mt-4 space-y-4">
               <Card className="gap-4 py-4">
                 <CardHeader>
-                  <CardTitle className="text-base">{t('production.create.planner.title', { defaultValue: 'Uretim Planlama Akisi' })}</CardTitle>
-                  <CardDescription>{t('production.create.planner.subtitle', { defaultValue: 'Planlamacinin once urunu, sonra asamalari, en son akis ve sorumlulari kurmasi icin sade akisi takip edin.' })}</CardDescription>
+                  <CardTitle className="text-base">{t('production.create.planner.title', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardDescription>{t('production.create.planner.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <InfoCallout
-                    title={t('production.create.info.overviewTitle', { defaultValue: 'Bu ekran ne yapiyor?' })}
-                    body={t('production.create.info.overviewBody', { defaultValue: 'Bu ekran once ana urunu ve miktari secmenizi, sonra uretimi asamalara bolmenizi, en son da hangi asamanin once veya ayni anda ilerleyecegini belirlemenizi saglar. Kayit aninda sistem plani uretim emirlerine cevirir.' })}
+                    title={t('production.create.info.overviewTitle', { defaultValue: 'Missing translation' })}
+                    body={t('production.create.info.overviewBody', { defaultValue: 'Missing translation' })}
                   />
                   {plannerStepNotes[plannerStep as 1 | 2 | 3 | 4].length > 0 ? (
                     <PlannerHintCard
-                      title={t('production.create.planner.stepMissingTitle', { defaultValue: 'Bu adimda tamamlanmasi gerekenler' })}
+                      title={t('production.create.planner.stepMissingTitle', { defaultValue: 'Missing translation' })}
                       body={plannerStepNotes[plannerStep as 1 | 2 | 3 | 4].map((item) => `• ${item}`).join('\n')}
                       tone="amber"
                     />
                   ) : (
                     <PlannerHintCard
-                      title={t('production.create.planner.stepReadyTitle', { defaultValue: 'Bu adim tamam gibi gorunuyor' })}
-                      body={t('production.create.planner.stepReadyBody', { defaultValue: 'Zorunlu alanlar dolu. Isterseniz bir sonraki adıma gecebilirsiniz.' })}
+                      title={t('production.create.planner.stepReadyTitle', { defaultValue: 'Missing translation' })}
+                      body={t('production.create.planner.stepReadyBody', { defaultValue: 'Missing translation' })}
                       tone="sky"
                     />
                   )}
@@ -1019,10 +1019,10 @@ export function ProductionCreatePage(): ReactElement {
                   />
                   <div className="flex flex-wrap justify-between gap-2">
                     <Button type="button" size="sm" variant="outline" onClick={() => setPlannerStep((prev) => Math.max(prev - 1, 1))} disabled={plannerStep === 1}>
-                      {t('common.back', { defaultValue: 'Geri' })}
+                      {t('common.back', { defaultValue: 'Missing translation' })}
                     </Button>
                     <Button type="button" size="sm" variant="outline" onClick={() => setPlannerStep((prev) => Math.min(prev + 1, plannerSteps.length))} disabled={plannerStep === plannerSteps.length}>
-                      {t('common.next', { defaultValue: 'Ileri' })}
+                      {t('common.next', { defaultValue: 'Missing translation' })}
                     </Button>
                   </div>
                 </CardContent>
@@ -1032,13 +1032,13 @@ export function ProductionCreatePage(): ReactElement {
                 <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
                   <Card className="gap-4 py-4">
                     <CardHeader>
-                      <CardTitle className="text-base">{t('production.create.planner.header.title', { defaultValue: 'Ne Uretecegiz?' })}</CardTitle>
-                      <CardDescription>{t('production.create.planner.header.subtitle', { defaultValue: 'Planin ana urununu, miktarini ve kaynagini secin.' })}</CardDescription>
+                      <CardTitle className="text-base">{t('production.create.planner.header.title', { defaultValue: 'Missing translation' })}</CardTitle>
+                      <CardDescription>{t('production.create.planner.header.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InfoCallout
-                        title={t('production.create.info.headerTitle', { defaultValue: 'Ana urun secimi nasil dusunulmeli?' })}
-                        body={t('production.create.info.headerBody', { defaultValue: 'Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz.' })}
+                        title={t('production.create.info.headerTitle', { defaultValue: 'Missing translation' })}
+                        body={t('production.create.info.headerBody', { defaultValue: 'Missing translation' })}
                       />
                       <Tabs className="gap-2" value={mode} onValueChange={(value) => handleModeChange(value as 'manual' | 'erp')}>
                         <TabsList className="h-8 p-0.5">
@@ -1047,7 +1047,7 @@ export function ProductionCreatePage(): ReactElement {
                         </TabsList>
                         <TabsContent value="manual" className="space-y-3">
                           <PlannerHintCard
-                            title={t('production.create.modeManual', { defaultValue: 'Manuel Planlama' })}
+                            title={t('production.create.modeManual', { defaultValue: 'Missing translation' })}
                             body={t('production.create.modeManualDescription')}
                           />
                         </TabsContent>
@@ -1065,11 +1065,11 @@ export function ProductionCreatePage(): ReactElement {
                             open={mainStockLookupOpen}
                             onOpenChange={setMainStockLookupOpen}
                             title={t('production.create.mainStockCode')}
-                            description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                            description={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
                             value={selectedMainStockLabel || draft.header.mainStockCode}
-                            placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
-                            searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                            emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                            placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                            searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                            emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                             queryKey={['production-create', 'main-stock']}
                             fetchPage={({ pageNumber, pageSize, search, signal }) =>
                               lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1094,9 +1094,9 @@ export function ProductionCreatePage(): ReactElement {
                             title={t('production.create.mainYapKod')}
                             description={draft.header.mainStockCode || t('production.create.mainStockCode')}
                             value={selectedMainYapKodLabel || draft.header.mainYapKod}
-                            placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
-                            searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
-                            emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                            placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                            searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                            emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                             disabled={!draft.header.mainStockId}
                             queryKey={['production-create', 'main-yapkod', draft.header.mainStockId ?? 'none']}
                             fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -1136,17 +1136,17 @@ export function ProductionCreatePage(): ReactElement {
                   <Card className="gap-4 py-4">
                     <CardHeader>
                       <CardTitle className="text-base">{t('production.create.readiness.title')}</CardTitle>
-                      <CardDescription>{t('production.create.planner.header.side', { defaultValue: 'Planin dogru kurulmasi icin ilk kontrol noktalari.' })}</CardDescription>
+                      <CardDescription>{t('production.create.planner.header.side', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <PlannerHintCard
-                        title={t('production.create.planner.modeHintTitle', { defaultValue: 'Plan modu ne demek?' })}
+                        title={t('production.create.planner.modeHintTitle', { defaultValue: 'Missing translation' })}
                         body={
                           draft.header.executionMode === 'Serial'
-                            ? t('production.create.planner.serialHint', { defaultValue: 'Seri modda bir asama bitmeden sonraki asama baslamaz.' })
+                            ? t('production.create.planner.serialHint', { defaultValue: 'Missing translation' })
                             : draft.header.executionMode === 'Parallel'
-                            ? t('production.create.planner.parallelHint', { defaultValue: 'Paralel modda asamalar ayni anda ilerleyebilir.' })
-                            : t('production.create.planner.hybridHint', { defaultValue: 'Karma modda bazi asamalar ayni anda, bazi asamalar sirayla ilerler.' })
+                            ? t('production.create.planner.parallelHint', { defaultValue: 'Missing translation' })
+                            : t('production.create.planner.hybridHint', { defaultValue: 'Missing translation' })
                         }
                         tone="amber"
                       />
@@ -1169,13 +1169,13 @@ export function ProductionCreatePage(): ReactElement {
                 <div className="space-y-4">
                   <Card className="gap-4 py-4">
                     <CardHeader>
-                      <CardTitle className="text-base">{t('production.create.planner.stageTemplates.title', { defaultValue: 'Hazir Asama Kurgulari' })}</CardTitle>
-                      <CardDescription>{t('production.create.planner.stageTemplates.subtitle', { defaultValue: 'Planlamaciya hiz kazandirmak icin hazir iskeletler sunuyoruz. Gerekirse sonra duzenlenir.' })}</CardDescription>
+                      <CardTitle className="text-base">{t('production.create.planner.stageTemplates.title', { defaultValue: 'Missing translation' })}</CardTitle>
+                      <CardDescription>{t('production.create.planner.stageTemplates.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-2 md:grid-cols-3">
-                      <Button type="button" size="sm" variant="outline" onClick={seedSingleStagePlan}>{t('production.create.planner.stageTemplates.single', { defaultValue: 'Tek Asamali Plan' })}</Button>
-                      <Button type="button" size="sm" variant="outline" onClick={seedSerialFlowPlan}>{t('production.create.planner.stageTemplates.serial', { defaultValue: '2 Asamali Seri Plan' })}</Button>
-                      <Button type="button" size="sm" variant="outline" onClick={seedParallelFlowPlan}>{t('production.create.planner.stageTemplates.parallel', { defaultValue: 'Paralel Hazirlik + Son Montaj' })}</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={seedSingleStagePlan}>{t('production.create.planner.stageTemplates.single', { defaultValue: 'Missing translation' })}</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={seedSerialFlowPlan}>{t('production.create.planner.stageTemplates.serial', { defaultValue: 'Missing translation' })}</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={seedParallelFlowPlan}>{t('production.create.planner.stageTemplates.parallel', { defaultValue: 'Missing translation' })}</Button>
                     </CardContent>
                   </Card>
 
@@ -1183,14 +1183,14 @@ export function ProductionCreatePage(): ReactElement {
                     <CardHeader>
                       <SectionHeader
                         title={t('production.create.orders.title')}
-                        description={t('production.create.planner.ordersGuide', { defaultValue: 'Her kart tek bir uretim asamasidir. Planlamaci bu kartlari asama mantigiyla doldurur.' })}
+                        description={t('production.create.planner.ordersGuide', { defaultValue: 'Missing translation' })}
                         action={<Button type="button" size="sm" variant="outline" onClick={addOrder}>{t('production.create.addOrder')}</Button>}
                       />
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InfoCallout
-                        title={t('production.create.info.stageTitle', { defaultValue: 'Asama nedir?' })}
-                        body={t('production.create.info.stageBody', { defaultValue: 'Her kart tek bir uretim asamasidir. Ornek: govde hazirlama, montaj, paketleme. Seri modda bir asama bitmeden sonraki baslamaz. Paralel veya karma modda ayni sequence numarasina sahip asamalar birlikte ilerleyebilir.' })}
+                        title={t('production.create.info.stageTitle', { defaultValue: 'Missing translation' })}
+                        body={t('production.create.info.stageBody', { defaultValue: 'Missing translation' })}
                       />
                       <p className="text-xs leading-snug text-muted-foreground">{t('production.create.planner.dragReorderHint')}</p>
                       <div className="flex flex-col gap-2" role="list">
@@ -1246,12 +1246,12 @@ export function ProductionCreatePage(): ReactElement {
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                       <div className="min-w-0 space-y-0.5">
                                         <CardTitle className="text-base">{order.orderNo || t('production.create.orderDraftLabel', { index: index + 1 })}</CardTitle>
-                                        <CardDescription>{t('production.create.planner.stageCardHint', { defaultValue: 'Asamanin urunu, miktari ve akistaki yeri burada belirlenir.' })}</CardDescription>
+                                        <CardDescription>{t('production.create.planner.stageCardHint', { defaultValue: 'Missing translation' })}</CardDescription>
                                       </div>
                                       <div className="flex shrink-0 flex-wrap items-center gap-1">
                                         <Badge className="text-xs font-normal" variant="secondary">{t('production.create.orderBadge', { index: index + 1 })}</Badge>
                                         <Badge className="text-xs font-normal" variant="outline">
-                                          {t('production.create.planner.flowBadge', { defaultValue: 'Akis' })}: {order.sequenceNo ?? index + 1}
+                                          {t('production.create.planner.flowBadge', { defaultValue: 'Missing translation' })}: {order.sequenceNo ?? index + 1}
                                           {order.parallelGroupNo ? ` / P${order.parallelGroupNo}` : ''}
                                         </Badge>
                                         <Button
@@ -1275,39 +1275,39 @@ export function ProductionCreatePage(): ReactElement {
                               {isStagePanelExpanded(order.localId) ? (
                           <CardContent className="space-y-3 pt-0">
                             <InfoCallout
-                              title={t('production.create.planner.stageSimpleTitle', { defaultValue: 'Bu asamayi basitce kurun' })}
-                              body={t('production.create.planner.stageSimpleBody', { defaultValue: 'Asama tipi secin, bu asamanin ne uretecegini yazin, sonra da once mi ayni anda mi yoksa sonra mi ilerleyecegini secin. Sistem teknik baglantiyi arka planda kurar.' })}
+                              title={t('production.create.planner.stageSimpleTitle', { defaultValue: 'Missing translation' })}
+                              body={t('production.create.planner.stageSimpleBody', { defaultValue: 'Missing translation' })}
                             />
                             <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200/70 bg-slate-50/70 p-2.5 text-xs dark:border-white/10 dark:bg-white/5">
                               <Badge className="text-xs font-normal" variant={index === 0 ? 'default' : 'secondary'}>
                                 {index === 0
-                                  ? t('production.create.planner.firstStage', { defaultValue: 'Ilk asama' })
+                                  ? t('production.create.planner.firstStage', { defaultValue: 'Missing translation' })
                                   : order.parallelGroupNo === draft.orders[index - 1]?.parallelGroupNo && order.sequenceNo === draft.orders[index - 1]?.sequenceNo
-                                    ? t('production.create.planner.parallelStage', { defaultValue: 'Oncekiyle ayni anda' })
-                                    : t('production.create.planner.afterStage', { defaultValue: 'Oncekinden sonra' })}
+                                    ? t('production.create.planner.parallelStage', { defaultValue: 'Missing translation' })
+                                    : t('production.create.planner.afterStage', { defaultValue: 'Missing translation' })}
                               </Badge>
                               <span className="text-muted-foreground">
-                                {t('production.create.planner.flowBadge', { defaultValue: 'Akis' })}: {order.sequenceNo ?? index + 1}
+                                {t('production.create.planner.flowBadge', { defaultValue: 'Missing translation' })}: {order.sequenceNo ?? index + 1}
                                 {order.parallelGroupNo ? ` / P${order.parallelGroupNo}` : ''}
                               </span>
                             </div>
                             <div className="grid gap-3 md:grid-cols-3">
-                              <Field label={t('production.create.planner.stagePreset', { defaultValue: 'Bu asama ne yapiyor?' })}>
+                              <Field label={t('production.create.planner.stagePreset', { defaultValue: 'Missing translation' })}>
                                 <Select onValueChange={(value) => applyStagePreset(order.localId, value as (typeof stagePresetOptions)[number]['value'])}>
-                                  <SelectTrigger className="w-full"><SelectValue placeholder={t('production.create.planner.stagePresetPlaceholder', { defaultValue: 'Asama tipini secin' })} /></SelectTrigger>
+                                  <SelectTrigger className="w-full"><SelectValue placeholder={t('production.create.planner.stagePresetPlaceholder', { defaultValue: 'Missing translation' })} /></SelectTrigger>
                                   <SelectContent>{stagePresetOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
                                 </Select>
                               </Field>
-                                <Field label={t('production.create.planner.flowChoice', { defaultValue: 'Akista yeri ne olsun?' })}>
+                                <Field label={t('production.create.planner.flowChoice', { defaultValue: 'Missing translation' })}>
                                 <div className="flex flex-wrap gap-1.5">
                                   <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'first')}>
-                                    {t('production.create.planner.firstStage', { defaultValue: 'Ilk asama' })}
+                                    {t('production.create.planner.firstStage', { defaultValue: 'Missing translation' })}
                                   </Button>
                                   <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'parallel')} disabled={index === 0}>
-                                    {t('production.create.planner.parallelStage', { defaultValue: 'Oncekiyle ayni anda' })}
+                                    {t('production.create.planner.parallelStage', { defaultValue: 'Missing translation' })}
                                   </Button>
                                   <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'after')} disabled={index === 0}>
-                                    {t('production.create.planner.afterStage', { defaultValue: 'Oncekinden sonra' })}
+                                    {t('production.create.planner.afterStage', { defaultValue: 'Missing translation' })}
                                   </Button>
                                 </div>
                               </Field>
@@ -1316,8 +1316,8 @@ export function ProductionCreatePage(): ReactElement {
                               </Field>
                             </div>
                             <div className="grid gap-3 md:grid-cols-4">
-                              <Field label={<>{t('production.create.planner.stageName', { defaultValue: 'Asama adi' })}<RequiredMark /></>}>
-                                <Input value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} placeholder={t('production.create.planner.stageNamePlaceholder', { defaultValue: 'Ornek: Govde Hazirlama, Son Montaj' })} />
+                              <Field label={<>{t('production.create.planner.stageName', { defaultValue: 'Missing translation' })}<RequiredMark /></>}>
+                                <Input value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} placeholder={t('production.create.planner.stageNamePlaceholder', { defaultValue: 'Missing translation' })} />
                               </Field>
                               <Field label={<>{t('production.create.producedStockCode')}<RequiredMark /></>}>
                                 <PagedLookupDialog<StockLookup>
@@ -1326,9 +1326,9 @@ export function ProductionCreatePage(): ReactElement {
                                   title={t('production.create.producedStockCode')}
                                   description={order.orderNo || t('production.create.orderPlaceholder')}
                                   value={getLookupLabel(`planner-order-stock-${order.localId}`, order.producedStockCode)}
-                                  placeholder={t('production.create.productSelect', { defaultValue: 'Uretilecek stok secin' })}
-                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                   queryKey={['production-create', 'planner-order-stock', order.localId]}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                     lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1356,9 +1356,9 @@ export function ProductionCreatePage(): ReactElement {
                                   title={t('production.create.producedYapKod')}
                                   description={order.producedStockCode || t('production.create.producedStockCode')}
                                   value={getLookupLabel(`planner-order-yapkod-${order.localId}`, order.producedYapKod)}
-                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                   disabled={!order.producedStockId}
                                   queryKey={['production-create', 'planner-order-yapkod', order.localId, order.producedStockId ?? 'none']}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -1386,9 +1386,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.sourceWarehouse')}
                                 description={order.orderNo || t('production.create.orderPlaceholder')}
                                 value={getLookupLabel(`planner-order-source-warehouse-${order.localId}`, order.sourceWarehouseCode)}
-                                placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
-                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'planner-order-source-warehouse', order.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -1408,9 +1408,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.targetWarehouse')}
                                 description={order.orderNo || t('production.create.orderPlaceholder')}
                                 value={getLookupLabel(`planner-order-target-warehouse-${order.localId}`, order.targetWarehouseCode)}
-                                placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
-                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'planner-order-target-warehouse', order.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -1429,7 +1429,7 @@ export function ProductionCreatePage(): ReactElement {
                               return stageNotes.length > 0 ? (
                                 <div className="md:col-span-2">
                                   <PlannerHintCard
-                                    title={t('production.create.planner.stageMissingTitle', { defaultValue: 'Bu asamada eksik kalanlar' })}
+                                    title={t('production.create.planner.stageMissingTitle', { defaultValue: 'Missing translation' })}
                                     body={stageNotes.map((item) => `• ${item}`).join('\n')}
                                     tone="amber"
                                   />
@@ -1437,8 +1437,8 @@ export function ProductionCreatePage(): ReactElement {
                               ) : (
                                 <div className="md:col-span-2">
                                   <PlannerHintCard
-                                    title={t('production.create.planner.stageReadyTitle', { defaultValue: 'Bu asama gecmeye hazir' })}
-                                    body={t('production.create.planner.stageReadyBody', { defaultValue: 'Asama adi, uretilecek stok ve miktar tamam. Isterseniz bir sonraki asamaya gecebilirsiniz.' })}
+                                    title={t('production.create.planner.stageReadyTitle', { defaultValue: 'Missing translation' })}
+                                    body={t('production.create.planner.stageReadyBody', { defaultValue: 'Missing translation' })}
                                     tone="sky"
                                   />
                                 </div>
@@ -1460,16 +1460,16 @@ export function ProductionCreatePage(): ReactElement {
                   <Card className="gap-4 py-4">
                     <CardHeader>
                       <CardTitle className="text-base">{t('production.create.outputs.title')}</CardTitle>
-                      <CardDescription>{t('production.create.planner.outputsGuide', { defaultValue: 'Her asamanin ne uretecegini planlayin. Gerekirse ayni asamaya birden fazla cikti ekleyebilirsiniz.' })}</CardDescription>
+                      <CardDescription>{t('production.create.planner.outputsGuide', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InfoCallout
-                        title={t('production.create.info.outputTitle', { defaultValue: 'Cikti neyi anlatir?' })}
-                        body={t('production.create.info.outputBody', { defaultValue: 'Cikti, ilgili asama sonunda elde edilen urundur. Ara mamul olabilir, nihai mamul olabilir. Burada planlanan miktar yazilir; gercekte ne kadar uretildigi process ekraninda kaydedilir.' })}
+                        title={t('production.create.info.outputTitle', { defaultValue: 'Missing translation' })}
+                        body={t('production.create.info.outputBody', { defaultValue: 'Missing translation' })}
                       />
                       {plannerStepNotes[3].some((item) => item.startsWith('Cikti') || item.includes('cikti satiri')) ? (
                         <PlannerHintCard
-                          title={t('production.create.planner.outputsMissingTitle', { defaultValue: 'Cikti tarafinda eksik kalanlar' })}
+                          title={t('production.create.planner.outputsMissingTitle', { defaultValue: 'Missing translation' })}
                           body={plannerStepNotes[3].filter((item) => item.startsWith('Cikti') || item.includes('cikti satiri')).map((item) => `• ${item}`).join('\n')}
                           tone="amber"
                         />
@@ -1492,9 +1492,9 @@ export function ProductionCreatePage(): ReactElement {
                                   title={t('production.create.columns.stock')}
                                   description={order.orderNo || t('production.create.orderPlaceholder')}
                                   value={getLookupLabel(`planner-output-stock-${row.localId}`, row.stockCode)}
-                                  placeholder={t('production.create.productSelect', { defaultValue: 'Urun secin' })}
-                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                   queryKey={['production-create', 'planner-output-stock', row.localId]}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                     lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1517,12 +1517,12 @@ export function ProductionCreatePage(): ReactElement {
                                 <PagedLookupDialog<YapKodLookup>
                                   open={activeLookupKey === `planner-output-yapkod-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-output-yapkod-${row.localId}` : null)}
-                                  title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                  title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
                                   description={row.stockCode || t('production.create.columns.stock')}
                                   value={getLookupLabel(`planner-output-yapkod-${row.localId}`, row.yapKod)}
-                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                   disabled={!row.stockId}
                                   queryKey={['production-create', 'planner-output-yapkod', row.localId, row.stockId ?? 'none']}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -1552,16 +1552,16 @@ export function ProductionCreatePage(): ReactElement {
                   <Card className="gap-4 py-4">
                     <CardHeader>
                       <CardTitle className="text-base">{t('production.create.consumptions.title')}</CardTitle>
-                      <CardDescription>{t('production.create.planner.consumptionsGuide', { defaultValue: 'Her asamanin ne tuketecegini planlayin. Gercekte kullanilan seri daha sonra operasyon sirasinda secilir.' })}</CardDescription>
+                      <CardDescription>{t('production.create.planner.consumptionsGuide', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InfoCallout
-                        title={t('production.create.info.consumptionTitle', { defaultValue: 'Tuketim neyi anlatir?' })}
-                        body={t('production.create.info.consumptionBody', { defaultValue: 'Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir.' })}
+                        title={t('production.create.info.consumptionTitle', { defaultValue: 'Missing translation' })}
+                        body={t('production.create.info.consumptionBody', { defaultValue: 'Missing translation' })}
                       />
                       {plannerStepNotes[3].some((item) => item.startsWith('Tuketim')) ? (
                         <PlannerHintCard
-                          title={t('production.create.planner.consumptionsMissingTitle', { defaultValue: 'Tuketim tarafinda kontrol edilmesi gerekenler' })}
+                          title={t('production.create.planner.consumptionsMissingTitle', { defaultValue: 'Missing translation' })}
                           body={plannerStepNotes[3].filter((item) => item.startsWith('Tuketim')).map((item) => `• ${item}`).join('\n')}
                           tone="sky"
                         />
@@ -1571,7 +1571,7 @@ export function ProductionCreatePage(): ReactElement {
                           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                             <div className="min-w-0">
                               <div className="text-sm font-medium">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
-                              <div className="text-xs text-muted-foreground">{t('production.create.planner.consumptionForStage', { defaultValue: 'Bu asama icin gerekli tuketimler' })}</div>
+                              <div className="text-xs text-muted-foreground">{t('production.create.planner.consumptionForStage', { defaultValue: 'Missing translation' })}</div>
                             </div>
                             <Button type="button" size="sm" variant="outline" onClick={() => addConsumptionForOrder(order.localId)}>{t('production.create.addConsumption')}</Button>
                           </div>
@@ -1584,9 +1584,9 @@ export function ProductionCreatePage(): ReactElement {
                                   title={t('production.create.sourceStock')}
                                   description={order.orderNo || t('production.create.orderPlaceholder')}
                                   value={getLookupLabel(`planner-consumption-stock-${row.localId}`, row.stockCode)}
-                                  placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Tuketilecek stok secin' })}
-                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                  placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                   queryKey={['production-create', 'planner-consumption-stock', row.localId]}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                     lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1609,12 +1609,12 @@ export function ProductionCreatePage(): ReactElement {
                                 <PagedLookupDialog<YapKodLookup>
                                   open={activeLookupKey === `planner-consumption-yapkod-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-consumption-yapkod-${row.localId}` : null)}
-                                  title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                  title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
                                   description={row.stockCode || t('production.create.sourceStock')}
                                   value={getLookupLabel(`planner-consumption-yapkod-${row.localId}`, row.yapKod)}
-                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                  placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                  searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                  emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                   disabled={!row.stockId}
                                   queryKey={['production-create', 'planner-consumption-yapkod', row.localId, row.stockId ?? 'none']}
                                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -1633,7 +1633,7 @@ export function ProductionCreatePage(): ReactElement {
                                   <SelectContent>{serialModes.map((value) => <SelectItem key={value} value={value}>{serialModeLabel(value)}</SelectItem>)}</SelectContent>
                                 </Select>
                                 <div className="flex h-9 items-center justify-between gap-2 rounded-lg border border-slate-200/70 px-2 dark:border-white/10">
-                                  <span className="text-xs">{t('production.create.isBackflush', { defaultValue: 'Backflush' })}</span>
+                                  <span className="text-xs">{t('production.create.isBackflush', { defaultValue: 'Missing translation' })}</span>
                                   <Switch className="scale-90" checked={row.isBackflush} onCheckedChange={(checked) => updateConsumption(row.localId, (current) => ({ ...current, isBackflush: checked }))} />
                                 </div>
                                 <Button type="button" size="sm" variant="ghost" onClick={() => removeConsumption(row.localId)}>{t('common.delete')}</Button>
@@ -1653,29 +1653,29 @@ export function ProductionCreatePage(): ReactElement {
                     <CardHeader>
                       <SectionHeader
                         title={t('production.create.dependencies.title')}
-                        description={t('production.create.planner.flowGuide', { defaultValue: 'Planlamaci asamalarin sirayla mi ayni anda mi ilerleyecegini burada kontrol eder. Sistem isterseniz baglantilari otomatik kurar.' })}
-                        action={<Button type="button" size="sm" variant="outline" onClick={applyFlowTemplate}>{t('production.create.planner.applyFlow', { defaultValue: 'Akisi Otomatik Kur' })}</Button>}
+                        description={t('production.create.planner.flowGuide', { defaultValue: 'Missing translation' })}
+                        action={<Button type="button" size="sm" variant="outline" onClick={applyFlowTemplate}>{t('production.create.planner.applyFlow', { defaultValue: 'Missing translation' })}</Button>}
                       />
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InfoCallout
-                        title={t('production.create.info.flowTitle', { defaultValue: 'Akis neyi kontrol eder?' })}
-                        body={t('production.create.info.flowBody', { defaultValue: 'Akis, hangi asamanin once bitecegini ve hangisinin onu bekleyecegini belirler. Bu alan sayesinde birlestirme veya son montaj gibi asamalar, gerekli onceki asamalar bitmeden baslatilmaz.' })}
+                        title={t('production.create.info.flowTitle', { defaultValue: 'Missing translation' })}
+                        body={t('production.create.info.flowBody', { defaultValue: 'Missing translation' })}
                       />
                       {plannerStepNotes[4].length > 0 ? (
                         <PlannerHintCard
-                          title={t('production.create.planner.flowMissingTitle', { defaultValue: 'Akis tarafinda tamamlanmasi gerekenler' })}
+                          title={t('production.create.planner.flowMissingTitle', { defaultValue: 'Missing translation' })}
                           body={plannerStepNotes[4].map((item) => `• ${item}`).join('\n')}
                           tone="amber"
                         />
                       ) : null}
                       <div className="grid gap-3 md:grid-cols-3">
-                        <SummaryStat label={t('production.create.planner.summary.stages', { defaultValue: 'Asama' })} value={plannerSummary.stageCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]" />
-                        <SummaryStat label={t('production.create.planner.summary.ordered', { defaultValue: 'Sirali Asama' })} value={plannerSummary.serialStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]" />
-                        <SummaryStat label={t('production.create.planner.summary.assigned', { defaultValue: 'Atanmis Asama' })} value={plannerSummary.assignedStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]" />
+                        <SummaryStat label={t('production.create.planner.summary.stages', { defaultValue: 'Missing translation' })} value={plannerSummary.stageCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]" />
+                        <SummaryStat label={t('production.create.planner.summary.ordered', { defaultValue: 'Missing translation' })} value={plannerSummary.serialStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]" />
+                        <SummaryStat label={t('production.create.planner.summary.assigned', { defaultValue: 'Missing translation' })} value={plannerSummary.assignedStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]" />
                       </div>
                       {draft.dependencies.length === 0 ? (
-                        <PlannerHintCard title={t('production.create.dependencies.empty')} body={t('production.create.planner.flowEmpty', { defaultValue: 'Henuz asamalar arasi baglanti kurulmamıs. Seri veya karma planlarda otomatik akis kur butonunu kullanin.' })} tone="amber" />
+                        <PlannerHintCard title={t('production.create.dependencies.empty')} body={t('production.create.planner.flowEmpty', { defaultValue: 'Missing translation' })} tone="amber" />
                       ) : draft.dependencies.map((dependency) => {
                         const predecessor = orderOptions.find((option) => option.value === dependency.predecessorOrderLocalId)?.label ?? '-';
                         const successor = orderOptions.find((option) => option.value === dependency.successorOrderLocalId)?.label ?? '-';
@@ -1702,7 +1702,7 @@ export function ProductionCreatePage(): ReactElement {
                       <CardHeader>
                         <SectionHeader
                           title={t('production.create.headerAssignments.title')}
-                          description={t('production.create.planner.headerAssignmentGuide', { defaultValue: 'Plani yonetecek ana ekip veya sorumluyu burada belirleyin.' })}
+                          description={t('production.create.planner.headerAssignmentGuide', { defaultValue: 'Missing translation' })}
                           action={<Button type="button" size="sm" variant="outline" onClick={addHeaderAssignment}>{t('production.create.addHeaderAssignment')}</Button>}
                         />
                       </CardHeader>
@@ -1717,17 +1717,17 @@ export function ProductionCreatePage(): ReactElement {
                               options={userOptions}
                               value={assignment.assignedUserId ? String(assignment.assignedUserId) : ''}
                               onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignedUserId: value ? Number(value) : undefined }))}
-                              placeholder={t('production.create.assignedUserSelect', { defaultValue: 'Sorumlu kullanici secin' })}
-                              searchPlaceholder={t('production.create.userSearch', { defaultValue: 'Kullanicilarda ara' })}
-                              emptyText={t('production.create.userEmpty', { defaultValue: 'Kullanici bulunamadi' })}
+                              placeholder={t('production.create.assignedUserSelect', { defaultValue: 'Missing translation' })}
+                              searchPlaceholder={t('production.create.userSearch', { defaultValue: 'Missing translation' })}
+                              emptyText={t('production.create.userEmpty', { defaultValue: 'Missing translation' })}
                             />
                             <Combobox
                               options={roleOptions}
                               value={assignment.assignedRoleId ? String(assignment.assignedRoleId) : ''}
                               onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignedRoleId: value ? Number(value) : undefined }))}
-                              placeholder={t('production.create.assignedRoleSelect', { defaultValue: 'Rol secin' })}
-                              searchPlaceholder={t('production.create.roleSearch', { defaultValue: 'Rollerde ara' })}
-                              emptyText={t('production.create.roleEmpty', { defaultValue: 'Rol bulunamadi' })}
+                              placeholder={t('production.create.assignedRoleSelect', { defaultValue: 'Missing translation' })}
+                              searchPlaceholder={t('production.create.roleSearch', { defaultValue: 'Missing translation' })}
+                              emptyText={t('production.create.roleEmpty', { defaultValue: 'Missing translation' })}
                             />
                             <Button type="button" size="sm" variant="ghost" onClick={() => removeHeaderAssignment(assignment.localId)}>{t('common.delete')}</Button>
                           </div>
@@ -1741,7 +1741,7 @@ export function ProductionCreatePage(): ReactElement {
                     <Card className="gap-4 py-4">
                       <CardHeader>
                         <CardTitle className="text-base">{t('production.create.orderAssignments.title')}</CardTitle>
-                        <CardDescription>{t('production.create.planner.orderAssignmentGuide', { defaultValue: 'Her asama farkli operatore veya role atanabilir.' })}</CardDescription>
+                        <CardDescription>{t('production.create.planner.orderAssignmentGuide', { defaultValue: 'Missing translation' })}</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         {draft.orders.map((order) => (
@@ -1761,9 +1761,9 @@ export function ProductionCreatePage(): ReactElement {
                                     options={userOptions}
                                     value={assignment.assignedUserId ? String(assignment.assignedUserId) : ''}
                                     onValueChange={(value) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, assignedUserId: value ? Number(value) : undefined }))}
-                                    placeholder={t('production.create.assignedUserSelect', { defaultValue: 'Kullanici secin' })}
-                                    searchPlaceholder={t('production.create.userSearch', { defaultValue: 'Kullanicilarda ara' })}
-                                    emptyText={t('production.create.userEmpty', { defaultValue: 'Kullanici bulunamadi' })}
+                                    placeholder={t('production.create.assignedUserSelect', { defaultValue: 'Missing translation' })}
+                                    searchPlaceholder={t('production.create.userSearch', { defaultValue: 'Missing translation' })}
+                                    emptyText={t('production.create.userEmpty', { defaultValue: 'Missing translation' })}
                                   />
                                   <Input placeholder={t('production.create.assignmentNote')} value={assignment.note} onChange={(e) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, note: e.target.value }))} />
                                   <Button type="button" size="sm" variant="ghost" onClick={() => removeOrderAssignment(order.localId, assignment.localId)}>{t('common.delete')}</Button>
@@ -1796,7 +1796,7 @@ export function ProductionCreatePage(): ReactElement {
                         <TabsTrigger className="px-2.5 text-xs" value="erp">{t('production.create.modeErp')}</TabsTrigger>
                       </TabsList>
                       <TabsContent value="manual" className="space-y-3">
-                        <PlannerHintCard title={t('production.create.modeManual', { defaultValue: 'Manuel Planlama' })} body={t('production.create.modeManualDescription')} />
+                        <PlannerHintCard title={t('production.create.modeManual', { defaultValue: 'Missing translation' })} body={t('production.create.modeManualDescription')} />
                       </TabsContent>
                       <TabsContent value="erp" className="space-y-3">
                         {renderErpFetchPanel()}
@@ -1868,11 +1868,11 @@ export function ProductionCreatePage(): ReactElement {
                       open={mainStockLookupOpen}
                       onOpenChange={setMainStockLookupOpen}
                       title={t('production.create.mainStockCode')}
-                      description={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
+                      description={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
                       value={selectedMainStockLabel || draft.header.mainStockCode}
-                      placeholder={t('production.create.productSelect', { defaultValue: 'Ana urun secin' })}
-                      searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                      emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                      placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                      emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                       queryKey={['production-create', 'advanced-main-stock']}
                       fetchPage={({ pageNumber, pageSize, search, signal }) =>
                         lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1897,9 +1897,9 @@ export function ProductionCreatePage(): ReactElement {
                       title={t('production.create.mainYapKod')}
                       description={draft.header.mainStockCode || t('production.create.mainStockCode')}
                       value={selectedMainYapKodLabel || draft.header.mainYapKod}
-                      placeholder={t('production.create.yapKodSelect', { defaultValue: 'Ana yapkod secin' })}
-                      searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Yapkodlarda ara' })}
-                      emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Bu urune uygun yapkod bulunamadi' })}
+                      placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                      emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                       disabled={!draft.header.mainStockId}
                       queryKey={['production-create', 'advanced-main-yapkod', draft.header.mainStockId ?? 'none']}
                       fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -1960,9 +1960,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.producedStockCode')}
                                 description={order.orderNo || t('production.create.orderPlaceholder')}
                                 value={getLookupLabel(`advanced-order-stock-${order.localId}`, order.producedStockCode)}
-                                placeholder={t('production.create.productSelect', { defaultValue: 'Uretilecek stok secin' })}
-                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'advanced-order-stock', order.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -1990,9 +1990,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.producedYapKod')}
                                 description={order.producedStockCode || t('production.create.producedStockCode')}
                                 value={getLookupLabel(`advanced-order-yapkod-${order.localId}`, order.producedYapKod)}
-                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                 disabled={!order.producedStockId}
                                 queryKey={['production-create', 'advanced-order-yapkod', order.localId, order.producedStockId ?? 'none']}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -2014,9 +2014,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.sourceWarehouse')}
                                 description={order.orderNo || t('production.create.orderPlaceholder')}
                                 value={getLookupLabel(`advanced-order-source-warehouse-${order.localId}`, order.sourceWarehouseCode)}
-                                placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
-                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'advanced-order-source-warehouse', order.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -2036,9 +2036,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.targetWarehouse')}
                                 description={order.orderNo || t('production.create.orderPlaceholder')}
                                 value={getLookupLabel(`advanced-order-target-warehouse-${order.localId}`, order.targetWarehouseCode)}
-                                placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
-                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                                placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'advanced-order-target-warehouse', order.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -2094,7 +2094,7 @@ export function ProductionCreatePage(): ReactElement {
                         <TableRow>
                           <TableHead>{t('production.create.columns.order')}</TableHead>
                           <TableHead>{t('production.create.columns.stock')}</TableHead>
-                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Yap Kod' })}</TableHead>
+                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</TableHead>
                           <TableHead>{t('production.create.columns.quantity')}</TableHead>
                           <TableHead>{t('production.create.trackingMode')}</TableHead>
                           <TableHead>{t('common.actions')}</TableHead>
@@ -2113,9 +2113,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.columns.stock')}
                                 description={t('production.create.outputs.title')}
                                 value={getLookupLabel(`advanced-output-stock-${row.localId}`, row.stockCode)}
-                                placeholder={t('production.create.productSelect', { defaultValue: 'Urun secin' })}
-                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                placeholder={t('production.create.productSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'advanced-output-stock', row.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -2140,12 +2140,12 @@ export function ProductionCreatePage(): ReactElement {
                               <PagedLookupDialog<YapKodLookup>
                                 open={activeLookupKey === `advanced-output-yapkod-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-output-yapkod-${row.localId}` : null)}
-                                title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
                                 description={row.stockCode || t('production.create.columns.stock')}
                                 value={getLookupLabel(`advanced-output-yapkod-${row.localId}`, row.yapKod)}
-                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                 disabled={!row.stockId}
                                 queryKey={['production-create', 'advanced-output-yapkod', row.localId, row.stockId ?? 'none']}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -2188,7 +2188,7 @@ export function ProductionCreatePage(): ReactElement {
                         <TableRow>
                           <TableHead>{t('production.create.columns.order')}</TableHead>
                           <TableHead>{t('production.create.sourceStock')}</TableHead>
-                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Yap Kod' })}</TableHead>
+                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</TableHead>
                           <TableHead>{t('production.create.columns.quantity')}</TableHead>
                           <TableHead>{t('production.create.serialEntryMode')}</TableHead>
                           <TableHead>{t('common.actions')}</TableHead>
@@ -2207,9 +2207,9 @@ export function ProductionCreatePage(): ReactElement {
                                 title={t('production.create.sourceStock')}
                                 description={t('production.create.consumptions.title')}
                                 value={getLookupLabel(`advanced-consumption-stock-${row.localId}`, row.stockCode)}
-                                placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Tuketilecek stok secin' })}
-                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Urunlerde ara' })}
-                                emptyText={t('production.create.productEmpty', { defaultValue: 'Urun bulunamadi' })}
+                                placeholder={t('production.create.sourceStockSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.productSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.productEmpty', { defaultValue: 'Missing translation' })}
                                 queryKey={['production-create', 'advanced-consumption-stock', row.localId]}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                                   lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -2234,12 +2234,12 @@ export function ProductionCreatePage(): ReactElement {
                               <PagedLookupDialog<YapKodLookup>
                                 open={activeLookupKey === `advanced-consumption-yapkod-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-consumption-yapkod-${row.localId}` : null)}
-                                title={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
+                                title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
                                 description={row.stockCode || t('production.create.sourceStock')}
                                 value={getLookupLabel(`advanced-consumption-yapkod-${row.localId}`, row.yapKod)}
-                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'YapKod secin' })}
-                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'YapKodlarda ara' })}
-                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'YapKod bulunamadi' })}
+                                placeholder={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
+                                searchPlaceholder={t('production.create.yapKodSearch', { defaultValue: 'Missing translation' })}
+                                emptyText={t('production.create.yapKodEmpty', { defaultValue: 'Missing translation' })}
                                 disabled={!row.stockId}
                                 queryKey={['production-create', 'advanced-consumption-yapkod', row.localId, row.stockId ?? 'none']}
                                 fetchPage={({ pageNumber, pageSize, search, signal }) =>

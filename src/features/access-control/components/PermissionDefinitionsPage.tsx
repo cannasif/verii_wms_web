@@ -284,7 +284,7 @@ export function PermissionDefinitionsPage(): ReactElement {
           renderSortIcon={renderSortIcon}
           isLoading={isLoading}
           isError={Boolean(error)}
-          errorText={t('common.errors.loadFailed', { defaultValue: t('common.errors.permissionDefinitionListLoadFailed', { defaultValue: 'Load failed' }) })}
+          errorText={t('common.errors.loadFailed', { defaultValue: t('common.errors.permissionDefinitionListLoadFailed', { defaultValue: 'Missing translation' }) })}
           emptyText={t('common.noData')}
           showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}

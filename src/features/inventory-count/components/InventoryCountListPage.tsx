@@ -90,20 +90,20 @@ export function InventoryCountListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.list.title', { defaultValue: 'Sayim Emirleri' }));
+    setPageTitle(t('inventoryCount.list.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<InventoryCountColumnKey>[]>(() => [
-    { key: 'documentNo', label: t('common.documentNo', { defaultValue: 'Belge No' }) },
-    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Belge Tarihi' }) },
-    { key: 'countType', label: t('inventoryCount.fields.countType', { defaultValue: 'Sayim tipi' }) },
-    { key: 'scopeMode', label: t('inventoryCount.fields.scopeMode', { defaultValue: 'Kapsam' }) },
-    { key: 'countMode', label: t('inventoryCount.fields.countMode', { defaultValue: 'Mod' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
-    { key: 'lineCount', label: t('inventoryCount.fields.lineCount', { defaultValue: 'Satir' }) },
-    { key: 'differenceLineCount', label: t('inventoryCount.fields.differenceLineCount', { defaultValue: 'Fark' }) },
-    { key: 'actions', label: t('common.actions', { defaultValue: 'Islemler' }), sortable: false },
+    { key: 'documentNo', label: t('common.documentNo', { defaultValue: 'Missing translation' }) },
+    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }) },
+    { key: 'countType', label: t('inventoryCount.fields.countType', { defaultValue: 'Missing translation' }) },
+    { key: 'scopeMode', label: t('inventoryCount.fields.scopeMode', { defaultValue: 'Missing translation' }) },
+    { key: 'countMode', label: t('inventoryCount.fields.countMode', { defaultValue: 'Missing translation' }) },
+    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }) },
+    { key: 'lineCount', label: t('inventoryCount.fields.lineCount', { defaultValue: 'Missing translation' }) },
+    { key: 'differenceLineCount', label: t('inventoryCount.fields.differenceLineCount', { defaultValue: 'Missing translation' }) },
+    { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -195,14 +195,14 @@ export function InventoryCountListPage(): ReactElement {
         renderSortIcon={renderSortIcon}
         isLoading={isLoading}
         isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('inventoryCount.list.error', { defaultValue: 'Sayim emirleri yuklenemedi.' })}
-        emptyText={t('inventoryCount.list.noData', { defaultValue: 'Henuz sayim emri bulunmuyor.' })}
+        errorText={error instanceof Error ? error.message : t('inventoryCount.list.error', { defaultValue: 'Missing translation' })}
+        emptyText={t('inventoryCount.list.noData', { defaultValue: 'Missing translation' })}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Islemler' })}
+        actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))}>
-              {t('inventoryCount.actions.process', { defaultValue: 'Direkt Giris' })}
+              {t('inventoryCount.actions.process', { defaultValue: 'Missing translation' })}
             </Button>
           </div>
         )}
@@ -215,8 +215,8 @@ export function InventoryCountListPage(): ReactElement {
         hasNextPage={Boolean(data?.hasNextPage)}
         onPreviousPage={pagedGrid.goToPreviousPage}
         onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
-        nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+        previousLabel={t('common.previous', { defaultValue: 'Missing translation' })}
+        nextLabel={t('common.next', { defaultValue: 'Missing translation' })}
         paginationInfoText={paginationInfoText}
         actionBar={{
           pageKey,
@@ -242,7 +242,7 @@ export function InventoryCountListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('inventoryCount.list.searchPlaceholder', { defaultValue: 'Belge no, depo ya da stok ara' }),
+            placeholder: t('inventoryCount.list.searchPlaceholder', { defaultValue: 'Missing translation' }),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
           refresh: {

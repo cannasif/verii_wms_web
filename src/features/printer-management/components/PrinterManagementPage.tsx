@@ -654,7 +654,7 @@ export function PrinterManagementPage(): ReactElement {
                     <TableHead>{t('common.status')}</TableHead>
                     <TableHead>{t('common.date')}</TableHead>
                     <TableHead>{t('common.error')}</TableHead>
-                    <TableHead>{t('printerManagement.jobs.retry', { defaultValue: 'Retry' })}</TableHead>
+                    <TableHead>{t('printerManagement.jobs.retry', { defaultValue: 'Missing translation' })}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -683,7 +683,7 @@ export function PrinterManagementPage(): ReactElement {
                             disabled={!permission.canCreate}
                           >
                             <SendToBack className="mr-2 size-4" />
-                            {t('printerManagement.jobs.retry', { defaultValue: 'Retry' })}
+                            {t('printerManagement.jobs.retry', { defaultValue: 'Missing translation' })}
                           </Button>
                         ) : null}
                       </TableCell>

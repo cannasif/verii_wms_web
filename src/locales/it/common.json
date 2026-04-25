@@ -160,7 +160,7 @@
       "userDeleteFailed": "User could not be deleted.",
       "userGroupSetFailed": "User groups could not be assigned.",
       "warehouse3dLoadFailed": "Warehouse information could not be loaded.",
-      "permissionDefinitionListLoadFailed": "Permission definition list could not be loaded."
+      "permissionDefinitionListLoadFailed": "Impossibile caricare l'elenco delle definizioni dei permessi."
     },
     "view": "Görüntüle",
     "create": "Oluştur",
@@ -171,16 +171,16 @@
       "selectAtLeastOneItem": "You must select at least one item before continuing."
     },
     "numericPlaceholder": "0",
-    "default": "Default",
-    "activate": "Activate",
-    "deactivate": "Deactivate",
-    "clearForm": "Clear form",
-    "date": "Date",
-    "warning": "Warning",
-    "barcodeFormat": "Active barcode format: {{format}}",
-    "selectStockFirst": "Select a stock first",
+    "default": "Predefinito",
+    "activate": "Attiva",
+    "deactivate": "Disattiva",
+    "clearForm": "Pulisci modulo",
+    "date": "Data",
+    "warning": "Avviso",
+    "barcodeFormat": "Formato barcode attivo: {{format}}",
+    "selectStockFirst": "Seleziona prima uno stock",
     "stock": "Stock",
-    "quantity": "Quantity"
+    "quantity": "Quantità"
   },
   "auth": {
     "login": {
@@ -203,8 +203,8 @@
       "animationOff": "Disattiva animazione",
       "animationOn": "Attiva animazione",
       "capsLockOn": "BLOC MAIUSC attivo",
-      "startAnimation": "Start animation",
-      "stopAnimation": "Stop animation"
+      "startAnimation": "Avvia animazione",
+      "stopAnimation": "Ferma animazione"
     },
     "forgotPassword": {
       "title": "Forgot Password",
@@ -727,7 +727,7 @@
       "remaining": "Remaining",
       "pending": "Pending",
       "completed": "Completed",
-      "unit": "Unit"
+      "unit": "Unità"
     },
     "details": {
       "serialNo": "Serial No",
@@ -738,8 +738,8 @@
       "batchNoPlaceholder": "Enter batch number",
       "configCode": "Config Code",
       "configCodePlaceholder": "Enter configuration code",
-      "serialNo2": "Serial no 2",
-      "serialNo2Placeholder": "Enter serial no 2"
+      "serialNo2": "Seriale 2",
+      "serialNo2Placeholder": "Inserisci seriale 2"
     },
     "validation": {
       "transferDateRequired": "Date is required",
@@ -918,7 +918,7 @@
       "selectedItems": "Selected Items",
       "selectedItemsCount": "{{count}} items",
       "noSelectedItems": "No selected items yet",
-      "stocks": "Stocks"
+      "stocks": "Stock"
     },
     "details": {
       "transferQuantity": "Transfer Quantity",
@@ -1023,7 +1023,7 @@
       "error": "An error occurred while creating transfer process"
     },
     "orderDetails": {
-      "orderQuantity": "Order quantity"
+      "orderQuantity": "Quantità ordine"
     }
   },
   "inventory": {
@@ -1387,8 +1387,8 @@
       "lotNoPlaceholder": "Enter lot number",
       "batchNoPlaceholder": "Enter batch number",
       "configCodePlaceholder": "Enter configuration code",
-      "serialNo2": "Serial no 2",
-      "serialNo2Placeholder": "Enter serial no 2"
+      "serialNo2": "Seriale 2",
+      "serialNo2Placeholder": "Inserisci seriale 2"
     },
     "process": {
       "steps": {
@@ -2308,7 +2308,7 @@
     },
     "jobs": {
       "jobName": "Job Name",
-      "retry": "Retry"
+      "retry": "Riprova"
     }
   },
   "serviceAllocation": {
@@ -3170,7 +3170,7 @@
       "lineListTitle": "Sayim satirlari",
       "lineListDescription": "Kirmizi satirlar fark var demektir. Sistem otomatik tekrar sayim isteyebilir.",
       "noLines": "Bu sayim emrinde henuz satir bulunmuyor.",
-      "emptyHeaderMessage": "No count header selected"
+      "emptyHeaderMessage": "Nessuna intestazione conteggio selezionata"
     },
     "fields": {
       "header": "Sayim emri",
@@ -3379,12 +3379,12 @@
   },
   "barcodeFormat": "Active barcode format: {{format}}",
   "paged": {
-    "search": "Search",
-    "searchPlaceholder": "Search records",
-    "loadingDescription": "Loading"
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca nei record",
+    "loadingDescription": "Caricamento"
   },
   "userManagement": {
-    "searchPlaceholder": "Search users..."
+    "searchPlaceholder": "Cerca utenti..."
   },
   "warehouseBalance": {
     "stock": {
@@ -3457,31 +3457,31 @@
     }
   },
   "barcodePrint": {
-    "selectTemplateFirst": "Select a barcode template first",
-    "selectPrinterFirst": "Select a printer first",
-    "selectProfileFirst": "Select a printer profile first",
-    "selectDocumentFirst": "Select at least one document",
-    "noPrintableLines": "No printable lines found for the selected document",
-    "printQueued": "Print job queued",
-    "printCreateFailed": "Print job could not be created",
-    "badge": "WMS Print",
-    "heroDescription": "Select operation, pick document(s), choose template and printer, then queue print directly.",
-    "operation": "Operation",
-    "selectedDocuments": "Selected documents",
-    "selectedLines": "Selected lines",
-    "operationAndDocumentList": "Operation and document list",
-    "selectOperation": "Select operation",
-    "documentListLoadFailed": "Document list could not be loaded.",
-    "documentListEmpty": "No documents found for this operation.",
-    "searchInOperation": "Search in {{operation}}...",
-    "clearVisible": "Clear visible",
-    "selectVisible": "Select visible",
-    "clearSelection": "Clear selection",
-    "documentLines": "Document lines",
-    "linesHelp": "If you select lines only those lines are printed; otherwise all lines are printed.",
-    "linesLoading": "Loading lines...",
-    "linesEmpty": "No lines found for this document.",
-    "selectSingleDocument": "Select one document for line-based printing.",
-    "printSettings": "Print settings"
+    "selectTemplateFirst": "Seleziona prima un template barcode",
+    "selectPrinterFirst": "Seleziona prima una stampante",
+    "selectProfileFirst": "Seleziona prima un profilo stampante",
+    "selectDocumentFirst": "Seleziona almeno un documento",
+    "noPrintableLines": "Nessuna riga stampabile trovata per il documento selezionato",
+    "printQueued": "Job di stampa messo in coda",
+    "printCreateFailed": "Impossibile creare il job di stampa",
+    "badge": "Stampa WMS",
+    "heroDescription": "Seleziona operazione, scegli documento/i, imposta template e stampante e invia direttamente in coda di stampa.",
+    "operation": "Operazione",
+    "selectedDocuments": "Documenti selezionati",
+    "selectedLines": "Righe selezionate",
+    "operationAndDocumentList": "Elenco operazioni e documenti",
+    "selectOperation": "Seleziona operazione",
+    "documentListLoadFailed": "Impossibile caricare l'elenco documenti.",
+    "documentListEmpty": "Nessun documento trovato per questa operazione.",
+    "searchInOperation": "Cerca in {{operation}}...",
+    "clearVisible": "Deseleziona visibili",
+    "selectVisible": "Seleziona visibili",
+    "clearSelection": "Cancella selezione",
+    "documentLines": "Righe documento",
+    "linesHelp": "Se selezioni le righe, verranno stampate solo quelle; altrimenti verranno stampate tutte.",
+    "linesLoading": "Caricamento righe...",
+    "linesEmpty": "Nessuna riga trovata per questo documento.",
+    "selectSingleDocument": "Seleziona un documento per la stampa per riga.",
+    "printSettings": "Impostazioni di stampa"
   }
 }

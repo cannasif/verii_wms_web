@@ -95,8 +95,8 @@ export function ServiceCaseFormPage(): ReactElement {
   useEffect(() => {
     setPageTitle(
       isEdit
-        ? t('serviceAllocation.form.editTitle', { defaultValue: 'Edit Service Case' })
-        : t('serviceAllocation.form.createTitle', { defaultValue: 'Create Service Case' }),
+        ? t('serviceAllocation.form.editTitle', { defaultValue: 'Missing translation' })
+        : t('serviceAllocation.form.createTitle', { defaultValue: 'Missing translation' }),
     );
     return () => setPageTitle(null);
   }, [isEdit, setPageTitle, t]);
@@ -177,13 +177,13 @@ export function ServiceCaseFormPage(): ReactElement {
       queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
       toast.success(
         isEdit
-          ? t('serviceAllocation.form.updateSuccess', { defaultValue: 'Service case updated.' })
-          : t('serviceAllocation.form.createSuccess', { defaultValue: 'Service case created.' }),
+          ? t('serviceAllocation.form.updateSuccess', { defaultValue: 'Missing translation' })
+          : t('serviceAllocation.form.createSuccess', { defaultValue: 'Missing translation' }),
       );
       navigate(`/service-allocation/cases/${serviceCase.id}`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('serviceAllocation.form.saveError', { defaultValue: 'Service case could not be saved.' }));
+      toast.error(error.message || t('serviceAllocation.form.saveError', { defaultValue: 'Missing translation' }));
     },
   });
 
@@ -197,7 +197,7 @@ export function ServiceCaseFormPage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => navigate(isEdit ? `/service-allocation/cases/${parsedId}` : '/service-allocation/cases')}>
-          {t('common.back', { defaultValue: 'Back' })}
+          {t('common.back', { defaultValue: 'Missing translation' })}
         </Button>
       </div>
 
@@ -208,34 +208,34 @@ export function ServiceCaseFormPage(): ReactElement {
             <CardHeader>
               <CardTitle>
                 {isEdit
-                  ? t('serviceAllocation.form.editTitle', { defaultValue: 'Edit Service Case' })
-                  : t('serviceAllocation.form.createTitle', { defaultValue: 'Create Service Case' })}
+                  ? t('serviceAllocation.form.editTitle', { defaultValue: 'Missing translation' })
+                  : t('serviceAllocation.form.createTitle', { defaultValue: 'Missing translation' })}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               <FormField control={form.control} name="caseNo" rules={{ required: true }} render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.caseNo', { defaultValue: 'Case No' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.caseNo', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="customerCode" rules={{ required: true }} render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.customerCode', { defaultValue: 'Customer Code' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="customerId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.customerId', { defaultValue: 'Customer Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.customerId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.status', { defaultValue: 'Status' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.status', { defaultValue: 'Missing translation' })}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -248,44 +248,44 @@ export function ServiceCaseFormPage(): ReactElement {
               )} />
               <FormField control={form.control} name="incomingStockCode" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Incoming Stock Code' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="incomingStockId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Incoming Stock Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="incomingSerialNo" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.serialNo', { defaultValue: 'Serial No' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.serialNo', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="receivedAt" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.receivedAt', { defaultValue: 'Received At' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="date" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="intakeWarehouseId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.intakeWarehouseId', { defaultValue: 'Intake Warehouse Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.intakeWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="currentWarehouseId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.currentWarehouseId', { defaultValue: 'Current Warehouse Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.currentWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <div className="md:col-span-2">
                 <FormField control={form.control} name="diagnosisNote" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('serviceAllocation.diagnosisNote', { defaultValue: 'Diagnosis Note' })}</FormLabel>
+                    <FormLabel>{t('serviceAllocation.diagnosisNote', { defaultValue: 'Missing translation' })}</FormLabel>
                     <FormControl><Textarea {...field} rows={4} /></FormControl>
                   </FormItem>
                 )} />
@@ -295,12 +295,12 @@ export function ServiceCaseFormPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('serviceAllocation.form.initialLine', { defaultValue: 'Initial / Additional Service Line' })}</CardTitle>
+              <CardTitle>{t('serviceAllocation.form.initialLine', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               <FormField control={form.control} name="initialLineType" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.lineType', { defaultValue: 'Line Type' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -313,7 +313,7 @@ export function ServiceCaseFormPage(): ReactElement {
               )} />
               <FormField control={form.control} name="initialProcessType" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.processType', { defaultValue: 'Process Type' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -326,44 +326,44 @@ export function ServiceCaseFormPage(): ReactElement {
               )} />
               <FormField control={form.control} name="initialLineStockCode" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Stock Code' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineStockId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Stock Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineQuantity" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.quantity', { defaultValue: 'Quantity' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} type="number" step="0.01" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineUnit" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.unit', { defaultValue: 'Unit' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.unit', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineErpOrderNo" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.erpOrderNo', { defaultValue: 'ERP Order No' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineErpOrderId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('serviceAllocation.erpOrderId', { defaultValue: 'ERP Order Id' })}</FormLabel>
+                  <FormLabel>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />
               <div className="md:col-span-2">
                 <FormField control={form.control} name="initialLineDescription" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('serviceAllocation.description', { defaultValue: 'Description' })}</FormLabel>
+                    <FormLabel>{t('serviceAllocation.description', { defaultValue: 'Missing translation' })}</FormLabel>
                     <FormControl><Textarea {...field} rows={3} /></FormControl>
                   </FormItem>
                 )} />
@@ -374,18 +374,18 @@ export function ServiceCaseFormPage(): ReactElement {
           {isEdit && existingLines.length > 0 ? (
             <Card>
               <CardHeader>
-                <CardTitle>{t('serviceAllocation.lines', { defaultValue: 'Existing Service Lines' })}</CardTitle>
+                <CardTitle>{t('serviceAllocation.lines', { defaultValue: 'Missing translation' })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('serviceAllocation.lineType', { defaultValue: 'Line Type' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Stock Code' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Quantity' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.processType', { defaultValue: 'Process Type' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'ERP Order No' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.erpOrderId', { defaultValue: 'ERP Order Id' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -408,8 +408,8 @@ export function ServiceCaseFormPage(): ReactElement {
           <div className="flex justify-end">
             <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
               {saveMutation.isPending
-                ? t('common.loading', { defaultValue: 'Loading...' })
-                : t('common.save', { defaultValue: 'Save' })}
+                ? t('common.loading', { defaultValue: 'Missing translation' })
+                : t('common.save', { defaultValue: 'Missing translation' })}
             </Button>
           </div>
           </fieldset>

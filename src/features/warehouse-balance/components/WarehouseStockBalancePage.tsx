@@ -80,7 +80,7 @@ export function WarehouseStockBalancePage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Depo Stok Bakiyesi' }));
+    setPageTitle(t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -165,14 +165,14 @@ export function WarehouseStockBalancePage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<StockColumnKey>[]>(
     () => [
-      { key: 'warehouse', label: t('warehouseBalance.stock.columns.warehouse', { defaultValue: 'Depo' }) },
-      { key: 'stock', label: t('warehouseBalance.stock.columns.stock', { defaultValue: 'Stok' }) },
-      { key: 'yapKod', label: t('warehouseBalance.stock.columns.yapKod', { defaultValue: 'YapKod' }) },
-      { key: 'quantity', label: t('warehouseBalance.stock.columns.quantity', { defaultValue: 'Miktar' }) },
-      { key: 'available', label: t('warehouseBalance.stock.columns.available', { defaultValue: 'Kullanilabilir' }) },
-      { key: 'serialCount', label: t('warehouseBalance.stock.columns.serialCount', { defaultValue: 'Seri Sayisi' }) },
-      { key: 'shelfCount', label: t('warehouseBalance.stock.columns.shelfCount', { defaultValue: 'Raf Sayisi' }) },
-      { key: 'updatedAt', label: t('warehouseBalance.stock.columns.updatedAt', { defaultValue: 'Son Hesaplama' }) },
+      { key: 'warehouse', label: t('warehouseBalance.stock.columns.warehouse', { defaultValue: 'Missing translation' }) },
+      { key: 'stock', label: t('warehouseBalance.stock.columns.stock', { defaultValue: 'Missing translation' }) },
+      { key: 'yapKod', label: t('warehouseBalance.stock.columns.yapKod', { defaultValue: 'Missing translation' }) },
+      { key: 'quantity', label: t('warehouseBalance.stock.columns.quantity', { defaultValue: 'Missing translation' }) },
+      { key: 'available', label: t('warehouseBalance.stock.columns.available', { defaultValue: 'Missing translation' }) },
+      { key: 'serialCount', label: t('warehouseBalance.stock.columns.serialCount', { defaultValue: 'Missing translation' }) },
+      { key: 'shelfCount', label: t('warehouseBalance.stock.columns.shelfCount', { defaultValue: 'Missing translation' }) },
+      { key: 'updatedAt', label: t('warehouseBalance.stock.columns.updatedAt', { defaultValue: 'Missing translation' }) },
       { key: 'actions', label: t('common.actions'), sortable: false },
     ],
     [t],
@@ -182,13 +182,13 @@ export function WarehouseStockBalancePage(): ReactElement {
   const totalSerials = useMemo(() => rows.reduce((sum, row) => sum + row.distinctSerialCount, 0), [rows]);
   const consistencyColumns = useMemo<PagedDataGridColumn<ConsistencyColumnKey>[]>(
     () => [
-      { key: 'issueType', label: t('warehouseBalance.consistency.columns.issueType', { defaultValue: 'Sorun Tipi' }) },
-      { key: 'warehouse', label: t('warehouseBalance.consistency.columns.warehouse', { defaultValue: 'Depo' }) },
-      { key: 'stock', label: t('warehouseBalance.consistency.columns.stock', { defaultValue: 'Stok' }) },
-      { key: 'yapKod', label: t('warehouseBalance.consistency.columns.yapKod', { defaultValue: 'YapKod' }) },
-      { key: 'quantityDelta', label: t('warehouseBalance.consistency.columns.quantityDelta', { defaultValue: 'Miktar Farki' }) },
-      { key: 'availableDelta', label: t('warehouseBalance.consistency.columns.availableDelta', { defaultValue: 'Kullanilabilir Farki' }) },
-      { key: 'serialDelta', label: t('warehouseBalance.consistency.columns.serialDelta', { defaultValue: 'Seri Farki' }) },
+      { key: 'issueType', label: t('warehouseBalance.consistency.columns.issueType', { defaultValue: 'Missing translation' }) },
+      { key: 'warehouse', label: t('warehouseBalance.consistency.columns.warehouse', { defaultValue: 'Missing translation' }) },
+      { key: 'stock', label: t('warehouseBalance.consistency.columns.stock', { defaultValue: 'Missing translation' }) },
+      { key: 'yapKod', label: t('warehouseBalance.consistency.columns.yapKod', { defaultValue: 'Missing translation' }) },
+      { key: 'quantityDelta', label: t('warehouseBalance.consistency.columns.quantityDelta', { defaultValue: 'Missing translation' }) },
+      { key: 'availableDelta', label: t('warehouseBalance.consistency.columns.availableDelta', { defaultValue: 'Missing translation' }) },
+      { key: 'serialDelta', label: t('warehouseBalance.consistency.columns.serialDelta', { defaultValue: 'Missing translation' }) },
     ],
     [t],
   );
@@ -198,11 +198,11 @@ export function WarehouseStockBalancePage(): ReactElement {
   const renderConsistencyIssueType = (issueType: string): string => {
     switch (issueType) {
       case 'MissingSummary':
-        return t('warehouseBalance.consistency.issueTypes.missingSummary', { defaultValue: 'Summary Eksik' });
+        return t('warehouseBalance.consistency.issueTypes.missingSummary', { defaultValue: 'Missing translation' });
       case 'ExtraSummary':
-        return t('warehouseBalance.consistency.issueTypes.extraSummary', { defaultValue: 'Fazla Summary' });
+        return t('warehouseBalance.consistency.issueTypes.extraSummary', { defaultValue: 'Missing translation' });
       case 'MetricMismatch':
-        return t('warehouseBalance.consistency.issueTypes.metricMismatch', { defaultValue: 'Deger Uyusmazligi' });
+        return t('warehouseBalance.consistency.issueTypes.metricMismatch', { defaultValue: 'Missing translation' });
       default:
         return issueType;
     }
@@ -221,8 +221,8 @@ export function WarehouseStockBalancePage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Depo Stok Bakiyesi' }), isActive: true },
+          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
+          { label: t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Missing translation' }), isActive: true },
         ]}
       />
 
@@ -234,7 +234,7 @@ export function WarehouseStockBalancePage(): ReactElement {
               <Badge variant="secondary">Summary</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Depo Stok Bakiyesi' })}
+              {t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Missing translation' })}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
               Depo bazli kümüle stok, yapkod, seri sayisi ve raf yayilimini tek ekranda izleyin.
@@ -248,7 +248,7 @@ export function WarehouseStockBalancePage(): ReactElement {
             {permission.canUpdate ? (
               <Button onClick={() => rebuildAllMutation.mutate()} disabled={rebuildAllMutation.isPending}>
                 <DatabaseZap className="mr-2 size-4" />
-                {t('warehouseBalance.stock.rebuildAll', { defaultValue: 'Tum Ozeti Rebuild Et' })}
+                {t('warehouseBalance.stock.rebuildAll', { defaultValue: 'Missing translation' })}
               </Button>
             ) : null}
           </div>
@@ -260,7 +260,7 @@ export function WarehouseStockBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <Rows3 className="size-5 text-sky-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.rows', { defaultValue: 'Kayit' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.rows', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{query.data?.data?.totalCount ?? 0}</div>
             </div>
           </CardContent>
@@ -269,7 +269,7 @@ export function WarehouseStockBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <ScanSearch className="size-5 text-emerald-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.quantity', { defaultValue: 'Toplam Miktar' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.quantity', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{formatNumber(totalQuantity)}</div>
             </div>
           </CardContent>
@@ -278,7 +278,7 @@ export function WarehouseStockBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <DatabaseZap className="size-5 text-fuchsia-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.serials', { defaultValue: 'Gorunen Seri Sayisi' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.stock.cards.serials', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{formatNumber(totalSerials)}</div>
             </div>
           </CardContent>
@@ -338,8 +338,8 @@ export function WarehouseStockBalancePage(): ReactElement {
             onSort={pagedGrid.handleSort}
             isLoading={query.isLoading}
             isError={query.isError}
-            errorText={query.error instanceof Error ? query.error.message : t('common.error', { defaultValue: 'Bir hata olustu' })}
-            emptyText={t('warehouseBalance.stock.empty', { defaultValue: 'Depo stok bakiye kaydi bulunamadi' })}
+            errorText={query.error instanceof Error ? query.error.message : t('common.error', { defaultValue: 'Missing translation' })}
+            emptyText={t('warehouseBalance.stock.empty', { defaultValue: 'Missing translation' })}
             pageSize={query.data?.data?.pageSize ?? pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -349,8 +349,8 @@ export function WarehouseStockBalancePage(): ReactElement {
             hasNextPage={query.data?.data?.hasNextPage ?? false}
             onPreviousPage={pagedGrid.goToPreviousPage}
             onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
-            nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+            previousLabel={t('common.previous', { defaultValue: 'Missing translation' })}
+            nextLabel={t('common.next', { defaultValue: 'Missing translation' })}
             paginationInfoText={t('common.paginationInfo', {
               current: range.from,
               total: range.to,
@@ -361,7 +361,7 @@ export function WarehouseStockBalancePage(): ReactElement {
               value: pagedGrid.searchConfig.value,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('warehouseBalance.stock.searchPlaceholder', { defaultValue: 'Depo, stok veya yapkod ara...' }),
+              placeholder: t('warehouseBalance.stock.searchPlaceholder', { defaultValue: 'Missing translation' }),
             }}
             showActionsColumn={permission.canUpdate}
             actionsHeaderLabel={t('common.actions')}
@@ -373,7 +373,7 @@ export function WarehouseStockBalancePage(): ReactElement {
                   onClick={() => rebuildWarehouseMutation.mutate(row.warehouseId)}
                   disabled={rebuildWarehouseMutation.isPending}
                 >
-                  {t('warehouseBalance.stock.rebuildWarehouse', { defaultValue: 'Depoyu Rebuild Et' })}
+                  {t('warehouseBalance.stock.rebuildWarehouse', { defaultValue: 'Missing translation' })}
                 </Button>
                 <Button
                   size="sm"
@@ -381,7 +381,7 @@ export function WarehouseStockBalancePage(): ReactElement {
                   onClick={() => rebuildStockMutation.mutate(row.stockId)}
                   disabled={rebuildStockMutation.isPending}
                 >
-                  {t('warehouseBalance.stock.rebuildStock', { defaultValue: 'Stogu Rebuild Et' })}
+                  {t('warehouseBalance.stock.rebuildStock', { defaultValue: 'Missing translation' })}
                 </Button>
               </div>
             ) : null}
@@ -394,20 +394,20 @@ export function WarehouseStockBalancePage(): ReactElement {
           <AlertTriangle className="size-5 text-amber-600" />
           <div>
             <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
-              {t('warehouseBalance.consistency.title', { defaultValue: 'Bakiye Tutarlilik Kontrolu' })}
+              {t('warehouseBalance.consistency.title', { defaultValue: 'Missing translation' })}
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-300">
-              {t('warehouseBalance.consistency.description', { defaultValue: 'Detail ve summary bakiye arasindaki farklari izleyin.' })}
+              {t('warehouseBalance.consistency.description', { defaultValue: 'Missing translation' })}
             </p>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-5">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.summaryRows', { defaultValue: 'Summary Satir' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.summaryRowCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.detailGroups', { defaultValue: 'Detail Grup' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.detailGroupCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.mismatch', { defaultValue: 'Toplam Sorun' })}</div><div className="mt-2 text-2xl font-semibold text-amber-600">{consistencySummary?.mismatchCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.missingSummary', { defaultValue: 'Eksik Summary' })}</div><div className="mt-2 text-2xl font-semibold text-rose-600">{consistencySummary?.missingSummaryCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.extraSummary', { defaultValue: 'Fazla Summary' })}</div><div className="mt-2 text-2xl font-semibold text-fuchsia-600">{consistencySummary?.extraSummaryCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.summaryRows', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.summaryRowCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.detailGroups', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.detailGroupCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.mismatch', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-amber-600">{consistencySummary?.mismatchCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.missingSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-rose-600">{consistencySummary?.missingSummaryCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.extraSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-fuchsia-600">{consistencySummary?.extraSummaryCount ?? 0}</div></CardContent></Card>
         </div>
 
         <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
@@ -459,8 +459,8 @@ export function WarehouseStockBalancePage(): ReactElement {
               onSort={consistencyGrid.handleSort}
               isLoading={consistencyIssuesQuery.isLoading || consistencySummaryQuery.isLoading}
               isError={consistencyIssuesQuery.isError || consistencySummaryQuery.isError}
-              errorText={(consistencyIssuesQuery.error instanceof Error ? consistencyIssuesQuery.error.message : undefined) ?? (consistencySummaryQuery.error instanceof Error ? consistencySummaryQuery.error.message : t('common.error', { defaultValue: 'Bir hata olustu' }))}
-              emptyText={t('warehouseBalance.consistency.empty', { defaultValue: 'Tutarsizlik bulunamadi' })}
+              errorText={(consistencyIssuesQuery.error instanceof Error ? consistencyIssuesQuery.error.message : undefined) ?? (consistencySummaryQuery.error instanceof Error ? consistencySummaryQuery.error.message : t('common.error', { defaultValue: 'Missing translation' }))}
+              emptyText={t('warehouseBalance.consistency.empty', { defaultValue: 'Missing translation' })}
               pageSize={consistencyIssuesQuery.data?.data?.pageSize ?? consistencyGrid.pageSize}
               pageSizeOptions={consistencyGrid.pageSizeOptions}
               onPageSizeChange={consistencyGrid.handlePageSizeChange}
@@ -470,8 +470,8 @@ export function WarehouseStockBalancePage(): ReactElement {
               hasNextPage={consistencyIssuesQuery.data?.data?.hasNextPage ?? false}
               onPreviousPage={consistencyGrid.goToPreviousPage}
               onNextPage={consistencyGrid.goToNextPage}
-              previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
-              nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+              previousLabel={t('common.previous', { defaultValue: 'Missing translation' })}
+              nextLabel={t('common.next', { defaultValue: 'Missing translation' })}
               paginationInfoText={t('common.paginationInfo', {
                 current: consistencyRange.from,
                 total: consistencyRange.to,
@@ -482,7 +482,7 @@ export function WarehouseStockBalancePage(): ReactElement {
                 value: consistencyGrid.searchConfig.value,
                 onValueChange: consistencyGrid.searchConfig.onValueChange,
                 onSearchChange: consistencyGrid.searchConfig.onSearchChange,
-                placeholder: t('warehouseBalance.consistency.searchPlaceholder', { defaultValue: 'Depo, stok, yapkod veya sorun tipi ara...' }),
+                placeholder: t('warehouseBalance.consistency.searchPlaceholder', { defaultValue: 'Missing translation' }),
               }}
             />
           </CardContent>

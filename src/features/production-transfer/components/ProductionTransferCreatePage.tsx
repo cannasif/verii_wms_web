@@ -75,10 +75,10 @@ export function ProductionTransferCreatePage(): ReactElement {
   useEffect(() => {
     setPageTitle(
       isEditMode
-        ? t('productionTransfer.create.editTitle', { defaultValue: 'Uretim Transfer Emrini Duzenle' })
+        ? t('productionTransfer.create.editTitle', { defaultValue: 'Missing translation' })
         : isCloneMode
-          ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Uretim Transfer Emrini Kopyala' })
-          : t('productionTransfer.create.title', { defaultValue: 'Uretim Transfer Emri Olustur' }),
+          ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Missing translation' })
+          : t('productionTransfer.create.title', { defaultValue: 'Missing translation' }),
     );
     return () => setPageTitle(null);
   }, [isCloneMode, isEditMode, setPageTitle, t]);
@@ -144,15 +144,15 @@ export function ProductionTransferCreatePage(): ReactElement {
     onSuccess: () => {
       toast.success(
         isEditMode
-          ? t('productionTransfer.create.updateSuccess', { defaultValue: 'Uretim transfer emri guncellendi' })
+          ? t('productionTransfer.create.updateSuccess', { defaultValue: 'Missing translation' })
           : isCloneMode
-            ? t('productionTransfer.create.cloneSuccess', { defaultValue: 'Uretim transfer emri kopyalanarak kaydedildi' })
-            : t('productionTransfer.create.success', { defaultValue: 'Uretim transfer emri kaydedildi' }),
+            ? t('productionTransfer.create.cloneSuccess', { defaultValue: 'Missing translation' })
+            : t('productionTransfer.create.success', { defaultValue: 'Missing translation' }),
       );
       navigate('/production-transfer/list');
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('productionTransfer.create.error', { defaultValue: 'Uretim transfer emri kaydedilemedi' }));
+      toast.error(error.message || t('productionTransfer.create.error', { defaultValue: 'Missing translation' }));
     },
   });
 
@@ -226,39 +226,39 @@ export function ProductionTransferCreatePage(): ReactElement {
   );
   const transferPurposeLabel = (value: (typeof transferPurposes)[number]): string =>
     ({
-      MaterialSupply: t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Malzeme Besleme' }),
-      SemiFinishedMove: t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Yari Mamul Tasima' }),
-      FinishedGoodsPutaway: t('productionTransfer.create.guide.outputMove', { defaultValue: 'Mamul Depoya Cikis' }),
-      ScrapMove: t('productionTransfer.create.guide.scrapMove', { defaultValue: 'Fire Tasima' }),
-      ReturnToStock: t('productionTransfer.create.guide.returnToStock', { defaultValue: 'Stoga Iade' }),
+      MaterialSupply: t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' }),
+      SemiFinishedMove: t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Missing translation' }),
+      FinishedGoodsPutaway: t('productionTransfer.create.guide.outputMove', { defaultValue: 'Missing translation' }),
+      ScrapMove: t('productionTransfer.create.guide.scrapMove', { defaultValue: 'Missing translation' }),
+      ReturnToStock: t('productionTransfer.create.guide.returnToStock', { defaultValue: 'Missing translation' }),
     })[value];
   const lineRoleLabel = (value: (typeof lineRoles)[number]): string =>
     ({
-      ConsumptionSupply: t('productionTransfer.create.lineRoleConsumption', { defaultValue: 'Tuketimi Besle' }),
-      SemiFinishedMove: t('productionTransfer.create.lineRoleSemiFinished', { defaultValue: 'Ara Mamul Tasi' }),
-      OutputMove: t('productionTransfer.create.lineRoleOutput', { defaultValue: 'Ciktiyi Tasi' }),
+      ConsumptionSupply: t('productionTransfer.create.lineRoleConsumption', { defaultValue: 'Missing translation' }),
+      SemiFinishedMove: t('productionTransfer.create.lineRoleSemiFinished', { defaultValue: 'Missing translation' }),
+      OutputMove: t('productionTransfer.create.lineRoleOutput', { defaultValue: 'Missing translation' }),
     })[value];
 
   return (
     <FormPageShell
       title={
         isEditMode
-          ? t('productionTransfer.create.editTitle', { defaultValue: 'Uretim Transfer Emrini Duzenle' })
+          ? t('productionTransfer.create.editTitle', { defaultValue: 'Missing translation' })
           : isCloneMode
-            ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Uretim Transfer Emrini Kopyala' })
-            : t('productionTransfer.create.title', { defaultValue: 'Uretim Transfer Emri Olustur' })
+            ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Missing translation' })
+            : t('productionTransfer.create.title', { defaultValue: 'Missing translation' })
       }
       description={
         isEditMode
-          ? t('productionTransfer.create.editSubtitle', { defaultValue: 'Tamamlanmamis ve henüz islenmemis transfer emirlerini burada guncelleyebilirsiniz.' })
+          ? t('productionTransfer.create.editSubtitle', { defaultValue: 'Missing translation' })
           : isCloneMode
-            ? t('productionTransfer.create.cloneSubtitle', { defaultValue: 'Var olan transfer emrini baz alip yeni bir transfer emri olusturuyorsunuz.' })
-            : t('productionTransfer.create.subtitle', { defaultValue: 'Uretim planina bagli hammadde besleme, yari mamul tasima veya mamul cikis akislarini tanimlayin.' })
+            ? t('productionTransfer.create.cloneSubtitle', { defaultValue: 'Missing translation' })
+            : t('productionTransfer.create.subtitle', { defaultValue: 'Missing translation' })
       }
       isLoading={detailQuery.isLoading}
       isError={detailQuery.isError}
       errorTitle={t('common.error')}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.create.error', { defaultValue: 'Uretim transfer detayi yuklenemedi' })}
+      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.create.error', { defaultValue: 'Missing translation' })}
       actions={(
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={() => navigate('/production-transfer/list')}>{t('common.cancel')}</Button>
@@ -292,7 +292,7 @@ export function ProductionTransferCreatePage(): ReactElement {
             {t('common.clear')}
           </Button>
           <Button type="button" onClick={() => createMutation.mutate()} disabled={!canSaveTransfer || createMutation.isPending}>
-            {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Guncelle' }) : isCloneMode ? t('common.save', { defaultValue: 'Kaydet' }) : t('common.save')}
+            {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : isCloneMode ? t('common.save', { defaultValue: 'Missing translation' }) : t('common.save')}
           </Button>
         </div>
       )}
@@ -306,19 +306,19 @@ export function ProductionTransferCreatePage(): ReactElement {
         ) : null}
         {isEditMode ? (
           <InfoCallout
-            title={t('productionTransfer.create.editModeTitle', { defaultValue: 'Kayit guncelleme modu' })}
-            body={t('productionTransfer.create.editModeBody', { defaultValue: 'Bu transfer daha once kaydedildi. Burada yaptiginiz degisiklikler mevcut transfer emrini gunceller; yeni bir kopya olusturmaz.' })}
+            title={t('productionTransfer.create.editModeTitle', { defaultValue: 'Missing translation' })}
+            body={t('productionTransfer.create.editModeBody', { defaultValue: 'Missing translation' })}
           />
         ) : null}
         {isCloneMode ? (
           <InfoCallout
-            title={t('productionTransfer.create.cloneModeTitle', { defaultValue: 'Kopya olusturma modu' })}
-            body={t('productionTransfer.create.cloneModeBody', { defaultValue: 'Bu ekran mevcut transfer emrini baz alir. Belge no yeni olmalidir; kaydettiginizde yeni bir transfer emri olustururuz.' })}
+            title={t('productionTransfer.create.cloneModeTitle', { defaultValue: 'Missing translation' })}
+            body={t('productionTransfer.create.cloneModeBody', { defaultValue: 'Missing translation' })}
           />
         ) : null}
         <InfoCallout
-          title={t('productionTransfer.create.info.overviewTitle', { defaultValue: 'Bu ekran ne yapiyor?' })}
-          body={t('productionTransfer.create.info.overviewBody', { defaultValue: 'Bu ekran, uretim planindaki bir asamaya malzeme beslemek, ara mamulu sonraki istasyona tasimak veya tamamlanan urunu mamul depoya almak icin transfer emri olusturur. Oneri paneli, secili plan veya emrin ihtiyacindan otomatik satir uretir.' })}
+          title={t('productionTransfer.create.info.overviewTitle', { defaultValue: 'Missing translation' })}
+          body={t('productionTransfer.create.info.overviewBody', { defaultValue: 'Missing translation' })}
         />
         <div className="grid gap-3 md:grid-cols-3">
           <Card className="border-slate-200/70 dark:border-white/10">
@@ -352,19 +352,19 @@ export function ProductionTransferCreatePage(): ReactElement {
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]">
             <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.purpose', { defaultValue: 'Transfer Amaci' })}</CardDescription>
+              <CardDescription>{t('productionTransfer.create.summary.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{draft.transferPurpose}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]">
             <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.lines', { defaultValue: 'Kalem' })}</CardDescription>
+              <CardDescription>{t('productionTransfer.create.summary.lines', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{summary.lineCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]">
             <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.quantity', { defaultValue: 'Toplam Miktar' })}</CardDescription>
+              <CardDescription>{t('productionTransfer.create.summary.quantity', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{summary.totalQuantity}</CardTitle>
             </CardHeader>
           </Card>
@@ -373,37 +373,37 @@ export function ProductionTransferCreatePage(): ReactElement {
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <Card>
             <CardHeader>
-              <CardTitle>{t('productionTransfer.create.header.title', { defaultValue: 'Transfer Ust Bilgisi' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.create.header.subtitle', { defaultValue: 'Transferin hangi uretim plani veya emri icin acildigini belirtin.' })}</CardDescription>
+              <CardTitle>{t('productionTransfer.create.header.title', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('productionTransfer.create.header.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-3">
                 <InfoCallout
-                  title={t('productionTransfer.create.info.linkTitle', { defaultValue: 'Uretim baglantisi neden onemli?' })}
-                  body={t('productionTransfer.create.info.linkBody', { defaultValue: 'Plan veya emir baglantisi kuruldugunda sistem, bu transferin hangi uretim ihtiyacini karşıladığını bilir. Boylece hangi tuketim satirinin beslendigi veya hangi ciktinin tasindigi izlenebilir olur.' })}
+                  title={t('productionTransfer.create.info.linkTitle', { defaultValue: 'Missing translation' })}
+                  body={t('productionTransfer.create.info.linkBody', { defaultValue: 'Missing translation' })}
                 />
               </div>
               <div className="space-y-2"><Label>{t('common.documentNo')}</Label><Input value={draft.documentNo} onChange={(e) => setDraft((prev) => ({ ...prev, documentNo: e.target.value }))} /></div>
-              <div className="space-y-2"><Label>{t('common.documentDate', { defaultValue: 'Belge Tarihi' })}</Label><Input type="date" value={draft.documentDate} onChange={(e) => setDraft((prev) => ({ ...prev, documentDate: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t('common.documentDate', { defaultValue: 'Missing translation' })}</Label><Input type="date" value={draft.documentDate} onChange={(e) => setDraft((prev) => ({ ...prev, documentDate: e.target.value }))} /></div>
               <div className="space-y-2">
-                <Label>{t('productionTransfer.create.purpose', { defaultValue: 'Transfer Amaci' })}</Label>
+                <Label>{t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}</Label>
                 <Select value={draft.transferPurpose} onValueChange={(value) => setDraft((prev) => ({ ...prev, transferPurpose: value as ProductionTransferDraft['transferPurpose'] }))}>
                   <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                   <SelectContent>{transferPurposes.map((value) => <SelectItem key={value} value={value}>{transferPurposeLabel(value)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2"><Label>{t('productionTransfer.create.productionDocument', { defaultValue: 'Uretim Plani No' })}</Label><Input value={draft.productionDocumentNo} onChange={(e) => setDraft((prev) => ({ ...prev, productionDocumentNo: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}</Label><Input value={draft.productionDocumentNo} onChange={(e) => setDraft((prev) => ({ ...prev, productionDocumentNo: e.target.value }))} /></div>
               <div className="space-y-2">
-                <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri No' })}</Label>
+                <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</Label>
                 <PagedLookupDialog<ProductionOrderLookup>
                   open={productionOrderLookupOpen}
                   onOpenChange={setProductionOrderLookupOpen}
-                  title={t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri No' })}
-                  description={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Bagli emri secin' })}
+                  title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
+                  description={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
                   value={selectedProductionOrderLabel || draft.productionOrderNo}
-                  placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Bagli emri secin' })}
-                  searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Uretim emirlerinde ara' })}
-                  emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Uretim emri bulunamadi' })}
+                  placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
+                  searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
+                  emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
                   queryKey={['production-transfer', 'production-order-lookup']}
                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
                     productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
@@ -417,16 +417,16 @@ export function ProductionTransferCreatePage(): ReactElement {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' })}</Label>
+                <Label>{t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}</Label>
                 <PagedLookupDialog<Warehouse>
                   open={sourceWarehouseLookupOpen}
                   onOpenChange={setSourceWarehouseLookupOpen}
-                  title={t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' })}
-                  description={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
+                  title={t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}
+                  description={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
                   value={selectedSourceWarehouseLabel || draft.sourceWarehouseCode}
-                  placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Kaynak depo secin' })}
-                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                  placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
+                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                   queryKey={['production-transfer', 'source-warehouse']}
                   fetchPage={({ pageNumber, pageSize, search, signal }: {
                     pageNumber: number;
@@ -445,16 +445,16 @@ export function ProductionTransferCreatePage(): ReactElement {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' })}</Label>
+                <Label>{t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}</Label>
                 <PagedLookupDialog<Warehouse>
                   open={targetWarehouseLookupOpen}
                   onOpenChange={setTargetWarehouseLookupOpen}
-                  title={t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' })}
-                  description={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
+                  title={t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}
+                  description={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
                   value={selectedTargetWarehouseLabel || draft.targetWarehouseCode}
-                  placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Hedef depo secin' })}
-                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Depolarda ara' })}
-                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Depo bulunamadi' })}
+                  placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
+                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
                   queryKey={['production-transfer', 'target-warehouse']}
                   fetchPage={({ pageNumber, pageSize, search, signal }: {
                     pageNumber: number;
@@ -478,21 +478,21 @@ export function ProductionTransferCreatePage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('productionTransfer.create.guide.title', { defaultValue: 'Transfer Rehberi' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.create.guide.subtitle', { defaultValue: 'Bu ekran PT tarafinda hangi rol ile neden acildigini netlestirir.' })}</CardDescription>
+              <CardTitle>{t('productionTransfer.create.guide.title', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('productionTransfer.create.guide.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Malzeme Besleme' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.materialSupplyBody', { defaultValue: 'Uretim tuketimi icin gerekli hammaddeleri besleme alanina cekmek icin kullanilir.' })}</div>
+                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-1">{t('productionTransfer.create.guide.materialSupplyBody', { defaultValue: 'Missing translation' })}</div>
               </div>
               <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Yari Mamul Tasima' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.semiFinishedMoveBody', { defaultValue: 'Bir emrin ciktisini sonraki emrin tuketimine veya istasyonuna tasir.' })}</div>
+                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-1">{t('productionTransfer.create.guide.semiFinishedMoveBody', { defaultValue: 'Missing translation' })}</div>
               </div>
               <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.outputMove', { defaultValue: 'Mamul Depoya Cikis' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.outputMoveBody', { defaultValue: 'Tamamlanan urunun uretimden mamul depoya cikisini yonetir.' })}</div>
+                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.outputMove', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-1">{t('productionTransfer.create.guide.outputMoveBody', { defaultValue: 'Missing translation' })}</div>
               </div>
             </CardContent>
           </Card>
@@ -510,8 +510,8 @@ export function ProductionTransferCreatePage(): ReactElement {
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <CardTitle>{t('productionTransfer.create.lines.title', { defaultValue: 'Transfer Kalemleri' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.create.lines.subtitle', { defaultValue: 'Uretim tuketimlerini besleyen veya ciktisini tasiyan satirlari tanimlayin.' })}</CardDescription>
+                <CardTitle>{t('productionTransfer.create.lines.title', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardDescription>{t('productionTransfer.create.lines.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -521,18 +521,18 @@ export function ProductionTransferCreatePage(): ReactElement {
                   disabled={suggestionMutation.isPending || (!draft.productionDocumentNo && !draft.productionOrderNo)}
                 >
                   {suggestionMutation.isPending
-                    ? t('common.loading', { defaultValue: 'Yukleniyor' })
-                    : t('productionTransfer.create.lines.fetchSuggestions', { defaultValue: 'Ihtiyactan Oneri Getir' })}
+                    ? t('common.loading', { defaultValue: 'Missing translation' })
+                    : t('productionTransfer.create.lines.fetchSuggestions', { defaultValue: 'Missing translation' })}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, lines: [...prev.lines, createEmptyProductionTransferLineDraft()] }))}>{t('common.add', { defaultValue: 'Kalem Ekle' })}</Button>
+                <Button type="button" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, lines: [...prev.lines, createEmptyProductionTransferLineDraft()] }))}>{t('common.add', { defaultValue: 'Missing translation' })}</Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="mb-4">
               <InfoCallout
-                title={t('productionTransfer.create.info.linesTitle', { defaultValue: 'Kalemleri nasil kullanmaliyim?' })}
-                body={t('productionTransfer.create.info.linesBody', { defaultValue: 'Once onerileri getirerek sistemin uretim ihtiyacindan tavsiye uretmesini saglayin. Sonra gerekli satirlari secip mevcut taslaga ekleyin veya degistirin. Bu ekran planlamaciya malzeme besleme ve ara istasyon hareketlerini kontrollu kurdurmak icin tasarlandi.' })}
+                title={t('productionTransfer.create.info.linesTitle', { defaultValue: 'Missing translation' })}
+                body={t('productionTransfer.create.info.linesBody', { defaultValue: 'Missing translation' })}
               />
             </div>
             <div className="space-y-4">
@@ -541,11 +541,11 @@ export function ProductionTransferCreatePage(): ReactElement {
                   <CardHeader className="pb-3">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <CardTitle className="text-lg">{t('productionTransfer.create.lineCardTitle', { defaultValue: 'Transfer Kalemi {{index}}', index: index + 1 })}</CardTitle>
+                        <CardTitle className="text-lg">{t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}</CardTitle>
                         <CardDescription>
                           {line.productionOrderNo
-                            ? t('productionTransfer.create.lineCardHintLinked', { defaultValue: 'Bu kalem {{orderNo}} emrine bagli ihtiyaci tasir.', orderNo: line.productionOrderNo })
-                            : t('productionTransfer.create.lineCardHint', { defaultValue: 'Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin.' })}
+                            ? t('productionTransfer.create.lineCardHintLinked', { defaultValue: 'Missing translation', orderNo: line.productionOrderNo })
+                            : t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })}
                         </CardDescription>
                       </div>
                       <div className="flex gap-2">
@@ -557,16 +557,16 @@ export function ProductionTransferCreatePage(): ReactElement {
                   <CardContent className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-4">
                       <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri' })}</Label>
+                        <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</Label>
                         <PagedLookupDialog<ProductionOrderLookup>
                           open={activeLineOrderLookupId === line.localId}
                           onOpenChange={(open) => setActiveLineOrderLookupId(open ? line.localId : null)}
-                          title={t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri' })}
-                          description={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Transfer Kalemi {{index}}', index: index + 1 })}
+                          title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
+                          description={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}
                           value={lineOrderLabels[line.localId] || line.productionOrderNo}
-                          placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Emir secin' })}
-                          searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Uretim emirlerinde ara' })}
-                          emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Uretim emri bulunamadi' })}
+                          placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
+                          searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
+                          emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
                           queryKey={['production-transfer', 'line-production-order-lookup', line.localId]}
                           fetchPage={({ pageNumber, pageSize, search, signal }) =>
                             productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
@@ -594,23 +594,23 @@ export function ProductionTransferCreatePage(): ReactElement {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.lineRole', { defaultValue: 'Bu kalem ne yapiyor?' })}</Label>
+                        <Label>{t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}</Label>
                         <Select value={line.lineRole} onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, lineRole: value as typeof lineRoles[number] } : current) }))}>
                           <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                           <SelectContent>{lineRoles.map((value) => <SelectItem key={value} value={value}>{lineRoleLabel(value)}</SelectItem>)}</SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('production.create.producedStockCode', { defaultValue: 'Stok' })}</Label>
+                        <Label>{t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}</Label>
                         <PagedLookupDialog<StockLookup>
                           open={activeLineStockLookupId === line.localId}
                           onOpenChange={(open) => setActiveLineStockLookupId(open ? line.localId : null)}
-                          title={t('production.create.producedStockCode', { defaultValue: 'Stok' })}
-                          description={line.productionOrderNo || t('productionTransfer.create.lineCardHint', { defaultValue: 'Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin.' })}
+                          title={t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}
+                          description={line.productionOrderNo || t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })}
                           value={lineStockLabels[line.localId] || line.stockCode}
-                          placeholder={t('productionTransfer.create.stockSelect', { defaultValue: 'Stok secin' })}
-                          searchPlaceholder={t('productionTransfer.create.stockSearch', { defaultValue: 'Transfer stoklarinda ara' })}
-                          emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Stok bulunamadi' })}
+                          placeholder={t('productionTransfer.create.stockSelect', { defaultValue: 'Missing translation' })}
+                          searchPlaceholder={t('productionTransfer.create.stockSearch', { defaultValue: 'Missing translation' })}
+                          emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Missing translation' })}
                           queryKey={['production-transfer', 'line-stock-lookup', line.localId, line.productionOrderNo || 'all']}
                           fetchPage={({ pageNumber, pageSize, search, signal }) =>
                             lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
@@ -628,32 +628,32 @@ export function ProductionTransferCreatePage(): ReactElement {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('production.create.plannedQuantity', { defaultValue: 'Miktar' })}</Label>
+                        <Label>{t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}</Label>
                         <Input type="number" min="0" step="0.001" value={line.quantity} onChange={(e) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, quantity: Number(e.target.value) || 0 } : current) }))} />
                       </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.sourceCell', { defaultValue: 'Kaynak Hucre' })}</Label>
+                        <Label>{t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}</Label>
                         <ShelfLookupCombobox
                           warehouseCode={draft.sourceWarehouseCode}
                           value={line.sourceCellCode}
                           onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, sourceCellCode: value } : current) }))}
-                          placeholder={t('productionTransfer.create.sourceCell', { defaultValue: 'Kaynak Hucre secin' })}
-                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Hucrelerde ara' })}
-                          emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Bu secim icin kaynak hucre onerisi yok' })}
+                          placeholder={t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}
+                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
+                          emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Missing translation' })}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.targetCell', { defaultValue: 'Hedef Hucre' })}</Label>
+                        <Label>{t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}</Label>
                         <ShelfLookupCombobox
                           warehouseCode={draft.targetWarehouseCode}
                           value={line.targetCellCode}
                           onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, targetCellCode: value } : current) }))}
-                          placeholder={t('productionTransfer.create.targetCell', { defaultValue: 'Hedef Hucre secin' })}
-                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Hucrelerde ara' })}
-                          emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Bu secim icin hedef hucre onerisi yok' })}
+                          placeholder={t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}
+                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
+                          emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Missing translation' })}
                         />
                       </div>
                     </div>
@@ -665,9 +665,9 @@ export function ProductionTransferCreatePage(): ReactElement {
         </Card>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">{t('productionTransfer.create.review.header', { defaultValue: 'Plan No' })}: {draft.productionDocumentNo || '-'}</Badge>
-          <Badge variant="secondary">{t('productionTransfer.create.review.order', { defaultValue: 'Emir No' })}: {draft.productionOrderNo || '-'}</Badge>
-          <Badge variant="secondary">{t('productionTransfer.create.review.purpose', { defaultValue: 'Amac' })}: {transferPurposeLabel(draft.transferPurpose)}</Badge>
+          <Badge variant="secondary">{t('productionTransfer.create.review.header', { defaultValue: 'Missing translation' })}: {draft.productionDocumentNo || '-'}</Badge>
+          <Badge variant="secondary">{t('productionTransfer.create.review.order', { defaultValue: 'Missing translation' })}: {draft.productionOrderNo || '-'}</Badge>
+          <Badge variant="secondary">{t('productionTransfer.create.review.purpose', { defaultValue: 'Missing translation' })}: {transferPurposeLabel(draft.transferPurpose)}</Badge>
         </div>
       </div>
     </FormPageShell>

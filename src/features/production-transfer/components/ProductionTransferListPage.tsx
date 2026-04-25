@@ -106,19 +106,19 @@ export function ProductionTransferListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('productionTransfer.list.title', { defaultValue: 'Uretim Transfer Emirleri' }));
+    setPageTitle(t('productionTransfer.list.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ProductionTransferColumnKey>[]>(() => [
     { key: 'documentNo', label: t('common.documentNo') },
-    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Belge Tarihi' }) },
-    { key: 'transferPurpose', label: t('productionTransfer.create.purpose', { defaultValue: 'Amac' }) },
-    { key: 'productionLink', label: t('productionTransfer.list.productionLink', { defaultValue: 'Uretim Baglantisi' }) },
-    { key: 'sourceWarehouse', label: t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' }) },
-    { key: 'targetWarehouse', label: t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
-    { key: 'actions', label: t('common.actions', { defaultValue: 'Islem' }), sortable: false },
+    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }) },
+    { key: 'transferPurpose', label: t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' }) },
+    { key: 'productionLink', label: t('productionTransfer.list.productionLink', { defaultValue: 'Missing translation' }) },
+    { key: 'sourceWarehouse', label: t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' }) },
+    { key: 'targetWarehouse', label: t('production.create.targetWarehouse', { defaultValue: 'Missing translation' }) },
+    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }) },
+    { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -230,14 +230,14 @@ export function ProductionTransferListPage(): ReactElement {
         renderSortIcon={renderSortIcon}
         isLoading={isLoading}
         isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('productionTransfer.list.error', { defaultValue: 'Uretim transferleri yuklenemedi' })}
-        emptyText={t('productionTransfer.list.noData', { defaultValue: 'Uretim transfer emri bulunamadi' })}
+        errorText={error instanceof Error ? error.message : t('productionTransfer.list.error', { defaultValue: 'Missing translation' })}
+        emptyText={t('productionTransfer.list.noData', { defaultValue: 'Missing translation' })}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Islem' })}
+        actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex min-w-[220px] flex-wrap justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production-transfer/detail/${row.id}`)}>
-              {t('productionTransfer.list.openDetail', { defaultValue: 'Detay' })}
+              {t('productionTransfer.list.openDetail', { defaultValue: 'Missing translation' })}
             </Button>
             <div className="flex items-center gap-1">
               <Button
@@ -247,20 +247,20 @@ export function ProductionTransferListPage(): ReactElement {
                 onClick={() => navigate(`/production-transfer/create?editId=${row.id}`)}
                 disabled={!canUpdateTransfer || Boolean(row.isCompleted)}
               >
-                {t('productionTransfer.list.editTransfer', { defaultValue: 'Duzenle' })}
+                {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
               </Button>
               {!canUpdateTransfer || row.isCompleted ? (
                 <FieldHelpTooltip
                   text={!canUpdateTransfer
                     ? t('productionTransfer.list.editDisabledPermission')
                     : t('productionTransfer.list.editDisabledHelp', {
-                      defaultValue: 'Tamamlanmis veya sahada islenmis transfer emirleri guvenlik nedeniyle duzenlenemez. Gerekirse aynisini kopyalayip yeni transfer acabilirsiniz.',
+                      defaultValue: 'Missing translation',
                     })}
                 />
               ) : null}
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production-transfer/create?cloneId=${row.id}`)} disabled={!canCreateTransfer}>
-              {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Kopyala' })}
+              {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
             </Button>
               {canDeleteTransfer && row.canDelete ? (
                 <Button
@@ -310,7 +310,7 @@ export function ProductionTransferListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('productionTransfer.list.searchPlaceholder', { defaultValue: 'Belge no veya bagli plan ara' }),
+            placeholder: t('productionTransfer.list.searchPlaceholder', { defaultValue: 'Missing translation' }),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}

@@ -49,7 +49,7 @@ export function ShelfManagementPage(): ReactElement {
   const [warehousePickerOpen, setWarehousePickerOpen] = useState(false);
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' }));
+    setPageTitle(t('sidebar.erpShelves', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -106,8 +106,8 @@ export function ShelfManagementPage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' }), isActive: true },
+          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
+          { label: t('sidebar.erpShelves', { defaultValue: 'Missing translation' }), isActive: true },
         ]}
       />
 
@@ -119,7 +119,7 @@ export function ShelfManagementPage(): ReactElement {
               <Badge variant="secondary">Warehouse Master</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' })}
+              {t('sidebar.erpShelves', { defaultValue: 'Missing translation' })}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
               Depo bazli zone, rack, shelf ve cell kayitlarini yonetin. Barcode girisi manuel veya otomatik olabilir.

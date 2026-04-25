@@ -289,7 +289,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
                 void query.refetch();
               },
               isLoading: query.isFetching,
-              label: t('common.refresh', { defaultValue: 'Refresh' }),
+              label: t('common.refresh', { defaultValue: 'Missing translation' }),
             }}
           />
         </CardContent>

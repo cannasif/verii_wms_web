@@ -183,7 +183,7 @@ export function ShipmentItemRow({
                     placeholder={
                       selectedItem?.stockId
                         ? t('shipment.details.configCodePlaceholder')
-                        : t('common.selectStockFirst', { defaultValue: 'Önce stok seçin' })
+                        : t('common.selectStockFirst', { defaultValue: 'Missing translation' })
                     }
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}
@@ -216,7 +216,7 @@ export function ShipmentItemRow({
               <p className="text-xs text-muted-foreground">
                 {selectedItem?.stockId
                   ? (selectedItem?.configCode || t('shipment.details.configCodePlaceholder'))
-                  : t('common.selectStockFirst', { defaultValue: 'Önce stok seçin' })}
+                  : t('common.selectStockFirst', { defaultValue: 'Missing translation' })}
               </p>
             </div>
           </div>

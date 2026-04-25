@@ -59,7 +59,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
   }));
 
   const selectedUserLabel = useMemo(() => {
-    if (selectedUserId == null) return t('userGroupAssignments.noUserSelected', { defaultValue: 'Henüz kullanıcı seçilmedi' });
+    if (selectedUserId == null) return t('userGroupAssignments.noUserSelected', { defaultValue: 'Missing translation' });
     return userOptions.find((option) => option.value === selectedUserId.toString())?.label ?? `#${selectedUserId}`;
   }, [selectedUserId, t, userOptions]);
 
@@ -112,12 +112,12 @@ export function UserGroupAssignmentsPage(): ReactElement {
               </div>
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-                  {t('userGroupAssignments.statusLabel', { defaultValue: 'Durum' })}
+                  {t('userGroupAssignments.statusLabel', { defaultValue: 'Missing translation' })}
                 </p>
                 <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">
                   {hasChanges
-                    ? t('userGroupAssignments.statusPending', { defaultValue: 'Kaydedilmedi' })
-                    : t('userGroupAssignments.statusCurrent', { defaultValue: 'Güncel' })}
+                    ? t('userGroupAssignments.statusPending', { defaultValue: 'Missing translation' })
+                    : t('userGroupAssignments.statusCurrent', { defaultValue: 'Missing translation' })}
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
             {!canUpdateAssignments ? (
               <div className="mb-3 rounded-2xl border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300">
                 {t('userGroupAssignments.readOnlyInfo', {
-                  defaultValue: 'Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir.',
+                  defaultValue: 'Missing translation',
                 })}
               </div>
             ) : null}

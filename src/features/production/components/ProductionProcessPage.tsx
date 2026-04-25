@@ -290,7 +290,7 @@ export function ProductionProcessPage(): ReactElement {
     if (!selectedOrder) {
       return {
         title: t('production.process.pickOrder'),
-        description: t('production.process.pickAssignedOrderFirst', { defaultValue: 'Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir.' }),
+        description: t('production.process.pickAssignedOrderFirst', { defaultValue: 'Missing translation' }),
       };
     }
 
@@ -304,28 +304,28 @@ export function ProductionProcessPage(): ReactElement {
     if (canShowStart) {
       return {
         title: t('production.process.start'),
-        description: t('production.process.startCardHint', { defaultValue: 'Secili asamayi operasyona alir.' }),
+        description: t('production.process.startCardHint', { defaultValue: 'Missing translation' }),
       };
     }
 
     if (canShowPause) {
       return {
         title: t('production.process.pause'),
-        description: t('production.process.pauseCardHint', { defaultValue: 'Makine durusu, ara veya bekleme icin kullanin.' }),
+        description: t('production.process.pauseCardHint', { defaultValue: 'Missing translation' }),
       };
     }
 
     if (canShowResume) {
       return {
         title: t('production.process.resume'),
-        description: t('production.process.resumeCardHint', { defaultValue: 'Duraklayan asamayi kaldigi yerden devam ettirir.' }),
+        description: t('production.process.resumeCardHint', { defaultValue: 'Missing translation' }),
       };
     }
 
     if (canShowComplete) {
       return {
         title: t('production.process.complete'),
-        description: t('production.process.completeCardHint', { defaultValue: 'Bu asamadaki operasyonu kapatir ve durumu gunceller.' }),
+        description: t('production.process.completeCardHint', { defaultValue: 'Missing translation' }),
       };
     }
 
@@ -400,23 +400,23 @@ export function ProductionProcessPage(): ReactElement {
   );
 
   const consumptionGuardMessage = useMemo(() => {
-    if (!selectedOrder) return t('production.process.pickAssignedOrderFirst', { defaultValue: 'Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir.' });
-    if (!activeOperation) return t('production.process.startCardHint', { defaultValue: 'Secili asamayi operasyona alir.' });
-    if (!consumptionLine.stockCode) return t('production.process.pickConsumptionLine', { defaultValue: 'Atanmis tuketim kalemini secin' });
-    if (consumptionLine.quantity <= 0) return t('production.process.quantityMustBePositive', { defaultValue: 'Miktar sifirdan buyuk olmali.' });
+    if (!selectedOrder) return t('production.process.pickAssignedOrderFirst', { defaultValue: 'Missing translation' });
+    if (!activeOperation) return t('production.process.startCardHint', { defaultValue: 'Missing translation' });
+    if (!consumptionLine.stockCode) return t('production.process.pickConsumptionLine', { defaultValue: 'Missing translation' });
+    if (consumptionLine.quantity <= 0) return t('production.process.quantityMustBePositive', { defaultValue: 'Missing translation' });
     if (consumptionRequiresSerial && !consumptionLine.serialNo1?.trim()) {
-      return t('production.process.serialRequiredGuard', { defaultValue: 'Bu kalem icin seri girmek zorunlu.' });
+      return t('production.process.serialRequiredGuard', { defaultValue: 'Missing translation' });
     }
     return null;
   }, [activeOperation, consumptionLine.quantity, consumptionLine.serialNo1, consumptionLine.stockCode, consumptionRequiresSerial, selectedOrder, t]);
 
   const outputGuardMessage = useMemo(() => {
-    if (!selectedOrder) return t('production.process.pickAssignedOrderFirstOutput', { defaultValue: 'Once size atanmis bir asama secin. Uretilecek cikti kalemleri secilen asamadan otomatik gelir.' });
-    if (!activeOperation) return t('production.process.startCardHint', { defaultValue: 'Secili asamayi operasyona alir.' });
-    if (!outputLine.stockCode) return t('production.process.pickOutputLine', { defaultValue: 'Atanmis cikti kalemini secin' });
-    if (outputLine.quantity <= 0) return t('production.process.quantityMustBePositive', { defaultValue: 'Miktar sifirdan buyuk olmali.' });
+    if (!selectedOrder) return t('production.process.pickAssignedOrderFirstOutput', { defaultValue: 'Missing translation' });
+    if (!activeOperation) return t('production.process.startCardHint', { defaultValue: 'Missing translation' });
+    if (!outputLine.stockCode) return t('production.process.pickOutputLine', { defaultValue: 'Missing translation' });
+    if (outputLine.quantity <= 0) return t('production.process.quantityMustBePositive', { defaultValue: 'Missing translation' });
     if (outputRequiresSerial && !outputLine.serialNo1?.trim()) {
-      return t('production.process.serialRequiredGuard', { defaultValue: 'Bu kalem icin seri girmek zorunlu.' });
+      return t('production.process.serialRequiredGuard', { defaultValue: 'Missing translation' });
     }
     return null;
   }, [activeOperation, outputLine.quantity, outputLine.serialNo1, outputLine.stockCode, outputRequiresSerial, selectedOrder, t]);
@@ -570,7 +570,7 @@ export function ProductionProcessPage(): ReactElement {
 
   const applyQuickEntryMatch = (): void => {
     if (!quickEntryPrimaryMatch) {
-      toast.error(t('production.process.quickEntryNoMatch', { defaultValue: 'Girilen bilgi ile eslesen plan satiri bulunamadi.' }));
+      toast.error(t('production.process.quickEntryNoMatch', { defaultValue: 'Missing translation' }));
       return;
     }
 
@@ -588,7 +588,7 @@ export function ProductionProcessPage(): ReactElement {
       }));
     }
 
-    toast.success(t('production.process.quickEntryApplied', { defaultValue: 'Plan satiri hizli kayit alanina tasindi.' }));
+    toast.success(t('production.process.quickEntryApplied', { defaultValue: 'Missing translation' }));
   };
 
   return (
@@ -598,10 +598,10 @@ export function ProductionProcessPage(): ReactElement {
       actions={(
         <div className="flex gap-2">
           <Button variant={isKioskMode ? 'outline' : 'default'} onClick={() => switchDisplayMode('web')}>
-            {t('production.process.webMode', { defaultValue: 'Web Modu' })}
+            {t('production.process.webMode', { defaultValue: 'Missing translation' })}
           </Button>
           <Button variant={isKioskMode ? 'default' : 'outline'} onClick={() => switchDisplayMode('kiosk')}>
-            {t('production.process.kioskMode', { defaultValue: 'Kiosk Modu' })}
+            {t('production.process.kioskMode', { defaultValue: 'Missing translation' })}
           </Button>
           {headerId > 0 ? (
             <Button variant="outline" onClick={() => navigate(`/production/detail/${headerId}`)}>
@@ -669,7 +669,7 @@ export function ProductionProcessPage(): ReactElement {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardDescription>{t('production.process.selectedOrder', { defaultValue: 'Secili Asama' })}</CardDescription>
+                  <CardDescription>{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</CardDescription>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Factory className="size-4 text-slate-500" />
                     {selectedOrder?.orderNo ?? '-'}
@@ -688,7 +688,7 @@ export function ProductionProcessPage(): ReactElement {
                   <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder?.producedStockCode || t('production.process.pickOrder')}</div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                      <span>{t('production.process.outputProgress', { defaultValue: 'Cikti ilerlemesi' })}</span>
+                      <span>{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</span>
                       <span>{formatQuantity(selectedOrder?.completedQuantity)} / {formatQuantity(selectedOrder?.plannedQuantity)}</span>
                     </div>
                     <div className="h-2 rounded-full bg-slate-100 dark:bg-white/10">
@@ -700,7 +700,7 @@ export function ProductionProcessPage(): ReactElement {
 
               <Card>
                 <CardHeader className="pb-3">
-                  <CardDescription>{t('production.process.lastOperation', { defaultValue: 'Son Operasyon Ozeti' })}</CardDescription>
+                  <CardDescription>{t('production.process.lastOperation', { defaultValue: 'Missing translation' })}</CardDescription>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <TimerReset className="size-4 text-slate-500" />
                     {recentEvent ? operationEventTypeLabel(recentEvent.eventType) : t('production.process.operationNone')}
@@ -718,17 +718,17 @@ export function ProductionProcessPage(): ReactElement {
             <Card className="overflow-hidden border-slate-200/80 bg-gradient-to-r from-white via-slate-50 to-sky-50/70 dark:border-white/10 dark:from-slate-950 dark:via-slate-950 dark:to-sky-950/20">
               <CardContent className="grid gap-4 p-6 md:grid-cols-4">
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.selectedOrder', { defaultValue: 'Secili Asama' })}</div>
+                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
                   <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{selectedOrder.orderNo}</div>
                   <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder.producedStockCode}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Cikti ilerlemesi' })}</div>
+                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
                   <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(selectedOrder.completedQuantity)} / {formatQuantity(selectedOrder.plannedQuantity)}</div>
                   <div className="text-sm text-slate-600 dark:text-slate-300">{t('production.process.gap.output', { value: selectedOrderGaps.outputGap })}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.materialProgress', { defaultValue: 'Tuketim ilerlemesi' })}</div>
+                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.materialProgress', { defaultValue: 'Missing translation' })}</div>
                   <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('production.process.gap.consumption', { value: selectedOrderGaps.consumptionGap })}</div>
                   <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder.consumptions.length} {t('production.process.consumptions').toLowerCase()}</div>
                 </div>
@@ -753,18 +753,18 @@ export function ProductionProcessPage(): ReactElement {
 
           <Card className="border-slate-200/80 bg-white/90 dark:border-white/10 dark:bg-slate-950/70">
             <CardHeader>
-              <CardTitle>{t('production.process.operatorFlow', { defaultValue: 'Operator Akisi' })}</CardTitle>
-              <CardDescription>{t('production.process.operatorFlowSubtitle', { defaultValue: 'Kioskta tek ekrandan ilerlemek icin asamanin su anki gerekli adimlarini takip edin.' })}</CardDescription>
+              <CardTitle>{t('production.process.operatorFlow', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('production.process.operatorFlowSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 xl:grid-cols-4">
               <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                 <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">01</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.selectedOrder', { defaultValue: 'Asamayi Sec' })}</div>
+                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{selectedOrder?.orderNo || t('production.process.pickOrder')}</div>
               </div>
               <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                 <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">02</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.dependencies', { defaultValue: 'Blokaj Kontrolu' })}</div>
+                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.dependencies', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                   {hasDependencyBlocker
                     ? t('production.process.startBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })
@@ -773,13 +773,13 @@ export function ProductionProcessPage(): ReactElement {
               </div>
               <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                 <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">03</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.currentAction', { defaultValue: 'Siradaki Islem' })}</div>
+                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">{currentActionSummary.title}</div>
                 <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{currentActionSummary.description}</div>
               </div>
               <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                 <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">04</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.lineHistory', { defaultValue: 'Kayitlar' })}</div>
+                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.lineHistory', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                   {t('production.process.lineRoleConsumption')}: {movementSummary.consumptionCount} / {t('production.process.lineRoleOutput')}: {movementSummary.outputCount}
                 </div>
@@ -791,9 +791,9 @@ export function ProductionProcessPage(): ReactElement {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ScanLine className="size-4 text-slate-500" />
-                {t('production.process.quickEntryTitle', { defaultValue: 'Hizli Giris' })}
+                {t('production.process.quickEntryTitle', { defaultValue: 'Missing translation' })}
               </CardTitle>
-              <CardDescription>{t('production.process.quickEntrySubtitle', { defaultValue: 'Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun.' })}</CardDescription>
+              <CardDescription>{t('production.process.quickEntrySubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
@@ -809,12 +809,12 @@ export function ProductionProcessPage(): ReactElement {
                 <Input
                   value={quickEntryValue}
                   onChange={(e) => setQuickEntryValue(e.target.value)}
-                  placeholder={t('production.process.quickEntryPlaceholder', { defaultValue: 'Stok kodu / YapKod / Barkod girin' })}
+                  placeholder={t('production.process.quickEntryPlaceholder', { defaultValue: 'Missing translation' })}
                   className={isKioskMode ? 'h-14 text-lg' : undefined}
                 />
                 <Button type="button" size="lg" onClick={applyQuickEntryMatch} disabled={!quickEntryPrimaryMatch}>
                   <ScanLine className="mr-2 size-4" />
-                  {t('production.process.quickEntryApply', { defaultValue: 'Satiri Doldur' })}
+                  {t('production.process.quickEntryApply', { defaultValue: 'Missing translation' })}
                 </Button>
               </div>
 
@@ -842,7 +842,7 @@ export function ProductionProcessPage(): ReactElement {
                       </div>
                     </div>
                     <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
-                      <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Kalan' })}</div>
+                      <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
                       <div className="mt-1 font-semibold text-sky-900 dark:text-sky-100">
                         {formatQuantity(getQuickEntryRemainingQuantity(quickEntryPrimaryMatch))}
                       </div>
@@ -851,7 +851,7 @@ export function ProductionProcessPage(): ReactElement {
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                  {t('production.process.quickEntryNoMatch', { defaultValue: 'Girilen bilgi ile eslesen plan satiri bulunamadi.' })}
+                  {t('production.process.quickEntryNoMatch', { defaultValue: 'Missing translation' })}
                 </div>
               )}
             </CardContent>
@@ -861,8 +861,8 @@ export function ProductionProcessPage(): ReactElement {
             <div className="grid gap-6 xl:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('production.process.requiredConsumptions', { defaultValue: 'Tuketilmesi Gereken Kalemler' })}</CardTitle>
-                  <CardDescription>{t('production.process.requiredConsumptionsSubtitle', { defaultValue: 'Secili asama icin zorunlu ve planli tuketim satirlarini seri/lokasyon bilgisiyle inceleyin.' })}</CardDescription>
+                  <CardTitle>{t('production.process.requiredConsumptions', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardDescription>{t('production.process.requiredConsumptionsSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {selectedOrder.consumptions.length === 0 ? (
@@ -887,12 +887,12 @@ export function ProductionProcessPage(): ReactElement {
                           {renderSerialModeBadge(row.serialEntryMode)}
                           {row.isMandatory ? (
                             <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
-                              {t('production.process.materialMandatory', { defaultValue: 'Zorunlu malzeme' })}
+                              {t('production.process.materialMandatory', { defaultValue: 'Missing translation' })}
                             </Badge>
                           ) : null}
                           {row.isBackflush ? (
                             <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-                              {t('production.process.materialBackflush', { defaultValue: 'Backflush' })}
+                              {t('production.process.materialBackflush', { defaultValue: 'Missing translation' })}
                             </Badge>
                           ) : null}
                         </div>
@@ -906,7 +906,7 @@ export function ProductionProcessPage(): ReactElement {
                             <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.consumedQuantity)} {row.unit || ''}</div>
                           </div>
                           <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
-                            <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Kalan ihtiyac' })}</div>
+                            <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
                             <div className="mt-1 font-semibold text-sky-900 dark:text-sky-100">{formatQuantity(remaining)} {row.unit || ''}</div>
                           </div>
                         </div>
@@ -918,8 +918,8 @@ export function ProductionProcessPage(): ReactElement {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('production.process.expectedOutputs', { defaultValue: 'Uretilmesi Gereken Ciktilar' })}</CardTitle>
-                  <CardDescription>{t('production.process.expectedOutputsSubtitle', { defaultValue: 'Secili asamanin hedef ciktilarini takip ve seri gereksinimleriyle izleyin.' })}</CardDescription>
+                  <CardTitle>{t('production.process.expectedOutputs', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardDescription>{t('production.process.expectedOutputsSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {selectedOrder.outputs.length === 0 ? (
@@ -943,7 +943,7 @@ export function ProductionProcessPage(): ReactElement {
                           {renderTrackingBadge(row.trackingMode)}
                           {renderSerialModeBadge(row.serialEntryMode)}
                           <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                            {t('production.process.outputReadyTarget', { defaultValue: 'Hedef cikti' })}
+                            {t('production.process.outputReadyTarget', { defaultValue: 'Missing translation' })}
                           </Badge>
                         </div>
                         <div className="mt-3 grid gap-3 sm:grid-cols-3">
@@ -956,7 +956,7 @@ export function ProductionProcessPage(): ReactElement {
                             <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.producedQuantity)} {row.unit || ''}</div>
                           </div>
                           <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/70 px-3 py-2 dark:border-emerald-500/20 dark:bg-emerald-500/10">
-                            <div className="text-xs text-emerald-700 dark:text-emerald-200">{t('production.process.remainingQuantity', { defaultValue: 'Kalan hedef' })}</div>
+                            <div className="text-xs text-emerald-700 dark:text-emerald-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
                             <div className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{formatQuantity(remaining)} {row.unit || ''}</div>
                           </div>
                         </div>
@@ -1029,13 +1029,13 @@ export function ProductionProcessPage(): ReactElement {
                   <Input value={orderStockFilter} onChange={(e) => setOrderStockFilter(e.target.value)} placeholder={t('production.process.orderSearchPlaceholder')} />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('production.process.assignmentScope', { defaultValue: 'Asama gorunumu' })}</Label>
+                  <Label>{t('production.process.assignmentScope', { defaultValue: 'Missing translation' })}</Label>
                   <div className="flex flex-wrap gap-2">
                     <Button type="button" size="sm" variant={onlyAssignedOrders ? 'default' : 'outline'} onClick={() => setOnlyAssignedOrders(true)}>
-                      {t('production.process.onlyAssignedOrders', { defaultValue: 'Sadece bana atanmis asamalar' })}
+                      {t('production.process.onlyAssignedOrders', { defaultValue: 'Missing translation' })}
                     </Button>
                     <Button type="button" size="sm" variant={!onlyAssignedOrders ? 'default' : 'outline'} onClick={() => setOnlyAssignedOrders(false)}>
-                      {t('production.process.allOrders', { defaultValue: 'Tum asamalar' })}
+                      {t('production.process.allOrders', { defaultValue: 'Missing translation' })}
                     </Button>
                   </div>
                 </div>
@@ -1128,13 +1128,13 @@ export function ProductionProcessPage(): ReactElement {
                           onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(detailQuery.data.header.documentNo || '')}&productionOrderNo=${encodeURIComponent(order.orderNo)}`)}
                           disabled={!canCreateTransfer}
                         >
-                          {t('production.process.openTransfer', { defaultValue: 'Bu Asama Icin Transfer Ac' })}
+                          {t('production.process.openTransfer', { defaultValue: 'Missing translation' })}
                         </Button>
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-3">
                         <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
-                          <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Cikti' })}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
                           <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(order.completedQuantity)} / {formatQuantity(order.plannedQuantity)}</div>
                         </div>
                         <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
@@ -1244,11 +1244,11 @@ export function ProductionProcessPage(): ReactElement {
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div className="space-y-1">
                         <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {t('production.process.quickTransferTitle', { defaultValue: 'Bu asama icin hizli transfer' })}
+                          {t('production.process.quickTransferTitle', { defaultValue: 'Missing translation' })}
                         </div>
                         <div className="text-sm text-slate-500 dark:text-slate-400">
                           {t('production.process.quickTransferDescription', {
-                            defaultValue: '{{orderNo}} asamasinin malzeme besleme, yari mamul veya cikti tasima transferini tek tikla baslat.',
+                            defaultValue: 'Missing translation',
                             orderNo: selectedOrder.orderNo,
                           })}
                         </div>
@@ -1259,7 +1259,7 @@ export function ProductionProcessPage(): ReactElement {
                         onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(detailQuery.data.header.documentNo || '')}&productionOrderNo=${encodeURIComponent(selectedOrder.orderNo)}`)}
                         disabled={!canCreateTransfer}
                       >
-                        {t('production.process.openTransfer', { defaultValue: 'Transfer Ac' })}
+                        {t('production.process.openTransfer', { defaultValue: 'Missing translation' })}
                       </Button>
                     </div>
                   </div>
@@ -1306,7 +1306,7 @@ export function ProductionProcessPage(): ReactElement {
                       <span className="text-xs opacity-80">
                         {hasDependencyBlocker
                           ? t('production.process.startBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })
-                          : t('production.process.startCardHint', { defaultValue: 'Secili asamayi operasyona alir.' })}
+                          : t('production.process.startCardHint', { defaultValue: 'Missing translation' })}
                       </span>
                     </Button>
                   ) : null}
@@ -1314,21 +1314,21 @@ export function ProductionProcessPage(): ReactElement {
                   {canShowPause ? (
                     <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => pauseMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || pauseMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><PauseCircle className="size-4" />{t('production.process.pause')}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.pauseCardHint', { defaultValue: 'Makine durusu, ara veya bekleme icin kullanin.' })}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.pauseCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
                   ) : null}
 
                   {canShowResume ? (
                     <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => resumeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || resumeMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><TimerReset className="size-4" />{t('production.process.resume')}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.resumeCardHint', { defaultValue: 'Duraklayan asamayi kaldigi yerden devam ettirir.' })}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.resumeCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
                   ) : null}
 
                   {canShowComplete ? (
                     <Button type="button" variant="destructive" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => completeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || completeMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><CheckCircle2 className="size-4" />{t('production.process.complete')}</span>
-                      <span className="text-xs opacity-80">{t('production.process.completeCardHint', { defaultValue: 'Bu asamadaki operasyonu kapatir ve durumu gunceller.' })}</span>
+                      <span className="text-xs opacity-80">{t('production.process.completeCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
                   ) : null}
                 </div>
@@ -1398,7 +1398,7 @@ export function ProductionProcessPage(): ReactElement {
               <Card>
                 <CardHeader>
                   <CardTitle>{t('production.process.addConsumption')}</CardTitle>
-                  <CardDescription>{t('production.process.consumptionSimpleHint', { defaultValue: '1. Tuketim kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.' })}</CardDescription>
+                  <CardDescription>{t('production.process.consumptionSimpleHint', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
@@ -1421,7 +1421,7 @@ export function ProductionProcessPage(): ReactElement {
                       {renderSerialModeBadge(selectedConsumptionPlan.serialEntryMode)}
                       {selectedConsumptionPlan.isMandatory ? (
                         <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
-                          {t('production.process.materialMandatory', { defaultValue: 'Zorunlu malzeme' })}
+                          {t('production.process.materialMandatory', { defaultValue: 'Missing translation' })}
                         </Badge>
                       ) : null}
                     </div>
@@ -1434,7 +1434,7 @@ export function ProductionProcessPage(): ReactElement {
 
                   {!selectedOrder ? (
                     <div className="md:col-span-2 rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      {t('production.process.pickAssignedOrderFirst', { defaultValue: 'Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir.' })}
+                      {t('production.process.pickAssignedOrderFirst', { defaultValue: 'Missing translation' })}
                     </div>
                   ) : null}
 
@@ -1442,7 +1442,7 @@ export function ProductionProcessPage(): ReactElement {
                     options={consumptionStockOptions}
                     value={selectedConsumptionPlan ? String(selectedConsumptionPlan.id) : ''}
                     onValueChange={(value) => prefillConsumptionFromPlan(value)}
-                    placeholder={t('production.process.pickConsumptionLine', { defaultValue: 'Atanmis tuketim kalemini secin' })}
+                    placeholder={t('production.process.pickConsumptionLine', { defaultValue: 'Missing translation' })}
                     searchPlaceholder={t('production.process.lookupSearch')}
                     emptyText={t('production.process.lookupEmpty')}
                     disabled={!selectedOrder}
@@ -1469,7 +1469,7 @@ export function ProductionProcessPage(): ReactElement {
                     {selectedConsumptionPlan ? (
                       <div className="mb-3 rounded-xl border border-sky-200/70 bg-sky-50/70 p-3 text-sm text-sky-900 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100">
                         {t('production.process.selectedConsumptionInfo', {
-                          defaultValue: 'Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}',
+                          defaultValue: 'Missing translation',
                           stock: selectedConsumptionPlan.stockCode,
                           planned: selectedConsumptionPlan.plannedQuantity,
                           remaining: Math.max(selectedConsumptionPlan.plannedQuantity - (selectedConsumptionPlan.consumedQuantity ?? 0), 0),
@@ -1486,7 +1486,7 @@ export function ProductionProcessPage(): ReactElement {
               <Card>
                 <CardHeader>
                   <CardTitle>{t('production.process.addOutput')}</CardTitle>
-                  <CardDescription>{t('production.process.outputSimpleHint', { defaultValue: '1. Uretilecek cikti kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.' })}</CardDescription>
+                  <CardDescription>{t('production.process.outputSimpleHint', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
@@ -1517,7 +1517,7 @@ export function ProductionProcessPage(): ReactElement {
 
                   {!selectedOrder ? (
                     <div className="md:col-span-2 rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      {t('production.process.pickAssignedOrderFirstOutput', { defaultValue: 'Once size atanmis bir asama secin. Uretilecek cikti kalemleri secilen asamadan otomatik gelir.' })}
+                      {t('production.process.pickAssignedOrderFirstOutput', { defaultValue: 'Missing translation' })}
                     </div>
                   ) : null}
 
@@ -1525,7 +1525,7 @@ export function ProductionProcessPage(): ReactElement {
                     options={outputStockOptions}
                     value={selectedOutputPlan ? String(selectedOutputPlan.id) : ''}
                     onValueChange={(value) => prefillOutputFromPlan(value)}
-                    placeholder={t('production.process.pickOutputLine', { defaultValue: 'Atanmis cikti kalemini secin' })}
+                    placeholder={t('production.process.pickOutputLine', { defaultValue: 'Missing translation' })}
                     searchPlaceholder={t('production.process.lookupSearch')}
                     emptyText={t('production.process.lookupEmpty')}
                     disabled={!selectedOrder}
@@ -1552,7 +1552,7 @@ export function ProductionProcessPage(): ReactElement {
                     {selectedOutputPlan ? (
                       <div className="mb-3 rounded-xl border border-emerald-200/70 bg-emerald-50/70 p-3 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100">
                         {t('production.process.selectedOutputInfo', {
-                          defaultValue: 'Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}',
+                          defaultValue: 'Missing translation',
                           stock: selectedOutputPlan.stockCode,
                           planned: selectedOutputPlan.plannedQuantity,
                           remaining: Math.max(selectedOutputPlan.plannedQuantity - (selectedOutputPlan.producedQuantity ?? 0), 0),
@@ -1573,7 +1573,7 @@ export function ProductionProcessPage(): ReactElement {
             : 'sticky bottom-0 z-20 -mx-2 rounded-t-3xl border border-slate-200/80 bg-white/95 px-4 py-4 shadow-[0_-12px_40px_rgba(15,23,42,0.12)] backdrop-blur dark:border-white/10 dark:bg-slate-950/95 sm:mx-0'}>
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="space-y-1">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('production.process.currentAction', { defaultValue: 'Siradaki Islem' })}</div>
+                <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{currentActionSummary.title}</div>
                 <div className="text-sm text-slate-600 dark:text-slate-300">{currentActionSummary.description}</div>
               </div>

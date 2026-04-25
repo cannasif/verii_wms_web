@@ -155,17 +155,17 @@ export function ShipmentCreatePage(): ReactElement {
   const steps = [
     { label: t('shipment.create.steps.basicInfo') },
     {
-      label: createMode === 'order' ? t('shipment.create.steps.orderSelection') : t('shipment.process.steps.stockSelection', { defaultValue: 'Stok Seçimi' }),
+      label: createMode === 'order' ? t('shipment.create.steps.orderSelection') : t('shipment.process.steps.stockSelection', { defaultValue: 'Missing translation' }),
     },
   ];
 
   const stockLabels = {
-    stocks: t('shipment.process.stocks', { defaultValue: 'Stoklar' }),
-    selectedItems: t('shipment.process.selectedItems', { defaultValue: 'Seçilen Kalemler' }),
-    selectedItemsCount: t('shipment.process.selectedItemsCount', { defaultValue: '{{count}} kalem' }),
-    searchStocks: t('shipment.process.searchStocks', { defaultValue: 'Stok kodu veya adı ile ara...' }),
-    searchItems: t('shipment.process.searchItems', { defaultValue: 'Seçilenleri ara...' }),
-    noSelectedItems: t('shipment.process.noSelectedItems', { defaultValue: 'Seçili stok bulunmamaktadır' }),
+    stocks: t('shipment.process.stocks', { defaultValue: 'Missing translation' }),
+    selectedItems: t('shipment.process.selectedItems', { defaultValue: 'Missing translation' }),
+    selectedItemsCount: t('shipment.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
+    searchStocks: t('shipment.process.searchStocks', { defaultValue: 'Missing translation' }),
+    searchItems: t('shipment.process.searchItems', { defaultValue: 'Missing translation' }),
+    noSelectedItems: t('shipment.process.noSelectedItems', { defaultValue: 'Missing translation' }),
     unit: t('shipment.step2.unit'),
     serialNo: t('shipment.details.serialNo'),
     serialNoPlaceholder: t('shipment.details.serialNoPlaceholder'),
@@ -201,12 +201,12 @@ export function ShipmentCreatePage(): ReactElement {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('shipment.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('shipment.create.mode.stock', { defaultValue: 'Stok bazlı' })}
+          {createMode === 'order' ? t('shipment.create.mode.order', { defaultValue: 'Missing translation' }) : t('shipment.create.mode.stock', { defaultValue: 'Missing translation' })}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('shipment.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('shipment.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('shipment.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('shipment.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

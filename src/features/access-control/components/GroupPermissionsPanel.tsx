@@ -120,10 +120,10 @@ export function GroupPermissionsPanel({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           <div className="mb-4 rounded-lg border border-slate-200/70 bg-slate-50/70 px-4 py-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
             <div className="font-medium text-slate-900 dark:text-slate-100">
-              {t('permissionGroups.permissionsPanel.introTitle', { defaultValue: 'Bu grup hangi işlemleri yapabilir?' })}
+              {t('permissionGroups.permissionsPanel.introTitle', { defaultValue: 'Missing translation' })}
             </div>
             <div className="mt-1 leading-6">
-              {t('permissionGroups.permissionsPanel.introBody', { defaultValue: 'Aşağıda bu grubun hangi modülleri görebileceğini, kayıt açabileceğini, güncelleyebileceğini veya silebileceğini seçersiniz. Bu gruba atanan tüm kullanıcılar aynı yetki setini alır.' })}
+              {t('permissionGroups.permissionsPanel.introBody', { defaultValue: 'Missing translation' })}
             </div>
           </div>
           {isSystemAdminGroup && (
@@ -133,19 +133,19 @@ export function GroupPermissionsPanel({
           )}
           <div className="mb-4 grid gap-3 md:grid-cols-4">
             <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.view', { defaultValue: 'Görüntüle' })}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.view', { defaultValue: 'Missing translation' })}</div>
               <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.view}</div>
             </div>
             <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.create', { defaultValue: 'Oluştur' })}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.create', { defaultValue: 'Missing translation' })}</div>
               <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.create}</div>
             </div>
             <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.update', { defaultValue: 'Güncelle' })}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.update', { defaultValue: 'Missing translation' })}</div>
               <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.update}</div>
             </div>
             <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.delete', { defaultValue: 'Sil' })}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.delete', { defaultValue: 'Missing translation' })}</div>
               <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.delete}</div>
             </div>
           </div>

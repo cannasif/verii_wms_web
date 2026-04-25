@@ -111,21 +111,21 @@ export function ProductionListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('production.list.title', { defaultValue: 'Uretim Planlari' }));
+    setPageTitle(t('production.list.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ProductionColumnKey>[]>(() => [
     { key: 'documentNo', label: t('common.documentNo') },
-    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Belge Tarihi' }) },
-    { key: 'mainStockCode', label: t('production.create.mainStockCode', { defaultValue: 'Ana Stok' }) },
-    { key: 'mainYapKod', label: t('production.create.mainYapKod', { defaultValue: 'Ana YapKod' }) },
-    { key: 'executionMode', label: t('production.create.executionMode', { defaultValue: 'Mod' }) },
-    { key: 'plannedQuantity', label: t('production.create.plannedQuantity', { defaultValue: 'Planlanan' }) },
-    { key: 'completedQuantity', label: t('production.list.completedQuantity', { defaultValue: 'Gerceklesen' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Durum' }) },
-    { key: 'projectCode', label: t('common.projectCode', { defaultValue: 'Proje' }) },
-    { key: 'actions', label: t('common.actions', { defaultValue: 'Islem' }), sortable: false },
+    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }) },
+    { key: 'mainStockCode', label: t('production.create.mainStockCode', { defaultValue: 'Missing translation' }) },
+    { key: 'mainYapKod', label: t('production.create.mainYapKod', { defaultValue: 'Missing translation' }) },
+    { key: 'executionMode', label: t('production.create.executionMode', { defaultValue: 'Missing translation' }) },
+    { key: 'plannedQuantity', label: t('production.create.plannedQuantity', { defaultValue: 'Missing translation' }) },
+    { key: 'completedQuantity', label: t('production.list.completedQuantity', { defaultValue: 'Missing translation' }) },
+    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }) },
+    { key: 'projectCode', label: t('common.projectCode', { defaultValue: 'Missing translation' }) },
+    { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -239,10 +239,10 @@ export function ProductionListPage(): ReactElement {
         renderSortIcon={renderSortIcon}
         isLoading={isLoading}
         isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('production.list.error', { defaultValue: 'Uretim planlari yuklenemedi' })}
-        emptyText={t('production.list.noData', { defaultValue: 'Uretim plani bulunamadi' })}
+        errorText={error instanceof Error ? error.message : t('production.list.error', { defaultValue: 'Missing translation' })}
+        emptyText={t('production.list.noData', { defaultValue: 'Missing translation' })}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Islem' })}
+        actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex min-w-[220px] flex-wrap items-center justify-end gap-2">
             <div className="flex items-center gap-1">
@@ -253,20 +253,20 @@ export function ProductionListPage(): ReactElement {
                 onClick={() => navigate(`/production/create?editId=${row.id}`)}
                 disabled={!canUpdateProduction || row.status !== 'Draft'}
               >
-                {t('production.list.editPlan', { defaultValue: 'Duzenle' })}
+                {t('production.list.editPlan', { defaultValue: 'Missing translation' })}
               </Button>
               {!canUpdateProduction || row.status !== 'Draft' ? (
                 <FieldHelpTooltip
                   text={!canUpdateProduction
                     ? t('production.list.editDisabledPermission')
                     : t('production.list.editDisabledHelp', {
-                      defaultValue: 'Sadece draft ve henüz islem gormemis planlar duzenlenebilir. Islem gormus planlar sahadaki hareketi bozmamak icin kilitlenir.',
+                      defaultValue: 'Missing translation',
                     })}
                 />
               ) : null}
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)}>
-              {t('production.list.openDetail', { defaultValue: 'Detay' })}
+              {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/production/process/${row.id}`)}>
               {t('production.list.openProcess', { defaultValue: getProcessLabel(row.status) })}
@@ -278,7 +278,7 @@ export function ProductionListPage(): ReactElement {
                 size="sm"
                 onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(row.documentNo)}`)}
               >
-                {t('production.list.openTransfer', { defaultValue: 'Transfer Ac' })}
+                {t('production.list.openTransfer', { defaultValue: 'Missing translation' })}
               </Button>
             ) : null}
               {canDeleteProduction && row.canDelete ? (
@@ -329,7 +329,7 @@ export function ProductionListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('production.list.searchPlaceholder', { defaultValue: 'Belge no, ana stok veya proje ara' }),
+            placeholder: t('production.list.searchPlaceholder', { defaultValue: 'Missing translation' }),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}

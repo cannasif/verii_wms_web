@@ -176,30 +176,30 @@ export function PermissionDefinitionMultiSelect({
     <div className="space-y-2">
       <div className="rounded-lg border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
         <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
-          {t('permissionGroups.permissionsPanel.selectionSummaryTitle', { defaultValue: 'Seçili CRUD özeti' })}
+          {t('permissionGroups.permissionsPanel.selectionSummaryTitle', { defaultValue: 'Missing translation' })}
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
           <Badge variant="secondary">
-            {t('common.view', { defaultValue: 'Görüntüle' })}: {selectionSummary.view}
+            {t('common.view', { defaultValue: 'Missing translation' })}: {selectionSummary.view}
           </Badge>
           <Badge variant="secondary">
-            {t('common.create', { defaultValue: 'Oluştur' })}: {selectionSummary.create}
+            {t('common.create', { defaultValue: 'Missing translation' })}: {selectionSummary.create}
           </Badge>
           <Badge variant="secondary">
-            {t('common.update', { defaultValue: 'Güncelle' })}: {selectionSummary.update}
+            {t('common.update', { defaultValue: 'Missing translation' })}: {selectionSummary.update}
           </Badge>
           <Badge variant="secondary">
-            {t('common.delete', { defaultValue: 'Sil' })}: {selectionSummary.delete}
+            {t('common.delete', { defaultValue: 'Missing translation' })}: {selectionSummary.delete}
           </Badge>
         </div>
         <div className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-          {t('permissionGroups.permissionsPanel.selectionSummaryBody', { defaultValue: 'Bu özet, grubun şu an hangi işlem tiplerinde yetki aldığını hızlıca görmenizi sağlar.' })}
+          {t('permissionGroups.permissionsPanel.selectionSummaryBody', { defaultValue: 'Missing translation' })}
         </div>
       </div>
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('permissionGroups.permissionsPanel.searchPlaceholder', { defaultValue: 'Modül, işlem veya izin adı ara...' })}
+        placeholder={t('permissionGroups.permissionsPanel.searchPlaceholder', { defaultValue: 'Missing translation' })}
         disabled={disabled}
       />
       <div className="flex items-center gap-2">
@@ -259,7 +259,7 @@ export function PermissionDefinitionMultiSelect({
                         />
                         <span>
                           {t('permissionGroups.permissionsPanel.selectActionGroup', {
-                            defaultValue: 'Tüm {{action}} izinlerini seç',
+                            defaultValue: 'Missing translation',
                             action: t(actionLabel.key, actionLabel.fallback),
                           })}
                         </span>

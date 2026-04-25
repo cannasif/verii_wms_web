@@ -25,15 +25,15 @@ function formatDate(dateString?: string | null): string {
 function transferPurposeLabel(value?: string | null, t?: (key: string, options?: Record<string, unknown>) => string): string {
   switch (value) {
     case 'MaterialSupply':
-      return t?.('productionTransfer.create.guide.materialSupply', { defaultValue: 'Malzeme Besleme' }) ?? 'Malzeme Besleme';
+      return t?.('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' }) ?? 'Malzeme Besleme';
     case 'SemiFinishedMove':
-      return t?.('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Yari Mamul Tasima' }) ?? 'Yari Mamul Tasima';
+      return t?.('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Missing translation' }) ?? 'Yari Mamul Tasima';
     case 'FinishedGoodsPutaway':
-      return t?.('productionTransfer.create.guide.outputMove', { defaultValue: 'Mamul Depoya Cikis' }) ?? 'Mamul Depoya Cikis';
+      return t?.('productionTransfer.create.guide.outputMove', { defaultValue: 'Missing translation' }) ?? 'Mamul Depoya Cikis';
     case 'ScrapMove':
-      return t?.('productionTransfer.create.guide.scrapMove', { defaultValue: 'Fire Tasima' }) ?? 'Fire Tasima';
+      return t?.('productionTransfer.create.guide.scrapMove', { defaultValue: 'Missing translation' }) ?? 'Fire Tasima';
     case 'ReturnToStock':
-      return t?.('productionTransfer.create.guide.returnToStock', { defaultValue: 'Stoga Iade' }) ?? 'Stoga Iade';
+      return t?.('productionTransfer.create.guide.returnToStock', { defaultValue: 'Missing translation' }) ?? 'Stoga Iade';
     default:
       return value || '-';
   }
@@ -42,11 +42,11 @@ function transferPurposeLabel(value?: string | null, t?: (key: string, options?:
 function lineRoleLabel(value?: string | null, t?: (key: string, options?: Record<string, unknown>) => string): string {
   switch (value) {
     case 'ConsumptionSupply':
-      return t?.('productionTransfer.create.lineRoleConsumption', { defaultValue: 'Tuketimi Besle' }) ?? 'Tuketimi Besle';
+      return t?.('productionTransfer.create.lineRoleConsumption', { defaultValue: 'Missing translation' }) ?? 'Tuketimi Besle';
     case 'SemiFinishedMove':
-      return t?.('productionTransfer.create.lineRoleSemiFinished', { defaultValue: 'Ara Mamul Tasi' }) ?? 'Ara Mamul Tasi';
+      return t?.('productionTransfer.create.lineRoleSemiFinished', { defaultValue: 'Missing translation' }) ?? 'Ara Mamul Tasi';
     case 'OutputMove':
-      return t?.('productionTransfer.create.lineRoleOutput', { defaultValue: 'Ciktiyi Tasi' }) ?? 'Ciktiyi Tasi';
+      return t?.('productionTransfer.create.lineRoleOutput', { defaultValue: 'Missing translation' }) ?? 'Ciktiyi Tasi';
     default:
       return value || '-';
   }
@@ -74,7 +74,7 @@ export function ProductionTransferDetailPage(): ReactElement {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    setPageTitle(t('productionTransfer.detail.title', { defaultValue: 'Uretim Transfer Detayi' }));
+    setPageTitle(t('productionTransfer.detail.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -105,12 +105,12 @@ export function ProductionTransferDetailPage(): ReactElement {
 
   return (
     <FormPageShell
-      title={t('productionTransfer.detail.title', { defaultValue: 'Uretim Transfer Detayi' })}
-      description={t('productionTransfer.detail.subtitle', { defaultValue: 'Transferin baglandigi uretim plani, amaci ve kalemlerini tek ekranda izleyin.' })}
+      title={t('productionTransfer.detail.title', { defaultValue: 'Missing translation' })}
+      description={t('productionTransfer.detail.subtitle', { defaultValue: 'Missing translation' })}
       isLoading={detailQuery.isLoading}
       isError={detailQuery.isError}
       errorTitle={t('common.error')}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.detail.error', { defaultValue: 'Uretim transfer detayi yuklenemedi' })}
+      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.detail.error', { defaultValue: 'Missing translation' })}
       actions={(
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" onClick={() => navigate('/production-transfer/list')}>
@@ -125,17 +125,17 @@ export function ProductionTransferDetailPage(): ReactElement {
                   onClick={() => setDeleteDialogOpen(true)}
                   disabled={deleteMutation.isPending}
                 >
-                  {t('common.delete', { defaultValue: 'Sil' })}
+                  {t('common.delete', { defaultValue: 'Missing translation' })}
                 </Button>
               ) : null}
               {canCreateTransfer ? (
                 <Button type="button" variant="outline" onClick={() => navigate(`/production-transfer/create?cloneId=${detailQuery.data.id}`)}>
-                  {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Kopyala' })}
+                  {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
                 </Button>
               ) : null}
               {canUpdateTransfer ? (
                 <Button type="button" onClick={() => navigate(`/production-transfer/create?editId=${detailQuery.data.id}`)} disabled={detailQuery.data.isCompleted}>
-                  {t('productionTransfer.list.editTransfer', { defaultValue: 'Duzenle' })}
+                  {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
                 </Button>
               ) : null}
             </>
@@ -146,13 +146,13 @@ export function ProductionTransferDetailPage(): ReactElement {
       {detailQuery.data ? (
         <div className="space-y-6">
           <InfoCallout
-            title={t('productionTransfer.detail.statusInfoTitle', { defaultValue: 'Durum ve izin bilgisi' })}
+            title={t('productionTransfer.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
             body={
               !canUpdateTransfer
                 ? t('productionTransfer.detail.statusInfoNoUpdate')
                 : !detailQuery.data.canDelete
-                  ? (detailQuery.data.deleteBlockedReason || t('productionTransfer.detail.statusInfoLocked', { defaultValue: 'Bu transfer tamamlanmış durumda. Güvenlik için yalnızca izlenebilir; değişiklik yapmak yerine kopyalayıp yeni transfer açabilirsiniz.' }))
-                  : t('productionTransfer.detail.statusInfoOpen', { defaultValue: 'Bu transfer henüz açık durumda. Sahada işlem görmediyse düzenleme ekranına geçip güncelleyebilirsiniz.' })
+                  ? (detailQuery.data.deleteBlockedReason || t('productionTransfer.detail.statusInfoLocked', { defaultValue: 'Missing translation' }))
+                  : t('productionTransfer.detail.statusInfoOpen', { defaultValue: 'Missing translation' })
             }
           />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -170,7 +170,7 @@ export function ProductionTransferDetailPage(): ReactElement {
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>{t('productionTransfer.create.purpose', { defaultValue: 'Transfer Amaci' })}</CardDescription>
+                <CardDescription>{t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
                 <CardTitle className="text-xl">{transferPurposeLabel(detailQuery.data.transferPurpose, t)}</CardTitle>
               </CardHeader>
             </Card>
@@ -180,8 +180,8 @@ export function ProductionTransferDetailPage(): ReactElement {
                 <CardTitle className="text-xl">
                   <Badge variant="secondary">
                     {detailQuery.data.isCompleted
-                      ? t('productionTransfer.detail.completed', { defaultValue: 'Tamamlandi' })
-                      : t('productionTransfer.detail.open', { defaultValue: 'Acik' })}
+                      ? t('productionTransfer.detail.completed', { defaultValue: 'Missing translation' })
+                      : t('productionTransfer.detail.open', { defaultValue: 'Missing translation' })}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -191,24 +191,24 @@ export function ProductionTransferDetailPage(): ReactElement {
           <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
             <Card>
               <CardHeader>
-                <CardTitle>{t('productionTransfer.detail.linkTitle', { defaultValue: 'Uretim Baglantisi' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.detail.linkSubtitle', { defaultValue: 'Bu transferin hangi plan veya emir ihtiyacina bagli oldugunu gorun.' })}</CardDescription>
+                <CardTitle>{t('productionTransfer.detail.linkTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardDescription>{t('productionTransfer.detail.linkSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionDocument', { defaultValue: 'Uretim Plani No' })}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}</div>
                   <div className="mt-1 text-sm font-medium">{detailQuery.data.productionDocumentNo || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri No' })}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</div>
                   <div className="mt-1 text-sm font-medium">{detailQuery.data.productionOrderNo || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.sourceWarehouse', { defaultValue: 'Kaynak Depo' })}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}</div>
                   <div className="mt-1 text-sm font-medium">{detailQuery.data.sourceWarehouseCode || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.targetWarehouse', { defaultValue: 'Hedef Depo' })}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}</div>
                   <div className="mt-1 text-sm font-medium">{detailQuery.data.targetWarehouseCode || '-'}</div>
                 </div>
               </CardContent>
@@ -216,12 +216,12 @@ export function ProductionTransferDetailPage(): ReactElement {
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('productionTransfer.detail.descriptionTitle', { defaultValue: 'Aciklama' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.detail.descriptionSubtitle', { defaultValue: 'Transferi acan ekibin notu veya is aciklamasi.' })}</CardDescription>
+                <CardTitle>{t('productionTransfer.detail.descriptionTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardDescription>{t('productionTransfer.detail.descriptionSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-                  {detailQuery.data.description?.trim() || t('productionTransfer.detail.noDescription', { defaultValue: 'Aciklama girilmemis.' })}
+                  {detailQuery.data.description?.trim() || t('productionTransfer.detail.noDescription', { defaultValue: 'Missing translation' })}
                 </div>
               </CardContent>
             </Card>
@@ -229,24 +229,24 @@ export function ProductionTransferDetailPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('productionTransfer.detail.linesTitle', { defaultValue: 'Transfer Kalemleri' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.detail.linesSubtitle', { defaultValue: 'Hangi stoklarin hangi amacla tasindigini satir bazinda inceleyin.' })}</CardDescription>
+              <CardTitle>{t('productionTransfer.detail.linesTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardDescription>{t('productionTransfer.detail.linesSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent>
               {detailQuery.data.lines.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-slate-200/70 p-6 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                  {t('productionTransfer.detail.noLines', { defaultValue: 'Bu transfer icin kayitli kalem bulunmuyor.' })}
+                  {t('productionTransfer.detail.noLines', { defaultValue: 'Missing translation' })}
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('productionTransfer.create.productionOrder', { defaultValue: 'Uretim Emri' })}</TableHead>
-                      <TableHead>{t('production.create.producedStockCode', { defaultValue: 'Stok' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.lineRole', { defaultValue: 'Kalem Rolu' })}</TableHead>
-                      <TableHead>{t('production.create.plannedQuantity', { defaultValue: 'Miktar' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.sourceCell', { defaultValue: 'Kaynak Hucre' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.targetCell', { defaultValue: 'Hedef Hucre' })}</TableHead>
+                      <TableHead>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}</TableHead>
+                      <TableHead>{t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -279,7 +279,7 @@ export function ProductionTransferDetailPage(): ReactElement {
           </DialogHeader>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel', { defaultValue: 'Vazgec' })}
+              {t('common.cancel', { defaultValue: 'Missing translation' })}
             </Button>
             <Button
               type="button"
@@ -290,7 +290,7 @@ export function ProductionTransferDetailPage(): ReactElement {
               }}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? t('common.loading', { defaultValue: 'Yukleniyor...' }) : t('common.delete', { defaultValue: 'Sil' })}
+              {deleteMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('common.delete', { defaultValue: 'Missing translation' })}
             </Button>
           </DialogFooter>
         </DialogContent>

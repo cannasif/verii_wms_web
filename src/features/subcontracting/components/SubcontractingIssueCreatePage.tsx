@@ -158,18 +158,18 @@ export function SubcontractingIssueCreatePage(): ReactElement {
   const steps = [
     { label: t('subcontracting.create.steps.basicInfo') },
     {
-      label: createMode === 'order' ? t('subcontracting.create.steps.orderSelection') : t('subcontracting.process.steps.stockSelection', { defaultValue: 'Stok Seçimi' }),
+      label: createMode === 'order' ? t('subcontracting.create.steps.orderSelection') : t('subcontracting.process.steps.stockSelection', { defaultValue: 'Missing translation' }),
     },
   ];
 
   const stockLabels = {
-    stocks: t('subcontracting.process.stocks', { defaultValue: 'Stoklar' }),
-    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Seçilen Kalemler' }),
-    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: '{{count}} kalem' }),
-    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Stok kodu veya adı ile ara...' }),
-    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Seçilenleri ara...' }),
-    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Seçili stok bulunmamaktadır' }),
-    unit: t('common.unit', { defaultValue: 'Birim' }),
+    stocks: t('subcontracting.process.stocks', { defaultValue: 'Missing translation' }),
+    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Missing translation' }),
+    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
+    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Missing translation' }),
+    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Missing translation' }),
+    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Missing translation' }),
+    unit: t('common.unit', { defaultValue: 'Missing translation' }),
     serialNo: t('subcontracting.details.serialNo'),
     serialNoPlaceholder: t('subcontracting.details.serialNoPlaceholder'),
     serialNo2: t('subcontracting.details.serialNo2'),
@@ -205,12 +205,12 @@ export function SubcontractingIssueCreatePage(): ReactElement {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('subcontracting.create.mode.order', { defaultValue: 'Sipariş bazlı' }) : t('subcontracting.create.mode.stock', { defaultValue: 'Stok bazlı' })}
+          {createMode === 'order' ? t('subcontracting.create.mode.order', { defaultValue: 'Missing translation' }) : t('subcontracting.create.mode.stock', { defaultValue: 'Missing translation' })}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('subcontracting.create.mode.order', { defaultValue: 'Sipariş bazlı' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('subcontracting.create.mode.stock', { defaultValue: 'Stok bazlı' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('subcontracting.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="stock">{t('subcontracting.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

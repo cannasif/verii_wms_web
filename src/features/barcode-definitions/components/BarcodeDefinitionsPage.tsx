@@ -163,7 +163,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
   const definitions = definitionsQuery.data?.data ?? [];
 
   useEffect(() => {
-    setPageTitle(t('barcodeManagement.title', { defaultValue: 'Barkod Tanımları' }));
+    setPageTitle(t('barcodeManagement.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -191,7 +191,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
       return await barcodeApi.createDefinition(payload.body);
     },
     onSuccess: (response) => {
-      toast.success(response.message || t('common.saveSuccess', { defaultValue: 'Kayıt başarıyla kaydedildi' }));
+      toast.success(response.message || t('common.saveSuccess', { defaultValue: 'Missing translation' }));
       setDialogOpen(false);
       setEditingDefinition(null);
       setFormState(emptyFormState);
@@ -205,7 +205,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => await barcodeApi.deleteDefinition(id),
     onSuccess: (response) => {
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi' }));
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Missing translation' }));
       void queryClient.invalidateQueries({ queryKey: ['barcode-definitions'] });
     },
     onError: (error: unknown) => {
@@ -318,8 +318,8 @@ export function BarcodeDefinitionsPage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Barkod Tanımla' }), isActive: true },
+          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
+          { label: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Missing translation' }), isActive: true },
         ]}
       />
 
@@ -327,12 +327,12 @@ export function BarcodeDefinitionsPage(): ReactElement {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'ERP' })}</Badge>
+              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
               <Badge variant="secondary">Barcode Setup</Badge>
             </div>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-                {t('barcodeManagement.title', { defaultValue: 'Barkod Tanımla' })}
+                {t('barcodeManagement.title', { defaultValue: 'Missing translation' })}
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 Her işlem için hangi barkod yapısının kullanılacağını, hangi alanların zorunlu olduğunu ve sistemin yedek arama yapıp yapmayacağını tanımla.
@@ -386,7 +386,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
           <CardContent className="space-y-4">
             {definitionsQuery.isLoading ? (
               <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('paged.loadingDescription', { defaultValue: 'Yükleniyor...' })}
+                {t('paged.loadingDescription', { defaultValue: 'Missing translation' })}
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
@@ -412,7 +412,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
                           <p className="text-xs text-slate-500 dark:text-slate-400">{getModuleLabel(definition.moduleKey)}</p>
                         </div>
                         <Badge variant={definition.isActive ? 'default' : 'outline'}>
-                          {definition.isActive ? t('common.active', { defaultValue: 'Aktif' }) : t('common.passive', { defaultValue: 'Pasif' })}
+                          {definition.isActive ? t('common.active', { defaultValue: 'Missing translation' }) : t('common.passive', { defaultValue: 'Missing translation' })}
                         </Badge>
                       </div>
 
@@ -549,7 +549,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
               </div>
 
               <Button onClick={handleResolve} disabled={!selectedModuleKey || !barcodeInput.trim() || resolveMutation.isPending} className="w-full">
-                {resolveMutation.isPending ? t('common.loading', { defaultValue: 'Yükleniyor...' }) : 'Barkodu Test Et'}
+                {resolveMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : 'Barkodu Test Et'}
               </Button>
 
               {resolveMessage ? (
@@ -704,10 +704,10 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              {t('common.cancel', { defaultValue: 'İptal' })}
+              {t('common.cancel', { defaultValue: 'Missing translation' })}
             </Button>
             <Button onClick={handleSaveDefinition} disabled={saveMutation.isPending || (!permission.canCreate && !permission.canUpdate)}>
-              {saveMutation.isPending ? t('common.loading', { defaultValue: 'Yükleniyor...' }) : t('common.save', { defaultValue: 'Kaydet' })}
+              {saveMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('common.save', { defaultValue: 'Missing translation' })}
             </Button>
           </DialogFooter>
         </DialogContent>

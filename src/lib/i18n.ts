@@ -100,7 +100,7 @@ const toCamelCase = (value: string): string =>
   value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
 
 function formatMissingKey(): string {
-  return 'Çeviri eksik';
+  return 'Missing translation';
 }
 
 function withNamespaceCompatibility(

@@ -34,8 +34,8 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
 
   const isIssue = mode === 'issue';
   const title = isIssue
-    ? t('subcontracting.issue.process.title', { defaultValue: 'Emirsiz Fason Çıkış İşlemi' })
-    : t('subcontracting.receipt.process.title', { defaultValue: 'Emirsiz Fason Giriş İşlemi' });
+    ? t('subcontracting.issue.process.title', { defaultValue: 'Missing translation' })
+    : t('subcontracting.receipt.process.title', { defaultValue: 'Missing translation' });
 
   useEffect(() => {
     setPageTitle(title);
@@ -75,8 +75,8 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
       queryClient.invalidateQueries({ queryKey: [isIssue ? 'subcontractingIssueHeaders' : 'subcontractingReceiptHeaders'] });
       toast.success(
         isIssue
-          ? t('subcontracting.issue.process.success', { defaultValue: 'Fason çıkış işlemi oluşturuldu' })
-          : t('subcontracting.receipt.process.success', { defaultValue: 'Fason giriş işlemi oluşturuldu' }),
+          ? t('subcontracting.issue.process.success', { defaultValue: 'Missing translation' })
+          : t('subcontracting.receipt.process.success', { defaultValue: 'Missing translation' }),
       );
       navigate(isIssue ? '/subcontracting/issue/list' : '/subcontracting/receipt/list');
     },
@@ -84,8 +84,8 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
       toast.error(
         error.message ||
           (isIssue
-            ? t('subcontracting.issue.process.error', { defaultValue: 'Fason çıkış işlemi oluşturulamadı' })
-            : t('subcontracting.receipt.process.error', { defaultValue: 'Fason giriş işlemi oluşturulamadı' })),
+            ? t('subcontracting.issue.process.error', { defaultValue: 'Missing translation' })
+            : t('subcontracting.receipt.process.error', { defaultValue: 'Missing translation' })),
       );
     },
   });
@@ -143,17 +143,17 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
 
   const steps = [
     { label: t('subcontracting.create.steps.basicInfo') },
-    { label: t('subcontracting.process.steps.stockSelection', { defaultValue: 'Stok Seçimi' }) },
+    { label: t('subcontracting.process.steps.stockSelection', { defaultValue: 'Missing translation' }) },
   ];
 
   const labels = {
-    stocks: t('subcontracting.process.stocks', { defaultValue: 'Stoklar' }),
-    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Seçilen Kalemler' }),
-    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: '{{count}} kalem' }),
-    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Stok kodu veya adı ile ara...' }),
-    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Seçilenleri ara...' }),
-    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Seçili stok bulunmamaktadır' }),
-    unit: t('common.unit', { defaultValue: 'Birim' }),
+    stocks: t('subcontracting.process.stocks', { defaultValue: 'Missing translation' }),
+    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Missing translation' }),
+    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
+    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Missing translation' }),
+    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Missing translation' }),
+    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Missing translation' }),
+    unit: t('common.unit', { defaultValue: 'Missing translation' }),
     serialNo: t('subcontracting.details.serialNo'),
     serialNoPlaceholder: t('subcontracting.details.serialNoPlaceholder'),
     serialNo2: t('subcontracting.details.serialNo2'),
@@ -169,7 +169,7 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
   return (
     <div className="crm-page space-y-6">
       <Badge variant="secondary" className="mb-4">
-        {t('subcontracting.process.badge', { defaultValue: 'Emirsiz Process' })}
+        {t('subcontracting.process.badge', { defaultValue: 'Missing translation' })}
       </Badge>
 
       <Breadcrumb
@@ -181,8 +181,8 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
         title={title}
         description={
           isIssue
-            ? t('subcontracting.issue.process.subtitle', { defaultValue: 'Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun.' })
-            : t('subcontracting.receipt.process.subtitle', { defaultValue: 'Header + ImportLine + Route mantığında fason giriş işlemi oluşturun.' })
+            ? t('subcontracting.issue.process.subtitle', { defaultValue: 'Missing translation' })
+            : t('subcontracting.receipt.process.subtitle', { defaultValue: 'Missing translation' })
         }
       >
         <Form {...form}>

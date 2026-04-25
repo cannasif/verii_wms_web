@@ -66,7 +66,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Depo Seri Bakiyesi' }));
+    setPageTitle(t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -80,14 +80,14 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<SerialColumnKey>[]>(
     () => [
-      { key: 'warehouse', label: t('warehouseBalance.serial.columns.warehouse', { defaultValue: 'Depo' }) },
-      { key: 'shelf', label: t('warehouseBalance.serial.columns.shelf', { defaultValue: 'Raf / Hucre' }) },
-      { key: 'stock', label: t('warehouseBalance.serial.columns.stock', { defaultValue: 'Stok' }) },
-      { key: 'yapKod', label: t('warehouseBalance.serial.columns.yapKod', { defaultValue: 'YapKod' }) },
-      { key: 'serials', label: t('warehouseBalance.serial.columns.serials', { defaultValue: 'Seriler' }) },
-      { key: 'quantity', label: t('warehouseBalance.serial.columns.quantity', { defaultValue: 'Miktar' }) },
-      { key: 'status', label: t('warehouseBalance.serial.columns.status', { defaultValue: 'Stok Durumu' }) },
-      { key: 'transactionDate', label: t('warehouseBalance.serial.columns.transactionDate', { defaultValue: 'Son Hareket' }) },
+      { key: 'warehouse', label: t('warehouseBalance.serial.columns.warehouse', { defaultValue: 'Missing translation' }) },
+      { key: 'shelf', label: t('warehouseBalance.serial.columns.shelf', { defaultValue: 'Missing translation' }) },
+      { key: 'stock', label: t('warehouseBalance.serial.columns.stock', { defaultValue: 'Missing translation' }) },
+      { key: 'yapKod', label: t('warehouseBalance.serial.columns.yapKod', { defaultValue: 'Missing translation' }) },
+      { key: 'serials', label: t('warehouseBalance.serial.columns.serials', { defaultValue: 'Missing translation' }) },
+      { key: 'quantity', label: t('warehouseBalance.serial.columns.quantity', { defaultValue: 'Missing translation' }) },
+      { key: 'status', label: t('warehouseBalance.serial.columns.status', { defaultValue: 'Missing translation' }) },
+      { key: 'transactionDate', label: t('warehouseBalance.serial.columns.transactionDate', { defaultValue: 'Missing translation' }) },
     ],
     [t],
   );
@@ -98,8 +98,8 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'ERP' }) },
-          { label: t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Depo Seri Bakiyesi' }), isActive: true },
+          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
+          { label: t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Missing translation' }), isActive: true },
         ]}
       />
 
@@ -111,7 +111,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
               <Badge variant="secondary">Serial Detail</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Depo Seri Bakiyesi' })}
+              {t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Missing translation' })}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
               Stok, seri ve raf bazli detay bakiyeyi izleyin; hangi serinin hangi rafta oldugunu hizli filtreleyin.
@@ -129,7 +129,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <Layers3 className="size-5 text-sky-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.rows', { defaultValue: 'Kayit' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.rows', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{query.data?.data?.totalCount ?? 0}</div>
             </div>
           </CardContent>
@@ -138,7 +138,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <Barcode className="size-5 text-fuchsia-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.quantity', { defaultValue: 'Toplam Miktar' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.quantity', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{formatNumber(totalQuantity)}</div>
             </div>
           </CardContent>
@@ -147,7 +147,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
           <CardContent className="flex items-center gap-3 p-5">
             <RefreshCcw className="size-5 text-emerald-600" />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.filtered', { defaultValue: 'Gorunen Satirlar' })}</div>
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.filtered', { defaultValue: 'Missing translation' })}</div>
               <div className="text-2xl font-semibold text-slate-950 dark:text-white">{rows.length}</div>
             </div>
           </CardContent>
@@ -217,8 +217,8 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
             onSort={pagedGrid.handleSort}
             isLoading={query.isLoading}
             isError={query.isError}
-            errorText={query.error instanceof Error ? query.error.message : t('common.error', { defaultValue: 'Bir hata olustu' })}
-            emptyText={t('warehouseBalance.serial.empty', { defaultValue: 'Depo seri bakiye kaydi bulunamadi' })}
+            errorText={query.error instanceof Error ? query.error.message : t('common.error', { defaultValue: 'Missing translation' })}
+            emptyText={t('warehouseBalance.serial.empty', { defaultValue: 'Missing translation' })}
             pageSize={query.data?.data?.pageSize ?? pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -228,8 +228,8 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
             hasNextPage={query.data?.data?.hasNextPage ?? false}
             onPreviousPage={pagedGrid.goToPreviousPage}
             onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous', { defaultValue: 'Onceki' })}
-            nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+            previousLabel={t('common.previous', { defaultValue: 'Missing translation' })}
+            nextLabel={t('common.next', { defaultValue: 'Missing translation' })}
             paginationInfoText={t('common.paginationInfo', {
               current: range.from,
               total: range.to,
@@ -240,7 +240,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
               value: pagedGrid.searchConfig.value,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('warehouseBalance.serial.searchPlaceholder', { defaultValue: 'Depo, raf, stok veya seri ara...' }),
+              placeholder: t('warehouseBalance.serial.searchPlaceholder', { defaultValue: 'Missing translation' }),
             }}
           />
         </CardContent>
