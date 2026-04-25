@@ -55,12 +55,16 @@ export interface UpdateKkdEmployeeDepartmentDto {
 }
 
 export interface KkdEmployeeRoleDto extends BaseEntityDto {
+  departmentId?: number | null;
+  departmentCode?: string | null;
+  departmentName?: string | null;
   roleCode: string;
   roleName: string;
   isActive: boolean;
 }
 
 export interface CreateKkdEmployeeRoleDto {
+  departmentId: number;
   roleCode: string;
   roleName: string;
   isActive: boolean;
@@ -68,6 +72,7 @@ export interface CreateKkdEmployeeRoleDto {
 }
 
 export interface UpdateKkdEmployeeRoleDto {
+  departmentId?: number | null;
   roleCode?: string;
   roleName?: string;
   isActive?: boolean;
@@ -75,6 +80,7 @@ export interface UpdateKkdEmployeeRoleDto {
 }
 
 export interface KkdEmployeeDto extends BaseEntityDto {
+  userId?: number | null;
   customerId: number;
   customerCode: string;
   employeeCode: string;
@@ -92,6 +98,7 @@ export interface KkdEmployeeDto extends BaseEntityDto {
 }
 
 export interface CreateKkdEmployeeDto {
+  userId: number;
   customerId: number;
   customerCode: string;
   employeeCode: string;
@@ -170,7 +177,6 @@ export type KkdEntitlementScopeType = 'Customer' | 'Department' | 'Role' | 'Depa
 
 export interface KkdEntitlementMatrixRowDto extends BaseEntityDto {
   headerId: number;
-  customerId: number;
   departmentId: number;
   departmentCode?: string | null;
   departmentName?: string | null;
@@ -204,7 +210,6 @@ export interface KkdEntitlementMatrixRowDto extends BaseEntityDto {
 }
 
 export interface CreateKkdEntitlementMatrixRowDto {
-  customerId: number;
   departmentId: number;
   roleId: number;
   matrixCode: string;
@@ -304,7 +309,7 @@ export interface UpdateKkdAdditionalEntitlementDto extends Partial<CreateKkdAddi
 
 export interface KkdEntitlementCheckRequestDto {
   employeeId: number;
-  customerId: number;
+  customerId?: number | null;
   groupCode: string;
   stockId?: number | null;
   quantity: number;

@@ -7,7 +7,6 @@ import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
-import { lookupApi } from '@/services/lookup-api';
 import type {
   CreateKkdEntitlementMatrixRowDto,
   KkdEmployeeDepartmentDto,
@@ -17,7 +16,6 @@ import type {
   UpdateKkdEntitlementMatrixRowDto,
 } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
-import type { CustomerLookup } from '@/services/lookup-types';
 
 type ColumnKey =
   | 'departmentName'
@@ -42,7 +40,6 @@ function KkdEntitlementMatrixForm({
   formState: CreateKkdEntitlementMatrixRowDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEntitlementMatrixRowDto>>;
 }): ReactElement {
-  const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const stockGroupsQuery = useQuery({
@@ -58,25 +55,6 @@ function KkdEntitlementMatrixForm({
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
         Bu ekranda haklar kişi için değil, bölüm ve görev tanımı için tanımlanır. Çalışanlar bağlı oldukları görev matrisinden hak alır.
       </div>
-
-      <div className="space-y-2">
-        <Label>Cari *</Label>
-        <PagedLookupDialog<CustomerLookup>
-          open={customerDialogOpen}
-          onOpenChange={setCustomerDialogOpen}
-          title="Cari Seç"
-          value={formState.customerId ? `${formState.customerId} / müşteri seçildi` : null}
-          placeholder="Cari seçiniz"
-          queryKey={['kkd', 'matrix-form', 'customers']}
-          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-            lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
-          }
-          getKey={(item) => String(item.id)}
-          getLabel={(item) => `${item.cariKod} - ${item.cariIsim}`}
-          onSelect={(item) => setFormState((prev) => ({ ...prev, customerId: item.id }))}
-        />
-      </div>
-
       <div className="space-y-2">
         <Label>Matris Kodu *</Label>
         <Input value={formState.matrixCode} onChange={(event) => setFormState((prev) => ({ ...prev, matrixCode: event.target.value }))} />
@@ -101,7 +79,11 @@ function KkdEntitlementMatrixForm({
           }
           getKey={(item) => String(item.id)}
           getLabel={(item) => `${item.departmentCode} - ${item.departmentName}`}
-          onSelect={(item) => setFormState((prev) => ({ ...prev, departmentId: item.id }))}
+          onSelect={(item) => setFormState((prev) => ({
+            ...prev,
+            departmentId: item.id,
+            roleId: 0,
+          }))}
         />
       </div>
 
@@ -112,10 +94,17 @@ function KkdEntitlementMatrixForm({
           onOpenChange={setRoleDialogOpen}
           title="Görev Seç"
           value={formState.roleId ? `#${formState.roleId}` : null}
-          placeholder="Görev seçiniz"
-          queryKey={['kkd', 'matrix-form', 'roles']}
+          placeholder={formState.departmentId ? 'Görev seçiniz' : 'Önce bölüm seçiniz'}
+          queryKey={['kkd', 'matrix-form', 'roles', formState.departmentId || 0]}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
-            kkdApi.getRoles({ pageNumber, pageSize, search }, { signal })
+            kkdApi.getRoles({
+              pageNumber,
+              pageSize,
+              search,
+              filters: formState.departmentId
+                ? [{ column: 'DepartmentId', operator: 'eq', value: String(formState.departmentId) }]
+                : [],
+            }, { signal })
           }
           getKey={(item) => String(item.id)}
           getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
@@ -248,7 +237,6 @@ export function KkdEntitlementMatrixPage(): ReactElement {
       columns={columns}
       fields={fields}
       initialForm={{
-        customerId: 0,
         departmentId: 0,
         roleId: 0,
         matrixCode: '',

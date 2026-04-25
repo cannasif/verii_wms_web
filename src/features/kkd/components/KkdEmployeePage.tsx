@@ -8,6 +8,8 @@ import { lookupApi } from '@/services/lookup-api';
 import type { CreateKkdEmployeeDto, KkdEmployeeDepartmentDto, KkdEmployeeDto, KkdEmployeeRoleDto, UpdateKkdEmployeeDto } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
 import type { CustomerLookup } from '@/services/lookup-types';
+import { userApi } from '@/features/user-management/api/user-api';
+import type { UserDto } from '@/features/user-management/types/user-types';
 
 type ColumnKey = 'employeeCode' | 'firstName' | 'lastName' | 'customerCode' | 'departmentName' | 'roleName' | 'isActive';
 
@@ -18,12 +20,41 @@ function EmployeeForm({
   formState: CreateKkdEmployeeDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEmployeeDto>>;
 }): ReactElement {
+  const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
+      <div className="space-y-2 md:col-span-2">
+        <Label>Sistem Kullanıcısı *</Label>
+        <PagedLookupDialog<UserDto>
+          open={userDialogOpen}
+          onOpenChange={setUserDialogOpen}
+          title="Kullanıcı Seç"
+          value={formState.userId ? `${formState.firstName} ${formState.lastName}`.trim() : null}
+          placeholder="Kullanıcı seçiniz"
+          queryKey={['kkd', 'employee-form', 'users']}
+          fetchPage={({ pageNumber, pageSize, search }) =>
+            userApi.getList({
+              pageNumber,
+              pageSize,
+              search,
+              filters: [{ column: 'IsActive', operator: 'eq', value: 'true' }],
+            })
+          }
+          getKey={(item) => String(item.id)}
+          getLabel={(item) => `${item.fullName || item.username} - ${item.email}`}
+          onSelect={(item) => setFormState((prev) => ({
+            ...prev,
+            userId: item.id,
+            firstName: item.firstName ?? item.username,
+            lastName: item.lastName ?? '',
+          }))}
+        />
+      </div>
+
       <div className="space-y-2">
         <Label>Cari *</Label>
         <PagedLookupDialog<CustomerLookup>
@@ -56,20 +87,20 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="firstName">Ad *</Label>
+        <Label htmlFor="firstName">Ad</Label>
         <Input
           id="firstName"
           value={formState.firstName}
-          onChange={(event) => setFormState((prev) => ({ ...prev, firstName: event.target.value }))}
+          readOnly
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="lastName">Soyad *</Label>
+        <Label htmlFor="lastName">Soyad</Label>
         <Input
           id="lastName"
           value={formState.lastName}
-          onChange={(event) => setFormState((prev) => ({ ...prev, lastName: event.target.value }))}
+          readOnly
         />
       </div>
 
@@ -92,6 +123,9 @@ function EmployeeForm({
             departmentId: item.id,
             departmentCode: item.departmentCode,
             departmentName: item.departmentName,
+            roleId: null,
+            roleCode: '',
+            roleName: '',
           }))}
         />
       </div>
@@ -103,10 +137,17 @@ function EmployeeForm({
           onOpenChange={setRoleDialogOpen}
           title="Görev Seç"
           value={formState.roleCode ? `${formState.roleCode} - ${formState.roleName ?? ''}` : null}
-          placeholder="Görev seçiniz"
-          queryKey={['kkd', 'employee-form', 'roles']}
+          placeholder={formState.departmentId ? 'Görev seçiniz' : 'Önce bölüm seçiniz'}
+          queryKey={['kkd', 'employee-form', 'roles', formState.departmentId ?? 0]}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
-            kkdApi.getRoles({ pageNumber, pageSize, search }, { signal })
+            kkdApi.getRoles({
+              pageNumber,
+              pageSize,
+              search,
+              filters: formState.departmentId
+                ? [{ column: 'DepartmentId', operator: 'eq', value: String(formState.departmentId) }]
+                : [],
+            }, { signal })
           }
           getKey={(item) => String(item.id)}
           getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
@@ -157,6 +198,7 @@ export function KkdEmployeePage(): ReactElement {
       columns={columns}
       fields={fields}
       initialForm={{
+        userId: 0,
         customerId: 0,
         customerCode: '',
         employeeCode: '',
