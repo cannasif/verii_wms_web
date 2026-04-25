@@ -168,6 +168,16 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2 md:col-span-2">
+        <Label htmlFor="employmentStartDate">İşe Giriş Tarihi *</Label>
+        <Input
+          id="employmentStartDate"
+          type="date"
+          value={formState.employmentStartDate}
+          onChange={(event) => setFormState((prev) => ({ ...prev, employmentStartDate: event.target.value }))}
+        />
+      </div>
+
+      <div className="space-y-2 md:col-span-2">
         <Label htmlFor="qrCode">QR Kod *</Label>
         <Input
           id="qrCode"
@@ -204,6 +214,7 @@ export function KkdEmployeePage(): ReactElement {
     { key: 'roleId', label: 'Görev', type: 'number' },
     { key: 'roleCode', label: 'Görev Kodu', type: 'text' },
     { key: 'roleName', label: 'Görev Adı', type: 'text' },
+    { key: 'employmentStartDate', label: 'İşe Giriş Tarihi', type: 'text', required: true },
     { key: 'qrCode', label: 'QR Kod', type: 'text', required: true },
     { key: 'isActive', label: 'Aktif', type: 'boolean' },
   ];
@@ -230,6 +241,7 @@ export function KkdEmployeePage(): ReactElement {
         roleId: null,
         roleCode: '',
         roleName: '',
+        employmentStartDate: new Date().toISOString().slice(0, 10),
         qrCode: '',
         isActive: true,
       }}

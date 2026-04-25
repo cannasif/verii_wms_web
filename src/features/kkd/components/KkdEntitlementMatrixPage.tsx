@@ -22,9 +22,9 @@ type ColumnKey =
   | 'roleName'
   | 'groupCode'
   | 'initialIssueQuantity'
-  | 'routinePeriodType'
-  | 'routineQuantity'
   | 'additionalAfterMonthsQuantity'
+  | 'routineQuantity'
+  | 'routinePeriodType'
   | 'isActive';
 
 function buildMatrixDefaults(departmentId: number, roleId: number): Pick<CreateKkdEntitlementMatrixRowDto, 'matrixCode' | 'matrixName'> {
@@ -58,7 +58,7 @@ function KkdEntitlementMatrixForm({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
-        Bu ekranda görev tanımı için sadece iki ana hak kuralı girilir: ilk alım adedi ve sonraki yıl adedi. Çalışan, bağlı olduğu bölüm ve görev üzerinden bu genel grup hakkını kullanır.
+        Haklar daima görev tanımı ve grup kodu üzerinden hesaplanır. Çalışan işe girdiğinde ilk giriş hakkını, işe giriş tarihinden 3 ay sonra ikinci hakkını, sonrasında da rutin dönem hakkını kullanır.
       </div>
 
       <div className="space-y-2">
@@ -133,33 +133,134 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>İlk Alım Adedi *</Label>
+        <Label>İlk Giriş Adedi *</Label>
         <Input type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
       </div>
 
       <div className="space-y-2">
-        <Label>Sonraki Yıl Adedi *</Label>
+        <Label>İlk Giriş Frekans (Gün)</Label>
         <Input
           type="number"
-          step="0.01"
-          value={formState.routineQuantity}
-          onChange={(event) => setFormState((prev) => ({
-            ...prev,
-            routinePeriodType: 'Year',
-            routinePeriodInterval: 1,
-            routineQuantity: Number(event.target.value) || 0,
-            additionalAfterMonths: null,
-            additionalAfterMonthsQuantity: null,
-            annualIssueCount: null,
-            annualQuantity: null,
-          }))}
+          value={formState.initialFrequencyDays ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, initialFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
         />
       </div>
 
       <div className="space-y-3">
-        <Label>Toplu Alım</Label>
+        <Label>İlk Giriş Toplu Alım</Label>
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
-          <Switch checked={formState.allowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, allowBulkIssue: checked }))} />
+          <Switch checked={formState.initialAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, initialAllowBulkIssue: checked }))} />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>İlk Giriş Frekans Adedi</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.initialQuantityPerFrequency ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, initialQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>3. Ay Sonrası Adedi *</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.additionalAfterMonthsQuantity ?? 0}
+          onChange={(event) => setFormState((prev) => ({
+            ...prev,
+            additionalAfterMonths: 3,
+            additionalAfterMonthsQuantity: Number(event.target.value) || 0,
+          }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>3. Ay Frekans (Gün)</Label>
+        <Input
+          type="number"
+          value={formState.threeMonthFrequencyDays ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
+        />
+      </div>
+
+      <div className="space-y-3">
+        <Label>3. Ay Toplu Alım</Label>
+        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
+          <Switch checked={formState.threeMonthAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, threeMonthAllowBulkIssue: checked }))} />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>3. Ay Frekans Adedi</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.threeMonthQuantityPerFrequency ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rutin Dönem Adedi *</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.routineQuantity}
+          onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantity: Number(event.target.value) || 0 }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rutin Dönem Tipi *</Label>
+        <Input
+          value={formState.routinePeriodType}
+          onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodType: event.target.value || 'Year' }))}
+          placeholder="Year / Month / Day"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rutin Dönem Aralığı *</Label>
+        <Input
+          type="number"
+          value={formState.routinePeriodInterval}
+          onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodInterval: Number(event.target.value) || 1 }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rutin Frekans (Gün)</Label>
+        <Input
+          type="number"
+          value={formState.routineFrequencyDays ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, routineFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
+        />
+      </div>
+
+      <div className="space-y-3">
+        <Label>Rutin Toplu Alım</Label>
+        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
+          <Switch checked={formState.routineAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, routineAllowBulkIssue: checked }))} />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rutin Frekans Adedi</Label>
+        <Input
+          type="number"
+          step="0.01"
+          value={formState.routineQuantityPerFrequency ?? ''}
+          onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+        />
+      </div>
+
+      <div className="space-y-3">
+        <Label>Aktif</Label>
+        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
+          <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
         </div>
       </div>
 
@@ -167,13 +268,6 @@ function KkdEntitlementMatrixForm({
         <Label>Zorunlu</Label>
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.isMandatory} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isMandatory: checked }))} />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <Label>Aktif</Label>
-        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
-          <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
         </div>
       </div>
     </div>
@@ -185,10 +279,10 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     { key: 'departmentName', label: 'Bölüm' },
     { key: 'roleName', label: 'Görev' },
     { key: 'groupCode', label: 'Grup Kodu' },
-    { key: 'initialIssueQuantity', label: 'İlk Alım' },
+    { key: 'initialIssueQuantity', label: 'İlk Giriş' },
+    { key: 'additionalAfterMonthsQuantity', label: '3. Ay' },
+    { key: 'routineQuantity', label: 'Rutin' },
     { key: 'routinePeriodType', label: 'Dönem' },
-    { key: 'routineQuantity', label: 'Sonraki Yıl' },
-    { key: 'additionalAfterMonthsQuantity', label: 'Ek Hak' },
     { key: 'isActive', label: 'Aktif' },
   ], []);
 
@@ -200,7 +294,7 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     <KkdCrudPage<KkdEntitlementMatrixRowDto, CreateKkdEntitlementMatrixRowDto, ColumnKey>
       pageKey="kkd-entitlement-matrix"
       title="KKD Görev Bazlı Hak Matrisi"
-      description="Görev için ilk alım ve sonraki yıl hak adetlerini tanımlayın."
+      description="Görev ve grup bazında ilk giriş, 3 ay sonrası ve rutin dönem haklarını tanımlayın."
       breadcrumbGroup="KKD"
       breadcrumbCurrent="Görev Bazlı Hak Matrisi"
       columns={columns}
@@ -219,11 +313,20 @@ export function KkdEntitlementMatrixPage(): ReactElement {
         standardCode: '',
         standardName: '',
         initialIssueQuantity: 0,
-        additionalAfterMonths: null,
-        additionalAfterMonthsQuantity: null,
+        initialAllowBulkIssue: true,
+        initialFrequencyDays: null,
+        initialQuantityPerFrequency: null,
+        additionalAfterMonths: 3,
+        additionalAfterMonthsQuantity: 0,
+        threeMonthAllowBulkIssue: true,
+        threeMonthFrequencyDays: null,
+        threeMonthQuantityPerFrequency: null,
         routinePeriodType: 'Year',
         routinePeriodInterval: 1,
         routineQuantity: 0,
+        routineAllowBulkIssue: true,
+        routineFrequencyDays: null,
+        routineQuantityPerFrequency: null,
         annualIssueCount: null,
         annualQuantity: null,
         maxCarryQuantity: null,
