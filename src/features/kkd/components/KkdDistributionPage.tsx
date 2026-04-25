@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,24 @@ import { toast } from 'sonner';
 import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/services/lookup-api';
 import type {
+  CreateKkdDistributionSubmissionLineDto,
   KkdDistributionHeaderDto,
   KkdEmployeeDto,
   KkdEntitlementCheckResultDto,
+  KkdRemainingEntitlementDto,
   KkdResolvedEmployeeDto,
   KkdResolvedStockDto,
 } from '../types/kkd.types';
 import type { WarehouseLookup } from '@/services/lookup-types';
+
+type LocalDistributionLine = CreateKkdDistributionSubmissionLineDto & {
+  clientId: string;
+  stockCode: string;
+  stockName: string;
+  groupCode?: string | null;
+  groupName?: string | null;
+  entitlement: KkdEntitlementCheckResultDto;
+};
 
 export function KkdDistributionPage(): ReactElement {
   const { t } = useTranslation('common');
@@ -34,30 +45,29 @@ export function KkdDistributionPage(): ReactElement {
   const [resolvedStock, setResolvedStock] = useState<KkdResolvedStockDto | null>(null);
   const [entitlementResult, setEntitlementResult] = useState<KkdEntitlementCheckResultDto | null>(null);
   const [quantity, setQuantity] = useState('1');
-  const [header, setHeader] = useState<KkdDistributionHeaderDto | null>(null);
+  const [submittedHeader, setSubmittedHeader] = useState<KkdDistributionHeaderDto | null>(null);
+  const [cartLines, setCartLines] = useState<LocalDistributionLine[]>([]);
 
   useEffect(() => {
     setPageTitle('KKD Dağıtım');
     return () => setPageTitle(null);
   }, [setPageTitle]);
 
+  const remainingEntitlementsQuery = useQuery({
+    queryKey: ['kkd', 'distribution', 'remaining-entitlements', resolvedEmployee?.employeeId],
+    queryFn: () => kkdApi.getRemainingEntitlements(resolvedEmployee!.employeeId),
+    enabled: Boolean(resolvedEmployee?.employeeId),
+  });
+
   const resolveQrMutation = useMutation({
     mutationFn: kkdApi.resolveEmployeeQr,
     onSuccess: (data) => {
       setResolvedEmployee(data);
-      setHeader(null);
+      setSubmittedHeader(null);
       setResolvedStock(null);
       setEntitlementResult(null);
+      setCartLines([]);
       toast.success('Çalışan bulundu');
-    },
-    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
-  });
-
-  const createDraftMutation = useMutation({
-    mutationFn: kkdApi.createDraft,
-    onSuccess: (data) => {
-      setHeader(data);
-      toast.success('KKD taslağı oluşturuldu');
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
@@ -84,73 +94,68 @@ export function KkdDistributionPage(): ReactElement {
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
-  const addLineMutation = useMutation({
+  const submitMutation = useMutation({
     mutationFn: async () => {
-      if (!header || !resolvedStock) throw new Error('Taslak veya stok bilgisi yok.');
-      await kkdApi.addDistributionLine(header.id, {
-        barcode,
-        stockId: resolvedStock.stockId,
-        quantity: Number(quantity) || 1,
+      if (!resolvedEmployee || !selectedWarehouse || cartLines.length === 0) {
+        throw new Error('Çalışan, depo ve satır bilgisi gereklidir.');
+      }
+
+      return kkdApi.submitDistribution({
+        employeeId: resolvedEmployee.employeeId,
+        warehouseId: selectedWarehouse.id,
+        sourceChannel: 'WMS',
+        lines: cartLines.map(({ clientId: _clientId, stockCode: _stockCode, stockName: _stockName, groupCode: _groupCode, groupName: _groupName, entitlement: _entitlement, ...line }) => line),
       });
-      return kkdApi.getDistributionById(header.id);
     },
     onSuccess: (data) => {
-      setHeader(data);
+      setSubmittedHeader(data);
+      setCartLines([]);
       setBarcode('');
       setResolvedStock(null);
       setEntitlementResult(null);
       setQuantity('1');
-      toast.success('Satır eklendi');
-    },
-    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
-  });
-
-  const completeMutation = useMutation({
-    mutationFn: async () => {
-      if (!header) throw new Error('Tamamlanacak taslak yok.');
-      await kkdApi.completeDistribution(header.id);
-      return kkdApi.getDistributionById(header.id);
-    },
-    onSuccess: (data) => {
-      setHeader(data);
+      remainingEntitlementsQuery.refetch();
       toast.success('KKD dağıtımı tamamlandı');
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
-  const cancelMutation = useMutation({
-    mutationFn: async () => {
-      if (!header) throw new Error('İptal edilecek taslak yok.');
-      await kkdApi.cancelDistribution(header.id);
-      return kkdApi.getDistributionById(header.id);
-    },
-    onSuccess: (data) => {
-      setHeader(data);
-      toast.success('KKD dağıtımı iptal edildi');
-    },
-    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
-  });
-
-  const deleteLineMutation = useMutation({
-    mutationFn: async (lineId: number) => {
-      if (!header) throw new Error('Taslak bulunamadı.');
-      await kkdApi.deleteDistributionLine(header.id, lineId);
-      return kkdApi.getDistributionById(header.id);
-    },
-    onSuccess: (data) => {
-      setHeader(data);
-      toast.success('Satır silindi');
-    },
-    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
-  });
-
-  const canCreateDraft = Boolean(resolvedEmployee && selectedWarehouse && !header);
   const canResolveStock = Boolean(resolvedEmployee && selectedWarehouse && barcode.trim());
-  const canAddLine = Boolean(header && resolvedStock && entitlementResult?.allowed);
+  const canAddLine = Boolean(resolvedStock && entitlementResult?.allowed);
   const totalLineQuantity = useMemo(
-    () => header?.lines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0) ?? 0,
-    [header?.lines],
+    () => cartLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0),
+    [cartLines],
   );
+
+  const selectedGroupEntitlement = useMemo(() => {
+    if (!resolvedStock?.groupCode || !remainingEntitlementsQuery.data) return null;
+    return remainingEntitlementsQuery.data.find((item) => item.groupCode === resolvedStock.groupCode) ?? null;
+  }, [remainingEntitlementsQuery.data, resolvedStock?.groupCode]);
+
+  function handleAddLine(): void {
+    if (!resolvedStock || !entitlementResult?.allowed) return;
+
+    setCartLines((prev) => [
+      ...prev,
+      {
+        clientId: `${resolvedStock.stockId}-${Date.now()}`,
+        barcode,
+        stockId: resolvedStock.stockId,
+        quantity: Number(quantity) || 1,
+        stockCode: resolvedStock.stockCode,
+        stockName: resolvedStock.stockName,
+        groupCode: resolvedStock.groupCode,
+        groupName: resolvedStock.groupName,
+        entitlement: entitlementResult,
+      },
+    ]);
+
+    setBarcode('');
+    setResolvedStock(null);
+    setEntitlementResult(null);
+    setQuantity('1');
+    toast.success('Satır sepete eklendi');
+  }
 
   return (
     <div className="crm-page space-y-6">
@@ -221,9 +226,10 @@ export function KkdDistributionPage(): ReactElement {
                       isActive: item.isActive,
                     });
                     setEmployeeQr(item.qrCode);
-                    setHeader(null);
+                    setSubmittedHeader(null);
                     setResolvedStock(null);
                     setEntitlementResult(null);
+                    setCartLines([]);
                   }}
                 />
               </div>
@@ -240,27 +246,46 @@ export function KkdDistributionPage(): ReactElement {
                 </div>
               ) : null}
 
-              {!header ? (
-                <Button type="button" onClick={() => {
-                  if (!resolvedEmployee || !selectedWarehouse) return;
-                  createDraftMutation.mutate({
-                    employeeId: resolvedEmployee.employeeId,
-                    customerId: resolvedEmployee.customerId,
-                    customerCode: resolvedEmployee.customerCode,
-                    warehouseId: selectedWarehouse.id,
-                    sourceChannel: 'WMS',
-                  });
-                }} disabled={!canCreateDraft || createDraftMutation.isPending}>
-                  Taslak Oluştur
-                </Button>
-              ) : (
+              {submittedHeader ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/20">
                   <div className="flex flex-wrap items-center gap-3">
-                    <Badge variant="outline">Header #{header.id}</Badge>
-                    <Badge>{header.status}</Badge>
-                    <Badge variant="secondary">Depo #{header.warehouseId}</Badge>
+                    <Badge variant="outline">Header #{submittedHeader.id}</Badge>
+                    <Badge>{submittedHeader.status}</Badge>
+                    <Badge variant="secondary">Depo #{submittedHeader.warehouseId}</Badge>
                   </div>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Belge No: {header.documentNo || '-'}</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Belge No: {submittedHeader.documentNo || '-'}</p>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Kişinin Alabilir Hakları</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!resolvedEmployee ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Önce çalışan seçildiğinde görev tanımına bağlı grup hakları burada görünür.</p>
+              ) : remainingEntitlementsQuery.isLoading ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Haklar yükleniyor...</p>
+              ) : !remainingEntitlementsQuery.data?.length ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Bu kişi için tanımlı aktif grup hakkı bulunamadı.</p>
+              ) : (
+                <div className="space-y-3">
+                  {remainingEntitlementsQuery.data.map((item: KkdRemainingEntitlementDto) => (
+                    <div key={item.groupCode} className={`rounded-2xl border p-4 ${item.groupCode === resolvedStock?.groupCode ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/5'}`}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge>{item.groupCode}</Badge>
+                        {item.suggestedPhaseType ? <Badge variant="secondary">{item.suggestedPhaseType}</Badge> : null}
+                        <Badge variant="outline">İlk Giriş: {item.remainingInitialQuantity}</Badge>
+                        <Badge variant="outline">3 Ay: {item.remainingThreeMonthQuantity}</Badge>
+                        <Badge variant="outline">Rutin: {item.remainingRecurringQuantity}</Badge>
+                        <Badge variant="secondary">Toplam: {item.totalRemainingQuantity}</Badge>
+                      </div>
+                      {item.groupName ? <p className="mt-2 font-medium text-slate-900 dark:text-white">{item.groupName}</p> : null}
+                      {item.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.message}</p> : null}
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -307,16 +332,42 @@ export function KkdDistributionPage(): ReactElement {
                     <Badge variant={entitlementResult.allowed ? 'default' : 'destructive'}>
                       {entitlementResult.allowed ? 'Hak Uygun' : 'Hak Yetersiz'}
                     </Badge>
-                    <Badge variant="outline">Ana: {entitlementResult.remainingMainQuantity}</Badge>
+                    {entitlementResult.activePhaseLabel ? <Badge variant="secondary">Aktif Faz: {entitlementResult.activePhaseLabel}</Badge> : null}
+                    <Badge variant="outline">İlk Giriş: {entitlementResult.remainingInitialQuantity}</Badge>
+                    <Badge variant="outline">3 Ay: {entitlementResult.remainingThreeMonthQuantity}</Badge>
+                    <Badge variant="outline">Rutin: {entitlementResult.remainingRecurringQuantity}</Badge>
                     <Badge variant="outline">Ek: {entitlementResult.remainingAdditionalQuantity}</Badge>
                     <Badge variant="secondary">Toplam: {entitlementResult.totalRemainingQuantity}</Badge>
                   </div>
-                  {entitlementResult.message ? <p className="mt-2 text-sm">{entitlementResult.message}</p> : null}
+                  {entitlementResult.eligibilityExplanation ? <p className="mt-3 text-sm">{entitlementResult.eligibilityExplanation}</p> : null}
+                  {entitlementResult.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{entitlementResult.message}</p> : null}
+                  {entitlementResult.phaseStatuses?.length ? (
+                    <div className="mt-3 grid gap-3 md:grid-cols-3">
+                      {entitlementResult.phaseStatuses.map((phase) => (
+                        <div key={phase.phaseType} className={`rounded-xl border p-3 ${phase.isCurrentPhase ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]'}`}>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant={phase.isCurrentPhase ? 'default' : 'outline'}>{phase.phaseLabel}</Badge>
+                            {phase.isAllowed ? <Badge variant="secondary">Kullanılabilir</Badge> : null}
+                          </div>
+                          <p className="mt-2 text-sm">Tanımlı: {phase.definedQuantity}</p>
+                          <p className="text-sm">Kalan: {phase.remainingQuantity}</p>
+                          {phase.frequencyDays ? <p className="text-sm">Frekans: {phase.frequencyDays} gün / {phase.quantityPerFrequency ?? 0}</p> : null}
+                          {phase.message ? <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">{phase.message}</p> : null}
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {selectedGroupEntitlement && !entitlementResult ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/5">
+                  Bu grupta mevcut hak: İlk Giriş {selectedGroupEntitlement.remainingInitialQuantity}, 3 Ay {selectedGroupEntitlement.remainingThreeMonthQuantity}, Rutin {selectedGroupEntitlement.remainingRecurringQuantity}, Toplam {selectedGroupEntitlement.totalRemainingQuantity}.
                 </div>
               ) : null}
 
               <div className="flex flex-wrap gap-2">
-                <Button type="button" onClick={() => addLineMutation.mutate()} disabled={!canAddLine || addLineMutation.isPending}>
+                <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>
                   Satıra Ekle
                 </Button>
               </div>
@@ -327,31 +378,36 @@ export function KkdDistributionPage(): ReactElement {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Dağıtım Satırları</CardTitle>
+              <CardTitle>Dağıtım Sepeti</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline">Satır: {header?.lines.length ?? 0}</Badge>
+                <Badge variant="outline">Satır: {cartLines.length}</Badge>
                 <Badge variant="secondary">Toplam Miktar: {totalLineQuantity}</Badge>
               </div>
 
               <div className="space-y-3">
-                {(header?.lines ?? []).map((line) => (
-                  <div key={line.id} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                {cartLines.map((line) => (
+                  <div key={line.clientId} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03]">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-white">{line.stockCode} {line.description ? `- ${line.description}` : ''}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">{line.stockCode} - {line.stockName}</p>
                         <p className="text-sm text-slate-600 dark:text-slate-300">
-                          Grup: {line.groupCode || '-'} | Miktar: {line.quantity}
+                          Grup: {line.groupCode || '-'} | Miktar: {line.quantity} | Faz: {line.entitlement.activePhaseLabel || '-'}
                         </p>
                       </div>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => deleteLineMutation.mutate(line.id)} disabled={deleteLineMutation.isPending}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCartLines((prev) => prev.filter((item) => item.clientId !== line.clientId))}
+                      >
                         Satırı Sil
                       </Button>
                     </div>
                   </div>
                 ))}
-                {!header?.lines.length ? (
+                {!cartLines.length ? (
                   <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
                     Henüz satır eklenmedi.
                   </div>
@@ -359,11 +415,11 @@ export function KkdDistributionPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button type="button" onClick={() => completeMutation.mutate()} disabled={!header?.lines.length || completeMutation.isPending}>
-                  Tamamla
+                <Button type="button" onClick={() => submitMutation.mutate()} disabled={!cartLines.length || submitMutation.isPending}>
+                  Kaydet ve Tamamla
                 </Button>
-                <Button type="button" variant="outline" onClick={() => cancelMutation.mutate()} disabled={!header || cancelMutation.isPending}>
-                  İptal Et
+                <Button type="button" variant="outline" onClick={() => setCartLines([])} disabled={!cartLines.length}>
+                  Sepeti Temizle
                 </Button>
               </div>
             </CardContent>

@@ -338,15 +338,47 @@ export interface KkdEntitlementCheckRequestDto {
 
 export interface KkdEntitlementCheckResultDto {
   allowed: boolean;
+  departmentName?: string | null;
+  roleName?: string | null;
+  employmentStartDate?: string | null;
+  activePhaseType?: string | null;
+  activePhaseLabel?: string | null;
+  eligibilityExplanation?: string | null;
+  remainingInitialQuantity: number;
+  remainingThreeMonthQuantity: number;
+  remainingRecurringQuantity: number;
   remainingMainQuantity: number;
   remainingAdditionalQuantity: number;
   totalRemainingQuantity: number;
   frequencyRuleSatisfied: boolean;
   message?: string | null;
   suggestedEntitlementType?: string | null;
+  suggestedPhaseType?: string | null;
   entitlementPolicyId?: number | null;
   additionalEntitlementId?: number | null;
+  entitlementMatrixHeaderId?: number | null;
+  entitlementMatrixLineId?: number | null;
+  entitlementPhaseId?: number | null;
+  entitlementOverrideId?: number | null;
   nextEligibleDate?: string | null;
+  phaseStatuses: KkdEntitlementPhaseStatusDto[];
+}
+
+export interface KkdEntitlementPhaseStatusDto {
+  phaseId?: number | null;
+  phaseType: string;
+  phaseLabel: string;
+  isCurrentPhase: boolean;
+  isActiveNow: boolean;
+  isAllowed: boolean;
+  definedQuantity: number;
+  remainingQuantity: number;
+  allowBulkIssue: boolean;
+  frequencyDays?: number | null;
+  quantityPerFrequency?: number | null;
+  activationDate?: string | null;
+  nextEligibleDate?: string | null;
+  message?: string | null;
 }
 
 export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
@@ -400,6 +432,26 @@ export interface CreateKkdDistributionDraftDto {
   branchCode?: string;
 }
 
+export interface CreateKkdDistributionSubmissionLineDto {
+  barcode?: string | null;
+  stockId?: number | null;
+  quantity: number;
+  shelfId?: number | null;
+  serialNo?: string | null;
+  serialNo2?: string | null;
+  serialNo3?: string | null;
+}
+
+export interface CreateKkdDistributionSubmissionDto {
+  employeeId: number;
+  warehouseId: number;
+  distributionDate?: string | null;
+  description?: string | null;
+  sourceChannel?: string;
+  branchCode?: string;
+  lines: CreateKkdDistributionSubmissionLineDto[];
+}
+
 export interface AddKkdDistributionLineDto {
   barcode?: string | null;
   stockId?: number | null;
@@ -450,11 +502,15 @@ export interface KkdRemainingEntitlementDto {
   groupCode: string;
   groupName?: string | null;
   periodType?: string | null;
+  remainingInitialQuantity: number;
+  remainingThreeMonthQuantity: number;
+  remainingRecurringQuantity: number;
   remainingMainQuantity: number;
   remainingAdditionalQuantity: number;
   totalRemainingQuantity: number;
   frequencyRuleSatisfied: boolean;
   suggestedEntitlementType?: string | null;
+  suggestedPhaseType?: string | null;
   lastUsageDate?: string | null;
   nextEligibleDate?: string | null;
   message?: string | null;

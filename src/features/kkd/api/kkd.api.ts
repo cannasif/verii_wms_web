@@ -5,6 +5,7 @@ import type { ApiRequestOptions } from '@/lib/request-utils';
 import type {
   AddKkdDistributionLineDto,
   CreateKkdDistributionDraftDto,
+  CreateKkdDistributionSubmissionDto,
   CreateKkdEmployeeDepartmentDto,
   CreateKkdEmployeeDto,
   CreateKkdEmployeeRoleDto,
@@ -206,6 +207,10 @@ export const kkdApi = {
 
   createDraft: async (dto: CreateKkdDistributionDraftDto): Promise<KkdDistributionHeaderDto> => {
     const response = await api.post<ApiResponse<KkdDistributionHeaderDto>>('/api/KkdDistribution/draft', dto);
+    return extractData(response);
+  },
+  submitDistribution: async (dto: CreateKkdDistributionSubmissionDto): Promise<KkdDistributionHeaderDto> => {
+    const response = await api.post<ApiResponse<KkdDistributionHeaderDto>>('/api/KkdDistribution/submit', dto);
     return extractData(response);
   },
   getDistributions: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDistributionListItemDto>> => {
