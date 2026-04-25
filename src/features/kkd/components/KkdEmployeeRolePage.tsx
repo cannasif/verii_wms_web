@@ -1,5 +1,6 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
@@ -36,6 +37,26 @@ function RoleForm({
           onSelect={(item) => setFormState((prev) => ({ ...prev, departmentId: item.id }))}
         />
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="roleCode">Görev Kodu *</Label>
+        <Input
+          id="roleCode"
+          value={formState.roleCode}
+          onChange={(event) => setFormState((prev) => ({ ...prev, roleCode: event.target.value }))}
+          placeholder="Görev kodu giriniz"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="roleName">Görev Adı *</Label>
+        <Input
+          id="roleName"
+          value={formState.roleName}
+          onChange={(event) => setFormState((prev) => ({ ...prev, roleName: event.target.value }))}
+          placeholder="Görev adı giriniz"
+        />
+      </div>
     </div>
   );
 }
@@ -49,6 +70,7 @@ export function KkdEmployeeRolePage(): ReactElement {
   ], []);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeRoleDto>[] = [
+    { key: 'departmentId', label: 'Bölüm', type: 'number', required: true },
     { key: 'roleCode', label: 'Görev Kodu', type: 'text', required: true },
     { key: 'roleName', label: 'Görev Adı', type: 'text', required: true },
     { key: 'isActive', label: 'Aktif', type: 'boolean' },

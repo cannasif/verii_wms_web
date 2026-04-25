@@ -176,8 +176,8 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   const openEdit = (item: TItem): void => {
     setEditingItem(item);
     const nextState = { ...initialForm } as Record<string, unknown>;
-    fields.forEach((field) => {
-      nextState[field.key] = (item as Record<string, unknown>)[field.key] ?? nextState[field.key];
+    Object.keys(nextState).forEach((key) => {
+      nextState[key] = (item as Record<string, unknown>)[key] ?? nextState[key];
     });
     setFormState(nextState as TForm);
     setDialogOpen(true);

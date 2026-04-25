@@ -134,10 +134,17 @@ function EmployeeForm({
         <Label>Görev</Label>
         <PagedLookupDialog<KkdEmployeeRoleDto>
           open={roleDialogOpen}
-          onOpenChange={setRoleDialogOpen}
+          onOpenChange={(open) => {
+            if (!formState.departmentId) {
+              setRoleDialogOpen(false);
+              return;
+            }
+            setRoleDialogOpen(open);
+          }}
           title="Görev Seç"
           value={formState.roleCode ? `${formState.roleCode} - ${formState.roleName ?? ''}` : null}
           placeholder={formState.departmentId ? 'Görev seçiniz' : 'Önce bölüm seçiniz'}
+          disabled={!formState.departmentId}
           queryKey={['kkd', 'employee-form', 'roles', formState.departmentId ?? 0]}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             kkdApi.getRoles({
@@ -185,7 +192,20 @@ export function KkdEmployeePage(): ReactElement {
   ], []);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeDto>[] = [
+    { key: 'userId', label: 'Sistem Kullanıcısı', type: 'number', required: true },
+    { key: 'customerId', label: 'Cari', type: 'number', required: true },
+    { key: 'customerCode', label: 'Cari Kodu', type: 'text', required: true },
     { key: 'employeeCode', label: 'Personel Kodu', type: 'text', required: true },
+    { key: 'firstName', label: 'Ad', type: 'text' },
+    { key: 'lastName', label: 'Soyad', type: 'text' },
+    { key: 'departmentId', label: 'Bölüm', type: 'number' },
+    { key: 'departmentCode', label: 'Bölüm Kodu', type: 'text' },
+    { key: 'departmentName', label: 'Bölüm Adı', type: 'text' },
+    { key: 'roleId', label: 'Görev', type: 'number' },
+    { key: 'roleCode', label: 'Görev Kodu', type: 'text' },
+    { key: 'roleName', label: 'Görev Adı', type: 'text' },
+    { key: 'qrCode', label: 'QR Kod', type: 'text', required: true },
+    { key: 'isActive', label: 'Aktif', type: 'boolean' },
   ];
 
   return (
