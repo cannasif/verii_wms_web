@@ -135,11 +135,16 @@ export function AdvancedFilter({
                     <SelectValue placeholder={getLabel('column')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {columns.map((column) => (
-                      <SelectItem key={column.value} value={column.value}>
-                        {t(column.labelKey, { ns: translationNamespace, defaultValue: column.label ?? column.value })}
-                      </SelectItem>
-                    ))}
+                    {columns.map((column) => {
+                      const itemLabel = column.label != null && String(column.label).trim() !== ''
+                        ? column.label
+                        : t(column.labelKey, { ns: translationNamespace, defaultValue: column.value });
+                      return (
+                        <SelectItem key={column.value} value={column.value}>
+                          {itemLabel}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <Select value={row.operator} onValueChange={(value) => updateRow(row.id, { operator: value })}>

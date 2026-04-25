@@ -17,8 +17,9 @@ import { getPagedRange } from '@/lib/paged';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
 import { toast } from 'sonner';
+import i18n from '@/lib/i18n';
 import type { PagedParams, PagedResponse } from '@/types/api';
-import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { inferFilterColumnType, type FilterColumnConfig } from '@/lib/advanced-filter-types';
 
 type CrudFieldType = 'text' | 'number' | 'date' | 'textarea' | 'boolean';
 
@@ -164,7 +165,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     () =>
       columns.map((column) => ({
         value: column.key,
-        type: 'string',
+        type: inferFilterColumnType(column.key),
         labelKey: column.key,
         label: column.label,
       })),
@@ -309,7 +310,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
                 void query.refetch();
               },
               isLoading: query.isFetching,
-              label: t('common.refresh', { defaultValue: 'Missing translation' }),
+              label: t('common.refresh'),
             }}
           />
         </CardContent>
@@ -421,7 +422,11 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
 
 export function renderKkdGenericCell(value: unknown): ReactElement | string | number | null {
   if (typeof value === 'boolean') {
-    return <Badge variant={value ? 'default' : 'secondary'}>{value ? 'Aktif' : 'Pasif'}</Badge>;
+    return (
+      <Badge variant={value ? 'default' : 'secondary'}>
+        {value ? i18n.t('common.active', { ns: 'common' }) : i18n.t('common.passive', { ns: 'common' })}
+      </Badge>
+    );
   }
   if (typeof value === 'string' && value.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(value)) {
     return new Date(value).toLocaleDateString('tr-TR');

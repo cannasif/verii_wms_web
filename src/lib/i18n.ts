@@ -99,7 +99,10 @@ type SupportedLanguage = (typeof supportedLngs)[number];
 const toCamelCase = (value: string): string =>
   value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
 
-function formatMissingKey(): string {
+function resolveMissingKey(_key: string, defaultValue?: string): string {
+  if (typeof defaultValue === 'string' && defaultValue.length > 0) {
+    return defaultValue;
+  }
   return 'Missing translation';
 }
 
@@ -259,7 +262,7 @@ const initPromise = (async () => {
     ns: namespaces.length > 0 ? namespaces : [defaultNS],
     defaultNS,
     interpolation: { escapeValue: false },
-    parseMissingKeyHandler: () => formatMissingKey(),
+    parseMissingKeyHandler: (key, defaultValue) => resolveMissingKey(key, defaultValue as string | undefined),
     returnEmptyString: false,
     detection: {
       order: [],

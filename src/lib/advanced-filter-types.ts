@@ -14,6 +14,13 @@ export type FilterColumnConfig = {
   label?: string;
 };
 
+export function inferFilterColumnType(columnKey: string): FilterColumnConfig['type'] {
+  if (columnKey === 'isActive') {
+    return 'boolean';
+  }
+  return 'string';
+}
+
 export const STRING_OPERATORS = ['Contains', 'StartsWith', 'EndsWith', 'Equals'] as const;
 export const NUMERIC_DATE_OPERATORS = ['Equals', '>', '>=', '<', '<='] as const;
 

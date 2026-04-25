@@ -2,7 +2,7 @@ import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { DataTableGrid, type DataTableGridColumn, type DataTableSortDirection } from './DataTableGrid';
 import type { DataTableActionBarProps } from './DataTableActionBar';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
-import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { inferFilterColumnType, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
 
 export type PagedDataGridColumn<TKey extends string> = DataTableGridColumn<TKey>;
@@ -154,7 +154,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       .filter((column) => column.key !== 'actions')
       .map((column) => ({
         value: column.key,
-        type: 'string',
+        type: inferFilterColumnType(column.key),
         labelKey: column.key,
         label: column.label,
       })),
