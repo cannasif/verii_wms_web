@@ -50,6 +50,10 @@ function EntitlementPolicyForm({
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
+      <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700 dark:border-cyan-800/30 dark:bg-cyan-950/20 dark:text-slate-200">
+        Bu ekranda grup ve miktar tanımı yapılır. İstersen çalışan, bölüm veya görev bazında kayıt açabilirsin.
+      </div>
+
       <div className="space-y-2">
         <Label>Cari *</Label>
         <PagedLookupDialog<CustomerLookup>
@@ -253,10 +257,10 @@ export function KkdEntitlementPolicyPage(): ReactElement {
   return (
     <KkdCrudPage<KkdEntitlementPolicyDto, CreateKkdEntitlementPolicyDto, ColumnKey>
       pageKey="kkd-entitlement-policies"
-      title="KKD Hak Tanımları"
-      description="Grup kodu bazlı ana hak politikalarını yönetin."
+      title="KKD Hak Şablonları"
+      description="Hak şablonlarını yönetin."
       breadcrumbGroup="KKD"
-      breadcrumbCurrent="Hak Tanımları"
+      breadcrumbCurrent="Hak Şablonları"
       columns={columns}
       fields={fields}
       initialForm={{

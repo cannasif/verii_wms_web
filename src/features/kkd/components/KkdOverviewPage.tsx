@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, ClipboardList, FileSearch, ShieldCheck, Users } from 'lucide-react';
+import { ArrowRight, ClipboardList, FileSearch, FolderTree, ShieldCheck, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -12,36 +12,58 @@ import { kkdApi } from '../api/kkd.api';
 const quickActions = [
   {
     title: 'KKD Dağıtım',
-    description: 'QR okut, çalışanı bul, barkodu çöz ve hak kontrolünden sonra belgeyi tamamla.',
+    description: 'Çalışanı seç, ürün okut, belgeyi tamamla.',
     href: '/kkd/distribution',
     icon: ClipboardList,
   },
   {
     title: 'Hak Sorgulama',
-    description: 'Çalışan ve grup bazında kalan ana hak, ek hak ve periyot uygunluğunu kontrol et.',
+    description: 'Çalışanın hakkı var mı hızlıca kontrol et.',
     href: '/kkd/entitlement-check',
     icon: ShieldCheck,
   },
   {
     title: 'Dağıtım Listesi',
-    description: 'Oluşmuş KKD belgelerini listele, filtrele ve detaylarını aç.',
+    description: 'Oluşan belgeleri listele ve incele.',
     href: '/kkd/distribution-list',
     icon: FileSearch,
   },
   {
-    title: 'Çalışan Tanımları',
-    description: 'Çalışan, bölüm ve görev omurgasını ERP yönetim alanından güncelle.',
+    title: 'Tanımlar',
+    description: 'Bölüm, görev ve çalışan kartlarını yönet.',
     href: '/erp/kkd/employees',
-    icon: Users,
+    icon: FolderTree,
   },
 ] as const;
 
 const scenarioSteps = [
-  'Çalışan QR kodu okutulur veya listeden seçilir.',
-  'Depo seçilir ve KKD taslağı açılır.',
-  'Ürün barkodu okutulur, stok grup kodu okunur.',
-  'Hak uygunluğu kontrol edilir ve satır taslağa eklenir.',
-  'Tamamlama anında stok, seri ve hak tüketimi birlikte kesinleşir.',
+  'Bölüm ve görev tanımlanır.',
+  'Çalışan kartı açılır.',
+  'Hak şablonu tanımlanır.',
+  'Gerekirse ek hak verilir.',
+  'Dağıtım yapılır.',
+  'Belge ve kalan hak izlenir.',
+] as const;
+
+const governanceCards = [
+  {
+    title: 'Organizasyon',
+    description: 'Bölüm, görev ve çalışan kartları.',
+    href: '/erp/kkd/departments',
+    icon: Users,
+  },
+  {
+    title: 'Hak Şablonları',
+    description: 'Grup ve miktar tanımları.',
+    href: '/erp/kkd/entitlements',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Ek Haklar',
+    description: 'Kişi bazlı ek hak kayıtları.',
+    href: '/erp/kkd/additional-entitlements',
+    icon: FileSearch,
+  },
 ] as const;
 
 export function KkdOverviewPage(): ReactElement {
@@ -107,10 +129,7 @@ export function KkdOverviewPage(): ReactElement {
             <Badge variant="outline">KKD Modulu</Badge>
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">KKD Operasyon Merkezi</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                KKD senaryosunu sadece tek dağıtım ekranı olarak değil; operasyon, hak sorgu ve belge izleme akışlarıyla birlikte
-                yönetin. Master tanımlar ERP alanında kalır, operasyon ekranları ise buradan yürür.
-              </p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">KKD işlemlerini tek yerden yönetin.</p>
             </div>
           </div>
 
@@ -141,7 +160,7 @@ export function KkdOverviewPage(): ReactElement {
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Operasyon Ekranları</CardTitle>
+            <CardTitle>İşlemler</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             {quickActions.map((action) => {
@@ -177,7 +196,7 @@ export function KkdOverviewPage(): ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle>Senaryo Akışı</CardTitle>
+            <CardTitle>Akış</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {scenarioSteps.map((step, index) => (
@@ -191,6 +210,42 @@ export function KkdOverviewPage(): ReactElement {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tanımlar</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-3">
+          {governanceCards.map((action) => {
+            const Icon = action.icon;
+            return (
+              <div
+                key={action.href}
+                className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-xs transition hover:border-cyan-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03]"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-100">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-slate-950 dark:text-white">{action.title}</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{action.description}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <Button asChild variant="outline" className="w-full justify-between">
+                    <Link to={action.href}>
+                      Ekranı Aç
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -22,10 +22,10 @@ export function KkdEmployeeDepartmentPage(): ReactElement {
   return (
     <KkdCrudPage<KkdEmployeeDepartmentDto, CreateKkdEmployeeDepartmentDto, ColumnKey>
       pageKey="kkd-departments"
-      title="KKD Bölümleri"
-      description="Çalışanların bağlı olduğu bölüm kayıtlarını yönetin."
+      title="KKD Bölüm Tanımları"
+      description="Bölüm kayıtlarını yönetin."
       breadcrumbGroup="KKD"
-      breadcrumbCurrent="Bölümler"
+      breadcrumbCurrent="Bölüm Tanımları"
       columns={columns}
       fields={fields}
       initialForm={{ departmentCode: '', departmentName: '', isActive: true }}
@@ -39,4 +39,3 @@ export function KkdEmployeeDepartmentPage(): ReactElement {
     />
   );
 }
-

@@ -43,6 +43,10 @@ function AdditionalEntitlementForm({
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
+      <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm leading-6 text-slate-700 dark:border-amber-800/30 dark:bg-amber-950/20 dark:text-slate-200">
+        Bu ekran çalışan bazlı ek hak vermek için kullanılır.
+      </div>
+
       <div className="space-y-2">
         <Label>Cari *</Label>
         <PagedLookupDialog<CustomerLookup>
@@ -195,10 +199,10 @@ export function KkdAdditionalEntitlementPage(): ReactElement {
   return (
     <KkdCrudPage<KkdAdditionalEntitlementDto, CreateKkdAdditionalEntitlementDto, ColumnKey>
       pageKey="kkd-additional-entitlements"
-      title="KKD Ek Haklar"
+      title="KKD Kişi Bazlı İstisna ve Ek Haklar"
       description="Çalışan bazlı ek hak kayıtlarını yönetin."
       breadcrumbGroup="KKD"
-      breadcrumbCurrent="Ek Haklar"
+      breadcrumbCurrent="Kişi Bazlı İstisna ve Ek Haklar"
       columns={columns}
       fields={fields}
       initialForm={{

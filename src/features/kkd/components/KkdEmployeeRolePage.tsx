@@ -22,10 +22,10 @@ export function KkdEmployeeRolePage(): ReactElement {
   return (
     <KkdCrudPage<KkdEmployeeRoleDto, CreateKkdEmployeeRoleDto, ColumnKey>
       pageKey="kkd-roles"
-      title="KKD Görevleri"
-      description="Çalışan görev tanımlarını yönetin."
+      title="KKD Görev Tanımları"
+      description="Görev kayıtlarını yönetin."
       breadcrumbGroup="KKD"
-      breadcrumbCurrent="Görevler"
+      breadcrumbCurrent="Görev Tanımları"
       columns={columns}
       fields={fields}
       initialForm={{ roleCode: '', roleName: '', isActive: true }}
@@ -39,4 +39,3 @@ export function KkdEmployeeRolePage(): ReactElement {
     />
   );
 }
-

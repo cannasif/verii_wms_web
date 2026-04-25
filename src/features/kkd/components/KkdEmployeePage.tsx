@@ -150,10 +150,10 @@ export function KkdEmployeePage(): ReactElement {
   return (
     <KkdCrudPage<KkdEmployeeDto, CreateKkdEmployeeDto, ColumnKey>
       pageKey="kkd-employees"
-      title="KKD Çalışanları"
-      description="KKD dağıtımında kullanılacak çalışan kayıtlarını yönetin."
+      title="KKD Çalışan Kartları"
+      description="Çalışan kartlarını yönetin."
       breadcrumbGroup="KKD"
-      breadcrumbCurrent="Çalışanlar"
+      breadcrumbCurrent="Çalışan Kartları"
       columns={columns}
       fields={fields}
       initialForm={{
