@@ -4,34 +4,40 @@ import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 import type {
   AddKkdDistributionLineDto,
-  CreateKkdAdditionalEntitlementDto,
   CreateKkdDistributionDraftDto,
   CreateKkdEmployeeDepartmentDto,
   CreateKkdEmployeeDto,
   CreateKkdEmployeeRoleDto,
+  CreateKkdEntitlementMatrixRowDto,
+  CreateKkdEntitlementOverrideDto,
   CreateKkdEntitlementPolicyDto,
-  KkdAdditionalEntitlementDto,
   KkdDistributionHeaderDto,
   KkdDistributionListItemDto,
   KkdDistributionLineDto,
+  KkdDepartmentUsageReportDto,
   KkdEmployeeDepartmentDto,
   KkdEmployeeDto,
   KkdEmployeeRoleDto,
   KkdEntitlementCheckRequestDto,
   KkdEntitlementCheckResultDto,
+  KkdEntitlementMatrixRowDto,
+  KkdEntitlementOverrideDto,
   KkdEntitlementPolicyDto,
+  KkdGroupUsageReportDto,
   KkdRemainingEntitlementDto,
   KkdResolvedEmployeeDto,
   KkdResolvedStockDto,
+  KkdRoleUsageReportDto,
   KkdStockGroupOption,
   KkdValidationLogDto,
   ResolveKkdEmployeeQrDto,
   ResolveKkdStockBarcodeDto,
-  UpdateKkdAdditionalEntitlementDto,
   UpdateKkdDistributionLineDto,
   UpdateKkdEmployeeDepartmentDto,
   UpdateKkdEmployeeDto,
   UpdateKkdEmployeeRoleDto,
+  UpdateKkdEntitlementMatrixRowDto,
+  UpdateKkdEntitlementOverrideDto,
   UpdateKkdEntitlementPolicyDto,
 } from '../types/kkd.types';
 
@@ -114,6 +120,57 @@ export const kkdApi = {
     return extractData(response);
   },
 
+  getEntitlementMatrixRows: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementMatrixRowDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementMatrixRowDto>>>(
+      '/api/KkdEntitlementMatrix/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
+  createEntitlementMatrixRow: async (dto: CreateKkdEntitlementMatrixRowDto): Promise<KkdEntitlementMatrixRowDto> => {
+    const response = await api.post<ApiResponse<KkdEntitlementMatrixRowDto>>('/api/KkdEntitlementMatrix', dto);
+    return extractData(response);
+  },
+  updateEntitlementMatrixRow: async (id: number, dto: UpdateKkdEntitlementMatrixRowDto): Promise<KkdEntitlementMatrixRowDto> => {
+    const response = await api.put<ApiResponse<KkdEntitlementMatrixRowDto>>(`/api/KkdEntitlementMatrix/${id}`, dto);
+    return extractData(response);
+  },
+  deleteEntitlementMatrixRow: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEntitlementMatrix/${id}`);
+    extractData(response);
+  },
+
+  getEntitlementOverrides: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementOverrideDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementOverrideDto>>>(
+      '/api/KkdEntitlementOverride/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
+  createEntitlementOverride: async (dto: CreateKkdEntitlementOverrideDto): Promise<KkdEntitlementOverrideDto> => {
+    const response = await api.post<ApiResponse<KkdEntitlementOverrideDto>>('/api/KkdEntitlementOverride', dto);
+    return extractData(response);
+  },
+  updateEntitlementOverride: async (id: number, dto: UpdateKkdEntitlementOverrideDto): Promise<KkdEntitlementOverrideDto> => {
+    const response = await api.put<ApiResponse<KkdEntitlementOverrideDto>>(`/api/KkdEntitlementOverride/${id}`, dto);
+    return extractData(response);
+  },
+  deleteEntitlementOverride: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEntitlementOverride/${id}`);
+    extractData(response);
+  },
+
+  getAdditionalEntitlements: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementOverrideDto>> =>
+    kkdApi.getEntitlementOverrides(params, options),
+  createAdditionalEntitlement: async (dto: CreateKkdEntitlementOverrideDto): Promise<KkdEntitlementOverrideDto> =>
+    kkdApi.createEntitlementOverride(dto),
+  updateAdditionalEntitlement: async (id: number, dto: UpdateKkdEntitlementOverrideDto): Promise<KkdEntitlementOverrideDto> =>
+    kkdApi.updateEntitlementOverride(id, dto),
+  deleteAdditionalEntitlement: async (id: number): Promise<void> =>
+    kkdApi.deleteEntitlementOverride(id),
+
   getEntitlementPolicies: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementPolicyDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementPolicyDto>>>(
       '/api/KkdEntitlementPolicy/paged',
@@ -135,26 +192,6 @@ export const kkdApi = {
     extractData(response);
   },
 
-  getAdditionalEntitlements: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdAdditionalEntitlementDto>> => {
-    const response = await api.post<ApiResponse<PagedResponse<KkdAdditionalEntitlementDto>>>(
-      '/api/KkdAdditionalEntitlement/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
-      options,
-    );
-    return extractPaged(response);
-  },
-  createAdditionalEntitlement: async (dto: CreateKkdAdditionalEntitlementDto): Promise<KkdAdditionalEntitlementDto> => {
-    const response = await api.post<ApiResponse<KkdAdditionalEntitlementDto>>('/api/KkdAdditionalEntitlement', dto);
-    return extractData(response);
-  },
-  updateAdditionalEntitlement: async (id: number, dto: UpdateKkdAdditionalEntitlementDto): Promise<KkdAdditionalEntitlementDto> => {
-    const response = await api.put<ApiResponse<KkdAdditionalEntitlementDto>>(`/api/KkdAdditionalEntitlement/${id}`, dto);
-    return extractData(response);
-  },
-  deleteAdditionalEntitlement: async (id: number): Promise<void> => {
-    const response = await api.delete<ApiResponse<boolean>>(`/api/KkdAdditionalEntitlement/${id}`);
-    extractData(response);
-  },
   getStockGroups: async (subeKodu?: string): Promise<KkdStockGroupOption[]> => {
     const response = await api.get<ApiResponse<Array<{ subeKodu: number; grupKod: string; grupIsim?: string | null }>>>(
       '/api/Erp/stock-groups',
@@ -224,6 +261,30 @@ export const kkdApi = {
     const response = await api.post<ApiResponse<PagedResponse<KkdValidationLogDto>>>(
       '/api/KkdReport/validation-logs/paged',
       buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'CreatedDate', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
+  getDepartmentUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDepartmentUsageReportDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdDepartmentUsageReportDto>>>(
+      '/api/KkdReport/department-usage/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
+  getRoleUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdRoleUsageReportDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdRoleUsageReportDto>>>(
+      '/api/KkdReport/role-usage/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
+  getGroupUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdGroupUsageReportDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdGroupUsageReportDto>>>(
+      '/api/KkdReport/group-usage/paged',
+      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);

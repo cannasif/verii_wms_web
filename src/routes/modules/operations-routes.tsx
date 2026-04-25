@@ -187,6 +187,9 @@ const KkdDistributionListPage = lazyNamed(() => import('@/features/kkd'), 'KkdDi
 const KkdEntitlementCheckPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementCheckPage');
 const KkdRemainingEntitlementsPage = lazyNamed(() => import('@/features/kkd'), 'KkdRemainingEntitlementsPage');
 const KkdValidationLogPage = lazyNamed(() => import('@/features/kkd'), 'KkdValidationLogPage');
+const KkdDepartmentReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdDepartmentReportPage');
+const KkdRoleReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdRoleReportPage');
+const KkdGroupReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdGroupReportPage');
 
 export const operationsChildRoutes: RouteObject[] = [
   {
@@ -198,6 +201,9 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'remaining-entitlements', element: withRoute(KkdRemainingEntitlementsPage, { routeName: 'kkd-remaining-entitlements' }) },
       { path: 'entitlement-check', element: withRoute(KkdEntitlementCheckPage, { routeName: 'kkd-entitlement-check' }) },
       { path: 'validation-logs', element: withRoute(KkdValidationLogPage, { routeName: 'kkd-validation-logs' }) },
+      { path: 'reports/departments', element: withRoute(KkdDepartmentReportPage, { routeName: 'kkd-department-report' }) },
+      { path: 'reports/roles', element: withRoute(KkdRoleReportPage, { routeName: 'kkd-role-report' }) },
+      { path: 'reports/groups', element: withRoute(KkdGroupReportPage, { routeName: 'kkd-group-report' }) },
     ],
   },
   {

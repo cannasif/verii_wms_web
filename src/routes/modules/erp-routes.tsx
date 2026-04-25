@@ -17,8 +17,8 @@ const PrinterManagementPage = lazyNamed(() => import('@/features/printer-managem
 const KkdEmployeePage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeePage');
 const KkdEmployeeDepartmentPage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeeDepartmentPage');
 const KkdEmployeeRolePage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeeRolePage');
-const KkdEntitlementPolicyPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementPolicyPage');
-const KkdAdditionalEntitlementPage = lazyNamed(() => import('@/features/kkd'), 'KkdAdditionalEntitlementPage');
+const KkdEntitlementMatrixPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementMatrixPage');
+const KkdEntitlementOverridePage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementOverridePage');
 
 export const erpChildRoutes: RouteObject[] = [
   {
@@ -40,8 +40,8 @@ export const erpChildRoutes: RouteObject[] = [
       { path: 'kkd/employees', element: withRoute(KkdEmployeePage, { routeName: 'erp-kkd-employees' }) },
       { path: 'kkd/departments', element: withRoute(KkdEmployeeDepartmentPage, { routeName: 'erp-kkd-departments' }) },
       { path: 'kkd/roles', element: withRoute(KkdEmployeeRolePage, { routeName: 'erp-kkd-roles' }) },
-      { path: 'kkd/entitlements', element: withRoute(KkdEntitlementPolicyPage, { routeName: 'erp-kkd-entitlements' }) },
-      { path: 'kkd/additional-entitlements', element: withRoute(KkdAdditionalEntitlementPage, { routeName: 'erp-kkd-additional-entitlements' }) },
+      { path: 'kkd/entitlement-matrix', element: withRoute(KkdEntitlementMatrixPage, { routeName: 'erp-kkd-entitlement-matrix' }) },
+      { path: 'kkd/manual-overrides', element: withRoute(KkdEntitlementOverridePage, { routeName: 'erp-kkd-manual-overrides' }) },
     ],
   },
 ];

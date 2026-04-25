@@ -39,8 +39,8 @@ const quickActions = [
 const scenarioSteps = [
   'Bölüm ve görev tanımlanır.',
   'Çalışan kartı açılır.',
-  'Hak şablonu tanımlanır.',
-  'Gerekirse ek hak verilir.',
+  'Görev matrisi tanımlanır.',
+  'Gerekirse manuel istisna verilir.',
   'Dağıtım yapılır.',
   'Belge ve kalan hak izlenir.',
 ] as const;
@@ -53,15 +53,15 @@ const governanceCards = [
     icon: Users,
   },
   {
-    title: 'Hak Şablonları',
-    description: 'Grup ve miktar tanımları.',
-    href: '/erp/kkd/entitlements',
+    title: 'Görev Matrisi',
+    description: 'Bölüm ve görev için hak kuralları.',
+    href: '/erp/kkd/entitlement-matrix',
     icon: ShieldCheck,
   },
   {
-    title: 'Ek Haklar',
-    description: 'Kişi bazlı ek hak kayıtları.',
-    href: '/erp/kkd/additional-entitlements',
+    title: 'Manuel İstisnalar',
+    description: 'İstisnai çalışan ihtiyaçları için ek hak.',
+    href: '/erp/kkd/manual-overrides',
     icon: FileSearch,
   },
 ] as const;
@@ -94,13 +94,13 @@ export function KkdOverviewPage(): ReactElement {
 
   const entitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'entitlements'],
-    queryFn: () => kkdApi.getEntitlementPolicies({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getEntitlementMatrixRows({ pageNumber: 0, pageSize: 1 }),
     retry: false,
   });
 
   const additionalEntitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'additional-entitlements'],
-    queryFn: () => kkdApi.getAdditionalEntitlements({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getEntitlementOverrides({ pageNumber: 0, pageSize: 1 }),
     retry: false,
   });
 
@@ -114,8 +114,8 @@ export function KkdOverviewPage(): ReactElement {
     { label: 'Çalışan', value: employeesQuery.data?.totalCount ?? 0 },
     { label: 'Bölüm', value: departmentsQuery.data?.totalCount ?? 0 },
     { label: 'Görev', value: rolesQuery.data?.totalCount ?? 0 },
-    { label: 'Ana Hak', value: entitlementsQuery.data?.totalCount ?? 0 },
-    { label: 'Ek Hak', value: additionalEntitlementsQuery.data?.totalCount ?? 0 },
+    { label: 'Görev Matrisi', value: entitlementsQuery.data?.totalCount ?? 0 },
+    { label: 'İstisna', value: additionalEntitlementsQuery.data?.totalCount ?? 0 },
     { label: 'Stok Grubu', value: stockGroupsQuery.data?.length ?? 0 },
   ];
 

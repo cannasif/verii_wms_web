@@ -166,6 +166,110 @@ export interface CreateKkdEntitlementPolicyDto {
 
 export interface UpdateKkdEntitlementPolicyDto extends Partial<CreateKkdEntitlementPolicyDto> {}
 
+export type KkdEntitlementScopeType = 'Customer' | 'Department' | 'Role' | 'DepartmentRole' | 'Employee';
+
+export interface KkdEntitlementMatrixRowDto extends BaseEntityDto {
+  headerId: number;
+  customerId: number;
+  departmentId: number;
+  departmentCode?: string | null;
+  departmentName?: string | null;
+  roleId: number;
+  roleCode?: string | null;
+  roleName?: string | null;
+  matrixCode: string;
+  matrixName: string;
+  effectiveFrom?: string | null;
+  effectiveTo?: string | null;
+  groupCode: string;
+  groupName?: string | null;
+  stockCode?: string | null;
+  stockName?: string | null;
+  standardCode?: string | null;
+  standardName?: string | null;
+  initialIssueQuantity: number;
+  additionalAfterMonths?: number | null;
+  additionalAfterMonthsQuantity?: number | null;
+  routinePeriodType: string;
+  routinePeriodInterval: number;
+  routineQuantity: number;
+  annualIssueCount?: number | null;
+  annualQuantity?: number | null;
+  maxCarryQuantity?: number | null;
+  allowBulkIssue: boolean;
+  isMandatory: boolean;
+  sortOrder: number;
+  isActive: boolean;
+  description?: string | null;
+}
+
+export interface CreateKkdEntitlementMatrixRowDto {
+  customerId: number;
+  departmentId: number;
+  roleId: number;
+  matrixCode: string;
+  matrixName: string;
+  effectiveFrom?: string | null;
+  effectiveTo?: string | null;
+  groupCode: string;
+  groupName?: string | null;
+  stockCode?: string | null;
+  stockName?: string | null;
+  standardCode?: string | null;
+  standardName?: string | null;
+  initialIssueQuantity: number;
+  additionalAfterMonths?: number | null;
+  additionalAfterMonthsQuantity?: number | null;
+  routinePeriodType: string;
+  routinePeriodInterval: number;
+  routineQuantity: number;
+  annualIssueCount?: number | null;
+  annualQuantity?: number | null;
+  maxCarryQuantity?: number | null;
+  allowBulkIssue: boolean;
+  isMandatory: boolean;
+  sortOrder: number;
+  isActive: boolean;
+  description?: string | null;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEntitlementMatrixRowDto extends Partial<CreateKkdEntitlementMatrixRowDto> {}
+
+export interface KkdEntitlementOverrideDto extends BaseEntityDto {
+  employeeId: number;
+  employeeCode?: string | null;
+  employeeName?: string | null;
+  matrixLineId?: number | null;
+  groupCode: string;
+  groupName?: string | null;
+  extraQuantity: number;
+  consumedQuantity: number;
+  validFrom: string;
+  validTo?: string | null;
+  reason?: string | null;
+  approvedByUserId?: number | null;
+  isActive: boolean;
+}
+
+export interface CreateKkdEntitlementOverrideDto {
+  employeeId: number;
+  matrixLineId?: number | null;
+  groupCode: string;
+  groupName?: string | null;
+  extraQuantity: number;
+  validFrom: string;
+  validTo?: string | null;
+  reason?: string | null;
+  approvedByUserId?: number | null;
+  isActive: boolean;
+  branchCode?: string;
+}
+
+export interface UpdateKkdEntitlementOverrideDto extends Partial<CreateKkdEntitlementOverrideDto> {
+  consumedQuantity?: number | null;
+}
+
 export interface KkdAdditionalEntitlementDto extends BaseEntityDto {
   customerId: number;
   employeeId: number;
@@ -249,6 +353,9 @@ export interface KkdDistributionLineDto extends BaseLineEntityDto {
   entitlementType: string;
   entitlementPolicyId?: number | null;
   additionalEntitlementId?: number | null;
+  entitlementMatrixHeaderId?: number | null;
+  entitlementMatrixLineId?: number | null;
+  entitlementOverrideId?: number | null;
   warehouseId: number;
   shelfId?: number | null;
   stockTransactionRef?: string | null;
@@ -345,4 +452,33 @@ export interface KkdValidationLogDto extends BaseEntityDto {
   reasonCode: string;
   reasonMessage?: string | null;
   deviceInfo?: string | null;
+}
+
+export interface KkdDepartmentUsageReportDto {
+  departmentId?: number | null;
+  departmentCode?: string | null;
+  departmentName?: string | null;
+  totalQuantity: number;
+  distributionCount: number;
+  employeeCount: number;
+  lastUsageDate?: string | null;
+}
+
+export interface KkdRoleUsageReportDto {
+  roleId?: number | null;
+  roleCode?: string | null;
+  roleName?: string | null;
+  totalQuantity: number;
+  distributionCount: number;
+  employeeCount: number;
+  lastUsageDate?: string | null;
+}
+
+export interface KkdGroupUsageReportDto {
+  groupCode: string;
+  groupName?: string | null;
+  totalQuantity: number;
+  distributionCount: number;
+  employeeCount: number;
+  lastUsageDate?: string | null;
 }

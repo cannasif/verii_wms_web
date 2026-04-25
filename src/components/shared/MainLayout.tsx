@@ -201,6 +201,14 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             { title: t('sidebar.kkdRemainingEntitlements'), href: '/kkd/remaining-entitlements' },
             { title: t('sidebar.kkdEntitlementCheck'), href: '/kkd/entitlement-check' },
             { title: t('sidebar.kkdValidationLogs'), href: '/kkd/validation-logs' },
+            {
+              title: t('sidebar.kkdReportsGroup'),
+              children: sortNavItems([
+                { title: t('sidebar.kkdDepartmentReport'), href: '/kkd/reports/departments' },
+                { title: t('sidebar.kkdRoleReport'), href: '/kkd/reports/roles' },
+                { title: t('sidebar.kkdGroupReport'), href: '/kkd/reports/groups' },
+              ]),
+            },
           ]),
         },
       ]),
@@ -269,8 +277,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             {
               title: t('sidebar.kkdRulesGroup'),
               children: sortNavItems([
-                { title: t('sidebar.kkdEntitlements'), href: '/erp/kkd/entitlements' },
-                { title: t('sidebar.kkdAdditionalEntitlements'), href: '/erp/kkd/additional-entitlements' },
+                { title: t('sidebar.kkdEntitlements'), href: '/erp/kkd/entitlement-matrix' },
+                { title: t('sidebar.kkdAdditionalEntitlements'), href: '/erp/kkd/manual-overrides' },
               ]),
             },
           ]),
