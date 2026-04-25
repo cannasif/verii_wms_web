@@ -332,12 +332,20 @@ export interface KkdEntitlementCheckRequestDto {
   customerId?: number | null;
   groupCode: string;
   stockId?: number | null;
+  stockCode?: string | null;
+  stockName?: string | null;
   quantity: number;
   transactionDate?: string | null;
 }
 
 export interface KkdEntitlementCheckResultDto {
   allowed: boolean;
+  requestedGroupCode?: string | null;
+  matchedGroupCode?: string | null;
+  resolvedStockCode?: string | null;
+  resolvedStockName?: string | null;
+  isGroupCodeMatched: boolean;
+  groupMatchMessage?: string | null;
   departmentName?: string | null;
   roleName?: string | null;
   employmentStartDate?: string | null;

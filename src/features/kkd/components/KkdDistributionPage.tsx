@@ -83,6 +83,8 @@ export function KkdDistributionPage(): ReactElement {
           customerId: resolvedEmployee.customerId,
           groupCode: data.groupCode ?? '',
           stockId: data.stockId,
+          stockCode: data.stockCode,
+          stockName: data.stockName,
           quantity: Number(quantity) || 1,
         });
         setEntitlementResult(entitlement);
@@ -323,6 +325,9 @@ export function KkdDistributionPage(): ReactElement {
                     <Badge variant="outline">Bakiye: {resolvedStock.availableQuantity}</Badge>
                   </div>
                   <p className="mt-3 font-semibold text-slate-900 dark:text-white">{resolvedStock.stockName}</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    Bu stok kodu kaydedildiğinde belge satırına aynen yazılır: <span className="font-medium">{resolvedStock.stockCode}</span>
+                  </p>
                 </div>
               ) : null}
 
@@ -338,6 +343,24 @@ export function KkdDistributionPage(): ReactElement {
                     <Badge variant="outline">Rutin: {entitlementResult.remainingRecurringQuantity}</Badge>
                     <Badge variant="outline">Ek: {entitlementResult.remainingAdditionalQuantity}</Badge>
                     <Badge variant="secondary">Toplam: {entitlementResult.totalRemainingQuantity}</Badge>
+                  </div>
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                    <p>
+                      Okutulan stok: <span className="font-medium">{entitlementResult.resolvedStockCode || resolvedStock?.stockCode || '-'}</span>
+                      {entitlementResult.resolvedStockName ? ` - ${entitlementResult.resolvedStockName}` : ''}
+                    </p>
+                    <p className="mt-1">
+                      Okutulan grup: <span className="font-medium">{entitlementResult.requestedGroupCode || resolvedStock?.groupCode || '-'}</span>
+                      {' | '}
+                      Hak grubu: <span className="font-medium">{entitlementResult.matchedGroupCode || '-'}</span>
+                      {' | '}
+                      Durum: <span className={`font-medium ${entitlementResult.isGroupCodeMatched ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`}>
+                        {entitlementResult.isGroupCodeMatched ? 'Uyumlu' : 'Uyumsuz'}
+                      </span>
+                    </p>
+                    {entitlementResult.groupMatchMessage ? (
+                      <p className="mt-2 text-slate-600 dark:text-slate-300">{entitlementResult.groupMatchMessage}</p>
+                    ) : null}
                   </div>
                   {entitlementResult.eligibilityExplanation ? <p className="mt-3 text-sm">{entitlementResult.eligibilityExplanation}</p> : null}
                   {entitlementResult.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{entitlementResult.message}</p> : null}
