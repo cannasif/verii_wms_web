@@ -160,7 +160,8 @@
       "userDeleteFailed": "User could not be deleted.",
       "userGroupSetFailed": "User groups could not be assigned.",
       "warehouse3dLoadFailed": "Warehouse information could not be loaded.",
-      "loadFailed": "Load failed"
+      "loadFailed": "Load failed",
+      "permissionDefinitionListLoadFailed": "Permission definition list could not be loaded."
     },
     "refresh": "Refresh",
     "noPermission": "Bu işlem için yetkiniz yok.",
@@ -169,7 +170,17 @@
     "deleteSuccess": "Kayıt silindi",
     "active": "Aktif",
     "passive": "Pasif",
-    "create": "Oluştur"
+    "create": "Oluştur",
+    "default": "Default",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "clearForm": "Clear form",
+    "date": "Date",
+    "warning": "Warning",
+    "barcodeFormat": "Active barcode format: {{format}}",
+    "selectStockFirst": "Select a stock first",
+    "stock": "Stock",
+    "quantity": "Quantity"
   },
   "auth": {
     "login": {
@@ -191,7 +202,9 @@
       "copyright": "© 2025 VERII. All rights reserved.",
       "animationOff": "Turn off animation",
       "animationOn": "Turn on animation",
-      "capsLockOn": "Caps Lock is on"
+      "capsLockOn": "Caps Lock is on",
+      "startAnimation": "Start animation",
+      "stopAnimation": "Stop animation"
     },
     "forgotPassword": {
       "title": "Forgot Password",
@@ -376,7 +389,10 @@
     "erpPrinterManagement": "Printers and Print Jobs",
     "accessControlManagementGroup": "Access and User Management",
     "accessControlSystemGroup": "System Tools",
-    "serviceOperationsGroup": "Service Operations"
+    "serviceOperationsGroup": "Service Operations",
+    "erpShelves": "Shelf / Cell Definitions",
+    "erpWarehouseStockBalance": "Warehouse Stock Balance",
+    "erpWarehouseSerialBalance": "Warehouse Serial Balance"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -771,7 +787,8 @@
       "ordered": "Ordered",
       "remaining": "Remaining",
       "pending": "Pending",
-      "completed": "Completed"
+      "completed": "Completed",
+      "unit": "Unit"
     },
     "details": {
       "serialNo": "Serial No",
@@ -781,7 +798,9 @@
       "batchNo": "Batch No",
       "batchNoPlaceholder": "Enter batch number",
       "configCode": "Config Code",
-      "configCodePlaceholder": "Enter configuration code"
+      "configCodePlaceholder": "Enter configuration code",
+      "serialNo2": "Serial no 2",
+      "serialNo2Placeholder": "Enter serial no 2"
     },
     "validation": {
       "transferDateRequired": "Date is required",
@@ -965,7 +984,8 @@
       "unit": "Unit",
       "selectedItems": "Selected Items",
       "selectedItemsCount": "{{count}} items",
-      "noSelectedItems": "No selected items yet"
+      "noSelectedItems": "No selected items yet",
+      "stocks": "Stocks"
     },
     "details": {
       "transferQuantity": "Transfer Quantity",
@@ -1062,6 +1082,9 @@
       "approve": "Approve",
       "reject": "Reject",
       "noData": "No orders awaiting approval"
+    },
+    "orderDetails": {
+      "orderQuantity": "Order quantity"
     }
   },
   "inventory": {
@@ -1424,7 +1447,9 @@
       "serialNoPlaceholder": "Enter serial number",
       "lotNoPlaceholder": "Enter lot number",
       "batchNoPlaceholder": "Enter batch number",
-      "configCodePlaceholder": "Enter configuration code"
+      "configCodePlaceholder": "Enter configuration code",
+      "serialNo2": "Serial no 2",
+      "serialNo2Placeholder": "Enter serial no 2"
     },
     "process": {
       "steps": {
@@ -3077,7 +3102,8 @@
       "errors": {
         "lineRequired": "Please choose a count line first.",
         "quantityRequired": "Enter a valid counted quantity."
-      }
+      },
+      "emptyHeaderMessage": "No count header selected"
     },
     "actions": {
       "process": "Direct Entry"
@@ -3221,7 +3247,8 @@
       "empty": "No mapping exists for the selected template yet."
     },
     "jobs": {
-      "jobName": "Job Name"
+      "jobName": "Job Name",
+      "retry": "Retry"
     }
   },
   "serviceAllocation": {
@@ -3350,5 +3377,111 @@
     "statusPending": "Kaydedilmedi",
     "statusCurrent": "Güncel",
     "readOnlyInfo": "Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir."
+  },
+  "paged": {
+    "search": "Search",
+    "searchPlaceholder": "Search records",
+    "loadingDescription": "Loading"
+  },
+  "userManagement": {
+    "searchPlaceholder": "Search users..."
+  },
+  "warehouseBalance": {
+    "stock": {
+      "columns": {
+        "warehouse": "Warehouse",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "quantity": "Quantity",
+        "available": "Available",
+        "serialCount": "Serial count",
+        "shelfCount": "Shelf count",
+        "updatedAt": "Updated at"
+      },
+      "rebuildAll": "Rebuild all summaries",
+      "cards": {
+        "rows": "Rows",
+        "quantity": "Total quantity",
+        "serials": "Visible serial count"
+      },
+      "empty": "No warehouse stock balance found",
+      "searchPlaceholder": "Search warehouse, stock or yapkod...",
+      "rebuildWarehouse": "Rebuild warehouse",
+      "rebuildStock": "Rebuild stock"
+    },
+    "consistency": {
+      "columns": {
+        "issueType": "Issue type",
+        "warehouse": "Warehouse",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "quantityDelta": "Quantity delta",
+        "availableDelta": "Available delta",
+        "serialDelta": "Serial delta"
+      },
+      "issueTypes": {
+        "missingSummary": "Missing summary",
+        "extraSummary": "Extra summary",
+        "metricMismatch": "Metric mismatch"
+      },
+      "title": "Balance consistency check",
+      "description": "Track differences between detail and summary balances.",
+      "cards": {
+        "summaryRows": "Summary rows",
+        "detailGroups": "Detail groups",
+        "mismatch": "Total mismatch",
+        "missingSummary": "Missing summary",
+        "extraSummary": "Extra summary"
+      },
+      "empty": "No inconsistency found",
+      "searchPlaceholder": "Search warehouse, stock, yapkod or issue type..."
+    },
+    "serial": {
+      "columns": {
+        "warehouse": "Warehouse",
+        "shelf": "Shelf / Cell",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "serials": "Serials",
+        "quantity": "Quantity",
+        "status": "Stock status",
+        "transactionDate": "Last transaction"
+      },
+      "cards": {
+        "rows": "Rows",
+        "quantity": "Total quantity",
+        "filtered": "Visible rows"
+      },
+      "empty": "No warehouse serial balance found",
+      "searchPlaceholder": "Search warehouse, shelf, stock or serial..."
+    }
+  },
+  "barcodePrint": {
+    "selectTemplateFirst": "Select a barcode template first",
+    "selectPrinterFirst": "Select a printer first",
+    "selectProfileFirst": "Select a printer profile first",
+    "selectDocumentFirst": "Select at least one document",
+    "noPrintableLines": "No printable lines found for the selected document",
+    "printQueued": "Print job queued",
+    "printCreateFailed": "Print job could not be created",
+    "badge": "WMS Print",
+    "heroDescription": "Select operation, pick document(s), choose template and printer, then queue print directly.",
+    "operation": "Operation",
+    "selectedDocuments": "Selected documents",
+    "selectedLines": "Selected lines",
+    "operationAndDocumentList": "Operation and document list",
+    "selectOperation": "Select operation",
+    "documentListLoadFailed": "Document list could not be loaded.",
+    "documentListEmpty": "No documents found for this operation.",
+    "searchInOperation": "Search in {{operation}}...",
+    "clearVisible": "Clear visible",
+    "selectVisible": "Select visible",
+    "clearSelection": "Clear selection",
+    "documentLines": "Document lines",
+    "linesHelp": "If you select lines only those lines are printed; otherwise all lines are printed.",
+    "linesLoading": "Loading lines...",
+    "linesEmpty": "No lines found for this document.",
+    "selectSingleDocument": "Select one document for line-based printing.",
+    "printSettings": "Print settings"
   }
 }

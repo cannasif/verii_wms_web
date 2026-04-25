@@ -77,7 +77,7 @@ export function MailSettingsForm({
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground text-sm">{t('common:common.loading')}</p>
+          <p className="text-muted-foreground text-sm">{t('common.loading')}</p>
         </CardContent>
       </Card>
     );
@@ -231,7 +231,7 @@ export function MailSettingsForm({
               : t('TestMail.Send')}
           </Button>
           <Button type="submit" disabled={isSubmitting || !isFormValid}>
-            {isSubmitting ? t('common:common.saving') : t('Save')}
+            {isSubmitting ? t('common.saving') : t('Save')}
           </Button>
         </div>
       </form>

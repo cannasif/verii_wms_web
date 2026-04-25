@@ -171,7 +171,7 @@ export function PrinterManagementPage(): ReactElement {
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: 'ERP' },
+          { label: t('sidebar.erp') },
           { label: t('sidebar.erpBarcodeDesigner') },
           { label: t('sidebar.printerManagement'), isActive: true },
         ]}
@@ -654,7 +654,7 @@ export function PrinterManagementPage(): ReactElement {
                     <TableHead>{t('common.status')}</TableHead>
                     <TableHead>{t('common.date')}</TableHead>
                     <TableHead>{t('common.error')}</TableHead>
-                    <TableHead>Retry</TableHead>
+                    <TableHead>{t('printerManagement.jobs.retry', { defaultValue: 'Retry' })}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -683,7 +683,7 @@ export function PrinterManagementPage(): ReactElement {
                             disabled={!permission.canCreate}
                           >
                             <SendToBack className="mr-2 size-4" />
-                            Retry
+                            {t('printerManagement.jobs.retry', { defaultValue: 'Retry' })}
                           </Button>
                         ) : null}
                       </TableCell>

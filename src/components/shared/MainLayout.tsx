@@ -250,9 +250,9 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.erpCustomers'), href: '/erp/customers' },
         { title: t('sidebar.erpStocks'), href: '/erp/stocks' },
         { title: t('sidebar.erpWarehouses'), href: '/erp/warehouses' },
-        { title: t('sidebar.erpShelves', { defaultValue: 'Raf / Hucre Tanimlari' }), href: '/erp/shelves' },
-        { title: t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Depo Stok Bakiyesi' }), href: '/erp/warehouse-stock-balance' },
-        { title: t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Depo Seri Bakiyesi' }), href: '/erp/warehouse-serial-balance' },
+        { title: t('sidebar.erpShelves'), href: '/erp/shelves' },
+        { title: t('sidebar.erpWarehouseStockBalance'), href: '/erp/warehouse-stock-balance' },
+        { title: t('sidebar.erpWarehouseSerialBalance'), href: '/erp/warehouse-serial-balance' },
         { title: t('sidebar.erpYapKodlar'), href: '/erp/yapkodlar' },
         { title: t('sidebar.erpBarcodeDefinitions'), href: '/erp/barcodes' },
         {

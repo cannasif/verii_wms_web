@@ -174,7 +174,7 @@ export function DataTableActionBar({
     setLegacyDisplayValue(value);
   };
 
-  const resolvedSearchPlaceholder = search?.placeholder ?? searchPlaceholder ?? t('search', { ns: 'common' });
+  const resolvedSearchPlaceholder = search?.placeholder ?? searchPlaceholder ?? t('common.search');
   const resolvedSearchClassName = search?.className ?? searchClassName;
   const shouldRenderSearch = Boolean(search || onSearchChange);
   const refreshCooldownSeconds = Math.max(refresh?.cooldownSeconds ?? 60, 0);
@@ -225,7 +225,7 @@ export function DataTableActionBar({
               }`}
             >
               <Filter className="mr-2 h-4 w-4" />
-              {t('filters', { ns: 'common' })}
+              {t('common.filters')}
               {appliedFilterCount > 0 && (
                 <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
                   {appliedFilterCount}
@@ -241,7 +241,7 @@ export function DataTableActionBar({
               <button
                 onClick={() => setShowFilters(false)}
                 className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                aria-label={t('close', { ns: 'common' })}
+                aria-label={t('common.close')}
               >
                 <X size={16} />
               </button>

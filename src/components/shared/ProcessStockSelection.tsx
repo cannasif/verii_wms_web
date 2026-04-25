@@ -557,6 +557,7 @@ function Field({
   onYapKodSelect?: (item: YapKodLookup) => void;
   onClear?: () => void;
 }): ReactElement {
+  const { t } = useTranslation();
   const isYapKodField = Boolean(stockCode && onYapKodLookupOpenChange && onYapKodSelect);
 
   return (
@@ -575,8 +576,8 @@ function Field({
                 description={stockCode}
                 value={value}
                 placeholder={placeholder}
-                searchPlaceholder="Ara"
-                emptyText="Kayıt bulunamadı"
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.notFound')}
                 queryKey={['process-stock-selection', 'yapkod', stockCode]}
                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                   lookupApi.getYapKodlarPaged({ pageNumber, pageSize, search }, { stockId }, { signal })
@@ -588,7 +589,7 @@ function Field({
             </div>
             {value ? (
               <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={onClear}>
-                Temizle
+                {t('common.clear')}
               </Button>
             ) : null}
           </div>

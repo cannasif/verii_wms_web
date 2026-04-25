@@ -7,7 +7,8 @@
     "enqueued": "En cola",
     "processing": "Procesando",
     "succeeded": "Exitoso",
-    "failed": "Fallido"
+    "failed": "Fallido",
+    "lastStockSync": "Last Stock Sync"
   },
   "table": {
     "jobId": "ID Trabajo",
@@ -25,5 +26,25 @@
     "title": "Cola de Mensajes Muertos",
     "empty": "La cola de mensajes muertos está vacía.",
     "enqueued": "En cola"
+  },
+  "hero": {
+    "badge": "Operations Control Center"
+  },
+  "manualSync": {
+    "title": "Run Manual Sync",
+    "description": "Trigger ERP mirror jobs in a controlled way. The same job cannot be queued again for 5 minutes at the API level.",
+    "selectLabel": "Select Job",
+    "selectPlaceholder": "Choose a sync job",
+    "runButton": "Run Sync",
+    "lastRun": "Last Run",
+    "nextAvailable": "Next Available",
+    "cooldown": "Cooldown",
+    "cooldownHelp": "A second trigger for the same job is blocked for 5 minutes.",
+    "cooldownActive": "Wait {{duration}} before running again",
+    "cooldownShort": "{{duration}} left",
+    "ready": "Ready",
+    "status": "Status",
+    "success": "{{jobName}} queued. JobId: {{jobId}}",
+    "error": "Sync job could not be queued."
   }
 }

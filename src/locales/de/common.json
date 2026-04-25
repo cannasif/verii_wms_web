@@ -85,7 +85,69 @@
       "userDeleteFailed": "Benutzer konnte nicht gelöscht werden.",
       "userGroupSetFailed": "Benutzergruppen konnten nicht zugewiesen werden.",
       "warehouse3dLoadFailed": "Lagerinformationen konnten nicht geladen werden.",
-      "loadFailed": "Load failed"
+      "loadFailed": "Load failed",
+      "packageHeadersLoadFailed": "Packaging list could not be loaded.",
+      "packageHeaderDetailLoadFailed": "Packaging detail could not be loaded.",
+      "packageHeaderCreateFailed": "Packaging could not be created.",
+      "packageHeaderUpdateFailed": "Packaging could not be updated.",
+      "packageHeaderDeleteFailed": "Packaging could not be deleted.",
+      "packagesLoadFailed": "Package list could not be loaded.",
+      "packageDetailLoadFailed": "Package detail could not be loaded.",
+      "packagesByHeaderLoadFailed": "Packages could not be loaded.",
+      "packageCreateFailed": "Package could not be created.",
+      "packageUpdateFailed": "Package could not be updated.",
+      "packageDeleteFailed": "Package could not be deleted.",
+      "packageLinesLoadFailed": "Package lines list could not be loaded.",
+      "packageLineDetailLoadFailed": "Package line detail could not be loaded.",
+      "packageLinesByHeaderLoadFailed": "Package lines could not be loaded.",
+      "packageLinesByPackageLoadFailed": "Package lines could not be loaded.",
+      "packageLineCreateFailed": "Package line could not be created.",
+      "packageLineUpdateFailed": "Package line could not be updated.",
+      "packageLineDeleteFailed": "Package line could not be deleted.",
+      "availableHeadersLoadFailed": "Available headers could not be loaded.",
+      "packageMatchFailed": "Matching operation failed.",
+      "goodsReceiptOrdersLoadFailed": "Orders could not be loaded.",
+      "goodsReceiptOrderItemsLoadFailed": "Order lines could not be loaded.",
+      "goodsReceiptCreateFailed": "Goods receipt could not be created.",
+      "goodsReceiptHeadersLoadFailed": "Goods receipt list could not be loaded.",
+      "goodsReceiptHeaderDetailLoadFailed": "Goods receipt detail could not be loaded.",
+      "goodsReceiptLinesLoadFailed": "Goods receipt lines could not be loaded.",
+      "goodsReceiptImportLinesLoadFailed": "Goods receipt content lines could not be loaded.",
+      "goodsReceiptAssignedHeadersLoadFailed": "Assigned goods receipt list could not be loaded.",
+      "goodsReceiptApprovalLoadFailed": "Goods receipt orders awaiting approval could not be loaded.",
+      "warehouseInboundHeadersLoadFailed": "Warehouse inbound list could not be loaded.",
+      "warehouseOutboundHeadersLoadFailed": "Warehouse outbound list could not be loaded.",
+      "warehouseAssignedInboundHeadersLoadFailed": "Assigned warehouse inbound list could not be loaded.",
+      "warehouseAssignedOutboundHeadersLoadFailed": "Assigned warehouse outbound list could not be loaded.",
+      "warehouseInboundLinesLoadFailed": "Warehouse inbound lines could not be loaded.",
+      "warehouseOutboundLinesLoadFailed": "Warehouse outbound lines could not be loaded.",
+      "warehouseInboundSerialsLoadFailed": "Warehouse inbound serial list could not be loaded.",
+      "warehouseOutboundSerialsLoadFailed": "Warehouse outbound serial list could not be loaded.",
+      "warehouseInboundApprovalLoadFailed": "Warehouse inbound orders awaiting approval could not be loaded.",
+      "warehouseOutboundApprovalLoadFailed": "Warehouse outbound orders awaiting approval could not be loaded.",
+      "transferAssignedHeadersLoadFailed": "Assigned transfer list could not be loaded.",
+      "transferHeadersLoadFailed": "Transfer list could not be loaded.",
+      "transferLinesLoadFailed": "Transfer lines could not be loaded.",
+      "transferSerialsLoadFailed": "Transfer serial list could not be loaded.",
+      "transferApprovalLoadFailed": "Orders awaiting approval could not be loaded.",
+      "shipmentHeadersLoadFailed": "Shipment list could not be loaded.",
+      "shipmentAssignedHeadersLoadFailed": "Assigned shipment list could not be loaded.",
+      "shipmentLinesLoadFailed": "Shipment lines could not be loaded.",
+      "shipmentSerialsLoadFailed": "Shipment serial list could not be loaded.",
+      "shipmentApprovalLoadFailed": "Shipment orders awaiting approval could not be loaded.",
+      "productionApprovalLoadFailed": "Production plans awaiting approval could not be loaded.",
+      "productionTransferApprovalLoadFailed": "Production transfer orders awaiting approval could not be loaded.",
+      "subcontractingAssignedIssueHeadersLoadFailed": "Assigned subcontracting issue list could not be loaded.",
+      "subcontractingAssignedReceiptHeadersLoadFailed": "Assigned subcontracting receipt list could not be loaded.",
+      "subcontractingReceiptHeadersLoadFailed": "Subcontracting receipt list could not be loaded.",
+      "subcontractingIssueHeadersLoadFailed": "Subcontracting issue list could not be loaded.",
+      "subcontractingReceiptLinesLoadFailed": "Subcontracting receipt lines could not be loaded.",
+      "subcontractingIssueLinesLoadFailed": "Subcontracting issue lines could not be loaded.",
+      "subcontractingReceiptSerialsLoadFailed": "Subcontracting receipt serial list could not be loaded.",
+      "subcontractingIssueSerialsLoadFailed": "Subcontracting issue serial list could not be loaded.",
+      "subcontractingIssueApprovalLoadFailed": "Subcontracting issue orders awaiting approval could not be loaded.",
+      "subcontractingReceiptApprovalLoadFailed": "Subcontracting receipt orders awaiting approval could not be loaded.",
+      "permissionDefinitionListLoadFailed": "Permission definition list could not be loaded."
     },
     "documentDate": "Belge Tarihi",
     "status": "Durum",
@@ -101,7 +163,24 @@
     "unit": "Birim",
     "projectCode": "Proje",
     "view": "Görüntüle",
-    "create": "Oluştur"
+    "create": "Oluştur",
+    "filters": "Filters",
+    "priority": "Priority",
+    "clear": "Clear",
+    "validation": {
+      "selectAtLeastOneItem": "You must select at least one item before continuing."
+    },
+    "numericPlaceholder": "0",
+    "default": "Default",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "clearForm": "Clear form",
+    "date": "Date",
+    "warning": "Warning",
+    "barcodeFormat": "Active barcode format: {{format}}",
+    "selectStockFirst": "Select a stock first",
+    "stock": "Stock",
+    "quantity": "Quantity"
   },
   "auth": {
     "login": {
@@ -123,7 +202,9 @@
       "copyright": "© 2025 VERII. Alle Rechte vorbehalten.",
       "animationOff": "Animation ausschalten",
       "animationOn": "Animation einschalten",
-      "capsLockOn": "Caps Lock ist aktiv"
+      "capsLockOn": "Caps Lock ist aktiv",
+      "startAnimation": "Start animation",
+      "stopAnimation": "Stop animation"
     },
     "forgotPassword": {
       "title": "Passwort vergessen",
@@ -249,7 +330,69 @@
     "erpCustomers": "Cariler",
     "erpStocks": "Stoklar",
     "erpWarehouses": "Depolar",
-    "erpYapKodlar": "YapKodlar"
+    "erpYapKodlar": "YapKodlar",
+    "goodsReceiptProcess": "Goods Receipt Direct Entry",
+    "goodsReceiptApproval": "Goods Receipt Orders Awaiting Approval",
+    "transferProcess": "Transfer Direct Entry",
+    "subcontractingIssueProcess": "Subcontracting Issue Direct Entry",
+    "subcontractingReceiptProcess": "Subcontracting Receipt Direct Entry",
+    "warehouseInboundProcess": "Warehouse Inbound Direct Entry",
+    "warehouseOutboundProcess": "Warehouse Outbound Direct Entry",
+    "production": "Production",
+    "productionCreate": "Create Production Order",
+    "productionList": "Production Plans",
+    "productionPlanningCreate": "Planning / Create Production Plan",
+    "productionPlanningAssigned": "Planning / Assigned Production Orders",
+    "productionPlanningList": "Planning / Production Plans",
+    "productionTransfer": "Production Transfer",
+    "productionTransferCreate": "Create Production Transfer Order",
+    "productionTransferList": "Production Transfers",
+    "productionTransferCreateGrouped": "Transfer / Create Production Transfer",
+    "productionTransferListGrouped": "Transfer / Production Transfers",
+    "productionPlanningGroup": "Planning",
+    "productionTransferGroup": "Transfer",
+    "productionAssigned": "Assigned Production Orders",
+    "productionApproval": "Production Plans Awaiting Approval",
+    "productionTransferApproval": "Production Transfer Orders Awaiting Approval",
+    "shipmentProcess": "Shipment Direct Entry",
+    "operationsGroup": "Operations",
+    "inboundOperationsGroup": "Inbound Operations",
+    "transferOperationsGroup": "Transfer Operations",
+    "outboundOperationsGroup": "Outbound Operations",
+    "productionOperationsGroup": "Production",
+    "inventoryGroup": "Warehouse and Visibility",
+    "analyticsGroup": "Reporting",
+    "masterDataGroup": "Master Data and Definitions",
+    "systemGroup": "System and Access",
+    "filterLabel": "Filter",
+    "inventoryCount": "Count",
+    "inventoryCountCreate": "Create Count Order",
+    "inventoryCountAssigned": "Assigned Count Orders",
+    "inventoryCountProcess": "Count Direct Entry",
+    "inventoryCountList": "Count Orders",
+    "kkd": "PPE",
+    "kkdOverview": "PPE Operations Hub",
+    "kkdOperationsGroup": "Operations",
+    "kkdMonitoringGroup": "Check and Monitoring",
+    "kkdReportsGroup": "Reports",
+    "kkdOrganizationGroup": "Organization Definitions",
+    "kkdRulesGroup": "Entitlement and Exception Rules",
+    "kkdDistribution": "PPE Distribution",
+    "kkdDistributionList": "PPE Distribution Documents",
+    "kkdRemainingEntitlements": "PPE Remaining Entitlements",
+    "kkdEntitlementCheck": "PPE Eligibility Check",
+    "kkdValidationLogs": "PPE Validation and Warning Logs",
+    "kkdDepartmentReport": "PPE Department Report",
+    "kkdRoleReport": "PPE Role Report",
+    "kkdGroupReport": "PPE Group Report",
+    "kkdEmployees": "PPE Employee Cards",
+    "kkdDepartments": "PPE Department Definitions",
+    "kkdRoles": "PPE Role Definitions",
+    "kkdEntitlements": "PPE Role Entitlement Matrix",
+    "kkdAdditionalEntitlements": "PPE Manual Overrides",
+    "erpShelves": "Shelf / Cell Definitions",
+    "erpWarehouseStockBalance": "Warehouse Stock Balance",
+    "erpWarehouseSerialBalance": "Warehouse Serial Balance"
   },
   "welcome": {
     "title": "Willkommen",
@@ -368,7 +511,9 @@
       "receiptDateRequired": "Datum ist erforderlich",
       "documentNoRequired": "Belegnummer ist erforderlich",
       "warehouseRequired": "Lagerauswahl ist erforderlich",
-      "customerRequired": "Kundenauswahl ist erforderlich"
+      "customerRequired": "Kundenauswahl ist erforderlich",
+      "documentNoLength": "Document number must be exactly 15 digits",
+      "documentNoInvoiceLength": "For e-invoice, document number must be exactly 16 digits"
     },
     "report": {
       "title": "Wareneingangsbericht",
@@ -477,6 +622,31 @@
       "scanBarcode": "Barcode scannen",
       "scanBarcodeDescription": "Barcode zur Kamera ausrichten",
       "yapKod": "Struktur"
+    },
+    "process": {
+      "title": "Goods Receipt Process",
+      "success": "Goods receipt process created successfully",
+      "error": "An error occurred while creating goods receipt process"
+    },
+    "approval": {
+      "title": "Goods Receipt Orders Awaiting Approval",
+      "approveSuccess": "Goods receipt order approved successfully",
+      "approveError": "Goods receipt order could not be approved",
+      "rejectSuccess": "Goods receipt order rejected successfully",
+      "rejectError": "Goods receipt order could not be rejected",
+      "error": "An error occurred while loading data",
+      "searchPlaceholder": "Search by document no, customer code, or planned date",
+      "id": "ID",
+      "documentNo": "Document No",
+      "documentDate": "Document Date",
+      "customerCode": "Customer Code",
+      "customerName": "Customer Name",
+      "plannedDate": "Planned Date",
+      "actions": "Actions",
+      "viewDetails": "Details",
+      "approve": "Approve",
+      "reject": "Reject",
+      "noData": "No goods receipt orders awaiting approval"
     }
   },
   "shipment": {
@@ -556,7 +726,8 @@
       "ordered": "Bestellt",
       "remaining": "Verbleibend",
       "pending": "Ausstehend",
-      "completed": "Abgeschlossen"
+      "completed": "Abgeschlossen",
+      "unit": "Unit"
     },
     "details": {
       "serialNo": "Seriennummer",
@@ -566,7 +737,9 @@
       "batchNo": "Batch-Nummer",
       "batchNoPlaceholder": "Batch-Nummer eingeben",
       "configCode": "Konfigurationscode",
-      "configCodePlaceholder": "Konfigurationscode eingeben"
+      "configCodePlaceholder": "Konfigurationscode eingeben",
+      "serialNo2": "Serial no 2",
+      "serialNo2Placeholder": "Enter serial no 2"
     },
     "validation": {
       "transferDateRequired": "Datum ist erforderlich",
@@ -747,7 +920,11 @@
       "errorLoadingOrders": "Beim Laden der Bestellungen ist ein Fehler aufgetreten",
       "stockSelection": "Bestandsauswahl",
       "searchStocks": "Nach Lagerbestandscode oder Name suchen...",
-      "unit": "Einheit"
+      "unit": "Einheit",
+      "selectedItems": "Selected Items",
+      "selectedItemsCount": "{{count}} items",
+      "noSelectedItems": "No selected items yet",
+      "stocks": "Stocks"
     },
     "details": {
       "transferQuantity": "Transfermenge",
@@ -838,6 +1015,15 @@
       "approve": "Genehmigen",
       "reject": "Ablehnen",
       "noData": "Keine Aufträge zur Genehmigung"
+    },
+    "process": {
+      "title": "Transfer Process Without Order",
+      "subtitle": "Create a transfer operation without an order by selecting stocks",
+      "success": "Transfer process created successfully",
+      "error": "An error occurred while creating transfer process"
+    },
+    "orderDetails": {
+      "orderQuantity": "Order quantity"
     }
   },
   "inventory": {
@@ -1200,7 +1386,9 @@
       "serialNoPlaceholder": "Seriennummer eingeben",
       "lotNoPlaceholder": "Chargennummer eingeben",
       "batchNoPlaceholder": "Batch-Nummer eingeben",
-      "configCodePlaceholder": "Konfigurationscode eingeben"
+      "configCodePlaceholder": "Konfigurationscode eingeben",
+      "serialNo2": "Serial no 2",
+      "serialNo2Placeholder": "Enter serial no 2"
     },
     "process": {
       "steps": {
@@ -1806,12 +1994,18 @@
         "error": "Fehler beim Laden der Daten",
         "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
         "noData": "Keine Daten gefunden"
+      },
+      "process": {
+        "title": "New Warehouse Outbound Process",
+        "success": "Warehouse outbound process saved successfully",
+        "error": "An error occurred while saving warehouse outbound process"
       }
     },
     "create": {
       "steps": {
         "basicInfo": "Grundinformationen",
-        "orderSelection": "Bestellauswahl"
+        "orderSelection": "Bestellauswahl",
+        "stockSelection": "Stock Selection"
       },
       "unknownStep": "Unbekannter Schritt",
       "mode": {
@@ -1870,6 +2064,11 @@
         "error": "Fehler beim Laden der Daten",
         "searchPlaceholder": "Belegnummer, Kundencode, Lager...",
         "noData": "Keine Daten gefunden"
+      },
+      "process": {
+        "title": "Warehouse Inbound Process",
+        "success": "Warehouse inbound process created successfully",
+        "error": "An error occurred while creating warehouse inbound process"
       }
     },
     "list": {
@@ -1930,7 +2129,14 @@
       "ordered": "Bestellt",
       "pending": "Ausstehend",
       "completed": "Abgeschlossen",
-      "remaining": "Verbleibend"
+      "remaining": "Verbleibend",
+      "stocks": "Stocks",
+      "selectedItems": "Selected Items",
+      "selectedItemsCount": "{{count}} items",
+      "noSelectedItems": "No selected stock",
+      "searchStocks": "Search by stock code or name...",
+      "enterQuantityToSelect": "Enter quantity to select the item.",
+      "unit": "Unit"
     },
     "details": {
       "configCode": "Konfigurationscode",
@@ -1940,7 +2146,27 @@
       "serialNoPlaceholder": "Seriennummer eingeben",
       "lotNoPlaceholder": "Chargennummer eingeben",
       "batchNoPlaceholder": "Batch-Nummer eingeben",
-      "configCodePlaceholder": "Konfigurationscode eingeben"
+      "configCodePlaceholder": "Konfigurationscode eingeben",
+      "serialNo2": "Serial No 2",
+      "serialNo2Placeholder": "Enter second serial information",
+      "sourceCellCode": "Source Cell",
+      "sourceCellCodePlaceholder": "Enter source cell code",
+      "targetCellCode": "Target Cell",
+      "targetCellCodePlaceholder": "Enter target cell code"
+    },
+    "operationTypes": {
+      "outbound": {
+        "shippingInvoice": "Shipping Invoice",
+        "wasteOut": "Waste Output",
+        "correctionOut": "Correction Output",
+        "transferOut": "Transfer Output"
+      },
+      "inbound": {
+        "shippingInvoiceIn": "Shipping Invoice Inbound",
+        "wasteIn": "Waste Input",
+        "correctionIn": "Correction Input",
+        "transferIn": "Transfer Input"
+      }
     }
   },
   "advancedFilter": {
@@ -1957,7 +2183,15 @@
     "column": "Feld",
     "operator": "Operator",
     "value": "Wert",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "operatorContains": "Contains",
+    "operatorStartsWith": "Starts with",
+    "operatorEndsWith": "Ends with",
+    "operatorEquals": "Equals",
+    "operator>": "Greater than",
+    "operator>=": "Greater than or equal",
+    "operator<": "Less than",
+    "operator<=": "Less than or equal"
   },
   "export": "Exportieren",
   "exportExcel": "Excel",
@@ -2073,7 +2307,8 @@
       "empty": "No mapping exists for the selected template yet."
     },
     "jobs": {
-      "jobName": "Job Name"
+      "jobName": "Job Name",
+      "retry": "Retry"
     }
   },
   "serviceAllocation": {
@@ -2203,7 +2438,8 @@
       "noDescription": "Aciklama girilmemis.",
       "linesTitle": "Transfer Kalemleri",
       "linesSubtitle": "Hangi stoklarin hangi amacla tasindigini satir bazinda inceleyin.",
-      "noLines": "Bu transfer icin kayitli kalem bulunmuyor."
+      "noLines": "Bu transfer icin kayitli kalem bulunmuyor.",
+      "statusInfoNoUpdate": "You can view this transfer, but you cannot switch to edit mode because you do not have production transfer update permission."
     },
     "list": {
       "cloneTransfer": "Kopyala",
@@ -2214,7 +2450,14 @@
       "noData": "Uretim transfer emri bulunamadi",
       "openDetail": "Detay",
       "editDisabledHelp": "Tamamlanmis veya sahada islenmis transfer emirleri guvenlik nedeniyle duzenlenemez. Gerekirse aynisini kopyalayip yeni transfer acabilirsiniz.",
-      "searchPlaceholder": "Belge no veya bagli plan ara"
+      "searchPlaceholder": "Belge no veya bagli plan ara",
+      "deleteTitle": "Delete production transfer",
+      "deleteDescription": "We will soft delete \"{{documentNo}}\". Only open transfers with no field processing can be deleted.",
+      "deleteSuccess": "Production transfer was deactivated.",
+      "deleteError": "Production transfer could not be deleted.",
+      "editDisabledPermission": "You need production transfer update permission to edit this transfer.",
+      "orderLink": "Order #{{id}}",
+      "planLink": "Plan #{{id}}"
     },
     "create": {
       "purpose": "Transfer Amaci",
@@ -2290,7 +2533,86 @@
         "header": "Plan No",
         "order": "Emir No",
         "purpose": "Amac"
+      },
+      "suggestions": {
+        "empty": "No suggested lines were found for the selected plan or order.",
+        "success": "Suggested transfer lines were prepared based on the production requirement.",
+        "error": "Transfer suggestions could not be loaded.",
+        "appliedAppend": "The selected suggested lines were added to the current draft.",
+        "appliedReplace": "The selected suggested lines replaced the current draft lines."
+      },
+      "permissionInfoTitle": "Permission information",
+      "permissionInfoCreate": "You need production transfer create permission to save this transfer.",
+      "permissionInfoUpdate": "You need production transfer update permission to update this transfer.",
+      "suggestPanel": {
+        "title": "Suggestions From Production Need",
+        "description": "The system suggests ready transfer lines based on the need in the selected plan or order.",
+        "hint": "First choose the required lines. Then either add them to the current draft or replace the current lines.",
+        "noSuggestions": "There are no suggestions yet. Choose the plan/order and transfer purpose to load suggestions.",
+        "applyModeLabel": "Apply Mode",
+        "applyMode": {
+          "append": "Add To Current Lines",
+          "replace": "Replace Current Lines"
+        },
+        "actions": {
+          "select": "Select",
+          "selected": "Selected",
+          "selectAll": "Select All",
+          "clearSelection": "Clear Selection",
+          "applySelected": "Apply Selected To Lines"
+        },
+        "columns": {
+          "selection": "Selection",
+          "order": "Order",
+          "lineRole": "What does this line do?",
+          "stock": "Stock",
+          "quantity": "Quantity",
+          "source": "Source",
+          "target": "Target"
+        },
+        "lineRole": {
+          "consumptionSupply": "Supply Consumption",
+          "semiFinishedMove": "Move Semi-Finished",
+          "outputMove": "Move Output"
+        }
+      },
+      "steps": {
+        "connect": {
+          "eyebrow": "1. Connect",
+          "title": "Choose the plan or order",
+          "body": "Choose which production need this transfer serves."
+        },
+        "purpose": {
+          "eyebrow": "2. Choose Purpose",
+          "title": "Why is it being moved?",
+          "body": "Specify whether it is material supply, semi-finished movement, or finished goods output."
+        },
+        "lines": {
+          "eyebrow": "3. Build Lines",
+          "title": "Use suggestions or choose manually",
+          "body": "Load suggestions and add the selected lines to the draft in a controlled way."
+        }
       }
+    },
+    "approval": {
+      "title": "Production Transfer Orders Awaiting Approval",
+      "approveSuccess": "Production transfer order approved successfully",
+      "approveError": "Production transfer order could not be approved",
+      "rejectSuccess": "Production transfer order rejected successfully",
+      "rejectError": "Production transfer order could not be rejected",
+      "error": "An error occurred while loading data",
+      "searchPlaceholder": "Search by document no, transfer purpose, or warehouse",
+      "id": "ID",
+      "documentNo": "Document No",
+      "documentDate": "Document Date",
+      "transferPurpose": "Transfer Purpose",
+      "sourceWarehouse": "Source Warehouse",
+      "targetWarehouse": "Target Warehouse",
+      "actions": "Actions",
+      "viewDetails": "Details",
+      "approve": "Approve",
+      "reject": "Reject",
+      "noData": "No production transfer orders awaiting approval"
     }
   },
   "production": {
@@ -2370,14 +2692,19 @@
         },
         "flowEmpty": "Henuz asamalar arasi baglanti kurulmamıs. Seri veya karma planlarda otomatik akis kur butonunu kullanin.",
         "headerAssignmentGuide": "Plani yonetecek ana ekip veya sorumluyu burada belirleyin.",
-        "orderAssignmentGuide": "Her asama farkli operatore veya role atanabilir."
+        "orderAssignmentGuide": "Her asama farkli operatore veya role atanabilir.",
+        "dragHandleAria": "Drag to reorder",
+        "dragReorderHint": "Drag the handle on the left and drop on another card to update flow numbers and rebuild dependencies for the current execution mode. (No links in parallel mode.)",
+        "expandStage": "Expand stage details",
+        "collapseStage": "Collapse stage details"
       },
       "updateSuccess": "Uretim plani guncellendi",
       "erp": {
         "fetchByWorkOrder": "Is emrinden getir",
         "fetchByStock": "Stok bilgisinden getir",
         "fetchByWorkOrderDescription": "ERP tarafinda hazir bir is emri varsa sadece is emrini secin. Sistem gerekli alt kirilimlari taslak olarak forma getirir.",
-        "fetchByStockDescription": "Hazir bir is emri yoksa ana urunu, varsa yapkodunu ve miktari secin. Sistem stok bilgisinden uygun uretim taslagini getirir."
+        "fetchByStockDescription": "Hazir bir is emri yoksa ana urunu, varsa yapkodunu ve miktari secin. Sistem stok bilgisinden uygun uretim taslagini getirir.",
+        "fetch": "Fill fields"
       },
       "mainOrderNo": "Ana Is Emri No",
       "mainOrderNoPlaceholder": "Is emri no ile alanlari doldurun",
@@ -2415,7 +2742,165 @@
       "assignedRoleSelect": "Rol secin",
       "roleSearch": "Rollerde ara",
       "roleEmpty": "Rol bulunamadi",
-      "yapKod": "Yap Kod"
+      "yapKod": "Yap Kod",
+      "title": "Create Production Plan",
+      "subtitle": "You can start quickly from a work order or stock information, then complete the plan normally on this screen.",
+      "erpLoaded": "Quick entry applied. Main product, variant, and quantity fields were filled.",
+      "erpError": "Could not load ERP template",
+      "success": "Production plan saved",
+      "error": "Production plan could not be saved",
+      "orderDraftLabel": "Order {{index}}",
+      "selectOrderPlaceholder": "Order",
+      "review": {
+        "source": "Source",
+        "sourceErp": "ERP",
+        "sourceManual": "Manual",
+        "execution": "Mode",
+        "mainStock": "Main stock"
+      },
+      "validation": {
+        "documentNo": "Plan number is missing.",
+        "mainStock": "Main stock is not selected.",
+        "orderNo": "An order number is empty.",
+        "outputOrder": "An output row has no linked order.",
+        "consumptionOrder": "A consumption row has no linked order."
+      },
+      "summary": {
+        "orders": "Orders",
+        "outputs": "Outputs",
+        "consumptions": "Consumption",
+        "dependencies": "Dependencies",
+        "totalOutput": "Total output qty",
+        "totalConsumption": "Total consumption qty"
+      },
+      "source": {
+        "title": "Quick entry",
+        "subtitle": "Fill the basic fields from a work order or stock information, then complete the rest of the plan here."
+      },
+      "modeErp": "Quick entry",
+      "modeManualDescription": "You define every order, output, and consumption breakdown. ERP may still be used as reference.",
+      "erpNote": {
+        "title": "Quick entry is only the start",
+        "body": "The fetched information fills Step 1 and, when available, the initial plan draft. Final review and saving still happen on this screen."
+      },
+      "readiness": {
+        "title": "Save readiness",
+        "subtitle": "See what is missing before you save the plan.",
+        "ready": "Core fields look ready. Review details, then save.",
+        "missing": "Review before saving"
+      },
+      "header": {
+        "title": "Plan header",
+        "subtitle": "These fields map to the production plan header (PR_HEADER)."
+      },
+      "planType": "Plan type",
+      "plannedStartDate": "Planned start",
+      "plannedEndDate": "Planned end",
+      "headerAssignments": {
+        "title": "Plan assignments",
+        "subtitle": "Assign team, role, or primary owner at PR_HEADER_ASSIGNMENT level.",
+        "empty": "Header assignments are optional but recommended to clarify shopfloor ownership."
+      },
+      "assignedUserId": "User ID",
+      "assignedRoleId": "Role ID",
+      "assignedTeamId": "Team ID",
+      "orders": {
+        "title": "Production orders",
+        "subtitle": "Manage PR_ORDER records per order. Each order owns its outputs, consumption, and dependencies."
+      },
+      "addOrder": "Add order",
+      "addHeaderAssignment": "Add assignment",
+      "addOrderAssignment": "Add assignment",
+      "addOutput": "Add output",
+      "addConsumption": "Add consumption",
+      "addDependency": "Add dependency",
+      "orderBadge": "Order {{index}}",
+      "orderPlaceholder": "New order",
+      "stockPlaceholder": "No stock selected",
+      "orderNo": "Order no.",
+      "columns": {
+        "order": "Order",
+        "stock": "Stock",
+        "quantity": "Qty"
+      },
+      "orderType": "Order type",
+      "producedYapKod": "YapKod to produce",
+      "sequenceNo": "Sequence no.",
+      "canStartManually": "Allow manual start",
+      "canStartManuallyHint": "Operator can start the order before dependencies complete.",
+      "autoStart": "Auto-start when dependencies done",
+      "autoStartHint": "Let ERP or shopfloor open the next step automatically.",
+      "orderAssignments": {
+        "title": "Order assignments",
+        "subtitle": "Define who owns this order on the shopfloor.",
+        "empty": "No assignment rows for this order."
+      },
+      "assignmentNote": "Note",
+      "outputs": {
+        "title": "Planned outputs",
+        "subtitle": "PR_ORDER_OUTPUT defines what each order will produce."
+      },
+      "trackingMode": "Tracking",
+      "consumptions": {
+        "title": "Planned consumption",
+        "subtitle": "PR_ORDER_CONSUMPTION lines; operators can enter actual serial/lot later."
+      },
+      "sourceStock": "Consumption stock",
+      "serialEntryMode": "Serial entry",
+      "dependencies": {
+        "title": "Order dependencies",
+        "subtitle": "Define when an order may start in serial, parallel, or hybrid flow. Add transfer completion rules if needed.",
+        "empty": "No dependencies yet. Leave empty for parallel flow or link orders for serial flow."
+      },
+      "predecessor": "Predecessor order",
+      "successor": "Successor order",
+      "lagMinutes": "Lag (min)",
+      "outputReady": "Output ready",
+      "transferReady": "Transfer ready",
+      "enums": {
+        "executionMode": {
+          "Serial": "Serial",
+          "Parallel": "Parallel",
+          "Hybrid": "Hybrid"
+        },
+        "planType": {
+          "Production": "Production",
+          "Assembly": "Assembly",
+          "Packaging": "Packaging",
+          "Rework": "Rework"
+        },
+        "orderType": {
+          "Production": "Production",
+          "SemiFinished": "Semi-finished",
+          "Assembly": "Assembly",
+          "Packaging": "Packaging",
+          "Rework": "Rework"
+        },
+        "trackingMode": {
+          "None": "None",
+          "Lot": "Lot",
+          "Serial": "Serial"
+        },
+        "serialMode": {
+          "Optional": "Optional",
+          "Required": "Required"
+        },
+        "dependencyType": {
+          "FinishToStart": "Finish to start",
+          "StartToStart": "Start to start",
+          "FinishToFinish": "Finish to finish",
+          "StartToFinish": "Start to finish"
+        },
+        "assignmentType": {
+          "Primary": "Primary",
+          "Support": "Support",
+          "Supervisor": "Supervisor",
+          "Observer": "Observer"
+        }
+      },
+      "permissionInfoTitle": "Permission information",
+      "permissionInfoCreate": "You need production create permission to save this plan.",
+      "permissionInfoUpdate": "You need production update permission to update this plan."
     },
     "process": {
       "pickAssignedOrderFirst": "Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir.",
@@ -2462,7 +2947,113 @@
       "consumptionSimpleHint": "1. Tuketim kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.",
       "selectedConsumptionInfo": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}",
       "outputSimpleHint": "1. Uretilecek cikti kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.",
-      "selectedOutputInfo": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}"
+      "selectedOutputInfo": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}",
+      "title": "Production process",
+      "subtitle": "Review the plan, start operations per order, and record actual consumption and output movements.",
+      "openDetail": "Open plan detail",
+      "error": "Could not load production plan detail.",
+      "startSuccess": "Operation started.",
+      "startError": "Operation could not be started.",
+      "pauseSuccess": "Operation paused.",
+      "pauseError": "Operation could not be paused.",
+      "resumeSuccess": "Operation resumed.",
+      "resumeError": "Operation could not be resumed.",
+      "completeSuccess": "Operation completed.",
+      "completeError": "Operation could not be completed.",
+      "consumptionSuccess": "Consumption recorded.",
+      "consumptionError": "Consumption could not be recorded.",
+      "outputSuccess": "Output recorded.",
+      "outputError": "Output could not be recorded.",
+      "orders": "Orders",
+      "operation": "Active operation",
+      "operationNone": "-",
+      "timeline": "Operation timeline",
+      "timelineSubtitle": "Follow start, pause, resume, and complete events in chronological order.",
+      "timelineEmpty": "No operation events yet. Select an order and start an operation to see the timeline here.",
+      "minutesShort": "{{count}} min",
+      "reasonCode": "Reason code",
+      "planDetail": "Plan detail",
+      "planDetailSubtitle": "Assignments, orders, outputs, and consumptions in one place.",
+      "filterAllOrders": "All orders",
+      "orderSearchLabel": "Search stock / order",
+      "orderSearchPlaceholder": "e.g. order no. or stock code",
+      "gap": {
+        "summary": "Selected order — remaining quantity",
+        "output": "Output gap: {{value}}",
+        "consumption": "Consumption gap: {{value}}"
+      },
+      "dependenciesBlocked": "Selected order is blocked. Waiting on: {{orders}}",
+      "dependenciesReady": "No active dependency block for the selected order.",
+      "dependenciesEmpty": "This order is not waiting on a direct predecessor.",
+      "dependencyBlocked": "Blocked",
+      "dependencyReady": "Ready",
+      "predecessorStatus": "Status: {{status}}",
+      "badgeTransferRequired": "Transfer required",
+      "badgeOutputRequired": "Output required",
+      "lagMinutes": "Lag {{minutes}} min",
+      "assignmentBadge": "{{type}} / U:{{user}} / R:{{role}}",
+      "selectOrder": "Select this order",
+      "outputs": "Outputs",
+      "consumptions": "Consumptions",
+      "gapBadge": "Gap: {{value}}",
+      "completeBadge": "Done",
+      "prefillFromPlan": "Prefill from plan",
+      "controls": "Operation controls",
+      "pickOrder": "Select an order to continue.",
+      "controlsDescription": "{{orderNo}} / {{stock}}",
+      "controlsDescriptionBlocked": "{{orderNo}} / {{stock}} — blocked",
+      "duration": "Duration (min)",
+      "start": "Start",
+      "pause": "Pause",
+      "resume": "Resume",
+      "complete": "Complete",
+      "startBlocked": "This order cannot be started. Complete these orders first: {{orders}}",
+      "lineHistorySubtitle": "Track consumption and output lines for the active operation.",
+      "lineHistoryRole": "Role",
+      "lineHistoryStock": "Stock code",
+      "lineHistoryStockPlaceholder": "STK…",
+      "lineHistoryFilterAll": "All movements",
+      "lineRoleConsumption": "Consumption",
+      "lineRoleOutput": "Output",
+      "lineHistoryEmpty": "No movement lines match the filters.",
+      "lineHistoryColTime": "Time",
+      "lineHistoryColRole": "Role",
+      "lineHistoryColStock": "Stock",
+      "lineHistoryColQty": "Qty",
+      "lineHistoryColSerial": "Serial",
+      "lineHistoryColLocation": "Warehouse / cell",
+      "warehouseCellSeparator": " → ",
+      "addConsumption": "Enter consumption",
+      "addOutput": "Enter output",
+      "lookupHint": "Pick stock from the selected order's planned lines.",
+      "lookupSearch": "Search planned lines",
+      "lookupEmpty": "No matching stock for the selected order.",
+      "serial": "Serial",
+      "barcode": "Barcode",
+      "recordConsumption": "Save consumption",
+      "recordOutput": "Save output",
+      "cellSearch": "Search planned cells",
+      "cellEmpty": "No matching source cell for the selected order.",
+      "cellEmptyTarget": "No matching target cell for the selected order.",
+      "sourceCellSelect": "Select source cell",
+      "targetCellSelect": "Select target cell",
+      "orderStatus": {
+        "Draft": "Draft",
+        "Ready": "Ready",
+        "InProgress": "In progress",
+        "Paused": "Paused",
+        "Completed": "Completed",
+        "Unknown": "Unknown"
+      },
+      "defaultDraft": "Draft",
+      "operationEventType": {
+        "Started": "Started",
+        "Paused": "Paused",
+        "Resumed": "Resumed",
+        "Completed": "Completed",
+        "Cancelled": "Cancelled"
+      },
+      "permissionInfo": "You need production update permission to operate on this stage. Operation buttons stay disabled for that reason."
     },
     "list": {
       "title": "Uretim Planlari",
@@ -2473,7 +3064,13 @@
       "editDisabledHelp": "Sadece draft ve henüz islem gormemis planlar duzenlenebilir. Islem gormus planlar sahadaki hareketi bozmamak icin kilitlenir.",
       "openDetail": "Detay",
       "openTransfer": "Transfer Ac",
-      "searchPlaceholder": "Belge no, ana stok veya proje ara"
+      "searchPlaceholder": "Belge no, ana stok veya proje ara",
+      "deleteTitle": "Delete production plan",
+      "deleteDescription": "We will soft delete \"{{documentNo}}\". Only draft plans with no shopfloor activity can be deleted.",
+      "deleteSuccess": "Production plan was deactivated.",
+      "deleteError": "Production plan could not be deleted.",
+      "openProcess": "Process",
+      "editDisabledPermission": "You need production update permission to edit this plan."
     },
     "detail": {
       "title": "Uretim Detayi",
@@ -2491,13 +3088,65 @@
       "orderTransferBreakdown": "Order Bazli Linked Transferler",
       "orderTransferBreakdownSubtitle": "Her emre bagli production transferleri ayri ayri izleyin.",
       "dependencies": "Dependency Haritasi",
-      "transferLinks": "Bagli Production Transferler"
+      "transferLinks": "Bagli Production Transferler",
+      "statusInfoNoUpdate": "You can view this plan, but you cannot switch to edit mode because you do not have production update permission.",
+      "columns": {
+        "order": "Order",
+        "stock": "Stock",
+        "planned": "Planned",
+        "actual": "Actual",
+        "status": "Status",
+        "assignment": "Assignment"
+      },
+      "outputGap": "Output Gap: {{value}}",
+      "consumptionGap": "Consumption Gap: {{value}}",
+      "noOrderTransfer": "There is no transfer linked to this order.",
+      "noPlanTransfer": "There is no transfer linked to this plan.",
+      "transferColumns": {
+        "document": "Document",
+        "purpose": "Purpose",
+        "source": "Source",
+        "target": "Target",
+        "status": "Status"
+      },
+      "dependencyColumns": {
+        "predecessor": "Predecessor Order",
+        "successor": "Successor Order",
+        "type": "Type",
+        "rules": "Rules"
+      },
+      "badges": {
+        "transfer": "Transfer",
+        "output": "Output",
+        "lag": "Lag {{minutes}} min"
+      }
     },
     "assigned": {
       "title": "Atanmis Uretim Emirleri",
       "error": "Atanmis uretim emirleri yuklenemedi",
       "noData": "Size atanmis bekleyen uretim emri bulunamadi",
       "searchPlaceholder": "Belge no veya ana stok ara"
+    },
+    "approval": {
+      "title": "Production Plans Awaiting Approval",
+      "approveSuccess": "Production plan approved successfully",
+      "approveError": "Production plan could not be approved",
+      "rejectSuccess": "Production plan rejected successfully",
+      "rejectError": "Production plan could not be rejected",
+      "error": "An error occurred while loading data",
+      "searchPlaceholder": "Search by plan no, main stock, or variant",
+      "id": "ID",
+      "documentNo": "Plan No",
+      "documentDate": "Document Date",
+      "mainStockCode": "Main Stock",
+      "mainYapKod": "Main YapKod",
+      "plannedQuantity": "Planned",
+      "completedQuantity": "Completed",
+      "actions": "Actions",
+      "viewDetails": "Details",
+      "approve": "Approve",
+      "reject": "Reject",
+      "noData": "No production plans awaiting approval"
     }
   },
   "inventoryCount": {
@@ -2520,7 +3169,8 @@
       "saveEntry": "Sayim Girisini Kaydet",
       "lineListTitle": "Sayim satirlari",
       "lineListDescription": "Kirmizi satirlar fark var demektir. Sistem otomatik tekrar sayim isteyebilir.",
-      "noLines": "Bu sayim emrinde henuz satir bulunmuyor."
+      "noLines": "Bu sayim emrinde henuz satir bulunmuyor.",
+      "emptyHeaderMessage": "No count header selected"
     },
     "fields": {
       "header": "Sayim emri",
@@ -2592,7 +3242,61 @@
       "nextStepTitle": "Kaydettikten sonra ne olacak?",
       "nextStepOne": "Sayim emri acilir.",
       "nextStepTwo": "Satirlar otomatik hazirlanir.",
-      "nextStepThree": "Direkt giris ekranina gecip miktarlari kaydedersin."
+      "nextStepThree": "Direkt giris ekranina gecip miktarlari kaydedersin.",
+      "combinedScopeDescription": "If you want to combine warehouse, stock and rack in one order, add scope rows.",
+      "options": {
+        "countType": {
+          "general": "General full count",
+          "warehouse": "Warehouse count",
+          "stock": "Stock count",
+          "rack": "Rack count",
+          "cell": "Cell count",
+          "combined": "Combined count"
+        },
+        "countMode": {
+          "blind": "Blind count",
+          "open": "Open count"
+        },
+        "freezeMode": {
+          "none": "Do not stop movement",
+          "soft": "Warn only",
+          "hard": "Lock movement"
+        },
+        "scopeType": {
+          "warehouse": "Warehouse",
+          "stock": "Stock",
+          "rack": "Rack",
+          "cell": "Cell"
+        }
+      },
+      "countTypeDescriptions": {
+        "general": "Counts all active stock in one order. This is the easiest path for an opening count.",
+        "warehouse": "Counts stocks in a single warehouse. Use it for warehouse-based counting.",
+        "stock": "Counts a specific stock code. Suitable for problematic or critical items.",
+        "rack": "Counts a specific rack area. Useful for rack cleanup and verification.",
+        "cell": "Counts a single cell. This is the fastest local control method.",
+        "combined": "Combines multiple warehouses, stocks, or racks in one count order."
+      },
+      "validation": {
+        "documentNoRequired": "Document number is required.",
+        "warehouseRequired": "A warehouse must be selected for warehouse count.",
+        "stockRequired": "A stock must be selected for stock count.",
+        "rackRequired": "A rack code must be entered for rack count.",
+        "cellRequired": "A cell code must be entered for cell count.",
+        "scopeRequired": "At least one scope row must be added for combined count.",
+        "validScopeRequired": "At least one valid scope row must be filled for combined count."
+      },
+      "summary": {
+        "combined": "{{count}} scope rows ready",
+        "general": "All active stock will be included in the count list",
+        "scoped": "Lines will be prepared automatically for the selected scope"
+      }
+    },
+    "assigned": {
+      "title": "Assigned Count Orders",
+      "error": "Assigned count orders could not be loaded.",
+      "noData": "There are no active count orders assigned to you.",
+      "searchPlaceholder": "Search by document no or count type"
     }
   },
   "barcodeManagement": {
@@ -2672,5 +3376,112 @@
     "statusPending": "Kaydedilmedi",
     "statusCurrent": "Güncel",
     "readOnlyInfo": "Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir."
+  },
+  "barcodeFormat": "Active barcode format: {{format}}",
+  "paged": {
+    "search": "Search",
+    "searchPlaceholder": "Search records",
+    "loadingDescription": "Loading"
+  },
+  "userManagement": {
+    "searchPlaceholder": "Search users..."
+  },
+  "warehouseBalance": {
+    "stock": {
+      "columns": {
+        "warehouse": "Warehouse",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "quantity": "Quantity",
+        "available": "Available",
+        "serialCount": "Serial count",
+        "shelfCount": "Shelf count",
+        "updatedAt": "Updated at"
+      },
+      "rebuildAll": "Rebuild all summaries",
+      "cards": {
+        "rows": "Rows",
+        "quantity": "Total quantity",
+        "serials": "Visible serial count"
+      },
+      "empty": "No warehouse stock balance found",
+      "searchPlaceholder": "Search warehouse, stock or yapkod...",
+      "rebuildWarehouse": "Rebuild warehouse",
+      "rebuildStock": "Rebuild stock"
+    },
+    "consistency": {
+      "columns": {
+        "issueType": "Issue type",
+        "warehouse": "Warehouse",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "quantityDelta": "Quantity delta",
+        "availableDelta": "Available delta",
+        "serialDelta": "Serial delta"
+      },
+      "issueTypes": {
+        "missingSummary": "Missing summary",
+        "extraSummary": "Extra summary",
+        "metricMismatch": "Metric mismatch"
+      },
+      "title": "Balance consistency check",
+      "description": "Track differences between detail and summary balances.",
+      "cards": {
+        "summaryRows": "Summary rows",
+        "detailGroups": "Detail groups",
+        "mismatch": "Total mismatch",
+        "missingSummary": "Missing summary",
+        "extraSummary": "Extra summary"
+      },
+      "empty": "No inconsistency found",
+      "searchPlaceholder": "Search warehouse, stock, yapkod or issue type..."
+    },
+    "serial": {
+      "columns": {
+        "warehouse": "Warehouse",
+        "shelf": "Shelf / Cell",
+        "stock": "Stock",
+        "yapKod": "YapKod",
+        "serials": "Serials",
+        "quantity": "Quantity",
+        "status": "Stock status",
+        "transactionDate": "Last transaction"
+      },
+      "cards": {
+        "rows": "Rows",
+        "quantity": "Total quantity",
+        "filtered": "Visible rows"
+      },
+      "empty": "No warehouse serial balance found",
+      "searchPlaceholder": "Search warehouse, shelf, stock or serial..."
+    }
+  },
+  "barcodePrint": {
+    "selectTemplateFirst": "Select a barcode template first",
+    "selectPrinterFirst": "Select a printer first",
+    "selectProfileFirst": "Select a printer profile first",
+    "selectDocumentFirst": "Select at least one document",
+    "noPrintableLines": "No printable lines found for the selected document",
+    "printQueued": "Print job queued",
+    "printCreateFailed": "Print job could not be created",
+    "badge": "WMS Print",
+    "heroDescription": "Select operation, pick document(s), choose template and printer, then queue print directly.",
+    "operation": "Operation",
+    "selectedDocuments": "Selected documents",
+    "selectedLines": "Selected lines",
+    "operationAndDocumentList": "Operation and document list",
+    "selectOperation": "Select operation",
+    "documentListLoadFailed": "Document list could not be loaded.",
+    "documentListEmpty": "No documents found for this operation.",
+    "searchInOperation": "Search in {{operation}}...",
+    "clearVisible": "Clear visible",
+    "selectVisible": "Select visible",
+    "clearSelection": "Clear selection",
+    "documentLines": "Document lines",
+    "linesHelp": "If you select lines only those lines are printed; otherwise all lines are printed.",
+    "linesLoading": "Loading lines...",
+    "linesEmpty": "No lines found for this document.",
+    "selectSingleDocument": "Select one document for line-based printing.",
+    "printSettings": "Print settings"
   }
 }

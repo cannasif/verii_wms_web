@@ -300,23 +300,23 @@ export function BarcodePrintPage(): ReactElement {
   const printMutation = useMutation({
     mutationFn: async () => {
       if (!permission.canCreate && !permission.canUpdate) {
-        throw new Error('Yazdırma yetkiniz yok');
+        throw new Error(t('common.noPermission'));
       }
 
       if (!selectedTemplateId) {
-        throw new Error('Önce bir barkod tasarımı seçin');
+        throw new Error(t('barcodePrint.selectTemplateFirst', { defaultValue: 'Önce bir barkod tasarımı seçin' }));
       }
 
       if (!selectedServerPrinterId) {
-        throw new Error('Önce bir yazıcı seçin');
+        throw new Error(t('barcodePrint.selectPrinterFirst', { defaultValue: 'Önce bir yazıcı seçin' }));
       }
 
       if (!selectedServerPrinterProfileId) {
-        throw new Error('Önce bir printer profile seçin');
+        throw new Error(t('barcodePrint.selectProfileFirst', { defaultValue: 'Önce bir printer profile seçin' }));
       }
 
       if (selectedHeaderIds.length === 0) {
-        throw new Error('Yazdırmak için en az bir belge seçin');
+        throw new Error(t('barcodePrint.selectDocumentFirst', { defaultValue: 'Yazdırmak için en az bir belge seçin' }));
       }
 
       const resolveRequests = selectedLineIds.length > 0 && singleSelectedHeaderId
@@ -337,7 +337,7 @@ export function BarcodePrintPage(): ReactElement {
       const resolvedSourceItems = resolvedGroups.flatMap((response) => response.data ?? []);
 
       if (resolvedSourceItems.length === 0) {
-        throw new Error('Seçili belge için yazdırılabilir satır bulunamadı');
+        throw new Error(t('barcodePrint.noPrintableLines', { defaultValue: 'Seçili belge için yazdırılabilir satır bulunamadı' }));
       }
 
       const records = resolvedSourceItems.map((item) => ({
@@ -373,10 +373,10 @@ export function BarcodePrintPage(): ReactElement {
       });
     },
     onSuccess: (response) => {
-      toast.success(response.message || 'Baskı işi kuyruğa alındı');
+      toast.success(response.message || t('barcodePrint.printQueued', { defaultValue: 'Baskı işi kuyruğa alındı' }));
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Baskı işi oluşturulamadı');
+      toast.error(error instanceof Error ? error.message : t('barcodePrint.printCreateFailed', { defaultValue: 'Baskı işi oluşturulamadı' }));
     },
   });
 
@@ -394,33 +394,33 @@ export function BarcodePrintPage(): ReactElement {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'ERP' })}</Badge>
-              <Badge variant="secondary">WMS Print</Badge>
+              <Badge variant="secondary">{t('barcodePrint.badge', { defaultValue: 'WMS Print' })}</Badge>
             </div>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
                 {t('sidebar.erpBarcodePrint', { defaultValue: 'Barkod Yazdır' })}
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                İşlem seçin, paged listeden belge veya belge satırı seçin, tasarım ve yazıcı belirleyip doğrudan baskı kuyruğuna gönderin.
+                {t('barcodePrint.heroDescription', { defaultValue: 'İşlem seçin, paged listeden belge veya belge satırı seçin, tasarım ve yazıcı belirleyip doğrudan baskı kuyruğuna gönderin.' })}
               </p>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.operation', { defaultValue: 'İşlem' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
               </CardContent>
             </Card>
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Belge</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedDocuments', { defaultValue: 'Seçili Belge' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
               </CardContent>
             </Card>
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Satır</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedLines', { defaultValue: 'Seçili Satır' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedLineIds.length}</div>
               </CardContent>
             </Card>
@@ -432,15 +432,15 @@ export function BarcodePrintPage(): ReactElement {
         <div className="space-y-6">
           <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
             <CardHeader>
-              <CardTitle>İşlem ve Belge Listesi</CardTitle>
+              <CardTitle>{t('barcodePrint.operationAndDocumentList', { defaultValue: 'İşlem ve Belge Listesi' })}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="grid gap-4 lg:grid-cols-[0.35fr_0.65fr]">
                 <div className="space-y-2">
-                  <Label>İşlem</Label>
+                  <Label>{t('barcodePrint.operation', { defaultValue: 'İşlem' })}</Label>
                   <Select value={sourceModule} onValueChange={(value) => setSourceModule(value as BarcodePrintSourceModule)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="İşlem seç" />
+                      <SelectValue placeholder={t('barcodePrint.selectOperation', { defaultValue: 'İşlem seç' })} />
                     </SelectTrigger>
                     <SelectContent>
                       {operationOptions.map((item) => (
@@ -491,8 +491,8 @@ export function BarcodePrintPage(): ReactElement {
                 onRowClick={(row) => toggleHeaderSelection(row)}
                 isLoading={headersQuery.isLoading}
                 isError={headersQuery.isError}
-                errorText="Belge listesi yüklenemedi."
-                emptyText="Bu işlem için belge bulunamadı."
+                errorText={t('barcodePrint.documentListLoadFailed', { defaultValue: 'Belge listesi yüklenemedi.' })}
+                emptyText={t('barcodePrint.documentListEmpty', { defaultValue: 'Bu işlem için belge bulunamadı.' })}
                 pageSize={pagedGrid.pageSize}
                 pageSizeOptions={pagedGrid.pageSizeOptions}
                 onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -509,16 +509,18 @@ export function BarcodePrintPage(): ReactElement {
                   value: pagedGrid.searchInput,
                   onValueChange: pagedGrid.searchConfig.onValueChange,
                   onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                  placeholder: `${getOperationLabel(sourceModule)} içinde ara...`,
+                  placeholder: t('barcodePrint.searchInOperation', { defaultValue: '{{operation}} içinde ara...', operation: getOperationLabel(sourceModule) }),
                 }}
                 leftSlot={(
                   <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" variant="outline" size="sm" onClick={toggleAllVisibleRows}>
-                      {allVisibleRowsSelected ? 'Görünenleri Kaldır' : 'Görünenleri Seç'}
+                      {allVisibleRowsSelected
+                        ? t('barcodePrint.clearVisible', { defaultValue: 'Görünenleri Kaldır' })
+                        : t('barcodePrint.selectVisible', { defaultValue: 'Görünenleri Seç' })}
                     </Button>
                     <Button type="button" variant="outline" size="sm" onClick={clearSelection} disabled={selectedHeaderIds.length === 0 && selectedLineIds.length === 0}>
                       <Trash2 className="mr-2 size-4" />
-                      Seçimi Temizle
+                      {t('barcodePrint.clearSelection', { defaultValue: 'Seçimi Temizle' })}
                     </Button>
                   </div>
                 )}
@@ -535,7 +537,7 @@ export function BarcodePrintPage(): ReactElement {
 
           <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
             <CardHeader>
-              <CardTitle>Belge Satırları</CardTitle>
+              <CardTitle>{t('barcodePrint.documentLines', { defaultValue: 'Belge Satırları' })}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {singleSelectedHeader ? (
@@ -543,7 +545,7 @@ export function BarcodePrintPage(): ReactElement {
                   <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
                     <div className="font-medium text-slate-900 dark:text-white">{singleSelectedHeader.title}</div>
                     <div className="mt-1 text-slate-600 dark:text-slate-300">
-                      Satır seçersen sadece o satırlar basılır. Seçmezsen belgenin tüm satırları yazdırılır.
+                      {t('barcodePrint.linesHelp', { defaultValue: 'Satır seçersen sadece o satırlar basılır. Seçmezsen belgenin tüm satırları yazdırılır.' })}
                     </div>
                   </div>
 
@@ -577,9 +579,9 @@ export function BarcodePrintPage(): ReactElement {
                               className="h-4 w-4 rounded border-slate-300"
                             />
                           </th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Stok</th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Açıklama</th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">Miktar</th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.stock', { defaultValue: 'Stok' })}</th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.description')}</th>
+                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.quantity', { defaultValue: 'Miktar' })}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -605,12 +607,12 @@ export function BarcodePrintPage(): ReactElement {
                         ))}
                         {linesQuery.isLoading ? (
                           <tr>
-                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">Satırlar yükleniyor...</td>
+                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">{t('barcodePrint.linesLoading', { defaultValue: 'Satırlar yükleniyor...' })}</td>
                           </tr>
                         ) : null}
                         {!linesQuery.isLoading && (linesQuery.data ?? []).length === 0 ? (
                           <tr>
-                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">Bu belge için satır bulunamadı.</td>
+                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">{t('barcodePrint.linesEmpty', { defaultValue: 'Bu belge için satır bulunamadı.' })}</td>
                           </tr>
                         ) : null}
                       </tbody>
@@ -619,7 +621,7 @@ export function BarcodePrintPage(): ReactElement {
                 </>
               ) : (
                 <div className="rounded-2xl border border-dashed border-slate-300/80 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                  Satır bazlı baskı için listeden tek bir belge seç.
+                  {t('barcodePrint.selectSingleDocument', { defaultValue: 'Satır bazlı baskı için listeden tek bir belge seç.' })}
                 </div>
               )}
             </CardContent>
@@ -629,7 +631,7 @@ export function BarcodePrintPage(): ReactElement {
         <div className="space-y-6">
           <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
             <CardHeader>
-              <CardTitle>Baskı Ayarları</CardTitle>
+              <CardTitle>{t('barcodePrint.printSettings', { defaultValue: 'Baskı Ayarları' })}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">

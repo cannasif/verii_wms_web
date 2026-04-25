@@ -112,7 +112,7 @@ function HangfireGrid({
     reason: item.reason || '-',
   })), [rows?.data]);
   const range = getPagedRange(rows);
-  const paginationInfoText = t('common:common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const visibleColumnKeys = orderedVisibleColumns as HangfireColumnKey[];
   const renderSortIcon = (columnKey: HangfireColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 
@@ -162,8 +162,8 @@ function HangfireGrid({
           hasNextPage={Boolean(rows?.hasNextPage)}
           onPreviousPage={pagedGrid.goToPreviousPage}
           onNextPage={pagedGrid.goToNextPage}
-          previousLabel={t('common:common.previous')}
-          nextLabel={t('common:common.next')}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
           actionBar={{
             pageKey,
@@ -189,7 +189,7 @@ function HangfireGrid({
               value: pagedGrid.searchInput,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('common:common.search'),
+              placeholder: t('common.search'),
             },
             refresh: {
               onRefresh: refetch,
@@ -278,7 +278,7 @@ export function HangfireMonitoringPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6">
-      <Breadcrumb items={[{ label: t('common:sidebar.accessControl') }, { label: t('menu'), isActive: true }]} />
+      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('menu'), isActive: true }]} />
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
@@ -437,7 +437,7 @@ export function HangfireMonitoringPage(): ReactElement {
         rows={failedQuery.data}
         isLoading={failedQuery.isLoading}
         isError={Boolean(failedQuery.error)}
-        errorText={t('common:common.errors.loadFailed')}
+        errorText={t('common.errors.loadFailed')}
         emptyText={t('failed.empty')}
         pagedGrid={failedGrid}
         userId={failedColumnsPref.userId}
@@ -455,7 +455,7 @@ export function HangfireMonitoringPage(): ReactElement {
         rows={deadLetterQuery.data}
         isLoading={deadLetterQuery.isLoading}
         isError={Boolean(deadLetterQuery.error)}
-        errorText={t('common:common.errors.loadFailed')}
+        errorText={t('common.errors.loadFailed')}
         emptyText={t('deadLetter.empty')}
         pagedGrid={deadGrid}
         userId={deadColumnsPref.userId}

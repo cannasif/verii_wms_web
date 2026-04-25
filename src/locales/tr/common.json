@@ -160,7 +160,8 @@
       "userDeleteFailed": "Kullanıcı silinemedi.",
       "userGroupSetFailed": "Kullanıcı grupları atanamadı.",
       "warehouse3dLoadFailed": "Depo bilgileri yüklenemedi.",
-      "loadFailed": "Load failed"
+      "loadFailed": "Load failed",
+      "permissionDefinitionListLoadFailed": "İzin tanımları listesi yüklenemedi."
     },
     "refresh": "Refresh",
     "noPermission": "Bu işlem için yetkiniz yok.",
@@ -169,7 +170,17 @@
     "deleteSuccess": "Kayıt silindi",
     "active": "Aktif",
     "passive": "Pasif",
-    "create": "Oluştur"
+    "create": "Oluştur",
+    "default": "Varsayılan",
+    "activate": "Aktifleştir",
+    "deactivate": "Pasife Al",
+    "clearForm": "Formu temizle",
+    "date": "Tarih",
+    "warning": "Uyarı",
+    "barcodeFormat": "Aktif barkod formatı: {{format}}",
+    "selectStockFirst": "Önce bir stok seçin",
+    "stock": "Stok",
+    "quantity": "Miktar"
   },
   "auth": {
     "login": {
@@ -191,7 +202,9 @@
       "copyright": "© 2025 VERII. Tüm hakları saklıdır.",
       "animationOff": "Animasyonu kapat",
       "animationOn": "Animasyonu aç",
-      "capsLockOn": "Caps Lock açık"
+      "capsLockOn": "Caps Lock açık",
+      "startAnimation": "Animasyonu başlat",
+      "stopAnimation": "Animasyonu durdur"
     },
     "forgotPassword": {
       "title": "Şifremi Unuttum",
@@ -376,7 +389,10 @@
     "erpPrinterManagement": "Yazıcılar ve Baskı İşleri",
     "accessControlManagementGroup": "Yetki ve Kullanıcı Yönetimi",
     "accessControlSystemGroup": "Sistem Araçları",
-    "serviceOperationsGroup": "Servis Operasyonları"
+    "serviceOperationsGroup": "Servis Operasyonları",
+    "erpShelves": "Raf / Hucre Tanimlari",
+    "erpWarehouseStockBalance": "Depo Stok Bakiyesi",
+    "erpWarehouseSerialBalance": "Depo Seri Bakiyesi"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -771,7 +787,8 @@
       "ordered": "Sipariş",
       "remaining": "Kalan",
       "pending": "Beklemede",
-      "completed": "Tamamlandı"
+      "completed": "Tamamlandı",
+      "unit": "Birim"
     },
     "details": {
       "serialNo": "Seri No",
@@ -781,7 +798,9 @@
       "batchNo": "Batch No",
       "batchNoPlaceholder": "Batch No giriniz",
       "configCode": "Yapılandırma Kodu",
-      "configCodePlaceholder": "Yapılandırma Kodu giriniz"
+      "configCodePlaceholder": "Yapılandırma Kodu giriniz",
+      "serialNo2": "Seri no 2",
+      "serialNo2Placeholder": "Seri no 2 girin"
     },
     "validation": {
       "transferDateRequired": "Tarih zorunludur",
@@ -971,7 +990,8 @@
       "unit": "Birim",
       "selectedItems": "Seçilen Kalemler",
       "selectedItemsCount": "{{count}} kalem ürün",
-      "noSelectedItems": "Henüz seçili kalem yok"
+      "noSelectedItems": "Henüz seçili kalem yok",
+      "stocks": "Stoklar"
     },
     "details": {
       "transferQuantity": "Transfer Miktarı",
@@ -1062,6 +1082,9 @@
       "approve": "Onayla",
       "reject": "Reddet",
       "noData": "Onay bekleyen emir bulunamadı"
+    },
+    "orderDetails": {
+      "orderQuantity": "Sipariş miktarı"
     }
   },
   "inventory": {
@@ -1424,7 +1447,9 @@
       "serialNoPlaceholder": "Seri No giriniz",
       "lotNoPlaceholder": "Parti No giriniz",
       "batchNoPlaceholder": "Batch No giriniz",
-      "configCodePlaceholder": "Yapılandırma Kodu giriniz"
+      "configCodePlaceholder": "Yapılandırma Kodu giriniz",
+      "serialNo2": "Seri no 2",
+      "serialNo2Placeholder": "Seri no 2 girin"
     },
     "process": {
       "steps": {
@@ -3077,7 +3102,8 @@
       "errors": {
         "lineRequired": "Önce sayım satırı seçilmelidir.",
         "quantityRequired": "Geçerli bir sayım miktarı girin."
-      }
+      },
+      "emptyHeaderMessage": "Seçili sayım başlığı yok"
     },
     "actions": {
       "process": "Direkt Giriş"
@@ -3221,7 +3247,8 @@
       "empty": "Seçili şablon için henüz eşleme yok."
     },
     "jobs": {
-      "jobName": "İş Adı"
+      "jobName": "İş Adı",
+      "retry": "Tekrar Dene"
     }
   },
   "serviceAllocation": {
@@ -3350,5 +3377,111 @@
     "statusPending": "Kaydedilmedi",
     "statusCurrent": "Güncel",
     "readOnlyInfo": "Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir."
+  },
+  "paged": {
+    "search": "Ara",
+    "searchPlaceholder": "Kayıtlarda ara",
+    "loadingDescription": "Yükleniyor"
+  },
+  "userManagement": {
+    "searchPlaceholder": "Kullanıcılarda ara..."
+  },
+  "warehouseBalance": {
+    "stock": {
+      "columns": {
+        "warehouse": "Depo",
+        "stock": "Stok",
+        "yapKod": "YapKod",
+        "quantity": "Miktar",
+        "available": "Kullanılabilir",
+        "serialCount": "Seri sayısı",
+        "shelfCount": "Raf sayısı",
+        "updatedAt": "Son hesaplama"
+      },
+      "rebuildAll": "Tüm özeti yeniden oluştur",
+      "cards": {
+        "rows": "Kayıt",
+        "quantity": "Toplam miktar",
+        "serials": "Görünen seri sayısı"
+      },
+      "empty": "Depo stok bakiyesi bulunamadı",
+      "searchPlaceholder": "Depo, stok veya yapkod ara...",
+      "rebuildWarehouse": "Depoyu yeniden oluştur",
+      "rebuildStock": "Stoğu yeniden oluştur"
+    },
+    "consistency": {
+      "columns": {
+        "issueType": "Sorun tipi",
+        "warehouse": "Depo",
+        "stock": "Stok",
+        "yapKod": "YapKod",
+        "quantityDelta": "Miktar farkı",
+        "availableDelta": "Kullanılabilir farkı",
+        "serialDelta": "Seri farkı"
+      },
+      "issueTypes": {
+        "missingSummary": "Eksik özet",
+        "extraSummary": "Fazla özet",
+        "metricMismatch": "Değer uyuşmazlığı"
+      },
+      "title": "Bakiye tutarlılık kontrolü",
+      "description": "Detay ve özet bakiye farklarını izleyin.",
+      "cards": {
+        "summaryRows": "Özet satır",
+        "detailGroups": "Detay grup",
+        "mismatch": "Toplam sorun",
+        "missingSummary": "Eksik özet",
+        "extraSummary": "Fazla özet"
+      },
+      "empty": "Tutarsızlık bulunamadı",
+      "searchPlaceholder": "Depo, stok, yapkod veya sorun tipi ara..."
+    },
+    "serial": {
+      "columns": {
+        "warehouse": "Depo",
+        "shelf": "Raf / Hücre",
+        "stock": "Stok",
+        "yapKod": "YapKod",
+        "serials": "Seriler",
+        "quantity": "Miktar",
+        "status": "Stok durumu",
+        "transactionDate": "Son hareket"
+      },
+      "cards": {
+        "rows": "Kayıt",
+        "quantity": "Toplam miktar",
+        "filtered": "Görünen satırlar"
+      },
+      "empty": "Depo seri bakiyesi bulunamadı",
+      "searchPlaceholder": "Depo, raf, stok veya seri ara..."
+    }
+  },
+  "barcodePrint": {
+    "selectTemplateFirst": "Önce bir barkod tasarımı seçin",
+    "selectPrinterFirst": "Önce bir yazıcı seçin",
+    "selectProfileFirst": "Önce bir printer profile seçin",
+    "selectDocumentFirst": "Yazdırmak için en az bir belge seçin",
+    "noPrintableLines": "Seçili belge için yazdırılabilir satır bulunamadı",
+    "printQueued": "Baskı işi kuyruğa alındı",
+    "printCreateFailed": "Baskı işi oluşturulamadı",
+    "badge": "WMS Print",
+    "heroDescription": "İşlem seçin, paged listeden belge veya belge satırı seçin, tasarım ve yazıcı belirleyip doğrudan baskı kuyruğuna gönderin.",
+    "operation": "İşlem",
+    "selectedDocuments": "Seçili Belge",
+    "selectedLines": "Seçili Satır",
+    "operationAndDocumentList": "İşlem ve Belge Listesi",
+    "selectOperation": "İşlem seç",
+    "documentListLoadFailed": "Belge listesi yüklenemedi.",
+    "documentListEmpty": "Bu işlem için belge bulunamadı.",
+    "searchInOperation": "{{operation}} içinde ara...",
+    "clearVisible": "Görünenleri Kaldır",
+    "selectVisible": "Görünenleri Seç",
+    "clearSelection": "Seçimi Temizle",
+    "documentLines": "Belge Satırları",
+    "linesHelp": "Satır seçersen sadece o satırlar basılır. Seçmezsen belgenin tüm satırları yazdırılır.",
+    "linesLoading": "Satırlar yükleniyor...",
+    "linesEmpty": "Bu belge için satır bulunamadı.",
+    "selectSingleDocument": "Satır bazlı baskı için listeden tek bir belge seç.",
+    "printSettings": "Baskı Ayarları"
   }
 }
