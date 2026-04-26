@@ -13,6 +13,7 @@ import type {
   CreateKkdEntitlementOverrideDto,
   CreateKkdEntitlementPolicyDto,
   KkdDistributionHeaderDto,
+  KkdDistributionContextDto,
   KkdDistributionListItemDto,
   KkdDistributionLineDto,
   KkdDepartmentUsageReportDto,
@@ -211,6 +212,12 @@ export const kkdApi = {
   },
   submitDistribution: async (dto: CreateKkdDistributionSubmissionDto): Promise<KkdDistributionHeaderDto> => {
     const response = await api.post<ApiResponse<KkdDistributionHeaderDto>>('/api/KkdDistribution/submit', dto);
+    return extractData(response);
+  },
+  getDistributionContext: async (employeeId: number, transactionDate?: string | null): Promise<KkdDistributionContextDto> => {
+    const response = await api.get<ApiResponse<KkdDistributionContextDto>>(`/api/KkdDistribution/context/${employeeId}`, {
+      params: { transactionDate: transactionDate || undefined },
+    });
     return extractData(response);
   },
   getDistributions: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDistributionListItemDto>> => {

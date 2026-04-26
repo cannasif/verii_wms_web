@@ -14,6 +14,8 @@ import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/services/lookup-api';
 import type {
   CreateKkdDistributionSubmissionLineDto,
+  KkdCariAcikSiparisDto,
+  KkdDistributionContextDto,
   KkdDistributionHeaderDto,
   KkdEmployeeDto,
   KkdEntitlementCheckResultDto,
@@ -53,9 +55,9 @@ export function KkdDistributionPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle]);
 
-  const remainingEntitlementsQuery = useQuery({
-    queryKey: ['kkd', 'distribution', 'remaining-entitlements', resolvedEmployee?.employeeId],
-    queryFn: () => kkdApi.getRemainingEntitlements(resolvedEmployee!.employeeId),
+  const distributionContextQuery = useQuery<KkdDistributionContextDto>({
+    queryKey: ['kkd', 'distribution', 'context', resolvedEmployee?.employeeId],
+    queryFn: () => kkdApi.getDistributionContext(resolvedEmployee!.employeeId),
     enabled: Boolean(resolvedEmployee?.employeeId),
   });
 
@@ -116,7 +118,7 @@ export function KkdDistributionPage(): ReactElement {
       setResolvedStock(null);
       setEntitlementResult(null);
       setQuantity('1');
-      remainingEntitlementsQuery.refetch();
+      distributionContextQuery.refetch();
       toast.success('KKD dağıtımı tamamlandı');
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
@@ -130,9 +132,9 @@ export function KkdDistributionPage(): ReactElement {
   );
 
   const selectedGroupEntitlement = useMemo(() => {
-    if (!resolvedStock?.groupCode || !remainingEntitlementsQuery.data) return null;
-    return remainingEntitlementsQuery.data.find((item) => item.groupCode === resolvedStock.groupCode) ?? null;
-  }, [remainingEntitlementsQuery.data, resolvedStock?.groupCode]);
+    if (!resolvedStock?.groupCode || !distributionContextQuery.data) return null;
+    return distributionContextQuery.data.remainingEntitlements.find((item) => item.groupCode === resolvedStock.groupCode) ?? null;
+  }, [distributionContextQuery.data, resolvedStock?.groupCode]);
 
   function handleAddLine(): void {
     if (!resolvedStock || !entitlementResult?.allowed) return;
@@ -268,13 +270,13 @@ export function KkdDistributionPage(): ReactElement {
             <CardContent className="space-y-4">
               {!resolvedEmployee ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">Önce çalışan seçildiğinde görev tanımına bağlı grup hakları burada görünür.</p>
-              ) : remainingEntitlementsQuery.isLoading ? (
+              ) : distributionContextQuery.isLoading ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">Haklar yükleniyor...</p>
-              ) : !remainingEntitlementsQuery.data?.length ? (
+              ) : !distributionContextQuery.data?.remainingEntitlements?.length ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">Bu kişi için tanımlı aktif grup hakkı bulunamadı.</p>
               ) : (
                 <div className="space-y-3">
-                  {remainingEntitlementsQuery.data.map((item: KkdRemainingEntitlementDto) => (
+                  {distributionContextQuery.data.remainingEntitlements.map((item: KkdRemainingEntitlementDto) => (
                     <div key={item.groupCode} className={`rounded-2xl border p-4 ${item.groupCode === resolvedStock?.groupCode ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/5'}`}>
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge>{item.groupCode}</Badge>
@@ -286,6 +288,38 @@ export function KkdDistributionPage(): ReactElement {
                       </div>
                       {item.groupName ? <p className="mt-2 font-medium text-slate-900 dark:text-white">{item.groupName}</p> : null}
                       {item.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.message}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Cariye Bağlı Açık KKD Siparişleri</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!resolvedEmployee ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Önce çalışan seçildiğinde çalışanın cari kodu ile eşleşen açık siparişler burada listelenir.</p>
+              ) : distributionContextQuery.isLoading ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Açık siparişler yükleniyor...</p>
+              ) : !distributionContextQuery.data?.cariAcikSiparis?.length ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Bu cari için bekleyen açık KKD siparişi bulunamadı.</p>
+              ) : (
+                <div className="space-y-3">
+                  {distributionContextQuery.data.cariAcikSiparis.map((item: KkdCariAcikSiparisDto, index) => (
+                    <div key={`${item.documentNo}-${item.stockCode}-${index}`} className={`rounded-2xl border p-4 ${item.groupCode && item.groupCode === resolvedStock?.groupCode ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/5'}`}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge>{item.stockCode}</Badge>
+                        {item.groupCode ? <Badge variant="secondary">{item.groupCode}</Badge> : null}
+                        <Badge variant="outline">Fis: {item.documentNo}</Badge>
+                        <Badge variant="outline">Bekleyen: {item.pendingQuantity}</Badge>
+                        {item.warehouseCode != null ? <Badge variant="outline">Depo: {item.warehouseCode}</Badge> : null}
+                      </div>
+                      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                        Tarih: {new Date(item.transactionDate).toLocaleDateString('tr-TR')} | Cari: {item.customerCode || resolvedEmployee.customerCode}
+                      </p>
                     </div>
                   ))}
                 </div>

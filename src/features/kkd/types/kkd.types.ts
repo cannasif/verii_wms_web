@@ -398,6 +398,26 @@ export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
   lines: KkdDistributionLineDto[];
 }
 
+export interface KkdCariAcikSiparisDto {
+  stockCode: string;
+  groupCode?: string | null;
+  documentNo: string;
+  transactionDate: string;
+  pendingQuantity: number;
+  customerCode?: string | null;
+  warehouseCode?: number | null;
+}
+
+export interface KkdDistributionContextDto {
+  employeeId: number;
+  employeeCode: string;
+  employeeName: string;
+  customerId: number;
+  customerCode: string;
+  remainingEntitlements: KkdRemainingEntitlementDto[];
+  cariAcikSiparis: KkdCariAcikSiparisDto[];
+}
+
 export interface KkdDistributionListItemDto extends BaseHeaderEntityDto {
   customerCode: string;
   employeeId: number;
