@@ -221,6 +221,14 @@ export const kkdApi = {
     });
     return extractData(response);
   },
+  getOrderStocksByGroupPaged: async (groupCode: string, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdOrderStockOptionDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<KkdOrderStockOptionDto>>>(
+      `/api/KkdOrder/stocks/by-group/${encodeURIComponent(groupCode)}/paged`,
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'StockCode', sortDirection: 'asc' }),
+      options,
+    );
+    return extractPaged(response);
+  },
   submitOrder: async (dto: CreateKkdOrderSubmissionDto): Promise<KkdOrderHeaderDto> => {
     const response = await api.post<ApiResponse<KkdOrderHeaderDto>>('/api/KkdOrder/submit', dto);
     return extractData(response);

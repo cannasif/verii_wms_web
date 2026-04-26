@@ -26,7 +26,8 @@ export function KkdInitialOrderPage(): ReactElement {
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);
   const [resolvedEmployee, setResolvedEmployee] = useState<KkdResolvedEmployeeDto | null>(null);
   const [selectedGroupCode, setSelectedGroupCode] = useState('');
-  const [selectedStockId, setSelectedStockId] = useState('');
+  const [stockDialogOpen, setStockDialogOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<KkdOrderStockOptionDto | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [cartLines, setCartLines] = useState<LocalOrderLine[]>([]);
   const [submittedHeader, setSubmittedHeader] = useState<KkdOrderHeaderDto | null>(null);
@@ -55,18 +56,12 @@ export function KkdInitialOrderPage(): ReactElement {
     enabled: Boolean(authUserId),
   });
 
-  const stockOptionsQuery = useQuery<KkdOrderStockOptionDto[]>({
-    queryKey: ['kkd', 'order', 'stocks', selectedGroupCode],
-    queryFn: () => kkdApi.getOrderStocksByGroup(selectedGroupCode),
-    enabled: Boolean(selectedGroupCode),
-  });
-
   const resolveQrMutation = useMutation({
     mutationFn: kkdApi.resolveEmployeeQr,
     onSuccess: (data) => {
       setResolvedEmployee(data);
       setSelectedGroupCode('');
-      setSelectedStockId('');
+      setSelectedStock(null);
       setCartLines([]);
       setSubmittedHeader(null);
       toast.success('Calisan bulundu');
@@ -90,7 +85,7 @@ export function KkdInitialOrderPage(): ReactElement {
       setSubmittedHeader(data);
       setCartLines([]);
       setSelectedGroupCode('');
-      setSelectedStockId('');
+      setSelectedStock(null);
       setQuantity('1');
       contextQuery.refetch();
       toast.success('KKD ilk giris siparisi olusturuldu');
@@ -101,10 +96,6 @@ export function KkdInitialOrderPage(): ReactElement {
   const selectedGroup = useMemo(
     () => contextQuery.data?.eligibleGroups.find((item) => item.groupCode === selectedGroupCode) ?? null,
     [contextQuery.data?.eligibleGroups, selectedGroupCode],
-  );
-  const selectedStock = useMemo(
-    () => stockOptionsQuery.data?.find((item) => String(item.stockId) === selectedStockId) ?? null,
-    [stockOptionsQuery.data, selectedStockId],
   );
   const requestedQuantity = Number(quantity) || 0;
   const alreadyRequestedForGroup = useMemo(
@@ -138,7 +129,7 @@ export function KkdInitialOrderPage(): ReactElement {
     setResolvedEmployee(mapEmployee(currentEmployeeQuery.data));
     setEmployeeQr(currentEmployeeQuery.data.qrCode);
     setSelectedGroupCode('');
-    setSelectedStockId('');
+    setSelectedStock(null);
     setCartLines([]);
     setSubmittedHeader(null);
   }
@@ -160,7 +151,7 @@ export function KkdInitialOrderPage(): ReactElement {
       },
     ]);
 
-    setSelectedStockId('');
+    setSelectedStock(null);
     setQuantity('1');
     toast.success('Satir eklendi');
   }
@@ -202,7 +193,7 @@ export function KkdInitialOrderPage(): ReactElement {
                     setResolvedEmployee(mapEmployee(item));
                     setEmployeeQr(item.qrCode);
                     setSelectedGroupCode('');
-                    setSelectedStockId('');
+                    setSelectedStock(null);
                     setCartLines([]);
                     setSubmittedHeader(null);
                   }}
@@ -229,7 +220,7 @@ export function KkdInitialOrderPage(): ReactElement {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Hak Grubu</Label>
-                <Select value={selectedGroupCode} onValueChange={(value) => { setSelectedGroupCode(value); setSelectedStockId(''); }}>
+                <Select value={selectedGroupCode} onValueChange={(value) => { setSelectedGroupCode(value); setSelectedStock(null); }}>
                   <SelectTrigger><SelectValue placeholder="Ilk giris hakkindan grup seciniz" /></SelectTrigger>
                   <SelectContent>
                     {(contextQuery.data?.eligibleGroups ?? []).map((group) => (
@@ -254,16 +245,22 @@ export function KkdInitialOrderPage(): ReactElement {
               <div className="grid gap-4 md:grid-cols-[1.2fr_0.5fr_auto]">
                 <div className="space-y-2">
                   <Label>Stok</Label>
-                  <Select value={selectedStockId} onValueChange={setSelectedStockId} disabled={!selectedGroupCode || stockOptionsQuery.isLoading}>
-                    <SelectTrigger><SelectValue placeholder={selectedGroupCode ? 'Gruba bagli stok seciniz' : 'Once grup seciniz'} /></SelectTrigger>
-                    <SelectContent>
-                      {(stockOptionsQuery.data ?? []).map((stock) => (
-                        <SelectItem key={stock.stockId} value={String(stock.stockId)}>
-                          {stock.stockCode} - {stock.stockName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PagedLookupDialog<KkdOrderStockOptionDto>
+                    open={stockDialogOpen}
+                    onOpenChange={setStockDialogOpen}
+                    title="Stok Sec"
+                    value={selectedStock ? `${selectedStock.stockCode} - ${selectedStock.stockName}` : null}
+                    placeholder={selectedGroupCode ? 'Gruba bagli stok seciniz' : 'Once grup seciniz'}
+                    searchPlaceholder="Stok kodu veya adina gore ara"
+                    queryKey={['kkd', 'order', 'stocks', selectedGroupCode]}
+                    disabled={!selectedGroupCode}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      kkdApi.getOrderStocksByGroupPaged(selectedGroupCode, { pageNumber, pageSize, search }, { signal })
+                    }
+                    getKey={(item) => String(item.stockId)}
+                    getLabel={(item) => `${item.stockCode} - ${item.stockName}`}
+                    onSelect={(item) => setSelectedStock(item)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Miktar</Label>
