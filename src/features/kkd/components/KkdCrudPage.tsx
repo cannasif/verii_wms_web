@@ -17,7 +17,7 @@ import { getPagedRange } from '@/lib/paged';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
 import { toast } from 'sonner';
-import i18n from '@/lib/i18n';
+import i18n, { getLocaleForFormatting } from '@/lib/i18n';
 import type { PagedParams, PagedResponse } from '@/types/api';
 import { inferFilterColumnType, type FilterColumnConfig } from '@/lib/advanced-filter-types';
 
@@ -65,7 +65,9 @@ function formatDateInput(value: unknown): string {
 
 function formatCellValue(value: unknown): string {
   if (value == null || value === '') return '-';
-  if (typeof value === 'boolean') return value ? 'Evet' : 'Hayır';
+  if (typeof value === 'boolean') {
+    return value ? i18n.t('common.yes', { ns: 'common' }) : i18n.t('common.no', { ns: 'common' });
+  }
   return String(value);
 }
 
@@ -396,7 +398,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             <DialogTitle>{t('common.delete')}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            {itemToDelete ? `${breadcrumbCurrent} kaydı silinsin mi?` : t('common.delete')}
+            {itemToDelete ? t('kkd.operational.deleteConfirm', { name: breadcrumbCurrent }) : t('common.delete')}
           </p>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)}>
@@ -429,7 +431,7 @@ export function renderKkdGenericCell(value: unknown): ReactElement | string | nu
     );
   }
   if (typeof value === 'string' && value.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    return new Date(value).toLocaleDateString('tr-TR');
+    return new Date(value).toLocaleDateString(getLocaleForFormatting(i18n.language));
   }
   return formatCellValue(value);
 }

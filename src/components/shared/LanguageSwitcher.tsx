@@ -12,21 +12,22 @@ import { cn } from '@/lib/utils';
 import { normalizeLanguage, setAppLanguage } from '@/lib/i18n';
 
 const languages = [
-  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-];
+  { code: 'tr', flag: '🇹🇷' },
+  { code: 'en', flag: '🇬🇧' },
+  { code: 'de', flag: '🇩🇪' },
+  { code: 'fr', flag: '🇫🇷' },
+] as const;
 
 interface LanguageSwitcherProps {
   variant?: 'default' | 'pill';
 }
 
 export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps): ReactElement {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('common');
 
   const normalizedLanguage = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
   const currentLanguage = languages.find((lang) => lang.code === normalizedLanguage) || languages[0];
+  const currentName = t(`languageNames.${normalizedLanguage}` as never);
 
   const handleLanguageChange = (value: string): void => {
     void setAppLanguage(value);
@@ -47,7 +48,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
             <span className="flex items-center gap-1.5">
               <span className="text-base">{currentLanguage.flag}</span>
               <span className={cn('hidden text-sm sm:inline', variant === 'pill' && 'font-medium text-slate-100')}>
-                {currentLanguage.name}
+                {currentName}
               </span>
             </span>
           </SelectValue>
@@ -62,7 +63,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
           >
             <div className="flex items-center gap-2">
               <span className="text-base">{language.flag}</span>
-              <span>{language.name}</span>
+              <span>{t(`languageNames.${language.code}` as never)}</span>
             </div>
           </SelectItem>
         ))}

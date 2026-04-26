@@ -4,14 +4,17 @@ import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { useUIStore } from '@/stores/ui-store';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/services/lookup-api';
+import { useNavigate } from 'react-router-dom';
 import type {
   CreateKkdDistributionSubmissionLineDto,
   KkdCariAcikSiparisDto,
@@ -39,9 +42,13 @@ type LocalDistributionLine = CreateKkdDistributionSubmissionLineDto & {
   isExcessIssue: boolean;
 };
 
+const dist = 'kkd.operational.dist' as const;
+
 export function KkdDistributionPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { setPageTitle } = useUIStore();
+  const dateLocale = getLocaleForFormatting(i18n.language);
+  const navigate = useNavigate();
 
   const [employeeQr, setEmployeeQr] = useState('');
   const [barcode, setBarcode] = useState('');
@@ -54,11 +61,13 @@ export function KkdDistributionPage(): ReactElement {
   const [quantity, setQuantity] = useState('1');
   const [submittedHeader, setSubmittedHeader] = useState<KkdDistributionHeaderDto | null>(null);
   const [cartLines, setCartLines] = useState<LocalDistributionLine[]>([]);
+  const [initialOrderPromptOpen, setInitialOrderPromptOpen] = useState(false);
+  const [initialOrderPromptHandledEmployeeId, setInitialOrderPromptHandledEmployeeId] = useState<number | null>(null);
 
   useEffect(() => {
-    setPageTitle('KKD Dağıtım');
+    setPageTitle(t(`${dist}.pageTitle`));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const distributionContextQuery = useQuery<KkdDistributionContextDto>({
     queryKey: ['kkd', 'distribution', 'context', resolvedEmployee?.employeeId],
@@ -74,7 +83,7 @@ export function KkdDistributionPage(): ReactElement {
       setResolvedStock(null);
       setEntitlementResult(null);
       setCartLines([]);
-      toast.success('Çalışan bulundu');
+      toast.success(t(`${dist}.toastFound`));
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
@@ -106,7 +115,7 @@ export function KkdDistributionPage(): ReactElement {
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!resolvedEmployee || !selectedWarehouse || cartLines.length === 0) {
-        throw new Error('Çalışan, depo ve satır bilgisi gereklidir.');
+        throw new Error(t(`${dist}.errNeedAll`));
       }
 
       return kkdApi.submitDistribution({
@@ -137,7 +146,7 @@ export function KkdDistributionPage(): ReactElement {
       setEntitlementResult(null);
       setQuantity('1');
       distributionContextQuery.refetch();
-      toast.success('KKD dağıtımı tamamlandı');
+      toast.success(t(`${dist}.toastComplete`));
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
@@ -173,6 +182,12 @@ export function KkdDistributionPage(): ReactElement {
   const requestedQuantity = Number(quantity) || 1;
   const hasMatchingOpenOrder = matchingOpenOrders.length > 0;
   const isWithinOpenOrderQuantity = hasMatchingOpenOrder && requestedQuantity <= totalOpenOrderPendingQuantity;
+  const canIssueByOpenOrderOnly = Boolean(
+    resolvedStock
+      && entitlementResult
+      && !entitlementResult.allowed
+      && isWithinOpenOrderQuantity,
+  );
   const canIssueAsExcess = Boolean(
     resolvedStock
       && entitlementResult
@@ -182,13 +197,45 @@ export function KkdDistributionPage(): ReactElement {
       && entitlementResult.remainingMainQuantity > 0
       && isWithinOpenOrderQuantity,
   );
-  const canAddLine = Boolean(resolvedStock && isWithinOpenOrderQuantity && (entitlementResult?.allowed || canIssueAsExcess));
+  const canAddLine = Boolean(
+    resolvedStock
+      && isWithinOpenOrderQuantity
+      && (entitlementResult?.allowed || canIssueAsExcess || canIssueByOpenOrderOnly),
+  );
   const entitledQuantity = entitlementResult?.allowed
     ? requestedQuantity
     : canIssueAsExcess
       ? Math.min(requestedQuantity, entitlementResult?.remainingMainQuantity ?? 0)
+      : canIssueByOpenOrderOnly
+        ? 0
       : 0;
   const excessQuantity = Math.max(0, requestedQuantity - entitledQuantity);
+  const shouldPromptInitialOrder = Boolean(
+    resolvedEmployee?.employeeId
+      && distributionContextQuery.data?.remainingEntitlements?.some((item) =>
+        String(item.suggestedPhaseType ?? '').toLowerCase() === 'initial' && (item.remainingInitialQuantity ?? 0) > 0)
+      && !submittedHeader
+      && cartLines.length === 0,
+  );
+
+  useEffect(() => {
+    if (!resolvedEmployee?.employeeId) {
+      setInitialOrderPromptOpen(false);
+      setInitialOrderPromptHandledEmployeeId(null);
+      return;
+    }
+
+    if (!shouldPromptInitialOrder) {
+      setInitialOrderPromptOpen(false);
+      return;
+    }
+
+    if (initialOrderPromptHandledEmployeeId === resolvedEmployee.employeeId) {
+      return;
+    }
+
+    setInitialOrderPromptOpen(true);
+  }, [cartLines.length, initialOrderPromptHandledEmployeeId, resolvedEmployee?.employeeId, shouldPromptInitialOrder, submittedHeader]);
 
   function handleAddLine(): void {
     if (!resolvedStock || !entitlementResult || !canAddLine) return;
@@ -217,39 +264,90 @@ export function KkdDistributionPage(): ReactElement {
     setResolvedStock(null);
     setEntitlementResult(null);
     setQuantity('1');
-    toast.success('Satır sepete eklendi');
+    toast.success(t(`${dist}.toastLineCart`));
+  }
+
+  function handleInitialOrderAnswer(opened: boolean): void {
+    if (!resolvedEmployee) {
+      setInitialOrderPromptOpen(false);
+      return;
+    }
+
+    setInitialOrderPromptHandledEmployeeId(resolvedEmployee.employeeId);
+    setInitialOrderPromptOpen(false);
+
+    if (opened) {
+      return;
+    }
+
+    navigate(`/kkd/initial-order?employeeId=${resolvedEmployee.employeeId}`, {
+      state: {
+        resolvedEmployee,
+        employeeQr,
+      },
+    });
   }
 
   return (
     <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: 'Operasyonlar' }, { label: 'KKD Dağıtım', isActive: true }]} />
+      <Dialog
+        open={initialOrderPromptOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setInitialOrderPromptHandledEmployeeId(resolvedEmployee?.employeeId ?? null);
+          }
+          setInitialOrderPromptOpen(open);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t(`${dist}.initialPromptTitle`)}</DialogTitle>
+            <DialogDescription>{t(`${dist}.initialPromptDesc`)}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => handleInitialOrderAnswer(false)}>
+              {t(`${dist}.initialPromptNo`)}
+            </Button>
+            <Button type="button" onClick={() => handleInitialOrderAnswer(true)}>
+              {t(`${dist}.initialPromptYes`)}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Breadcrumb
+        items={[
+          { label: t('common.operationsGroup') },
+          { label: t(`${dist}.breadcrumb`), isActive: true },
+        ]}
+      />
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Çalışan ve Depo Seçimi</CardTitle>
+              <CardTitle>{t(`${dist}.titleEmployeeWarehouse`)}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="kkd-qr">QR Kodu</Label>
+                  <Label htmlFor="kkd-qr">{t(`${dist}.qrLabel`)}</Label>
                   <div className="flex gap-2">
-                    <Input id="kkd-qr" value={employeeQr} onChange={(e) => setEmployeeQr(e.target.value)} placeholder="Çalışan QR kodu okutun" />
+                    <Input id="kkd-qr" value={employeeQr} onChange={(e) => setEmployeeQr(e.target.value)} placeholder={t(`${dist}.qrPh`)} />
                     <Button type="button" onClick={() => resolveQrMutation.mutate({ qrCode: employeeQr })} disabled={!employeeQr.trim() || resolveQrMutation.isPending}>
-                      Çöz
+                      {t(`${dist}.resolveQr`)}
                     </Button>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Depo</Label>
+                  <Label>{t(`${dist}.warehouse`)}</Label>
                   <PagedLookupDialog<WarehouseLookup>
                     open={warehouseDialogOpen}
                     onOpenChange={setWarehouseDialogOpen}
-                    title="Depo Seç"
+                    title={t(`${dist}.whDialogTitle`)}
                     value={selectedWarehouse ? `${selectedWarehouse.depoKodu} - ${selectedWarehouse.depoIsmi}` : null}
-                    placeholder="Depo seçiniz"
+                    placeholder={t(`${dist}.whPh`)}
                     queryKey={['kkd', 'warehouses']}
                     fetchPage={({ pageNumber, pageSize, search, signal }) =>
                       lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -262,13 +360,13 @@ export function KkdDistributionPage(): ReactElement {
               </div>
 
               <div className="space-y-2">
-                <Label>Alternatif Çalışan Seçimi</Label>
+                <Label>{t(`${dist}.altEmployee`)}</Label>
                 <PagedLookupDialog<KkdEmployeeDto>
                   open={employeeDialogOpen}
                   onOpenChange={setEmployeeDialogOpen}
-                  title="Çalışan Seç"
+                  title={t(`${dist}.empDialogTitle`)}
                   value={resolvedEmployee ? `${resolvedEmployee.employeeCode} - ${resolvedEmployee.fullName}` : null}
-                  placeholder="QR yerine listeden çalışan seçiniz"
+                  placeholder={t(`${dist}.empPh`)}
                   queryKey={['kkd', 'distribution', 'employees']}
                   fetchPage={({ pageNumber, pageSize, search, signal }) =>
                     kkdApi.getEmployees({ pageNumber, pageSize, search }, { signal })
@@ -312,11 +410,13 @@ export function KkdDistributionPage(): ReactElement {
               {submittedHeader ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/20">
                   <div className="flex flex-wrap items-center gap-3">
-                    <Badge variant="outline">Header #{submittedHeader.id}</Badge>
+                    <Badge variant="outline">{t(`${dist}.headerIdBadge`, { id: submittedHeader.id })}</Badge>
                     <Badge>{submittedHeader.status}</Badge>
-                    <Badge variant="secondary">Depo #{submittedHeader.warehouseId}</Badge>
+                    <Badge variant="secondary">{t(`${dist}.warehouseIdBadge`, { id: submittedHeader.warehouseId })}</Badge>
                   </div>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Belge No: {submittedHeader.documentNo || '-'}</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    {t(`${dist}.docNo`)}: {submittedHeader.documentNo || '-'}
+                  </p>
                 </div>
               ) : null}
             </CardContent>
@@ -324,15 +424,15 @@ export function KkdDistributionPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>Kişinin Alabilir Hakları</CardTitle>
+              <CardTitle>{t(`${dist}.entitlementsTitle`)}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {!resolvedEmployee ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Önce çalışan seçildiğinde görev tanımına bağlı grup hakları burada görünür.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.noEmployeePick`)}</p>
               ) : distributionContextQuery.isLoading ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Haklar yükleniyor...</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.entitlementsLoading`)}</p>
               ) : !distributionContextQuery.data?.remainingEntitlements?.length ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Bu kişi için tanımlı aktif grup hakkı bulunamadı.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.noEntitlementGroup`)}</p>
               ) : (
                 <div className="space-y-3">
                   {distributionContextQuery.data.remainingEntitlements.map((item: KkdRemainingEntitlementDto) => (
@@ -340,10 +440,10 @@ export function KkdDistributionPage(): ReactElement {
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge>{item.groupCode}</Badge>
                         {item.suggestedPhaseType ? <Badge variant="secondary">{item.suggestedPhaseType}</Badge> : null}
-                        <Badge variant="outline">İlk Giriş: {item.remainingInitialQuantity}</Badge>
-                        <Badge variant="outline">3 Ay: {item.remainingThreeMonthQuantity}</Badge>
-                        <Badge variant="outline">Rutin: {item.remainingRecurringQuantity}</Badge>
-                        <Badge variant="secondary">Toplam: {item.totalRemainingQuantity}</Badge>
+                        <Badge variant="outline">{t(`${dist}.firstEntry`)}: {item.remainingInitialQuantity}</Badge>
+                        <Badge variant="outline">{t(`${dist}.month3`)}: {item.remainingThreeMonthQuantity}</Badge>
+                        <Badge variant="outline">{t(`${dist}.routine`)}: {item.remainingRecurringQuantity}</Badge>
+                        <Badge variant="secondary">{t(`${dist}.totalRem`)}: {item.totalRemainingQuantity}</Badge>
                       </div>
                       {item.groupName ? <p className="mt-2 font-medium text-slate-900 dark:text-white">{item.groupName}</p> : null}
                       {item.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.message}</p> : null}
@@ -356,15 +456,15 @@ export function KkdDistributionPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>Cariye Bağlı Açık KKD Siparişleri</CardTitle>
+              <CardTitle>{t(`${dist}.openOrdersTitle`)}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {!resolvedEmployee ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Önce çalışan seçildiğinde çalışanın cari kodu ile eşleşen açık siparişler burada listelenir.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.noOpenOrdersContext`)}</p>
               ) : distributionContextQuery.isLoading ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Açık siparişler yükleniyor...</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.openOrdersLoading`)}</p>
               ) : !distributionContextQuery.data?.cariAcikSiparis?.length ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Bu cari için bekleyen açık KKD siparişi bulunamadı.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(`${dist}.noOpenOrderForCustomer`)}</p>
               ) : (
                 <div className="space-y-3">
                   {distributionContextQuery.data.cariAcikSiparis.map((item: KkdCariAcikSiparisDto, index) => (
@@ -372,12 +472,15 @@ export function KkdDistributionPage(): ReactElement {
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge>{item.stockCode}</Badge>
                         {item.groupCode ? <Badge variant="secondary">{item.groupCode}</Badge> : null}
-                        <Badge variant="outline">Fis: {item.documentNo}</Badge>
-                        <Badge variant="outline">Bekleyen: {item.pendingQuantity}</Badge>
-                        {item.warehouseCode != null ? <Badge variant="outline">Depo: {item.warehouseCode}</Badge> : null}
+                        <Badge variant="outline">{t(`${dist}.badgeFis`)}: {item.documentNo}</Badge>
+                        <Badge variant="outline">{t(`${dist}.pending`)}: {item.pendingQuantity}</Badge>
+                        {item.warehouseCode != null ? <Badge variant="outline">{t(`${dist}.whCode`)}: {item.warehouseCode}</Badge> : null}
                       </div>
                       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                        Tarih: {new Date(item.transactionDate).toLocaleDateString('tr-TR')} | Cari: {item.customerCode || resolvedEmployee.customerCode}
+                        {t(`${dist}.orderMeta`, {
+                          d: new Date(item.transactionDate).toLocaleDateString(dateLocale),
+                          c: item.customerCode || resolvedEmployee.customerCode,
+                        })}
                       </p>
                     </div>
                   ))}
@@ -388,16 +491,16 @@ export function KkdDistributionPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>Ürün Okutma</CardTitle>
+              <CardTitle>{t(`${dist}.scanTitle`)}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-[1.4fr_0.6fr_auto]">
                 <div className="space-y-2">
-                  <Label htmlFor="kkd-barcode">Barkod</Label>
-                  <Input id="kkd-barcode" value={barcode} onChange={(e) => setBarcode(e.target.value)} placeholder="Ürün barkodu okutun" />
+                  <Label htmlFor="kkd-barcode">{t(`${dist}.barcode`)}</Label>
+                  <Input id="kkd-barcode" value={barcode} onChange={(e) => setBarcode(e.target.value)} placeholder={t(`${dist}.barcodePh`)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="kkd-qty">Miktar</Label>
+                  <Label htmlFor="kkd-qty">{t(`${dist}.qty`)}</Label>
                   <Input id="kkd-qty" type="number" min="1" step="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                 </div>
                 <div className="flex items-end">
@@ -405,7 +508,7 @@ export function KkdDistributionPage(): ReactElement {
                     if (!selectedWarehouse) return;
                     resolveStockMutation.mutate({ barcode, warehouseId: selectedWarehouse.id });
                   }} disabled={!canResolveStock || resolveStockMutation.isPending}>
-                    Barkodu Çöz
+                    {t(`${dist}.resolveBarcode`)}
                   </Button>
                 </div>
               </div>
@@ -415,11 +518,11 @@ export function KkdDistributionPage(): ReactElement {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge>{resolvedStock.stockCode}</Badge>
                     {resolvedStock.groupCode ? <Badge variant="secondary">{resolvedStock.groupCode}</Badge> : null}
-                    <Badge variant="outline">Bakiye: {resolvedStock.availableQuantity}</Badge>
+                    <Badge variant="outline">{t(`${dist}.stockBalance`)}: {resolvedStock.availableQuantity}</Badge>
                   </div>
                   <p className="mt-3 font-semibold text-slate-900 dark:text-white">{resolvedStock.stockName}</p>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                    Bu stok kodu kaydedildiğinde belge satırına aynen yazılır: <span className="font-medium">{resolvedStock.stockCode}</span>
+                    {t(`${dist}.stockSavedNote`, { code: resolvedStock.stockCode })}
                   </p>
                 </div>
               ) : null}
@@ -428,51 +531,59 @@ export function KkdDistributionPage(): ReactElement {
                 <div className={`rounded-2xl border p-4 ${hasMatchingOpenOrder ? 'border-sky-200 bg-sky-50/60 dark:border-sky-800/40 dark:bg-sky-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={hasMatchingOpenOrder ? 'default' : 'destructive'}>
-                      {hasMatchingOpenOrder ? 'Açık Siparişte Var' : 'Açık Siparişte Yok'}
+                      {hasMatchingOpenOrder ? t(`${dist}.openOrderY`) : t(`${dist}.openOrderN`)}
                     </Badge>
-                    <Badge variant="outline">Stok: {resolvedStock.stockCode}</Badge>
-                    {resolvedStock.groupCode ? <Badge variant="secondary">Grup: {resolvedStock.groupCode}</Badge> : null}
-                    <Badge variant="outline">Bekleyen: {totalOpenOrderPendingQuantity}</Badge>
+                    <Badge variant="outline">{t(`${dist}.stockPrefix`)}: {resolvedStock.stockCode}</Badge>
+                    {resolvedStock.groupCode ? <Badge variant="secondary">{t(`${dist}.groupPrefix`)}: {resolvedStock.groupCode}</Badge> : null}
+                    <Badge variant="outline">{t(`${dist}.pending`)}: {totalOpenOrderPendingQuantity}</Badge>
                   </div>
                   {openOrderDocumentNos ? (
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Sipariş Belgeleri: {openOrderDocumentNos}</p>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                      {t(`${dist}.orderDocs`)}: {openOrderDocumentNos}
+                    </p>
                   ) : null}
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                     {hasMatchingOpenOrder
                       ? isWithinOpenOrderQuantity
-                        ? 'Okutulan stok, cariye bağlı açık KKD siparişinde yer alıyor ve miktar sınırı aşılmıyor.'
-                        : `Girilen miktar açık sipariş bekleyen miktarını aşıyor. En fazla ${totalOpenOrderPendingQuantity} adet alınabilir.`
-                      : 'Bu stok kodu, cariye bağlı açık KKD siparişleri içinde bulunmuyor.'}
+                        ? t(`${dist}.matchOk`)
+                        : t(`${dist}.matchQty`, { max: totalOpenOrderPendingQuantity })
+                      : t(`${dist}.matchNo`)}
                   </p>
                 </div>
               ) : null}
 
               {entitlementResult ? (
-                <div className={`rounded-2xl border p-4 ${entitlementResult.allowed ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-800/40 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
+                <div className={`rounded-2xl border p-4 ${(entitlementResult.allowed || canIssueByOpenOrderOnly) ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-800/40 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={(entitlementResult.allowed || canIssueAsExcess) ? 'default' : 'destructive'}>
-                      {(entitlementResult.allowed || canIssueAsExcess) ? 'Hak Uygun' : 'Hak Yetersiz'}
+                    <Badge variant={(entitlementResult.allowed || canIssueAsExcess || canIssueByOpenOrderOnly) ? 'default' : 'destructive'}>
+                      {entitlementResult.allowed
+                        ? t(`${dist}.entOk`)
+                        : canIssueByOpenOrderOnly
+                          ? t(`${dist}.openOrderOverride`)
+                          : canIssueAsExcess
+                            ? t(`${dist}.entOk`)
+                            : t(`${dist}.entNo`)}
                     </Badge>
-                    {entitlementResult.activePhaseLabel ? <Badge variant="secondary">Aktif Faz: {entitlementResult.activePhaseLabel}</Badge> : null}
-                    <Badge variant="outline">İlk Giriş: {entitlementResult.remainingInitialQuantity}</Badge>
-                    <Badge variant="outline">3 Ay: {entitlementResult.remainingThreeMonthQuantity}</Badge>
-                    <Badge variant="outline">Rutin: {entitlementResult.remainingRecurringQuantity}</Badge>
-                    <Badge variant="outline">Ek: {entitlementResult.remainingAdditionalQuantity}</Badge>
-                    <Badge variant="secondary">Toplam: {entitlementResult.totalRemainingQuantity}</Badge>
-                    {excessQuantity > 0 ? <Badge variant="destructive">Fazla Alım: {excessQuantity}</Badge> : null}
+                    {entitlementResult.activePhaseLabel ? <Badge variant="secondary">{t(`${dist}.activePhase`)}: {entitlementResult.activePhaseLabel}</Badge> : null}
+                    <Badge variant="outline">{t(`${dist}.firstEntry`)}: {entitlementResult.remainingInitialQuantity}</Badge>
+                    <Badge variant="outline">{t(`${dist}.month3`)}: {entitlementResult.remainingThreeMonthQuantity}</Badge>
+                    <Badge variant="outline">{t(`${dist}.routine`)}: {entitlementResult.remainingRecurringQuantity}</Badge>
+                    <Badge variant="outline">{t(`${dist}.extraH`)}: {entitlementResult.remainingAdditionalQuantity}</Badge>
+                    <Badge variant="secondary">{t(`${dist}.totalRem`)}: {entitlementResult.totalRemainingQuantity}</Badge>
+                    {excessQuantity > 0 ? <Badge variant="destructive">{t(`${dist}.excessIssue`)}: {excessQuantity}</Badge> : null}
                   </div>
                   <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
                     <p>
-                      Okutulan stok: <span className="font-medium">{entitlementResult.resolvedStockCode || resolvedStock?.stockCode || '-'}</span>
+                      {t(`${dist}.readStock`)}: <span className="font-medium">{entitlementResult.resolvedStockCode || resolvedStock?.stockCode || '-'}</span>
                       {entitlementResult.resolvedStockName ? ` - ${entitlementResult.resolvedStockName}` : ''}
                     </p>
                     <p className="mt-1">
-                      Okutulan grup: <span className="font-medium">{entitlementResult.requestedGroupCode || resolvedStock?.groupCode || '-'}</span>
+                      {t(`${dist}.readGroup`)}: <span className="font-medium">{entitlementResult.requestedGroupCode || resolvedStock?.groupCode || '-'}</span>
                       {' | '}
-                      Hak grubu: <span className="font-medium">{entitlementResult.matchedGroupCode || '-'}</span>
+                      {t(`${dist}.entGroup`)}: <span className="font-medium">{entitlementResult.matchedGroupCode || '-'}</span>
                       {' | '}
-                      Durum: <span className={`font-medium ${entitlementResult.isGroupCodeMatched ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`}>
-                        {entitlementResult.isGroupCodeMatched ? 'Uyumlu' : 'Uyumsuz'}
+                      {t(`${dist}.stateLabel`)}: <span className={`font-medium ${entitlementResult.isGroupCodeMatched ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`}>
+                        {entitlementResult.isGroupCodeMatched ? t(`${dist}.matchY`) : t(`${dist}.matchN`)}
                       </span>
                     </p>
                     {entitlementResult.groupMatchMessage ? (
@@ -481,10 +592,13 @@ export function KkdDistributionPage(): ReactElement {
                   </div>
                   {entitlementResult.eligibilityExplanation ? <p className="mt-3 text-sm">{entitlementResult.eligibilityExplanation}</p> : null}
                   {entitlementResult.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{entitlementResult.message}</p> : null}
-                  {(entitlementResult.allowed || canIssueAsExcess) && resolvedStock ? (
+                  {(entitlementResult.allowed || canIssueAsExcess || canIssueByOpenOrderOnly) && resolvedStock ? (
                     <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
-                      <p>Bu satır için hak kullanılacak miktar: <span className="font-medium">{entitledQuantity}</span></p>
-                      <p className="mt-1">Fazla alım olarak işaretlenecek miktar: <span className="font-medium">{excessQuantity}</span></p>
+                      <p>{t(`${dist}.entQtyLine`)}: <span className="font-medium">{entitledQuantity}</span></p>
+                      <p className="mt-1">{t(`${dist}.entExcessLine`)}: <span className="font-medium">{excessQuantity}</span></p>
+                      {canIssueByOpenOrderOnly ? (
+                        <p className="mt-1 text-slate-600 dark:text-slate-300">{t(`${dist}.openOrderIssueSummary`)}</p>
+                      ) : null}
                     </div>
                   ) : null}
                   {entitlementResult.phaseStatuses?.length ? (
@@ -493,11 +607,11 @@ export function KkdDistributionPage(): ReactElement {
                         <div key={phase.phaseType} className={`rounded-xl border p-3 ${phase.isCurrentPhase ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]'}`}>
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={phase.isCurrentPhase ? 'default' : 'outline'}>{phase.phaseLabel}</Badge>
-                            {phase.isAllowed ? <Badge variant="secondary">Kullanılabilir</Badge> : null}
+                            {phase.isAllowed ? <Badge variant="secondary">{t(`${dist}.phaseUsable`)}</Badge> : null}
                           </div>
-                          <p className="mt-2 text-sm">Tanımlı: {phase.definedQuantity}</p>
-                          <p className="text-sm">Kalan: {phase.remainingQuantity}</p>
-                          {phase.frequencyDays ? <p className="text-sm">Frekans: {phase.frequencyDays} gün / {phase.quantityPerFrequency ?? 0}</p> : null}
+                          <p className="mt-2 text-sm">{t(`${dist}.defined`)}: {phase.definedQuantity}</p>
+                          <p className="text-sm">{t(`${dist}.remain`)}: {phase.remainingQuantity}</p>
+                          {phase.frequencyDays ? <p className="text-sm">{t(`${dist}.frequencyLine`, { days: phase.frequencyDays, qty: phase.quantityPerFrequency ?? 0 })}</p> : null}
                           {phase.message ? <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">{phase.message}</p> : null}
                         </div>
                       ))}
@@ -508,13 +622,18 @@ export function KkdDistributionPage(): ReactElement {
 
               {selectedGroupEntitlement && !entitlementResult ? (
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/5">
-                  Bu grupta mevcut hak: İlk Giriş {selectedGroupEntitlement.remainingInitialQuantity}, 3 Ay {selectedGroupEntitlement.remainingThreeMonthQuantity}, Rutin {selectedGroupEntitlement.remainingRecurringQuantity}, Toplam {selectedGroupEntitlement.totalRemainingQuantity}.
+                  {t(`${dist}.groupEntSummary`, {
+                    a: selectedGroupEntitlement.remainingInitialQuantity,
+                    b: selectedGroupEntitlement.remainingThreeMonthQuantity,
+                    c: selectedGroupEntitlement.remainingRecurringQuantity,
+                    total: selectedGroupEntitlement.totalRemainingQuantity,
+                  })}
                 </div>
               ) : null}
 
               <div className="flex flex-wrap gap-2">
                 <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>
-                  Satıra Ekle
+                  {t(`${dist}.addLine`)}
                 </Button>
               </div>
             </CardContent>
@@ -524,12 +643,12 @@ export function KkdDistributionPage(): ReactElement {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Dağıtım Sepeti</CardTitle>
+              <CardTitle>{t(`${dist}.cartTitle`)}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline">Satır: {cartLines.length}</Badge>
-                <Badge variant="secondary">Toplam Miktar: {totalLineQuantity}</Badge>
+                <Badge variant="outline">{t(`${dist}.lineN`)}: {cartLines.length}</Badge>
+                <Badge variant="secondary">{t(`${dist}.totalQ`)}: {totalLineQuantity}</Badge>
               </div>
 
               <div className="space-y-3">
@@ -539,14 +658,23 @@ export function KkdDistributionPage(): ReactElement {
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">{line.stockCode} - {line.stockName}</p>
                         <p className="text-sm text-slate-600 dark:text-slate-300">
-                          Grup: {line.groupCode || '-'} | Miktar: {line.quantity} | Faz: {line.entitlement.activePhaseLabel || '-'}
+                          {t(`${dist}.lineSummary`, {
+                            g: line.groupCode || '-',
+                            q: line.quantity,
+                            p: line.entitlement.activePhaseLabel || (line.entitledQuantity <= 0 && line.excessQuantity > 0 ? t(`${dist}.openOrderOverride`) : '-'),
+                          })}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-300">
-                          Açık Sipariş: {line.openOrderDocumentNos || '-'} | Bekleyen: {line.openOrderPendingQuantity}
+                          {t(`${dist}.lineOpen`, { d: line.openOrderDocumentNos || '-', p: line.openOrderPendingQuantity })}
                         </p>
                         {line.isExcessIssue ? (
                           <p className="text-sm font-medium text-amber-600 dark:text-amber-300">
-                            Hak: {line.entitledQuantity} | Fazla Alım: {line.excessQuantity}
+                            {t(`${dist}.lineExcess`, { e: line.entitledQuantity, x: line.excessQuantity })}
+                          </p>
+                        ) : null}
+                        {line.entitledQuantity <= 0 && line.excessQuantity > 0 && line.openOrderPendingQuantity > 0 ? (
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            {t(`${dist}.lineOpenOrderOnly`)}
                           </p>
                         ) : null}
                       </div>
@@ -556,24 +684,24 @@ export function KkdDistributionPage(): ReactElement {
                         size="sm"
                         onClick={() => setCartLines((prev) => prev.filter((item) => item.clientId !== line.clientId))}
                       >
-                        Satırı Sil
+                        {t(`${dist}.removeLine`)}
                       </Button>
                     </div>
                   </div>
                 ))}
                 {!cartLines.length ? (
                   <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                    Henüz satır eklenmedi.
+                    {t(`${dist}.emptyCart`)}
                   </div>
                 ) : null}
               </div>
 
               <div className="flex flex-wrap gap-2">
                 <Button type="button" onClick={() => submitMutation.mutate()} disabled={!cartLines.length || submitMutation.isPending}>
-                  Kaydet ve Tamamla
+                  {t(`${dist}.saveSubmit`)}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setCartLines([])} disabled={!cartLines.length}>
-                  Sepeti Temizle
+                  {t(`${dist}.clearCart`)}
                 </Button>
               </div>
             </CardContent>

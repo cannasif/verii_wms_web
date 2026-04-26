@@ -346,7 +346,7 @@ export function OutsideWarehousePage(): ReactElement {
                         <div className="mt-1 font-medium text-white">{selectedItem.serialNo}</div>
                       </div>
                       <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">D-KODU</div>
+                        <div className="text-slate-400">{t('inventory.outsideWarehouse.dCode')}</div>
                         <div className="mt-1 font-medium text-white">{selectedItem.dCode}</div>
                       </div>
                       <div className="rounded-xl border border-white/10 p-3">

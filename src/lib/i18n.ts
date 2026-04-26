@@ -79,7 +79,8 @@ for (const [path, loader] of Object.entries(featureModules)) {
 const DEFAULT_LANGUAGE = 'tr';
 const DEFAULT_NAMESPACE = 'translation';
 const COMMON_NAMESPACE = 'common';
-const STORAGE_KEY = 'i18nextLng';
+const STORAGE_KEY_LEGACY = 'i18nextLng';
+const STORAGE_KEY_WMS = 'wms-app-language';
 const fallbackLng = DEFAULT_LANGUAGE;
 const COMMON_RESOURCES = {
   tr: trCommon,
@@ -96,14 +97,24 @@ const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unkn
 
 type SupportedLanguage = (typeof supportedLngs)[number];
 
+const LOCALE_BY_LANGUAGE: Record<SupportedLanguage, string> = {
+  tr: 'tr-TR',
+  en: 'en-GB',
+  de: 'de-DE',
+  fr: 'fr-FR',
+  ar: 'ar',
+  es: 'es-ES',
+  it: 'it-IT',
+};
+
 const toCamelCase = (value: string): string =>
   value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
 
-function resolveMissingKey(_key: string, defaultValue?: string): string {
+function resolveMissingKey(key: string, defaultValue?: string): string {
   if (typeof defaultValue === 'string' && defaultValue.length > 0) {
     return defaultValue;
   }
-  return 'Missing translation';
+  return key;
 }
 
 function withNamespaceCompatibility(
@@ -149,16 +160,53 @@ export function normalizeLanguage(language: string | null | undefined): Supporte
 
 export const SUPPORTED_LANGUAGES = supportedLngs as SupportedLanguage[];
 
+export function getLocaleForFormatting(language: string | null | undefined): string {
+  return LOCALE_BY_LANGUAGE[normalizeLanguage(language)];
+}
+
+export function getLanguageForHttpHeader(): SupportedLanguage {
+  if (typeof window === 'undefined') {
+    return normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
+  }
+  return normalizeLanguage(readPersistedLanguage() ?? i18n.resolvedLanguage ?? i18n.language);
+}
+
+function syncDocumentLanguage(language: SupportedLanguage): void {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.documentElement.lang = language;
+}
+
+function persistLanguage(language: SupportedLanguage): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(STORAGE_KEY_WMS, language);
+  window.localStorage.setItem(STORAGE_KEY_LEGACY, language);
+  syncDocumentLanguage(language);
+}
+
+function readPersistedLanguage(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return window.localStorage.getItem(STORAGE_KEY_WMS) ?? window.localStorage.getItem(STORAGE_KEY_LEGACY);
+}
+
 function getInitialLanguage(): SupportedLanguage {
   if (typeof window === 'undefined') {
     return DEFAULT_LANGUAGE;
   }
 
-  const persisted = window.localStorage.getItem(STORAGE_KEY);
+  const persisted = readPersistedLanguage();
   const normalizedPersisted = normalizeLanguage(persisted);
 
   if (persisted && normalizedPersisted !== persisted) {
-    window.localStorage.setItem(STORAGE_KEY, normalizedPersisted);
+    persistLanguage(normalizedPersisted);
   }
 
   if (persisted) {
@@ -169,6 +217,7 @@ function getInitialLanguage(): SupportedLanguage {
 }
 
 const initialLng = getInitialLanguage();
+syncDocumentLanguage(initialLng);
 
 function rebuildLanguageResources(lang: string): void {
   const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
@@ -277,9 +326,7 @@ const initPromise = (async () => {
 })();
 
 i18n.on('languageChanged', async (language) => {
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(STORAGE_KEY, normalizeLanguage(language));
-  }
+  persistLanguage(normalizeLanguage(language));
 
   await ensureNamespaces(PRELOADED_NAMESPACES, language);
 });
@@ -291,15 +338,15 @@ export async function ensureI18nReady(): Promise<void> {
 export async function setAppLanguage(language: string): Promise<void> {
   const normalizedLanguage = normalizeLanguage(language);
 
+  persistLanguage(normalizedLanguage);
+
   await loadLanguage(normalizedLanguage);
 
   if (i18n.language !== normalizedLanguage || i18n.resolvedLanguage !== normalizedLanguage) {
     await i18n.changeLanguage(normalizedLanguage);
   }
 
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(STORAGE_KEY, normalizedLanguage);
-  }
+  persistLanguage(normalizedLanguage);
 }
 
 export { COMMON_NAMESPACE, DEFAULT_NAMESPACE, PRELOADED_NAMESPACES };

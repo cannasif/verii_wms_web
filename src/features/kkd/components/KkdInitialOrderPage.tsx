@@ -12,15 +12,22 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdOrderSubmissionLineDto, KkdEmployeeDto, KkdOrderContextDto, KkdOrderHeaderDto, KkdOrderStockOptionDto, KkdResolvedEmployeeDto } from '../types/kkd.types';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 type LocalOrderLine = CreateKkdOrderSubmissionLineDto & { clientId: string };
 
 export function KkdInitialOrderPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { setPageTitle } = useUIStore();
+  const dateLocale = getLocaleForFormatting(i18n.language);
   const authUserId = useAuthStore((state) => state.user?.id ?? null);
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const prefilledEmployeeId = Number(searchParams.get('employeeId') || 0) || null;
+  const routeState = location.state as { resolvedEmployee?: KkdResolvedEmployeeDto | null; employeeQr?: string | null } | null;
 
   const [employeeQr, setEmployeeQr] = useState('');
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);
@@ -33,9 +40,9 @@ export function KkdInitialOrderPage(): ReactElement {
   const [submittedHeader, setSubmittedHeader] = useState<KkdOrderHeaderDto | null>(null);
 
   useEffect(() => {
-    setPageTitle('KKD Ilk Giris Siparisi');
+    setPageTitle(t('kkd.operational.initialOrder.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const contextQuery = useQuery<KkdOrderContextDto>({
     queryKey: ['kkd', 'order', 'context', resolvedEmployee?.employeeId],
@@ -56,6 +63,19 @@ export function KkdInitialOrderPage(): ReactElement {
     enabled: Boolean(authUserId),
   });
 
+  const prefilledEmployeeQuery = useQuery({
+    queryKey: ['kkd', 'order', 'prefill-employee', prefilledEmployeeId],
+    queryFn: async () => {
+      const result = await kkdApi.getEmployees({
+        pageNumber: 1,
+        pageSize: 1,
+        filters: [{ column: 'Id', operator: 'eq', value: String(prefilledEmployeeId) }],
+      });
+      return result.data[0] ?? null;
+    },
+    enabled: Boolean(prefilledEmployeeId && !routeState?.resolvedEmployee && !resolvedEmployee),
+  });
+
   const resolveQrMutation = useMutation({
     mutationFn: kkdApi.resolveEmployeeQr,
     onSuccess: (data) => {
@@ -64,7 +84,7 @@ export function KkdInitialOrderPage(): ReactElement {
       setSelectedStock(null);
       setCartLines([]);
       setSubmittedHeader(null);
-      toast.success('Calisan bulundu');
+      toast.success(t('kkd.operational.initialOrder.toastEmployeeFound'));
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
@@ -72,7 +92,7 @@ export function KkdInitialOrderPage(): ReactElement {
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!resolvedEmployee || cartLines.length === 0) {
-        throw new Error('Calisan ve en az bir satir gereklidir');
+        throw new Error(t('kkd.operational.initialOrder.errNeedLines'));
       }
 
       return kkdApi.submitOrder({
@@ -88,7 +108,7 @@ export function KkdInitialOrderPage(): ReactElement {
       setSelectedStock(null);
       setQuantity('1');
       contextQuery.refetch();
-      toast.success('KKD ilk giris siparisi olusturuldu');
+      toast.success(t('kkd.operational.initialOrder.toastOrderCreated'));
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
@@ -104,6 +124,22 @@ export function KkdInitialOrderPage(): ReactElement {
   );
   const remainingAfterCart = Math.max(0, (selectedGroup?.remainingInitialQuantity ?? 0) - alreadyRequestedForGroup);
   const canAddLine = Boolean(selectedGroup && selectedStock && requestedQuantity > 0 && requestedQuantity <= remainingAfterCart);
+
+  useEffect(() => {
+    if (routeState?.resolvedEmployee && !resolvedEmployee) {
+      setResolvedEmployee(routeState.resolvedEmployee);
+      setEmployeeQr(routeState.employeeQr ?? '');
+    }
+  }, [resolvedEmployee, routeState]);
+
+  useEffect(() => {
+    if (!prefilledEmployeeQuery.data || resolvedEmployee) {
+      return;
+    }
+
+    setResolvedEmployee(mapEmployee(prefilledEmployeeQuery.data));
+    setEmployeeQr(prefilledEmployeeQuery.data.qrCode);
+  }, [prefilledEmployeeQuery.data, resolvedEmployee]);
 
   function mapEmployee(item: KkdEmployeeDto): KkdResolvedEmployeeDto {
     return {
@@ -122,7 +158,7 @@ export function KkdInitialOrderPage(): ReactElement {
 
   function handleSelfSelect(): void {
     if (!currentEmployeeQuery.data) {
-      toast.error('Bu kullanici icin KKD calisan kaydi bulunamadi');
+      toast.error(t('kkd.operational.initialOrder.errNoEmployee'));
       return;
     }
 
@@ -153,38 +189,52 @@ export function KkdInitialOrderPage(): ReactElement {
 
     setSelectedStock(null);
     setQuantity('1');
-    toast.success('Satir eklendi');
+    toast.success(t('kkd.operational.initialOrder.toastLineAdded'));
   }
 
   return (
     <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: 'Operasyonlar' }, { label: 'KKD Ilk Giris Siparisi', isActive: true }]} />
+      <Breadcrumb
+        items={[
+          { label: t('sidebar.operationsGroup') },
+          { label: t('kkd.operational.initialOrder.breadcrumb'), isActive: true },
+        ]}
+      />
       <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="space-y-6">
           <Card>
-            <CardHeader><CardTitle>Calisan Secimi</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('kkd.operational.initialOrder.cardEmployee')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-[1fr_auto_auto]">
                 <div className="space-y-2">
-                  <Label htmlFor="kkd-order-qr">QR Kodu</Label>
-                  <Input id="kkd-order-qr" value={employeeQr} onChange={(e) => setEmployeeQr(e.target.value)} placeholder="Calisan QR kodu okutun" />
+                  <Label htmlFor="kkd-order-qr">{t('kkd.operational.initialOrder.qrLabel')}</Label>
+                  <Input
+                    id="kkd-order-qr"
+                    value={employeeQr}
+                    onChange={(e) => setEmployeeQr(e.target.value)}
+                    placeholder={t('kkd.operational.initialOrder.qrPlaceholder')}
+                  />
                 </div>
                 <div className="flex items-end">
-                  <Button type="button" onClick={() => resolveQrMutation.mutate({ qrCode: employeeQr })} disabled={!employeeQr.trim() || resolveQrMutation.isPending}>QR Coz</Button>
+                  <Button type="button" onClick={() => resolveQrMutation.mutate({ qrCode: employeeQr })} disabled={!employeeQr.trim() || resolveQrMutation.isPending}>
+                    {t('kkd.operational.initialOrder.resolveQr')}
+                  </Button>
                 </div>
                 <div className="flex items-end">
-                  <Button type="button" variant="outline" onClick={handleSelfSelect} disabled={!authUserId || currentEmployeeQuery.isLoading}>Beni Sec</Button>
+                  <Button type="button" variant="outline" onClick={handleSelfSelect} disabled={!authUserId || currentEmployeeQuery.isLoading}>
+                    {t('kkd.operational.initialOrder.selectMe')}
+                  </Button>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>Alternatif Calisan Secimi</Label>
+                <Label>{t('kkd.operational.initialOrder.altEmployee')}</Label>
                 <PagedLookupDialog<KkdEmployeeDto>
                   open={employeeDialogOpen}
                   onOpenChange={setEmployeeDialogOpen}
-                  title="Calisan Sec"
+                  title={t('kkd.operational.initialOrder.selectEmployeeDialog')}
                   value={resolvedEmployee ? `${resolvedEmployee.employeeCode} - ${resolvedEmployee.fullName}` : null}
-                  placeholder="Listeden calisan seciniz"
+                  placeholder={t('kkd.operational.initialOrder.selectEmployeePlaceholder')}
                   queryKey={['kkd', 'order', 'employees']}
                   fetchPage={({ pageNumber, pageSize, search, signal }) => kkdApi.getEmployees({ pageNumber, pageSize, search }, { signal })}
                   getKey={(item) => String(item.id)}
@@ -209,19 +259,26 @@ export function KkdInitialOrderPage(): ReactElement {
                     {resolvedEmployee.roleName ? <Badge variant="outline">{resolvedEmployee.roleName}</Badge> : null}
                   </div>
                   <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{resolvedEmployee.fullName}</p>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Ise giris: {contextQuery.data?.employmentStartDate ? new Date(contextQuery.data.employmentStartDate).toLocaleDateString('tr-TR') : '-'}</p>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    {t('kkd.operational.initialOrder.employmentStart')}:{' '}
+                    {contextQuery.data?.employmentStartDate
+                      ? new Date(contextQuery.data.employmentStartDate).toLocaleDateString(dateLocale)
+                      : '-'}
+                  </p>
                 </div>
               ) : null}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Ilk Giris Haklari ve Stok Secimi</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('kkd.operational.initialOrder.cardStock')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Hak Grubu</Label>
+                <Label>{t('kkd.operational.initialOrder.entitlementGroup')}</Label>
                 <Select value={selectedGroupCode} onValueChange={(value) => { setSelectedGroupCode(value); setSelectedStock(null); }}>
-                  <SelectTrigger><SelectValue placeholder="Ilk giris hakkindan grup seciniz" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('kkd.operational.initialOrder.groupPlaceholder')} />
+                  </SelectTrigger>
                   <SelectContent>
                     {(contextQuery.data?.eligibleGroups ?? []).map((group) => (
                       <SelectItem key={group.groupCode} value={group.groupCode}>
@@ -236,22 +293,26 @@ export function KkdInitialOrderPage(): ReactElement {
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/5">
                   <div className="flex flex-wrap gap-2">
                     <Badge>{selectedGroup.groupCode}</Badge>
-                    <Badge variant="secondary">Ilk Giris Hakkı: {selectedGroup.remainingInitialQuantity}</Badge>
-                    <Badge variant="outline">Sepette Kalan: {remainingAfterCart}</Badge>
+                    <Badge variant="secondary">
+                      {t('kkd.operational.initialOrder.initialEntitlement')}: {selectedGroup.remainingInitialQuantity}
+                    </Badge>
+                    <Badge variant="outline">
+                      {t('kkd.operational.initialOrder.remainingInCart')}: {remainingAfterCart}
+                    </Badge>
                   </div>
                 </div>
               ) : null}
 
               <div className="grid gap-4 md:grid-cols-[1.2fr_0.5fr_auto]">
                 <div className="space-y-2">
-                  <Label>Stok</Label>
+                  <Label>{t('kkd.operational.initialOrder.stockLabel')}</Label>
                   <PagedLookupDialog<KkdOrderStockOptionDto>
                     open={stockDialogOpen}
                     onOpenChange={setStockDialogOpen}
-                    title="Stok Sec"
+                    title={t('kkd.operational.initialOrder.selectStock')}
                     value={selectedStock ? `${selectedStock.stockCode} - ${selectedStock.stockName}` : null}
-                    placeholder={selectedGroupCode ? 'Gruba bagli stok seciniz' : 'Once grup seciniz'}
-                    searchPlaceholder="Stok kodu veya adina gore ara"
+                    placeholder={selectedGroupCode ? t('kkd.operational.initialOrder.groupStockPlaceholder') : t('kkd.operational.initialOrder.selectGroupFirst')}
+                    searchPlaceholder={t('kkd.operational.initialOrder.stockSearchPlaceholder')}
                     queryKey={['kkd', 'order', 'stocks', selectedGroupCode]}
                     disabled={!selectedGroupCode}
                     fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -263,11 +324,13 @@ export function KkdInitialOrderPage(): ReactElement {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Miktar</Label>
+                  <Label>{t('common.quantity')}</Label>
                   <Input type="number" min="1" step="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                 </div>
                 <div className="flex items-end">
-                  <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>Ekle</Button>
+                  <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>
+                    {t('kkd.operational.initialOrder.add')}
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -276,46 +339,66 @@ export function KkdInitialOrderPage(): ReactElement {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader><CardTitle>Order Header / Line</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('kkd.operational.initialOrder.cardOrder')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm dark:border-white/10">
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Satir: {cartLines.length}</Badge>
-                  <Badge variant="outline">Toplam Miktar: {cartLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0)}</Badge>
+                  <Badge variant="outline">
+                    {t('kkd.operational.initialOrder.lineCount')}: {cartLines.length}
+                  </Badge>
+                  <Badge variant="outline">
+                    {t('kkd.operational.initialOrder.totalQty')}: {cartLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0)}
+                  </Badge>
                 </div>
               </div>
 
               <div className="space-y-3">
                 {cartLines.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-slate-300 p-5 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">Henuz satir eklenmedi.</div>
+                  <div className="rounded-2xl border border-dashed border-slate-300 p-5 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    {t('kkd.operational.initialOrder.noLines')}
+                  </div>
                 ) : cartLines.map((line) => (
                   <div key={line.clientId} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                     <div className="flex flex-wrap gap-2">
                       <Badge>{line.groupCode}</Badge>
                       <Badge variant="secondary">{line.stockCode}</Badge>
-                      <Badge variant="outline">Miktar: {line.quantity}</Badge>
+                      <Badge variant="outline">
+                        {t('common.quantity')}: {line.quantity}
+                      </Badge>
                     </div>
                     <p className="mt-2 font-medium text-slate-900 dark:text-white">{line.stockName}</p>
                     <div className="mt-3 flex justify-end">
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setCartLines((prev) => prev.filter((item) => item.clientId !== line.clientId))}>Kaldir</Button>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setCartLines((prev) => prev.filter((item) => item.clientId !== line.clientId))}>
+                        {t('kkd.operational.initialOrder.remove')}
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="flex gap-3">
-                <Button type="button" onClick={() => submitMutation.mutate()} disabled={!resolvedEmployee || cartLines.length === 0 || submitMutation.isPending}>Kaydet</Button>
-                <Button type="button" variant="outline" onClick={() => setCartLines([])} disabled={cartLines.length === 0}>Sepeti Temizle</Button>
+                <Button type="button" onClick={() => submitMutation.mutate()} disabled={!resolvedEmployee || cartLines.length === 0 || submitMutation.isPending}>
+                  {t('kkd.operational.initialOrder.save')}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setCartLines([])} disabled={cartLines.length === 0}>
+                  {t('kkd.operational.initialOrder.clearCart')}
+                </Button>
               </div>
 
               {submittedHeader ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 text-sm dark:border-emerald-800/40 dark:bg-emerald-950/20">
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">Header #{submittedHeader.id}</Badge>
+                    <Badge variant="outline">
+                      {t('kkd.operational.initialOrder.headerPrefix')} #{submittedHeader.id}
+                    </Badge>
                     <Badge>{submittedHeader.status}</Badge>
                   </div>
-                  <p className="mt-2">Belge No: {submittedHeader.documentNo || '-'}</p>
-                  <p className="mt-1">Kalem: {submittedHeader.lines.length}</p>
+                  <p className="mt-2">
+                    {t('kkd.operational.initialOrder.documentNo')}: {submittedHeader.documentNo || '-'}
+                  </p>
+                  <p className="mt-1">
+                    {t('kkd.operational.initialOrder.lineCountN')}: {submittedHeader.lines.length}
+                  </p>
                 </div>
               ) : null}
             </CardContent>

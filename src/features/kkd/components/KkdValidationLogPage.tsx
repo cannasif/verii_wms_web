@@ -1,10 +1,12 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
@@ -43,12 +45,8 @@ function mapSortBy(value: ValidationColumnKey): string {
   }
 }
 
-function formatDate(value?: string | null): string {
-  if (!value) return '-';
-  return new Date(value).toLocaleString('tr-TR');
-}
-
 export function KkdValidationLogPage(): ReactElement {
+  const { t, i18n } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const [selectedRow, setSelectedRow] = useState<KkdValidationLogDto | null>(null);
   const pagedGrid = usePagedDataGrid<ValidationColumnKey>({
@@ -59,10 +57,18 @@ export function KkdValidationLogPage(): ReactElement {
     mapSortBy,
   });
 
+  const formatDate = useCallback(
+    (value?: string | null): string => {
+      if (!value) return '-';
+      return new Date(value).toLocaleString(getLocaleForFormatting(i18n.language));
+    },
+    [i18n.language],
+  );
+
   useEffect(() => {
-    setPageTitle('KKD Validation Log');
+    setPageTitle(t('kkd.operational.validationLog.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const query = useQuery({
     queryKey: ['kkd', 'validation-logs', pagedGrid.queryParams],
@@ -75,26 +81,31 @@ export function KkdValidationLogPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<ValidationColumnKey>[]>(
     () => [
-      { key: 'createdDate', label: 'Zaman' },
-      { key: 'employee', label: 'Çalışan' },
-      { key: 'customerCode', label: 'Cari' },
-      { key: 'stock', label: 'Stok' },
-      { key: 'groupCode', label: 'Grup' },
-      { key: 'attemptedQuantity', label: 'Miktar' },
-      { key: 'reasonCode', label: 'Kod' },
-      { key: 'reasonMessage', label: 'Açıklama' },
+      { key: 'createdDate', label: t('kkd.operational.validationLog.time') },
+      { key: 'employee', label: t('kkd.operational.validationLog.employee') },
+      { key: 'customerCode', label: t('kkd.operational.validationLog.account') },
+      { key: 'stock', label: t('kkd.operational.validationLog.stock') },
+      { key: 'groupCode', label: t('kkd.operational.validationLog.group') },
+      { key: 'attemptedQuantity', label: t('kkd.operational.validationLog.qty') },
+      { key: 'reasonCode', label: t('kkd.operational.validationLog.code') },
+      { key: 'reasonMessage', label: t('kkd.operational.validationLog.desc') },
     ],
-    [],
+    [t],
   );
 
   return (
     <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: 'Operasyonlar' }, { label: 'KKD Validation Log', isActive: true }]} />
+      <Breadcrumb
+        items={[
+          { label: t('sidebar.operationsGroup') },
+          { label: t('kkd.operational.validationLog.breadcrumb'), isActive: true },
+        ]}
+      />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Validation Kayıtları</CardTitle>
+            <CardTitle>{t('kkd.operational.validationLog.gridTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             <PagedDataGrid<KkdValidationLogDto, ValidationColumnKey>
@@ -107,11 +118,15 @@ export function KkdValidationLogPage(): ReactElement {
                   case 'createdDate':
                     return formatDate(row.createdDate);
                   case 'employee':
-                    return row.employeeCode ? `${row.employeeCode} - ${row.employeeName || ''}`.trim() : row.employeeName || '-';
+                    return row.employeeCode
+                      ? `${row.employeeCode} - ${row.employeeName || ''}`.trim()
+                      : row.employeeName || '-';
                   case 'customerCode':
                     return row.customerCode || '-';
                   case 'stock':
-                    return row.stockCode ? `${row.stockCode} - ${row.stockName || ''}`.trim() : row.stockName || '-';
+                    return row.stockCode
+                      ? `${row.stockCode} - ${row.stockName || ''}`.trim()
+                      : row.stockName || '-';
                   case 'groupCode':
                     return row.groupCode || '-';
                   case 'attemptedQuantity':
@@ -137,18 +152,18 @@ export function KkdValidationLogPage(): ReactElement {
               hasNextPage={query.data?.hasNextPage ?? false}
               onPreviousPage={pagedGrid.goToPreviousPage}
               onNextPage={pagedGrid.goToNextPage}
-              previousLabel="Önceki"
-              nextLabel="Sonraki"
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
               paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
               isLoading={query.isLoading}
               isError={query.isError}
-              errorText="Validation log yüklenemedi."
-              emptyText="Validation kaydı bulunamadı."
+              errorText={t('kkd.operational.validationLog.errLoad')}
+              emptyText={t('kkd.operational.validationLog.empty')}
               search={{
                 value: pagedGrid.searchInput,
                 onValueChange: pagedGrid.searchConfig.onValueChange,
                 onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: 'Çalışan, stok, grup veya hata kodu ara',
+                placeholder: t('kkd.operational.validationLog.searchPh'),
               }}
             />
           </CardContent>
@@ -156,7 +171,7 @@ export function KkdValidationLogPage(): ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle>Kayıt Detayı</CardTitle>
+            <CardTitle>{t('kkd.operational.validationLog.detailTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {selectedRow ? (
@@ -169,34 +184,49 @@ export function KkdValidationLogPage(): ReactElement {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Çalışan / Cari</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                      {t('kkd.operational.validationLog.employeeCust')}
+                    </p>
                     <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {(selectedRow.employeeCode || selectedRow.employeeName) ? `${selectedRow.employeeCode || ''} ${selectedRow.employeeName || ''}`.trim() : '-'} / {selectedRow.customerCode || '-'}
+                      {(selectedRow.employeeCode || selectedRow.employeeName)
+                        ? `${selectedRow.employeeCode || ''} ${selectedRow.employeeName || ''}`.trim()
+                        : '-'}{' '}
+                      / {selectedRow.customerCode || '-'}
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Stok / Miktar</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                      {t('kkd.operational.validationLog.stockQty')}
+                    </p>
                     <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {(selectedRow.stockCode || selectedRow.stockName) ? `${selectedRow.stockCode || ''} ${selectedRow.stockName || ''}`.trim() : '-'} / {selectedRow.attemptedQuantity}
+                      {(selectedRow.stockCode || selectedRow.stockName)
+                        ? `${selectedRow.stockCode || ''} ${selectedRow.stockName || ''}`.trim()
+                        : '-'}{' '}
+                      / {selectedRow.attemptedQuantity}
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Mesaj</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                    {t('kkd.operational.validationLog.message')}
+                  </p>
                   <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">{selectedRow.reasonMessage || '-'}</p>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
-                  QR: {selectedRow.scannedQr || '-'}<br />
-                  Barkod: {selectedRow.scannedBarcode || '-'}<br />
-                  Depo: {selectedRow.warehouseId || '-'}<br />
-                  Cihaz: {selectedRow.deviceInfo || '-'}
+                  {t('kkd.operational.validationLog.metaQr')}: {selectedRow.scannedQr || '-'}
+                  <br />
+                  {t('kkd.operational.validationLog.metaBarcode')}: {selectedRow.scannedBarcode || '-'}
+                  <br />
+                  {t('kkd.operational.validationLog.metaWh')}: {selectedRow.warehouseId || '-'}
+                  <br />
+                  {t('kkd.operational.validationLog.metaDevice')}: {selectedRow.deviceInfo || '-'}
                 </div>
               </>
             ) : (
               <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                Soldan bir validation kaydı seçtiğinde detayını burada görürsün.
+                {t('kkd.operational.validationLog.pickLog')}
               </div>
             )}
           </CardContent>

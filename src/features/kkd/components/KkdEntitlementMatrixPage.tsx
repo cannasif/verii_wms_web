@@ -68,17 +68,17 @@ function KkdEntitlementMatrixForm({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
-        Haklar daima görev tanımı ve grup kodu üzerinden hesaplanır. Çalışan işe girdiğinde ilk giriş hakkını, işe giriş tarihinden 3 ay sonra ikinci hakkını, sonrasında da rutin dönem hakkını kullanır.
+        {t('kkd.operational.matrix.intro')}
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Bölüm *', 'help.kkd.matrix.department')}
+        {labelWithHelp(t('kkd.operational.matrix.lblDepartment'), 'help.kkd.matrix.department')}
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
-          title="Bölüm Seç"
+          title={t('kkd.operational.matrix.departmentTitle')}
           value={formState.departmentId ? `#${formState.departmentId}` : null}
-          placeholder="Bölüm seçiniz"
+          placeholder={t('kkd.operational.matrix.departmentPh')}
           queryKey={['kkd', 'matrix-form', 'departments']}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             kkdApi.getDepartments({ pageNumber, pageSize, search }, { signal })
@@ -95,13 +95,13 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Görev *', 'help.kkd.matrix.role')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRole'), 'help.kkd.matrix.role')}
         <PagedLookupDialog<KkdEmployeeRoleDto>
           open={roleDialogOpen}
           onOpenChange={setRoleDialogOpen}
-          title="Görev Seç"
+          title={t('kkd.operational.matrix.roleTitle')}
           value={formState.roleId ? `#${formState.roleId}` : null}
-          placeholder={formState.departmentId ? 'Görev seçiniz' : 'Önce bölüm seçiniz'}
+          placeholder={formState.departmentId ? t('kkd.operational.matrix.rolePh') : t('kkd.operational.matrix.departmentPhNeedDept')}
           queryKey={['kkd', 'matrix-form', 'roles', formState.departmentId || 0]}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             kkdApi.getRoles({
@@ -125,7 +125,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Grup Kodu *', 'help.kkd.matrix.groupCode')}
+        {labelWithHelp(t('kkd.operational.matrix.lblGroupCode'), 'help.kkd.matrix.groupCode')}
         <SearchableSelect<KkdStockGroupOption>
           value={formState.groupCode}
           onValueChange={(value) => {
@@ -135,20 +135,20 @@ function KkdEntitlementMatrixForm({
           options={stockGroups}
           getOptionValue={(item) => item.groupCode}
           getOptionLabel={(item) => `${item.groupCode}${item.groupName ? ` - ${item.groupName}` : ''}`}
-          placeholder="Stok grubu seçiniz"
-          searchPlaceholder="Grup ara"
-          emptyText="Grup bulunamadı"
+          placeholder={t('kkd.placeholders.selectStockGroup')}
+          searchPlaceholder={t('kkd.operational.matrix.groupSearch')}
+          emptyText={t('kkd.operational.matrix.groupEmpty')}
           isLoading={stockGroupsQuery.isLoading}
         />
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('İlk Giriş Adedi *', 'help.kkd.matrix.initialQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblInitialIssue'), 'help.kkd.matrix.initialQuantity')}
         <Input type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('İlk Giriş Frekans (Gün)', 'help.kkd.matrix.initialFrequencyDays')}
+        {labelWithHelp(t('kkd.operational.matrix.lblInitialFreqDays'), 'help.kkd.matrix.initialFrequencyDays')}
         <Input
           type="number"
           value={formState.initialFrequencyDays ?? ''}
@@ -157,14 +157,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        {labelWithHelp('İlk Giriş Toplu Alım', 'help.kkd.matrix.initialBulk')}
+        {labelWithHelp(t('kkd.operational.matrix.lblInitialBulk'), 'help.kkd.matrix.initialBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.initialAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, initialAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('İlk Giriş Frekans Adedi', 'help.kkd.matrix.initialFrequencyQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblInitialFreqQty'), 'help.kkd.matrix.initialFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -174,7 +174,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('3. Ay Sonrası Adedi *', 'help.kkd.matrix.threeMonthQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblThreeMonthQty'), 'help.kkd.matrix.threeMonthQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -188,7 +188,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('3. Ay Frekans (Gün)', 'help.kkd.matrix.threeMonthFrequencyDays')}
+        {labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqDays'), 'help.kkd.matrix.threeMonthFrequencyDays')}
         <Input
           type="number"
           value={formState.threeMonthFrequencyDays ?? ''}
@@ -197,14 +197,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        {labelWithHelp('3. Ay Toplu Alım', 'help.kkd.matrix.threeMonthBulk')}
+        {labelWithHelp(t('kkd.operational.matrix.lblThreeMonthBulk'), 'help.kkd.matrix.threeMonthBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.threeMonthAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, threeMonthAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('3. Ay Frekans Adedi', 'help.kkd.matrix.threeMonthFrequencyQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqQty'), 'help.kkd.matrix.threeMonthFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -214,7 +214,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Rutin Dönem Adedi *', 'help.kkd.matrix.routineQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutineQty'), 'help.kkd.matrix.routineQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -224,16 +224,16 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Rutin Dönem Tipi *', 'help.kkd.matrix.routinePeriodType')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutinePeriodType'), 'help.kkd.matrix.routinePeriodType')}
         <Input
           value={formState.routinePeriodType}
           onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodType: event.target.value || 'Year' }))}
-          placeholder="Year / Month / Day"
+          placeholder={t('kkd.operational.matrix.periodPlaceholder')}
         />
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Rutin Dönem Aralığı *', 'help.kkd.matrix.routinePeriodInterval')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutineInterval'), 'help.kkd.matrix.routinePeriodInterval')}
         <Input
           type="number"
           value={formState.routinePeriodInterval}
@@ -242,7 +242,7 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Rutin Frekans (Gün)', 'help.kkd.matrix.routineFrequencyDays')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqDays'), 'help.kkd.matrix.routineFrequencyDays')}
         <Input
           type="number"
           value={formState.routineFrequencyDays ?? ''}
@@ -251,14 +251,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        {labelWithHelp('Rutin Toplu Alım', 'help.kkd.matrix.routineBulk')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutineBulk'), 'help.kkd.matrix.routineBulk')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.routineAllowBulkIssue} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, routineAllowBulkIssue: checked }))} />
         </div>
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Rutin Frekans Adedi', 'help.kkd.matrix.routineFrequencyQuantity')}
+        {labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqQty'), 'help.kkd.matrix.routineFrequencyQuantity')}
         <Input
           type="number"
           step="0.01"
@@ -268,14 +268,14 @@ function KkdEntitlementMatrixForm({
       </div>
 
       <div className="space-y-3">
-        {labelWithHelp('Aktif', 'help.kkd.matrix.isActive')}
+        {labelWithHelp(t('kkd.operational.matrix.lblActive'), 'help.kkd.matrix.isActive')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
         </div>
       </div>
 
       <div className="space-y-3">
-        {labelWithHelp('Zorunlu', 'help.kkd.matrix.isMandatory')}
+        {labelWithHelp(t('kkd.operational.matrix.lblMandatory'), 'help.kkd.matrix.isMandatory')}
         <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
           <Switch checked={formState.isMandatory} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isMandatory: checked }))} />
         </div>
