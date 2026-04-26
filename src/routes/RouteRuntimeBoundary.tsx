@@ -32,6 +32,19 @@ function measurePerformance(name: string, startMark: string, endMark: string): n
   }
 }
 
+function shouldExposePerfInTitle(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('perf') === '1';
+  } catch {
+    return false;
+  }
+}
+
 export function RouteRuntimeBoundary({
   routeName,
   namespaces = [],
@@ -82,6 +95,10 @@ export function RouteRuntimeBoundary({
       const duration = measurePerformance(`route:${routeName}:render`, startMark, endMark);
       if (duration != null) {
         recordRouteTelemetry(routeName, duration);
+        if (shouldExposePerfInTitle()) {
+          const baseTitle = document.title.replace(/\s+\[perf:[^\]]+\]$/, '');
+          document.title = `${baseTitle} [perf:${routeName}:${Math.round(duration)}ms]`;
+        }
       }
     });
 
