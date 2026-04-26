@@ -194,6 +194,7 @@ const KkdGroupReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdGroupRe
 const SteelGoodReciptAcceptanseImportPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseImportPage');
 const SteelGoodReciptAcceptanseListPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseListPage');
 const SteelGoodReciptAcceptanseInspectionPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseInspectionPage');
+const SteelGoodReciptAcceptanseReceiptPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseReceiptPage');
 
 export const operationsChildRoutes: RouteObject[] = [
   {
@@ -202,6 +203,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'import', element: withRoute(SteelGoodReciptAcceptanseImportPage, { routeName: 'sgra-import' }) },
       { path: 'list', element: withRoute(SteelGoodReciptAcceptanseListPage, { routeName: 'sgra-list' }) },
       { path: 'inspection', element: withRoute(SteelGoodReciptAcceptanseInspectionPage, { routeName: 'sgra-inspection' }) },
+      { path: 'receipt', element: withRoute(SteelGoodReciptAcceptanseReceiptPage, { routeName: 'sgra-receipt' }) },
     ],
   },
   {

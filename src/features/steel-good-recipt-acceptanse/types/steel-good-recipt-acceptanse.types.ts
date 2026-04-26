@@ -127,3 +127,22 @@ export interface SaveSteelGoodReciptAcceptanseInspectionDto {
   rejectReason?: string | null;
   note?: string | null;
 }
+
+export interface SteelGoodReciptAcceptanseReceiptHeaderDto {
+  id: number;
+  documentNo?: string | null;
+  documentDate?: string | null;
+  supplierCode: string;
+  supplierName: string;
+  exportRefNo?: string | null;
+  status: string;
+  totalLineCount: number;
+  totalReceiptQuantity: number;
+  createdAt: string;
+}
+
+export interface CreateSteelGoodReciptAcceptanseReceiptDto {
+  branchCode?: string;
+  lineIds: number[];
+  note?: string | null;
+}
