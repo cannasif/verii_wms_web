@@ -58,13 +58,30 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
   const [rows, setRows] = useState<SteelGoodReciptAcceptanseExcelRowDto[]>([]);
   const [preview, setPreview] = useState<SteelGoodReciptAcceptanseImportPreviewDto | null>(null);
 
+  const effectiveExportRefNo = useMemo(() => {
+    if (exportRefNo.trim()) {
+      return exportRefNo.trim();
+    }
+
+    const distinctRowExportRefs = Array.from(new Set(rows.map((row) => row.exportRefNo?.trim()).filter(Boolean)));
+    return distinctRowExportRefs.length === 1 ? distinctRowExportRefs[0] ?? null : null;
+  }, [exportRefNo, rows]);
+
+  const previewByRowNumber = useMemo(() => {
+    if (!preview) {
+      return new Map<number, SteelGoodReciptAcceptanseImportPreviewDto['rows'][number]>();
+    }
+
+    return new Map(preview.rows.map((row) => [row.rowNumber, row]));
+  }, [preview]);
+
   useEffect(() => {
     setPageTitle('Sac Mal Kabul Excel Aktarim');
     return () => setPageTitle(null);
   }, [setPageTitle]);
 
   const requestPayload = useMemo<SteelGoodReciptAcceptanseImportPreviewRequestDto | null>(() => {
-    if (!supplier || rows.length === 0 || !excelRecordNo.trim() || !fileName.trim()) {
+    if (!supplier || rows.length === 0 || !fileName.trim() || (!excelRecordNo.trim() && !effectiveExportRefNo)) {
       return null;
     }
 
@@ -74,11 +91,11 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
       supplierCode: supplier.cariKod,
       supplierName: supplier.cariIsim,
       excelRecordNo: excelRecordNo.trim(),
-      exportRefNo: exportRefNo.trim() || null,
+      exportRefNo: effectiveExportRefNo,
       fileName: fileName.trim(),
       rows,
     };
-  }, [supplier, rows, excelRecordNo, exportRefNo, fileName]);
+  }, [supplier, rows, excelRecordNo, effectiveExportRefNo, fileName]);
 
   const previewMutation = useMutation({
     mutationFn: async () => {
@@ -133,7 +150,7 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
         materialQuality: findValue(row, ['Material Quality Malzeme Kalitesi', 'Material Quality', 'Malzeme Kalitesi']) || null,
         heatNumber: findValue(row, ['Heat Number Döküm/Şarj No', 'Heat Number', 'Döküm/Şarj No']) || null,
         certificateNumber: findValue(row, ['Certificate Number Sertifika No', 'Certificate Number', 'Sertifika No']) || null,
-        exportRefNo: exportRefNo.trim() || null,
+        exportRefNo: findValue(row, ['Export Ref No', 'EXPORT_REF_NO']) || exportRefNo.trim() || null,
       })) satisfies SteelGoodReciptAcceptanseExcelRowDto[];
 
       setRows(mappedRows.filter((row) => row.stockCode || row.serialNo || row.netsisOrderNo));
@@ -216,29 +233,52 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
                 <table className="min-w-full text-sm">
                   <thead className="bg-white/5 text-left">
                     <tr>
-                      <th className="px-3 py-2">Satir</th>
+                      <th className="px-3 py-2">Excel Satir</th>
+                      <th className="px-3 py-2">Netsis Sip. No</th>
+                      <th className="px-3 py-2">Sira No</th>
+                      <th className="px-3 py-2">Netsis Sip. Sira No</th>
+                      <th className="px-3 py-2">Stok Kodu</th>
+                      <th className="px-3 py-2">Kombine Size</th>
+                      <th className="px-3 py-2">Seri No (Levha No)</th>
+                      <th className="px-3 py-2">Seri-2 (Poz No)</th>
+                      <th className="px-3 py-2">Miktar(Kg)</th>
+                      <th className="px-3 py-2">Depo Kodu</th>
+                      <th className="px-3 py-2">Material Quality</th>
+                      <th className="px-3 py-2">Heat Number</th>
+                      <th className="px-3 py-2">Certificate Number</th>
+                      <th className="px-3 py-2">Export Ref No</th>
                       <th className="px-3 py-2">Aksiyon</th>
                       <th className="px-3 py-2">D-KODU</th>
-                      <th className="px-3 py-2">Stok</th>
-                      <th className="px-3 py-2">Levha No</th>
-                      <th className="px-3 py-2">Beklenen</th>
                       <th className="px-3 py-2">Durum</th>
                       <th className="px-3 py-2">Hata</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {preview.rows.map((row) => (
-                      <tr key={row.compositeKey} className="border-t border-white/5">
-                        <td className="px-3 py-2">{row.rowNumber}</td>
-                        <td className="px-3 py-2">{row.actionType}</td>
-                        <td className="px-3 py-2">{row.existingDCode ?? '-'}</td>
-                        <td className="px-3 py-2">{row.stockCode}</td>
-                        <td className="px-3 py-2">{row.serialNo}</td>
-                        <td className="px-3 py-2">{row.expectedQuantity}</td>
-                        <td className="px-3 py-2">{row.existingStatus ?? '-'}</td>
-                        <td className="px-3 py-2 text-rose-300">{row.errors.join(', ') || '-'}</td>
-                      </tr>
-                    ))}
+                    {rows.map((sourceRow) => {
+                      const previewRow = previewByRowNumber.get(sourceRow.rowNumber);
+                      return (
+                        <tr key={sourceRow.rowNumber} className="border-t border-white/5">
+                          <td className="px-3 py-2">{sourceRow.rowNumber}</td>
+                          <td className="px-3 py-2">{sourceRow.netsisOrderNo || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.netsisLineSequenceNo || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.netsisOrderLineNo || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.stockCode || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.combinedSize || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.serialNo || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.serialNo2 || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.expectedQuantity}</td>
+                          <td className="px-3 py-2">{sourceRow.depotCode || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.materialQuality || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.heatNumber || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.certificateNumber || '-'}</td>
+                          <td className="px-3 py-2">{sourceRow.exportRefNo || '-'}</td>
+                          <td className="px-3 py-2">{previewRow?.actionType ?? '-'}</td>
+                          <td className="px-3 py-2">{previewRow?.existingDCode ?? '-'}</td>
+                          <td className="px-3 py-2">{previewRow?.existingStatus ?? '-'}</td>
+                          <td className="px-3 py-2 text-rose-300">{previewRow?.errors.join(', ') || '-'}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

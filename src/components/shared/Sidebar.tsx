@@ -119,6 +119,24 @@ function nodeHasActiveDescendant(node: NavItem, pathname: string): boolean {
   return node.children?.some((child) => nodeHasActiveDescendant(child, pathname)) ?? false;
 }
 
+function collectActiveAncestorKeys(nodes: NavItem[], pathname: string, level = 0): string[] {
+  for (const node of nodes) {
+    const itemKey = node.href || `${level}:${node.title}`;
+    if (node.href && node.href === pathname) {
+      return [];
+    }
+
+    if (node.children?.length) {
+      const childKeys = collectActiveAncestorKeys(node.children, pathname, level + 1);
+      if (childKeys.length > 0 || node.children.some((child) => nodeHasActiveDescendant(child, pathname))) {
+        return [itemKey, ...childKeys];
+      }
+    }
+  }
+
+  return [];
+}
+
 function NavItemComponent({
   item,
   searchQuery,
@@ -139,7 +157,7 @@ function NavItemComponent({
   const hasActiveChild = item.children?.some((child) => nodeHasActiveDescendant(child, location.pathname)) ?? false;
   const itemKey = item.href || `${level}:${item.title}`;
   const searchMatched = nodeMatchesSearch(item, searchQuery);
-  const isExpanded = expandedItemKeys.includes(itemKey) || hasActiveChild || (Boolean(searchQuery.trim()) && hasChildren && searchMatched);
+  const isExpanded = expandedItemKeys.includes(itemKey) || (Boolean(searchQuery.trim()) && hasChildren && searchMatched);
   const iconTone = getToneByTitle(item.title);
   const toneClasses = toneClassMap[iconTone];
 
@@ -163,6 +181,7 @@ function NavItemComponent({
       <div className="space-y-1">
         <button
           type="button"
+          title={item.title}
           onClick={() => {
             if (!isSidebarOpen) {
               setSidebarOpen(true);
@@ -195,8 +214,10 @@ function NavItemComponent({
           {level > 0 && isSidebarOpen ? (
             <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />
           ) : null}
-          <span className={cn('flex-1 truncate text-left transition-opacity', !isSidebarOpen && 'hidden')}>
-            {item.title}
+          <span className={cn('flex-1 text-left text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
+            <span className="line-clamp-2 break-words">
+              {item.title}
+            </span>
           </span>
           {isSidebarOpen && (
             <svg
@@ -240,6 +261,7 @@ function NavItemComponent({
   return (
     <Link
       to={item.href}
+      title={item.title}
       className={cn(
         'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
         'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
@@ -270,8 +292,10 @@ function NavItemComponent({
         </span>
       ) : null}
       {level > 0 && isSidebarOpen ? <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" /> : null}
-      <span className={cn('truncate transition-opacity', !isSidebarOpen && 'hidden')}>
-        {item.title}
+      <span className={cn('text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
+        <span className="line-clamp-2 break-words">
+          {item.title}
+        </span>
       </span>
     </Link>
   );
@@ -280,6 +304,7 @@ function NavItemComponent({
 export function Sidebar({ items }: SidebarProps): ReactElement {
   const { isSidebarOpen, searchQuery } = useUIStore();
   const { t } = useTranslation();
+  const location = useLocation();
   const [expandedItemKeys, setExpandedItemKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -287,6 +312,15 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       setExpandedItemKeys([]);
     }
   }, [isSidebarOpen]);
+
+  useEffect(() => {
+    const activeAncestorKeys = collectActiveAncestorKeys(items, location.pathname);
+    if (activeAncestorKeys.length === 0) {
+      return;
+    }
+
+    setExpandedItemKeys((prev) => Array.from(new Set([...prev, ...activeAncestorKeys])));
+  }, [items, location.pathname]);
 
   const handleToggle = useCallback((key: string): void => {
     setExpandedItemKeys((prev) => (
