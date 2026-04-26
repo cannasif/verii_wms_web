@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Printer, RefreshCcw, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -80,6 +80,7 @@ export function BarcodePrintPage(): ReactElement {
   const [selectedServerPrinterId, setSelectedServerPrinterId] = useState('');
   const [selectedServerPrinterProfileId, setSelectedServerPrinterProfileId] = useState('');
   const [copies, setCopies] = useState(1);
+  const [printSettingsExpanded, setPrintSettingsExpanded] = useState(false);
 
   const pagedGrid = usePagedDataGrid<HeaderSortKey>({
     pageKey: `barcode-print-${sourceModule}`,
@@ -104,6 +105,7 @@ export function BarcodePrintPage(): ReactElement {
   const templatesQuery = useQuery({
     queryKey: ['barcode-designer-templates-for-print-operations'],
     queryFn: ({ signal }) => barcodeDesignerApi.getTemplates({ signal }),
+    enabled: printSettingsExpanded,
   });
 
   useEffect(() => {
@@ -130,7 +132,7 @@ export function BarcodePrintPage(): ReactElement {
   const draftQuery = useQuery({
     queryKey: ['barcode-designer-draft-for-print-operations', selectedTemplateId],
     queryFn: ({ signal }) => barcodeDesignerApi.getDraft(selectedTemplateId!, { signal }),
-    enabled: !!selectedTemplateId,
+    enabled: !!selectedTemplateId && printSettingsExpanded,
   });
 
   const headersQuery = useQuery({
@@ -161,17 +163,19 @@ export function BarcodePrintPage(): ReactElement {
   const serverPrintersQuery = useQuery({
     queryKey: ['printer-management-printers-for-barcode-print-operations'],
     queryFn: ({ signal }) => printerManagementApi.getPrinters({ signal }),
+    enabled: printSettingsExpanded,
   });
 
   const templatePrinterProfilesQuery = useQuery({
     queryKey: ['barcode-designer-template-printer-profiles-for-print-operations', selectedTemplateId],
     queryFn: ({ signal }) => printerManagementApi.getTemplatePrinterProfiles(selectedTemplateId!, { signal }),
-    enabled: !!selectedTemplateId,
+    enabled: !!selectedTemplateId && printSettingsExpanded,
   });
 
   const printerProfilesQuery = useQuery({
     queryKey: ['printer-management-profiles-for-barcode-print-operations'],
     queryFn: ({ signal }) => printerManagementApi.getProfiles(undefined, { signal }),
+    enabled: printSettingsExpanded,
   });
 
   useEffect(() => {
@@ -631,9 +635,26 @@ export function BarcodePrintPage(): ReactElement {
         <div className="space-y-6">
           <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
             <CardHeader>
-              <CardTitle>{t('barcodePrint.printSettings', { defaultValue: 'Missing translation' })}</CardTitle>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between gap-3 text-left"
+                onClick={() => setPrintSettingsExpanded((current) => !current)}
+              >
+                <CardTitle>{t('barcodePrint.printSettings', { defaultValue: 'Missing translation' })}</CardTitle>
+                <Badge variant="outline" className="gap-2">
+                  {printSettingsExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+                  {printSettingsExpanded ? 'Acik' : 'Yukle'}
+                </Badge>
+              </button>
             </CardHeader>
             <CardContent className="space-y-4">
+              {!printSettingsExpanded ? (
+                <div className="rounded-2xl border border-dashed border-slate-300/80 px-4 py-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                  Yazdirma ayarlari ilk acilista yuklenmez. Tasarim, yazici ve profile ihtiyac oldugunda bu paneli acin.
+                </div>
+              ) : null}
+              {printSettingsExpanded ? (
+                <>
               <div className="space-y-2">
                 <Label>Tasarım</Label>
                 <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
@@ -714,6 +735,8 @@ export function BarcodePrintPage(): ReactElement {
                 <RefreshCcw className="mr-2 size-4" />
                 Yazıcıları Yenile
               </Button>
+                </>
+              ) : null}
             </CardContent>
           </Card>
 

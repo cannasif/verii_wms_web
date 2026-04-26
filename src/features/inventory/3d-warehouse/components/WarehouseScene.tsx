@@ -1,9 +1,7 @@
-import { type ReactElement, useMemo, useRef, useEffect, useState, useCallback } from 'react';
+import { Suspense, lazy, type ReactElement, useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { WarehouseFloor } from './WarehouseFloor';
-import { Shelf3D } from './Shelf3D';
-import { AisleFloor3D } from './AisleFloor3D';
 import { buildWarehouseModel, calculateCenter, LAYOUT_CONSTANTS } from '../utils/layout-engine';
 import { parseLocation } from '../utils/location-parser';
 import type { WarehouseShelvesWithStockInformationDto, WarehouseSlot as WarehouseSlotType } from '../types/warehouse-3d';
@@ -31,6 +29,16 @@ interface AisleData {
 }
 
 const { AISLE_SPACING, BAY_SPACING, AISLE_WIDTH } = LAYOUT_CONSTANTS;
+
+const Shelf3D = lazy(async () => {
+  const module = await import('./Shelf3D');
+  return { default: module.Shelf3D };
+});
+
+const AisleFloor3D = lazy(async () => {
+  const module = await import('./AisleFloor3D');
+  return { default: module.AisleFloor3D };
+});
 
 export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseSceneProps): ReactElement {
   const controlsRef = useRef<OrbitControlsType>(null);
@@ -239,33 +247,35 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
 
       <WarehouseFloor center={{ x: center.x, z: center.z }} bounds={bounds} />
 
-      {aisles.map((aisle) => (
-        <AisleFloor3D
-          key={aisle.row}
-          row={aisle.row}
-          position={aisle.position}
-          width={aisle.width}
-          length={aisle.length}
-          selected={selectedAisleId === aisle.row}
-          onSelect={() => handleSelectAisle(aisle.row)}
-        />
-      ))}
+      <Suspense fallback={null}>
+        {aisles.map((aisle) => (
+          <AisleFloor3D
+            key={aisle.row}
+            row={aisle.row}
+            position={aisle.position}
+            width={aisle.width}
+            length={aisle.length}
+            selected={selectedAisleId === aisle.row}
+            onSelect={() => handleSelectAisle(aisle.row)}
+          />
+        ))}
 
-      {shelfGroups.map((group) => (
-        <Shelf3D
-          key={`${group.row}-${group.column}`}
-          row={group.row}
-          column={group.column}
-          slots={group.slots}
-          position={group.position}
-          selected={selectedShelfId === `${group.row}-${group.column}`}
-          showLabels={showLabels && !clickedBin}
-          onSelect={() => handleSelectShelf(group.row, group.column)}
-          onBinHover={(slot) => onSlotHover?.(slot)}
-          onBinClick={handleBinClick}
-          clickedBin={clickedBin}
-        />
-      ))}
+        {shelfGroups.map((group) => (
+          <Shelf3D
+            key={`${group.row}-${group.column}`}
+            row={group.row}
+            column={group.column}
+            slots={group.slots}
+            position={group.position}
+            selected={selectedShelfId === `${group.row}-${group.column}`}
+            showLabels={showLabels && !clickedBin}
+            onSelect={() => handleSelectShelf(group.row, group.column)}
+            onBinHover={(slot) => onSlotHover?.(slot)}
+            onBinClick={handleBinClick}
+            clickedBin={clickedBin}
+          />
+        ))}
+      </Suspense>
     </Canvas>
   );
 }

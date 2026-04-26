@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Suspense, lazy, type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -41,7 +41,10 @@ import {
 } from '@/lib/html5-qrcode';
 import type { PPackageDto, PLineDto } from '../types/package';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { PackageLabelPrintDialog } from './PackageLabelPrintDialog';
+const PackageLabelPrintDialog = lazy(async () => {
+  const module = await import('./PackageLabelPrintDialog');
+  return { default: module.PackageLabelPrintDialog };
+});
 
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
@@ -791,12 +794,14 @@ export function PackageDetailPage(): ReactElement {
       </DetailPageShell>
 
       {headerId ? (
-        <PackageLabelPrintDialog
-          open={printDialogOpen}
-          onOpenChange={setPrintDialogOpen}
-          packingHeaderId={headerId}
-          initialPackageIds={initialPrintPackageIds}
-        />
+        <Suspense fallback={null}>
+          <PackageLabelPrintDialog
+            open={printDialogOpen}
+            onOpenChange={setPrintDialogOpen}
+            packingHeaderId={headerId}
+            initialPackageIds={initialPrintPackageIds}
+          />
+        </Suspense>
       ) : null}
 
       <Dialog open={permission.canUpdate && packageDialogOpen} onOpenChange={setPackageDialogOpen}>

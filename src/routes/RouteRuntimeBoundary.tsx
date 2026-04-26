@@ -1,6 +1,7 @@
 import { type PropsWithChildren, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureNamespaces } from '@/lib/i18n';
+import { recordRouteTelemetry } from './route-telemetry';
 
 interface RouteRuntimeBoundaryProps extends PropsWithChildren {
   routeName: string;
@@ -15,15 +16,19 @@ function markPerformance(label: string): void {
   performance.mark(label);
 }
 
-function measurePerformance(name: string, startMark: string, endMark: string): void {
+function measurePerformance(name: string, startMark: string, endMark: string): number | null {
   if (typeof performance === 'undefined' || typeof performance.measure !== 'function') {
-    return;
+    return null;
   }
 
   try {
     performance.measure(name, startMark, endMark);
+    const measures = performance.getEntriesByName(name, 'measure');
+    const lastMeasure = measures[measures.length - 1];
+    return typeof lastMeasure?.duration === 'number' ? lastMeasure.duration : null;
   } catch {
     // Ignore duplicate or missing mark errors in unsupported browsers/devtools.
+    return null;
   }
 }
 
@@ -74,7 +79,10 @@ export function RouteRuntimeBoundary({
     const frameId = window.requestAnimationFrame(() => {
       const endMark = `route:${routeName}:ready:${Date.now()}`;
       markPerformance(endMark);
-      measurePerformance(`route:${routeName}:render`, startMark, endMark);
+      const duration = measurePerformance(`route:${routeName}:render`, startMark, endMark);
+      if (duration != null) {
+        recordRouteTelemetry(routeName, duration);
+      }
     });
 
     return () => {
