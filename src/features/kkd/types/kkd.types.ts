@@ -400,7 +400,9 @@ export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
 
 export interface KkdCariAcikSiparisDto {
   stockCode: string;
+  stockName?: string | null;
   groupCode?: string | null;
+  groupName?: string | null;
   documentNo: string;
   transactionDate: string;
   pendingQuantity: number;

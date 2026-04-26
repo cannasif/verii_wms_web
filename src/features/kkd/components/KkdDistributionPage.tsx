@@ -42,6 +42,9 @@ type LocalDistributionLine = CreateKkdDistributionSubmissionLineDto & {
   isExcessIssue: boolean;
 };
 
+const formatGroupLabel = (groupCode?: string | null, groupName?: string | null): string =>
+  [groupCode, groupName].filter(Boolean).join(' - ');
+
 const dist = 'kkd.operational.dist' as const;
 
 export function KkdDistributionPage(): ReactElement {
@@ -438,14 +441,13 @@ export function KkdDistributionPage(): ReactElement {
                   {distributionContextQuery.data.remainingEntitlements.map((item: KkdRemainingEntitlementDto) => (
                     <div key={item.groupCode} className={`rounded-2xl border p-4 ${item.groupCode === resolvedStock?.groupCode ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/5'}`}>
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge>{item.groupCode}</Badge>
+                        <Badge>{formatGroupLabel(item.groupCode, item.groupName) || '-'}</Badge>
                         {item.suggestedPhaseType ? <Badge variant="secondary">{item.suggestedPhaseType}</Badge> : null}
                         <Badge variant="outline">{t(`${dist}.firstEntry`)}: {item.remainingInitialQuantity}</Badge>
                         <Badge variant="outline">{t(`${dist}.month3`)}: {item.remainingThreeMonthQuantity}</Badge>
                         <Badge variant="outline">{t(`${dist}.routine`)}: {item.remainingRecurringQuantity}</Badge>
                         <Badge variant="secondary">{t(`${dist}.totalRem`)}: {item.totalRemainingQuantity}</Badge>
                       </div>
-                      {item.groupName ? <p className="mt-2 font-medium text-slate-900 dark:text-white">{item.groupName}</p> : null}
                       {item.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.message}</p> : null}
                     </div>
                   ))}
@@ -471,11 +473,12 @@ export function KkdDistributionPage(): ReactElement {
                     <div key={`${item.documentNo}-${item.stockCode}-${index}`} className={`rounded-2xl border p-4 ${item.groupCode && item.groupCode === resolvedStock?.groupCode ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/5'}`}>
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge>{item.stockCode}</Badge>
-                        {item.groupCode ? <Badge variant="secondary">{item.groupCode}</Badge> : null}
+                        {item.groupCode ? <Badge variant="secondary">{formatGroupLabel(item.groupCode, item.groupName)}</Badge> : null}
                         <Badge variant="outline">{t(`${dist}.badgeFis`)}: {item.documentNo}</Badge>
                         <Badge variant="outline">{t(`${dist}.pending`)}: {item.pendingQuantity}</Badge>
                         {item.warehouseCode != null ? <Badge variant="outline">{t(`${dist}.whCode`)}: {item.warehouseCode}</Badge> : null}
                       </div>
+                      {item.stockName ? <p className="mt-2 font-medium text-slate-900 dark:text-white">{item.stockName}</p> : null}
                       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                         {t(`${dist}.orderMeta`, {
                           d: new Date(item.transactionDate).toLocaleDateString(dateLocale),
@@ -517,7 +520,7 @@ export function KkdDistributionPage(): ReactElement {
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge>{resolvedStock.stockCode}</Badge>
-                    {resolvedStock.groupCode ? <Badge variant="secondary">{resolvedStock.groupCode}</Badge> : null}
+                    {resolvedStock.groupCode ? <Badge variant="secondary">{formatGroupLabel(resolvedStock.groupCode, resolvedStock.groupName)}</Badge> : null}
                     <Badge variant="outline">{t(`${dist}.stockBalance`)}: {resolvedStock.availableQuantity}</Badge>
                   </div>
                   <p className="mt-3 font-semibold text-slate-900 dark:text-white">{resolvedStock.stockName}</p>
@@ -534,7 +537,7 @@ export function KkdDistributionPage(): ReactElement {
                       {hasMatchingOpenOrder ? t(`${dist}.openOrderY`) : t(`${dist}.openOrderN`)}
                     </Badge>
                     <Badge variant="outline">{t(`${dist}.stockPrefix`)}: {resolvedStock.stockCode}</Badge>
-                    {resolvedStock.groupCode ? <Badge variant="secondary">{t(`${dist}.groupPrefix`)}: {resolvedStock.groupCode}</Badge> : null}
+                    {resolvedStock.groupCode ? <Badge variant="secondary">{t(`${dist}.groupPrefix`)}: {formatGroupLabel(resolvedStock.groupCode, resolvedStock.groupName)}</Badge> : null}
                     <Badge variant="outline">{t(`${dist}.pending`)}: {totalOpenOrderPendingQuantity}</Badge>
                   </div>
                   {openOrderDocumentNos ? (
@@ -578,9 +581,9 @@ export function KkdDistributionPage(): ReactElement {
                       {entitlementResult.resolvedStockName ? ` - ${entitlementResult.resolvedStockName}` : ''}
                     </p>
                     <p className="mt-1">
-                      {t(`${dist}.readGroup`)}: <span className="font-medium">{entitlementResult.requestedGroupCode || resolvedStock?.groupCode || '-'}</span>
+                      {t(`${dist}.readGroup`)}: <span className="font-medium">{formatGroupLabel(entitlementResult.requestedGroupCode || resolvedStock?.groupCode, resolvedStock?.groupName) || '-'}</span>
                       {' | '}
-                      {t(`${dist}.entGroup`)}: <span className="font-medium">{entitlementResult.matchedGroupCode || '-'}</span>
+                      {t(`${dist}.entGroup`)}: <span className="font-medium">{formatGroupLabel(entitlementResult.matchedGroupCode, selectedGroupEntitlement?.groupName) || '-'}</span>
                       {' | '}
                       {t(`${dist}.stateLabel`)}: <span className={`font-medium ${entitlementResult.isGroupCodeMatched ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`}>
                         {entitlementResult.isGroupCodeMatched ? t(`${dist}.matchY`) : t(`${dist}.matchN`)}
@@ -659,7 +662,7 @@ export function KkdDistributionPage(): ReactElement {
                         <p className="font-semibold text-slate-900 dark:text-white">{line.stockCode} - {line.stockName}</p>
                         <p className="text-sm text-slate-600 dark:text-slate-300">
                           {t(`${dist}.lineSummary`, {
-                            g: line.groupCode || '-',
+                            g: formatGroupLabel(line.groupCode, line.groupName) || '-',
                             q: line.quantity,
                             p: line.entitlement.activePhaseLabel || (line.entitledQuantity <= 0 && line.excessQuantity > 0 ? t(`${dist}.openOrderOverride`) : '-'),
                           })}
