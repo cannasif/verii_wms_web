@@ -1,5 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptans
 import type { SaveSteelGoodReciptAcceptansePlacementDto, SteelGoodReciptAcceptanseLineListItemDto } from '../types/steel-good-recipt-acceptanse.types';
 
 export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
+  const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -93,6 +95,28 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   function updateForm<K extends keyof SaveSteelGoodReciptAcceptansePlacementDto>(key: K, value: SaveSteelGoodReciptAcceptansePlacementDto[K]): void {
     setForm((current) => current ? { ...current, [key]: value } : current);
+  }
+
+  function openVisualization(mode: '2d' | '3d'): void {
+    if (!warehouse?.id || (!shelf?.id && !form?.areaCode?.trim())) {
+      toast.error('Görünüm açmak için depo ve hücre veya saha kodu seçin');
+      return;
+    }
+
+    const params = new URLSearchParams({
+      warehouseId: String(warehouse.id),
+      mode,
+    });
+
+    if (shelf?.id) {
+      params.set('shelfId', String(shelf.id));
+    }
+
+    if (form?.areaCode?.trim()) {
+      params.set('areaCode', form.areaCode.trim());
+    }
+
+    navigate(`/inventory/3d-outside-warehouse?${params.toString()}`);
   }
 
   return (
@@ -223,9 +247,17 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                       <Textarea value={form.note ?? ''} onChange={(event) => updateForm('note', event.target.value)} placeholder="Yerleşim notu" />
                     </div>
 
-                    <Button type="button" className="w-full" disabled={saveMutation.isPending} onClick={() => void saveMutation.mutateAsync()}>
-                      {saveMutation.isPending ? 'Kaydediliyor...' : 'Yerleşimi Kaydet'}
-                    </Button>
+                    <div className="grid gap-3 md:grid-cols-3">
+                      <Button type="button" className="md:col-span-3" disabled={saveMutation.isPending} onClick={() => void saveMutation.mutateAsync()}>
+                        {saveMutation.isPending ? 'Kaydediliyor...' : 'Yerleşimi Kaydet'}
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => openVisualization('2d')}>
+                        2D Görünümde Aç
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => openVisualization('3d')}>
+                        3D Görünümde Aç
+                      </Button>
+                    </div>
                   </>
                 ) : (
                   <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">Soldan bir levha seçin.</div>
