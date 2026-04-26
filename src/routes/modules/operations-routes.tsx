@@ -191,8 +191,19 @@ const KkdValidationLogPage = lazyNamed(() => import('@/features/kkd'), 'KkdValid
 const KkdDepartmentReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdDepartmentReportPage');
 const KkdRoleReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdRoleReportPage');
 const KkdGroupReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdGroupReportPage');
+const SteelGoodReciptAcceptanseImportPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseImportPage');
+const SteelGoodReciptAcceptanseListPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseListPage');
+const SteelGoodReciptAcceptanseInspectionPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseInspectionPage');
 
 export const operationsChildRoutes: RouteObject[] = [
+  {
+    path: 'sac-mal-kabul',
+    children: [
+      { path: 'import', element: withRoute(SteelGoodReciptAcceptanseImportPage, { routeName: 'sgra-import' }) },
+      { path: 'list', element: withRoute(SteelGoodReciptAcceptanseListPage, { routeName: 'sgra-list' }) },
+      { path: 'inspection', element: withRoute(SteelGoodReciptAcceptanseInspectionPage, { routeName: 'sgra-inspection' }) },
+    ],
+  },
   {
     path: 'kkd',
     children: [

@@ -230,6 +230,15 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       ]),
     };
 
+    const steelGoodReciptAcceptanseModule: NavItem = {
+      title: t('sidebar.sacMalKabul'),
+      children: sortNavItems([
+        { title: t('sidebar.sacMalKabulImport'), href: '/sac-mal-kabul/import' },
+        { title: t('sidebar.sacMalKabulInspection'), href: '/sac-mal-kabul/inspection' },
+        { title: t('sidebar.sacMalKabulList'), href: '/sac-mal-kabul/list' },
+      ]),
+    };
+
     const packageModule: NavItem = {
       title: t('sidebar.package'),
       children: sortNavItems([
@@ -357,7 +366,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           },
           {
             title: t('sidebar.serviceOperationsGroup'),
-            children: sortNavItems([serviceAllocationModule, kkdModule]),
+            children: sortNavItems([serviceAllocationModule, kkdModule, steelGoodReciptAcceptanseModule]),
           },
           {
             title: t('sidebar.productionOperationsGroup'),

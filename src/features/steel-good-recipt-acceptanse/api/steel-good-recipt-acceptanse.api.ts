@@ -1,0 +1,104 @@
+import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
+import { getLocalizedText } from '@/lib/localized-error';
+import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
+import type {
+  SteelGoodReciptAcceptanseCommitImportDto,
+  SteelGoodReciptAcceptanseHeaderDto,
+  SteelGoodReciptAcceptanseImportPreviewDto,
+  SteelGoodReciptAcceptanseImportPreviewRequestDto,
+  SteelGoodReciptAcceptanseLineDetailDto,
+  SteelGoodReciptAcceptanseLineListItemDto,
+  SteelGoodReciptAcceptansePhotoDto,
+  SaveSteelGoodReciptAcceptanseInspectionDto,
+} from '../types/steel-good-recipt-acceptanse.types';
+
+export const steelGoodReciptAcceptanseApi = {
+  async previewImport(dto: SteelGoodReciptAcceptanseImportPreviewRequestDto): Promise<SteelGoodReciptAcceptanseImportPreviewDto> {
+    const response = await api.post<ApiResponse<SteelGoodReciptAcceptanseImportPreviewDto>>('/api/SteelGoodReciptAcceptanse/import/preview', dto);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async commitImport(dto: SteelGoodReciptAcceptanseCommitImportDto): Promise<SteelGoodReciptAcceptanseHeaderDto> {
+    const response = await api.post<ApiResponse<SteelGoodReciptAcceptanseHeaderDto>>('/api/SteelGoodReciptAcceptanse/import/commit', dto);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async getLinesPaged(params: PagedParams = {}): Promise<PagedResponse<SteelGoodReciptAcceptanseLineListItemDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<SteelGoodReciptAcceptanseLineListItemDto>>>(
+      '/api/SteelGoodReciptAcceptanse/lines/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async getHeadersPaged(params: PagedParams = {}): Promise<PagedResponse<SteelGoodReciptAcceptanseHeaderDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<SteelGoodReciptAcceptanseHeaderDto>>>(
+      '/api/SteelGoodReciptAcceptanse/headers/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async searchBySerial(serialNo: string): Promise<SteelGoodReciptAcceptanseLineListItemDto[]> {
+    const response = await api.get<ApiResponse<SteelGoodReciptAcceptanseLineListItemDto[]>>('/api/SteelGoodReciptAcceptanse/lines/search-by-serial', {
+      params: { serialNo },
+    });
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async getLineDetail(id: number): Promise<SteelGoodReciptAcceptanseLineDetailDto> {
+    const response = await api.get<ApiResponse<SteelGoodReciptAcceptanseLineDetailDto>>(`/api/SteelGoodReciptAcceptanse/lines/${id}`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async saveInspection(dto: SaveSteelGoodReciptAcceptanseInspectionDto): Promise<SteelGoodReciptAcceptanseLineDetailDto> {
+    const response = await api.post<ApiResponse<SteelGoodReciptAcceptanseLineDetailDto>>('/api/SteelGoodReciptAcceptanse/inspection/save', dto);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async uploadInspectionPhotos(lineId: number, files: File[], captions: string[] = []): Promise<SteelGoodReciptAcceptansePhotoDto[]> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('files', file));
+    captions.forEach((caption) => formData.append('captions', caption));
+
+    const response = await api.post<ApiResponse<SteelGoodReciptAcceptansePhotoDto[]>>(
+      `/api/SteelGoodReciptAcceptanse/inspection/photos/${lineId}`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async deleteInspectionPhoto(photoId: number): Promise<boolean> {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/SteelGoodReciptAcceptanse/inspection/photos/${photoId}`);
+    if (response.success) {
+      return true;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+};
