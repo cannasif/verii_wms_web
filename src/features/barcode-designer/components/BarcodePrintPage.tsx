@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import { printerManagementApi } from '@/features/printer-management/api/printer-
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
+import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 import type { PrinterProfile } from '@/features/printer-management/types/printer-management.types';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
 import { barcodePrintSourceBrowserApi } from '../api/barcode-print-source-browser.api';
@@ -68,6 +69,7 @@ function formatDate(value?: string | null): string {
 
 export function BarcodePrintPage(): ReactElement {
   const { t } = useTranslation('common');
+  const { reportScreenReady } = useRouteScreenReady();
   const { id } = useParams();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.print-management');
@@ -81,6 +83,7 @@ export function BarcodePrintPage(): ReactElement {
   const [selectedServerPrinterProfileId, setSelectedServerPrinterProfileId] = useState('');
   const [copies, setCopies] = useState(1);
   const [printSettingsExpanded, setPrintSettingsExpanded] = useState(false);
+  const screenReadyReportedRef = useRef(false);
 
   const pagedGrid = usePagedDataGrid<HeaderSortKey>({
     pageKey: `barcode-print-${sourceModule}`,
@@ -139,6 +142,15 @@ export function BarcodePrintPage(): ReactElement {
     queryKey: ['barcode-print-headers-paged', sourceModule, pagedGrid.queryParams],
     queryFn: () => barcodePrintSourceBrowserApi.getHeadersPaged(sourceModule, pagedGrid.queryParams),
   });
+
+  useEffect(() => {
+    if (screenReadyReportedRef.current || headersQuery.isLoading) {
+      return;
+    }
+
+    screenReadyReportedRef.current = true;
+    reportScreenReady('initial-screen');
+  }, [headersQuery.isLoading, reportScreenReady]);
 
   const selectedHeaderIds = useMemo(
     () => Object.keys(selectedHeaderMap).map(Number).sort((left, right) => left - right),

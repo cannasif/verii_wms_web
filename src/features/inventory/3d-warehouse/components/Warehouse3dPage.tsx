@@ -1,4 +1,4 @@
-import { Suspense, lazy, startTransition, type ReactElement, useMemo, useState } from 'react';
+import { Suspense, lazy, startTransition, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWarehouse3d } from '../hooks/useWarehouse3d';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import type { WarehouseSlot } from '../types/warehouse-3d';
 import { Button } from '@/components/ui/button';
+import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 
 const WarehouseScene = lazy(async () => {
   const module = await import('./WarehouseScene');
@@ -14,12 +15,14 @@ const WarehouseScene = lazy(async () => {
 
 export function Warehouse3dPage(): ReactElement {
   const { t } = useTranslation();
+  const { reportScreenReady } = useRouteScreenReady();
   const [selectedDepoKodu, setSelectedDepoKodu] = useState<string>('');
   const [sceneActivated, setSceneActivated] = useState(false);
   const [hoveredSlot, setHoveredSlot] = useState<WarehouseSlot | null>(null);
   const [clickedSlot, setClickedSlot] = useState<WarehouseSlot | null>(null);
+  const screenReadyReportedRef = useRef(false);
   
-  const { data: warehouses } = useWarehouses();
+  const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
   const { data: warehouseData, isLoading, error, isFetching } = useWarehouse3d(selectedDepoKodu, !!selectedDepoKodu && sceneActivated);
 
   const displaySlot = clickedSlot || hoveredSlot;
@@ -34,6 +37,15 @@ export function Warehouse3dPage(): ReactElement {
     setHoveredSlot(null);
     setClickedSlot(null);
   }
+
+  useEffect(() => {
+    if (screenReadyReportedRef.current || isLoadingWarehouses || selectedDepoKodu) {
+      return;
+    }
+
+    screenReadyReportedRef.current = true;
+    reportScreenReady('initial-screen');
+  }, [isLoadingWarehouses, reportScreenReady, selectedDepoKodu]);
 
   return (
     <div className="flex h-full flex-col gap-4">

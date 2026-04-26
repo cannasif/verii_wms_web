@@ -41,6 +41,7 @@ import {
 } from '@/lib/html5-qrcode';
 import type { PPackageDto, PLineDto } from '../types/package';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 const PackageLabelPrintDialog = lazy(async () => {
   const module = await import('./PackageLabelPrintDialog');
   return { default: module.PackageLabelPrintDialog };
@@ -74,6 +75,7 @@ const getStatusBadgeColor = (status: string): string => {
 
 export function PackageDetailPage(): ReactElement {
   const { t } = useTranslation();
+  const { reportScreenReady } = useRouteScreenReady();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
@@ -95,6 +97,7 @@ export function PackageDetailPage(): ReactElement {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [initialPrintPackageIds, setInitialPrintPackageIds] = useState<number[]>([]);
+  const screenReadyReportedRef = useRef(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
 
@@ -106,6 +109,15 @@ export function PackageDetailPage(): ReactElement {
   const matchPlinesMutation = useMatchPlines();
   const { data: yapKodlar = [] } = useYapKodlar();
   const { data: barcodeData, isLoading: isSearching } = useStokBarcode(searchBarcode, enableSearch);
+
+  useEffect(() => {
+    if (screenReadyReportedRef.current || isLoadingHeader || isLoadingPackages || isLoadingLines) {
+      return;
+    }
+
+    screenReadyReportedRef.current = true;
+    reportScreenReady('initial-screen');
+  }, [isLoadingHeader, isLoadingLines, isLoadingPackages, reportScreenReady]);
 
   const packageSchema = useMemo(() => pPackageFormSchema(t), [t]);
   const lineSchema = useMemo(() => pLineFormSchema(t), [t]);

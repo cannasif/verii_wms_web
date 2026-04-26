@@ -2,10 +2,12 @@ interface RouteTelemetryEntry {
   routeName: string;
   durationMs: number;
   recordedAt: string;
+  metric: 'route' | 'screen';
+  stage?: string;
 }
 
-const STORAGE_KEY = 'wms-route-telemetry:v1';
-const MAX_ENTRIES = 40;
+const STORAGE_KEY = 'wms-route-telemetry:v2';
+const MAX_ENTRIES = 120;
 const SLOW_ROUTE_THRESHOLD_MS = 4000;
 
 function readEntries(): RouteTelemetryEntry[] {
@@ -38,7 +40,12 @@ function writeEntries(entries: RouteTelemetryEntry[]): void {
   }
 }
 
-export function recordRouteTelemetry(routeName: string, durationMs: number): void {
+function recordTelemetry(
+  routeName: string,
+  durationMs: number,
+  metric: 'route' | 'screen',
+  stage?: string,
+): void {
   if (typeof window === 'undefined' || !Number.isFinite(durationMs)) {
     return;
   }
@@ -47,6 +54,8 @@ export function recordRouteTelemetry(routeName: string, durationMs: number): voi
     routeName,
     durationMs: Math.round(durationMs),
     recordedAt: new Date().toISOString(),
+    metric,
+    stage,
   };
 
   const nextEntries = [...readEntries(), entry];
@@ -57,3 +66,10 @@ export function recordRouteTelemetry(routeName: string, durationMs: number): voi
   }
 }
 
+export function recordRouteTelemetry(routeName: string, durationMs: number): void {
+  recordTelemetry(routeName, durationMs, 'route');
+}
+
+export function recordScreenTelemetry(routeName: string, durationMs: number, stage = 'ready'): void {
+  recordTelemetry(routeName, durationMs, 'screen', stage);
+}

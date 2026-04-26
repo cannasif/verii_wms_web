@@ -1,12 +1,28 @@
-import { type PropsWithChildren, type ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  type PropsWithChildren,
+  type ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureNamespaces } from '@/lib/i18n';
-import { recordRouteTelemetry } from './route-telemetry';
+import { recordRouteTelemetry, recordScreenTelemetry } from './route-telemetry';
 
 interface RouteRuntimeBoundaryProps extends PropsWithChildren {
   routeName: string;
   namespaces?: string[];
 }
+
+interface RoutePerfContextValue {
+  reportScreenReady: (stage?: string) => void;
+}
+
+const RoutePerfContext = createContext<RoutePerfContextValue | null>(null);
 
 function markPerformance(label: string): void {
   if (typeof performance === 'undefined' || typeof performance.mark !== 'function') {
@@ -45,6 +61,16 @@ function shouldExposePerfInTitle(): boolean {
   }
 }
 
+function sanitizeTitle(baseTitle: string): string {
+  return baseTitle.replace(/\s+\[(?:screenperf|perf):[^\]]+\]$/, '');
+}
+
+export function useRouteScreenReady(): RoutePerfContextValue {
+  return useContext(RoutePerfContext) ?? {
+    reportScreenReady: () => undefined,
+  };
+}
+
 export function RouteRuntimeBoundary({
   routeName,
   namespaces = [],
@@ -53,10 +79,39 @@ export function RouteRuntimeBoundary({
   const { i18n } = useTranslation();
   const [ready, setReady] = useState(namespaces.length === 0);
   const startMark = useMemo(() => `route:${routeName}:start:${Date.now()}`, [routeName]);
+  const baseTitleRef = useRef<string>('');
 
   useEffect(() => {
     markPerformance(startMark);
+    baseTitleRef.current = sanitizeTitle(document.title);
   }, [startMark]);
+
+  const reportMetric = useCallback(
+    (metric: 'route' | 'screen', stage = 'ready') => {
+      const endMark = `route:${routeName}:${metric}:${stage}:${Date.now()}`;
+      markPerformance(endMark);
+      const duration = measurePerformance(`route:${routeName}:${metric}:${stage}`, startMark, endMark);
+      if (duration == null) {
+        return;
+      }
+
+      if (metric === 'screen') {
+        recordScreenTelemetry(routeName, duration, stage);
+      } else {
+        recordRouteTelemetry(routeName, duration);
+      }
+
+      if (shouldExposePerfInTitle()) {
+        const baseTitle = baseTitleRef.current || sanitizeTitle(document.title);
+        const tag =
+          metric === 'screen'
+            ? `[screenperf:${routeName}:${stage}:${Math.round(duration)}ms]`
+            : `[perf:${routeName}:${Math.round(duration)}ms]`;
+        document.title = `${baseTitle} ${tag}`;
+      }
+    },
+    [routeName, startMark],
+  );
 
   useEffect(() => {
     let active = true;
@@ -90,22 +145,13 @@ export function RouteRuntimeBoundary({
     }
 
     const frameId = window.requestAnimationFrame(() => {
-      const endMark = `route:${routeName}:ready:${Date.now()}`;
-      markPerformance(endMark);
-      const duration = measurePerformance(`route:${routeName}:render`, startMark, endMark);
-      if (duration != null) {
-        recordRouteTelemetry(routeName, duration);
-        if (shouldExposePerfInTitle()) {
-          const baseTitle = document.title.replace(/\s+\[perf:[^\]]+\]$/, '');
-          document.title = `${baseTitle} [perf:${routeName}:${Math.round(duration)}ms]`;
-        }
-      }
+      reportMetric('route');
     });
 
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [ready, routeName, startMark]);
+  }, [ready, reportMetric]);
 
   if (!ready) {
     return (
@@ -115,5 +161,13 @@ export function RouteRuntimeBoundary({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <RoutePerfContext.Provider
+      value={{
+        reportScreenReady: (stage) => reportMetric('screen', stage),
+      }}
+    >
+      {children}
+    </RoutePerfContext.Provider>
+  );
 }

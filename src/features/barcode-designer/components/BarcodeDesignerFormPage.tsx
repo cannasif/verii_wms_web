@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useUIStore } from '@/stores/ui-store';
 import { loadJsPdfModule } from '@/lib/lazy-vendors';
+import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 import { printerManagementApi } from '@/features/printer-management/api/printer-management.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
@@ -402,6 +403,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
   });
   const [bindingPickerOpen, setBindingPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'designer' | 'json' | 'preview' | 'plan'>('designer');
+  const { reportScreenReady } = useRouteScreenReady();
+  const screenReadyReportedRef = useRef(false);
   const [printerProfilesExpanded, setPrinterProfilesExpanded] = useState(false);
   const [versioningExpanded, setVersioningExpanded] = useState(false);
   const [deferredInsightsEnabled, setDeferredInsightsEnabled] = useState(false);
@@ -477,6 +480,30 @@ export function BarcodeDesignerFormPage(): ReactElement {
     queryFn: ({ signal }) => printerManagementApi.getTemplatePrinterProfiles(activeTemplateId!, { signal }),
     enabled: isEditMode && printerProfilesExpanded,
   });
+
+  useEffect(() => {
+    if (screenReadyReportedRef.current || activeTab !== 'designer') {
+      return;
+    }
+
+    const designerBindingsReady = !bindingCatalogQuery.isLoading && !schemaMetadataQuery.isLoading;
+    const editPayloadReady = !isEditMode || (!templateQuery.isLoading && !draftQuery.isLoading);
+
+    if (!designerBindingsReady || !editPayloadReady) {
+      return;
+    }
+
+    screenReadyReportedRef.current = true;
+    reportScreenReady('initial-screen');
+  }, [
+    activeTab,
+    bindingCatalogQuery.isLoading,
+    draftQuery.isLoading,
+    isEditMode,
+    reportScreenReady,
+    schemaMetadataQuery.isLoading,
+    templateQuery.isLoading,
+  ]);
 
   useEffect(() => {
     setPageTitle(
