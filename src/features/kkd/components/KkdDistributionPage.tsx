@@ -32,6 +32,11 @@ type LocalDistributionLine = CreateKkdDistributionSubmissionLineDto & {
   groupCode?: string | null;
   groupName?: string | null;
   entitlement: KkdEntitlementCheckResultDto;
+  openOrderPendingQuantity: number;
+  openOrderDocumentNos: string;
+  entitledQuantity: number;
+  excessQuantity: number;
+  isExcessIssue: boolean;
 };
 
 export function KkdDistributionPage(): ReactElement {
@@ -108,7 +113,20 @@ export function KkdDistributionPage(): ReactElement {
         employeeId: resolvedEmployee.employeeId,
         warehouseId: selectedWarehouse.id,
         sourceChannel: 'WMS',
-        lines: cartLines.map(({ clientId: _clientId, stockCode: _stockCode, stockName: _stockName, groupCode: _groupCode, groupName: _groupName, entitlement: _entitlement, ...line }) => line),
+        lines: cartLines.map(({
+          clientId: _clientId,
+          stockCode: _stockCode,
+          stockName: _stockName,
+          groupCode: _groupCode,
+          groupName: _groupName,
+          entitlement: _entitlement,
+          openOrderPendingQuantity: _openOrderPendingQuantity,
+          openOrderDocumentNos: _openOrderDocumentNos,
+          entitledQuantity: _entitledQuantity,
+          excessQuantity: _excessQuantity,
+          isExcessIssue: _isExcessIssue,
+          ...line
+        }) => line),
       });
     },
     onSuccess: (data) => {
@@ -125,7 +143,6 @@ export function KkdDistributionPage(): ReactElement {
   });
 
   const canResolveStock = Boolean(resolvedEmployee && selectedWarehouse && barcode.trim());
-  const canAddLine = Boolean(resolvedStock && entitlementResult?.allowed);
   const totalLineQuantity = useMemo(
     () => cartLines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0),
     [cartLines],
@@ -136,8 +153,45 @@ export function KkdDistributionPage(): ReactElement {
     return distributionContextQuery.data.remainingEntitlements.find((item) => item.groupCode === resolvedStock.groupCode) ?? null;
   }, [distributionContextQuery.data, resolvedStock?.groupCode]);
 
+  const matchingOpenOrders = useMemo(() => {
+    if (!resolvedStock?.stockCode || !distributionContextQuery.data?.cariAcikSiparis?.length) return [];
+    return distributionContextQuery.data.cariAcikSiparis.filter(
+      (item) => item.stockCode.trim().toUpperCase() === resolvedStock.stockCode.trim().toUpperCase(),
+    );
+  }, [distributionContextQuery.data, resolvedStock?.stockCode]);
+
+  const totalOpenOrderPendingQuantity = useMemo(
+    () => matchingOpenOrders.reduce((sum, item) => sum + (Number(item.pendingQuantity) || 0), 0),
+    [matchingOpenOrders],
+  );
+
+  const openOrderDocumentNos = useMemo(
+    () => Array.from(new Set(matchingOpenOrders.map((item) => item.documentNo).filter(Boolean))).join(', '),
+    [matchingOpenOrders],
+  );
+
+  const requestedQuantity = Number(quantity) || 1;
+  const hasMatchingOpenOrder = matchingOpenOrders.length > 0;
+  const isWithinOpenOrderQuantity = hasMatchingOpenOrder && requestedQuantity <= totalOpenOrderPendingQuantity;
+  const canIssueAsExcess = Boolean(
+    resolvedStock
+      && entitlementResult
+      && !entitlementResult.allowed
+      && entitlementResult.isGroupCodeMatched
+      && entitlementResult.entitlementMatrixLineId
+      && entitlementResult.remainingMainQuantity > 0
+      && isWithinOpenOrderQuantity,
+  );
+  const canAddLine = Boolean(resolvedStock && isWithinOpenOrderQuantity && (entitlementResult?.allowed || canIssueAsExcess));
+  const entitledQuantity = entitlementResult?.allowed
+    ? requestedQuantity
+    : canIssueAsExcess
+      ? Math.min(requestedQuantity, entitlementResult?.remainingMainQuantity ?? 0)
+      : 0;
+  const excessQuantity = Math.max(0, requestedQuantity - entitledQuantity);
+
   function handleAddLine(): void {
-    if (!resolvedStock || !entitlementResult?.allowed) return;
+    if (!resolvedStock || !entitlementResult || !canAddLine) return;
 
     setCartLines((prev) => [
       ...prev,
@@ -151,6 +205,11 @@ export function KkdDistributionPage(): ReactElement {
         groupCode: resolvedStock.groupCode,
         groupName: resolvedStock.groupName,
         entitlement: entitlementResult,
+        openOrderPendingQuantity: totalOpenOrderPendingQuantity,
+        openOrderDocumentNos,
+        entitledQuantity,
+        excessQuantity,
+        isExcessIssue: excessQuantity > 0,
       },
     ]);
 
@@ -365,11 +424,34 @@ export function KkdDistributionPage(): ReactElement {
                 </div>
               ) : null}
 
+              {resolvedStock ? (
+                <div className={`rounded-2xl border p-4 ${hasMatchingOpenOrder ? 'border-sky-200 bg-sky-50/60 dark:border-sky-800/40 dark:bg-sky-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={hasMatchingOpenOrder ? 'default' : 'destructive'}>
+                      {hasMatchingOpenOrder ? 'Açık Siparişte Var' : 'Açık Siparişte Yok'}
+                    </Badge>
+                    <Badge variant="outline">Stok: {resolvedStock.stockCode}</Badge>
+                    {resolvedStock.groupCode ? <Badge variant="secondary">Grup: {resolvedStock.groupCode}</Badge> : null}
+                    <Badge variant="outline">Bekleyen: {totalOpenOrderPendingQuantity}</Badge>
+                  </div>
+                  {openOrderDocumentNos ? (
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Sipariş Belgeleri: {openOrderDocumentNos}</p>
+                  ) : null}
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    {hasMatchingOpenOrder
+                      ? isWithinOpenOrderQuantity
+                        ? 'Okutulan stok, cariye bağlı açık KKD siparişinde yer alıyor ve miktar sınırı aşılmıyor.'
+                        : `Girilen miktar açık sipariş bekleyen miktarını aşıyor. En fazla ${totalOpenOrderPendingQuantity} adet alınabilir.`
+                      : 'Bu stok kodu, cariye bağlı açık KKD siparişleri içinde bulunmuyor.'}
+                  </p>
+                </div>
+              ) : null}
+
               {entitlementResult ? (
                 <div className={`rounded-2xl border p-4 ${entitlementResult.allowed ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-800/40 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={entitlementResult.allowed ? 'default' : 'destructive'}>
-                      {entitlementResult.allowed ? 'Hak Uygun' : 'Hak Yetersiz'}
+                    <Badge variant={(entitlementResult.allowed || canIssueAsExcess) ? 'default' : 'destructive'}>
+                      {(entitlementResult.allowed || canIssueAsExcess) ? 'Hak Uygun' : 'Hak Yetersiz'}
                     </Badge>
                     {entitlementResult.activePhaseLabel ? <Badge variant="secondary">Aktif Faz: {entitlementResult.activePhaseLabel}</Badge> : null}
                     <Badge variant="outline">İlk Giriş: {entitlementResult.remainingInitialQuantity}</Badge>
@@ -377,6 +459,7 @@ export function KkdDistributionPage(): ReactElement {
                     <Badge variant="outline">Rutin: {entitlementResult.remainingRecurringQuantity}</Badge>
                     <Badge variant="outline">Ek: {entitlementResult.remainingAdditionalQuantity}</Badge>
                     <Badge variant="secondary">Toplam: {entitlementResult.totalRemainingQuantity}</Badge>
+                    {excessQuantity > 0 ? <Badge variant="destructive">Fazla Alım: {excessQuantity}</Badge> : null}
                   </div>
                   <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
                     <p>
@@ -398,6 +481,12 @@ export function KkdDistributionPage(): ReactElement {
                   </div>
                   {entitlementResult.eligibilityExplanation ? <p className="mt-3 text-sm">{entitlementResult.eligibilityExplanation}</p> : null}
                   {entitlementResult.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{entitlementResult.message}</p> : null}
+                  {(entitlementResult.allowed || canIssueAsExcess) && resolvedStock ? (
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                      <p>Bu satır için hak kullanılacak miktar: <span className="font-medium">{entitledQuantity}</span></p>
+                      <p className="mt-1">Fazla alım olarak işaretlenecek miktar: <span className="font-medium">{excessQuantity}</span></p>
+                    </div>
+                  ) : null}
                   {entitlementResult.phaseStatuses?.length ? (
                     <div className="mt-3 grid gap-3 md:grid-cols-3">
                       {entitlementResult.phaseStatuses.map((phase) => (
@@ -452,6 +541,14 @@ export function KkdDistributionPage(): ReactElement {
                         <p className="text-sm text-slate-600 dark:text-slate-300">
                           Grup: {line.groupCode || '-'} | Miktar: {line.quantity} | Faz: {line.entitlement.activePhaseLabel || '-'}
                         </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                          Açık Sipariş: {line.openOrderDocumentNos || '-'} | Bekleyen: {line.openOrderPendingQuantity}
+                        </p>
+                        {line.isExcessIssue ? (
+                          <p className="text-sm font-medium text-amber-600 dark:text-amber-300">
+                            Hak: {line.entitledQuantity} | Fazla Alım: {line.excessQuantity}
+                          </p>
+                        ) : null}
                       </div>
                       <Button
                         type="button"

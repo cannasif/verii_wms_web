@@ -447,6 +447,9 @@ export interface KkdDistributionLineDto extends BaseLineEntityDto {
   serialNo?: string | null;
   serialNo2?: string | null;
   serialNo3?: string | null;
+  isExcessIssue: boolean;
+  entitledQuantity: number;
+  excessQuantity: number;
 }
 
 export interface CreateKkdDistributionDraftDto {
