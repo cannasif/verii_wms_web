@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Barcode, ChevronDown, ChevronRight, Copy, Download, FileJson2, Image as ImageIcon, Layers3, Package2, Plus, Save, ScanLine, Sparkles, Trash2, Type } from 'lucide-react';
 import type { Stage as KonvaStage } from 'konva/lib/Stage';
@@ -19,8 +19,6 @@ import { loadJsPdfModule } from '@/lib/lazy-vendors';
 import { printerManagementApi } from '@/features/printer-management/api/printer-management.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
-import { BarcodeDesignerCanvas } from './BarcodeDesignerCanvas';
-import { BarcodePrintSourcePickerDialog } from './BarcodePrintSourcePickerDialog';
 import { BarcodeTemplatePresetThumbnail } from './BarcodeTemplatePresetThumbnail';
 import { ARCHITECTURE_GROUPS, DELIVERY_PHASES, STACK_OPTIONS } from '../constants/barcode-designer-plan';
 import type {
@@ -37,6 +35,16 @@ import type {
 import { BARCODE_BINDING_FIELDS, BARCODE_TEMPLATE_PRESETS, DEFAULT_TEMPLATE_DOCUMENT, cmToMm, cmToPx, getRecommendedBindingTarget, getSuggestedBarcodeSymbology, getSuggestedElementLayout, mmToCm, parseTemplateDocument, pxToCm, snapToGridPx, stringifyTemplateDocument } from '../utils/barcode-designer-document';
 import { loadBarcodeDesignerDefaults, saveBarcodeDesignerDefaults } from '../utils/barcode-designer-defaults';
 import { validateBarcodeTemplate } from '../utils/barcode-designer-validation';
+
+const BarcodeDesignerCanvas = lazy(async () => {
+  const module = await import('./BarcodeDesignerCanvas');
+  return { default: module.BarcodeDesignerCanvas };
+});
+
+const BarcodePrintSourcePickerDialog = lazy(async () => {
+  const module = await import('./BarcodePrintSourcePickerDialog');
+  return { default: module.BarcodePrintSourcePickerDialog };
+});
 
 const DEFAULT_GS1_ELEMENTS = [
   { applicationIdentifier: '00', value: '' },
@@ -393,6 +401,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
     sourceLineId: '',
   });
   const [bindingPickerOpen, setBindingPickerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'designer' | 'json' | 'preview' | 'plan'>('designer');
+  const [printerProfilesExpanded, setPrinterProfilesExpanded] = useState(false);
+  const [versioningExpanded, setVersioningExpanded] = useState(false);
+  const [deferredInsightsEnabled, setDeferredInsightsEnabled] = useState(false);
   const [selectedBindingHeader, setSelectedBindingHeader] = useState<BarcodeSourceHeaderOption | null>(null);
   const [selectedBindingLine, setSelectedBindingLine] = useState<BarcodeSourceLineOption | null>(null);
   const [selectedBindingPackage, setSelectedBindingPackage] = useState<BarcodeSourcePackageOption | null>(null);
@@ -424,7 +436,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
   const versionsQuery = useQuery({
     queryKey: ['barcode-designer-versions', activeTemplateId],
     queryFn: ({ signal }) => barcodeDesignerApi.getVersions(activeTemplateId!, { signal }),
-    enabled: isEditMode,
+    enabled: isEditMode && versioningExpanded,
   });
 
   const bindingCatalogQuery = useQuery({
@@ -435,6 +447,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
       sourceLineId: bindingContext.sourceLineId.trim() ? Number(bindingContext.sourceLineId) : null,
       printMode: bindingContext.sourceLineId.trim() ? 'document-line' : 'document-all',
     }, { signal }),
+    enabled: activeTab === 'designer',
   });
   const schemaMetadataQuery = useQuery({
     queryKey: ['barcode-designer-schema-metadata', bindingContext.sourceModule, bindingContext.sourceHeaderId, bindingContext.sourceLineId],
@@ -444,22 +457,25 @@ export function BarcodeDesignerFormPage(): ReactElement {
       sourceLineId: bindingContext.sourceLineId.trim() ? Number(bindingContext.sourceLineId) : null,
       printMode: bindingContext.sourceLineId.trim() ? 'document-line' : 'document-all',
     }, { signal }),
+    enabled: activeTab === 'designer',
   });
 
   const printJobsQuery = useQuery({
     queryKey: ['printer-management-print-jobs-for-barcode-recommendation'],
     queryFn: ({ signal }) => printerManagementApi.getPrintJobs(200, { signal }),
+    enabled: deferredInsightsEnabled,
   });
 
   const printerProfilesQuery = useQuery({
     queryKey: ['printer-management-profiles-for-template-mapping'],
     queryFn: ({ signal }) => printerManagementApi.getProfiles(undefined, { signal }),
+    enabled: isEditMode && printerProfilesExpanded,
   });
 
   const templatePrinterProfilesQuery = useQuery({
     queryKey: ['barcode-designer-template-printer-profiles', activeTemplateId],
     queryFn: ({ signal }) => printerManagementApi.getTemplatePrinterProfiles(activeTemplateId!, { signal }),
-    enabled: isEditMode,
+    enabled: isEditMode && printerProfilesExpanded,
   });
 
   useEffect(() => {
@@ -543,6 +559,14 @@ export function BarcodeDesignerFormPage(): ReactElement {
         setSelectedPresetId(preset.id);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDeferredInsightsEnabled(true);
+    }, 600);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const selectedElement = useMemo(
@@ -2417,7 +2441,15 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
             {isEditMode ? (
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="font-medium text-slate-900 dark:text-white">Printer Profile Esleme</div>
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between gap-3 text-left"
+                  onClick={() => setPrinterProfilesExpanded((current) => !current)}
+                >
+                  <div className="font-medium text-slate-900 dark:text-white">Printer Profile Esleme</div>
+                  <Badge variant="outline">{printerProfilesExpanded ? 'Acik' : 'Yukle'}</Badge>
+                </button>
+                {printerProfilesExpanded ? (
                 <div className="mt-4 space-y-4">
                   <div className="space-y-2">
                     <Label>Printer Profile</Label>
@@ -2478,12 +2510,17 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     ) : null}
                   </div>
                 </div>
+                ) : (
+                  <div className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                    Bu panel ilk acilista yuklenmez. Yalnizca printer-profile esleme yapacaginiz zaman acilir.
+                  </div>
+                )}
               </div>
             ) : null}
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="designer" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="designer">Designer</TabsTrigger>
             <TabsTrigger value="json">JSON</TabsTrigger>
@@ -2574,23 +2611,34 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </CardContent>
             </Card>
 
-            <BarcodeDesignerCanvas
-              document={documentState}
-              selectedElementId={selectedElementId}
-              selectedElementIds={selectedElementIds}
-              onSelectElement={handleSelectElement}
-              onClearSelection={handleClearSelection}
-              onMoveElement={canManageTemplate ? handleMoveElement : () => {}}
-              onResizeElement={canManageTemplate ? handleResizeElement : () => {}}
-              onDuplicateSelected={canManageTemplate ? handleDuplicateSelectedElement : undefined}
-              onDeleteSelected={canManageTemplate ? handleDeleteSelectedElement : undefined}
-              onApplyTextPreset={canManageTemplate ? handleApplyTextPreset : undefined}
-              onApplyBarcodePreset={canManageTemplate ? handleApplyBarcodePreset : undefined}
-              onApplyImagePreset={canManageTemplate ? handleApplyImagePreset : undefined}
-              onDropBindingField={canManageTemplate ? handleDropBindingField : () => {}}
-              arrangementGuides={arrangementGuides}
-              stageRef={stageRef}
-            />
+            <Suspense
+              fallback={(
+                <div className="flex min-h-[520px] items-center justify-center rounded-2xl border border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="text-center">
+                    <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Designer canvas yukleniyor...</p>
+                  </div>
+                </div>
+              )}
+            >
+              <BarcodeDesignerCanvas
+                document={documentState}
+                selectedElementId={selectedElementId}
+                selectedElementIds={selectedElementIds}
+                onSelectElement={handleSelectElement}
+                onClearSelection={handleClearSelection}
+                onMoveElement={canManageTemplate ? handleMoveElement : () => {}}
+                onResizeElement={canManageTemplate ? handleResizeElement : () => {}}
+                onDuplicateSelected={canManageTemplate ? handleDuplicateSelectedElement : undefined}
+                onDeleteSelected={canManageTemplate ? handleDeleteSelectedElement : undefined}
+                onApplyTextPreset={canManageTemplate ? handleApplyTextPreset : undefined}
+                onApplyBarcodePreset={canManageTemplate ? handleApplyBarcodePreset : undefined}
+                onApplyImagePreset={canManageTemplate ? handleApplyImagePreset : undefined}
+                onDropBindingField={canManageTemplate ? handleDropBindingField : () => {}}
+                arrangementGuides={arrangementGuides}
+                stageRef={stageRef}
+              />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="json" className="space-y-4">
@@ -2661,9 +2709,23 @@ export function BarcodeDesignerFormPage(): ReactElement {
       {isEditMode ? (
         <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
           <CardHeader>
-            <CardTitle>Versioning ve Publish</CardTitle>
+            <button
+              type="button"
+              className="flex w-full items-center justify-between gap-3 text-left"
+              onClick={() => setVersioningExpanded((current) => !current)}
+            >
+              <CardTitle>Versioning ve Publish</CardTitle>
+              <Badge variant="outline">{versioningExpanded ? 'Acik' : 'Yukle'}</Badge>
+            </button>
           </CardHeader>
           <CardContent className="grid gap-3">
+            {!versioningExpanded ? (
+              <div className="text-sm text-slate-500 dark:text-slate-400">
+                Version listesi ve publish gecmisi ilk acilista yuklenmez. Ihtiyac oldugunda bu paneli acin.
+              </div>
+            ) : null}
+            {versioningExpanded ? (
+            <>
             {(versionsQuery.data?.data ?? []).map((version) => (
               <div key={version.id ?? version.versionNo} className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-1 text-sm">
@@ -2740,19 +2802,23 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
               </div>
             ) : null}
+            </>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}
 
-      <BarcodePrintSourcePickerDialog
-        open={bindingPickerOpen}
-        onOpenChange={setBindingPickerOpen}
-        sourceModule={bindingContext.sourceModule}
-        printMode="document-line"
-        selectedHeaderId={bindingContext.sourceHeaderId.trim() ? Number(bindingContext.sourceHeaderId) : null}
-        selectedLineId={bindingContext.sourceLineId.trim() ? Number(bindingContext.sourceLineId) : null}
-        onConfirm={handleBindingPickerConfirm}
-      />
+      <Suspense fallback={null}>
+        <BarcodePrintSourcePickerDialog
+          open={bindingPickerOpen}
+          onOpenChange={setBindingPickerOpen}
+          sourceModule={bindingContext.sourceModule}
+          printMode="document-line"
+          selectedHeaderId={bindingContext.sourceHeaderId.trim() ? Number(bindingContext.sourceHeaderId) : null}
+          selectedLineId={bindingContext.sourceLineId.trim() ? Number(bindingContext.sourceLineId) : null}
+          onConfirm={handleBindingPickerConfirm}
+        />
+      </Suspense>
     </div>
   );
 }

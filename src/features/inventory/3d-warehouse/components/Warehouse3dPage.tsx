@@ -1,10 +1,11 @@
-import { Suspense, lazy, type ReactElement, useState } from 'react';
+import { Suspense, lazy, startTransition, type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWarehouse3d } from '../hooks/useWarehouse3d';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
 import type { WarehouseSlot } from '../types/warehouse-3d';
+import { Button } from '@/components/ui/button';
 
 const WarehouseScene = lazy(async () => {
   const module = await import('./WarehouseScene');
@@ -14,13 +15,25 @@ const WarehouseScene = lazy(async () => {
 export function Warehouse3dPage(): ReactElement {
   const { t } = useTranslation();
   const [selectedDepoKodu, setSelectedDepoKodu] = useState<string>('');
+  const [sceneActivated, setSceneActivated] = useState(false);
   const [hoveredSlot, setHoveredSlot] = useState<WarehouseSlot | null>(null);
   const [clickedSlot, setClickedSlot] = useState<WarehouseSlot | null>(null);
   
   const { data: warehouses } = useWarehouses();
-  const { data: warehouseData, isLoading, error } = useWarehouse3d(selectedDepoKodu, !!selectedDepoKodu);
+  const { data: warehouseData, isLoading, error, isFetching } = useWarehouse3d(selectedDepoKodu, !!selectedDepoKodu && sceneActivated);
 
   const displaySlot = clickedSlot || hoveredSlot;
+  const selectedWarehouse = useMemo(
+    () => warehouses?.find((warehouse) => warehouse.depoKodu.toString() === selectedDepoKodu) ?? null,
+    [warehouses, selectedDepoKodu],
+  );
+
+  function handleWarehouseChange(value: string): void {
+    setSelectedDepoKodu(value);
+    setSceneActivated(false);
+    setHoveredSlot(null);
+    setClickedSlot(null);
+  }
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -28,7 +41,7 @@ export function Warehouse3dPage(): ReactElement {
         <label className="text-sm font-medium">
           {t('inventory.warehouse3d.selectWarehouse')}
         </label>
-        <Select value={selectedDepoKodu} onValueChange={setSelectedDepoKodu}>
+        <Select value={selectedDepoKodu} onValueChange={handleWarehouseChange}>
           <SelectTrigger className="w-full sm:max-w-[260px]">
             <SelectValue placeholder={t('inventory.warehouse3d.selectWarehouse')} />
           </SelectTrigger>
@@ -81,6 +94,28 @@ export function Warehouse3dPage(): ReactElement {
         </div>
       )}
 
+      {selectedDepoKodu && !sceneActivated && !isLoading && (
+        <div className="hidden min-h-[460px] items-center justify-center rounded-lg border bg-muted/30 md:flex xl:min-h-[600px]">
+          <div className="max-w-xl text-center p-6">
+            <div className="text-5xl mb-4">🏗️</div>
+            <p className="text-lg font-medium text-foreground">
+              {selectedWarehouse?.depoIsmi ?? t('inventory.warehouse3d.selectWarehouse')}
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              3D depo gorunumu agir bir ekran. Ilk acilisi hizli tutmak icin model ve stok katmani sadece istediginizde yuklenir.
+            </p>
+            <Button
+              type="button"
+              className="mt-5"
+              onClick={() => startTransition(() => setSceneActivated(true))}
+              disabled={isFetching}
+            >
+              3D Gorunumu Yukle
+            </Button>
+          </div>
+        </div>
+      )}
+
       {selectedDepoKodu && error && (
         <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
           <p className="text-destructive">
@@ -89,7 +124,7 @@ export function Warehouse3dPage(): ReactElement {
         </div>
       )}
 
-      {selectedDepoKodu && warehouseData && !isLoading && (
+      {selectedDepoKodu && sceneActivated && warehouseData && !isLoading && (
         <>
           <div className="relative hidden min-h-[460px] md:block xl:min-h-[600px]">
             <div className="h-full w-full rounded-lg overflow-hidden">
