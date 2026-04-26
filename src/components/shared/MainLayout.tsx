@@ -236,6 +236,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         { title: t('sidebar.sacMalKabulImport'), href: '/sac-mal-kabul/import' },
         { title: t('sidebar.sacMalKabulInspection'), href: '/sac-mal-kabul/inspection' },
         { title: t('sidebar.sacMalKabulList'), href: '/sac-mal-kabul/list' },
+        { title: t('sidebar.sacMalKabulPlacement'), href: '/sac-mal-kabul/placement' },
         { title: t('sidebar.sacMalKabulReceipt'), href: '/sac-mal-kabul/receipt' },
       ]),
     };

@@ -2,3 +2,4 @@ export { SteelGoodReciptAcceptanseImportPage } from './components/SteelGoodRecip
 export { SteelGoodReciptAcceptanseListPage } from './components/SteelGoodReciptAcceptanseListPage';
 export { SteelGoodReciptAcceptanseInspectionPage } from './components/SteelGoodReciptAcceptanseInspectionPage';
 export { SteelGoodReciptAcceptanseReceiptPage } from './components/SteelGoodReciptAcceptanseReceiptPage';
+export { SteelGoodReciptAcceptansePlacementPage } from './components/SteelGoodReciptAcceptansePlacementPage';

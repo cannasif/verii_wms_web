@@ -10,8 +10,11 @@ import type {
   SteelGoodReciptAcceptanseImportPreviewRequestDto,
   SteelGoodReciptAcceptanseLineDetailDto,
   SteelGoodReciptAcceptanseLineListItemDto,
+  SteelGoodReciptAcceptanseLocationOccupancyItemDto,
+  SteelGoodReciptAcceptansePlacementDto,
   SteelGoodReciptAcceptansePhotoDto,
   SteelGoodReciptAcceptanseReceiptHeaderDto,
+  SaveSteelGoodReciptAcceptansePlacementDto,
   SaveSteelGoodReciptAcceptanseInspectionDto,
 } from '../types/steel-good-recipt-acceptanse.types';
 
@@ -104,6 +107,35 @@ export const steelGoodReciptAcceptanseApi = {
 
   async createReceipt(dto: CreateSteelGoodReciptAcceptanseReceiptDto): Promise<SteelGoodReciptAcceptanseReceiptHeaderDto> {
     const response = await api.post<ApiResponse<SteelGoodReciptAcceptanseReceiptHeaderDto>>('/api/SteelGoodReciptAcceptanse/receipt/create', dto);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async getPlacementCandidatesPaged(params: PagedParams = {}): Promise<PagedResponse<SteelGoodReciptAcceptanseLineListItemDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<SteelGoodReciptAcceptanseLineListItemDto>>>(
+      '/api/SteelGoodReciptAcceptanse/placement/candidates/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 50, sortBy: 'Id', sortDirection: 'desc' }),
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async getLocationOccupancy(warehouseId: number, shelfId?: number | null, areaCode?: string | null): Promise<SteelGoodReciptAcceptanseLocationOccupancyItemDto[]> {
+    const response = await api.get<ApiResponse<SteelGoodReciptAcceptanseLocationOccupancyItemDto[]>>('/api/SteelGoodReciptAcceptanse/placement/location-occupancy', {
+      params: { warehouseId, shelfId, areaCode },
+    });
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async savePlacement(dto: SaveSteelGoodReciptAcceptansePlacementDto): Promise<SteelGoodReciptAcceptansePlacementDto> {
+    const response = await api.post<ApiResponse<SteelGoodReciptAcceptansePlacementDto>>('/api/SteelGoodReciptAcceptanse/placement/save', dto);
     if (response.success && response.data) {
       return response.data;
     }

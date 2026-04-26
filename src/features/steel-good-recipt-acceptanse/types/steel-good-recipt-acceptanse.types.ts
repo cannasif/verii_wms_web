@@ -146,3 +146,42 @@ export interface CreateSteelGoodReciptAcceptanseReceiptDto {
   lineIds: number[];
   note?: string | null;
 }
+
+export interface SteelGoodReciptAcceptansePlacementDto {
+  id: number;
+  lineId: number;
+  warehouseId?: number | null;
+  shelfId?: number | null;
+  areaCode?: string | null;
+  placementType: string;
+  stackOrderNo?: number | null;
+  rowNo?: number | null;
+  positionNo?: number | null;
+  createdDate?: string | null;
+}
+
+export interface SaveSteelGoodReciptAcceptansePlacementDto {
+  lineId: number;
+  warehouseId: number;
+  shelfId?: number | null;
+  areaCode?: string | null;
+  placementType: 'SideBySide' | 'Stacked' | string;
+  stackOrderNo?: number | null;
+  rowNo?: number | null;
+  positionNo?: number | null;
+  note?: string | null;
+}
+
+export interface SteelGoodReciptAcceptanseLocationOccupancyItemDto {
+  lineId: number;
+  dCode: string;
+  stockCode: string;
+  serialNo: string;
+  supplierCode: string;
+  headerDocumentNo?: string | null;
+  placementType: string;
+  stackOrderNo?: number | null;
+  rowNo?: number | null;
+  positionNo?: number | null;
+  placementDate?: string | null;
+}
