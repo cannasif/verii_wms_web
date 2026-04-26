@@ -1,4 +1,5 @@
 export { KkdOverviewPage } from './components/KkdOverviewPage';
+export { KkdInitialOrderPage } from './components/KkdInitialOrderPage';
 export { KkdDistributionPage } from './components/KkdDistributionPage';
 export { KkdDistributionListPage } from './components/KkdDistributionListPage';
 export { KkdEntitlementCheckPage } from './components/KkdEntitlementCheckPage';

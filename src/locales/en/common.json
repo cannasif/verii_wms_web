@@ -362,6 +362,7 @@
     "serviceAllocation": "Service Allocation",
     "kkd": "PPE",
     "kkdOverview": "PPE Operations Hub",
+    "kkdInitialOrder": "PPE Initial Order",
     "kkdOperationsGroup": "Operations",
     "kkdMonitoringGroup": "Check and Monitoring",
     "kkdReportsGroup": "Reports",

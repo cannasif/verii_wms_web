@@ -182,6 +182,7 @@ const ServiceCaseListPage = lazyNamed(() => import('@/features/service-allocatio
 const ServiceCaseTimelinePage = lazyNamed(() => import('@/features/service-allocation'), 'ServiceCaseTimelinePage');
 const ServiceReportsPage = lazyNamed(() => import('@/features/service-allocation'), 'ServiceReportsPage');
 const KkdOverviewPage = lazyNamed(() => import('@/features/kkd'), 'KkdOverviewPage');
+const KkdInitialOrderPage = lazyNamed(() => import('@/features/kkd'), 'KkdInitialOrderPage');
 const KkdDistributionPage = lazyNamed(() => import('@/features/kkd'), 'KkdDistributionPage');
 const KkdDistributionListPage = lazyNamed(() => import('@/features/kkd'), 'KkdDistributionListPage');
 const KkdEntitlementCheckPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementCheckPage');
@@ -196,6 +197,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'kkd',
     children: [
       { index: true, element: withRoute(KkdOverviewPage, { routeName: 'kkd-overview' }) },
+      { path: 'initial-order', element: withRoute(KkdInitialOrderPage, { routeName: 'kkd-initial-order' }) },
       { path: 'distribution', element: withRoute(KkdDistributionPage, { routeName: 'kkd-distribution' }) },
       { path: 'distribution-list', element: withRoute(KkdDistributionListPage, { routeName: 'kkd-distribution-list' }) },
       { path: 'remaining-entitlements', element: withRoute(KkdRemainingEntitlementsPage, { routeName: 'kkd-remaining-entitlements' }) },

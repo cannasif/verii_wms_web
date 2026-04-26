@@ -418,6 +418,69 @@ export interface KkdDistributionContextDto {
   cariAcikSiparis: KkdCariAcikSiparisDto[];
 }
 
+export interface KkdInitialOrderEligibleGroupDto {
+  groupCode: string;
+  groupName?: string | null;
+  remainingInitialQuantity: number;
+  nextEligibleDate?: string | null;
+  message?: string | null;
+}
+
+export interface KkdOrderStockOptionDto {
+  stockId: number;
+  stockCode: string;
+  stockName: string;
+  unit?: string | null;
+  groupCode?: string | null;
+  groupName?: string | null;
+}
+
+export interface KkdOrderContextDto {
+  employeeId: number;
+  employeeCode: string;
+  employeeName: string;
+  customerId: number;
+  customerCode: string;
+  employmentStartDate: string;
+  eligibleGroups: KkdInitialOrderEligibleGroupDto[];
+}
+
+export interface CreateKkdOrderSubmissionLineDto {
+  groupCode: string;
+  groupName?: string | null;
+  stockId: number;
+  stockCode: string;
+  stockName: string;
+  unit?: string | null;
+  quantity: number;
+}
+
+export interface CreateKkdOrderSubmissionDto {
+  employeeId: number;
+  orderDate?: string | null;
+  description?: string | null;
+  sourceChannel: string;
+  branchCode?: string;
+  lines: CreateKkdOrderSubmissionLineDto[];
+}
+
+export interface KkdOrderLineDto extends BaseLineEntityDto {
+  headerId: number;
+  groupCode: string;
+  groupName?: string | null;
+  entitlementPhaseType: string;
+  entitledQuantity: number;
+  remainingQuantitySnapshot: number;
+}
+
+export interface KkdOrderHeaderDto extends BaseHeaderEntityDto {
+  customerCode: string;
+  employeeId: number;
+  status: string;
+  sourceChannel: string;
+  lines: KkdOrderLineDto[];
+}
+
 export interface KkdDistributionListItemDto extends BaseHeaderEntityDto {
   customerCode: string;
   employeeId: number;

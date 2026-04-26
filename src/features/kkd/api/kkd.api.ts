@@ -26,12 +26,16 @@ import type {
   KkdEntitlementOverrideDto,
   KkdEntitlementPolicyDto,
   KkdGroupUsageReportDto,
+  KkdOrderContextDto,
+  KkdOrderHeaderDto,
+  KkdOrderStockOptionDto,
   KkdRemainingEntitlementDto,
   KkdResolvedEmployeeDto,
   KkdResolvedStockDto,
   KkdRoleUsageReportDto,
   KkdStockGroupOption,
   KkdValidationLogDto,
+  CreateKkdOrderSubmissionDto,
   ResolveKkdEmployeeQrDto,
   ResolveKkdStockBarcodeDto,
   UpdateKkdDistributionLineDto,
@@ -204,6 +208,22 @@ export const kkdApi = {
       groupCode: row.grupKod,
       groupName: row.grupIsim,
     }));
+  },
+  getOrderContext: async (employeeId: number, transactionDate?: string | null): Promise<KkdOrderContextDto> => {
+    const response = await api.get<ApiResponse<KkdOrderContextDto>>(`/api/KkdOrder/context/${employeeId}`, {
+      params: { transactionDate: transactionDate || undefined },
+    });
+    return extractData(response);
+  },
+  getOrderStocksByGroup: async (groupCode: string, search?: string): Promise<KkdOrderStockOptionDto[]> => {
+    const response = await api.get<ApiResponse<KkdOrderStockOptionDto[]>>(`/api/KkdOrder/stocks/by-group/${encodeURIComponent(groupCode)}`, {
+      params: { search: search || undefined },
+    });
+    return extractData(response);
+  },
+  submitOrder: async (dto: CreateKkdOrderSubmissionDto): Promise<KkdOrderHeaderDto> => {
+    const response = await api.post<ApiResponse<KkdOrderHeaderDto>>('/api/KkdOrder/submit', dto);
+    return extractData(response);
   },
 
   createDraft: async (dto: CreateKkdDistributionDraftDto): Promise<KkdDistributionHeaderDto> => {

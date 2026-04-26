@@ -206,6 +206,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           title: t('sidebar.kkdOperationsGroup'),
           children: sortNavItems([
             { title: t('sidebar.kkdOverview'), href: '/kkd' },
+            { title: t('sidebar.kkdInitialOrder'), href: '/kkd/initial-order' },
             { title: t('sidebar.kkdDistribution'), href: '/kkd/distribution' },
             { title: t('sidebar.kkdDistributionList'), href: '/kkd/distribution-list' },
           ]),
