@@ -7,18 +7,13 @@ import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
+import type { NavItem } from './nav-items';
 
 const UserProfileModal = lazy(() =>
   import('@/features/user-detail/components/UserProfileModal').then((module) => ({
     default: module.UserProfileModal,
   })),
 );
-
-interface NavItem {
-  title: string;
-  href?: string;
-  children?: NavItem[];
-}
 
 interface SearchTarget {
   title: string;
@@ -42,18 +37,21 @@ const normalizeText = (text: string): string =>
     .replace(/ö/g, 'o')
     .replace(/ç/g, 'c');
 
-const flattenSearchTargets = (items: NavItem[]): SearchTarget[] => {
+const flattenSearchTargets = (items: NavItem[], resolveTitle: (item: NavItem) => string): SearchTarget[] => {
   const targets: SearchTarget[] = [];
   for (const item of items) {
     if (item.href) {
-      targets.push({ title: item.title, subtitle: item.title, href: item.href });
+      const title = resolveTitle(item);
+      targets.push({ title, subtitle: title, href: item.href });
     }
     if (item.children?.length) {
       for (const child of item.children) {
         if (!child.href) continue;
+        const parentTitle = resolveTitle(item);
+        const childTitle = resolveTitle(child);
         targets.push({
-          title: child.title,
-          subtitle: `${item.title} / ${child.title}`,
+          title: childTitle,
+          subtitle: `${parentTitle} / ${childTitle}`,
           href: child.href,
         });
       }
@@ -70,6 +68,10 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const [isSearchFocus, setIsSearchFocus] = useState(false);
+  const resolveTitle = useMemo(
+    () => (item: NavItem): string => t(item.title, { defaultValue: item.titleFallback ?? item.title }),
+    [t],
+  );
 
   const { isListening, isSupported, startListening } = useVoiceSearch({
     onResult: (text) => {
@@ -81,7 +83,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     },
   });
 
-  const searchTargets = useMemo(() => flattenSearchTargets(navItems), [navItems]);
+  const searchTargets = useMemo(() => flattenSearchTargets(navItems, resolveTitle), [navItems, resolveTitle]);
   const quickResults = useMemo(() => {
     const q = normalizeText(searchQuery.trim());
     if (!q) return [] as SearchTarget[];

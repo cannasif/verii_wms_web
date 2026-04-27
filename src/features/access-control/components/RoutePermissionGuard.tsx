@@ -1,15 +1,27 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { canAccessPath } from '../utils/hasPermission';
 import { UnauthorizedPage } from './UnauthorizedPage';
+import { logPerfDebug } from '@/lib/perf-debug';
 
 export function RoutePermissionGuard(): ReactElement {
   const { t } = useTranslation();
   const location = useLocation();
   const { data: permissions, isLoading, isError, error } = useMyPermissionsQuery();
+
+  useEffect(() => {
+    if (isLoading) {
+      logPerfDebug('permissions:loading', { path: location.pathname });
+      return;
+    }
+
+    if (permissions) {
+      logPerfDebug('permissions:ready', { path: location.pathname });
+    }
+  }, [isLoading, location.pathname, permissions]);
 
   if (isLoading) {
     return (

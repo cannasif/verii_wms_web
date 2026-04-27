@@ -43,8 +43,17 @@ export default defineConfig({
             return 'vendor-signalr';
           }
 
-          if (id.includes('/src/features/inventory/3d-warehouse/')) {
-            return 'warehouse-3d-feature';
+          if (
+            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseScene') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/Shelf3D') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/AisleFloor3D') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseFloor') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseBin') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseShelf') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/AisleFloor') ||
+            id.includes('/src/features/inventory/3d-warehouse/components/Bin3D')
+          ) {
+            return 'warehouse-3d-scene';
           }
 
           // Let Rollup group third-party vendor modules naturally. The custom

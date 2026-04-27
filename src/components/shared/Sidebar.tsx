@@ -6,13 +6,7 @@ import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 import v3riiWmsLogo from '@/assets/v3riiwms.png';
 import v3logo from '@/assets/v3logo.png';
-
-interface NavItem {
-  title: string;
-  href?: string;
-  icon?: ReactElement;
-  children?: NavItem[];
-}
+import type { NavItem } from './nav-items';
 
 interface SidebarProps {
   items: NavItem[];
@@ -103,12 +97,12 @@ function matchesQuery(title: string, searchQuery: string): boolean {
   return queryWords.every((queryWord) => titleWords.some((titleWord) => titleWord.includes(queryWord)));
 }
 
-function nodeMatchesSearch(node: NavItem, searchQuery: string): boolean {
-  if (matchesQuery(node.title, searchQuery)) {
+function nodeMatchesSearch(node: NavItem, searchQuery: string, resolveTitle: (item: NavItem) => string): boolean {
+  if (matchesQuery(resolveTitle(node), searchQuery)) {
     return true;
   }
 
-  return node.children?.some((child) => nodeMatchesSearch(child, searchQuery)) ?? false;
+  return node.children?.some((child) => nodeMatchesSearch(child, searchQuery, resolveTitle)) ?? false;
 }
 
 function nodeHasActiveDescendant(node: NavItem, pathname: string): boolean {
@@ -142,12 +136,14 @@ function NavItemComponent({
   searchQuery,
   expandedItemKeys,
   onToggle,
+  resolveTitle,
   level = 0,
 }: {
   item: NavItem;
   searchQuery: string;
   expandedItemKeys: string[];
   onToggle: (key: string) => void;
+  resolveTitle: (item: NavItem) => string;
   level?: number;
 }): ReactElement {
   const location = useLocation();
@@ -156,7 +152,8 @@ function NavItemComponent({
   const isActive = item.href ? location.pathname === item.href : false;
   const hasActiveChild = item.children?.some((child) => nodeHasActiveDescendant(child, location.pathname)) ?? false;
   const itemKey = item.href || `${level}:${item.title}`;
-  const searchMatched = nodeMatchesSearch(item, searchQuery);
+  const title = resolveTitle(item);
+  const searchMatched = nodeMatchesSearch(item, searchQuery, resolveTitle);
   const isExpanded = expandedItemKeys.includes(itemKey) || (Boolean(searchQuery.trim()) && hasChildren && searchMatched);
   const iconTone = getToneByTitle(item.title);
   const toneClasses = toneClassMap[iconTone];
@@ -181,7 +178,7 @@ function NavItemComponent({
       <div className="space-y-1">
         <button
           type="button"
-          title={item.title}
+          title={title}
           onClick={() => {
             if (!isSidebarOpen) {
               setSidebarOpen(true);
@@ -216,7 +213,7 @@ function NavItemComponent({
           ) : null}
           <span className={cn('flex-1 text-left text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
             <span className="line-clamp-2 break-words">
-              {item.title}
+              {title}
             </span>
           </span>
           {isSidebarOpen && (
@@ -245,6 +242,7 @@ function NavItemComponent({
                 searchQuery={searchQuery}
                 expandedItemKeys={expandedItemKeys}
                 onToggle={onToggle}
+                resolveTitle={resolveTitle}
                 level={level + 1}
               />
             ))}
@@ -261,7 +259,7 @@ function NavItemComponent({
   return (
     <Link
       to={item.href}
-      title={item.title}
+      title={title}
       className={cn(
         'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
         'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
@@ -294,7 +292,7 @@ function NavItemComponent({
       {level > 0 && isSidebarOpen ? <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" /> : null}
       <span className={cn('text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
         <span className="line-clamp-2 break-words">
-          {item.title}
+          {title}
         </span>
       </span>
     </Link>
@@ -306,6 +304,10 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
   const { t } = useTranslation();
   const location = useLocation();
   const [expandedItemKeys, setExpandedItemKeys] = useState<string[]>([]);
+  const resolveTitle = useCallback(
+    (item: NavItem): string => t(item.title, { defaultValue: item.titleFallback ?? item.title }),
+    [t],
+  );
 
   useEffect(() => {
     if (!isSidebarOpen) {
@@ -393,6 +395,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
               searchQuery={searchQuery}
               expandedItemKeys={expandedItemKeys}
               onToggle={handleToggle}
+              resolveTitle={resolveTitle}
             />
           ))}
         </nav>

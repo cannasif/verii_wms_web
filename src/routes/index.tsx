@@ -12,31 +12,33 @@ import { lazyNamed, withRoute } from './route-utils';
 const WelcomePage = lazyNamed(() => import('@/features/welcome'), 'WelcomePage');
 const DashboardPage = lazyNamed(() => import('@/features/dashboard'), 'DashboardPage');
 const ParameterFormPage = lazyNamed(() => import('@/features/parameters'), 'ParameterFormPage');
-const ProfilePage = lazyNamed(
-  () => import('@/features/user-detail/components/ProfilePage'),
-  'ProfilePage',
-);
+const ProfilePage = lazyNamed(() => import('@/features/user-detail/components/ProfilePage'), 'ProfilePage');
 
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    errorElement: <RouteErrorPage />,
-    element: (
-      <ProtectedRoute>
-        <MainLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: withRoute(WelcomePage, { routeName: 'welcome' }) },
-      { path: 'dashboard', element: withRoute(DashboardPage, { routeName: 'dashboard' }) },
-      ...operationsChildRoutes,
-      { path: 'parameters', children: [{ path: ':type', element: withRoute(ParameterFormPage, { routeName: 'parameters-form' }) }] },
-      ...adminChildRoutes,
-      ...erpChildRoutes,
-      { path: 'profile', element: withRoute(ProfilePage, { routeName: 'profile' }) },
-    ],
-  },
-  ...authRouteTrees,
-], {
-  basename: getAppBasePath(),
-});
+export function createAppRouter() {
+  return createBrowserRouter([
+    {
+      path: '/',
+      errorElement: <RouteErrorPage />,
+      element: (
+        <ProtectedRoute>
+          <MainLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        { index: true, element: withRoute(WelcomePage, { routeName: 'welcome' }) },
+        { path: 'dashboard', element: withRoute(DashboardPage, { routeName: 'dashboard' }) },
+        ...operationsChildRoutes,
+        {
+          path: 'parameters',
+          children: [{ path: ':type', element: withRoute(ParameterFormPage, { routeName: 'parameters-form' }) }],
+        },
+        ...adminChildRoutes,
+        ...erpChildRoutes,
+        { path: 'profile', element: withRoute(ProfilePage, { routeName: 'profile' }) },
+      ],
+    },
+    ...authRouteTrees,
+  ], {
+    basename: getAppBasePath(),
+  });
+}
