@@ -156,7 +156,7 @@ export function RouteRuntimeBoundary({
   if (!ready) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center px-6 py-10 text-sm text-slate-500 dark:text-slate-400">
-        {t('common.pagePreparing')}
+        {t('pagePreparing')}
       </div>
     );
   }

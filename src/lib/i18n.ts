@@ -212,6 +212,7 @@ function getInitialLanguage(): SupportedLanguage {
 
 const initialLng = getInitialLanguage();
 syncDocumentLanguage(initialLng);
+persistLanguage(initialLng);
 loadedBundlesByLanguage[fallbackLng] = {
   [DEFAULT_NAMESPACE]: {
     [DEFAULT_NAMESPACE]: trCommon,
@@ -311,6 +312,7 @@ const initPromise = (async () => {
     ns,
     defaultNS,
     fallbackNS: [COMMON_NAMESPACE, DEFAULT_NAMESPACE],
+    initImmediate: false,
     interpolation: { escapeValue: false },
     parseMissingKeyHandler: (key, defaultValue) => {
       if (import.meta.env.DEV && (defaultValue === undefined || defaultValue === '')) {
@@ -324,6 +326,10 @@ const initPromise = (async () => {
       caches: [],
     },
   });
+
+  if (i18n.language !== initialLng || i18n.resolvedLanguage !== initialLng) {
+    await i18n.changeLanguage(initialLng);
+  }
 
   await ensureNamespaces(PRELOADED_NAMESPACES, fallbackLng);
   if (initialLng !== fallbackLng) {

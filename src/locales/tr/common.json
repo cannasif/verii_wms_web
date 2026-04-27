@@ -3427,7 +3427,17 @@
       "createSuccess": "Servis vakası oluşturuldu.",
       "updateSuccess": "Servis vakası güncellendi.",
       "saveError": "Servis vakası kaydedilemedi.",
-      "initialLine": "İlk / Ek Servis Satırı"
+      "initialLine": "İlk / Ek Servis Satırı",
+      "selectCustomer": "Müşteri seçin",
+      "selectStock": "Stok seçin",
+      "selectWarehouse": "Depo seçin",
+      "noCustomers": "Müşteri bulunamadı.",
+      "noStocks": "Stok bulunamadı.",
+      "noWarehouses": "Depo bulunamadı.",
+      "customerLookupDescription": "Kod yerine doğrudan müşteri kaydını seçin; sistem müşteri kodu ve kimliğini birlikte doldurur.",
+      "incomingStockLookupDescription": "Gelen ürün için ERP stok kaydını seçin; stok kodu ve stok kimliği birlikte doldurulur.",
+      "initialLineStockLookupDescription": "Servis satırında kullanılacak stok kartını seçin; sistem stok kodunu, kimliğini ve birimi taşır.",
+      "warehouseLookupDescription": "Kimlik alanı yerine doğrudan depo seçin; sistem doğru depo kaydını arka planda bağlar."
     },
     "reports": {
       "title": "Servis Raporları",

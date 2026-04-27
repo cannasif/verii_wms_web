@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { lookupApi } from '@/services/lookup-api';
+import type { CustomerLookup, StockLookup, WarehouseLookup } from '@/services/lookup-types';
 import { serviceAllocationApi } from '../api/service-allocation.api';
 import { useServiceCaseTimelineQuery } from '../hooks/useServiceCaseTimelineQuery';
 import {
@@ -54,7 +57,7 @@ function toDateInput(value?: string): string {
 }
 
 export function ServiceCaseFormPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams();
@@ -65,6 +68,16 @@ export function ServiceCaseFormPage(): ReactElement {
   const timelineQuery = useServiceCaseTimelineQuery(isEdit ? parsedId : undefined);
   const canSubmit = isEdit ? permission.canUpdate : permission.canCreate;
   const isReadOnly = !canSubmit;
+  const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
+  const [incomingStockLookupOpen, setIncomingStockLookupOpen] = useState(false);
+  const [intakeWarehouseLookupOpen, setIntakeWarehouseLookupOpen] = useState(false);
+  const [currentWarehouseLookupOpen, setCurrentWarehouseLookupOpen] = useState(false);
+  const [initialLineStockLookupOpen, setInitialLineStockLookupOpen] = useState(false);
+  const [selectedCustomerLabel, setSelectedCustomerLabel] = useState('');
+  const [selectedIncomingStockLabel, setSelectedIncomingStockLabel] = useState('');
+  const [selectedIntakeWarehouseLabel, setSelectedIntakeWarehouseLabel] = useState('');
+  const [selectedCurrentWarehouseLabel, setSelectedCurrentWarehouseLabel] = useState('');
+  const [selectedInitialLineStockLabel, setSelectedInitialLineStockLabel] = useState('');
 
   const form = useForm<ServiceCaseFormValues>({
     defaultValues: {
@@ -130,7 +143,52 @@ export function ServiceCaseFormPage(): ReactElement {
       initialLineErpOrderId: '',
       initialLineDescription: '',
     });
+
+    setSelectedCustomerLabel(serviceCase.customerCode ?? '');
+    setSelectedIncomingStockLabel(serviceCase.incomingStockCode ?? '');
+    setSelectedIntakeWarehouseLabel(serviceCase.intakeWarehouseId ? `#${serviceCase.intakeWarehouseId}` : '');
+    setSelectedCurrentWarehouseLabel(serviceCase.currentWarehouseId ? `#${serviceCase.currentWarehouseId}` : '');
   }, [form, timelineQuery.data]);
+
+  useEffect(() => {
+    if (!timelineQuery.data) {
+      return;
+    }
+
+    const { serviceCase } = timelineQuery.data;
+    let active = true;
+
+    void Promise.allSettled([
+      serviceCase.customerId ? lookupApi.getCustomerById(serviceCase.customerId) : Promise.resolve(null),
+      serviceCase.incomingStockId ? lookupApi.getProductById(serviceCase.incomingStockId) : Promise.resolve(null),
+      serviceCase.intakeWarehouseId ? lookupApi.getWarehouseById(serviceCase.intakeWarehouseId) : Promise.resolve(null),
+      serviceCase.currentWarehouseId ? lookupApi.getWarehouseById(serviceCase.currentWarehouseId) : Promise.resolve(null),
+    ]).then(([customerResult, stockResult, intakeWarehouseResult, currentWarehouseResult]) => {
+      if (!active) {
+        return;
+      }
+
+      if (customerResult.status === 'fulfilled' && customerResult.value) {
+        setSelectedCustomerLabel(`${customerResult.value.cariKod} - ${customerResult.value.cariIsim}`);
+      }
+
+      if (stockResult.status === 'fulfilled' && stockResult.value) {
+        setSelectedIncomingStockLabel(`${stockResult.value.stokKodu} - ${stockResult.value.stokAdi}`);
+      }
+
+      if (intakeWarehouseResult.status === 'fulfilled' && intakeWarehouseResult.value) {
+        setSelectedIntakeWarehouseLabel(`${intakeWarehouseResult.value.depoKodu} - ${intakeWarehouseResult.value.depoIsmi}`);
+      }
+
+      if (currentWarehouseResult.status === 'fulfilled' && currentWarehouseResult.value) {
+        setSelectedCurrentWarehouseLabel(`${currentWarehouseResult.value.depoKodu} - ${currentWarehouseResult.value.depoIsmi}`);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [timelineQuery.data]);
 
   const saveMutation = useMutation({
     mutationFn: async (values: ServiceCaseFormValues) => {
@@ -193,6 +251,10 @@ export function ServiceCaseFormPage(): ReactElement {
 
   const existingLines = timelineQuery.data?.lines ?? [];
 
+  const getCustomerLabel = (item: CustomerLookup): string => `${item.cariKod} - ${item.cariIsim}`;
+  const getStockLabel = (item: StockLookup): string => `${item.stokKodu} - ${item.stokAdi}`;
+  const getWarehouseLabel = (item: WarehouseLookup): string => `${item.depoKodu} - ${item.depoIsmi}`;
+
   return (
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
@@ -223,14 +285,30 @@ export function ServiceCaseFormPage(): ReactElement {
               <FormField control={form.control} name="customerCode" rules={{ required: true }} render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
+                  <FormControl>
+                    <PagedLookupDialog<CustomerLookup>
+                      open={customerLookupOpen}
+                      onOpenChange={setCustomerLookupOpen}
+                      title={t('serviceAllocation.customerCode')}
+                      description={t('serviceAllocation.form.customerLookupDescription')}
+                      value={selectedCustomerLabel || field.value}
+                      placeholder={t('serviceAllocation.form.selectCustomer')}
+                      searchPlaceholder={t('common.search')}
+                      emptyText={t('serviceAllocation.form.noCustomers')}
+                      queryKey={['service-allocation', 'customer-lookup']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={getCustomerLabel}
+                      onSelect={(item) => {
+                        field.onChange(item.cariKod);
+                        form.setValue('customerId', String(item.id));
+                        setSelectedCustomerLabel(getCustomerLabel(item));
+                      }}
+                    />
+                  </FormControl>
                   <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="customerId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.customerId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
@@ -249,13 +327,29 @@ export function ServiceCaseFormPage(): ReactElement {
               <FormField control={form.control} name="incomingStockCode" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="incomingStockId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl>
+                    <PagedLookupDialog<StockLookup>
+                      open={incomingStockLookupOpen}
+                      onOpenChange={setIncomingStockLookupOpen}
+                      title={t('serviceAllocation.stockCode')}
+                      description={t('serviceAllocation.form.incomingStockLookupDescription')}
+                      value={selectedIncomingStockLabel || field.value}
+                      placeholder={t('serviceAllocation.form.selectStock')}
+                      searchPlaceholder={t('common.search')}
+                      emptyText={t('serviceAllocation.form.noStocks')}
+                      queryKey={['service-allocation', 'incoming-stock-lookup']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={getStockLabel}
+                      onSelect={(item) => {
+                        field.onChange(item.stokKodu);
+                        form.setValue('incomingStockId', String(item.id));
+                        setSelectedIncomingStockLabel(getStockLabel(item));
+                      }}
+                    />
+                  </FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="incomingSerialNo" render={({ field }) => (
@@ -273,13 +367,55 @@ export function ServiceCaseFormPage(): ReactElement {
               <FormField control={form.control} name="intakeWarehouseId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.intakeWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl>
+                    <PagedLookupDialog<WarehouseLookup>
+                      open={intakeWarehouseLookupOpen}
+                      onOpenChange={setIntakeWarehouseLookupOpen}
+                      title={t('serviceAllocation.intakeWarehouseId')}
+                      description={t('serviceAllocation.form.warehouseLookupDescription')}
+                      value={selectedIntakeWarehouseLabel || (field.value ? `#${field.value}` : '')}
+                      placeholder={t('serviceAllocation.form.selectWarehouse')}
+                      searchPlaceholder={t('common.search')}
+                      emptyText={t('serviceAllocation.form.noWarehouses')}
+                      queryKey={['service-allocation', 'intake-warehouse-lookup']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={getWarehouseLabel}
+                      onSelect={(item) => {
+                        field.onChange(String(item.id));
+                        setSelectedIntakeWarehouseLabel(getWarehouseLabel(item));
+                      }}
+                    />
+                  </FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="currentWarehouseId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.currentWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl>
+                    <PagedLookupDialog<WarehouseLookup>
+                      open={currentWarehouseLookupOpen}
+                      onOpenChange={setCurrentWarehouseLookupOpen}
+                      title={t('serviceAllocation.currentWarehouseId')}
+                      description={t('serviceAllocation.form.warehouseLookupDescription')}
+                      value={selectedCurrentWarehouseLabel || (field.value ? `#${field.value}` : '')}
+                      placeholder={t('serviceAllocation.form.selectWarehouse')}
+                      searchPlaceholder={t('common.search')}
+                      emptyText={t('serviceAllocation.form.noWarehouses')}
+                      queryKey={['service-allocation', 'current-warehouse-lookup']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={getWarehouseLabel}
+                      onSelect={(item) => {
+                        field.onChange(String(item.id));
+                        setSelectedCurrentWarehouseLabel(getWarehouseLabel(item));
+                      }}
+                    />
+                  </FormControl>
                 </FormItem>
               )} />
               <div className="md:col-span-2">
@@ -327,13 +463,30 @@ export function ServiceCaseFormPage(): ReactElement {
               <FormField control={form.control} name="initialLineStockCode" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineStockId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormControl>
+                    <PagedLookupDialog<StockLookup>
+                      open={initialLineStockLookupOpen}
+                      onOpenChange={setInitialLineStockLookupOpen}
+                      title={t('serviceAllocation.stockCode')}
+                      description={t('serviceAllocation.form.initialLineStockLookupDescription')}
+                      value={selectedInitialLineStockLabel || field.value}
+                      placeholder={t('serviceAllocation.form.selectStock')}
+                      searchPlaceholder={t('common.search')}
+                      emptyText={t('serviceAllocation.form.noStocks')}
+                      queryKey={['service-allocation', 'initial-line-stock-lookup']}
+                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                        lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                      }
+                      getKey={(item) => item.id.toString()}
+                      getLabel={getStockLabel}
+                      onSelect={(item) => {
+                        field.onChange(item.stokKodu);
+                        form.setValue('initialLineStockId', String(item.id));
+                        form.setValue('initialLineUnit', item.olcuBr1 || '');
+                        setSelectedInitialLineStockLabel(getStockLabel(item));
+                      }}
+                    />
+                  </FormControl>
                 </FormItem>
               )} />
               <FormField control={form.control} name="initialLineQuantity" render={({ field }) => (
@@ -351,12 +504,6 @@ export function ServiceCaseFormPage(): ReactElement {
               <FormField control={form.control} name="initialLineErpOrderNo" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineErpOrderId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                 </FormItem>
               )} />

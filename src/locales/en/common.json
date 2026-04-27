@@ -3427,7 +3427,17 @@
       "createSuccess": "Service case created.",
       "updateSuccess": "Service case updated.",
       "saveError": "Service case could not be saved.",
-      "initialLine": "Initial / Additional Service Line"
+      "initialLine": "Initial / Additional Service Line",
+      "selectCustomer": "Select customer",
+      "selectStock": "Select stock",
+      "selectWarehouse": "Select warehouse",
+      "noCustomers": "No customers found.",
+      "noStocks": "No stocks found.",
+      "noWarehouses": "No warehouses found.",
+      "customerLookupDescription": "Pick the customer record directly instead of typing an id; the system fills the customer code and identifier together.",
+      "incomingStockLookupDescription": "Select the ERP stock record for the incoming item; stock code and stock identifier are filled together.",
+      "initialLineStockLookupDescription": "Select the stock card used on the service line; the system carries stock code, identifier and unit together.",
+      "warehouseLookupDescription": "Select the warehouse directly instead of entering an id; the system binds the correct warehouse record in the background."
     },
     "reports": {
       "title": "Service Reports",

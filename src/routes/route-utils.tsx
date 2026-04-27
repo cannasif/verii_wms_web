@@ -1,4 +1,5 @@
 import { type ComponentType, type ReactElement, Suspense, lazy } from 'react';
+import i18n from '@/lib/i18n';
 import { RouteRuntimeBoundary } from './RouteRuntimeBoundary';
 
 export interface RouteOptions {
@@ -21,7 +22,7 @@ export function lazyNamed<TModule extends Record<string, unknown>, TExport exten
 export function RouteLoadingFallback(): ReactElement {
   return (
     <div className="flex min-h-[40vh] items-center justify-center px-6 py-10 text-sm text-slate-500 dark:text-slate-400">
-      Sayfa yükleniyor...
+      {i18n.t('pagePreparing', { ns: 'common', defaultValue: 'Preparing page...' })}
     </div>
   );
 }

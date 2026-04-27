@@ -93,6 +93,65 @@ interface YapKodStockRef {
 }
 
 export const lookupApi = {
+  getCustomerById: async (id: number, options?: ApiRequestOptions): Promise<CustomerLookup> => {
+    try {
+      const response = await api.get<ApiResponse<WmsCustomerLookupDto>>(`/api/Customer/${id}`, options);
+      const customer = response.data;
+      if (!response.success || !customer) {
+        throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+      }
+
+      return {
+        id: customer.id,
+        subeKodu: Number(customer.branchCode || 0),
+        isletmeKodu: 0,
+        cariKod: customer.customerCode,
+        cariTel: customer.phone1 || '',
+        cariIl: customer.city || '',
+        ulkeKodu: customer.countryCode || '',
+        cariIsim: customer.customerName,
+        cariTip: '',
+        grupKodu: customer.groupCode || '',
+        raporKodu1: '',
+        raporKodu2: '',
+        raporKodu3: '',
+        raporKodu4: '',
+        raporKodu5: '',
+        cariAdres: customer.address || '',
+        cariIlce: '',
+        vergiDairesi: customer.taxOffice || '',
+        vergiNumarasi: customer.taxNumber || '',
+        fax: '',
+        postaKodu: '',
+        detayKodu: 0,
+        nakliyeKatsayisi: 0,
+        riskSiniri: 0,
+        teminati: 0,
+        cariRisk: 0,
+        ccRisk: 0,
+        saRisk: 0,
+        scRisk: 0,
+        cmBorct: 0,
+        cmAlact: 0,
+        cmRapTarih: '',
+        kosulKodu: '',
+        iskontoOrani: 0,
+        vadeGunu: 0,
+        listeFiati: 0,
+        acik1: '',
+        acik2: '',
+        acik3: '',
+        mKod: '',
+        dovizTipi: 0,
+        dovizTuru: 0,
+        hesapTutmaSekli: '',
+        dovizLimi: '',
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpCustomersLoadFailed'));
+    }
+  },
+
   getCustomers: async (options?: ApiRequestOptions): Promise<CustomerLookup[]> => {
     try {
       const customers = await getServerPagedFirstPageData<WmsCustomerLookupDto>('/api/Customer/paged', options);
@@ -255,6 +314,24 @@ export const lookupApi = {
     }
   },
 
+  getWarehouseById: async (id: number, options?: ApiRequestOptions): Promise<WarehouseLookup> => {
+    try {
+      const response = await api.get<ApiResponse<WmsWarehouseLookupDto>>(`/api/Warehouse/${id}`, options);
+      const warehouse = response.data;
+      if (!response.success || !warehouse) {
+        throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+      }
+
+      return {
+        id: warehouse.id,
+        depoKodu: warehouse.warehouseCode,
+        depoIsmi: warehouse.warehouseName,
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpWarehousesLoadFailed'));
+    }
+  },
+
   getShelves: async (warehouseCode?: number | string, options?: ApiRequestOptions): Promise<ShelfLookup[]> => {
     try {
       const normalizedWarehouseCode = typeof warehouseCode === 'string' ? Number(warehouseCode) : warehouseCode;
@@ -344,6 +421,37 @@ export const lookupApi = {
           kod4: product.kod4 || '',
           kod5: product.kod5 || '',
         })),
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpProductsLoadFailed'));
+    }
+  },
+
+  getProductById: async (id: number, options?: ApiRequestOptions): Promise<StockLookup> => {
+    try {
+      const response = await api.get<ApiResponse<WmsStockLookupDto>>(`/api/Stock/${id}`, options);
+      const product = response.data;
+      if (!response.success || !product) {
+        throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+      }
+
+      return {
+        id: product.id,
+        subeKodu: Number(product.branchCode || 0),
+        isletmeKodu: 0,
+        stokKodu: product.erpStockCode,
+        ureticiKodu: product.ureticiKodu || '',
+        stokAdi: product.stockName,
+        grupKodu: product.grupKodu || '',
+        saticiKodu: '',
+        olcuBr1: product.unit || '',
+        olcuBr2: '',
+        pay1: 0,
+        kod1: product.kod1 || '',
+        kod2: product.kod2 || '',
+        kod3: product.kod3 || '',
+        kod4: product.kod4 || '',
+        kod5: product.kod5 || '',
       };
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpProductsLoadFailed'));
