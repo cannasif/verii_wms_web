@@ -8,7 +8,7 @@ import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeRoleDto, KkdEmployeeDepartmentDto, KkdEmployeeRoleDto, UpdateKkdEmployeeRoleDto } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
 
-type ColumnKey = 'departmentName' | 'roleCode' | 'roleName' | 'isActive';
+type ColumnKey = 'departmentCode' | 'departmentName' | 'roleCode' | 'roleName' | 'updatedDate' | 'isActive';
 
 function RoleForm({
   formState,
@@ -66,9 +66,11 @@ function RoleForm({
 export function KkdEmployeeRolePage(): ReactElement {
   const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
+    { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
     { key: 'departmentName', label: t('kkd.columns.department') },
     { key: 'roleCode', label: t('kkd.columns.roleCode') },
     { key: 'roleName', label: t('kkd.columns.roleName') },
+    { key: 'updatedDate', label: t('common.updatedDate') },
     { key: 'isActive', label: t('common.active') },
   ], [t]);
 
@@ -94,7 +96,7 @@ export function KkdEmployeeRolePage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateRole(id, dto as UpdateKkdEmployeeRoleDto)}
       deleteItem={kkdApi.deleteRole}
       queryKey={['kkd', 'roles']}
-      mapSortBy={(value) => value === 'roleName' ? 'RoleName' : value === 'isActive' ? 'IsActive' : 'RoleCode'}
+      mapSortBy={(value) => value === 'departmentCode' ? 'DepartmentCode' : value === 'departmentName' ? 'DepartmentName' : value === 'roleName' ? 'RoleName' : value === 'updatedDate' ? 'UpdatedDate' : value === 'isActive' ? 'IsActive' : 'RoleCode'}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
       renderForm={({ formState, setFormState }) => (
         <RoleForm formState={formState} setFormState={setFormState} />

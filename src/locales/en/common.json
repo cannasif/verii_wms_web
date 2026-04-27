@@ -364,6 +364,8 @@
     "kkdOverview": "PPE Operations Hub",
     "kkdInitialOrder": "PPE Initial Order",
     "sacMalKabul": "Steel Plate Acceptance",
+    "sacMalKabulVehicleCheckIn": "Vehicle Check-In",
+    "sacMalKabulVehicleCheckInList": "Vehicle Check-In List",
     "sacMalKabulImport": "Excel Import",
     "sacMalKabulInspection": "Yard Acceptance Control",
     "sacMalKabulList": "Expected Plate List",
@@ -715,6 +717,74 @@
       "scanBarcode": "Scan Barcode",
       "scanBarcodeDescription": "Align barcode to camera",
       "yapKod": "Structure"
+    }
+  },
+  "vehicleCheckIn": {
+    "badge": "Vehicle Check-In 1",
+    "pageTitle": "Vehicle Check-In",
+    "title": "Vehicle Pre-Entry Form",
+    "description": "Create the first record for an arriving vehicle. If the same plate returns on the same day, the current record is updated.",
+    "guidance": {
+      "title": "Business Rule",
+      "sameDayRule": "If the same plate arrives again on the same day, no new record is created; the existing record is updated.",
+      "nextDayRule": "If the same plate arrives on a different day, the system records it as a new entry."
+    },
+    "fields": {
+      "plate": "Plate",
+      "platePh": "34ABC123",
+      "entryDate": "Vehicle Entry Date",
+      "firstName": "First Name",
+      "firstNamePh": "Driver or related person first name",
+      "lastName": "Last Name",
+      "lastNamePh": "Driver or related person last name",
+      "customer": "Customer",
+      "customerPh": "Select customer"
+    },
+    "customerLookup": {
+      "title": "Select Customer",
+      "description": "Select the customer to be associated with this vehicle arrival."
+    },
+    "actions": {
+      "findToday": "Find Today's Record",
+      "save": "Save / Update",
+      "openList": "Open Record List"
+    },
+    "images": {
+      "title": "Vehicle Images",
+      "description": "Add one or more images related to this vehicle entry.",
+      "saveHint": "Create the vehicle record or fetch today's existing record before uploading images.",
+      "add": "Add New Image",
+      "upload": "Upload Images",
+      "delete": "Delete Image",
+      "empty": "No images have been uploaded for this record yet.",
+      "image": "Vehicle Image"
+    },
+    "list": {
+      "pageTitle": "Vehicle Check-In List",
+      "title": "Vehicle Entry Records",
+      "description": "Track same-day updates and different-day new entries for vehicle arrivals.",
+      "searchPh": "Search plate, name, or customer",
+      "empty": "No vehicle check-in records to display.",
+      "actions": {
+        "open": "Open Record"
+      },
+      "columns": {
+        "plate": "Plate",
+        "entryDate": "Entry Date",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "customer": "Customer",
+        "images": "Images",
+        "actions": "Action"
+      }
+    },
+    "messages": {
+      "plateRequired": "Plate is required for vehicle check-in.",
+      "todayFound": "Today's vehicle record has been loaded.",
+      "saved": "Vehicle check-in record saved.",
+      "saveFirst": "Create the vehicle check-in record first.",
+      "imagesUploaded": "Vehicle images uploaded.",
+      "imageDeleted": "Vehicle image deleted."
     }
   },
   "shipment": {
@@ -3556,10 +3626,16 @@
       "lastName": "Last name",
       "customerCode": "Customer code",
       "groupCode": "Group code",
+      "groupName": "Group name",
+      "stockCode": "Stock code",
       "initialIssue": "Initial issue",
       "afterThreeMonths": "After 3 months",
       "routine": "Routine",
       "period": "Period",
+      "periodInterval": "Period interval",
+      "employmentStartDate": "Employment start date",
+      "qrCode": "QR code",
+      "mandatory": "Mandatory",
       "employee": "Employee",
       "extraEntitlement": "Extra entitlement",
       "consumed": "Consumed",

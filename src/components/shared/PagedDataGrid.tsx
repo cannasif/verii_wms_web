@@ -221,11 +221,6 @@ export function PagedDataGrid<TRow, TKey extends string>({
     ],
   );
 
-  const autoVisibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as TKey[],
-    [orderedVisibleColumns],
-  );
-
   return (
     <DataTableGrid<TRow, TKey>
       columns={columns}
@@ -256,7 +251,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       previousLabel={previousLabel}
       nextLabel={nextLabel}
       paginationInfoText={paginationInfoText}
-      showActionsColumn={showActionsColumn && (visibleColumnKeys ? true : autoVisibleColumnKeys.includes('actions' as TKey) || orderedVisibleColumns.includes('actions' as TKey))}
+      showActionsColumn={showActionsColumn}
       actionsHeaderLabel={actionsHeaderLabel ?? ''}
       renderActionsCell={renderActionsCell}
       actionsCellClassName={actionsCellClassName}

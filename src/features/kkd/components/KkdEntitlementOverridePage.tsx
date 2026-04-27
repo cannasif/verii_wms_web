@@ -20,7 +20,7 @@ import type {
 } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
 
-type ColumnKey = 'groupCode' | 'employeeName' | 'extraQuantity' | 'consumedQuantity' | 'validFrom' | 'validTo' | 'isActive';
+type ColumnKey = 'employeeCode' | 'employeeName' | 'groupCode' | 'groupName' | 'extraQuantity' | 'consumedQuantity' | 'validFrom' | 'validTo' | 'reason' | 'isActive';
 
 function KkdEntitlementOverrideForm({
   formState,
@@ -131,12 +131,15 @@ function KkdEntitlementOverrideForm({
 export function KkdEntitlementOverridePage(): ReactElement {
   const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
+    { key: 'employeeCode', label: t('kkd.columns.employeeCode') },
     { key: 'groupCode', label: t('kkd.columns.groupCode') },
+    { key: 'groupName', label: t('kkd.columns.groupName') },
     { key: 'employeeName', label: t('kkd.columns.employee') },
     { key: 'extraQuantity', label: t('kkd.columns.extraEntitlement') },
     { key: 'consumedQuantity', label: t('kkd.columns.consumed') },
     { key: 'validFrom', label: t('kkd.columns.startDate') },
     { key: 'validTo', label: t('kkd.columns.endDate') },
+    { key: 'reason', label: t('common.description') },
     { key: 'isActive', label: t('common.active') },
   ], [t]);
 
@@ -171,12 +174,15 @@ export function KkdEntitlementOverridePage(): ReactElement {
       deleteItem={kkdApi.deleteEntitlementOverride}
       queryKey={['kkd', 'entitlement-overrides']}
       mapSortBy={(value) => ({
+        employeeCode: 'EmployeeCode',
         groupCode: 'GroupCode',
+        groupName: 'GroupName',
         employeeName: 'EmployeeName',
         extraQuantity: 'ExtraQuantity',
         consumedQuantity: 'ConsumedQuantity',
         validFrom: 'ValidFrom',
         validTo: 'ValidTo',
+        reason: 'Reason',
         isActive: 'IsActive',
       }[value] ?? 'UpdatedDate')}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}

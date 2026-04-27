@@ -13,7 +13,7 @@ import { userApi } from '@/features/user-management/api/user-api';
 import type { UserDto } from '@/features/user-management/types/user-types';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 
-type ColumnKey = 'employeeCode' | 'firstName' | 'lastName' | 'customerCode' | 'departmentName' | 'roleName' | 'isActive';
+type ColumnKey = 'employeeCode' | 'firstName' | 'lastName' | 'customerCode' | 'employmentStartDate' | 'qrCode' | 'departmentName' | 'roleName' | 'isActive';
 
 function EmployeeForm({
   formState,
@@ -216,6 +216,8 @@ export function KkdEmployeePage(): ReactElement {
     { key: 'firstName', label: t('kkd.columns.firstName') },
     { key: 'lastName', label: t('kkd.columns.lastName') },
     { key: 'customerCode', label: t('kkd.columns.customerCode') },
+    { key: 'employmentStartDate', label: t('kkd.columns.employmentStartDate') },
+    { key: 'qrCode', label: t('kkd.columns.qrCode') },
     { key: 'departmentName', label: t('kkd.columns.department') },
     { key: 'roleName', label: t('kkd.columns.role') },
     { key: 'isActive', label: t('common.active') },
@@ -275,6 +277,8 @@ export function KkdEmployeePage(): ReactElement {
         firstName: 'FirstName',
         lastName: 'LastName',
         customerCode: 'CustomerCode',
+        employmentStartDate: 'EmploymentStartDate',
+        qrCode: 'QrCode',
         departmentName: 'DepartmentName',
         roleName: 'RoleName',
         isActive: 'IsActive',

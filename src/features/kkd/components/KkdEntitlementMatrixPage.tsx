@@ -23,10 +23,14 @@ type ColumnKey =
   | 'departmentName'
   | 'roleName'
   | 'groupCode'
+  | 'groupName'
+  | 'stockCode'
   | 'initialIssueQuantity'
   | 'additionalAfterMonthsQuantity'
   | 'routineQuantity'
   | 'routinePeriodType'
+  | 'routinePeriodInterval'
+  | 'isMandatory'
   | 'isActive';
 
 function buildMatrixDefaults(departmentId: number, roleId: number): Pick<CreateKkdEntitlementMatrixRowDto, 'matrixCode' | 'matrixName'> {
@@ -290,10 +294,14 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     { key: 'departmentName', label: t('kkd.columns.department') },
     { key: 'roleName', label: t('kkd.columns.role') },
     { key: 'groupCode', label: t('kkd.columns.groupCode') },
+    { key: 'groupName', label: t('kkd.columns.groupName') },
+    { key: 'stockCode', label: t('kkd.columns.stockCode') },
     { key: 'initialIssueQuantity', label: t('kkd.columns.initialIssue') },
     { key: 'additionalAfterMonthsQuantity', label: t('kkd.columns.afterThreeMonths') },
     { key: 'routineQuantity', label: t('kkd.columns.routine') },
     { key: 'routinePeriodType', label: t('kkd.columns.period') },
+    { key: 'routinePeriodInterval', label: t('kkd.columns.periodInterval') },
+    { key: 'isMandatory', label: t('kkd.columns.mandatory') },
     { key: 'isActive', label: t('common.active') },
   ], [t]);
 
@@ -356,10 +364,14 @@ export function KkdEntitlementMatrixPage(): ReactElement {
         departmentName: 'DepartmentName',
         roleName: 'RoleName',
         groupCode: 'GroupCode',
+        groupName: 'GroupName',
+        stockCode: 'StockCode',
         initialIssueQuantity: 'InitialIssueQuantity',
         routinePeriodType: 'RoutinePeriodType',
+        routinePeriodInterval: 'RoutinePeriodInterval',
         routineQuantity: 'RoutineQuantity',
         additionalAfterMonthsQuantity: 'AdditionalAfterMonthsQuantity',
+        isMandatory: 'IsMandatory',
         isActive: 'IsActive',
       }[value] ?? 'UpdatedDate')}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}

@@ -364,6 +364,8 @@
     "kkdOverview": "KKD Operasyon Merkezi",
     "kkdInitialOrder": "KKD İlk Giriş Siparişi",
     "sacMalKabul": "Sac Mal Kabul",
+    "sacMalKabulVehicleCheckIn": "Araç Kontrol",
+    "sacMalKabulVehicleCheckInList": "Araç Kontrol Listesi",
     "sacMalKabulImport": "Excel Aktarım",
     "sacMalKabulInspection": "Saha Kabul Kontrol",
     "sacMalKabulList": "Beklenen Levha Listesi",
@@ -715,6 +717,74 @@
       "scanBarcode": "Barkod Okut",
       "scanBarcodeDescription": "Barkodu kameraya hizalayın",
       "yapKod": "Yapı"
+    }
+  },
+  "vehicleCheckIn": {
+    "badge": "Araç Kontrol 1",
+    "pageTitle": "Araç Kontrol",
+    "title": "Araç Ön Giriş Formu",
+    "description": "Sahaya gelen araç için ilk kaydı oluşturun. Aynı plaka aynı gün tekrar gelirse mevcut kayıt güncellenir.",
+    "guidance": {
+      "title": "İş Kuralı",
+      "sameDayRule": "Aynı gün aynı plaka tekrar gelirse yeni kayıt açılmaz; mevcut kayıt güncellenir.",
+      "nextDayRule": "Aynı plaka farklı bir gün gelirse sistem bunu yeni giriş olarak kaydeder."
+    },
+    "fields": {
+      "plate": "Plaka",
+      "platePh": "34ABC123",
+      "entryDate": "Araç Giriş Tarihi",
+      "firstName": "Ad",
+      "firstNamePh": "Sürücü ya da ilgili kişi adı",
+      "lastName": "Soyad",
+      "lastNamePh": "Sürücü ya da ilgili kişi soyadı",
+      "customer": "Müşteri",
+      "customerPh": "Müşteri seçiniz"
+    },
+    "customerLookup": {
+      "title": "Müşteri Seç",
+      "description": "Araç gelişi ile ilişkilendirilecek müşteriyi seçin."
+    },
+    "actions": {
+      "findToday": "Bugünkü Kaydı Getir",
+      "save": "Kaydet / Güncelle",
+      "openList": "Kayıt Listesini Aç"
+    },
+    "images": {
+      "title": "Araç Görselleri",
+      "description": "Bu girişle ilişkili bir veya daha fazla görsel ekleyin.",
+      "saveHint": "Görsel eklemek için önce araç kaydını oluşturun veya bugünkü mevcut kaydı getirin.",
+      "add": "Yeni Görsel Ekle",
+      "upload": "Görselleri Yükle",
+      "delete": "Görseli Sil",
+      "empty": "Bu kayıt için henüz görsel yüklenmedi.",
+      "image": "Araç Görseli"
+    },
+    "list": {
+      "pageTitle": "Araç Kontrol Listesi",
+      "title": "Araç Giriş Kayıtları",
+      "description": "Aynı gün güncellenen ya da farklı günlerde açılan araç giriş kayıtlarını izleyin.",
+      "searchPh": "Plaka, isim veya müşteri ara",
+      "empty": "Gösterilecek araç girişi bulunamadı.",
+      "actions": {
+        "open": "Kaydı Aç"
+      },
+      "columns": {
+        "plate": "Plaka",
+        "entryDate": "Giriş Tarihi",
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "customer": "Müşteri",
+        "images": "Görsel",
+        "actions": "İşlem"
+      }
+    },
+    "messages": {
+      "plateRequired": "Araç kontrol kaydı için plaka zorunludur.",
+      "todayFound": "Bugünkü araç kaydı getirildi.",
+      "saved": "Araç kontrol kaydı kaydedildi.",
+      "saveFirst": "Önce araç kontrol kaydını oluşturun.",
+      "imagesUploaded": "Araç görselleri yüklendi.",
+      "imageDeleted": "Araç görseli silindi."
     }
   },
   "shipment": {
@@ -3556,10 +3626,16 @@
       "lastName": "Soyad",
       "customerCode": "Cari Kodu",
       "groupCode": "Grup Kodu",
+      "groupName": "Grup Adı",
+      "stockCode": "Stok Kodu",
       "initialIssue": "İlk Giriş",
       "afterThreeMonths": "3. Ay",
       "routine": "Rutin",
       "period": "Dönem",
+      "periodInterval": "Dönem Aralığı",
+      "employmentStartDate": "İşe Giriş Tarihi",
+      "qrCode": "QR Kod",
+      "mandatory": "Zorunlu",
       "employee": "Çalışan",
       "extraEntitlement": "Ek Hak",
       "consumed": "Kullanılan",

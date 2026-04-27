@@ -151,8 +151,14 @@ const InventoryCountCreatePage = lazyNamed(() => import('@/features/inventory-co
 const InventoryCountListPage = lazyNamed(() => import('@/features/inventory-count'), 'InventoryCountListPage');
 const InventoryCountProcessPage = lazyNamed(() => import('@/features/inventory-count'), 'InventoryCountProcessPage');
 
-const Warehouse3dPage = lazyNamed(() => import('@/features/inventory/3d-warehouse'), 'Warehouse3dPage');
-const OutsideWarehousePage = lazyNamed(() => import('@/features/inventory/3d-warehouse'), 'OutsideWarehousePage');
+const Warehouse3dPage = lazyNamed(
+  () => import('@/features/inventory/3d-warehouse/components/Warehouse3dPage'),
+  'Warehouse3dPage',
+);
+const OutsideWarehousePage = lazyNamed(
+  () => import('@/features/inventory/3d-warehouse/components/OutsideWarehousePage'),
+  'OutsideWarehousePage',
+);
 
 const PackageListPage = lazyNamed(
   () => import('@/features/package/components/PackageListPage'),
@@ -191,6 +197,8 @@ const KkdValidationLogPage = lazyNamed(() => import('@/features/kkd'), 'KkdValid
 const KkdDepartmentReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdDepartmentReportPage');
 const KkdRoleReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdRoleReportPage');
 const KkdGroupReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdGroupReportPage');
+const VehicleCheckInPage = lazyNamed(() => import('@/features/vehicle-check-in'), 'VehicleCheckInPage');
+const VehicleCheckInListPage = lazyNamed(() => import('@/features/vehicle-check-in'), 'VehicleCheckInListPage');
 const SteelGoodReciptAcceptanseImportPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseImportPage');
 const SteelGoodReciptAcceptanseListPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseListPage');
 const SteelGoodReciptAcceptanseInspectionPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseInspectionPage');
@@ -198,6 +206,8 @@ const SteelGoodReciptAcceptanseReceiptPage = lazyNamed(() => import('@/features/
 const SteelGoodReciptAcceptansePlacementPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptansePlacementPage');
 
 export const operationsChildRoutes: RouteObject[] = [
+  { path: 'vehicle-check-in', element: withRoute(VehicleCheckInPage, { routeName: 'vehicle-check-in' }) },
+  { path: 'vehicle-check-in/list', element: withRoute(VehicleCheckInListPage, { routeName: 'vehicle-check-in-list' }) },
   {
     path: 'sac-mal-kabul',
     children: [

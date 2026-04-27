@@ -264,7 +264,8 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => openEdit(row)}>
-                  <Pencil className="size-4" />
+                  <Pencil className="mr-2 size-4" />
+                  {t('common.edit')}
                 </Button>
                 <Button
                   type="button"
@@ -275,10 +276,12 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
                     setDeleteDialogOpen(true);
                   }}
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="mr-2 size-4" />
+                  {t('common.delete')}
                 </Button>
               </div>
             )}
+            actionsCellClassName="min-w-[156px]"
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}

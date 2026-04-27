@@ -5,13 +5,14 @@ import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeDepartmentDto, KkdEmployeeDepartmentDto, UpdateKkdEmployeeDepartmentDto } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
 
-type ColumnKey = 'departmentCode' | 'departmentName' | 'isActive';
+type ColumnKey = 'departmentCode' | 'departmentName' | 'updatedDate' | 'isActive';
 
 export function KkdEmployeeDepartmentPage(): ReactElement {
   const { t } = useTranslation('common');
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
     { key: 'departmentName', label: t('kkd.columns.departmentName') },
+    { key: 'updatedDate', label: t('common.updatedDate') },
     { key: 'isActive', label: t('common.active') },
   ], [t]);
 
@@ -36,7 +37,7 @@ export function KkdEmployeeDepartmentPage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateDepartment(id, dto as UpdateKkdEmployeeDepartmentDto)}
       deleteItem={kkdApi.deleteDepartment}
       queryKey={['kkd', 'departments']}
-      mapSortBy={(value) => value === 'departmentName' ? 'DepartmentName' : value === 'isActive' ? 'IsActive' : 'DepartmentCode'}
+      mapSortBy={(value) => value === 'departmentName' ? 'DepartmentName' : value === 'updatedDate' ? 'UpdatedDate' : value === 'isActive' ? 'IsActive' : 'DepartmentCode'}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
     />
   );
