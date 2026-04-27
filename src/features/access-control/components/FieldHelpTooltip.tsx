@@ -13,6 +13,8 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
   const [open, setOpen] = useState(false);
   const openDelayTimerRef = useRef<number | null>(null);
   const closeDelayTimerRef = useRef<number | null>(null);
+  const isPointerOverTriggerRef = useRef(false);
+  const isPointerOverContentRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -47,6 +49,10 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
   const closeWithDelay = (): void => {
     clearTimers();
     closeDelayTimerRef.current = window.setTimeout(() => {
+      if (isPointerOverTriggerRef.current || isPointerOverContentRef.current) {
+        closeDelayTimerRef.current = null;
+        return;
+      }
       setOpen(false);
       closeDelayTimerRef.current = null;
     }, 180);
@@ -58,14 +64,28 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen && (isPointerOverTriggerRef.current || isPointerOverContentRef.current)) {
+          return;
+        }
+        setOpen(nextOpen);
+      }}
+    >
       <PopoverTrigger asChild>
         <span
           role="img"
           aria-label={text}
           tabIndex={0}
-          onMouseEnter={openWithDelay}
-          onMouseLeave={closeWithDelay}
+          onMouseEnter={() => {
+            isPointerOverTriggerRef.current = true;
+            openWithDelay();
+          }}
+          onMouseLeave={() => {
+            isPointerOverTriggerRef.current = false;
+            closeWithDelay();
+          }}
           onFocus={() => {
             clearTimers();
             setOpen(true);
@@ -80,6 +100,7 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
             'inline-flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 cursor-help ml-1 shrink-0',
             className
           )}
+          data-no-drag-scroll="true"
         >
           <CircleHelp size={14} strokeWidth={2} />
         </span>
@@ -89,10 +110,19 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
         align="center"
         sideOffset={6}
         onMouseEnter={() => {
+          isPointerOverContentRef.current = true;
           clearTimers();
           setOpen(true);
         }}
-        onMouseLeave={closeWithDelay}
+        onMouseLeave={() => {
+          isPointerOverContentRef.current = false;
+          closeWithDelay();
+        }}
+        onInteractOutside={(event) => {
+          if (isPointerOverTriggerRef.current || isPointerOverContentRef.current) {
+            event.preventDefault();
+          }
+        }}
         className="max-w-sm px-3 py-1.5 text-sm"
       >
         <p className="leading-5">{text}</p>

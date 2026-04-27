@@ -223,6 +223,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
 
   return (
     <DataTableGrid<TRow, TKey>
+      pageKey={resolvedPageKey}
       columns={columns}
       visibleColumnKeys={resolvedVisibleColumnKeys}
       rows={rows}

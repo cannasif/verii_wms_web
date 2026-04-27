@@ -1,4 +1,4 @@
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -19,6 +19,7 @@ export interface DataTableGridColumn<TKey extends string> {
 }
 
 interface DataTableGridProps<TRow, TKey extends string> {
+  pageKey?: string;
   actionBar?: DataTableActionBarProps;
   toolbar?: ReactNode;
   columns: DataTableGridColumn<TKey>[];
@@ -59,6 +60,8 @@ interface DataTableGridProps<TRow, TKey extends string> {
   disablePaginationButtons?: boolean;
 }
 
+const tableScrollPositions = new Map<string, number>();
+
 function isInteractiveTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return Boolean(
@@ -67,6 +70,7 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 }
 
 export function DataTableGrid<TRow, TKey extends string>({
+  pageKey,
   actionBar,
   toolbar,
   columns,
@@ -107,6 +111,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
   const suppressNativeDoubleClickUntilRef = useRef(0);
   const tableScrollRef = useRef<HTMLDivElement | null>(null);
+  const resolvedScrollKey = pageKey ?? actionBar?.pageKey ?? null;
   const dragStateRef = useRef({
     isDragging: false,
     startX: 0,
@@ -179,6 +184,30 @@ export function DataTableGrid<TRow, TKey extends string>({
   };
 
   const colSpan = visibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
+
+  useLayoutEffect(() => {
+    if (!resolvedScrollKey) return;
+    const container = tableScrollRef.current;
+    if (!container) return;
+    const saved = tableScrollPositions.get(resolvedScrollKey);
+    if (typeof saved === 'number' && Number.isFinite(saved)) {
+      container.scrollLeft = saved;
+    }
+  }, [resolvedScrollKey, visibleColumnKeys.length, rows.length, isLoading, isError]);
+
+  useEffect(() => {
+    if (!resolvedScrollKey) return;
+    const container = tableScrollRef.current;
+    if (!container) return;
+    const handleScroll = (): void => {
+      tableScrollPositions.set(resolvedScrollKey, container.scrollLeft);
+    };
+    handleScroll();
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [resolvedScrollKey]);
 
   return (
     <div className="min-w-0 w-full space-y-4">
