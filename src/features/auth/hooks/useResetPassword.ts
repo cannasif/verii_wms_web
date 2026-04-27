@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { authApi } from '../api/auth-api';
 
 export const useResetPassword = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   return useMutation({

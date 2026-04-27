@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { authApi } from '../api/auth-api';
 
 export const useForgotPassword = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: (email: string) => authApi.requestPasswordReset(email),

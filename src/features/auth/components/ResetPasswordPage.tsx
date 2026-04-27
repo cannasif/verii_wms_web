@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { useResetPassword } from '../hooks/useResetPassword';
 
 export function ResetPasswordPage(): React.JSX.Element {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');

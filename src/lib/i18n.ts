@@ -1,18 +1,15 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import trCommon from '../locales/tr/common.json';
-import enCommon from '../locales/en/common.json';
-import deCommon from '../locales/de/common.json';
-import frCommon from '../locales/fr/common.json';
-import arCommon from '../locales/ar/common.json';
-import esCommon from '../locales/es/common.json';
-import itCommon from '../locales/it/common.json';
 
 const i18n = i18next.createInstance();
 
 type ResourceModule = { default: Record<string, unknown> };
 
-const sharedModules = import.meta.glob('../locales/**/*.json');
+const sharedModules = import.meta.glob([
+  '../locales/**/*.json',
+  '!../locales/tr/common.json',
+]);
 const featureModules = import.meta.glob('../features/**/localization/*.json');
 
 type LoaderMap = Record<string, Record<string, () => Promise<ResourceModule>>>;
@@ -82,18 +79,15 @@ const COMMON_NAMESPACE = 'common';
 const STORAGE_KEY_LEGACY = 'i18nextLng';
 const STORAGE_KEY_WMS = 'wms-app-language';
 const fallbackLng = DEFAULT_LANGUAGE;
-const COMMON_RESOURCES = {
-  tr: trCommon,
-  en: enCommon,
-  de: deCommon,
-  fr: frCommon,
-  ar: arCommon,
-  es: esCommon,
-  it: itCommon,
-} as const;
-const supportedLngs = Object.keys(COMMON_RESOURCES);
+const supportedLngs = ['tr', 'en', 'de', 'fr', 'ar', 'es', 'it'] as const;
+const supportedLanguageSet = new Set<string>(supportedLngs);
 const PRELOADED_NAMESPACES = [DEFAULT_NAMESPACE, COMMON_NAMESPACE] as const;
 const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unknown>>> = {};
+
+if (!loaders[fallbackLng]) loaders[fallbackLng] = {};
+if (!loaders[fallbackLng][COMMON_NAMESPACE]) {
+  loaders[fallbackLng][COMMON_NAMESPACE] = async () => ({ default: trCommon as Record<string, unknown> });
+}
 
 type SupportedLanguage = (typeof supportedLngs)[number];
 
@@ -146,19 +140,19 @@ export function normalizeLanguage(language: string | null | undefined): Supporte
 
   const lower = language.toLowerCase();
   const mapped = lower === 'sa' ? 'ar' : lower;
-  if (supportedLngs.includes(mapped)) {
-    return mapped;
+  if (supportedLanguageSet.has(mapped)) {
+    return mapped as SupportedLanguage;
   }
 
   const base = mapped.split('-')[0];
-  if (supportedLngs.includes(base)) {
-    return base;
+  if (supportedLanguageSet.has(base)) {
+    return base as SupportedLanguage;
   }
 
   return DEFAULT_LANGUAGE;
 }
 
-export const SUPPORTED_LANGUAGES = supportedLngs as SupportedLanguage[];
+export const SUPPORTED_LANGUAGES = [...supportedLngs];
 
 export function getLocaleForFormatting(language: string | null | undefined): string {
   return LOCALE_BY_LANGUAGE[normalizeLanguage(language)];
@@ -218,6 +212,16 @@ function getInitialLanguage(): SupportedLanguage {
 
 const initialLng = getInitialLanguage();
 syncDocumentLanguage(initialLng);
+loadedBundlesByLanguage[fallbackLng] = {
+  [DEFAULT_NAMESPACE]: {
+    [DEFAULT_NAMESPACE]: trCommon,
+    [COMMON_NAMESPACE]: trCommon,
+  },
+  [COMMON_NAMESPACE]: {
+    [DEFAULT_NAMESPACE]: trCommon,
+    [COMMON_NAMESPACE]: trCommon,
+  },
+};
 
 function rebuildLanguageResources(lang: string): void {
   const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
@@ -288,30 +292,32 @@ export async function loadLanguage(language: string): Promise<void> {
 }
 
 const initPromise = (async () => {
-  const namespaces = Object.keys(loaders[fallbackLng] || {});
-  const defaultNS = namespaces.includes(COMMON_NAMESPACE)
-    ? COMMON_NAMESPACE
-    : namespaces[0] ?? DEFAULT_NAMESPACE;
+  const fileNamespaces = Object.keys(loaders[fallbackLng] || {});
+  const defaultNS = COMMON_NAMESPACE;
+  const ns = [...new Set([COMMON_NAMESPACE, DEFAULT_NAMESPACE, ...fileNamespaces])];
 
   await i18n.use(initReactI18next).init({
-    resources: Object.fromEntries(
-      Object.entries(COMMON_RESOURCES).map(([language, common]) => [
-        language,
-        {
-          [DEFAULT_NAMESPACE]: common,
-          [COMMON_NAMESPACE]: common,
-        },
-      ]),
-    ),
+    resources: {
+      [fallbackLng]: {
+        [DEFAULT_NAMESPACE]: trCommon,
+        [COMMON_NAMESPACE]: trCommon,
+      },
+    },
     lng: initialLng,
     fallbackLng,
     supportedLngs,
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
-    ns: namespaces.length > 0 ? namespaces : [defaultNS],
+    ns,
     defaultNS,
+    fallbackNS: [COMMON_NAMESPACE, DEFAULT_NAMESPACE],
     interpolation: { escapeValue: false },
-    parseMissingKeyHandler: (key, defaultValue) => resolveMissingKey(key, defaultValue as string | undefined),
+    parseMissingKeyHandler: (key, defaultValue) => {
+      if (import.meta.env.DEV && (defaultValue === undefined || defaultValue === '')) {
+        console.warn(`[i18n] missing key: ${key} (lng=${i18n.language}, ns=${defaultNS})`);
+      }
+      return resolveMissingKey(key, defaultValue as string | undefined);
+    },
     returnEmptyString: false,
     detection: {
       order: [],

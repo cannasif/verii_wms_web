@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useForgotPassword } from '../hooks/useForgotPassword';
 
 export function ForgotPasswordPage(): React.JSX.Element {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { mutate: requestPasswordReset, isPending } = useForgotPassword();
 

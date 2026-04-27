@@ -8,7 +8,7 @@ import { getUserFromToken } from '@/utils/jwt';
 import type { LoginRequest, Branch } from '../types/auth';
 
 export const useLogin = (branches?: Branch[]) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
 

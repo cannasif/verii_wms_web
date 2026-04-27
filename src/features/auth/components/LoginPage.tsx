@@ -21,7 +21,7 @@ import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert, ShieldC
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
 export function LoginPage(): React.JSX.Element {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: branches } = useBranches();
