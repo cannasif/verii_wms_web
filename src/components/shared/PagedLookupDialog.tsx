@@ -115,22 +115,35 @@ export function PagedLookupDialog<T>({
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
 
-          <div className="space-y-4">
-            <Input
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  setSearch(searchInput.trim());
-                }
-              }}
-              placeholder={searchPlaceholder ?? t('paged.searchPlaceholder')}
-            />
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              <Input
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    setSearch(searchInput.trim());
+                  }
+                }}
+                placeholder={searchPlaceholder ?? t('paged.searchPlaceholder')}
+                className="min-w-0 flex-1"
+                aria-label={searchPlaceholder ?? t('paged.searchPlaceholder')}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-10 shrink-0 gap-1.5 px-4"
+                onClick={() => setSearch(searchInput.trim())}
+              >
+                <Search className="size-4 opacity-80" aria-hidden />
+                {t('paged.search')}
+              </Button>
+            </div>
 
             <div
               ref={listRef}
               onScroll={handleScroll}
-              className="max-h-[360px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3"
+              className="max-h-[min(360px,50vh)] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3"
             >
               {query.isLoading ? (
                 <div className="flex items-center justify-center py-8 text-sm text-slate-500">
@@ -163,12 +176,6 @@ export function PagedLookupDialog<T>({
                   {t('common.loading')}
                 </div>
               ) : null}
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setSearch(searchInput.trim())}>
-                {t('paged.search')}
-              </Button>
             </div>
           </div>
         </DialogContent>
