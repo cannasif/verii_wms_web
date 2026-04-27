@@ -1072,7 +1072,16 @@
       "legendEmptySlot": "Emplacement vide",
       "legendSelectedSlot": "Emplacement sélectionné",
       "legendDropTarget": "Zone de dépôt",
-      "mixedStock": "Stock mixte"
+      "mixedStock": "Stock mixte",
+      "cameraIso": "Vue isométrique",
+      "cameraTop": "Vue de dessus",
+      "cameraFront": "Vue de face",
+      "cameraEye": "Niveau des yeux (Opérateur)",
+      "cameraReset": "Réinitialiser la caméra",
+      "interactionHint": "Clic gauche : pivoter · Clic droit : déplacer · Molette : zoomer",
+      "legendSelected": "Sélectionné",
+      "legendHover": "Survolé",
+      "rackSelected": "Étagère sélectionnée · Voir le panneau"
     },
     "warehouse3d": {
       "title": "Visualisation 3D de l'entrepôt",

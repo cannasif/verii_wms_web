@@ -1072,7 +1072,16 @@
       "legendEmptySlot": "Empty Slot",
       "legendSelectedSlot": "Selected Slot",
       "legendDropTarget": "Drop Target",
-      "mixedStock": "Mixed Stock"
+      "mixedStock": "Mixed Stock",
+      "cameraIso": "عرض متساوي القياس",
+      "cameraTop": "عرض من الأعلى",
+      "cameraFront": "عرض أمامي",
+      "cameraEye": "مستوى العين (المشغل)",
+      "cameraReset": "إعادة ضبط الكاميرا",
+      "interactionHint": "زر أيسر: تدوير · زر أيمن: تحريك · العجلة: تكبير",
+      "legendSelected": "محدد",
+      "legendHover": "تحت المؤشر",
+      "rackSelected": "الرف محدد · انظر اللوحة"
     },
     "warehouse3d": {
       "title": "3D Warehouse Visualization",

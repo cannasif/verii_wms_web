@@ -1072,7 +1072,16 @@
       "legendEmptySlot": "Leerer Slot",
       "legendSelectedSlot": "Ausgewählter Slot",
       "legendDropTarget": "Ablageziel",
-      "mixedStock": "Gemischter Bestand"
+      "mixedStock": "Gemischter Bestand",
+      "cameraIso": "Isometrische Ansicht",
+      "cameraTop": "Draufsicht",
+      "cameraFront": "Vorderansicht",
+      "cameraEye": "Augenhöhe (Bediener)",
+      "cameraReset": "Kamera zurücksetzen",
+      "interactionHint": "Linksklick: drehen · Rechtsklick: schwenken · Mausrad: zoomen",
+      "legendSelected": "Ausgewählt",
+      "legendHover": "Überflogen",
+      "rackSelected": "Regal ausgewählt · Panel unten"
     },
     "warehouse3d": {
       "title": "3D-Lagervisualisierung",

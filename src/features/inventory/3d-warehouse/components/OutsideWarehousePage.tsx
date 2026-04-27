@@ -1,7 +1,8 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
+import { Box, Compass, Footprints, Move3D, Package, RotateCcw, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,9 +15,110 @@ import type {
   SteelPlacementVisualizationItemDto,
   SteelPlacementVisualizationLocationDto,
 } from '../types/warehouse-3d';
+import type { CameraPreset } from './outside/OutsideScene';
 import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 
 type ViewMode = '2d' | '3d';
+
+interface RackDetailPanelProps {
+  items: SteelPlacementVisualizationItemDto[];
+  selectedItemId: number | null;
+  onSelectItem: (item: SteelPlacementVisualizationItemDto) => void;
+  onClose: () => void;
+  resolveImageUrl: (url: string | null | undefined) => string | null;
+}
+
+function RackDetailPanel({
+  items,
+  selectedItemId,
+  onSelectItem,
+  onClose,
+  resolveImageUrl,
+}: RackDetailPanelProps): ReactElement {
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => (a.stackOrderNo ?? 0) - (b.stackOrderNo ?? 0)),
+    [items],
+  );
+  const slotLabel =
+    sortedItems.length > 0
+      ? `R${sortedItems[0].rowNo ?? 1}/P${sortedItems[0].positionNo ?? 1}`
+      : '';
+
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-20 rounded-b-2xl border-t border-white/10 bg-slate-950/95 backdrop-blur-xl">
+      <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+          <span className="text-xs font-semibold text-cyan-300">{slotLabel}</span>
+          <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 text-[10px] font-bold text-cyan-400 ring-1 ring-cyan-400/20">
+            {sortedItems.length}
+          </span>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="h-6 w-6 rounded-full text-slate-400 hover:text-white"
+        >
+          <X className="size-3.5" />
+        </Button>
+      </div>
+
+      <div className="flex gap-2.5 overflow-x-auto px-4 pb-3 pt-0.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+        {sortedItems.map((item) => {
+          const imageUrl = resolveImageUrl(item.imageUrl);
+          const isSelected = selectedItemId === item.lineId;
+
+          return (
+            <button
+              key={item.lineId}
+              type="button"
+              onClick={() => onSelectItem(item)}
+              className={`group relative shrink-0 cursor-pointer rounded-xl border-2 p-1.5 transition-all duration-200 ${
+                isSelected
+                  ? 'border-cyan-400 bg-cyan-400/10 shadow-[0_0_14px_rgba(34,211,238,0.30)]'
+                  : 'border-white/10 bg-white/5 hover:border-sky-400/40 hover:bg-sky-400/5'
+              }`}
+            >
+              <div className="relative mb-1.5 h-14 w-[68px] overflow-hidden rounded-lg">
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={item.stockCode}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-slate-700/60 to-slate-800/60">
+                    <Package className="size-5 text-slate-500" />
+                  </div>
+                )}
+                <div className="absolute bottom-0.5 right-0.5 rounded bg-black/75 px-1 py-0.5 text-[8px] font-bold leading-none text-cyan-300">
+                  #{item.stackOrderNo ?? 1}
+                </div>
+                {isSelected && (
+                  <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-cyan-400/60" />
+                )}
+              </div>
+
+              <div className="w-[68px] truncate text-center text-[9px] font-semibold leading-tight text-slate-300">
+                {item.stockCode}
+              </div>
+              <div className="w-[68px] truncate text-center text-[8px] leading-tight text-slate-500">
+                {item.serialNo}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const OutsideScene = lazy(async () => {
+  const module = await import('./outside/OutsideScene');
+  return { default: module.OutsideScene };
+});
 
 function getFullImageUrl(url: string | null | undefined): string | null {
   if (!url) return null;
@@ -137,6 +239,28 @@ export function OutsideWarehousePage(): ReactElement {
   const [mode, setMode] = useState<ViewMode>(initialMode);
   const [selectedLocationKey, setSelectedLocationKey] = useState<string>('');
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>('iso');
+  const [cameraPresetVersion, setCameraPresetVersion] = useState<number>(0);
+  const [selectedRackKey, setSelectedRackKey] = useState<string | null>(null);
+  const [selectedRackItems, setSelectedRackItems] = useState<SteelPlacementVisualizationItemDto[]>([]);
+  const prevLocationKey = useRef<string>('');
+
+  const triggerCameraPreset = useCallback((preset: CameraPreset): void => {
+    setCameraPreset(preset);
+    setCameraPresetVersion((value) => value + 1);
+    setSelectedRackKey(null);
+    setSelectedRackItems([]);
+  }, []);
+
+  const handleSelectRack = useCallback(
+    (key: string | null, items: SteelPlacementVisualizationItemDto[]): void => {
+      setSelectedRackKey(key);
+      setSelectedRackItems((prev) => (key === null ? (prev.length > 0 ? [] : prev) : items));
+    },
+    [],
+  );
+
+  const resolveImageUrl = useCallback((url: string | null | undefined): string | null => getFullImageUrl(url), []);
 
   const warehousesQuery = useQuery({
     queryKey: ['outside-warehouse', 'warehouses'],
@@ -149,9 +273,9 @@ export function OutsideWarehousePage(): ReactElement {
     enabled: selectedWarehouseId > 0,
   });
 
-  const warehouses = warehousesQuery.data?.data ?? [];
+  const warehouses = useMemo(() => warehousesQuery.data?.data ?? [], [warehousesQuery.data]);
   const visualization = visualizationQuery.data;
-  const locations = visualization?.locations ?? [];
+  const locations = useMemo(() => visualization?.locations ?? [], [visualization]);
 
   useEffect(() => {
     if (!selectedWarehouseId && warehouses.length > 0) {
@@ -163,6 +287,8 @@ export function OutsideWarehousePage(): ReactElement {
     if (locations.length === 0) {
       setSelectedLocationKey('');
       setSelectedItemId(null);
+      setSelectedRackKey(null);
+      setSelectedRackItems((prev) => (prev.length > 0 ? [] : prev));
       return;
     }
 
@@ -172,8 +298,15 @@ export function OutsideWarehousePage(): ReactElement {
       return false;
     }) ?? locations[0];
 
-    setSelectedLocationKey((current) => current || focusedLocation.locationKey);
+    const newKey = focusedLocation.locationKey;
+    setSelectedLocationKey((current) => current || newKey);
     setSelectedItemId((current) => current ?? focusedLocation.items[0]?.lineId ?? null);
+
+    if (prevLocationKey.current !== newKey) {
+      prevLocationKey.current = newKey;
+      setSelectedRackKey(null);
+      setSelectedRackItems((prev) => (prev.length > 0 ? [] : prev));
+    }
   }, [locations, initialAreaCode, initialShelfId]);
 
   useEffect(() => {
@@ -303,12 +436,128 @@ export function OutsideWarehousePage(): ReactElement {
               </CardHeader>
               <CardContent>
                 {selectedLocation ? (
-                  <VisualizationPlane
-                    location={selectedLocation}
-                    mode={mode}
-                    selectedItemId={selectedItemId}
-                    onSelectItem={(item) => setSelectedItemId(item.lineId)}
-                  />
+                  mode === '3d' ? (
+                    <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60">
+                      <Suspense
+                        fallback={
+                          <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
+                            {t('common.loading')}
+                          </div>
+                        }
+                      >
+                        <OutsideScene
+                          location={selectedLocation}
+                          selectedItemId={selectedItemId}
+                          onSelectItem={(item) => setSelectedItemId(item.lineId)}
+                          resolveImageUrl={resolveImageUrl}
+                          cameraPreset={cameraPreset}
+                          cameraPresetVersion={cameraPresetVersion}
+                          selectedRackKey={selectedRackKey}
+                          onSelectRack={handleSelectRack}
+                        />
+                      </Suspense>
+
+                      <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3">
+                        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-[11px] font-medium text-cyan-200 backdrop-blur">
+                          {selectedRackKey ? (
+                            <>
+                              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+                              {t('inventory.outsideWarehouse.rackSelected')}
+                            </>
+                          ) : (
+                            `${selectedLocation.plateCount} ${t('inventory.outsideWarehouse.totalPlates')}`
+                          )}
+                        </div>
+                        <div className="pointer-events-auto flex gap-1.5 rounded-full border border-white/10 bg-slate-950/70 p-1 backdrop-blur">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant={cameraPreset === 'iso' && !selectedRackKey ? 'secondary' : 'ghost'}
+                            onClick={() => triggerCameraPreset('iso')}
+                            title={t('inventory.outsideWarehouse.cameraIso')}
+                            className="h-8 w-8"
+                          >
+                            <Move3D className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant={cameraPreset === 'top' && !selectedRackKey ? 'secondary' : 'ghost'}
+                            onClick={() => triggerCameraPreset('top')}
+                            title={t('inventory.outsideWarehouse.cameraTop')}
+                            className="h-8 w-8"
+                          >
+                            <Compass className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant={cameraPreset === 'front' && !selectedRackKey ? 'secondary' : 'ghost'}
+                            onClick={() => triggerCameraPreset('front')}
+                            title={t('inventory.outsideWarehouse.cameraFront')}
+                            className="h-8 w-8"
+                          >
+                            <Box className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant={cameraPreset === 'eye' && !selectedRackKey ? 'secondary' : 'ghost'}
+                            onClick={() => triggerCameraPreset('eye')}
+                            title={t('inventory.outsideWarehouse.cameraEye')}
+                            className="h-8 w-8"
+                          >
+                            <Footprints className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => triggerCameraPreset('reset')}
+                            title={t('inventory.outsideWarehouse.cameraReset')}
+                            className="h-8 w-8"
+                          >
+                            <RotateCcw className="size-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {!selectedRackKey && (
+                        <div className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-300">
+                          <div className="rounded-md border border-white/10 bg-slate-950/70 px-2.5 py-1 backdrop-blur">
+                            {t('inventory.outsideWarehouse.interactionHint')}
+                          </div>
+                          <div className="flex items-center gap-3 rounded-md border border-white/10 bg-slate-950/70 px-2.5 py-1 backdrop-blur">
+                            <span className="flex items-center gap-1.5">
+                              <span className="size-2 rounded-sm" style={{ backgroundColor: '#22d3ee' }} />
+                              {t('inventory.outsideWarehouse.legendSelected')}
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="size-2 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
+                              {t('inventory.outsideWarehouse.legendHover')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedRackKey && selectedRackItems.length > 0 && (
+                        <RackDetailPanel
+                          items={selectedRackItems}
+                          selectedItemId={selectedItemId}
+                          onSelectItem={(item) => setSelectedItemId(item.lineId)}
+                          onClose={() => handleSelectRack(null, [])}
+                          resolveImageUrl={resolveImageUrl}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <VisualizationPlane
+                      location={selectedLocation}
+                      mode={mode}
+                      selectedItemId={selectedItemId}
+                      onSelectItem={(item) => setSelectedItemId(item.lineId)}
+                    />
+                  )
                 ) : null}
               </CardContent>
             </Card>

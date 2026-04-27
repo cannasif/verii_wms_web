@@ -1238,7 +1238,16 @@
       "legendEmptySlot": "Boş Slot",
       "legendSelectedSlot": "Seçili Slot",
       "legendDropTarget": "Bırakma Hedefi",
-      "mixedStock": "Karma Stok"
+      "mixedStock": "Karma Stok",
+      "cameraIso": "İzometrik Görünüm",
+      "cameraTop": "Üstten Görünüm",
+      "cameraFront": "Önden Görünüm",
+      "cameraEye": "Göz Hizası (Operatör)",
+      "cameraReset": "Kamerayı Sıfırla",
+      "interactionHint": "Sol tık: döndür · Sağ tık: kaydır · Tekerlek: yakınlaş",
+      "legendSelected": "Seçili",
+      "legendHover": "Üzerinde",
+      "rackSelected": "Raf seçili · Panoyu görmek için tıkla"
     },
     "warehouse3d": {
       "title": "3D Depo Görselleştirme",

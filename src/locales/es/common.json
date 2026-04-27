@@ -1072,7 +1072,16 @@
       "legendEmptySlot": "Empty Slot",
       "legendSelectedSlot": "Selected Slot",
       "legendDropTarget": "Drop Target",
-      "mixedStock": "Mixed Stock"
+      "mixedStock": "Mixed Stock",
+      "cameraIso": "Vista isométrica",
+      "cameraTop": "Vista superior",
+      "cameraFront": "Vista frontal",
+      "cameraEye": "Nivel de ojos (Operador)",
+      "cameraReset": "Reiniciar cámara",
+      "interactionHint": "Clic izquierdo: rotar · Clic derecho: desplazar · Rueda: zoom",
+      "legendSelected": "Seleccionado",
+      "legendHover": "En foco",
+      "rackSelected": "Estante seleccionado · Ver panel"
     },
     "warehouse3d": {
       "title": "3D Warehouse Visualization",
