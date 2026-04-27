@@ -364,8 +364,8 @@
     "kkdOverview": "PPE Operations Hub",
     "kkdInitialOrder": "PPE Initial Order",
     "sacMalKabul": "Steel Plate Acceptance",
-    "sacMalKabulVehicleCheckIn": "Vehicle Check-In",
-    "sacMalKabulVehicleCheckInList": "Vehicle Check-In List",
+    "sacMalKabulVehicleCheckIn": "Vehicle Entry Step",
+    "sacMalKabulVehicleCheckInList": "Vehicle Entry Records",
     "sacMalKabulImport": "Excel Import",
     "sacMalKabulInspection": "Yard Acceptance Control",
     "sacMalKabulList": "Expected Plate List",
@@ -720,9 +720,9 @@
     }
   },
   "vehicleCheckIn": {
-    "badge": "Vehicle Check-In 1",
-    "pageTitle": "Vehicle Check-In",
-    "title": "Vehicle Pre-Entry Form",
+    "badge": "Vehicle Entry 1",
+    "pageTitle": "Vehicle Entry Step",
+    "title": "Vehicle Entry Form",
     "description": "Create the first record for an arriving vehicle. If the same plate returns on the same day, the current record is updated.",
     "guidance": {
       "title": "Business Rule",
@@ -760,7 +760,7 @@
       "image": "Vehicle Image"
     },
     "list": {
-      "pageTitle": "Vehicle Check-In List",
+      "pageTitle": "Vehicle Entry Records",
       "title": "Vehicle Entry Records",
       "description": "Track same-day updates and different-day new entries for vehicle arrivals.",
       "searchPh": "Search plate, name, or customer",

@@ -313,8 +313,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             title: 'sidebar.sacMalKabul',
             titleFallback: 'Sac Mal Kabul',
             children: [
-              { title: 'sidebar.sacMalKabulVehicleCheckIn', titleFallback: 'Araç Kontrol', href: '/vehicle-check-in' },
-              { title: 'sidebar.sacMalKabulVehicleCheckInList', titleFallback: 'Araç Kontrol Listesi', href: '/vehicle-check-in/list' },
+              { title: 'sidebar.sacMalKabulVehicleCheckIn', titleFallback: 'Araç Giriş İşlemi', href: '/vehicle-check-in' },
+              { title: 'sidebar.sacMalKabulVehicleCheckInList', titleFallback: 'Araç Giriş Kayıtları', href: '/vehicle-check-in/list' },
               { title: 'sidebar.sacMalKabulImport', titleFallback: 'Excel Aktarım', href: '/sac-mal-kabul/import' },
               { title: 'sidebar.sacMalKabulList', titleFallback: 'Beklenen Levha Listesi', href: '/sac-mal-kabul/list' },
               { title: 'sidebar.sacMalKabulInspection', titleFallback: 'Kabul Kontrol', href: '/sac-mal-kabul/inspection' },

@@ -364,8 +364,8 @@
     "kkdOverview": "KKD Operasyon Merkezi",
     "kkdInitialOrder": "KKD İlk Giriş Siparişi",
     "sacMalKabul": "Sac Mal Kabul",
-    "sacMalKabulVehicleCheckIn": "Araç Kontrol",
-    "sacMalKabulVehicleCheckInList": "Araç Kontrol Listesi",
+    "sacMalKabulVehicleCheckIn": "Araç Giriş İşlemi",
+    "sacMalKabulVehicleCheckInList": "Araç Giriş Kayıtları",
     "sacMalKabulImport": "Excel Aktarım",
     "sacMalKabulInspection": "Saha Kabul Kontrol",
     "sacMalKabulList": "Beklenen Levha Listesi",
@@ -720,9 +720,9 @@
     }
   },
   "vehicleCheckIn": {
-    "badge": "Araç Kontrol 1",
-    "pageTitle": "Araç Kontrol",
-    "title": "Araç Ön Giriş Formu",
+    "badge": "Araç Giriş 1",
+    "pageTitle": "Araç Giriş İşlemi",
+    "title": "Araç Giriş Formu",
     "description": "Sahaya gelen araç için ilk kaydı oluşturun. Aynı plaka aynı gün tekrar gelirse mevcut kayıt güncellenir.",
     "guidance": {
       "title": "İş Kuralı",
@@ -760,7 +760,7 @@
       "image": "Araç Görseli"
     },
     "list": {
-      "pageTitle": "Araç Kontrol Listesi",
+      "pageTitle": "Araç Giriş Kayıtları",
       "title": "Araç Giriş Kayıtları",
       "description": "Aynı gün güncellenen ya da farklı günlerde açılan araç giriş kayıtlarını izleyin.",
       "searchPh": "Plaka, isim veya müşteri ara",
