@@ -37,6 +37,14 @@ function buildCustomerLabel(record: Pick<CreateOrUpdateVehicleCheckInDto, 'custo
   return [record.customerCode, record.customerName].filter(Boolean).join(' - ');
 }
 
+function normalizePlateForLookup(value?: string | null): string {
+  if (!value) {
+    return '';
+  }
+
+  return value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
+
 export function VehicleCheckInPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
@@ -44,6 +52,7 @@ export function VehicleCheckInPage(): ReactElement {
   const [searchParams, setSearchParams] = useSearchParams();
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const lastLookupPlateRef = useRef<string>('');
 
   const [formState, setFormState] = useState<CreateOrUpdateVehicleCheckInDto>({
     branchCode: '0',
@@ -153,6 +162,7 @@ export function VehicleCheckInPage(): ReactElement {
 
   function hydrateForm(data: VehicleCheckInHeaderDto): void {
     setCurrentRecord(data);
+    lastLookupPlateRef.current = normalizePlateForLookup(data.plateNo);
     setFormState({
       branchCode: data.branchCode || '0',
       plateNo: data.plateNo,
@@ -177,12 +187,39 @@ export function VehicleCheckInPage(): ReactElement {
   }
 
   function handleFindToday(): void {
-    if (!formState.plateNo.trim()) {
+    const plateNo = formState.plateNo.trim();
+    if (!plateNo) {
       toast.error(t('vehicleCheckIn.messages.plateRequired'));
       return;
     }
 
-    findTodayMutation.mutate(formState.plateNo.trim());
+    lastLookupPlateRef.current = normalizePlateForLookup(plateNo);
+    findTodayMutation.mutate(plateNo);
+  }
+
+  function handlePlateBlur(): void {
+    const plateNo = formState.plateNo.trim();
+    if (!plateNo || findTodayMutation.isPending) {
+      return;
+    }
+
+    const normalizedPlate = normalizePlateForLookup(plateNo);
+    if (!normalizedPlate) {
+      return;
+    }
+
+    const currentRecordPlate = normalizePlateForLookup(currentRecord?.plateNo);
+    if (currentRecord?.id && currentRecordPlate === normalizedPlate) {
+      lastLookupPlateRef.current = normalizedPlate;
+      return;
+    }
+
+    if (lastLookupPlateRef.current === normalizedPlate) {
+      return;
+    }
+
+    lastLookupPlateRef.current = normalizedPlate;
+    findTodayMutation.mutate(plateNo);
   }
 
   function handleFileSelect(event: ChangeEvent<HTMLInputElement>): void {
@@ -210,6 +247,7 @@ export function VehicleCheckInPage(): ReactElement {
                   id="vehicle-plate"
                   value={formState.plateNo}
                   onChange={(event) => setFormState((prev) => ({ ...prev, plateNo: event.target.value.toUpperCase() }))}
+                  onBlur={handlePlateBlur}
                   placeholder={t('vehicleCheckIn.fields.platePh')}
                 />
                 <Button type="button" variant="outline" onClick={handleFindToday} disabled={findTodayMutation.isPending}>
