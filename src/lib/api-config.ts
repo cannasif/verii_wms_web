@@ -207,11 +207,26 @@ function refreshRuntimeConfigInBackground(): void {
 export function loadConfig(): Promise<string> {
   if (!configPromise) {
     if (import.meta.env.DEV) {
-      configPromise = fetchRuntimeConfig().then((config) => {
-        hydrateMemoryCache(config);
-        persistRuntimeConfig(config);
-        return config;
-      });
+      const persisted = readPersistedRuntimeConfig();
+
+      if (persisted) {
+        const resolved = hydrateMemoryCache({
+          apiUrl: persisted.apiUrl,
+          baseUrl: persisted.baseUrl,
+        });
+
+        if (!isPersistedConfigFresh(persisted)) {
+          refreshRuntimeConfigInBackground();
+        }
+
+        configPromise = Promise.resolve(resolved);
+      } else {
+        configPromise = fetchRuntimeConfig().then((config) => {
+          hydrateMemoryCache(config);
+          persistRuntimeConfig(config);
+          return config;
+        });
+      }
 
       return configPromise.then((config) => config.apiUrl);
     }
