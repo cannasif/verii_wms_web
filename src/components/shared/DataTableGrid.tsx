@@ -5,12 +5,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { DataTableActionBar, type DataTableActionBarProps } from './DataTableActionBar';
+import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 
 export type DataTableSortDirection = 'asc' | 'desc';
 
 export interface DataTableGridColumn<TKey extends string> {
   key: TKey;
   label: string;
+  headerHelpText?: string;
   sortable?: boolean;
   headClassName?: string;
   cellClassName?: string;
@@ -202,12 +204,16 @@ export function DataTableGrid<TRow, TKey extends string>({
                 return (
                   <TableHead key={key} className={column?.headClassName}>
                     {sortable ? (
-                      <Button variant="ghost" size="sm" onClick={() => onSort?.(key)} className="h-7 -ml-1 px-1 hover:bg-transparent">
+                      <Button variant="ghost" size="sm" onClick={() => onSort?.(key)} className="h-7 -ml-1 gap-1 px-1 hover:bg-transparent">
                         <span>{column?.label ?? key}</span>
+                        {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
                         {renderSortIcon?.(key)}
                       </Button>
                     ) : (
-                      <span>{column?.label ?? key}</span>
+                      <span className="inline-flex items-center gap-1">
+                        <span>{column?.label ?? key}</span>
+                        {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
+                      </span>
                     )}
                   </TableHead>
                 );
