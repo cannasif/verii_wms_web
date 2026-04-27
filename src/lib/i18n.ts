@@ -1,15 +1,11 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import trCommon from '../locales/tr/common.json';
 
 const i18n = i18next.createInstance();
 
 type ResourceModule = { default: Record<string, unknown> };
 
-const sharedModules = import.meta.glob([
-  '../locales/**/*.json',
-  '!../locales/tr/common.json',
-]);
+const sharedModules = import.meta.glob('../locales/**/*.json');
 const featureModules = import.meta.glob('../features/**/localization/*.json');
 
 type LoaderMap = Record<string, Record<string, () => Promise<ResourceModule>>>;
@@ -83,11 +79,6 @@ const supportedLngs = ['tr', 'en', 'de', 'fr', 'ar', 'es', 'it'] as const;
 const supportedLanguageSet = new Set<string>(supportedLngs);
 const PRELOADED_NAMESPACES = [DEFAULT_NAMESPACE, COMMON_NAMESPACE] as const;
 const loadedBundlesByLanguage: Record<string, Record<string, Record<string, unknown>>> = {};
-
-if (!loaders[fallbackLng]) loaders[fallbackLng] = {};
-if (!loaders[fallbackLng][COMMON_NAMESPACE]) {
-  loaders[fallbackLng][COMMON_NAMESPACE] = async () => ({ default: trCommon as Record<string, unknown> });
-}
 
 type SupportedLanguage = (typeof supportedLngs)[number];
 
@@ -213,16 +204,7 @@ function getInitialLanguage(): SupportedLanguage {
 const initialLng = getInitialLanguage();
 syncDocumentLanguage(initialLng);
 persistLanguage(initialLng);
-loadedBundlesByLanguage[fallbackLng] = {
-  [DEFAULT_NAMESPACE]: {
-    [DEFAULT_NAMESPACE]: trCommon,
-    [COMMON_NAMESPACE]: trCommon,
-  },
-  [COMMON_NAMESPACE]: {
-    [DEFAULT_NAMESPACE]: trCommon,
-    [COMMON_NAMESPACE]: trCommon,
-  },
-};
+const resolvedInitialLng = supportedLanguageSet.has(initialLng) ? initialLng : DEFAULT_LANGUAGE;
 
 function rebuildLanguageResources(lang: string): void {
   const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
@@ -294,17 +276,12 @@ export async function loadLanguage(language: string): Promise<void> {
 
 const initPromise = (async () => {
   const fileNamespaces = Object.keys(loaders[fallbackLng] || {});
-  const defaultNS = COMMON_NAMESPACE;
-  const ns = [...new Set([COMMON_NAMESPACE, DEFAULT_NAMESPACE, ...fileNamespaces])];
+  const defaultNS = fileNamespaces.includes(COMMON_NAMESPACE) ? COMMON_NAMESPACE : (fileNamespaces[0] ?? DEFAULT_NAMESPACE);
+  const ns = fileNamespaces.length > 0 ? fileNamespaces : [COMMON_NAMESPACE, DEFAULT_NAMESPACE];
 
   await i18n.use(initReactI18next).init({
-    resources: {
-      [fallbackLng]: {
-        [DEFAULT_NAMESPACE]: trCommon,
-        [COMMON_NAMESPACE]: trCommon,
-      },
-    },
-    lng: initialLng,
+    resources: {},
+    lng: resolvedInitialLng,
     fallbackLng,
     supportedLngs,
     load: 'languageOnly',
@@ -327,13 +304,13 @@ const initPromise = (async () => {
     },
   });
 
-  if (i18n.language !== initialLng || i18n.resolvedLanguage !== initialLng) {
-    await i18n.changeLanguage(initialLng);
+  await ensureNamespaces(PRELOADED_NAMESPACES, fallbackLng);
+  if (resolvedInitialLng !== fallbackLng) {
+    await ensureNamespaces(PRELOADED_NAMESPACES, resolvedInitialLng);
   }
 
-  await ensureNamespaces(PRELOADED_NAMESPACES, fallbackLng);
-  if (initialLng !== fallbackLng) {
-    await ensureNamespaces(PRELOADED_NAMESPACES, initialLng);
+  if (i18n.language !== resolvedInitialLng || i18n.resolvedLanguage !== resolvedInitialLng) {
+    await i18n.changeLanguage(resolvedInitialLng);
   }
 })();
 
