@@ -9,6 +9,7 @@ import App from './App.tsx';
 import { queryClient } from './lib/query-client';
 import { ensureApiReady } from './lib/axios';
 import { tryRecoverFromChunkError } from './lib/chunk-recovery';
+import { endPerfDebug, logPerfDebug, startPerfDebug } from './lib/perf-debug';
 
 window.addEventListener('vite:preloadError', (event) => {
   const customEvent = event as unknown as CustomEvent<{ payload?: unknown }>;
@@ -20,7 +21,9 @@ window.addEventListener('vite:preloadError', (event) => {
 });
 
 async function bootstrap(): Promise<void> {
+  startPerfDebug();
   await Promise.all([ensureApiReady(), ensureI18nReady()]);
+  logPerfDebug('bootstrap:dependencies-ready');
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -33,6 +36,7 @@ async function bootstrap(): Promise<void> {
       </I18nextProvider>
     </StrictMode>,
   );
+  endPerfDebug();
 }
 
 void bootstrap();
