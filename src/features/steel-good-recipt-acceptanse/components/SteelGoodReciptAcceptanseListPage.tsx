@@ -6,6 +6,7 @@ import { FormPageShell } from '@/components/shared';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { localizeStatus } from '@/lib/localize-status';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 
 export function SteelGoodReciptAcceptanseListPage(): ReactElement {
@@ -90,7 +91,7 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
                     <td className="px-3 py-2">{row.arrivedQuantity}</td>
                     <td className="px-3 py-2">{row.approvedQuantity}</td>
                     <td className="px-3 py-2">{row.rejectedQuantity}</td>
-                    <td className="px-3 py-2">{row.status}</td>
+                    <td className="px-3 py-2">{localizeStatus(row.status, t)}</td>
                   </tr>
                 ))}
                 {!query.isLoading && rows.length === 0 ? (

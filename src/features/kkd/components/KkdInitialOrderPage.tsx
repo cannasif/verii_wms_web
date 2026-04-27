@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getLocaleForFormatting } from '@/lib/i18n';
+import { localizeStatus } from '@/lib/localize-status';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdOrderSubmissionLineDto, KkdEmployeeDto, KkdOrderContextDto, KkdOrderHeaderDto, KkdOrderStockOptionDto, KkdResolvedEmployeeDto } from '../types/kkd.types';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -391,7 +392,7 @@ export function KkdInitialOrderPage(): ReactElement {
                     <Badge variant="outline">
                       {t('kkd.operational.initialOrder.headerPrefix')} #{submittedHeader.id}
                     </Badge>
-                    <Badge>{submittedHeader.status}</Badge>
+                    <Badge>{localizeStatus(submittedHeader.status, t)}</Badge>
                   </div>
                   <p className="mt-2">
                     {t('kkd.operational.initialOrder.documentNo')}: {submittedHeader.documentNo || '-'}

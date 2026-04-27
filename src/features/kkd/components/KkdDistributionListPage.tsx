@@ -8,6 +8,7 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { getLocaleForFormatting } from '@/lib/i18n';
+import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
@@ -136,7 +137,7 @@ export function KkdDistributionListPage(): ReactElement {
                   case 'warehouseId':
                     return `#${row.warehouseId}`;
                   case 'status':
-                    return row.status;
+                    return localizeStatus(row.status, t);
                   case 'sourceChannel':
                     return row.sourceChannel;
                   case 'lineCount':
@@ -188,7 +189,7 @@ export function KkdDistributionListPage(): ReactElement {
               <>
                 <div className="flex flex-wrap gap-2">
                   <Badge>{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</Badge>
-                  <Badge variant="secondary">{detail.status}</Badge>
+                  <Badge variant="secondary">{localizeStatus(detail.status, t)}</Badge>
                   <Badge variant="outline">{detail.sourceChannel}</Badge>
                   <Badge variant="outline">{t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}</Badge>
                 </div>

@@ -12,6 +12,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getLocaleForFormatting } from '@/lib/i18n';
+import { localizeStatus } from '@/lib/localize-status';
 import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/services/lookup-api';
 import { useNavigate } from 'react-router-dom';
@@ -450,7 +451,7 @@ export function KkdDistributionPage(): ReactElement {
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/20">
                   <div className="flex flex-wrap items-center gap-3">
                     <Badge variant="outline">{t(`${dist}.headerIdBadge`, { id: submittedHeader.id })}</Badge>
-                    <Badge>{submittedHeader.status}</Badge>
+                    <Badge>{localizeStatus(submittedHeader.status, t)}</Badge>
                     <Badge variant="secondary">{t(`${dist}.warehouseIdBadge`, { id: submittedHeader.warehouseId })}</Badge>
                   </div>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">

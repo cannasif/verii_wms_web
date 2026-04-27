@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { FormPageShell } from '@/components/shared';
+import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 
@@ -93,7 +94,7 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
                     <div className="flex flex-wrap gap-2 text-sm">
                       <Badge variant="secondary">{row.dCode}</Badge>
                       <Badge variant="secondary">{row.stockCode}</Badge>
-                      <Badge variant="secondary">{row.status}</Badge>
+                      <Badge variant="secondary">{localizeStatus(row.status, t)}</Badge>
                     </div>
                     <div className="font-medium">{row.serialNo}</div>
                     <div className="text-sm text-slate-400">{row.supplierCode} - {row.supplierName}</div>
@@ -147,7 +148,7 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
                   <div key={header.id} className="rounded-2xl border border-white/10 p-4">
                     <div className="flex flex-wrap gap-2 text-sm">
                       <Badge variant="secondary">{header.documentNo}</Badge>
-                      <Badge variant="secondary">{header.status}</Badge>
+                      <Badge variant="secondary">{localizeStatus(header.status, t)}</Badge>
                     </div>
                     <div className="mt-2 font-medium">{header.supplierCode} - {header.supplierName}</div>
                     <div className="mt-1 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.receipt.lineMeta', { l: header.totalLineCount, q: header.totalReceiptQuantity })}</div>

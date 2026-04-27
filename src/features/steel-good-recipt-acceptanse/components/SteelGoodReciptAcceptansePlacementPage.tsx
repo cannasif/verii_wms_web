@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { FormPageShell } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { erpReferenceApi } from '@/features/erp-reference/api/erpReference.api';
 import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpReference.types';
@@ -186,7 +187,7 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                   <div className="flex flex-wrap gap-2 text-sm">
                     <Badge variant="secondary">{row.dCode}</Badge>
                     <Badge variant="secondary">{row.stockCode}</Badge>
-                    <Badge variant="secondary">{row.status}</Badge>
+                    <Badge variant="secondary">{localizeStatus(row.status, t)}</Badge>
                   </div>
                   <div className="mt-2 font-medium">{row.serialNo}</div>
                   <div className="text-sm text-slate-400">{row.supplierCode} - {row.supplierName}</div>
