@@ -11,28 +11,49 @@ interface FieldHelpTooltipProps {
 
 export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpTooltipProps): ReactElement {
   const [open, setOpen] = useState(false);
-  const hoverDelayTimerRef = useRef<number | null>(null);
+  const openDelayTimerRef = useRef<number | null>(null);
+  const closeDelayTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
-      if (hoverDelayTimerRef.current !== null) {
-        window.clearTimeout(hoverDelayTimerRef.current);
+      if (openDelayTimerRef.current !== null) {
+        window.clearTimeout(openDelayTimerRef.current);
+      }
+      if (closeDelayTimerRef.current !== null) {
+        window.clearTimeout(closeDelayTimerRef.current);
       }
     };
   }, []);
 
-  const openWithDelay = (): void => {
-    if (hoverDelayTimerRef.current !== null) {
-      window.clearTimeout(hoverDelayTimerRef.current);
+  const clearTimers = (): void => {
+    if (openDelayTimerRef.current !== null) {
+      window.clearTimeout(openDelayTimerRef.current);
+      openDelayTimerRef.current = null;
     }
-    hoverDelayTimerRef.current = window.setTimeout(() => setOpen(true), 160);
+    if (closeDelayTimerRef.current !== null) {
+      window.clearTimeout(closeDelayTimerRef.current);
+      closeDelayTimerRef.current = null;
+    }
+  };
+
+  const openWithDelay = (): void => {
+    clearTimers();
+    openDelayTimerRef.current = window.setTimeout(() => {
+      setOpen(true);
+      openDelayTimerRef.current = null;
+    }, 140);
+  };
+
+  const closeWithDelay = (): void => {
+    clearTimers();
+    closeDelayTimerRef.current = window.setTimeout(() => {
+      setOpen(false);
+      closeDelayTimerRef.current = null;
+    }, 180);
   };
 
   const closeImmediately = (): void => {
-    if (hoverDelayTimerRef.current !== null) {
-      window.clearTimeout(hoverDelayTimerRef.current);
-      hoverDelayTimerRef.current = null;
-    }
+    clearTimers();
     setOpen(false);
   };
 
@@ -44,9 +65,12 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
           aria-label={text}
           tabIndex={0}
           onMouseEnter={openWithDelay}
-          onMouseLeave={closeImmediately}
-          onFocus={() => setOpen(true)}
-          onBlur={closeImmediately}
+          onMouseLeave={closeWithDelay}
+          onFocus={() => {
+            clearTimers();
+            setOpen(true);
+          }}
+          onBlur={closeWithDelay}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
               closeImmediately();
@@ -60,7 +84,17 @@ export function FieldHelpTooltip({ text, side = 'top', className }: FieldHelpToo
           <CircleHelp size={14} strokeWidth={2} />
         </span>
       </PopoverTrigger>
-      <PopoverContent side={side} align="center" sideOffset={6} className="pointer-events-none max-w-sm px-3 py-1.5 text-sm">
+      <PopoverContent
+        side={side}
+        align="center"
+        sideOffset={6}
+        onMouseEnter={() => {
+          clearTimers();
+          setOpen(true);
+        }}
+        onMouseLeave={closeWithDelay}
+        className="max-w-sm px-3 py-1.5 text-sm"
+      >
         <p className="leading-5">{text}</p>
       </PopoverContent>
     </Popover>
