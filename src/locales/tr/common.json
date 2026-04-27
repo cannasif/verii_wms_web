@@ -49,6 +49,7 @@
     "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
     "update": "Güncelle",
     "processing": "İşleniyor...",
+    "pagePreparing": "Sayfa hazırlanıyor...",
     "statusLabels": {
       "waiting": "Beklemede",
       "approved": "Onaylandı",

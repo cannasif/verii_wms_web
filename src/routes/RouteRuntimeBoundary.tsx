@@ -76,7 +76,7 @@ export function RouteRuntimeBoundary({
   namespaces = [],
   children,
 }: RouteRuntimeBoundaryProps): ReactElement {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('common');
   const [ready, setReady] = useState(namespaces.length === 0);
   const startMark = useMemo(() => `route:${routeName}:start:${Date.now()}`, [routeName]);
   const baseTitleRef = useRef<string>('');
@@ -156,7 +156,7 @@ export function RouteRuntimeBoundary({
   if (!ready) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center px-6 py-10 text-sm text-slate-500 dark:text-slate-400">
-        Sayfa hazırlanıyor...
+        {t('common.pagePreparing')}
       </div>
     );
   }

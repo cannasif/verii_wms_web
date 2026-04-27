@@ -49,6 +49,7 @@
     "generalError": "An error occurred. Please try again.",
     "update": "Update",
     "processing": "Processing...",
+    "pagePreparing": "Preparing page...",
     "statusLabels": {
       "waiting": "Waiting",
       "approved": "Approved",
