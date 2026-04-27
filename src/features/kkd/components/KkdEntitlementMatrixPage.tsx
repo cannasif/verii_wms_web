@@ -26,10 +26,19 @@ type ColumnKey =
   | 'groupName'
   | 'stockCode'
   | 'initialIssueQuantity'
+  | 'initialFrequencyDays'
+  | 'initialAllowBulkIssue'
+  | 'initialQuantityPerFrequency'
   | 'additionalAfterMonthsQuantity'
+  | 'threeMonthFrequencyDays'
+  | 'threeMonthAllowBulkIssue'
+  | 'threeMonthQuantityPerFrequency'
   | 'routineQuantity'
   | 'routinePeriodType'
   | 'routinePeriodInterval'
+  | 'routineFrequencyDays'
+  | 'routineAllowBulkIssue'
+  | 'routineQuantityPerFrequency'
   | 'isMandatory'
   | 'isActive';
 
@@ -298,10 +307,19 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     { key: 'groupName', label: t('kkd.columns.groupName') },
     { key: 'stockCode', label: t('kkd.columns.stockCode') },
     { key: 'initialIssueQuantity', label: t('kkd.columns.initialIssue') },
+    { key: 'initialFrequencyDays', label: t('kkd.columns.initialFrequencyDays') },
+    { key: 'initialAllowBulkIssue', label: t('kkd.columns.initialBulkIssue') },
+    { key: 'initialQuantityPerFrequency', label: t('kkd.columns.initialQuantityPerFrequency') },
     { key: 'additionalAfterMonthsQuantity', label: t('kkd.columns.afterThreeMonths') },
+    { key: 'threeMonthFrequencyDays', label: t('kkd.columns.threeMonthFrequencyDays') },
+    { key: 'threeMonthAllowBulkIssue', label: t('kkd.columns.threeMonthBulkIssue') },
+    { key: 'threeMonthQuantityPerFrequency', label: t('kkd.columns.threeMonthQuantityPerFrequency') },
     { key: 'routineQuantity', label: t('kkd.columns.routine') },
     { key: 'routinePeriodType', label: t('kkd.columns.period') },
     { key: 'routinePeriodInterval', label: t('kkd.columns.periodInterval') },
+    { key: 'routineFrequencyDays', label: t('kkd.columns.routineFrequencyDays') },
+    { key: 'routineAllowBulkIssue', label: t('kkd.columns.routineBulkIssue') },
+    { key: 'routineQuantityPerFrequency', label: t('kkd.columns.routineQuantityPerFrequency') },
     { key: 'isMandatory', label: t('kkd.columns.mandatory') },
     { key: 'isActive', label: t('common.active') },
   ], [t]);
@@ -368,9 +386,18 @@ export function KkdEntitlementMatrixPage(): ReactElement {
         groupName: 'GroupName',
         stockCode: 'StockCode',
         initialIssueQuantity: 'InitialIssueQuantity',
+        initialFrequencyDays: 'InitialFrequencyDays',
+        initialAllowBulkIssue: 'InitialAllowBulkIssue',
+        initialQuantityPerFrequency: 'InitialQuantityPerFrequency',
+        threeMonthFrequencyDays: 'ThreeMonthFrequencyDays',
+        threeMonthAllowBulkIssue: 'ThreeMonthAllowBulkIssue',
+        threeMonthQuantityPerFrequency: 'ThreeMonthQuantityPerFrequency',
         routinePeriodType: 'RoutinePeriodType',
         routinePeriodInterval: 'RoutinePeriodInterval',
         routineQuantity: 'RoutineQuantity',
+        routineFrequencyDays: 'RoutineFrequencyDays',
+        routineAllowBulkIssue: 'RoutineAllowBulkIssue',
+        routineQuantityPerFrequency: 'RoutineQuantityPerFrequency',
         additionalAfterMonthsQuantity: 'AdditionalAfterMonthsQuantity',
         isMandatory: 'IsMandatory',
         isActive: 'IsActive',
