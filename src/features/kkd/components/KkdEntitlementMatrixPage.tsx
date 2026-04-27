@@ -77,10 +77,21 @@ function KkdEntitlementMatrixForm({
     </div>
   );
 
+  const helperText = (text: string): ReactElement => (
+    <p className="text-xs leading-5 text-slate-500">{text}</p>
+  );
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-cyan-200 bg-cyan-50/80 p-4 text-sm leading-6 text-slate-700">
         {t('kkd.operational.matrix.intro')}
+      </div>
+
+      <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-sm leading-6 text-slate-700">
+        <div className="font-semibold text-slate-900">{t('kkd.operational.matrix.touchGuideTitle')}</div>
+        <div>{t('kkd.operational.matrix.touchGuideLine1')}</div>
+        <div>{t('kkd.operational.matrix.touchGuideLine2')}</div>
+        <div>{t('kkd.operational.matrix.touchGuideLine3')}</div>
       </div>
 
       <div className="space-y-2">
@@ -167,6 +178,7 @@ function KkdEntitlementMatrixForm({
           value={formState.initialFrequencyDays ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, initialFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintInitialFreqDays'))}
       </div>
 
       <div className="space-y-3">
@@ -184,6 +196,7 @@ function KkdEntitlementMatrixForm({
           value={formState.initialQuantityPerFrequency ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, initialQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintInitialFreqQty'))}
       </div>
 
       <div className="space-y-2">
@@ -207,6 +220,7 @@ function KkdEntitlementMatrixForm({
           value={formState.threeMonthFrequencyDays ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintThreeMonthFreqDays'))}
       </div>
 
       <div className="space-y-3">
@@ -224,6 +238,7 @@ function KkdEntitlementMatrixForm({
           value={formState.threeMonthQuantityPerFrequency ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintThreeMonthFreqQty'))}
       </div>
 
       <div className="space-y-2">
@@ -261,6 +276,7 @@ function KkdEntitlementMatrixForm({
           value={formState.routineFrequencyDays ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, routineFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintRoutineFreqDays'))}
       </div>
 
       <div className="space-y-3">
@@ -278,6 +294,7 @@ function KkdEntitlementMatrixForm({
           value={formState.routineQuantityPerFrequency ?? ''}
           onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
         />
+        {helperText(t('kkd.operational.matrix.hintRoutineFreqQty'))}
       </div>
 
       <div className="space-y-3">
