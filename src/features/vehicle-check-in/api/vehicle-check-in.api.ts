@@ -17,6 +17,26 @@ function extractData<T>(response: ApiResponse<T>): T {
   throw new Error(response.message || response.exceptionMessage || getLocalizedText('common.errors.unknown'));
 }
 
+function buildPagedQueryParams(params: PagedParams = {}): URLSearchParams {
+  const request = buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'EntryDate', sortDirection: 'desc' });
+  const searchParams = new URLSearchParams();
+
+  searchParams.set('pageNumber', String(request.pageNumber));
+  searchParams.set('pageSize', String(request.pageSize));
+  searchParams.set('sortBy', request.sortBy);
+  searchParams.set('sortDirection', request.sortDirection);
+  searchParams.set('search', request.search);
+  searchParams.set('filterLogic', request.filterLogic);
+
+  request.filters.forEach((filter, index) => {
+    searchParams.set(`filters[${index}].column`, filter.column);
+    searchParams.set(`filters[${index}].operator`, filter.operator);
+    searchParams.set(`filters[${index}].value`, filter.value);
+  });
+
+  return searchParams;
+}
+
 export const vehicleCheckInApi = {
   async findTodayByPlate(plateNo: string): Promise<VehicleCheckInHeaderDto> {
     const response = await api.get<ApiResponse<VehicleCheckInHeaderDto>>('/api/VehicleCheckIn/today-by-plate', {
@@ -36,10 +56,9 @@ export const vehicleCheckInApi = {
   },
 
   async getPaged(params: PagedParams = {}): Promise<PagedResponse<VehicleCheckInPagedRowDto>> {
-    const response = await api.post<ApiResponse<PagedResponse<VehicleCheckInPagedRowDto>>>(
-      '/api/VehicleCheckIn/paged',
-      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'EntryDate', sortDirection: 'desc' }),
-    );
+    const response = await api.get<ApiResponse<PagedResponse<VehicleCheckInPagedRowDto>>>('/api/VehicleCheckIn/paged', {
+      params: buildPagedQueryParams(params),
+    });
     return extractData(response);
   },
 
