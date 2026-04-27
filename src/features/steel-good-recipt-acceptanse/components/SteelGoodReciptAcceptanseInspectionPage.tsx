@@ -7,7 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormPageShell } from '@/components/shared';
+import {
+  localizeStatus,
+  resolveStatusCategory,
+  statusCategoryLabel,
+  STATUS_CATEGORY_ORDER,
+  type StatusCategoryKey,
+} from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 import type {
@@ -17,8 +25,16 @@ import type {
 } from '../types/steel-good-recipt-acceptanse.types';
 import { SteelGoodReciptAcceptansePhotoUpload } from './SteelGoodReciptAcceptansePhotoUpload';
 
+type SeriesStatusFilter = 'all' | StatusCategoryKey | 'unknown';
+
 function getStatusTone(status: string): string {
   const normalized = status.toLowerCase();
+  if (normalized.includes('placed') || normalized.includes('placement')) {
+    return 'border-violet-400/25 bg-violet-500/10 text-violet-200';
+  }
+  if (normalized.includes('waiting') || normalized.includes('pending')) {
+    return 'border-amber-400/25 bg-amber-500/10 text-amber-200';
+  }
   if (normalized.includes('approved')) return 'border-emerald-400/20 bg-emerald-500/10 text-emerald-200';
   if (normalized.includes('rejected')) return 'border-rose-400/20 bg-rose-500/10 text-rose-200';
   if (normalized.includes('arrived')) return 'border-sky-400/20 bg-sky-500/10 text-sky-200';
@@ -34,11 +50,16 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
   const [selectedBatch, setSelectedBatch] = useState<SteelGoodReciptAcceptanseInspectionBatchSearchDto | null>(null);
   const [selectedLine, setSelectedLine] = useState<SteelGoodReciptAcceptanseLineListItemDto | null>(null);
   const [form, setForm] = useState<SaveSteelGoodReciptAcceptanseInspectionDto | null>(null);
+  const [seriesStatusFilter, setSeriesStatusFilter] = useState<SeriesStatusFilter>('all');
 
   useEffect(() => {
     setPageTitle(t('steelGoodReceiptAcceptance.inspection.pageTitle'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  useEffect(() => {
+    setSeriesStatusFilter('all');
+  }, [selectedBatch?.headerId]);
 
   const batchQuery = useQuery({
     queryKey: ['sgra', 'inspection', 'batches', uniqueValue],
@@ -85,13 +106,46 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
     return Math.max(0, form.arrivedQuantity - (form.approvedQuantity + form.rejectedQuantity));
   }, [form]);
 
-  const filteredLines = useMemo(() => {
+  const textFilteredLines = useMemo(() => {
     if (!selectedBatch) return [];
     const filter = serialFilter.trim().toLowerCase();
     if (!filter) return selectedBatch.lines;
     return selectedBatch.lines.filter((line) =>
       `${line.serialNo} ${line.serialNo2 ?? ''} ${line.stockCode} ${line.dCode}`.toLowerCase().includes(filter));
   }, [selectedBatch, serialFilter]);
+
+  const statusSummary = useMemo(() => {
+    const counts = new Map<StatusCategoryKey, number>();
+    let unknown = 0;
+    for (const line of textFilteredLines) {
+      const category = resolveStatusCategory(line.status);
+      if (category) {
+        counts.set(category, (counts.get(category) ?? 0) + 1);
+      } else {
+        unknown += 1;
+      }
+    }
+    return { counts, unknown };
+  }, [textFilteredLines]);
+
+  const displayLines = useMemo(() => {
+    if (seriesStatusFilter === 'all') {
+      return textFilteredLines;
+    }
+    if (seriesStatusFilter === 'unknown') {
+      return textFilteredLines.filter((line) => resolveStatusCategory(line.status) === null);
+    }
+    return textFilteredLines.filter((line) => resolveStatusCategory(line.status) === seriesStatusFilter);
+  }, [textFilteredLines, seriesStatusFilter]);
+
+  useEffect(() => {
+    if (!selectedLine) {
+      return;
+    }
+    if (!displayLines.some((line) => line.id === selectedLine.id)) {
+      setSelectedLine(null);
+    }
+  }, [displayLines, selectedLine]);
 
   function updateForm<K extends keyof SaveSteelGoodReciptAcceptanseInspectionDto>(key: K, value: SaveSteelGoodReciptAcceptanseInspectionDto[K]): void {
     setForm((current) => current ? { ...current, [key]: value } : current);
@@ -221,23 +275,95 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
           </Card>
 
           {selectedBatch ? (
-            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-              <Card className="border-white/10 bg-white/5">
-                <CardHeader className="space-y-4">
-                    <CardTitle>{t('steelGoodReceiptAcceptance.inspection.pickSeries')}</CardTitle>
-                  <div className="flex flex-wrap gap-2 text-sm">
-                    <Badge variant="secondary">{selectedBatch.excelRecordNo}</Badge>
-                    {selectedBatch.exportRefNo ? <Badge variant="secondary">{selectedBatch.exportRefNo}</Badge> : null}
-                    <Badge variant="secondary">{selectedBatch.supplierCode}</Badge>
+            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr] xl:items-stretch xl:gap-6 xl:h-[calc(100dvh-12rem)] xl:max-h-[calc(100dvh-12rem)] xl:min-h-[280px]">
+              <Card className="border-white/10 bg-white/5 xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:overflow-hidden">
+                <CardHeader className="shrink-0 space-y-4 border-b border-white/5 pb-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 space-y-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-400/90">
+                        {t('steelGoodReceiptAcceptance.inspection.seriesStepKicker')}
+                      </p>
+                      <CardTitle className="text-xl font-semibold leading-tight tracking-tight">
+                        {t('steelGoodReceiptAcceptance.inspection.pickSeries')}
+                      </CardTitle>
+                      <p className="max-w-xl text-sm text-slate-400">
+                        {t('steelGoodReceiptAcceptance.inspection.pickSeriesSubtitle')}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      <Badge variant="secondary" className="font-normal">{selectedBatch.excelRecordNo}</Badge>
+                      {selectedBatch.exportRefNo ? <Badge variant="secondary" className="font-normal">{selectedBatch.exportRefNo}</Badge> : null}
+                      <Badge variant="secondary" className="font-normal">{selectedBatch.supplierCode}</Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <Label className="text-slate-300">{t('steelGoodReceiptAcceptance.inspection.seriesFilterLabel')}</Label>
+                      <span className="text-xs tabular-nums text-slate-500">
+                        {t('steelGoodReceiptAcceptance.inspection.seriesVisibleCount', {
+                          n: displayLines.length,
+                          total: textFilteredLines.length,
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={seriesStatusFilter === 'all' ? 'secondary' : 'outline'}
+                        className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
+                        onClick={() => setSeriesStatusFilter('all')}
+                      >
+                        {t('steelGoodReceiptAcceptance.inspection.seriesFilterAll')}
+                        <span className="ml-1.5 tabular-nums text-muted-foreground">({textFilteredLines.length})</span>
+                      </Button>
+                      {STATUS_CATEGORY_ORDER.map((key) => {
+                        const count = statusSummary.counts.get(key) ?? 0;
+                        if (count === 0) {
+                          return null;
+                        }
+                        return (
+                          <Button
+                            key={key}
+                            type="button"
+                            size="sm"
+                            variant={seriesStatusFilter === key ? 'secondary' : 'outline'}
+                            className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
+                            onClick={() => setSeriesStatusFilter(key)}
+                          >
+                            {statusCategoryLabel(key, t)}
+                            <span className="ml-1.5 tabular-nums text-muted-foreground">({count})</span>
+                          </Button>
+                        );
+                      })}
+                      {statusSummary.unknown > 0 ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={seriesStatusFilter === 'unknown' ? 'secondary' : 'outline'}
+                          className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
+                          onClick={() => setSeriesStatusFilter('unknown')}
+                        >
+                          {t('steelGoodReceiptAcceptance.inspection.seriesFilterOther')}
+                          <span className="ml-1.5 tabular-nums text-muted-foreground">({statusSummary.unknown})</span>
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                   <Input
                     value={serialFilter}
                     onChange={(event) => setSerialFilter(event.target.value)}
                     placeholder={t('steelGoodReceiptAcceptance.inspection.searchPh')}
+                    className="h-11"
                   />
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {filteredLines.map((row) => (
+                <CardContent className="space-y-3 pt-5 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-y-contain xl:pr-1 custom-scrollbar">
+                  {displayLines.length === 0 && textFilteredLines.length > 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/15 bg-white/2 px-6 py-10 text-center text-sm text-slate-400">
+                      {t('steelGoodReceiptAcceptance.inspection.seriesEmptyFilter')}
+                    </div>
+                  ) : null}
+                  {displayLines.map((row) => (
                     <button
                       key={row.id}
                       type="button"
@@ -249,7 +375,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                       <div className="flex flex-wrap gap-2 text-sm">
                         <Badge variant="secondary">{row.dCode}</Badge>
                         <Badge variant="secondary">{row.stockCode}</Badge>
-                        <Badge className={getStatusTone(row.status)}>{row.status}</Badge>
+                        <Badge className={getStatusTone(row.status)}>{localizeStatus(row.status, t)}</Badge>
                       </div>
                       <div className="mt-2 font-medium">{row.serialNo}</div>
                       <div className="text-sm text-slate-400">{row.description}</div>
@@ -264,8 +390,8 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
               </Card>
 
               {detailQuery.data && form ? (
-                <div className="space-y-6">
-                  <Card className="border-white/10 bg-white/5">
+                <div className="flex flex-col gap-6 xl:h-full xl:min-h-0 xl:overflow-y-auto xl:overscroll-y-contain xl:pr-1 custom-scrollbar">
+                  <Card className="border-white/10 bg-white/5 shrink-0">
                     <CardHeader>
                       <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
                     </CardHeader>
@@ -292,17 +418,27 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label>{t('steelGoodReceiptAcceptance.inspection.arrQ')}</Label>
-                          <select className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2" value={form.isArrived ? 'yes' : 'no'} onChange={(event) => updateForm('isArrived', event.target.value === 'yes')}>
-                            <option value="yes">{t('steelGoodReceiptAcceptance.inspection.y')}</option>
-                            <option value="no">{t('steelGoodReceiptAcceptance.inspection.n')}</option>
-                          </select>
+                          <Select value={form.isArrived ? 'yes' : 'no'} onValueChange={(value) => updateForm('isArrived', value === 'yes')}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.y')}</SelectItem>
+                              <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.n')}</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="space-y-2">
                           <Label>{t('steelGoodReceiptAcceptance.inspection.apprQ')}</Label>
-                          <select className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2" value={form.isApproved ? 'yes' : 'no'} onChange={(event) => updateForm('isApproved', event.target.value === 'yes')}>
-                            <option value="yes">{t('steelGoodReceiptAcceptance.inspection.yAp')}</option>
-                            <option value="no">{t('steelGoodReceiptAcceptance.inspection.nAp')}</option>
-                          </select>
+                          <Select value={form.isApproved ? 'yes' : 'no'} onValueChange={(value) => updateForm('isApproved', value === 'yes')}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.yAp')}</SelectItem>
+                              <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.nAp')}</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div><Label>{t('steelGoodReceiptAcceptance.inspection.arrivedQty')}</Label><Input type="number" value={String(form.arrivedQuantity)} onChange={(event) => updateForm('arrivedQuantity', Number(event.target.value) || 0)} /></div>
                         <div><Label>{t('steelGoodReceiptAcceptance.inspection.approvedQty')}</Label><Input type="number" value={String(form.approvedQuantity)} onChange={(event) => updateForm('approvedQuantity', Number(event.target.value) || 0)} /></div>
@@ -315,7 +451,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                       <div className="flex flex-wrap gap-2 text-sm">
                         <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.expQty')}: {expectedQuantity}</Badge>
                         <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.openGap')}: {remainingGap}</Badge>
-                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.status')}: {detailQuery.data.status}</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.status')}: {localizeStatus(detailQuery.data.status, t)}</Badge>
                       </div>
 
                       <div className="flex justify-end">
@@ -326,7 +462,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-white/10 bg-white/5">
+                  <Card className="border-white/10 bg-white/5 shrink-0">
                     <CardHeader>
                       <CardTitle>{t('steelGoodReceiptAcceptance.inspection.photosTitle')}</CardTitle>
                     </CardHeader>
@@ -354,11 +490,11 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                   </Card>
                 </div>
               ) : (
-                <Card className="border-white/10 bg-white/5">
-                  <CardHeader>
+                <Card className="border-white/10 bg-white/5 xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:overflow-hidden">
+                  <CardHeader className="shrink-0">
                     <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="xl:min-h-0 xl:flex-1 xl:overflow-y-auto custom-scrollbar">
                     <div className="rounded-xl border border-dashed border-white/10 p-6 text-sm text-slate-400">
                       {t('steelGoodReceiptAcceptance.inspection.pickFlowHelp')}
                     </div>
