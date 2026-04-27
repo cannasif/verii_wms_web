@@ -32,6 +32,7 @@ interface SearchableSelectProps<T> {
   className?: string;
   maxHeight?: string;
   itemLimit?: number;
+  modal?: boolean;
 }
 
 export function SearchableSelect<T>({
@@ -48,6 +49,7 @@ export function SearchableSelect<T>({
   className,
   maxHeight = '220px',
   itemLimit = 100,
+  modal = false,
 }: SearchableSelectProps<T>): ReactElement {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -75,8 +77,14 @@ export function SearchableSelect<T>({
     [options, value, getOptionValue]
   );
 
+  const handleSelect = (optionValue: string): void => {
+    onValueChange(optionValue);
+    setSearchQuery('');
+    setOpen(false);
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -98,7 +106,13 @@ export function SearchableSelect<T>({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" align="start" style={{ width: 'var(--radix-popover-trigger-width)' }}>
+      <PopoverContent
+        className="p-0"
+        align="start"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        style={{ width: 'var(--radix-popover-trigger-width)' }}
+      >
         <Command shouldFilter={false}>
           <div className="relative [&_[data-slot=command-input-wrapper]]:pr-10">
             <CommandInput
@@ -132,11 +146,11 @@ export function SearchableSelect<T>({
                       <CommandItem
                         key={optionValue}
                         value={optionValue}
-                        onSelect={() => {
-                          onValueChange(optionValue);
-                          setOpen(false);
-                          setSearchQuery('');
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          handleSelect(optionValue);
                         }}
+                        onSelect={() => handleSelect(optionValue)}
                       >
                         <Check
                           className={cn(

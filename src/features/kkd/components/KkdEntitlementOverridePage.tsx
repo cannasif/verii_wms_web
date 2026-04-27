@@ -79,6 +79,7 @@ function KkdEntitlementOverrideForm({
           searchPlaceholder={t('kkd.placeholders.searchGroup')}
           emptyText={t('kkd.messages.groupNotFound')}
           isLoading={stockGroupsQuery.isLoading}
+          modal
         />
       </div>
 

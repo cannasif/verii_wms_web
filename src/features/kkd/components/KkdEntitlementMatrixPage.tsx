@@ -143,6 +143,7 @@ function KkdEntitlementMatrixForm({
           searchPlaceholder={t('kkd.operational.matrix.groupSearch')}
           emptyText={t('kkd.operational.matrix.groupEmpty')}
           isLoading={stockGroupsQuery.isLoading}
+          modal
         />
       </div>
 
