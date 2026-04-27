@@ -131,7 +131,7 @@ export function PermissionDefinitionForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="permission-definition-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 crm-page">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
               <FormField
                 control={form.control}
                 name="code"

@@ -150,7 +150,7 @@ export function GroupPermissionsPanel({
             </div>
           </div>
           {group?.permissionCodes && group.permissionCodes.length > 0 && (
-            <div className="mb-4 rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="mb-4 rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
                 {t('permissionGroups.permissionsPanel.currentCodes')}
               </p>
@@ -181,7 +181,7 @@ export function GroupPermissionsPanel({
               </div>
             </div>
           )}
-          <div className="rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
             <p className="text-sm font-medium mb-2 inline-flex items-center">
               {t('permissionGroups.form.permissions')}
               <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />

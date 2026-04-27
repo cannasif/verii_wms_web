@@ -1,5 +1,6 @@
 import { type ChangeEvent, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -48,6 +49,7 @@ const toDecimal = (value: string): number => {
 };
 
 export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [supplierLookupOpen, setSupplierLookupOpen] = useState(false);
@@ -76,9 +78,9 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
   }, [preview]);
 
   useEffect(() => {
-    setPageTitle('Sac Mal Kabul Excel Aktarim');
+    setPageTitle(t('steelGoodReceiptAcceptance.import.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const requestPayload = useMemo<SteelGoodReciptAcceptanseImportPreviewRequestDto | null>(() => {
     if (!supplier || rows.length === 0 || !fileName.trim() || (!excelRecordNo.trim() && !effectiveExportRefNo)) {
@@ -99,23 +101,23 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
 
   const previewMutation = useMutation({
     mutationFn: async () => {
-      if (!requestPayload) throw new Error('Aktarim verisi hazir degil');
+      if (!requestPayload) throw new Error(t('steelGoodReceiptAcceptance.import.errPayload'));
       return steelGoodReciptAcceptanseApi.previewImport(requestPayload);
     },
     onSuccess: (data) => {
       setPreview(data);
-      toast.success('Excel on izleme hazirlandi');
+      toast.success(t('steelGoodReceiptAcceptance.import.previewOk'));
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
   const commitMutation = useMutation({
     mutationFn: async () => {
-      if (!requestPayload) throw new Error('Aktarim verisi hazir degil');
+      if (!requestPayload) throw new Error(t('steelGoodReceiptAcceptance.import.errPayload'));
       return steelGoodReciptAcceptanseApi.commitImport(requestPayload);
     },
     onSuccess: () => {
-      toast.success('Sac mal kabul aktarimi tamamlandi');
+      toast.success(t('steelGoodReceiptAcceptance.import.commitOk'));
       navigate('/sac-mal-kabul/list');
     },
     onError: (error: Error) => toast.error(error.message),
@@ -156,28 +158,28 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
       setRows(mappedRows.filter((row) => row.stockCode || row.serialNo || row.netsisOrderNo));
       setFileName(file.name);
       setPreview(null);
-      toast.success(`${mappedRows.length} satir okundu`);
+      toast.success(t('steelGoodReceiptAcceptance.import.readOk', { n: mappedRows.length }));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Excel okunamadi');
+      toast.error(error instanceof Error ? error.message : t('steelGoodReceiptAcceptance.import.readErr'));
     }
   };
 
   return (
     <div className="space-y-6 crm-page">
-      <Badge variant="secondary">Sac Mal Kabul</Badge>
+      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
       <FormPageShell
-        title="Sac Mal Kabul Excel Aktarimi"
-        description="Tedarikciden gelen levha listesini yukleyin, on izleme alin ve D-KODU korumali sekilde sisteme aktarın."
+        title={t('steelGoodReceiptAcceptance.import.title')}
+        description={t('steelGoodReceiptAcceptance.import.description')}
       >
         <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Tedarikci</label>
+              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.supplier')}</label>
               <PagedLookupDialog<CustomerLookup>
                 open={supplierLookupOpen}
                 onOpenChange={setSupplierLookupOpen}
-                title="Tedarikci sec"
-                placeholder="Tedarikci seciniz"
+                title={t('steelGoodReceiptAcceptance.import.dialogTitle')}
+                placeholder={t('steelGoodReceiptAcceptance.import.dialogPh')}
                 value={supplier ? `${supplier.cariKod} - ${supplier.cariIsim}` : null}
                 queryKey={['sgra-suppliers']}
                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -190,24 +192,24 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Excel Kayit No</label>
-              <Input value={excelRecordNo} onChange={(event) => setExcelRecordNo(event.target.value)} placeholder="Excel kayit no" />
+              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.recNo')}</label>
+              <Input value={excelRecordNo} onChange={(event) => setExcelRecordNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.recNoPh')} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Export Ref No</label>
-              <Input value={exportRefNo} onChange={(event) => setExportRefNo(event.target.value)} placeholder="Export ref no (opsiyonel)" />
+              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.expRef')}</label>
+              <Input value={exportRefNo} onChange={(event) => setExportRefNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.expRefPh')} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Excel Dosyasi</label>
+              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.file')}</label>
               <Input type="file" accept=".xlsx,.xls" onChange={(event) => void handleFileChange(event)} />
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <Button type="button" onClick={() => void previewMutation.mutateAsync()} disabled={!requestPayload || previewMutation.isPending}>
-              {previewMutation.isPending ? 'On izleniyor...' : 'On Izleme Al'}
+              {previewMutation.isPending ? t('steelGoodReceiptAcceptance.import.previewP') : t('steelGoodReceiptAcceptance.import.previewBtn')}
             </Button>
             <Button
               type="button"
@@ -215,42 +217,42 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
               onClick={() => void commitMutation.mutateAsync()}
               disabled={!requestPayload || !preview || preview.errorRowCount > 0 || commitMutation.isPending}
             >
-              {commitMutation.isPending ? 'Aktariliyor...' : 'Aktarimi Tamamla'}
+              {commitMutation.isPending ? t('steelGoodReceiptAcceptance.import.commitP') : t('steelGoodReceiptAcceptance.import.commitBtn')}
             </Button>
           </div>
 
           {preview ? (
             <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="flex flex-wrap gap-2 text-sm">
-                <Badge variant="secondary">Toplam Satir: {preview.totalRows}</Badge>
-                <Badge variant="secondary">Yeni: {preview.newRowCount}</Badge>
-                <Badge variant="secondary">Guncellenecek: {preview.updateRowCount}</Badge>
-                <Badge variant={preview.errorRowCount > 0 ? 'destructive' : 'secondary'}>Hata: {preview.errorRowCount}</Badge>
-                <Badge variant="secondary">Toplam Beklenen: {preview.totalExpectedQuantity}</Badge>
+                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeTotal', { n: preview.totalRows })}</Badge>
+                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeNew', { n: preview.newRowCount })}</Badge>
+                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeUp', { n: preview.updateRowCount })}</Badge>
+                <Badge variant={preview.errorRowCount > 0 ? 'destructive' : 'secondary'}>{t('steelGoodReceiptAcceptance.import.badgeErr', { n: preview.errorRowCount })}</Badge>
+                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeExp', { n: preview.totalExpectedQuantity })}</Badge>
               </div>
 
               <div className="overflow-x-auto rounded-xl border border-white/10">
                 <table className="min-w-full text-sm">
                   <thead className="bg-white/5 text-left">
                     <tr>
-                      <th className="px-3 py-2">Excel Satir</th>
-                      <th className="px-3 py-2">Netsis Sip. No</th>
-                      <th className="px-3 py-2">Sira No</th>
-                      <th className="px-3 py-2">Netsis Sip. Sira No</th>
-                      <th className="px-3 py-2">Stok Kodu</th>
-                      <th className="px-3 py-2">Kombine Size</th>
-                      <th className="px-3 py-2">Seri No (Levha No)</th>
-                      <th className="px-3 py-2">Seri-2 (Poz No)</th>
-                      <th className="px-3 py-2">Miktar(Kg)</th>
-                      <th className="px-3 py-2">Depo Kodu</th>
-                      <th className="px-3 py-2">Material Quality</th>
-                      <th className="px-3 py-2">Heat Number</th>
-                      <th className="px-3 py-2">Certificate Number</th>
-                      <th className="px-3 py-2">Export Ref No</th>
-                      <th className="px-3 py-2">Aksiyon</th>
-                      <th className="px-3 py-2">D-KODU</th>
-                      <th className="px-3 py-2">Durum</th>
-                      <th className="px-3 py-2">Hata</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableRow')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colOrd')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colLineSeq')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colOrderLine')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableSt')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colCombinedSize')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tablePlate')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colSerial2')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableExp')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colDepot')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colMaterialQuality')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colHeatNumber')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colCertificateNumber')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colExportRef')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableAction')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableD')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableStat')}</th>
+                      <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableErr')}</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -132,7 +132,7 @@ export function KkdRemainingEntitlementsPage(): ReactElement {
           <CardContent className="space-y-4">
             {items.length ? (
               items.map((item) => (
-                <div key={item.groupCode} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                <div key={item.groupCode} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                   <div className="flex flex-wrap gap-2">
                     <Badge>{item.groupCode}</Badge>
                     {item.groupName ? <Badge variant="secondary">{item.groupName}</Badge> : null}

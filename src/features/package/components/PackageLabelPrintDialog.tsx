@@ -108,7 +108,7 @@ function PackageTreeRow({
   return (
     <>
       <div
-        className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 rounded-xl border border-slate-200/70 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/[0.03]"
+        className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 rounded-xl border border-slate-200/70 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/3"
         style={{ marginLeft: `${node.depth * 16}px` }}
       >
         <input
@@ -339,7 +339,7 @@ export function PackageLabelPrintDialog({
                 Temizle
               </Button>
             </div>
-            <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3">
               {treeQuery.isLoading ? (
                 <div className="text-sm text-slate-500">Paket ağacı yükleniyor...</div>
               ) : treeRows.length === 0 ? (
@@ -358,7 +358,7 @@ export function PackageLabelPrintDialog({
             </div>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
             <div className="space-y-2">
               <Label>Barkod Tasarımı</Label>
               <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
@@ -428,7 +428,7 @@ export function PackageLabelPrintDialog({
               <Switch checked={useGs1SsccForPallets} onCheckedChange={setUseGs1SsccForPallets} />
             </div>
 
-            <div className="rounded-xl bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:bg-white/[0.03] dark:text-slate-300">
+            <div className="rounded-xl bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:bg-white/3 dark:text-slate-300">
               <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-white">
                 <Printer className="size-4" />
                 Hazır Baskı Özeti

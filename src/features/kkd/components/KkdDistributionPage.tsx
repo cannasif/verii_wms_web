@@ -166,6 +166,16 @@ export function KkdDistributionPage(): ReactElement {
   }, [distributionContextQuery.data, resolvedStock?.groupCode]);
 
   const matchingOpenOrders = useMemo(() => {
+    if (!resolvedStock?.stockCode || !distributionContextQuery.data?.cariAcikSiparis?.length || !selectedWarehouse) return [];
+    return distributionContextQuery.data.cariAcikSiparis.filter(
+      (item) =>
+        item.stockCode.trim().toUpperCase() === resolvedStock.stockCode.trim().toUpperCase()
+        && item.warehouseCode != null
+        && Number(item.warehouseCode) === Number(selectedWarehouse.depoKodu),
+    );
+  }, [distributionContextQuery.data, resolvedStock?.stockCode, selectedWarehouse]);
+
+  const stockOpenOrdersAnyWarehouse = useMemo(() => {
     if (!resolvedStock?.stockCode || !distributionContextQuery.data?.cariAcikSiparis?.length) return [];
     return distributionContextQuery.data.cariAcikSiparis.filter(
       (item) => item.stockCode.trim().toUpperCase() === resolvedStock.stockCode.trim().toUpperCase(),
@@ -184,6 +194,7 @@ export function KkdDistributionPage(): ReactElement {
 
   const requestedQuantity = Number(quantity) || 1;
   const hasMatchingOpenOrder = matchingOpenOrders.length > 0;
+  const hasOpenOrderOnDifferentWarehouse = stockOpenOrdersAnyWarehouse.length > 0 && !hasMatchingOpenOrder;
   const isWithinOpenOrderQuantity = hasMatchingOpenOrder && requestedQuantity <= totalOpenOrderPendingQuantity;
   const canIssueByOpenOrderOnly = Boolean(
     resolvedStock
@@ -205,6 +216,31 @@ export function KkdDistributionPage(): ReactElement {
       && isWithinOpenOrderQuantity
       && (entitlementResult?.allowed || canIssueAsExcess || canIssueByOpenOrderOnly),
   );
+  const addLineDisabledReason = useMemo(() => {
+    if (!resolvedEmployee) return t(`${dist}.reasonPickEmployee`);
+    if (!selectedWarehouse) return t(`${dist}.reasonPickWarehouse`);
+    if (!barcode.trim() && !resolvedStock) return t(`${dist}.reasonResolveBarcode`);
+    if (!resolvedStock) return t(`${dist}.reasonResolveBarcode`);
+    if (hasOpenOrderOnDifferentWarehouse) return t(`${dist}.reasonWarehouseMismatch`);
+    if (!hasMatchingOpenOrder) return t(`${dist}.reasonMissingOpenOrder`);
+    if (!isWithinOpenOrderQuantity) return t(`${dist}.reasonExceedsOpenOrder`, { max: totalOpenOrderPendingQuantity });
+    if (!entitlementResult && !canIssueByOpenOrderOnly) return t(`${dist}.reasonWaitEntitlement`);
+    if (!canAddLine) return t(`${dist}.reasonLineNotAllowed`);
+    return '';
+  }, [
+    barcode,
+    canAddLine,
+    canIssueByOpenOrderOnly,
+    entitlementResult,
+    hasMatchingOpenOrder,
+    hasOpenOrderOnDifferentWarehouse,
+    isWithinOpenOrderQuantity,
+    resolvedEmployee,
+    resolvedStock,
+    selectedWarehouse,
+    t,
+    totalOpenOrderPendingQuantity,
+  ]);
   const entitledQuantity = entitlementResult?.allowed
     ? requestedQuantity
     : canIssueAsExcess
@@ -320,7 +356,7 @@ export function KkdDistributionPage(): ReactElement {
 
       <Breadcrumb
         items={[
-          { label: t('common.operationsGroup') },
+          { label: t('sidebar.kkdOperationsGroup') },
           { label: t(`${dist}.breadcrumb`), isActive: true },
         ]}
       />
@@ -550,7 +586,9 @@ export function KkdDistributionPage(): ReactElement {
                       ? isWithinOpenOrderQuantity
                         ? t(`${dist}.matchOk`)
                         : t(`${dist}.matchQty`, { max: totalOpenOrderPendingQuantity })
-                      : t(`${dist}.matchNo`)}
+                      : hasOpenOrderOnDifferentWarehouse
+                        ? t(`${dist}.matchWarehouse`)
+                        : t(`${dist}.matchNo`)}
                   </p>
                 </div>
               ) : null}
@@ -575,7 +613,7 @@ export function KkdDistributionPage(): ReactElement {
                     <Badge variant="secondary">{t(`${dist}.totalRem`)}: {entitlementResult.totalRemainingQuantity}</Badge>
                     {excessQuantity > 0 ? <Badge variant="destructive">{t(`${dist}.excessIssue`)}: {excessQuantity}</Badge> : null}
                   </div>
-                  <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/3">
                     <p>
                       {t(`${dist}.readStock`)}: <span className="font-medium">{entitlementResult.resolvedStockCode || resolvedStock?.stockCode || '-'}</span>
                       {entitlementResult.resolvedStockName ? ` - ${entitlementResult.resolvedStockName}` : ''}
@@ -596,7 +634,7 @@ export function KkdDistributionPage(): ReactElement {
                   {entitlementResult.eligibilityExplanation ? <p className="mt-3 text-sm">{entitlementResult.eligibilityExplanation}</p> : null}
                   {entitlementResult.message ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{entitlementResult.message}</p> : null}
                   {(entitlementResult.allowed || canIssueAsExcess || canIssueByOpenOrderOnly) && resolvedStock ? (
-                    <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-white/70 p-3 text-sm dark:border-white/10 dark:bg-white/3">
                       <p>{t(`${dist}.entQtyLine`)}: <span className="font-medium">{entitledQuantity}</span></p>
                       <p className="mt-1">{t(`${dist}.entExcessLine`)}: <span className="font-medium">{excessQuantity}</span></p>
                       {canIssueByOpenOrderOnly ? (
@@ -607,7 +645,7 @@ export function KkdDistributionPage(): ReactElement {
                   {entitlementResult.phaseStatuses?.length ? (
                     <div className="mt-3 grid gap-3 md:grid-cols-3">
                       {entitlementResult.phaseStatuses.map((phase) => (
-                        <div key={phase.phaseType} className={`rounded-xl border p-3 ${phase.isCurrentPhase ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]'}`}>
+                        <div key={phase.phaseType} className={`rounded-xl border p-3 ${phase.isCurrentPhase ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-700/50 dark:bg-emerald-950/20' : 'border-slate-200 bg-white/70 dark:border-white/10 dark:bg-white/3'}`}>
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={phase.isCurrentPhase ? 'default' : 'outline'}>{phase.phaseLabel}</Badge>
                             {phase.isAllowed ? <Badge variant="secondary">{t(`${dist}.phaseUsable`)}</Badge> : null}
@@ -635,9 +673,13 @@ export function KkdDistributionPage(): ReactElement {
               ) : null}
 
               <div className="flex flex-wrap gap-2">
-                <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>
-                  {t(`${dist}.addLine`)}
-                </Button>
+                <div title={!canAddLine ? addLineDisabledReason : undefined}>
+                  <span className="inline-flex">
+                    <Button type="button" onClick={handleAddLine} disabled={!canAddLine}>
+                      {t(`${dist}.addLine`)}
+                    </Button>
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -656,7 +698,7 @@ export function KkdDistributionPage(): ReactElement {
 
               <div className="space-y-3">
                 {cartLines.map((line) => (
-                  <div key={line.clientId} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div key={line.clientId} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-white/3">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">{line.stockCode} - {line.stockName}</p>

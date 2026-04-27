@@ -133,7 +133,7 @@ export function ShelfManagementPage(): ReactElement {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
             <CardTitle>{selectedId ? 'Raf Kaydini Duzenle' : 'Yeni Raf Kaydi'}</CardTitle>
           </CardHeader>
@@ -276,7 +276,7 @@ export function ShelfManagementPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <CardTitle>Raf Listesi</CardTitle>

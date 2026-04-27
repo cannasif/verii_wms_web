@@ -1,4 +1,5 @@
 import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ImagePlus, Loader2, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function SteelGoodReciptAcceptansePhotoUpload({ lineId, onUploaded }: Props): ReactElement {
+  const { t } = useTranslation('common');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
@@ -56,12 +58,12 @@ export function SteelGoodReciptAcceptansePhotoUpload({ lineId, onUploaded }: Pro
             <ImagePlus className="h-5 w-5 text-slate-600 dark:text-slate-200" />
           </div>
           <div className="text-sm">
-            <p className="font-semibold text-slate-900 dark:text-white">Kontrol fotoğrafı ekle</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Red veya kontrol kanıtı için fotoğraf ekleyin.</p>
+            <p className="font-semibold text-slate-900 dark:text-white">{t('steelGoodReceiptAcceptance.photos.addTitle')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('steelGoodReceiptAcceptance.photos.addHint')}</p>
           </div>
           <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="mr-2 h-4 w-4" />
-            Fotoğraf seç
+            {t('steelGoodReceiptAcceptance.photos.select')}
           </Button>
           <Input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleSelect} />
         </div>
@@ -82,7 +84,7 @@ export function SteelGoodReciptAcceptansePhotoUpload({ lineId, onUploaded }: Pro
                 <Input
                   value={captions[index] ?? ''}
                   onChange={(event) => setCaptions((current) => current.map((value, i) => i === index ? event.target.value : value))}
-                  placeholder="Fotoğraf notu"
+                  placeholder={t('steelGoodReceiptAcceptance.photos.notePh')}
                 />
               </div>
             </div>
@@ -91,7 +93,7 @@ export function SteelGoodReciptAcceptansePhotoUpload({ lineId, onUploaded }: Pro
           <div className="flex justify-end">
             <Button type="button" onClick={() => void handleUpload()} disabled={isUploading}>
               {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-              Fotoğrafları yükle
+              {t('steelGoodReceiptAcceptance.photos.uploadP')}
             </Button>
           </div>
         </div>

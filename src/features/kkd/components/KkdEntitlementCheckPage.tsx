@@ -147,7 +147,7 @@ export function KkdEntitlementCheckPage(): ReactElement {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300">
               {t('kkd.operational.entitlementCheck.infoBox')}
             </div>
 
@@ -191,13 +191,13 @@ export function KkdEntitlementCheckPage(): ReactElement {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.entitlementCheck.suggestedSource')}
                     </p>
                     <p className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">{result.suggestedEntitlementType || '-'}</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.entitlementCheck.nextDate')}
                     </p>

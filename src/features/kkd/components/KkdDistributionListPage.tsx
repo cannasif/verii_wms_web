@@ -1,11 +1,13 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
@@ -49,13 +51,15 @@ function mapSortBy(value: DistributionColumnKey): string {
   }
 }
 
-function formatDate(value?: string | null): string {
+function formatDate(value: string | null | undefined, locale: string): string {
   if (!value) return '-';
-  return new Date(value).toLocaleString('tr-TR');
+  return new Date(value).toLocaleString(locale);
 }
 
 export function KkdDistributionListPage(): ReactElement {
+  const { t, i18n } = useTranslation('common');
   const { setPageTitle } = useUIStore();
+  const dateLocale = getLocaleForFormatting(i18n.language);
   const [selectedHeader, setSelectedHeader] = useState<KkdDistributionHeaderDto | null>(null);
   const pagedGrid = usePagedDataGrid<DistributionColumnKey>({
     pageKey: 'kkd-distribution-list-grid',
@@ -66,9 +70,9 @@ export function KkdDistributionListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle('KKD Dağıtım Listesi');
+    setPageTitle(t('kkd.operational.distributionList.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const query = useQuery({
     queryKey: ['kkd', 'distribution-list', pagedGrid.queryParams],
@@ -88,30 +92,30 @@ export function KkdDistributionListPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<DistributionColumnKey>[]>(
     () => [
-      { key: 'documentNo', label: 'Belge No' },
-      { key: 'documentDate', label: 'Belge Tarihi' },
-      { key: 'customerCode', label: 'Cari' },
-      { key: 'employee', label: 'Çalışan' },
-      { key: 'warehouseId', label: 'Depo' },
-      { key: 'status', label: 'Durum' },
-      { key: 'sourceChannel', label: 'Kaynak' },
-      { key: 'lineCount', label: 'Satır' },
-      { key: 'totalQuantity', label: 'Toplam Miktar' },
-      { key: 'erpStatus', label: 'ERP Durumu' },
+      { key: 'documentNo', label: t('kkd.operational.distributionList.colDocNo') },
+      { key: 'documentDate', label: t('kkd.operational.distributionList.colDocDate') },
+      { key: 'customerCode', label: t('kkd.operational.distributionList.colCustomer') },
+      { key: 'employee', label: t('kkd.operational.distributionList.colEmployee') },
+      { key: 'warehouseId', label: t('kkd.operational.distributionList.colWarehouse') },
+      { key: 'status', label: t('kkd.operational.distributionList.colStatus') },
+      { key: 'sourceChannel', label: t('kkd.operational.distributionList.colSource') },
+      { key: 'lineCount', label: t('kkd.operational.distributionList.colLineCount') },
+      { key: 'totalQuantity', label: t('kkd.operational.distributionList.colTotalQty') },
+      { key: 'erpStatus', label: t('kkd.operational.distributionList.colErpStatus') },
     ],
-    [],
+    [t],
   );
 
   const detail = detailQuery.data ?? selectedHeader;
 
   return (
     <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: 'Operasyonlar' }, { label: 'KKD Dağıtım Listesi', isActive: true }]} />
+      <Breadcrumb items={[{ label: t('sidebar.kkdOperationsGroup') }, { label: t('kkd.operational.distributionList.breadcrumb'), isActive: true }]} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <CardHeader>
-            <CardTitle>KKD Belgeleri</CardTitle>
+            <CardTitle>{t('kkd.operational.distributionList.gridTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             <PagedDataGrid<KkdDistributionListItemDto, DistributionColumnKey>
@@ -124,7 +128,7 @@ export function KkdDistributionListPage(): ReactElement {
                   case 'documentNo':
                     return row.documentNo || '-';
                   case 'documentDate':
-                    return formatDate(row.documentDate);
+                    return formatDate(row.documentDate, dateLocale);
                   case 'customerCode':
                     return row.customerCode;
                   case 'employee':
@@ -158,18 +162,18 @@ export function KkdDistributionListPage(): ReactElement {
               hasNextPage={query.data?.hasNextPage ?? false}
               onPreviousPage={pagedGrid.goToPreviousPage}
               onNextPage={pagedGrid.goToNextPage}
-              previousLabel="Önceki"
-              nextLabel="Sonraki"
-              paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total })}
               isLoading={query.isLoading}
               isError={query.isError}
-              errorText="KKD dağıtım listesi yüklenemedi."
-              emptyText="KKD belgesi bulunamadı."
+              errorText={t('kkd.operational.distributionList.errLoad')}
+              emptyText={t('kkd.operational.distributionList.empty')}
               search={{
                 value: pagedGrid.searchInput,
                 onValueChange: pagedGrid.searchConfig.onValueChange,
                 onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: 'Belge no, cari, çalışan veya durum ara',
+                placeholder: t('kkd.operational.distributionList.searchPh'),
               }}
             />
           </CardContent>
@@ -177,63 +181,63 @@ export function KkdDistributionListPage(): ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle>Belge Özeti</CardTitle>
+            <CardTitle>{t('kkd.operational.distributionList.detailTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {detail ? (
               <>
                 <div className="flex flex-wrap gap-2">
-                  <Badge>{detail.documentNo || `Header #${detail.id}`}</Badge>
+                  <Badge>{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</Badge>
                   <Badge variant="secondary">{detail.status}</Badge>
                   <Badge variant="outline">{detail.sourceChannel}</Badge>
-                  <Badge variant="outline">ERP: {detail.erpIntegrationStatus || '-'}</Badge>
+                  <Badge variant="outline">{t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}</Badge>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Cari / Çalışan</p>
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
                     <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
                       {detail.customerCode || '-'} / #{detail.employeeId}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Belge / Tamamlanma</p>
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.documentCompletion')}</p>
                     <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {formatDate(detail.documentDate)} / {formatDate(detail.completionDate)}
+                      {formatDate(detail.documentDate, dateLocale)} / {formatDate(detail.completionDate, dateLocale)}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Satırlar</h2>
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.linesTitle')}</h2>
                   {detailQuery.isLoading ? (
                     <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      Belge satırları yükleniyor...
+                      {t('kkd.operational.distributionList.linesLoading')}
                     </div>
                   ) : detail.lines.length ? (
                     detail.lines.map((line) => (
-                      <div key={line.id} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                      <div key={line.id} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                         <div className="flex flex-wrap gap-2">
                           <Badge>{line.stockCode}</Badge>
                           {line.groupCode ? <Badge variant="secondary">{line.groupCode}</Badge> : null}
-                          <Badge variant="outline">Miktar: {line.quantity}</Badge>
+                          <Badge variant="outline">{t('kkd.operational.distributionList.qtyPrefix')}: {line.quantity}</Badge>
                           <Badge variant="outline">{line.entitlementType}</Badge>
                         </div>
                         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                          Barkod: {line.barcode || '-'} | Seri: {line.serialNo || '-'} | Raf: {line.shelfId || '-'}
+                          {t('kkd.operational.distributionList.lineMeta', { b: line.barcode || '-', s: line.serialNo || '-', r: line.shelfId || '-' })}
                         </p>
                       </div>
                     ))
                   ) : (
                     <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      Belge seçildiğinde satırlar burada gösterilir.
+                      {t('kkd.operational.distributionList.pickDocument')}
                     </div>
                   )}
                 </div>
               </>
             ) : (
               <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                Soldan bir KKD belgesi seçtiğinde detayları burada göreceksin.
+                {t('kkd.operational.distributionList.pickLeft')}
               </div>
             )}
           </CardContent>

@@ -63,7 +63,7 @@ function PackageTreeMoveRow({
   return (
     <>
       <div
-        className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-slate-200/70 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/[0.03]"
+        className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-slate-200/70 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/3"
         style={{ marginLeft: `${node.depth * 16}px` }}
       >
         <input
@@ -173,7 +173,7 @@ export function PackageMoveToSourceDialog({
         </DialogHeader>
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
             <div className="space-y-2">
               <Label>Kaynak Paketleme İşi</Label>
               <PagedLookupDialog<PHeaderDto>
@@ -222,7 +222,7 @@ export function PackageMoveToSourceDialog({
                 Tümünü Seç
               </Button>
             </div>
-            <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3">
               {treeQuery.isLoading ? (
                 <div className="text-sm text-slate-500">Package tree yükleniyor...</div>
               ) : treeRows.length === 0 ? (

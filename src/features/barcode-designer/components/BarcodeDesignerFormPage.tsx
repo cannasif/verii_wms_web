@@ -1726,7 +1726,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
             </div>
           </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <div className="sm:col-span-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+              <div className="sm:col-span-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/4">
                 <div className="mb-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -1814,7 +1814,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       className={`rounded-2xl border p-4 text-left transition ${
                         selectedPresetId === preset.id
                           ? 'border-sky-400 bg-sky-50/80 shadow-sm dark:border-sky-500 dark:bg-sky-500/10'
-                          : 'border-slate-200/80 bg-white/80 hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03]'
+                          : 'border-slate-200/80 bg-white/80 hover:border-slate-300 dark:border-white/10 dark:bg-white/3'
                       }`}
                     >
                       <div className="mb-3">
@@ -1880,7 +1880,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       </Button>
                     </div>
                     {previewMutation.data?.data?.outputFormat === 'svg' && previewMutation.data.data.previewPayload ? (
-                      <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/80 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                      <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/80 p-3 dark:border-white/10 dark:bg-white/3">
                         <div className="mb-2 text-sm font-medium text-slate-900 dark:text-white">GS1 Logistic Label Preview</div>
                         <div
                           className="overflow-hidden rounded-xl border border-slate-200/80 bg-white p-2 dark:border-white/10 dark:bg-slate-950"
@@ -1917,7 +1917,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.34fr_0.66fr]">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
             <CardTitle>Template Bilgisi</CardTitle>
           </CardHeader>
@@ -1998,7 +1998,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition ${
                       selectedElementId === element.id
                         ? 'border-sky-400 bg-sky-50/80 dark:border-sky-500 dark:bg-sky-500/10'
-                        : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03]'
+                        : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/3'
                     }`}
                   >
                     <div>
@@ -2048,7 +2048,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 Stok kodu, stok adi, ana gorsel, musteri/firma kodu ve adini secili elemana tek tikla baglayabilirsin.
               </div>
-              <div className="mt-4 rounded-2xl border border-dashed border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mt-4 rounded-2xl border border-dashed border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                 <div className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Belge Baglami ile Zenginlestir</div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   <Select value={bindingContext.sourceModule} onValueChange={(value) => setBindingContext((current) => ({ ...current, sourceModule: value as BarcodePrintSourceModule }))} disabled={!canManageTemplate}>
@@ -2094,7 +2094,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   Header/line girilirse katalog ilgili belge satirinin ornek degerleriyle zenginlesir.
                 </div>
               </div>
-              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div className="text-sm font-medium text-slate-900 dark:text-white">Schema Explorer</div>
@@ -2119,7 +2119,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
               </div>
               {frequentFields.length > 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
                       <div className="text-sm font-medium text-slate-900 dark:text-white">Sik Kullanilan Alanlar</div>
@@ -2144,7 +2144,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
               ) : null}
               {schemaEntities.length > 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                   <div className="mb-3 text-sm font-medium text-slate-900 dark:text-white">Process / Entity Ayrimi</div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {schemaEntities.map((entity) => (
@@ -2162,7 +2162,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="mt-4 text-[11px] text-slate-500 dark:text-slate-400">
                 Tree node seviyesinde ac/kapa kullanabilir, leaf alanlari cift tiklayabilir veya dogrudan canvas'a surukleyebilirsin.
               </div>
-              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <div className="text-sm font-medium text-slate-900 dark:text-white">Hizli Alan Yerlestir</div>
@@ -2193,7 +2193,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 {bindingExplorerTrees.map((group) => {
                   const expanded = expandedBindingGroups[group.groupKey] ?? true;
                   return (
-                    <div key={group.groupKey} className="rounded-2xl border border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+                    <div key={group.groupKey} className="rounded-2xl border border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
                       <button
                         type="button"
                         className="flex w-full items-center justify-between px-4 py-3 text-left"
@@ -2240,7 +2240,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     </Button>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
                     <div className="mb-2 text-sm font-medium text-slate-900 dark:text-white">Hizli Konumlandirma</div>
                     <div className="grid gap-2 sm:grid-cols-3">
                       <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0, -0.1)} disabled={!canManageTemplate}>Yukari</Button>
@@ -2449,7 +2449,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     GS1 Uret ve Binding'e Yaz
                   </Button>
                 </div>
-                <div className="rounded-xl border border-slate-200/80 bg-white/80 p-3 text-xs dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="rounded-xl border border-slate-200/80 bg-white/80 p-3 text-xs dark:border-white/10 dark:bg-white/4">
                   <div><span className="font-medium">gs1.value:</span> {documentState.bindings['gs1.value'] ?? '-'}</div>
                   <div className="mt-2"><span className="font-medium">gs1.hri:</span> {documentState.bindings['gs1.hri'] ?? '-'}</div>
                   {gs1BuildMutation.data?.data?.warnings?.length ? (
@@ -2508,7 +2508,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   </div>
                   <div className="space-y-2">
                     {(templatePrinterProfilesQuery.data?.data ?? []).map((mapping) => (
-                      <div key={mapping.id ?? `${mapping.barcodeTemplateId}-${mapping.printerProfileId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 text-sm dark:border-white/10 dark:bg-white/[0.04]">
+                      <div key={mapping.id ?? `${mapping.barcodeTemplateId}-${mapping.printerProfileId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 text-sm dark:border-white/10 dark:bg-white/4">
                         <div>
                           <div className="font-medium text-slate-900 dark:text-white">{mapping.printerProfileDisplayName}</div>
                           <div className="text-slate-500 dark:text-slate-400">{mapping.printerCode} · {mapping.printerProfileCode}</div>
@@ -2576,7 +2576,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               ) : null}
             </div>
 
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
                 <div>
                   <div className="font-medium text-slate-900 dark:text-white">
@@ -2590,7 +2590,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
               <CardContent className="flex flex-wrap items-center gap-2 p-4">
                 <Badge variant="secondary">{selectedElementIds.length} secili</Badge>
                 <Button variant="outline" size="sm" disabled={selectedElementIds.length < 2} onClick={() => handleAlignHorizontalSelection('left')}>
@@ -2640,7 +2640,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
             <Suspense
               fallback={(
-                <div className="flex min-h-[520px] items-center justify-center rounded-2xl border border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="flex min-h-[520px] items-center justify-center rounded-2xl border border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
                   <div className="text-center">
                     <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
                     <p className="text-sm text-slate-500 dark:text-slate-400">Designer canvas yukleniyor...</p>
@@ -2669,7 +2669,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
           </TabsContent>
 
           <TabsContent value="json" className="space-y-4">
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
               <CardHeader>
                 <div className="flex items-center justify-between gap-3">
                   <CardTitle>Template JSON</CardTitle>
@@ -2687,7 +2687,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
           <TabsContent value="preview" className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
-              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
                 <CardHeader><CardTitle>Preview Servis Cevabi</CardTitle></CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <div><span className="font-medium">Engine:</span> {previewMutation.data?.data?.engineType ?? 'client-bwip-js'}</div>
@@ -2699,7 +2699,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </CardContent>
               </Card>
 
-              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
                 <CardHeader><CardTitle>Aktif Fazlar</CardTitle></CardHeader>
                 <CardContent className="grid gap-3">
                   {DELIVERY_PHASES.map((phase) => (
@@ -2718,7 +2718,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
           <TabsContent value="plan" className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
               {ARCHITECTURE_GROUPS.map((group) => (
-                <Card key={group.title} className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+                <Card key={group.title} className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
                   <CardHeader><CardTitle>{group.title}</CardTitle></CardHeader>
                   <CardContent>
                     <p className="text-sm text-slate-600 dark:text-slate-300">{group.description}</p>
@@ -2734,7 +2734,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
       </div>
 
       {isEditMode ? (
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
             <button
               type="button"
@@ -2800,9 +2800,9 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{lastComplianceReport.summary}</div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm">
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/[0.03]">Label: {lastComplianceReport.labelType || templateRequest.labelType}</div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/[0.03]">Barkod: {lastComplianceReport.barcodeCount}</div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/[0.03]">GS1 HRI: {lastComplianceReport.hasGs1HumanReadableText ? 'Var' : 'Yok'}</div>
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Label: {lastComplianceReport.labelType || templateRequest.labelType}</div>
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Barkod: {lastComplianceReport.barcodeCount}</div>
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">GS1 HRI: {lastComplianceReport.hasGs1HumanReadableText ? 'Var' : 'Yok'}</div>
                 </div>
                 <div className="mt-3 space-y-2">
                   {lastComplianceReport.issues.map((issue) => (

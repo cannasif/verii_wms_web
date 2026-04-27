@@ -130,7 +130,7 @@ export function PagedLookupDialog<T>({
             <div
               ref={listRef}
               onScroll={handleScroll}
-              className="max-h-[360px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/[0.03]"
+              className="max-h-[360px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3"
             >
               {query.isLoading ? (
                 <div className="flex items-center justify-center py-8 text-sm text-slate-500">
@@ -146,7 +146,7 @@ export function PagedLookupDialog<T>({
                   <button
                     key={getKey(item)}
                     type="button"
-                    className="flex w-full items-start rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-left text-sm transition hover:border-sky-300 hover:bg-sky-50/70 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-sky-400/50 dark:hover:bg-sky-500/10"
+                    className="flex w-full items-start rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-left text-sm transition hover:border-sky-300 hover:bg-sky-50/70 dark:border-white/10 dark:bg-white/4 dark:hover:border-sky-400/50 dark:hover:bg-sky-500/10"
                     onClick={() => {
                       onSelect(item);
                       onOpenChange(false);

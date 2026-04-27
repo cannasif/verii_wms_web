@@ -422,19 +422,19 @@ export function BarcodePrintPage(): ReactElement {
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.operation', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedDocuments', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedLines', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedLineIds.length}</div>
@@ -446,7 +446,7 @@ export function BarcodePrintPage(): ReactElement {
 
       <div className="grid gap-6 xl:grid-cols-[0.72fr_0.28fr]">
         <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('barcodePrint.operationAndDocumentList', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
@@ -551,7 +551,7 @@ export function BarcodePrintPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('barcodePrint.documentLines', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
@@ -645,7 +645,7 @@ export function BarcodePrintPage(): ReactElement {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <button
                 type="button"
@@ -752,7 +752,7 @@ export function BarcodePrintPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>Seçim Özeti</CardTitle>
             </CardHeader>

@@ -204,7 +204,7 @@ export function PrinterManagementPage(): ReactElement {
 
       <div className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
         <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.printerForm.title')}</CardTitle>
             </CardHeader>
@@ -294,7 +294,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.profileForm.title')}</CardTitle>
             </CardHeader>
@@ -401,7 +401,7 @@ export function PrinterManagementPage(): ReactElement {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.printers')}</CardTitle>
             </CardHeader>
@@ -469,7 +469,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.profiles')}</CardTitle>
             </CardHeader>
@@ -541,7 +541,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.mappings')}</CardTitle>
             </CardHeader>
@@ -641,7 +641,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.jobs')}</CardTitle>
             </CardHeader>

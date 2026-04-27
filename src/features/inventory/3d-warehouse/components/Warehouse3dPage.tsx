@@ -114,7 +114,7 @@ export function Warehouse3dPage(): ReactElement {
               {selectedWarehouse?.depoIsmi ?? t('inventory.warehouse3d.selectWarehouse')}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              3D depo gorunumu agir bir ekran. Ilk acilisi hizli tutmak icin model ve stok katmani sadece istediginizde yuklenir.
+              {t('inventory.warehouse3d.lazyLoadHint')}
             </p>
             <Button
               type="button"
@@ -122,7 +122,7 @@ export function Warehouse3dPage(): ReactElement {
               onClick={() => startTransition(() => setSceneActivated(true))}
               disabled={isFetching}
             >
-              3D Gorunumu Yukle
+              {t('inventory.warehouse3d.load3dView')}
             </Button>
           </div>
         </div>

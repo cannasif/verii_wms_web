@@ -183,7 +183,7 @@ export function KkdValidationLogPage(): ReactElement {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.validationLog.employeeCust')}
                     </p>
@@ -194,7 +194,7 @@ export function KkdValidationLogPage(): ReactElement {
                       / {selectedRow.customerCode || '-'}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.validationLog.stockQty')}
                     </p>
@@ -207,14 +207,14 @@ export function KkdValidationLogPage(): ReactElement {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                     {t('kkd.operational.validationLog.message')}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">{selectedRow.reasonMessage || '-'}</p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300">
                   {t('kkd.operational.validationLog.metaQr')}: {selectedRow.scannedQr || '-'}
                   <br />
                   {t('kkd.operational.validationLog.metaBarcode')}: {selectedRow.scannedBarcode || '-'}

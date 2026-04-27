@@ -143,8 +143,10 @@ function extractApiErrorMessage(payload: unknown): string | null {
   return null;
 }
 
-api.interceptors.request.use(async (config) => {
-  config.baseURL = config.baseURL || await getApiUrl() || getApiBaseUrl() || api.defaults.baseURL;
+api.interceptors.request.use((config) => {
+  // Runtime config is resolved during bootstrap; requests should use the hydrated in-memory value
+  // instead of awaiting config.json again through loadConfig() on every call.
+  config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
 
   const skipAuth = config.skipAuth === true;
   if (!skipAuth) {

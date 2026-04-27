@@ -1,6 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import type {
 } from '../types/steel-good-recipt-acceptanse.types';
 
 export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const [searchInput, setSearchInput] = useState('');
@@ -35,9 +37,9 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
   const [form, setForm] = useState<SaveSteelGoodReciptAcceptansePlacementDto | null>(null);
 
   useEffect(() => {
-    setPageTitle('Sac Mal Kabul Yerleştirme');
+    setPageTitle(t('steelGoodReceiptAcceptance.placement.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const candidatesQuery = useQuery({
     queryKey: ['sgra', 'placement', 'candidates', search],
@@ -81,11 +83,11 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      if (!form) throw new Error('Yerleştirme formu hazır değil');
+      if (!form) throw new Error(t('steelGoodReceiptAcceptance.placement.errForm'));
       return steelGoodReciptAcceptanseApi.savePlacement(form);
     },
     onSuccess: () => {
-      toast.success('Yerleştirme kaydedildi');
+      toast.success(t('steelGoodReceiptAcceptance.placement.saveOk'));
       setSelectedLine(null);
       setWarehouse(null);
       setShelf(null);
@@ -137,7 +139,7 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   function openVisualization(mode: '2d' | '3d'): void {
     if (!warehouse?.id || (!shelf?.id && !form?.areaCode?.trim())) {
-      toast.error('Görünüm açmak için depo ve hücre veya saha kodu seçin');
+      toast.error(t('steelGoodReceiptAcceptance.placement.errView'));
       return;
     }
 
@@ -159,18 +161,18 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   return (
     <div className="space-y-6 crm-page">
-      <Badge variant="secondary">Sac Mal Kabul</Badge>
+      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
       <FormPageShell
-        title="Saha / Hücre Yerleştirme"
-        description="İrsaliyeye aktarılmış levhaları saha veya hücreye yerleştirin. Üst üste istifte sıra numarası zorunludur."
+        title={t('steelGoodReceiptAcceptance.placement.title')}
+        description={t('steelGoodReceiptAcceptance.placement.description')}
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <Card className="border-white/10 bg-white/5">
             <CardHeader className="space-y-4">
-              <CardTitle>Yerleştirilecek Levhalar</CardTitle>
+              <CardTitle>{t('steelGoodReceiptAcceptance.placement.title')}</CardTitle>
               <div className="flex gap-3">
-                <Input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="D-KODU, stok veya seri ara" />
-                <Button type="button" variant="outline" onClick={() => setSearch(searchInput.trim())}>Ara</Button>
+                <Input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.placement.searchPh')} />
+                <Button type="button" variant="outline" onClick={() => setSearch(searchInput.trim())}>{t('common.search')}</Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -188,11 +190,11 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                   </div>
                   <div className="mt-2 font-medium">{row.serialNo}</div>
                   <div className="text-sm text-slate-400">{row.supplierCode} - {row.supplierName}</div>
-                  <div className="mt-1 text-sm">Onaylanan miktar: <span className="font-medium">{row.approvedQuantity}</span></div>
+                  <div className="mt-1 text-sm">{t('steelGoodReceiptAcceptance.placement.approvedQty')}: <span className="font-medium">{row.approvedQuantity}</span></div>
                 </button>
               ))}
               {!candidatesQuery.isLoading && candidates.length === 0 ? (
-                <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">Yerleştirme bekleyen levha bulunmuyor.</div>
+                <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.placement.noPending')}</div>
               ) : null}
             </CardContent>
           </Card>
@@ -200,44 +202,44 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
           <div className="space-y-6">
             <Card className="border-white/10 bg-white/5">
               <CardHeader>
-                <CardTitle>Yerleştirme Rehberi</CardTitle>
+                <CardTitle>{t('steelGoodReceiptAcceptance.placement.guideTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-slate-300">
                 <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-3">
-                  <div className="font-medium text-emerald-200">Yanına koy</div>
-                  <div>Aynı satırda, mevcut levhanın sağındaki boş pozisyona yerleşir. Düz düzlemde yan yana sahalar için uygundur.</div>
+                  <div className="font-medium text-emerald-200">{t('steelGoodReceiptAcceptance.placement.presetBesideTitle')}</div>
+                  <div>{t('steelGoodReceiptAcceptance.placement.presetBesideDesc')}</div>
                 </div>
                 <div className="rounded-xl border border-sky-400/20 bg-sky-500/10 p-3">
-                  <div className="font-medium text-sky-200">Arkasına koy</div>
-                  <div>Aynı kolon mantığında bir sıra geriye atar. Derin saha yerleşimlerinde arkaya koyma senaryosu için kullanılır.</div>
+                  <div className="font-medium text-sky-200">{t('steelGoodReceiptAcceptance.placement.presetBehindTitle')}</div>
+                  <div>{t('steelGoodReceiptAcceptance.placement.presetBehindDesc')}</div>
                 </div>
                 <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 p-3">
-                  <div className="font-medium text-amber-200">Üstüne koy</div>
-                  <div>Aynı konum üzerinde istif yapar. Bu durumda sistem otomatik olarak bir üst <span className="font-medium">stack sıra no</span> önerir.</div>
+                  <div className="font-medium text-amber-200">{t('steelGoodReceiptAcceptance.placement.presetAboveTitle')}</div>
+                  <div>{t('steelGoodReceiptAcceptance.placement.presetAboveDesc')}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-white/10 bg-white/5">
               <CardHeader>
-                <CardTitle>Yerleştirme Formu</CardTitle>
+                <CardTitle>{t('steelGoodReceiptAcceptance.placement.formTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {selectedLine && form ? (
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
-                      <div><Label>D-KODU</Label><Input value={selectedLine.dCode} readOnly /></div>
-                      <div><Label>Levha No</Label><Input value={selectedLine.serialNo} readOnly /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.inspection.dcode')}</Label><Input value={selectedLine.dCode} readOnly /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.inspection.plate')}</Label><Input value={selectedLine.serialNo} readOnly /></div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label>Depo</Label>
+                        <Label>{t('steelGoodReceiptAcceptance.placement.whTitle')}</Label>
                         <PagedLookupDialog<WarehouseReferenceDto>
                           open={warehouseOpen}
                           onOpenChange={setWarehouseOpen}
-                          title="Depo Seç"
-                          placeholder="Depo seçin"
+                          title={t('steelGoodReceiptAcceptance.placement.whTitle')}
+                          placeholder={t('steelGoodReceiptAcceptance.placement.whPh')}
                           value={warehouse ? `${warehouse.warehouseCode} - ${warehouse.warehouseName}` : ''}
                           queryKey={['sgra', 'placement', 'warehouses']}
                           fetchPage={({ pageNumber, pageSize, search: warehouseSearch }: { pageNumber: number; pageSize: number; search: string }) =>
@@ -251,12 +253,12 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Hücre / Raf</Label>
+                        <Label>{t('steelGoodReceiptAcceptance.placement.shelfTitle')}</Label>
                         <PagedLookupDialog<ShelfDefinitionDto>
                           open={shelfOpen}
                           onOpenChange={setShelfOpen}
-                          title="Hücre / Raf Seç"
-                          placeholder="Hücre seçin"
+                          title={t('steelGoodReceiptAcceptance.placement.shelfTitle')}
+                          placeholder={t('steelGoodReceiptAcceptance.placement.shelfPh')}
                           value={shelf ? `${shelf.code} - ${shelf.name}` : ''}
                           disabled={!warehouse}
                           queryKey={['sgra', 'placement', 'shelves', warehouse?.id ?? 0]}
@@ -284,27 +286,27 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                      <div><Label>Saha Kodu</Label><Input value={form.areaCode ?? ''} onChange={(event) => updateForm('areaCode', event.target.value)} placeholder="Saha / alan kodu" /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.placement.area')}</Label><Input value={form.areaCode ?? ''} onChange={(event) => updateForm('areaCode', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.placement.areaPh')} /></div>
                       <div className="space-y-2">
-                        <Label>Yerleşim Tipi</Label>
+                        <Label>{t('steelGoodReceiptAcceptance.placement.placementType')}</Label>
                         <select className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2" value={form.placementType} onChange={(event) => updateForm('placementType', event.target.value)}>
-                          <option value="SideBySide">Yan Yana</option>
-                          <option value="Stacked">Üst Üste</option>
+                          <option value="SideBySide">{t('steelGoodReceiptAcceptance.placement.sideBySide')}</option>
+                          <option value="Stacked">{t('steelGoodReceiptAcceptance.placement.stacked')}</option>
                         </select>
                       </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-3">
-                      <div><Label>İstif Sıra No</Label><Input type="number" value={form.stackOrderNo ?? ''} onChange={(event) => updateForm('stackOrderNo', event.target.value ? Number(event.target.value) : null)} /></div>
-                      <div><Label>Sıra No</Label><Input type="number" value={form.rowNo ?? ''} onChange={(event) => updateForm('rowNo', event.target.value ? Number(event.target.value) : null)} /></div>
-                      <div><Label>Pozisyon No</Label><Input type="number" value={form.positionNo ?? ''} onChange={(event) => updateForm('positionNo', event.target.value ? Number(event.target.value) : null)} /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.placement.stackOrder')}</Label><Input type="number" value={form.stackOrderNo ?? ''} onChange={(event) => updateForm('stackOrderNo', event.target.value ? Number(event.target.value) : null)} /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.placement.row')}</Label><Input type="number" value={form.rowNo ?? ''} onChange={(event) => updateForm('rowNo', event.target.value ? Number(event.target.value) : null)} /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.placement.pos')}</Label><Input type="number" value={form.positionNo ?? ''} onChange={(event) => updateForm('positionNo', event.target.value ? Number(event.target.value) : null)} /></div>
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <div>
-                          <div className="font-medium">3D Yerleşim Mantığına Uygun Hızlı Öneriler</div>
-                          <div className="text-sm text-slate-400">Mevcut levhaların yanına, arkasına ya da üstüne tek tıkla konum öner.</div>
+                          <div className="font-medium">{t('steelGoodReceiptAcceptance.placement.quickSuggestTitle')}</div>
+                          <div className="text-sm text-slate-400">{t('steelGoodReceiptAcceptance.placement.quickSuggestDesc')}</div>
                         </div>
                       </div>
 
@@ -322,13 +324,13 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                               <div className="mt-2 font-medium">{item.serialNo}</div>
                               <div className="mt-3 grid gap-2 md:grid-cols-3">
                                 <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'beside')}>
-                                  Yanına Yerleştir
+                                  {t('steelGoodReceiptAcceptance.placement.placeBeside')}
                                 </Button>
                                 <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'behind')}>
-                                  Arkasına Yerleştir
+                                  {t('steelGoodReceiptAcceptance.placement.placeBehind')}
                                 </Button>
                                 <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'above')}>
-                                  Üstüne Yerleştir
+                                  {t('steelGoodReceiptAcceptance.placement.placeAbove')}
                                 </Button>
                               </div>
                             </div>
@@ -336,37 +338,37 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                         </div>
                       ) : (
                         <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm text-slate-400">
-                          Bu lokasyonda henüz yerleşmiş levha yok. İlk levha için sıra ve pozisyonu manuel girebilir ya da 2D/3D görünümden boş alanı kontrol edebilirsin.
+                          {t('steelGoodReceiptAcceptance.placement.noOccupancyHelp')}
                         </div>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Not</Label>
-                      <Textarea value={form.note ?? ''} onChange={(event) => updateForm('note', event.target.value)} placeholder="Yerleşim notu" />
+                      <Label>{t('common.description')}</Label>
+                      <Textarea value={form.note ?? ''} onChange={(event) => updateForm('note', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.placement.notePh')} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-3">
                       <Button type="button" className="md:col-span-3" disabled={saveMutation.isPending} onClick={() => void saveMutation.mutateAsync()}>
-                        {saveMutation.isPending ? 'Kaydediliyor...' : 'Yerleşimi Kaydet'}
+                        {saveMutation.isPending ? t('steelGoodReceiptAcceptance.placement.saving') : t('steelGoodReceiptAcceptance.placement.saveBtn')}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => openVisualization('2d')}>
-                        2D Görünümde Aç
+                        {t('steelGoodReceiptAcceptance.placement.open2d')}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => openVisualization('3d')}>
-                        3D Görünümde Aç
+                        {t('steelGoodReceiptAcceptance.placement.open3d')}
                       </Button>
                     </div>
                   </>
                 ) : (
-                  <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">Soldan bir levha seçin.</div>
+                  <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.placement.pickPlate')}</div>
                 )}
               </CardContent>
             </Card>
 
             <Card className="border-white/10 bg-white/5">
               <CardHeader>
-                <CardTitle>Aynı Lokasyondaki Mevcut Levhalar</CardTitle>
+                <CardTitle>{t('steelGoodReceiptAcceptance.placement.sameLocationTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {sameLocationSummary.map((item) => (
@@ -374,14 +376,14 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                     <div className="flex flex-wrap gap-2 text-sm">
                       <Badge variant="secondary">{item.dCode}</Badge>
                       <Badge variant="secondary">{item.placementType}</Badge>
-                      {item.stackOrderNo ? <Badge variant="secondary">İstif {item.stackOrderNo}</Badge> : null}
+                      {item.stackOrderNo ? <Badge variant="secondary">{t('steelGoodReceiptAcceptance.placement.stackBadge', { n: item.stackOrderNo })}</Badge> : null}
                     </div>
                     <div className="mt-2 font-medium">{item.serialNo}</div>
                     <div className="text-sm text-slate-400">{item.stockCode} • {item.supplierCode}</div>
                   </div>
                 ))}
                 {!occupancyQuery.isLoading && sameLocationSummary.length === 0 ? (
-                  <div className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">Bu lokasyonda kayıtlı başka levha yok.</div>
+                  <div className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.placement.noOther')}</div>
                 ) : null}
               </CardContent>
             </Card>

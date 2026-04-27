@@ -186,7 +186,7 @@ export function PermissionGroupForm({
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                     <FormLabel className="inline-flex items-center">
                       {t('permissionGroups.form.isActive')}
                       <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
@@ -202,7 +202,7 @@ export function PermissionGroupForm({
                 control={form.control}
                 name="permissionDefinitionIds"
                 render={({ field }) => (
-                  <FormItem className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <FormItem className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                     <FormLabel className="inline-flex items-center">
                       {t('permissionGroups.form.permissions')}
                       <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />

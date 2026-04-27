@@ -1,5 +1,6 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { FormPageShell } from '@/components/shared';
 import { Input } from '@/components/ui/input';
@@ -8,14 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 
 export function SteelGoodReciptAcceptanseListPage(): ReactElement {
+  const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    setPageTitle('Sac Mal Kabul Beklenen Liste');
+    setPageTitle(t('steelGoodReceiptAcceptance.list.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const query = useQuery({
     queryKey: ['sgra-lines', search],
@@ -26,43 +28,43 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
 
   return (
     <div className="space-y-6 crm-page">
-      <Badge variant="secondary">Sac Mal Kabul</Badge>
+      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
       <FormPageShell
-        title="Beklenen Levha Listesi"
-        description="Excel aktarimindaki kolonlari ayni isimlerle izleyin. Tablo saga sola kaydirilabilir."
+        title={t('steelGoodReceiptAcceptance.list.title')}
+        description={t('steelGoodReceiptAcceptance.list.description')}
       >
         <div className="space-y-4">
           <div className="flex gap-3">
-            <Input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="D-KODU, stok, seri veya siparis no ara" />
-            <Button type="button" variant="outline" onClick={() => setSearch(searchInput.trim())}>Ara</Button>
-            <Button type="button" variant="ghost" onClick={() => void query.refetch()}>Yenile</Button>
+            <Input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.list.searchPh')} />
+            <Button type="button" variant="outline" onClick={() => setSearch(searchInput.trim())}>{t('common.search')}</Button>
+            <Button type="button" variant="ghost" onClick={() => void query.refetch()}>{t('steelGoodReceiptAcceptance.list.refresh')}</Button>
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-white/10">
             <table className="min-w-[2100px] text-sm">
               <thead className="bg-white/5 text-left">
                 <tr>
-                  <th className="px-3 py-2">Excel Kayit No</th>
-                  <th className="px-3 py-2">D-KODU</th>
-                  <th className="px-3 py-2">Tedarikci</th>
-                  <th className="px-3 py-2">Netsis Sip. No</th>
-                  <th className="px-3 py-2">Sira No</th>
-                  <th className="px-3 py-2">Netsis Sip. Sira No</th>
-                  <th className="px-3 py-2">Stok Kodu</th>
-                  <th className="px-3 py-2">Stok Adi</th>
-                  <th className="px-3 py-2">Kombine Size</th>
-                  <th className="px-3 py-2">Seri No (Levha No)</th>
-                  <th className="px-3 py-2">Seri-2 (Poz No)</th>
-                  <th className="px-3 py-2">Miktar(Kg)</th>
-                  <th className="px-3 py-2">Depo Kodu</th>
-                  <th className="px-3 py-2">Material Quality</th>
-                  <th className="px-3 py-2">Heat Number</th>
-                  <th className="px-3 py-2">Certificate Number</th>
-                  <th className="px-3 py-2">Export Ref No</th>
-                  <th className="px-3 py-2">Gelen</th>
-                  <th className="px-3 py-2">Onaylanan</th>
-                  <th className="px-3 py-2">Red</th>
-                  <th className="px-3 py-2">Durum</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colRecNo')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colD')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colSup')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colOrd')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colLineSeq')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colOrderLine')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colSt')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colStockName')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colCombinedSize')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colPlate')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colSerial2')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colExp')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colDepot')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colMaterialQuality')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colHeatNumber')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colCertificateNumber')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colExportRef')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colArr')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colAp')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colRejected')}</th>
+                  <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colStat')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,7 +95,7 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
                 ))}
                 {!query.isLoading && rows.length === 0 ? (
                   <tr>
-                    <td className="px-3 py-6 text-center text-slate-400" colSpan={19}>Kayit bulunamadi</td>
+                    <td className="px-3 py-6 text-center text-slate-400" colSpan={21}>{t('steelGoodReceiptAcceptance.list.empty')}</td>
                   </tr>
                 ) : null}
               </tbody>

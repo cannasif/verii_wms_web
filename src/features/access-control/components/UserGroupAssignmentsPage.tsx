@@ -125,7 +125,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </div>
       </div>
 
-      <div className="space-y-4 rounded-[28px] border border-slate-200/70 bg-white/85 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] sm:p-6">
+      <div className="space-y-4 rounded-[28px] border border-slate-200/70 bg-white/85 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 sm:p-6">
         <div>
           <div className="mb-3 flex items-center justify-between gap-3">
             <label className="text-sm font-medium flex items-center gap-1">
@@ -150,7 +150,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </div>
 
         {selectedUserId != null && (
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/3">
             <label className="text-sm font-medium mb-3 flex items-center gap-1">
               {t('userGroupAssignments.assignedGroups')}
               <FieldHelpTooltip text={t('help.userAssignment.groups')} />

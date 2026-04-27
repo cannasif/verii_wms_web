@@ -340,19 +340,19 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Toplam Tanım</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.length}</div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Aktif Tanım</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.isActive).length}</div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]">
+            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Mirror Lookup</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.allowMirrorLookup).length}</div>
@@ -363,7 +363,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.04]">
+        <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/4">
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -400,7 +400,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
                       className={`rounded-2xl border p-4 text-left transition ${
                         isSelected
                           ? 'border-sky-400 bg-sky-50/80 dark:border-sky-400/70 dark:bg-sky-500/10'
-                          : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.02]'
+                          : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/2'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -474,7 +474,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
         </Card>
 
         <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.04]">
+          <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/4">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-emerald-500/10 p-3 text-emerald-600 dark:text-emerald-300">
@@ -489,26 +489,26 @@ export function BarcodeDefinitionsPage(): ReactElement {
               </div>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                 <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
                 <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition ? getModuleLabel(selectedDefinition.moduleKey) : '-'}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Barkod Yapısı</div>
                 <div className="mt-1 font-mono text-xs text-slate-900 dark:text-white">{selectedDefinition?.segmentPattern || '-'}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Zorunlu Alanlar</div>
                 <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition?.requiredSegments || '-'}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
                 <div className="text-xs text-slate-500 dark:text-slate-400">Kullanıcı İpucu</div>
                 <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition?.hintText || '-'}</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/[0.04]">
+          <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/4">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-amber-500/10 p-3 text-amber-600 dark:text-amber-300">
@@ -553,7 +553,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
               </Button>
 
               {resolveMessage ? (
-                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-medium text-slate-900 dark:text-white">{resolveMessage}</p>
                     <Badge variant={getReasonTone(resolveResult?.reasonCode)}>{resolveResult?.source || 'error'}</Badge>
@@ -576,7 +576,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
                         {resolveCandidates.map((candidate, index) => (
                           <div
                             key={`${candidate.stockCode ?? 'candidate'}-${candidate.yapKod ?? 'none'}-${index}`}
-                            className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/[0.02]"
+                            className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/2"
                           >
                             {formatCandidate(candidate)}
                           </div>

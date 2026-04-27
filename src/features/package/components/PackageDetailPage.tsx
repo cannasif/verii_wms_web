@@ -550,7 +550,7 @@ export function PackageDetailPage(): ReactElement {
                 <PageState tone="loading" title={t('common.loading')} compact />
               ) : packages && packages.length > 0 ? (
                 <>
-                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -701,7 +701,7 @@ export function PackageDetailPage(): ReactElement {
                 <PageState tone="loading" title={t('common.loading')} compact />
               ) : lines && lines.length > 0 ? (
                 <>
-                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
                     <Table>
                       <TableHeader>
                         <TableRow>

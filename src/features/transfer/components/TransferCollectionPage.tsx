@@ -331,8 +331,8 @@ export function TransferCollectionPage(): ReactElement {
   }, [orderLinesData?.data?.lines, collectedData?.data]);
 
   return (
-    <div className="crm-page flex w-full flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/[0.03]">
-      <div className="shrink-0 border-b border-slate-200/80 bg-white/80 p-4 space-y-4 dark:border-white/10 dark:bg-white/[0.03]">
+    <div className="crm-page flex w-full flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/3">
+      <div className="shrink-0 border-b border-slate-200/80 bg-white/80 p-4 space-y-4 dark:border-white/10 dark:bg-white/3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/transfer/assigned')}>
             <ArrowLeft className="size-4 mr-2" />
@@ -471,7 +471,7 @@ export function TransferCollectionPage(): ReactElement {
         </Card>
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto rounded-xl border border-slate-200/80 bg-white/70 p-4 space-y-2 dark:border-white/10 dark:bg-white/[0.02]">
+      <div className="custom-scrollbar flex-1 overflow-y-auto rounded-xl border border-slate-200/80 bg-white/70 p-4 space-y-2 dark:border-white/10 dark:bg-white/2">
         {isLoadingOrderLines ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -542,7 +542,7 @@ export function TransferCollectionPage(): ReactElement {
         )}
       </div>
 
-      <div className="shrink-0 border-t border-slate-200/80 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="shrink-0 border-t border-slate-200/80 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
         <Button
           onClick={handleComplete}
           disabled={!permission.canUpdate || completeTransferMutation.isPending}

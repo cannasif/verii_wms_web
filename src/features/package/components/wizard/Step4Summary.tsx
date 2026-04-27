@@ -175,7 +175,7 @@ export function Step4Summary({
             {isLoadingPackages ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : packages.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -225,7 +225,7 @@ export function Step4Summary({
             {isLoadingLines ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : lines.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
                 <Table>
                   <TableHeader>
                     <TableRow>

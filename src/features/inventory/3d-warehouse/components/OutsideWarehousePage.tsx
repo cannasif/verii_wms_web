@@ -79,7 +79,7 @@ function VisualizationPlane({
     >
       <div className="pointer-events-none absolute inset-0 opacity-25" style={{ backgroundImage: 'linear-gradient(rgba(96,165,250,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(96,165,250,0.12) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
       <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,0.55))]" />
-      <div className={`${mode === '3d' ? 'relative mx-auto mt-6 h-[190px] w-[92%] [perspective:1100px]' : 'relative mx-auto mt-4 h-[180px] w-[92%]'}`}>
+      <div className={`${mode === '3d' ? 'relative mx-auto mt-6 h-[190px] w-[92%] perspective-[1100px]' : 'relative mx-auto mt-4 h-[180px] w-[92%]'}`}>
         {items.map((item) => {
           const col = Math.max((item.positionNo ?? 1) - 1, 0);
           const row = Math.max((item.rowNo ?? 1) - 1, 0);

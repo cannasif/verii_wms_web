@@ -256,7 +256,7 @@ export function WarehouseStockBalancePage(): ReactElement {
       </section>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <Rows3 className="size-5 text-sky-600" />
             <div>
@@ -265,7 +265,7 @@ export function WarehouseStockBalancePage(): ReactElement {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <ScanSearch className="size-5 text-emerald-600" />
             <div>
@@ -274,7 +274,7 @@ export function WarehouseStockBalancePage(): ReactElement {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <DatabaseZap className="size-5 text-fuchsia-600" />
             <div>
@@ -285,7 +285,7 @@ export function WarehouseStockBalancePage(): ReactElement {
         </Card>
       </div>
 
-      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
         <CardContent className="p-5">
           <PagedDataGrid<WarehouseStockBalanceDto, StockColumnKey>
             pageKey="warehouse-stock-balance-grid"
@@ -403,14 +403,14 @@ export function WarehouseStockBalancePage(): ReactElement {
         </div>
 
         <div className="grid gap-4 md:grid-cols-5">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.summaryRows', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.summaryRowCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.detailGroups', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.detailGroupCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.mismatch', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-amber-600">{consistencySummary?.mismatchCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.missingSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-rose-600">{consistencySummary?.missingSummaryCount ?? 0}</div></CardContent></Card>
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.extraSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-fuchsia-600">{consistencySummary?.extraSummaryCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.summaryRows', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.summaryRowCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.detailGroups', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold">{consistencySummary?.detailGroupCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.mismatch', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-amber-600">{consistencySummary?.mismatchCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.missingSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-rose-600">{consistencySummary?.missingSummaryCount ?? 0}</div></CardContent></Card>
+          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3"><CardContent className="p-4"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.consistency.cards.extraSummary', { defaultValue: 'Missing translation' })}</div><div className="mt-2 text-2xl font-semibold text-fuchsia-600">{consistencySummary?.extraSummaryCount ?? 0}</div></CardContent></Card>
         </div>
 
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="p-5">
             <PagedDataGrid<WarehouseBalanceConsistencyIssueDto, ConsistencyColumnKey>
               pageKey="warehouse-balance-consistency-grid"

@@ -1,5 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ function getStatusTone(status: string): string {
 }
 
 export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
+  const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const [uniqueValueInput, setUniqueValueInput] = useState('');
   const [uniqueValue, setUniqueValue] = useState('');
@@ -34,9 +36,9 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
   const [form, setForm] = useState<SaveSteelGoodReciptAcceptanseInspectionDto | null>(null);
 
   useEffect(() => {
-    setPageTitle('Sac Mal Kabul Kontrol');
+    setPageTitle(t('steelGoodReceiptAcceptance.inspection.pageTitle'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   const batchQuery = useQuery({
     queryKey: ['sgra', 'inspection', 'batches', uniqueValue],
@@ -66,11 +68,11 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      if (!form) throw new Error('Kontrol formu hazir degil');
+      if (!form) throw new Error(t('steelGoodReceiptAcceptance.inspection.errForm'));
       return steelGoodReciptAcceptanseApi.saveInspection(form);
     },
     onSuccess: () => {
-      toast.success('Kontrol kaydedildi');
+      toast.success(t('steelGoodReceiptAcceptance.inspection.saveOk'));
       void detailQuery.refetch();
       void batchQuery.refetch();
     },
@@ -106,7 +108,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
         approvedQuantity: detailQuery.data.expectedQuantity,
         rejectedQuantity: 0,
         rejectReason: '',
-        note: 'Hizli onay uygulandi',
+        note: t('steelGoodReceiptAcceptance.inspection.quickApproveNote'),
       });
       return;
     }
@@ -120,7 +122,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
         approvedQuantity: 0,
         rejectedQuantity: 0,
         rejectReason: '',
-        note: 'Levha sahada bulunamadi',
+        note: t('steelGoodReceiptAcceptance.inspection.quickMissingNote'),
       });
       return;
     }
@@ -132,49 +134,49 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
       arrivedQuantity: detailQuery.data.expectedQuantity,
       approvedQuantity: 0,
       rejectedQuantity: detailQuery.data.expectedQuantity,
-      rejectReason: detailQuery.data.rejectReason || 'Kalite red',
-      note: 'Hizli red uygulandi',
+      rejectReason: detailQuery.data.rejectReason || t('steelGoodReceiptAcceptance.inspection.quickRejectReason'),
+      note: t('steelGoodReceiptAcceptance.inspection.quickRejectNote'),
     });
   }
 
   return (
     <div className="space-y-6 crm-page">
-      <Badge variant="secondary">Sac Mal Kabul</Badge>
+      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
       <FormPageShell
-        title="Saha Kabul Kontrol"
-        description="Excel kayit no veya export ref no ile ilgili partiyi bulun, sonra o partiye ait levhalardan isleyeceginizi secin."
+        title={t('steelGoodReceiptAcceptance.inspection.title')}
+        description={t('steelGoodReceiptAcceptance.inspection.description')}
       >
         <div className="space-y-6">
           <Card className="border-white/10 bg-white/5">
             <CardHeader>
-              <CardTitle>Kontrol Akışı Rehberi</CardTitle>
+              <CardTitle>{t('steelGoodReceiptAcceptance.inspection.flowGuideTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-3 text-sm text-slate-300">
               <div className="rounded-xl border border-sky-400/20 bg-sky-500/10 p-4">
-                <div className="font-medium text-sky-200">Onayla</div>
-                <div>Levha sahaya geldiyse ve kalite / evrak açısından uygunsa onaylanır. Yalnızca onaylanan miktar sonraki adıma ilerler.</div>
+                <div className="font-medium text-sky-200">{t('steelGoodReceiptAcceptance.inspection.approveTitle')}</div>
+                <div>{t('steelGoodReceiptAcceptance.inspection.approveDesc')}</div>
               </div>
               <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 p-4">
-                <div className="font-medium text-rose-200">Reddet</div>
-                <div>Levha geldi ama uygun değilse red verilir. Red miktarı varsa red nedeni girmek zorunludur.</div>
+                <div className="font-medium text-rose-200">{t('steelGoodReceiptAcceptance.inspection.rejectTitle')}</div>
+                <div>{t('steelGoodReceiptAcceptance.inspection.rejectDesc')}</div>
               </div>
               <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 p-4">
-                <div className="font-medium text-amber-200">Gelmedi / Kısmi Kabul</div>
-                <div>Levha hiç gelmediyse gelmedi olarak bırakılır. Kısmi geldiyse gelen, onaylanan ve red miktarlarını ayrı işleyebilirsin.</div>
+                <div className="font-medium text-amber-200">{t('steelGoodReceiptAcceptance.inspection.partialTitle')}</div>
+                <div>{t('steelGoodReceiptAcceptance.inspection.partialDesc')}</div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-white/10 bg-white/5">
             <CardHeader>
-              <CardTitle>1. Excel Partisini Bul</CardTitle>
+              <CardTitle>{t('steelGoodReceiptAcceptance.inspection.findBatch')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-3">
                 <Input
                   value={uniqueValueInput}
                   onChange={(event) => setUniqueValueInput(event.target.value)}
-                  placeholder="Excel kayit no veya export ref no girin"
+                  placeholder={t('steelGoodReceiptAcceptance.inspection.batchSearchPh')}
                 />
                 <Button type="button" variant="outline" onClick={() => {
                   setUniqueValue(uniqueValueInput.trim());
@@ -182,7 +184,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                   setSelectedLine(null);
                   setSerialFilter('');
                 }}>
-                  Partiyi Bul
+                  {t('steelGoodReceiptAcceptance.inspection.findBatchBtn')}
                 </Button>
               </div>
 
@@ -204,16 +206,16 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                       <div className="flex flex-wrap gap-2 text-sm">
                         <Badge variant="secondary">{batch.excelRecordNo}</Badge>
                         {batch.exportRefNo ? <Badge variant="secondary">{batch.exportRefNo}</Badge> : null}
-                        <Badge variant="secondary">{batch.totalSeriesCount} seri</Badge>
-                        <Badge variant="secondary">{batch.pendingSeriesCount} bekleyen</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.seriesCount', { n: batch.totalSeriesCount })}</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.pendingCount', { n: batch.pendingSeriesCount })}</Badge>
                       </div>
                       <div className="mt-3 font-medium">{batch.supplierCode} - {batch.supplierName}</div>
-                      <div className="text-sm text-slate-400">{batch.headerDocumentNo ?? 'Baslik belge no yok'}</div>
+                      <div className="text-sm text-slate-400">{batch.headerDocumentNo ?? t('steelGoodReceiptAcceptance.inspection.noHeaderDoc')}</div>
                     </button>
                   ))}
                 </div>
               ) : uniqueValue && !batchQuery.isLoading ? (
-                <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">Bu unique degere ait sac mal kabul partisi bulunamadi.</div>
+                <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.inspection.noHit')}</div>
               ) : null}
             </CardContent>
           </Card>
@@ -222,7 +224,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
             <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
               <Card className="border-white/10 bg-white/5">
                 <CardHeader className="space-y-4">
-                  <CardTitle>2. İşlem Yapılacak Seriyi Seç</CardTitle>
+                    <CardTitle>{t('steelGoodReceiptAcceptance.inspection.pickSeries')}</CardTitle>
                   <div className="flex flex-wrap gap-2 text-sm">
                     <Badge variant="secondary">{selectedBatch.excelRecordNo}</Badge>
                     {selectedBatch.exportRefNo ? <Badge variant="secondary">{selectedBatch.exportRefNo}</Badge> : null}
@@ -231,7 +233,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                   <Input
                     value={serialFilter}
                     onChange={(event) => setSerialFilter(event.target.value)}
-                    placeholder="Seri no, stok kodu veya D-KODU ile filtrele"
+                    placeholder={t('steelGoodReceiptAcceptance.inspection.searchPh')}
                   />
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -252,9 +254,9 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                       <div className="mt-2 font-medium">{row.serialNo}</div>
                       <div className="text-sm text-slate-400">{row.description}</div>
                       <div className="mt-2 text-sm text-slate-300">
-                        Beklenen: <span className="font-medium">{row.expectedQuantity}</span>
-                        {' · '}Onaylanan: <span className="font-medium">{row.approvedQuantity}</span>
-                        {' · '}Red: <span className="font-medium">{row.rejectedQuantity}</span>
+                        {t('steelGoodReceiptAcceptance.inspection.expQty')}: <span className="font-medium">{row.expectedQuantity}</span>
+                        {' · '}{t('steelGoodReceiptAcceptance.inspection.approvedQty')}: <span className="font-medium">{row.approvedQuantity}</span>
+                        {' · '}{t('steelGoodReceiptAcceptance.inspection.rejectedQty')}: <span className="font-medium">{row.rejectedQuantity}</span>
                       </div>
                     </button>
                   ))}
@@ -265,60 +267,60 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                 <div className="space-y-6">
                   <Card className="border-white/10 bg-white/5">
                     <CardHeader>
-                      <CardTitle>3. Kontrol Kararını Ver</CardTitle>
+                      <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid gap-4 md:grid-cols-2">
-                        <div><Label>D-KODU</Label><Input value={detailQuery.data.dCode} readOnly /></div>
-                        <div><Label>Stok Kodu</Label><Input value={detailQuery.data.stockCode} readOnly /></div>
-                        <div><Label>Levha No</Label><Input value={detailQuery.data.serialNo} readOnly /></div>
-                        <div><Label>Beklenen Miktar</Label><Input value={String(expectedQuantity)} readOnly /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.dcode')}</Label><Input value={detailQuery.data.dCode} readOnly /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.stock')}</Label><Input value={detailQuery.data.stockCode} readOnly /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.plate')}</Label><Input value={detailQuery.data.serialNo} readOnly /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.expQty')}</Label><Input value={String(expectedQuantity)} readOnly /></div>
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-3">
                         <Button type="button" variant="outline" onClick={() => applyQuickDecision('approved')}>
-                          Hızlı Onay
+                          {t('steelGoodReceiptAcceptance.inspection.quickApprove')}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => applyQuickDecision('missing')}>
-                          Gelmedi İşaretle
+                          {t('steelGoodReceiptAcceptance.inspection.quickMissing')}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => applyQuickDecision('rejected')}>
-                          Hızlı Red
+                          {t('steelGoodReceiptAcceptance.inspection.quickReject')}
                         </Button>
                       </div>
 
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label>Geldi mi?</Label>
+                          <Label>{t('steelGoodReceiptAcceptance.inspection.arrQ')}</Label>
                           <select className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2" value={form.isArrived ? 'yes' : 'no'} onChange={(event) => updateForm('isArrived', event.target.value === 'yes')}>
-                            <option value="yes">Geldi</option>
-                            <option value="no">Gelmedi</option>
+                            <option value="yes">{t('steelGoodReceiptAcceptance.inspection.y')}</option>
+                            <option value="no">{t('steelGoodReceiptAcceptance.inspection.n')}</option>
                           </select>
                         </div>
                         <div className="space-y-2">
-                          <Label>Onaylandı mı?</Label>
+                          <Label>{t('steelGoodReceiptAcceptance.inspection.apprQ')}</Label>
                           <select className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2" value={form.isApproved ? 'yes' : 'no'} onChange={(event) => updateForm('isApproved', event.target.value === 'yes')}>
-                            <option value="yes">Onaylandı</option>
-                            <option value="no">Onaylanmadı</option>
+                            <option value="yes">{t('steelGoodReceiptAcceptance.inspection.yAp')}</option>
+                            <option value="no">{t('steelGoodReceiptAcceptance.inspection.nAp')}</option>
                           </select>
                         </div>
-                        <div><Label>Gelen Miktar</Label><Input type="number" value={String(form.arrivedQuantity)} onChange={(event) => updateForm('arrivedQuantity', Number(event.target.value) || 0)} /></div>
-                        <div><Label>Onaylanan Miktar</Label><Input type="number" value={String(form.approvedQuantity)} onChange={(event) => updateForm('approvedQuantity', Number(event.target.value) || 0)} /></div>
-                        <div><Label>Red Miktarı</Label><Input type="number" value={String(form.rejectedQuantity)} onChange={(event) => updateForm('rejectedQuantity', Number(event.target.value) || 0)} /></div>
-                        <div><Label>Durum Notu</Label><Input value={form.note ?? ''} onChange={(event) => updateForm('note', event.target.value)} placeholder="Kontrol notu" /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.arrivedQty')}</Label><Input type="number" value={String(form.arrivedQuantity)} onChange={(event) => updateForm('arrivedQuantity', Number(event.target.value) || 0)} /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.approvedQty')}</Label><Input type="number" value={String(form.approvedQuantity)} onChange={(event) => updateForm('approvedQuantity', Number(event.target.value) || 0)} /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.rejectedQty')}</Label><Input type="number" value={String(form.rejectedQuantity)} onChange={(event) => updateForm('rejectedQuantity', Number(event.target.value) || 0)} /></div>
+                        <div><Label>{t('steelGoodReceiptAcceptance.inspection.statusNote')}</Label><Input value={form.note ?? ''} onChange={(event) => updateForm('note', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.statusNotePh')} /></div>
                       </div>
 
-                      <div><Label>Red Nedeni</Label><Input value={form.rejectReason ?? ''} onChange={(event) => updateForm('rejectReason', event.target.value)} placeholder="Red nedeni" /></div>
+                      <div><Label>{t('steelGoodReceiptAcceptance.inspection.rejectReasonLabel')}</Label><Input value={form.rejectReason ?? ''} onChange={(event) => updateForm('rejectReason', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.rejectPh')} /></div>
 
                       <div className="flex flex-wrap gap-2 text-sm">
-                        <Badge variant="secondary">Beklenen: {expectedQuantity}</Badge>
-                        <Badge variant="secondary">Açık Fark: {remainingGap}</Badge>
-                        <Badge variant="secondary">Durum: {detailQuery.data.status}</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.expQty')}: {expectedQuantity}</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.openGap')}: {remainingGap}</Badge>
+                        <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.status')}: {detailQuery.data.status}</Badge>
                       </div>
 
                       <div className="flex justify-end">
                         <Button type="button" onClick={() => void saveMutation.mutateAsync()} disabled={saveMutation.isPending}>
-                          {saveMutation.isPending ? 'Kaydediliyor...' : 'Kontrolü Kaydet'}
+                          {saveMutation.isPending ? t('steelGoodReceiptAcceptance.inspection.saveP') : t('steelGoodReceiptAcceptance.inspection.save')}
                         </Button>
                       </div>
                     </CardContent>
@@ -326,7 +328,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
 
                   <Card className="border-white/10 bg-white/5">
                     <CardHeader>
-                      <CardTitle>Kontrol Fotoğrafları</CardTitle>
+                      <CardTitle>{t('steelGoodReceiptAcceptance.inspection.photosTitle')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <SteelGoodReciptAcceptansePhotoUpload lineId={detailQuery.data.id} onUploaded={async () => { await detailQuery.refetch(); }} />
@@ -336,16 +338,16 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                           <div key={photo.id} className="flex items-start gap-3 rounded-xl border border-white/10 p-3">
                             <img src={photo.imageUrl} alt={photo.caption ?? photo.id.toString()} className="h-20 w-20 rounded-lg object-cover" />
                             <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium">{photo.caption || 'Fotoğraf'}</div>
+                              <div className="text-sm font-medium">{photo.caption || t('steelGoodReceiptAcceptance.inspection.photo')}</div>
                               <div className="text-xs text-slate-400">{photo.createdDate ?? '-'}</div>
                             </div>
                             <Button type="button" variant="ghost" onClick={() => void steelGoodReciptAcceptanseApi.deleteInspectionPhoto(photo.id).then(() => detailQuery.refetch())}>
-                              Sil
+                              {t('common.delete')}
                             </Button>
                           </div>
                         ))}
                         {detailQuery.data.photos.length === 0 ? (
-                          <div className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">Henüz fotoğraf eklenmemiş.</div>
+                          <div className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.inspection.noPhotos')}</div>
                         ) : null}
                       </div>
                     </CardContent>
@@ -354,11 +356,11 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
               ) : (
                 <Card className="border-white/10 bg-white/5">
                   <CardHeader>
-                    <CardTitle>3. Kontrol Kararını Ver</CardTitle>
+                    <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="rounded-xl border border-dashed border-white/10 p-6 text-sm text-slate-400">
-                      Önce ilgili Excel partisini seç, sonra içindeki serilerden kontrol yapacağın levhayı işaretle.
+                      {t('steelGoodReceiptAcceptance.inspection.pickFlowHelp')}
                     </div>
                   </CardContent>
                 </Card>

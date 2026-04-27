@@ -125,7 +125,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
       </section>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <Layers3 className="size-5 text-sky-600" />
             <div>
@@ -134,7 +134,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <Barcode className="size-5 text-fuchsia-600" />
             <div>
@@ -143,7 +143,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardContent className="flex items-center gap-3 p-5">
             <RefreshCcw className="size-5 text-emerald-600" />
             <div>
@@ -154,7 +154,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
         </Card>
       </div>
 
-      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/[0.03]">
+      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
         <CardContent className="p-5">
           <PagedDataGrid<WarehouseStockSerialBalanceDto, SerialColumnKey>
             pageKey="warehouse-serial-balance-grid"

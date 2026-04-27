@@ -155,7 +155,7 @@ export function KkdDepartmentReportPage(): ReactElement {
           <CardContent>
             {selectedRow ? (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                     {t('kkd.operational.reports.deptLabel')}
                   </p>
@@ -164,13 +164,13 @@ export function KkdDepartmentReportPage(): ReactElement {
                   </p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.reports.labelQty')}
                     </p>
                     <p className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">{selectedRow.totalQuantity}</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                       {t('kkd.operational.reports.labelDocEmp')}
                     </p>
@@ -179,7 +179,7 @@ export function KkdDepartmentReportPage(): ReactElement {
                     </p>
                   </div>
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/3">
                   {t('kkd.operational.reports.lastMove')}: {formatDate(selectedRow.lastUsageDate)}
                 </div>
               </div>
