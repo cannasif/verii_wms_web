@@ -24,7 +24,6 @@ type ColumnKey =
   | 'roleName'
   | 'groupCode'
   | 'groupName'
-  | 'stockCode'
   | 'initialIssueQuantity'
   | 'initialFrequencyDays'
   | 'initialAllowBulkIssue'
@@ -306,7 +305,6 @@ export function KkdEntitlementMatrixPage(): ReactElement {
     { key: 'roleName', label: t('kkd.columns.role'), headerHelpText: matrixHelp('role') },
     { key: 'groupCode', label: t('kkd.columns.groupCode'), headerHelpText: matrixHelp('groupCode') },
     { key: 'groupName', label: t('kkd.columns.groupName'), headerHelpText: matrixHelp('groupCode') },
-    { key: 'stockCode', label: t('kkd.columns.stockCode'), headerHelpText: matrixHelp('groupCode') },
     { key: 'initialIssueQuantity', label: t('kkd.columns.initialIssue'), headerHelpText: matrixHelp('initialQuantity') },
     { key: 'initialFrequencyDays', label: t('kkd.columns.initialFrequencyDays'), headerHelpText: matrixHelp('initialFrequencyDays') },
     { key: 'initialAllowBulkIssue', label: t('kkd.columns.initialBulkIssue'), headerHelpText: matrixHelp('initialBulk') },
@@ -385,7 +383,6 @@ export function KkdEntitlementMatrixPage(): ReactElement {
         roleName: 'RoleName',
         groupCode: 'GroupCode',
         groupName: 'GroupName',
-        stockCode: 'StockCode',
         initialIssueQuantity: 'InitialIssueQuantity',
         initialFrequencyDays: 'InitialFrequencyDays',
         initialAllowBulkIssue: 'InitialAllowBulkIssue',
