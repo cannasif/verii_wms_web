@@ -147,6 +147,7 @@ api.interceptors.request.use((config) => {
   // Runtime config is resolved during bootstrap; requests should use the hydrated in-memory value
   // instead of awaiting config.json again through loadConfig() on every call.
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
+  config.headers['X-Language'] = getLanguageForHttpHeader();
 
   const skipAuth = config.skipAuth === true;
   if (!skipAuth) {
@@ -154,7 +155,6 @@ api.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    config.headers['X-Language'] = getLanguageForHttpHeader();
 
     const branch = useAuthStore.getState().branch;
     if (branch?.code) {
