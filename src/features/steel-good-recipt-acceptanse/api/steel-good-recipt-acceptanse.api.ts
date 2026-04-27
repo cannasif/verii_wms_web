@@ -6,6 +6,7 @@ import type {
   CreateSteelGoodReciptAcceptanseReceiptDto,
   SteelGoodReciptAcceptanseCommitImportDto,
   SteelGoodReciptAcceptanseHeaderDto,
+  SteelGoodReciptAcceptanseInspectionBatchSearchDto,
   SteelGoodReciptAcceptanseImportPreviewDto,
   SteelGoodReciptAcceptanseImportPreviewRequestDto,
   SteelGoodReciptAcceptanseLineDetailDto,
@@ -60,6 +61,16 @@ export const steelGoodReciptAcceptanseApi = {
   async searchBySerial(serialNo: string): Promise<SteelGoodReciptAcceptanseLineListItemDto[]> {
     const response = await api.get<ApiResponse<SteelGoodReciptAcceptanseLineListItemDto[]>>('/api/SteelGoodReciptAcceptanse/lines/search-by-serial', {
       params: { serialNo },
+    });
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  },
+
+  async searchInspectionBatches(uniqueValue: string): Promise<SteelGoodReciptAcceptanseInspectionBatchSearchDto[]> {
+    const response = await api.get<ApiResponse<SteelGoodReciptAcceptanseInspectionBatchSearchDto[]>>('/api/SteelGoodReciptAcceptanse/inspection/search-by-batch', {
+      params: { uniqueValue },
     });
     if (response.success && response.data) {
       return response.data;

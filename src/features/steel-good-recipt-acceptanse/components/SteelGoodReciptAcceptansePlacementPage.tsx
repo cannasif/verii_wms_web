@@ -16,7 +16,11 @@ import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpRe
 import { shelfManagementApi } from '@/features/shelf-management/api/shelf-management.api';
 import type { ShelfDefinitionDto } from '@/features/shelf-management/types/shelf-management.types';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
-import type { SaveSteelGoodReciptAcceptansePlacementDto, SteelGoodReciptAcceptanseLineListItemDto } from '../types/steel-good-recipt-acceptanse.types';
+import type {
+  SaveSteelGoodReciptAcceptansePlacementDto,
+  SteelGoodReciptAcceptanseLineListItemDto,
+  SteelGoodReciptAcceptanseLocationOccupancyItemDto,
+} from '../types/steel-good-recipt-acceptanse.types';
 
 export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
   const navigate = useNavigate();
@@ -93,6 +97,40 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   const sameLocationSummary = useMemo(() => occupancyQuery.data ?? [], [occupancyQuery.data]);
 
+  function applyPlacementPreset(anchor: SteelGoodReciptAcceptanseLocationOccupancyItemDto, mode: 'beside' | 'behind' | 'above'): void {
+    if (!form) return;
+
+    if (mode === 'above') {
+      setForm((current) => current ? ({
+        ...current,
+        placementType: 'Stacked',
+        rowNo: anchor.rowNo ?? current.rowNo ?? 1,
+        positionNo: anchor.positionNo ?? current.positionNo ?? 1,
+        stackOrderNo: (anchor.stackOrderNo ?? 0) + 1,
+      }) : current);
+      return;
+    }
+
+    if (mode === 'beside') {
+      setForm((current) => current ? ({
+        ...current,
+        placementType: 'SideBySide',
+        rowNo: anchor.rowNo ?? current.rowNo ?? 1,
+        positionNo: (anchor.positionNo ?? 0) + 1,
+        stackOrderNo: null,
+      }) : current);
+      return;
+    }
+
+    setForm((current) => current ? ({
+      ...current,
+      placementType: 'SideBySide',
+      rowNo: (anchor.rowNo ?? 0) + 1,
+      positionNo: anchor.positionNo ?? current.positionNo ?? 1,
+      stackOrderNo: null,
+    }) : current);
+  }
+
   function updateForm<K extends keyof SaveSteelGoodReciptAcceptansePlacementDto>(key: K, value: SaveSteelGoodReciptAcceptansePlacementDto[K]): void {
     setForm((current) => current ? { ...current, [key]: value } : current);
   }
@@ -160,6 +198,26 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
           </Card>
 
           <div className="space-y-6">
+            <Card className="border-white/10 bg-white/5">
+              <CardHeader>
+                <CardTitle>Yerleştirme Rehberi</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-slate-300">
+                <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-3">
+                  <div className="font-medium text-emerald-200">Yanına koy</div>
+                  <div>Aynı satırda, mevcut levhanın sağındaki boş pozisyona yerleşir. Düz düzlemde yan yana sahalar için uygundur.</div>
+                </div>
+                <div className="rounded-xl border border-sky-400/20 bg-sky-500/10 p-3">
+                  <div className="font-medium text-sky-200">Arkasına koy</div>
+                  <div>Aynı kolon mantığında bir sıra geriye atar. Derin saha yerleşimlerinde arkaya koyma senaryosu için kullanılır.</div>
+                </div>
+                <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 p-3">
+                  <div className="font-medium text-amber-200">Üstüne koy</div>
+                  <div>Aynı konum üzerinde istif yapar. Bu durumda sistem otomatik olarak bir üst <span className="font-medium">stack sıra no</span> önerir.</div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="border-white/10 bg-white/5">
               <CardHeader>
                 <CardTitle>Yerleştirme Formu</CardTitle>
@@ -240,6 +298,47 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
                       <div><Label>İstif Sıra No</Label><Input type="number" value={form.stackOrderNo ?? ''} onChange={(event) => updateForm('stackOrderNo', event.target.value ? Number(event.target.value) : null)} /></div>
                       <div><Label>Sıra No</Label><Input type="number" value={form.rowNo ?? ''} onChange={(event) => updateForm('rowNo', event.target.value ? Number(event.target.value) : null)} /></div>
                       <div><Label>Pozisyon No</Label><Input type="number" value={form.positionNo ?? ''} onChange={(event) => updateForm('positionNo', event.target.value ? Number(event.target.value) : null)} /></div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">3D Yerleşim Mantığına Uygun Hızlı Öneriler</div>
+                          <div className="text-sm text-slate-400">Mevcut levhaların yanına, arkasına ya da üstüne tek tıkla konum öner.</div>
+                        </div>
+                      </div>
+
+                      {sameLocationSummary.length > 0 ? (
+                        <div className="space-y-3">
+                          {sameLocationSummary.map((item) => (
+                            <div key={item.lineId} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                              <div className="flex flex-wrap items-center gap-2 text-sm">
+                                <Badge variant="secondary">{item.dCode}</Badge>
+                                <Badge variant="secondary">{item.stockCode}</Badge>
+                                <Badge variant="secondary">R{item.rowNo ?? '-'}</Badge>
+                                <Badge variant="secondary">P{item.positionNo ?? '-'}</Badge>
+                                <Badge variant="secondary">S{item.stackOrderNo ?? 0}</Badge>
+                              </div>
+                              <div className="mt-2 font-medium">{item.serialNo}</div>
+                              <div className="mt-3 grid gap-2 md:grid-cols-3">
+                                <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'beside')}>
+                                  Yanına Yerleştir
+                                </Button>
+                                <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'behind')}>
+                                  Arkasına Yerleştir
+                                </Button>
+                                <Button type="button" variant="outline" onClick={() => applyPlacementPreset(item, 'above')}>
+                                  Üstüne Yerleştir
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm text-slate-400">
+                          Bu lokasyonda henüz yerleşmiş levha yok. İlk levha için sıra ve pozisyonu manuel girebilir ya da 2D/3D görünümden boş alanı kontrol edebilirsin.
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2">

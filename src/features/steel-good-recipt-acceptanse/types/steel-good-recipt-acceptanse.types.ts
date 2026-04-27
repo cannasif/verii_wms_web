@@ -122,6 +122,18 @@ export interface SteelGoodReciptAcceptanseLineDetailDto extends SteelGoodReciptA
   photos: SteelGoodReciptAcceptansePhotoDto[];
 }
 
+export interface SteelGoodReciptAcceptanseInspectionBatchSearchDto {
+  headerId: number;
+  headerDocumentNo?: string | null;
+  excelRecordNo: string;
+  exportRefNo?: string | null;
+  supplierCode: string;
+  supplierName: string;
+  totalSeriesCount: number;
+  pendingSeriesCount: number;
+  lines: SteelGoodReciptAcceptanseLineListItemDto[];
+}
+
 export interface SaveSteelGoodReciptAcceptanseInspectionDto {
   lineId: number;
   isArrived: boolean;
