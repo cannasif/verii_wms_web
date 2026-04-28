@@ -3541,6 +3541,50 @@
       "allocationRows": "Tahsis Satırları",
       "activeRepairCases": "Aktif Tamir Vakaları",
       "shipmentLinksCount": "Sevkiyat Bağlantı Sayısı"
+    },
+    "enum": {
+      "serviceCaseStatus": {
+        "0": "Taslak",
+        "1": "Kabul Bekliyor",
+        "2": "Kabul Edildi",
+        "3": "Arıza Tespitte",
+        "4": "Parça Bekliyor",
+        "5": "Tamirde",
+        "6": "İadeye Hazır",
+        "7": "Ana Depoya İade Edildi",
+        "8": "Kapatıldı",
+        "9": "İptal"
+      },
+      "serviceCaseLineType": {
+        "0": "Gelen Ürün",
+        "1": "Yedek Parça",
+        "2": "İşçilik",
+        "3": "İkame Ürün"
+      },
+      "serviceProcessType": {
+        "0": "Normal Satış Siparişi",
+        "1": "Servis Onarım",
+        "2": "Yedek Parça Tedarik",
+        "3": "Onarım İade"
+      },
+      "allocationStatus": {
+        "0": "Bekliyor",
+        "1": "Bloke",
+        "2": "Tahsis Edildi",
+        "3": "Kısmi Tahsis",
+        "4": "Sevk Edildi",
+        "5": "İptal"
+      },
+      "documentLinkPurpose": {
+        "0": "Kabul",
+        "1": "İç Transfer",
+        "2": "Yedek Parça Tedarik",
+        "3": "Onarım Operasyonu",
+        "4": "Ana Depoya İade",
+        "5": "Sevkiyat",
+        "6": "Tahsis Kaynağı",
+        "7": "Tahsis Sonucu"
+      }
     }
   },
   "detailPage": {
