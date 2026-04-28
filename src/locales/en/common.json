@@ -378,6 +378,8 @@
     "sacMalKabul": "Steel Plate Acceptance",
     "sacMalKabulVehicleCheckIn": "Vehicle Entry Step",
     "sacMalKabulVehicleCheckInList": "Vehicle Entry Records",
+    "sacMalKabulOcrMatch": "OCR Customer Stock Match",
+    "sacMalKabulOcrMatchList": "OCR Match Records",
     "sacMalKabulImport": "Excel Import",
     "sacMalKabulInspection": "Yard Acceptance Control",
     "sacMalKabulList": "Expected Plate List",
@@ -797,6 +799,71 @@
       "saveFirst": "Create the vehicle check-in record first.",
       "imagesUploaded": "Vehicle images uploaded.",
       "imageDeleted": "Vehicle image deleted."
+    }
+  },
+  "ocrGoodsReceiptMatch": {
+    "badge": "OCR Match 1",
+    "pageTitle": "OCR Customer Stock Match",
+    "title": "OCR Customer Stock Match Form",
+    "description": "Match the stock code used by the customer on the dispatch note with our stock card. OCR lines will be converted through this definition later.",
+    "guidance": {
+      "title": "Business Rule",
+      "line1": "The same customer stock code can only be defined once for the same customer.",
+      "line2": "This screen does not perform OCR; it only manages the mapping between customer stock codes and our stock cards."
+    },
+    "fields": {
+      "customer": "Customer",
+      "customerPlaceholder": "Select customer",
+      "customerStockCode": "Customer Stock Code",
+      "customerStockCodePlaceholder": "The stock code used by the customer on the dispatch note",
+      "customerStockName": "Customer Stock Name",
+      "customerStockNamePlaceholder": "The stock name on the customer's document",
+      "customerBarcode": "Customer Barcode",
+      "customerBarcodePlaceholder": "Customer barcode if available",
+      "ourStock": "Our Stock Card",
+      "ourStockPlaceholder": "Select our stock card",
+      "unit": "Unit",
+      "unitPlaceholder": "Unit of measure",
+      "isActive": "Status",
+      "description": "Description",
+      "descriptionPlaceholder": "Operational note or additional description"
+    },
+    "customerLookup": {
+      "title": "Select Customer",
+      "description": "Select the customer for which the mapping will be created.",
+      "searchPlaceholder": "Search by customer code or name"
+    },
+    "stockLookup": {
+      "title": "Select Our Stock Card",
+      "description": "Select the WMS/ERP stock card that matches the customer's stock code.",
+      "searchPlaceholder": "Search by stock code or name"
+    },
+    "options": {
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "messages": {
+      "customerRequired": "Customer selection is required",
+      "customerStockCodeRequired": "Customer stock code is required",
+      "ourStockRequired": "Our stock card selection is required",
+      "created": "OCR customer stock match record created",
+      "updated": "OCR customer stock match record updated"
+    },
+    "list": {
+      "pageTitle": "OCR Match Records",
+      "empty": "No OCR customer stock match records found.",
+      "searchPlaceholder": "Search by customer, customer stock code, or our stock code",
+      "columns": {
+        "customer": "Customer",
+        "customerStockCode": "Customer Stock Code",
+        "customerStockName": "Customer Stock Name",
+        "customerBarcode": "Customer Barcode",
+        "ourStockCode": "Our Stock Code",
+        "ourStockName": "Our Stock Name",
+        "unit": "Unit",
+        "isActive": "Status",
+        "description": "Description"
+      }
     }
   },
   "shipment": {

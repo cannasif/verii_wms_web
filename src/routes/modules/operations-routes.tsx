@@ -199,6 +199,8 @@ const KkdRoleReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdRoleRepo
 const KkdGroupReportPage = lazyNamed(() => import('@/features/kkd'), 'KkdGroupReportPage');
 const VehicleCheckInPage = lazyNamed(() => import('@/features/vehicle-check-in'), 'VehicleCheckInPage');
 const VehicleCheckInListPage = lazyNamed(() => import('@/features/vehicle-check-in'), 'VehicleCheckInListPage');
+const OcrGoodsReceiptMatchPage = lazyNamed(() => import('@/features/ocr-goods-receipt-match'), 'OcrGoodsReceiptMatchPage');
+const OcrGoodsReceiptMatchListPage = lazyNamed(() => import('@/features/ocr-goods-receipt-match'), 'OcrGoodsReceiptMatchListPage');
 const SteelGoodReciptAcceptanseImportPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseImportPage');
 const SteelGoodReciptAcceptanseListPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseListPage');
 const SteelGoodReciptAcceptanseInspectionPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseInspectionPage');
@@ -208,6 +210,8 @@ const SteelGoodReciptAcceptansePlacementPage = lazyNamed(() => import('@/feature
 export const operationsChildRoutes: RouteObject[] = [
   { path: 'vehicle-check-in', element: withRoute(VehicleCheckInPage, { routeName: 'vehicle-check-in' }) },
   { path: 'vehicle-check-in/list', element: withRoute(VehicleCheckInListPage, { routeName: 'vehicle-check-in-list' }) },
+  { path: 'ocr-goods-receipt-match', element: withRoute(OcrGoodsReceiptMatchPage, { routeName: 'ocr-goods-receipt-match' }) },
+  { path: 'ocr-goods-receipt-match/list', element: withRoute(OcrGoodsReceiptMatchListPage, { routeName: 'ocr-goods-receipt-match-list' }) },
   {
     path: 'sac-mal-kabul',
     children: [

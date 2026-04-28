@@ -315,6 +315,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             children: [
               { title: 'sidebar.sacMalKabulVehicleCheckIn', titleFallback: 'Araç Giriş İşlemi', href: '/vehicle-check-in' },
               { title: 'sidebar.sacMalKabulVehicleCheckInList', titleFallback: 'Araç Giriş Kayıtları', href: '/vehicle-check-in/list' },
+              { title: 'sidebar.sacMalKabulOcrMatch', titleFallback: 'OCR Müşteri Stok Eşleme', href: '/ocr-goods-receipt-match' },
+              { title: 'sidebar.sacMalKabulOcrMatchList', titleFallback: 'OCR Eşleme Kayıtları', href: '/ocr-goods-receipt-match/list' },
               { title: 'sidebar.sacMalKabulImport', titleFallback: 'Excel Aktarım', href: '/sac-mal-kabul/import' },
               { title: 'sidebar.sacMalKabulList', titleFallback: 'Beklenen Levha Listesi', href: '/sac-mal-kabul/list' },
               { title: 'sidebar.sacMalKabulInspection', titleFallback: 'Kabul Kontrol', href: '/sac-mal-kabul/inspection' },

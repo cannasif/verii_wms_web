@@ -378,6 +378,8 @@
     "sacMalKabul": "Sac Mal Kabul",
     "sacMalKabulVehicleCheckIn": "Araç Giriş İşlemi",
     "sacMalKabulVehicleCheckInList": "Araç Giriş Kayıtları",
+    "sacMalKabulOcrMatch": "OCR Müşteri Stok Eşleme",
+    "sacMalKabulOcrMatchList": "OCR Eşleme Kayıtları",
     "sacMalKabulImport": "Excel Aktarım",
     "sacMalKabulInspection": "Saha Kabul Kontrol",
     "sacMalKabulList": "Beklenen Levha Listesi",
@@ -797,6 +799,71 @@
       "saveFirst": "Önce araç kontrol kaydını oluşturun.",
       "imagesUploaded": "Araç görselleri yüklendi.",
       "imageDeleted": "Araç görseli silindi."
+    }
+  },
+  "ocrGoodsReceiptMatch": {
+    "badge": "OCR Eşleme 1",
+    "pageTitle": "OCR Müşteri Stok Eşleme",
+    "title": "OCR Müşteri Stok Eşleme Formu",
+    "description": "Müşterinin irsaliyede kullandığı stok kodunu bizim stok kartımızla eşleyin. OCR sonrası satırlar bu tanım üzerinden çevrilecektir.",
+    "guidance": {
+      "title": "İş Kuralı",
+      "line1": "Aynı müşteri için aynı müşteri stok kodu yalnızca bir kez tanımlanabilir.",
+      "line2": "Bu ekran OCR yapmaz; sadece müşteri stok kodu ile bizim stok kartımız arasındaki eşlemeyi yönetir."
+    },
+    "fields": {
+      "customer": "Müşteri",
+      "customerPlaceholder": "Müşteri seçiniz",
+      "customerStockCode": "Müşteri Stok Kodu",
+      "customerStockCodePlaceholder": "Müşterinin irsaliyede kullandığı stok kodu",
+      "customerStockName": "Müşteri Stok Adı",
+      "customerStockNamePlaceholder": "Müşterinin belge üzerindeki stok adı",
+      "customerBarcode": "Müşteri Barkodu",
+      "customerBarcodePlaceholder": "Varsa müşteri barkodu",
+      "ourStock": "Bizim Stok Kartımız",
+      "ourStockPlaceholder": "Bizim stok kartımızı seçin",
+      "unit": "Birim",
+      "unitPlaceholder": "Ölçü birimi",
+      "isActive": "Aktiflik",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Operasyon notu veya ek açıklama"
+    },
+    "customerLookup": {
+      "title": "Müşteri Seç",
+      "description": "Eşleme yapılacak müşteriyi seçin.",
+      "searchPlaceholder": "Müşteri kodu veya adı ile ara"
+    },
+    "stockLookup": {
+      "title": "Bizim Stok Kartımızı Seç",
+      "description": "Müşteri stok kodunun karşılık geldiği WMS/ERP stok kartını seçin.",
+      "searchPlaceholder": "Stok kodu veya adı ile ara"
+    },
+    "options": {
+      "active": "Aktif",
+      "passive": "Pasif"
+    },
+    "messages": {
+      "customerRequired": "Müşteri seçimi zorunludur",
+      "customerStockCodeRequired": "Müşteri stok kodu zorunludur",
+      "ourStockRequired": "Bizim stok kartı seçimi zorunludur",
+      "created": "OCR müşteri stok eşleme kaydı oluşturuldu",
+      "updated": "OCR müşteri stok eşleme kaydı güncellendi"
+    },
+    "list": {
+      "pageTitle": "OCR Eşleme Kayıtları",
+      "empty": "OCR müşteri stok eşleme kaydı bulunamadı.",
+      "searchPlaceholder": "Müşteri, müşteri stok kodu veya bizim stok kodu ile ara",
+      "columns": {
+        "customer": "Müşteri",
+        "customerStockCode": "Müşteri Stok Kodu",
+        "customerStockName": "Müşteri Stok Adı",
+        "customerBarcode": "Müşteri Barkodu",
+        "ourStockCode": "Bizim Stok Kodu",
+        "ourStockName": "Bizim Stok Adı",
+        "unit": "Birim",
+        "isActive": "Aktiflik",
+        "description": "Açıklama"
+      }
     }
   },
   "shipment": {
