@@ -4,57 +4,17 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Form } from '@/components/ui/form';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { lookupApi } from '@/services/lookup-api';
-import type { CustomerLookup, StockLookup, WarehouseLookup } from '@/services/lookup-types';
 import { serviceAllocationApi } from '../api/service-allocation.api';
 import { useServiceCaseTimelineQuery } from '../hooks/useServiceCaseTimelineQuery';
-import {
-  renderServiceCaseLineType,
-  renderServiceProcessType,
-  serviceCaseLineTypeOptions,
-  serviceCaseStatusOptions,
-  serviceProcessTypeOptions,
-} from '../utils/service-allocation-display';
-
-type ServiceCaseFormValues = {
-  caseNo: string;
-  customerCode: string;
-  customerId?: string;
-  incomingStockCode: string;
-  incomingStockId?: string;
-  incomingSerialNo: string;
-  intakeWarehouseId?: string;
-  currentWarehouseId?: string;
-  diagnosisNote: string;
-  status: string;
-  receivedAt: string;
-  closedAt: string;
-  initialLineType: string;
-  initialProcessType: string;
-  initialLineStockCode: string;
-  initialLineStockId?: string;
-  initialLineQuantity?: string;
-  initialLineUnit: string;
-  initialLineErpOrderNo: string;
-  initialLineErpOrderId: string;
-  initialLineDescription: string;
-};
-
-function toDateInput(value?: string): string {
-  if (!value) return '';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0];
-}
+import { ServiceCaseExistingLinesSection } from './service-case-form/ServiceCaseExistingLinesSection';
+import { ServiceCaseHeaderSection } from './service-case-form/ServiceCaseHeaderSection';
+import { ServiceCaseInitialLineSection } from './service-case-form/ServiceCaseInitialLineSection';
+import { type ServiceCaseFormValues, toDateInput } from './service-case-form/shared';
 
 export function ServiceCaseFormPage(): ReactElement {
   const { t } = useTranslation('common');
@@ -251,10 +211,6 @@ export function ServiceCaseFormPage(): ReactElement {
 
   const existingLines = timelineQuery.data?.lines ?? [];
 
-  const getCustomerLabel = (item: CustomerLookup): string => `${item.cariKod} - ${item.cariIsim}`;
-  const getStockLabel = (item: StockLookup): string => `${item.stokKodu} - ${item.stokAdi}`;
-  const getWarehouseLabel = (item: WarehouseLookup): string => `${item.depoKodu} - ${item.depoIsmi}`;
-
   return (
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
@@ -266,311 +222,46 @@ export function ServiceCaseFormPage(): ReactElement {
       <Form {...form}>
         <form className="space-y-6" onSubmit={onSubmit}>
           <fieldset disabled={isReadOnly} className={isReadOnly ? 'pointer-events-none opacity-75' : undefined}>
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {isEdit
-                  ? t('serviceAllocation.form.editTitle', { defaultValue: 'Missing translation' })
-                  : t('serviceAllocation.form.createTitle', { defaultValue: 'Missing translation' })}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <FormField control={form.control} name="caseNo" rules={{ required: true }} render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.caseNo', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="customerCode" rules={{ required: true }} render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl>
-                    <PagedLookupDialog<CustomerLookup>
-                      open={customerLookupOpen}
-                      onOpenChange={setCustomerLookupOpen}
-                      title={t('serviceAllocation.customerCode')}
-                      description={t('serviceAllocation.form.customerLookupDescription')}
-                      value={selectedCustomerLabel || field.value}
-                      placeholder={t('serviceAllocation.form.selectCustomer')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('serviceAllocation.form.noCustomers')}
-                      queryKey={['service-allocation', 'customer-lookup']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
-                      }
-                      getKey={(item) => item.id.toString()}
-                      getLabel={getCustomerLabel}
-                      onSelect={(item) => {
-                        field.onChange(item.cariKod);
-                        form.setValue('customerId', String(item.id));
-                        setSelectedCustomerLabel(getCustomerLabel(item));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="status" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.status', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {serviceCaseStatusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {t(option.labelKey, { defaultValue: option.value })}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="incomingStockCode" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl>
-                    <PagedLookupDialog<StockLookup>
-                      open={incomingStockLookupOpen}
-                      onOpenChange={setIncomingStockLookupOpen}
-                      title={t('serviceAllocation.stockCode')}
-                      description={t('serviceAllocation.form.incomingStockLookupDescription')}
-                      value={selectedIncomingStockLabel || field.value}
-                      placeholder={t('serviceAllocation.form.selectStock')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('serviceAllocation.form.noStocks')}
-                      queryKey={['service-allocation', 'incoming-stock-lookup']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
-                      }
-                      getKey={(item) => item.id.toString()}
-                      getLabel={getStockLabel}
-                      onSelect={(item) => {
-                        field.onChange(item.stokKodu);
-                        form.setValue('incomingStockId', String(item.id));
-                        setSelectedIncomingStockLabel(getStockLabel(item));
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="incomingSerialNo" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.serialNo', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="receivedAt" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="date" /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="intakeWarehouseId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.intakeWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl>
-                    <PagedLookupDialog<WarehouseLookup>
-                      open={intakeWarehouseLookupOpen}
-                      onOpenChange={setIntakeWarehouseLookupOpen}
-                      title={t('serviceAllocation.intakeWarehouseId')}
-                      description={t('serviceAllocation.form.warehouseLookupDescription')}
-                      value={selectedIntakeWarehouseLabel || (field.value ? `#${field.value}` : '')}
-                      placeholder={t('serviceAllocation.form.selectWarehouse')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('serviceAllocation.form.noWarehouses')}
-                      queryKey={['service-allocation', 'intake-warehouse-lookup']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
-                      }
-                      getKey={(item) => item.id.toString()}
-                      getLabel={getWarehouseLabel}
-                      onSelect={(item) => {
-                        field.onChange(String(item.id));
-                        setSelectedIntakeWarehouseLabel(getWarehouseLabel(item));
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="currentWarehouseId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.currentWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl>
-                    <PagedLookupDialog<WarehouseLookup>
-                      open={currentWarehouseLookupOpen}
-                      onOpenChange={setCurrentWarehouseLookupOpen}
-                      title={t('serviceAllocation.currentWarehouseId')}
-                      description={t('serviceAllocation.form.warehouseLookupDescription')}
-                      value={selectedCurrentWarehouseLabel || (field.value ? `#${field.value}` : '')}
-                      placeholder={t('serviceAllocation.form.selectWarehouse')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('serviceAllocation.form.noWarehouses')}
-                      queryKey={['service-allocation', 'current-warehouse-lookup']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
-                      }
-                      getKey={(item) => item.id.toString()}
-                      getLabel={getWarehouseLabel}
-                      onSelect={(item) => {
-                        field.onChange(String(item.id));
-                        setSelectedCurrentWarehouseLabel(getWarehouseLabel(item));
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <div className="md:col-span-2">
-                <FormField control={form.control} name="diagnosisNote" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('serviceAllocation.diagnosisNote', { defaultValue: 'Missing translation' })}</FormLabel>
-                    <FormControl><Textarea {...field} rows={4} /></FormControl>
-                  </FormItem>
-                )} />
-              </div>
-            </CardContent>
-          </Card>
+            <ServiceCaseHeaderSection
+              form={form}
+              isEdit={isEdit}
+              customerLookupOpen={customerLookupOpen}
+              onCustomerLookupOpenChange={setCustomerLookupOpen}
+              incomingStockLookupOpen={incomingStockLookupOpen}
+              onIncomingStockLookupOpenChange={setIncomingStockLookupOpen}
+              intakeWarehouseLookupOpen={intakeWarehouseLookupOpen}
+              onIntakeWarehouseLookupOpenChange={setIntakeWarehouseLookupOpen}
+              currentWarehouseLookupOpen={currentWarehouseLookupOpen}
+              onCurrentWarehouseLookupOpenChange={setCurrentWarehouseLookupOpen}
+              selectedCustomerLabel={selectedCustomerLabel}
+              setSelectedCustomerLabel={setSelectedCustomerLabel}
+              selectedIncomingStockLabel={selectedIncomingStockLabel}
+              setSelectedIncomingStockLabel={setSelectedIncomingStockLabel}
+              selectedIntakeWarehouseLabel={selectedIntakeWarehouseLabel}
+              setSelectedIntakeWarehouseLabel={setSelectedIntakeWarehouseLabel}
+              selectedCurrentWarehouseLabel={selectedCurrentWarehouseLabel}
+              setSelectedCurrentWarehouseLabel={setSelectedCurrentWarehouseLabel}
+            />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('serviceAllocation.form.initialLine', { defaultValue: 'Missing translation' })}</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <FormField control={form.control} name="initialLineType" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {serviceCaseLineTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {t(option.labelKey, { defaultValue: option.value })}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialProcessType" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {serviceProcessTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {t(option.labelKey, { defaultValue: option.value })}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineStockCode" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl>
-                    <PagedLookupDialog<StockLookup>
-                      open={initialLineStockLookupOpen}
-                      onOpenChange={setInitialLineStockLookupOpen}
-                      title={t('serviceAllocation.stockCode')}
-                      description={t('serviceAllocation.form.initialLineStockLookupDescription')}
-                      value={selectedInitialLineStockLabel || field.value}
-                      placeholder={t('serviceAllocation.form.selectStock')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('serviceAllocation.form.noStocks')}
-                      queryKey={['service-allocation', 'initial-line-stock-lookup']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
-                      }
-                      getKey={(item) => item.id.toString()}
-                      getLabel={getStockLabel}
-                      onSelect={(item) => {
-                        field.onChange(item.stokKodu);
-                        form.setValue('initialLineStockId', String(item.id));
-                        form.setValue('initialLineUnit', item.olcuBr1 || '');
-                        setSelectedInitialLineStockLabel(getStockLabel(item));
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineQuantity" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} type="number" step="0.01" /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineUnit" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.unit', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="initialLineErpOrderNo" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                </FormItem>
-              )} />
-              <div className="md:col-span-2">
-                <FormField control={form.control} name="initialLineDescription" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('serviceAllocation.description', { defaultValue: 'Missing translation' })}</FormLabel>
-                    <FormControl><Textarea {...field} rows={3} /></FormControl>
-                  </FormItem>
-                )} />
-              </div>
-            </CardContent>
-          </Card>
+            <ServiceCaseInitialLineSection
+              form={form}
+              initialLineStockLookupOpen={initialLineStockLookupOpen}
+              onInitialLineStockLookupOpenChange={setInitialLineStockLookupOpen}
+              selectedInitialLineStockLabel={selectedInitialLineStockLabel}
+              setSelectedInitialLineStockLabel={setSelectedInitialLineStockLabel}
+            />
 
-          {isEdit && existingLines.length > 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('serviceAllocation.lines', { defaultValue: 'Missing translation' })}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {existingLines.map((line) => (
-                      <TableRow key={line.id}>
-                        <TableCell>{renderServiceCaseLineType(line.lineType)}</TableCell>
-                        <TableCell>{line.stockCode || '-'}</TableCell>
-                        <TableCell>{line.quantity}</TableCell>
-                        <TableCell>{renderServiceProcessType(line.processType)}</TableCell>
-                        <TableCell>{line.erpOrderNo || '-'}</TableCell>
-                        <TableCell>{line.erpOrderId || '-'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          ) : null}
+            {isEdit && existingLines.length > 0 ? (
+              <ServiceCaseExistingLinesSection lines={existingLines} />
+            ) : null}
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
-              {saveMutation.isPending
-                ? t('common.loading', { defaultValue: 'Missing translation' })
-                : t('common.save', { defaultValue: 'Missing translation' })}
-            </Button>
-          </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
+                {saveMutation.isPending
+                  ? t('common.loading', { defaultValue: 'Missing translation' })
+                  : t('common.save', { defaultValue: 'Missing translation' })}
+              </Button>
+            </div>
           </fieldset>
         </form>
       </Form>
