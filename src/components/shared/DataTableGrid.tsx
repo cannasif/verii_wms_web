@@ -1,11 +1,12 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { DataTableActionBar, type DataTableActionBarProps } from './DataTableActionBar';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
+import { DataTableGridBody } from './data-table-grid/DataTableGridBody';
+import { DataTableGridPagination } from './data-table-grid/DataTableGridPagination';
+import { findColumn, isInteractiveTarget } from './data-table-grid/shared';
 
 export type DataTableSortDirection = 'asc' | 'desc';
 
@@ -61,13 +62,6 @@ interface DataTableGridProps<TRow, TKey extends string> {
 }
 
 const tableScrollPositions = new Map<string, number>();
-
-function isInteractiveTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  return Boolean(
-    target.closest('button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"]')
-  );
-}
 
 export function DataTableGrid<TRow, TKey extends string>({
   pageKey,
@@ -228,7 +222,7 @@ export function DataTableGrid<TRow, TKey extends string>({
           <TableHeader>
             <TableRow>
               {visibleColumnKeys.map((key) => {
-                const column = columns.find((item) => item.key === key);
+                const column = findColumn(columns, key);
                 const sortable = Boolean(onSort && column?.sortable !== false);
                 return (
                   <TableHead key={key} className={column?.headClassName}>
@@ -254,109 +248,46 @@ export function DataTableGrid<TRow, TKey extends string>({
               )}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {isLoading &&
-              Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
-                <TableRow key={`skeleton-${i}`}>
-                  {visibleColumnKeys.map((key) => (
-                    <TableCell key={key}>
-                      <div className="h-5 w-full max-w-[120px] animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
-                    </TableCell>
-                  ))}
-                  {showActionsColumn && (
-                    <TableCell className="sticky right-0 bg-white text-right shadow-[-10px_0_16px_-14px_rgba(15,23,42,0.28)] dark:bg-[#130822]">
-                      <div className="ml-auto h-8 w-32 animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-
-            {!isLoading && isError && (
-              <TableRow>
-                <TableCell colSpan={colSpan} className="py-8 text-center text-red-600">
-                  {errorText}
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading && !isError && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={colSpan} className="py-8 text-center text-muted-foreground">
-                  {emptyText}
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading && !isError && rows.map((row) => {
-              const customRowClass = typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
-              return (
-                <TableRow
-                  key={rowKey(row)}
-                  className={customRowClass}
-                  onClick={onRowClick || onRowDoubleClick ? () => handleRowClick(row) : undefined}
-                  onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
-                >
-                  {visibleColumnKeys.map((key) => {
-                    const column = columns.find((item) => item.key === key);
-                    return (
-                      <TableCell key={`${rowKey(row)}-${key}`} className={column?.cellClassName}>
-                        {renderCell(row, key)}
-                      </TableCell>
-                    );
-                  })}
-                  {showActionsColumn && (
-                    <TableCell
-                      className={cn(
-                        'sticky right-0 bg-white shadow-[-10px_0_16px_-14px_rgba(15,23,42,0.28)] dark:bg-[#130822]',
-                        actionsCellClassName,
-                        iconOnlyActions &&
-                          '[&_button]:h-8 [&_button]:w-8 [&_button]:min-w-8 [&_button]:p-0 [&_button]:text-[0px] [&_button]:leading-none [&_button_span]:hidden [&_button_svg]:mx-auto [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:shrink-0'
-                      )}
-                      onClick={(event) => event.stopPropagation()}
-                      data-no-drag-scroll="true"
-                    >
-                      {renderActionsCell?.(row)}
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
+          <DataTableGridBody
+            columns={columns}
+            visibleColumnKeys={visibleColumnKeys}
+            rows={rows}
+            rowKey={rowKey}
+            renderCell={renderCell}
+            isLoading={isLoading}
+            isError={isError}
+            errorText={errorText}
+            emptyText={emptyText}
+            pageSize={pageSize}
+            colSpan={colSpan}
+            showActionsColumn={showActionsColumn}
+            renderActionsCell={renderActionsCell}
+            actionsCellClassName={actionsCellClassName}
+            iconOnlyActions={iconOnlyActions}
+            rowClassName={rowClassName}
+            onRowClick={onRowClick}
+            onRowDoubleClick={onRowDoubleClick}
+            handleRowClick={handleRowClick}
+            handleRowDoubleClick={handleRowDoubleClick}
+          />
         </Table>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 px-3">
-                <span>{pageSize}</span>
-                <ChevronDown className="ml-1 h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-24">
-              {pageSizeOptions.map((size) => (
-                <DropdownMenuItem key={size} onClick={() => onPageSizeChange(size)}>
-                  {size}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="text-xs text-muted-foreground">{paginationInfoText}</div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onPreviousPage} disabled={!hasPreviousPage || disablePaginationButtons}>
-            {previousLabel}
-          </Button>
-          <span className="px-2 text-xs text-muted-foreground">
-            {pageNumber} / {Math.max(totalPages, 1)}
-          </span>
-          <Button variant="outline" size="sm" onClick={onNextPage} disabled={!hasNextPage || disablePaginationButtons}>
-            {nextLabel}
-          </Button>
-        </div>
-      </div>
+      <DataTableGridPagination
+        pageSize={pageSize}
+        pageSizeOptions={pageSizeOptions}
+        onPageSizeChange={onPageSizeChange}
+        paginationInfoText={paginationInfoText}
+        onPreviousPage={onPreviousPage}
+        onNextPage={onNextPage}
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
+        disablePaginationButtons={disablePaginationButtons}
+        previousLabel={previousLabel}
+        nextLabel={nextLabel}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
