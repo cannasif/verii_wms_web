@@ -20,6 +20,8 @@ import type { TFunction } from 'i18next';
 export const createTransferFormSchema = (t: TFunction, isFreeTransfer: boolean = false) => z.object({
   transferDate: z.string().min(1, t('transfer.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('transfer.validation.documentNoRequired')),
+  documentSeriesDefinitionId: z.number().min(1, t('documentSeries.messages.definitionRequired')),
+  requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: isFreeTransfer ? z.string().optional() : z.string().min(1, t('transfer.validation.customerRequired')),
   sourceWarehouse: isFreeTransfer 

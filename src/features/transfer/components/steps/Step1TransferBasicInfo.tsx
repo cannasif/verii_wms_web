@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { SearchableMultiSelect } from './components/SearchableMultiSelect';
 import { lookupApi } from '@/services/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
@@ -33,7 +34,7 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
 
   return (
     <div className="space-y-6 crm-page">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <FormField
           control={form.control}
           name="transferDate"
@@ -60,6 +61,12 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        <OperationDocumentSeriesSelector
+          operationType="WT"
+          warehouseId={form.watch('targetWarehouseId')}
+          customerId={form.watch('customerRefId')}
         />
       </div>
 

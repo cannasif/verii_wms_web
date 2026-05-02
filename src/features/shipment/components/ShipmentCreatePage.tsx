@@ -51,9 +51,13 @@ export function ShipmentCreatePage(): ReactElement {
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
+      documentSeriesDefinitionId: undefined,
+      requiresEDispatch: false,
       projectCode: '',
       customerId: '',
+      customerRefId: undefined,
       sourceWarehouse: '',
+      sourceWarehouseId: undefined,
       notes: '',
       userIds: [],
     },
@@ -266,6 +270,5 @@ export function ShipmentCreatePage(): ReactElement {
     </div>
   );
 }
-
 
 

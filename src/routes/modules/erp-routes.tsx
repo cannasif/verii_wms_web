@@ -19,6 +19,8 @@ const KkdEmployeeDepartmentPage = lazyNamed(() => import('@/features/kkd'), 'Kkd
 const KkdEmployeeRolePage = lazyNamed(() => import('@/features/kkd'), 'KkdEmployeeRolePage');
 const KkdEntitlementMatrixPage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementMatrixPage');
 const KkdEntitlementOverridePage = lazyNamed(() => import('@/features/kkd'), 'KkdEntitlementOverridePage');
+const DocumentSeriesDefinitionManagementPage = lazyNamed(() => import('@/features/document-series-management'), 'DocumentSeriesDefinitionManagementPage');
+const DocumentSeriesRuleManagementPage = lazyNamed(() => import('@/features/document-series-management'), 'DocumentSeriesRuleManagementPage');
 
 export const erpChildRoutes: RouteObject[] = [
   {
@@ -42,6 +44,8 @@ export const erpChildRoutes: RouteObject[] = [
       { path: 'kkd/roles', element: withRoute(KkdEmployeeRolePage, { routeName: 'erp-kkd-roles' }) },
       { path: 'kkd/entitlement-matrix', element: withRoute(KkdEntitlementMatrixPage, { routeName: 'erp-kkd-entitlement-matrix' }) },
       { path: 'kkd/manual-overrides', element: withRoute(KkdEntitlementOverridePage, { routeName: 'erp-kkd-manual-overrides' }) },
+      { path: 'document-series/definitions', element: withRoute(DocumentSeriesDefinitionManagementPage, { routeName: 'erp-document-series-definitions' }) },
+      { path: 'document-series/rules', element: withRoute(DocumentSeriesRuleManagementPage, { routeName: 'erp-document-series-rules' }) },
     ],
   },
 ];

@@ -13,6 +13,7 @@ export { DataTableGrid } from './DataTableGrid';
 export type { DataTableGridColumn, DataTableSortDirection } from './DataTableGrid';
 export { PagedDataGrid } from './PagedDataGrid';
 export type { PagedDataGridColumn, PagedDataGridSortDirection } from './PagedDataGrid';
+export { PagedLookupDialog } from './PagedLookupDialog';
 export { PageState } from './PageState';
 export { PageActionBar } from './PageActionBar';
 export { DetailPageShell } from './DetailPageShell';

@@ -51,6 +51,8 @@ export function TransferCreatePage(): ReactElement {
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
+      documentSeriesDefinitionId: undefined,
+      requiresEDispatch: false,
       projectCode: '',
       customerId: '',
       customerRefId: undefined,

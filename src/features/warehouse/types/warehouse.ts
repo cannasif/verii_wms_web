@@ -48,6 +48,8 @@ export const createWarehouseFormSchema = (t: TFunction, type: 'inbound' | 'outbo
   operationType: z.string().min(1, t('warehouse.validation.operationTypeRequired')),
   transferDate: z.string().min(1, t('warehouse.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('warehouse.validation.documentNoRequired')),
+  documentSeriesDefinitionId: z.number().min(1, t('documentSeries.messages.definitionRequired')),
+  requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: z.string().min(1, t('warehouse.validation.customerRequired')),
   sourceWarehouse: type === 'outbound' 

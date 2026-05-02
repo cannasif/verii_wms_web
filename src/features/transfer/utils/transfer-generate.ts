@@ -88,6 +88,8 @@ export function buildTransferGenerateRequest(
       targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse,
       priority: '',
+      documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
+      requiresEDispatch: formData.requiresEDispatch,
       type: isStockBased ? 1 : 0,
     },
     lines,
@@ -129,6 +131,8 @@ export function buildTransferProcessRequest(
       targetWarehouseId: formData.targetWarehouseId,
       targetWarehouse: formData.targetWarehouse || '',
       priority: '',
+      documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
+      requiresEDispatch: formData.requiresEDispatch,
       type: 1,
     },
     routes: selectedItems

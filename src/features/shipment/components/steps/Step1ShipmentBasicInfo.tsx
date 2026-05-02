@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
 import { lookupApi } from '@/services/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
@@ -27,7 +28,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <FormField
           control={form.control}
           name="transferDate"
@@ -54,6 +55,12 @@ export function Step1ShipmentBasicInfo(): ReactElement {
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        <OperationDocumentSeriesSelector
+          operationType="SH"
+          warehouseId={form.watch('sourceWarehouseId')}
+          customerId={form.watch('customerRefId')}
         />
       </div>
 
@@ -82,6 +89,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                   getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
                   onSelect={(customer) => {
                     field.onChange(customer.cariKod);
+                    form.setValue('customerRefId', customer.id);
                     setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
                   }}
                 />
@@ -143,6 +151,7 @@ export function Step1ShipmentBasicInfo(): ReactElement {
                 getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
                 onSelect={(warehouse) => {
                   field.onChange(String(warehouse.depoKodu));
+                  form.setValue('sourceWarehouseId', warehouse.id);
                   setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
                 }}
               />
@@ -196,7 +205,6 @@ export function Step1ShipmentBasicInfo(): ReactElement {
     </div>
   );
 }
-
 
 
 

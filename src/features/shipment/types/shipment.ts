@@ -9,11 +9,15 @@ import type { TFunction } from 'i18next';
 export const createShipmentFormSchema = (t: TFunction) => z.object({
   transferDate: z.string().min(1, t('shipment.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('shipment.validation.documentNoRequired')),
+  documentSeriesDefinitionId: z.number().min(1, t('documentSeries.messages.definitionRequired')),
+  requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: z.string().min(1, t('shipment.validation.customerRequired')),
   sourceWarehouse: z.string().min(1, t('shipment.validation.sourceWarehouseRequired')),
   notes: z.string().optional(),
   userIds: z.array(z.string()).optional(),
+  customerRefId: z.number().optional(),
+  sourceWarehouseId: z.number().optional(),
 });
 
 export type ShipmentFormData = z.infer<ReturnType<typeof createShipmentFormSchema>>;
@@ -110,6 +114,8 @@ export interface ShipmentGenerateRequest {
     sourceWarehouse: string;
     targetWarehouse: string;
     priority: string;
+    documentSeriesDefinitionId?: number;
+    requiresEDispatch?: boolean;
     type: number;
   };
   lines: {

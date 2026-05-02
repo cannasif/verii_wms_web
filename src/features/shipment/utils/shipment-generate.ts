@@ -75,6 +75,8 @@ export function buildShipmentGenerateRequest(
       sourceWarehouse: formData.sourceWarehouse,
       targetWarehouse: '',
       priority: '',
+      documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
+      requiresEDispatch: formData.requiresEDispatch,
       type: isStockBased ? 1 : 0,
     },
     lines,
@@ -115,6 +117,8 @@ export function buildShipmentProcessRequest(
       sourceWarehouse: formData.sourceWarehouse,
       targetWarehouse: '',
       priority: '',
+      documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
+      requiresEDispatch: formData.requiresEDispatch,
       type: 1,
     },
     routes: selectedItems

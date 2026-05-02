@@ -201,6 +201,12 @@ const VehicleCheckInPage = lazyNamed(() => import('@/features/vehicle-check-in')
 const VehicleCheckInListPage = lazyNamed(() => import('@/features/vehicle-check-in'), 'VehicleCheckInListPage');
 const OcrGoodsReceiptMatchPage = lazyNamed(() => import('@/features/ocr-goods-receipt-match'), 'OcrGoodsReceiptMatchPage');
 const OcrGoodsReceiptMatchListPage = lazyNamed(() => import('@/features/ocr-goods-receipt-match'), 'OcrGoodsReceiptMatchListPage');
+const QualityControlRulePage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlRulePage');
+const QualityControlRuleListPage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlRuleListPage');
+const QualityControlInspectionPage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlInspectionPage');
+const QualityControlInspectionListPage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlInspectionListPage');
+const QualityControlQuarantineQueuePage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlQuarantineQueuePage');
+const QualityControlSettingsPage = lazyNamed(() => import('@/features/quality-control'), 'QualityControlSettingsPage');
 const SteelGoodReciptAcceptanseImportPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseImportPage');
 const SteelGoodReciptAcceptanseListPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseListPage');
 const SteelGoodReciptAcceptanseInspectionPage = lazyNamed(() => import('@/features/steel-good-recipt-acceptanse'), 'SteelGoodReciptAcceptanseInspectionPage');
@@ -212,6 +218,12 @@ export const operationsChildRoutes: RouteObject[] = [
   { path: 'vehicle-check-in/list', element: withRoute(VehicleCheckInListPage, { routeName: 'vehicle-check-in-list' }) },
   { path: 'ocr-goods-receipt-match', element: withRoute(OcrGoodsReceiptMatchPage, { routeName: 'ocr-goods-receipt-match' }) },
   { path: 'ocr-goods-receipt-match/list', element: withRoute(OcrGoodsReceiptMatchListPage, { routeName: 'ocr-goods-receipt-match-list' }) },
+  { path: 'quality-control/rules', element: withRoute(QualityControlRulePage, { routeName: 'quality-control-rules' }) },
+  { path: 'quality-control/rules/list', element: withRoute(QualityControlRuleListPage, { routeName: 'quality-control-rules-list' }) },
+  { path: 'quality-control/settings', element: withRoute(QualityControlSettingsPage, { routeName: 'quality-control-settings' }) },
+  { path: 'quality-control/inspections', element: withRoute(QualityControlInspectionPage, { routeName: 'quality-control-inspections' }) },
+  { path: 'quality-control/inspections/list', element: withRoute(QualityControlInspectionListPage, { routeName: 'quality-control-inspections-list' }) },
+  { path: 'quality-control/quarantine', element: withRoute(QualityControlQuarantineQueuePage, { routeName: 'quality-control-quarantine' }) },
   {
     path: 'sac-mal-kabul',
     children: [

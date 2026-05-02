@@ -168,6 +168,18 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.subcontractingReceiptList', titleFallback: 'Fason Giriş Listesi', href: '/subcontracting/receipt/list' },
             ],
           },
+          {
+            title: 'sidebar.qualityControl',
+            titleFallback: 'Kalite Kontrol',
+            children: [
+              { title: 'sidebar.qualityControlSettings', titleFallback: 'Kalite Parametreleri', href: '/quality-control/settings' },
+              { title: 'sidebar.qualityControlRules', titleFallback: 'Kalite Kural Tanımları', href: '/quality-control/rules' },
+              { title: 'sidebar.qualityControlRulesList', titleFallback: 'Kalite Kural Listesi', href: '/quality-control/rules/list' },
+              { title: 'sidebar.qualityControlInspections', titleFallback: 'Kalite İnceleme Kayıtları', href: '/quality-control/inspections' },
+              { title: 'sidebar.qualityControlInspectionsList', titleFallback: 'Kalite İnceleme Listesi', href: '/quality-control/inspections/list' },
+              { title: 'sidebar.qualityControlQuarantine', titleFallback: 'Karantina Kuyruğu', href: '/quality-control/quarantine' },
+            ],
+          },
         ],
       },
       {
@@ -404,6 +416,14 @@ export const WMS_NAV_ITEMS: NavItem[] = [
           { title: 'sidebar.erpWarehouseSerialBalance', titleFallback: 'Depo Seri Bakiyesi', href: '/erp/warehouse-serial-balance' },
           { title: 'sidebar.erpYapKodlar', titleFallback: 'YapKodlar', href: '/erp/yapkodlar' },
           { title: 'sidebar.erpBarcodeDefinitions', titleFallback: 'Barkod Tanımları', href: '/erp/barcodes' },
+          {
+            title: 'sidebar.erpDocumentSeries',
+            titleFallback: 'Belge Seri Yönetimi',
+            children: [
+              { title: 'sidebar.erpDocumentSeriesDefinitions', titleFallback: 'Belge Seri Tanımları', href: '/erp/document-series/definitions' },
+              { title: 'sidebar.erpDocumentSeriesRules', titleFallback: 'Belge Seri Kuralları', href: '/erp/document-series/rules' },
+            ],
+          },
           {
             title: 'sidebar.erpBarcodeDesigner',
             titleFallback: 'Barkod Tasarımları',

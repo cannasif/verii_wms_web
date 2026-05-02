@@ -366,6 +366,9 @@
     "inventoryCountAssigned": "Atanmış Sayım Emirleri",
     "inventoryCountProcess": "Sayım Direkt Giriş Yap",
     "inventoryCountList": "Sayım Emirleri",
+    "erpDocumentSeries": "Belge Seri Yönetimi",
+    "erpDocumentSeriesDefinitions": "Belge Seri Tanımları",
+    "erpDocumentSeriesRules": "Belge Seri Kuralları",
     "erpBarcodeDesigner": "Barkod Tasarımcısı",
     "erpBarcodeDesignerCreate": "Barkod Tasarımı Oluştur",
     "erpBarcodeDesignerEdit": "Barkod Tasarımını Düzenle",
@@ -375,6 +378,13 @@
     "kkd": "KKD",
     "kkdOverview": "KKD Operasyon Merkezi",
     "kkdInitialOrder": "KKD İlk Giriş Siparişi",
+    "qualityControl": "Kalite Kontrol",
+    "qualityControlSettings": "Kalite Parametreleri",
+    "qualityControlRules": "Kalite Kural Tanımları",
+    "qualityControlRulesList": "Kalite Kural Listesi",
+    "qualityControlInspections": "Kalite İnceleme Kayıtları",
+    "qualityControlInspectionsList": "Kalite İnceleme Listesi",
+    "qualityControlQuarantine": "Karantina Kuyruğu",
     "sacMalKabul": "Sac Mal Kabul",
     "sacMalKabulVehicleCheckIn": "Araç Giriş İşlemi",
     "sacMalKabulVehicleCheckInList": "Araç Giriş Kayıtları",
@@ -864,6 +874,307 @@
         "isActive": "Aktiflik",
         "description": "Açıklama"
       }
+    }
+  },
+  "qualityControl": {
+    "badge": "Kalite 1",
+    "messages": {
+      "settingsSaved": "Kalite parametreleri kaydedildi.",
+      "settingsQuarantineWarehouseRequired": "Karantina deposu kullanılıyorsa varsayılan karantina deposu seçmelisiniz.",
+      "ruleCreated": "Kalite kuralı oluşturuldu.",
+      "ruleUpdated": "Kalite kuralı güncellendi.",
+      "ruleDeleted": "Kalite kuralı silindi.",
+      "ruleStockRequired": "Stok bazlı kural için stok seçimi zorunludur.",
+      "ruleGroupRequired": "Grup bazlı kural için grup kodu zorunludur.",
+      "ruleInspectionModeRequired": "İnceleme tipi zorunludur.",
+      "ruleFailActionRequired": "Başarısızlık aksiyonu zorunludur.",
+      "inspectionCreated": "Kalite inceleme kaydı oluşturuldu.",
+      "inspectionUpdated": "Kalite inceleme kaydı güncellendi.",
+      "inspectionDeleted": "Kalite inceleme kaydı silindi.",
+      "quarantineReleased": "Karantinadaki kayıt serbest bırakıldı.",
+      "quarantineReleasedWithReference": "Karantinadaki kayıt serbest bırakıldı. Oluşan belge: {{reference}}",
+      "quarantineRejected": "Karantinadaki kayıt reddedildi.",
+      "quarantineRejectedWithReference": "Karantinadaki kayıt reddedildi. Oluşan belge: {{reference}}",
+      "quarantineReturned": "Karantinadaki kayıt iade sürecine alındı.",
+      "quarantineReturnedWithReference": "Karantinadaki kayıt iade sürecine alındı. Oluşan belge: {{reference}}",
+      "inspectionDocumentTypeRequired": "Belge tipi zorunludur.",
+      "inspectionWarehouseRequired": "Depo seçimi zorunludur.",
+      "inspectionLinesRequired": "En az bir inceleme satırı eklemelisiniz.",
+      "inspectionLineStockRequired": "İnceleme satırında stok seçimi zorunludur.",
+      "inspectionLineQuantityRequired": "İnceleme satırı miktarı sıfırdan büyük olmalıdır."
+    },
+    "rules": {
+      "pageTitle": "Kalite Kural Tanımları",
+      "title": "Kalite Kural Formu",
+      "description": "Mal kabul ve kalite kontrol akışında hangi stok ya da stok grubunun nasıl değerlendirileceğini tanımlayın.",
+      "guidanceTitle": "Nasıl Kullanılır?",
+      "guidance1": "Önce bu kuralın stok bazlı mı yoksa stok grubu bazlı mı çalışacağını seçin.",
+      "guidance2": "Bu ekran doğrudan karar vermez; gelen malın kalite kuyruğuna nasıl düşeceğini tanımlar.",
+      "scopeTypes": {
+        "stock": "Stok Bazlı",
+        "stockGroup": "Stok Grubu Bazlı"
+      },
+      "inspectionModes": {
+        "noCheck": "Kontrol Yok",
+        "quickCheck": "Hızlı Kontrol",
+        "inspectionRequired": "Detaylı İnceleme Gerekli"
+      },
+      "failActions": {
+        "quarantine": "Karantinaya Al",
+        "reject": "Reddet",
+        "managerApproval": "Yönetici Onayı Bekle"
+      },
+      "fields": {
+        "scopeType": "Kural Kapsamı",
+        "stock": "Stok",
+        "stockPlaceholder": "Stok seçiniz",
+        "stockGroupCode": "Stok Grup Kodu",
+        "stockGroupCodePlaceholder": "Örn: SAC-HAMMADDE",
+        "stockGroupName": "Stok Grup Adı",
+        "stockGroupNamePlaceholder": "Operasyonun anlayacağı açıklama",
+        "inspectionMode": "İnceleme Tipi",
+        "onFailAction": "Başarısızlık Aksiyonu",
+        "autoQuarantine": "Otomatik Karantinaya Al",
+        "requireLot": "Lot Bilgisi Zorunlu",
+        "requireSerial": "Seri Bilgisi Zorunlu",
+        "requireExpiry": "Son Kullanma Tarihi Zorunlu",
+        "minRemainingShelfLifeDays": "Min Kalan Raf Ömrü (Gün)",
+        "nearExpiryWarningDays": "Yaklaşan SKT Uyarı Günü",
+        "isActive": "Aktif",
+        "description": "Açıklama",
+        "descriptionPlaceholder": "Bu kuralın neden var olduğunu operasyona anlatan kısa not"
+      },
+      "stockLookup": {
+        "title": "Stok Seç",
+        "description": "Kalite kuralının bağlanacağı stok kartını seçin.",
+        "searchPlaceholder": "Stok kodu veya stok adı ile ara"
+      },
+      "list": {
+        "pageTitle": "Kalite Kural Listesi",
+        "empty": "Gösterilecek kalite kuralı bulunamadı.",
+        "searchPlaceholder": "Stok, grup ya da kural türü ile ara",
+        "columns": {
+          "scopeType": "Kapsam",
+          "stock": "Stok",
+          "stockGroup": "Stok Grubu",
+          "inspectionMode": "İnceleme Tipi",
+          "onFailAction": "Başarısızlık Aksiyonu",
+          "autoQuarantine": "Oto Karantina",
+          "requireLot": "Lot",
+          "requireSerial": "Seri",
+          "requireExpiry": "SKT",
+          "isActive": "Aktif"
+        }
+      }
+    },
+    "settings": {
+      "pageTitle": "Kalite Parametreleri",
+      "title": "Kalite Parametreleri",
+      "description": "Kural bulunmadığında veya tüm firma için ortak davranış gerektiğinde kullanılacak kalite varsayımlarını yönetin.",
+      "guidanceTitle": "Bu Ekran Ne İşe Yarar?",
+      "guidance1": "Firma bazında mal kabulün kalite kontrol akışına nasıl gireceğini buradan belirlersiniz.",
+      "guidance2": "Özel stok veya grup kuralı yoksa sistem önce bu ayarlara bakar, sonra işlemi kabul eder, karantinaya atar ya da inceleme açar.",
+      "fields": {
+        "defaultInspectionMode": "Varsayılan İnceleme Tipi",
+        "defaultOnFailAction": "Varsayılan Başarısızlık Aksiyonu",
+        "defaultQuarantineWarehouse": "Varsayılan Karantina Deposu",
+        "defaultQuarantineWarehousePlaceholder": "Karantina deposu seçiniz",
+        "defaultApprovedWarehouse": "Varsayılan Serbest Bırakma Deposu",
+        "defaultApprovedWarehousePlaceholder": "Serbest bırakma deposu seçiniz",
+        "defaultRejectWarehouse": "Varsayılan Red / Hurda Deposu",
+        "defaultRejectWarehousePlaceholder": "Red deposu seçiniz",
+        "defaultReturnOutboundType": "Varsayılan İade Çıkış Tipi",
+        "defaultReturnOutboundTypePlaceholder": "Örn: QRETURN",
+        "autoCreateInspectionOnReceipt": "Mal Kabulde Otomatik İnceleme Kaydı Aç",
+        "useQuarantineWarehouse": "Karantina Deposu Kullan",
+        "allowDirectReceiptWhenNoRule": "Kural Yoksa Direkt Kabul Et",
+        "blockReceiptWhenLotMissing": "Lot Eksikse Mal Kabulü Blokla",
+        "blockReceiptWhenSerialMissing": "Seri Eksikse Mal Kabulü Blokla",
+        "blockReceiptWhenExpiryMissing": "SKT Eksikse Mal Kabulü Blokla",
+        "requireManagerApprovalForRelease": "Serbest Bırakmada Yönetici Onayı İste",
+        "enableTraceabilityEvents": "İzlenebilirlik Olaylarını Kaydet",
+        "enableNearExpiryWarning": "Yaklaşan SKT Uyarısı Ver"
+      },
+      "warehouseLookup": {
+        "title": "Karantina Deposu Seç",
+        "description": "Karantina sürecinde kullanılacak varsayılan depoyu seçin.",
+        "searchPlaceholder": "Depo kodu veya adı ile ara"
+      }
+    },
+    "inspections": {
+      "pageTitle": "Kalite İnceleme Kayıtları",
+      "title": "Kalite İnceleme Formu",
+      "description": "Gelen ürün için kalite kararı verilecek satırları oluşturun, durumu yönetin ve karar geçmişini izleyin.",
+      "guidanceTitle": "İş Akışı",
+      "guidance1": "Önce belge ve depo bilgisini girin; sonra kontrol edilecek stok satırlarını ekleyin.",
+      "guidance2": "Bu ekran karar kaydını tutar. Sonraki fazlarda karantina, hold/release ve traceability buradan beslenecek.",
+      "fields": {
+        "documentType": "Belge Tipi",
+        "documentTypePlaceholder": "Örn: PurchaseReceipt",
+        "documentNumber": "Belge Numarası",
+        "documentNumberPlaceholder": "Operasyon ya da ERP belge no",
+        "documentId": "Belge ID",
+        "warehouse": "Depo",
+        "warehousePlaceholder": "Depo seçiniz",
+        "supplier": "Tedarikçi / Cari",
+        "supplierPlaceholder": "İsteğe bağlı tedarikçi seçiniz",
+        "inspectionDate": "İnceleme Tarihi",
+        "status": "Durum",
+        "note": "Not",
+        "notePlaceholder": "Kontrol sonucunu destekleyen kısa operasyon notu"
+      },
+      "warehouseLookup": {
+        "title": "Depo Seç",
+        "description": "Kalite inceleme kaydının bağlı olduğu depoyu seçin.",
+        "searchPlaceholder": "Depo kodu veya adı ile ara"
+      },
+      "supplierLookup": {
+        "title": "Tedarikçi Seç",
+        "description": "Gelen mal bir tedarikçi ya da cari ile ilişkilendirilecekse seçin.",
+        "searchPlaceholder": "Cari kodu veya adı ile ara"
+      },
+      "stockLookup": {
+        "title": "İncelenecek Stok",
+        "description": "Kalite kararı verilecek stok kalemini seçin.",
+        "searchPlaceholder": "Stok kodu veya adı ile ara"
+      },
+      "statuses": {
+        "pending": "Beklemede",
+        "approved": "Onaylandı",
+        "rejected": "Reddedildi",
+        "quarantined": "Karantinada",
+        "released": "Serbest Bırakıldı",
+        "returned": "İadeye Ayrıldı"
+      },
+      "decisions": {
+        "accept": "Depoya Al",
+        "pendingInspection": "İnceleme Beklet",
+        "quarantine": "Karantinaya Al",
+        "reject": "Reddet",
+        "return": "İadeye Yönlendir",
+        "hold": "Hold ile Kabul Et"
+      },
+      "lines": {
+        "title": "İnceleme Satırları",
+        "stock": "Stok",
+        "stockPlaceholder": "Stok seçiniz",
+        "lotNo": "Lot No",
+        "serialNo": "Seri No",
+        "expiryDate": "Son Kullanma Tarihi",
+        "quantity": "Miktar",
+        "decision": "Karar",
+        "reasonCode": "Sebep Kodu",
+        "reasonNote": "Sebep / Açıklama",
+        "add": "Satırı Ekle",
+        "empty": "Henüz inceleme satırı eklenmedi.",
+        "lineSummary": "Stok #{{stockId}} | Miktar: {{quantity}} | Karar: {{decision}}",
+        "lineMeta": "Lot: {{lot}} | Seri: {{serial}} | SKT: {{expiry}}"
+      },
+      "list": {
+        "pageTitle": "Kalite İnceleme Listesi",
+        "empty": "Gösterilecek kalite inceleme kaydı bulunamadı.",
+        "searchPlaceholder": "Belge, depo, tedarikçi ya da durum ile ara",
+        "columns": {
+          "documentType": "Belge Tipi",
+          "documentNumber": "Belge Numarası",
+          "warehouse": "Depo",
+          "supplier": "Tedarikçi",
+          "inspectionDate": "İnceleme Tarihi",
+          "status": "Durum",
+          "lineCount": "Satır"
+        }
+      }
+    },
+    "quarantine": {
+      "pageTitle": "Karantina Kuyruğu",
+      "title": "Karantina Kuyruğu",
+      "description": "Karantinaya düşen mal kabul kalite kayıtlarını gözden geçirin ve serbest bırakma, red veya iade kararını yönetin.",
+      "empty": "Aktif karantina kaydı bulunamadı.",
+      "searchPlaceholder": "Belge, depo veya tedarikçi ile ara",
+      "review": "İncele",
+      "columns": {
+        "documentType": "Belge Tipi",
+        "documentNumber": "Belge Numarası",
+        "warehouse": "Karantina Deposu",
+        "supplier": "Tedarikçi",
+        "inspectionDate": "Karantinaya Giriş",
+        "lineCount": "Satır",
+        "totalQuantity": "Toplam Miktar",
+        "serialTrackedLineCount": "Serili Satır"
+      },
+      "dialog": {
+        "title": "Karantina Kararı",
+        "description": "Serbest bırakma, red veya iade kararını kayıt bazında verin.",
+        "linesTitle": "Karantinadaki Satırlar",
+        "note": "Operasyon Notu",
+        "notePlaceholder": "Verilen kararı açıklayan kısa not"
+      },
+      "actions": {
+        "release": "Serbest Bırak",
+        "reject": "Reddet",
+        "return": "İadeye Gönder"
+      }
+    }
+  },
+  "documentSeries": {
+    "badge": "Belge Seri",
+    "searchPlaceholder": "Kod, ad, işlem tipi veya seri prefix ile ara",
+    "messages": {
+      "definitionCreated": "Belge seri tanımı oluşturuldu.",
+      "definitionUpdated": "Belge seri tanımı güncellendi.",
+      "definitionDeleted": "Belge seri tanımı silindi.",
+      "definitionRequiredFields": "Kod, ad ve seri prefix alanları zorunludur.",
+      "definitionRequired": "Belge seri tanımı seçmelisiniz.",
+      "resolvePending": "Sistemin uygun varsayılan seri kuralını çözmesi bekleniyor.",
+      "resolveFallback": "Uygun varsayılan seri bulunamadı. Belge serisini elle seçebilirsiniz.",
+      "selectorHelp": "Mal kabul dışındaki işlemlerde belge numarası bu seri kuralına göre önerilir.",
+      "ruleCreated": "Belge seri kuralı oluşturuldu.",
+      "ruleUpdated": "Belge seri kuralı güncellendi.",
+      "ruleDeleted": "Belge seri kuralı silindi."
+    },
+    "fields": {
+      "selection": "Belge Kuralı / Seri"
+    },
+    "matchTypes": {
+      "userPreference": "Kullanıcı varsayılanı",
+      "rule": "Belge kuralı",
+      "defaultDefinition": "Genel varsayılan",
+      "unknown": "Çözümleme"
+    },
+    "columns": {
+      "code": "Kod",
+      "name": "Ad",
+      "operationType": "İşlem Tipi",
+      "documentFlow": "Belge Akışı",
+      "warehouse": "Depo",
+      "seriesPrefix": "Seri Prefix",
+      "currentNumber": "Son Numara",
+      "eDispatch": "e-İrsaliye",
+      "isDefault": "Varsayılan",
+      "isActive": "Aktif",
+      "companyCode": "Firma Kodu",
+      "definition": "Belge Seri Tanımı",
+      "customer": "Cari",
+      "user": "Kullanıcı",
+      "priority": "Öncelik"
+    },
+    "placeholders": {
+      "warehouse": "Depo seçiniz",
+      "customer": "Cari seçiniz",
+      "user": "Kullanıcı seçiniz",
+      "definition": "Belge seri tanımı seçiniz"
+    },
+    "definitions": {
+      "pageTitle": "Belge Seri Tanımları",
+      "empty": "Gösterilecek belge seri tanımı bulunamadı.",
+      "createTitle": "Belge Seri Tanımı Oluştur",
+      "editTitle": "Belge Seri Tanımını Güncelle"
+    },
+    "rules": {
+      "pageTitle": "Belge Seri Kuralları",
+      "empty": "Gösterilecek belge seri kuralı bulunamadı.",
+      "createTitle": "Belge Seri Kuralı Oluştur",
+      "editTitle": "Belge Seri Kuralını Güncelle"
     }
   },
   "shipment": {

@@ -366,6 +366,9 @@
     "inventoryCountAssigned": "Assigned Count Orders",
     "inventoryCountProcess": "Count Direct Entry",
     "inventoryCountList": "Count Orders",
+    "erpDocumentSeries": "Document Series Management",
+    "erpDocumentSeriesDefinitions": "Document Series Definitions",
+    "erpDocumentSeriesRules": "Document Series Rules",
     "erpBarcodeDesigner": "Barcode Designer",
     "erpBarcodeDesignerCreate": "Create Barcode Design",
     "erpBarcodeDesignerEdit": "Edit Barcode Design",
@@ -375,6 +378,13 @@
     "kkd": "PPE",
     "kkdOverview": "PPE Operations Hub",
     "kkdInitialOrder": "PPE Initial Order",
+    "qualityControl": "Quality Control",
+    "qualityControlSettings": "Quality Parameters",
+    "qualityControlRules": "Quality Rule Definitions",
+    "qualityControlRulesList": "Quality Rule List",
+    "qualityControlInspections": "Quality Inspection Records",
+    "qualityControlInspectionsList": "Quality Inspection List",
+    "qualityControlQuarantine": "Quarantine Queue",
     "sacMalKabul": "Steel Plate Acceptance",
     "sacMalKabulVehicleCheckIn": "Vehicle Entry Step",
     "sacMalKabulVehicleCheckInList": "Vehicle Entry Records",
@@ -864,6 +874,307 @@
         "isActive": "Status",
         "description": "Description"
       }
+    }
+  },
+  "qualityControl": {
+    "badge": "Quality 1",
+    "messages": {
+      "settingsSaved": "Quality parameters saved.",
+      "settingsQuarantineWarehouseRequired": "Select a default quarantine warehouse when quarantine warehouse usage is enabled.",
+      "ruleCreated": "Quality rule created.",
+      "ruleUpdated": "Quality rule updated.",
+      "ruleDeleted": "Quality rule deleted.",
+      "ruleStockRequired": "Stock selection is required for a stock-scoped rule.",
+      "ruleGroupRequired": "Group code is required for a group-scoped rule.",
+      "ruleInspectionModeRequired": "Inspection mode is required.",
+      "ruleFailActionRequired": "Fail action is required.",
+      "inspectionCreated": "Quality inspection record created.",
+      "inspectionUpdated": "Quality inspection record updated.",
+      "inspectionDeleted": "Quality inspection record deleted.",
+      "quarantineReleased": "Quarantine record released.",
+      "quarantineReleasedWithReference": "Quarantine record released. Created document: {{reference}}",
+      "quarantineRejected": "Quarantine record rejected.",
+      "quarantineRejectedWithReference": "Quarantine record rejected. Created document: {{reference}}",
+      "quarantineReturned": "Quarantine record moved to return flow.",
+      "quarantineReturnedWithReference": "Quarantine record moved to return flow. Created document: {{reference}}",
+      "inspectionDocumentTypeRequired": "Document type is required.",
+      "inspectionWarehouseRequired": "Warehouse selection is required.",
+      "inspectionLinesRequired": "Add at least one inspection line.",
+      "inspectionLineStockRequired": "Stock selection is required on the inspection line.",
+      "inspectionLineQuantityRequired": "Inspection line quantity must be greater than zero."
+    },
+    "rules": {
+      "pageTitle": "Quality Rule Definitions",
+      "title": "Quality Rule Form",
+      "description": "Define how a stock or stock group will be evaluated during goods receipt and quality control.",
+      "guidanceTitle": "How to Use",
+      "guidance1": "First decide whether the rule applies to a specific stock or to a stock group.",
+      "guidance2": "This screen does not make the final decision itself; it defines how incoming material enters the quality flow.",
+      "scopeTypes": {
+        "stock": "Stock Based",
+        "stockGroup": "Stock Group Based"
+      },
+      "inspectionModes": {
+        "noCheck": "No Check",
+        "quickCheck": "Quick Check",
+        "inspectionRequired": "Detailed Inspection Required"
+      },
+      "failActions": {
+        "quarantine": "Move to Quarantine",
+        "reject": "Reject",
+        "managerApproval": "Wait for Manager Approval"
+      },
+      "fields": {
+        "scopeType": "Rule Scope",
+        "stock": "Stock",
+        "stockPlaceholder": "Select stock",
+        "stockGroupCode": "Stock Group Code",
+        "stockGroupCodePlaceholder": "Example: STEEL-RAW",
+        "stockGroupName": "Stock Group Name",
+        "stockGroupNamePlaceholder": "A label that operations can understand",
+        "inspectionMode": "Inspection Mode",
+        "onFailAction": "Fail Action",
+        "autoQuarantine": "Auto Quarantine",
+        "requireLot": "Lot Required",
+        "requireSerial": "Serial Required",
+        "requireExpiry": "Expiry Required",
+        "minRemainingShelfLifeDays": "Minimum Remaining Shelf Life (Days)",
+        "nearExpiryWarningDays": "Near Expiry Warning Days",
+        "isActive": "Active",
+        "description": "Description",
+        "descriptionPlaceholder": "Short note explaining why this rule exists"
+      },
+      "stockLookup": {
+        "title": "Select Stock",
+        "description": "Select the stock card to which this quality rule will apply.",
+        "searchPlaceholder": "Search by stock code or name"
+      },
+      "list": {
+        "pageTitle": "Quality Rule List",
+        "empty": "No quality rule records found.",
+        "searchPlaceholder": "Search by stock, group, or rule type",
+        "columns": {
+          "scopeType": "Scope",
+          "stock": "Stock",
+          "stockGroup": "Stock Group",
+          "inspectionMode": "Inspection Mode",
+          "onFailAction": "Fail Action",
+          "autoQuarantine": "Auto Quarantine",
+          "requireLot": "Lot",
+          "requireSerial": "Serial",
+          "requireExpiry": "Expiry",
+          "isActive": "Active"
+        }
+      }
+    },
+    "settings": {
+      "pageTitle": "Quality Parameters",
+      "title": "Quality Parameters",
+      "description": "Manage the default quality behavior used when no specific stock or group rule is defined.",
+      "guidanceTitle": "Why This Screen Matters",
+      "guidance1": "This is where you define how goods receipt enters the quality flow for the company or branch.",
+      "guidance2": "If no stock-specific or group-specific rule exists, the system falls back to these settings before accepting, quarantining, or opening an inspection.",
+      "fields": {
+        "defaultInspectionMode": "Default Inspection Mode",
+        "defaultOnFailAction": "Default Fail Action",
+        "defaultQuarantineWarehouse": "Default Quarantine Warehouse",
+        "defaultQuarantineWarehousePlaceholder": "Select quarantine warehouse",
+        "defaultApprovedWarehouse": "Default Release Warehouse",
+        "defaultApprovedWarehousePlaceholder": "Select release warehouse",
+        "defaultRejectWarehouse": "Default Reject / Scrap Warehouse",
+        "defaultRejectWarehousePlaceholder": "Select reject warehouse",
+        "defaultReturnOutboundType": "Default Return Outbound Type",
+        "defaultReturnOutboundTypePlaceholder": "Example: QRETURN",
+        "autoCreateInspectionOnReceipt": "Auto Create Inspection on Goods Receipt",
+        "useQuarantineWarehouse": "Use Quarantine Warehouse",
+        "allowDirectReceiptWhenNoRule": "Allow Direct Receipt When No Rule Exists",
+        "blockReceiptWhenLotMissing": "Block Receipt When Lot Is Missing",
+        "blockReceiptWhenSerialMissing": "Block Receipt When Serial Is Missing",
+        "blockReceiptWhenExpiryMissing": "Block Receipt When Expiry Is Missing",
+        "requireManagerApprovalForRelease": "Require Manager Approval for Release",
+        "enableTraceabilityEvents": "Record Traceability Events",
+        "enableNearExpiryWarning": "Enable Near Expiry Warning"
+      },
+      "warehouseLookup": {
+        "title": "Select Quarantine Warehouse",
+        "description": "Select the default warehouse that will be used for quarantine flow.",
+        "searchPlaceholder": "Search by warehouse code or name"
+      }
+    },
+    "inspections": {
+      "pageTitle": "Quality Inspection Records",
+      "title": "Quality Inspection Form",
+      "description": "Create inspection lines for incoming material, manage the status, and keep a clear decision history.",
+      "guidanceTitle": "Workflow",
+      "guidance1": "Start with the document and warehouse information, then add the stock lines to be reviewed.",
+      "guidance2": "This screen stores the decision record. Quarantine, hold/release, and traceability will build on top of it in later phases.",
+      "fields": {
+        "documentType": "Document Type",
+        "documentTypePlaceholder": "Example: PurchaseReceipt",
+        "documentNumber": "Document Number",
+        "documentNumberPlaceholder": "Operation or ERP document number",
+        "documentId": "Document ID",
+        "warehouse": "Warehouse",
+        "warehousePlaceholder": "Select warehouse",
+        "supplier": "Supplier / Customer",
+        "supplierPlaceholder": "Optionally select supplier",
+        "inspectionDate": "Inspection Date",
+        "status": "Status",
+        "note": "Note",
+        "notePlaceholder": "Short operation note supporting the decision"
+      },
+      "warehouseLookup": {
+        "title": "Select Warehouse",
+        "description": "Select the warehouse to which this inspection record belongs.",
+        "searchPlaceholder": "Search by warehouse code or name"
+      },
+      "supplierLookup": {
+        "title": "Select Supplier",
+        "description": "Select the supplier/customer if the inbound material should be linked to one.",
+        "searchPlaceholder": "Search by customer code or name"
+      },
+      "stockLookup": {
+        "title": "Stock to Inspect",
+        "description": "Select the stock line that will receive the quality decision.",
+        "searchPlaceholder": "Search by stock code or name"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "quarantined": "Quarantined",
+        "released": "Released",
+        "returned": "Returned"
+      },
+      "decisions": {
+        "accept": "Accept to Warehouse",
+        "pendingInspection": "Keep Pending",
+        "quarantine": "Move to Quarantine",
+        "reject": "Reject",
+        "return": "Send to Return",
+        "hold": "Accept with Hold"
+      },
+      "lines": {
+        "title": "Inspection Lines",
+        "stock": "Stock",
+        "stockPlaceholder": "Select stock",
+        "lotNo": "Lot No",
+        "serialNo": "Serial No",
+        "expiryDate": "Expiry Date",
+        "quantity": "Quantity",
+        "decision": "Decision",
+        "reasonCode": "Reason Code",
+        "reasonNote": "Reason / Note",
+        "add": "Add Line",
+        "empty": "No inspection lines added yet.",
+        "lineSummary": "Stock #{{stockId}} | Quantity: {{quantity}} | Decision: {{decision}}",
+        "lineMeta": "Lot: {{lot}} | Serial: {{serial}} | Expiry: {{expiry}}"
+      },
+      "list": {
+        "pageTitle": "Quality Inspection List",
+        "empty": "No quality inspection records found.",
+        "searchPlaceholder": "Search by document, warehouse, supplier, or status",
+        "columns": {
+          "documentType": "Document Type",
+          "documentNumber": "Document Number",
+          "warehouse": "Warehouse",
+          "supplier": "Supplier",
+          "inspectionDate": "Inspection Date",
+          "status": "Status",
+          "lineCount": "Lines"
+        }
+      }
+    },
+    "quarantine": {
+      "pageTitle": "Quarantine Queue",
+      "title": "Quarantine Queue",
+      "description": "Review quality records that were moved to quarantine and manage release, reject, or return decisions.",
+      "empty": "No active quarantine record found.",
+      "searchPlaceholder": "Search by document, warehouse, or supplier",
+      "review": "Review",
+      "columns": {
+        "documentType": "Document Type",
+        "documentNumber": "Document Number",
+        "warehouse": "Quarantine Warehouse",
+        "supplier": "Supplier",
+        "inspectionDate": "Quarantine Entry",
+        "lineCount": "Lines",
+        "totalQuantity": "Total Quantity",
+        "serialTrackedLineCount": "Serial Lines"
+      },
+      "dialog": {
+        "title": "Quarantine Decision",
+        "description": "Give the release, reject, or return decision for this record.",
+        "linesTitle": "Quarantined Lines",
+        "note": "Operation Note",
+        "notePlaceholder": "Short note explaining the decision"
+      },
+      "actions": {
+        "release": "Release",
+        "reject": "Reject",
+        "return": "Return"
+      }
+    }
+  },
+  "documentSeries": {
+    "badge": "Document Series",
+    "searchPlaceholder": "Search by code, name, operation type, or series prefix",
+    "messages": {
+      "definitionCreated": "Document series definition created.",
+      "definitionUpdated": "Document series definition updated.",
+      "definitionDeleted": "Document series definition deleted.",
+      "definitionRequiredFields": "Code, name, and series prefix are required.",
+      "definitionRequired": "You must select a document series definition.",
+      "resolvePending": "Waiting for the system to resolve the best default document series.",
+      "resolveFallback": "No suitable default series was found. You can select the document series manually.",
+      "selectorHelp": "For operations other than goods receipt, the document number is suggested from this series rule.",
+      "ruleCreated": "Document series rule created.",
+      "ruleUpdated": "Document series rule updated.",
+      "ruleDeleted": "Document series rule deleted."
+    },
+    "fields": {
+      "selection": "Document Rule / Series"
+    },
+    "matchTypes": {
+      "userPreference": "User preference",
+      "rule": "Document rule",
+      "defaultDefinition": "Global default",
+      "unknown": "Resolution"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "operationType": "Operation Type",
+      "documentFlow": "Document Flow",
+      "warehouse": "Warehouse",
+      "seriesPrefix": "Series Prefix",
+      "currentNumber": "Current Number",
+      "eDispatch": "e-Dispatch",
+      "isDefault": "Default",
+      "isActive": "Active",
+      "companyCode": "Company Code",
+      "definition": "Document Series Definition",
+      "customer": "Customer",
+      "user": "User",
+      "priority": "Priority"
+    },
+    "placeholders": {
+      "warehouse": "Select warehouse",
+      "customer": "Select customer",
+      "user": "Select user",
+      "definition": "Select document series definition"
+    },
+    "definitions": {
+      "pageTitle": "Document Series Definitions",
+      "empty": "No document series definition found.",
+      "createTitle": "Create Document Series Definition",
+      "editTitle": "Update Document Series Definition"
+    },
+    "rules": {
+      "pageTitle": "Document Series Rules",
+      "empty": "No document series rule found.",
+      "createTitle": "Create Document Series Rule",
+      "editTitle": "Update Document Series Rule"
     }
   },
   "shipment": {

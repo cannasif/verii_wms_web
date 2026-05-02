@@ -21,6 +21,8 @@ export interface BaseDocumentHeaderRequest {
   targetWarehouseId?: number;
   targetWarehouse: string;
   priority: string;
+  documentSeriesDefinitionId?: number;
+  requiresEDispatch?: boolean;
 }
 
 export interface BaseDocumentLineRequest {
