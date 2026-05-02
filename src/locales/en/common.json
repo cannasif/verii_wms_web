@@ -3541,6 +3541,50 @@
       "allocationRows": "Allocation Rows",
       "activeRepairCases": "Active Repair Cases",
       "shipmentLinksCount": "Shipment Link Count"
+    },
+    "enum": {
+      "serviceCaseStatus": {
+        "0": "Draft",
+        "1": "Waiting For Intake",
+        "2": "Received",
+        "3": "In Diagnosis",
+        "4": "Waiting For Parts",
+        "5": "In Repair",
+        "6": "Ready For Return",
+        "7": "Returned To Main Warehouse",
+        "8": "Closed",
+        "9": "Cancelled"
+      },
+      "serviceCaseLineType": {
+        "0": "Incoming Product",
+        "1": "Spare Part",
+        "2": "Labor",
+        "3": "Replacement Product"
+      },
+      "serviceProcessType": {
+        "0": "Normal Sales Order",
+        "1": "Service Repair",
+        "2": "Spare Part Supply",
+        "3": "Repair Return"
+      },
+      "allocationStatus": {
+        "0": "Waiting",
+        "1": "Blocked",
+        "2": "Allocated",
+        "3": "Partially Allocated",
+        "4": "Shipped",
+        "5": "Cancelled"
+      },
+      "documentLinkPurpose": {
+        "0": "Intake",
+        "1": "Internal Transfer",
+        "2": "Spare Part Supply",
+        "3": "Repair Operation",
+        "4": "Return To Main Warehouse",
+        "5": "Shipment",
+        "6": "Allocation Source",
+        "7": "Allocation Result"
+      }
     }
   },
   "detailPage": {
