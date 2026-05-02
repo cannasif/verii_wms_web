@@ -11,7 +11,6 @@ import { useNotificationStore } from '../stores/notification-store';
 import { notificationApi } from '../api/notification-api';
 import { NotificationItem } from './NotificationItem';
 import { debounce } from '@/lib/utils/debounce';
-import { notificationService } from '../services/notification-service';
 
 interface NotificationDropdownProps {
   children: ReactElement;
@@ -149,16 +148,10 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
     if (open) {
       hasLoadedForOpenRef.current = false;
-      notificationService.connect().catch(() => {
-        // Connection failures should not block manual notification loading.
-      });
       return;
     }
 
     hasLoadedForOpenRef.current = false;
-    notificationService.disconnect().catch(() => {
-      // Disconnect failures should not break the dropdown close flow.
-    });
   };
 
   const handleMarkAllAsRead = async (): Promise<void> => {

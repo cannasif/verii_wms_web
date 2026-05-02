@@ -7,20 +7,32 @@ export function useNotificationConnection(): void {
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
-    const shouldDisconnect = !token || !user;
+    let isCancelled = false;
 
-    if (shouldDisconnect) {
+    if (!token || !user) {
       notificationService.disconnect().catch((error) => {
         console.error('[useNotificationConnection] Failed to disconnect from SignalR:', error);
       });
+
+      return;
     }
 
-    return () => {
-      if (shouldDisconnect) {
-        notificationService.disconnect().catch((error) => {
-          console.error('[useNotificationConnection] Failed to disconnect from SignalR:', error);
-        });
+    notificationService.connect().catch((error) => {
+      if (!isCancelled) {
+        console.error('[useNotificationConnection] Failed to connect to SignalR:', error);
       }
+    });
+
+    return () => {
+      isCancelled = true;
     };
   }, [token, user]);
+
+  useEffect(() => {
+    return () => {
+      notificationService.disconnect().catch((error) => {
+        console.error('[useNotificationConnection] Failed to disconnect from SignalR during unmount:', error);
+      });
+    };
+  }, []);
 }
