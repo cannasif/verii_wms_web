@@ -319,7 +319,11 @@ export function ServiceCaseFormPage(): ReactElement {
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {serviceCaseStatusOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                      {serviceCaseStatusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(option.labelKey, { defaultValue: option.value })}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -442,7 +446,11 @@ export function ServiceCaseFormPage(): ReactElement {
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {serviceCaseLineTypeOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                      {serviceCaseLineTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(option.labelKey, { defaultValue: option.value })}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -455,7 +463,11 @@ export function ServiceCaseFormPage(): ReactElement {
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {serviceProcessTypeOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                      {serviceProcessTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(option.labelKey, { defaultValue: option.value })}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
