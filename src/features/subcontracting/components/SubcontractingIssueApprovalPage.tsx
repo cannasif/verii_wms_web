@@ -9,6 +9,7 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import type { SubcontractingHeader } from '../types/subcontracting';
 import { useApproveSitHeader } from '../hooks/useApproveSitHeader';
 import { useAwaitingApprovalSitHeaders } from '../hooks/useAwaitingApprovalSitHeaders';
@@ -19,6 +20,7 @@ type ColumnKey = 'id' | 'documentNo' | 'documentDate' | 'customerCode' | 'custom
 export function SubcontractingIssueApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.subcontracting.issue');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const approveMutation = useApproveSitHeader();
@@ -41,6 +43,10 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
+    if (!permission.canUpdate) {
+      return;
+    }
+
     try { await approveMutation.mutateAsync({ id, approved }); toast.success(approved ? t('subcontracting.issue.approval.approveSuccess') : t('subcontracting.issue.approval.rejectSuccess')); }
     catch (err) { toast.error(err instanceof Error ? err.message : approved ? t('subcontracting.issue.approval.approveError') : t('subcontracting.issue.approval.rejectError')); }
   };
@@ -60,7 +66,7 @@ export function SubcontractingIssueApprovalPage(): ReactElement {
           showActionsColumn
           actionsHeaderLabel={t('subcontracting.issue.approval.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.reject')}</span></Button></div>}
+          renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('subcontracting.issue.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

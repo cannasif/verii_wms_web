@@ -10,6 +10,8 @@ export const WMS_SCOPE_POLICY_ENTITY_TYPES = [
   'Shipment',
   'Package',
   'InventoryCount',
+  'Production',
+  'ProductionTransfer',
 ] as const;
 
 export const createWmsScopePolicySchema = z.object({
