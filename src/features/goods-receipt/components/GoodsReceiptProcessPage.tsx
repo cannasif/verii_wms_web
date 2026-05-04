@@ -18,6 +18,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2StockSelection } from './steps/Step2StockSelection';
 
@@ -25,6 +27,7 @@ export function GoodsReceiptProcessPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.goods-receipt');
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedItems, setSelectedItems] = useState<SelectedStockItem[]>([]);
 
@@ -132,36 +135,41 @@ export function GoodsReceiptProcessPage(): ReactElement {
         title={t('goodsReceipt.process.title')}
         description={t('goodsReceipt.create.subtitle')}
       >
+        {!permission.canCreate ? (
+          <PermissionNotice />
+        ) : null}
         <Form {...form}>
-          <form className="space-y-6 crm-page">
-            {currentStep === 1 ? (
-              <Step1BasicInfo />
-            ) : (
-              <Step2StockSelection
-                selectedItems={selectedItems}
-                onToggleItem={handleToggleItem}
-                onUpdateItem={handleUpdateItem}
-                onRemoveItem={handleRemoveItem}
-              />
-            )}
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+            <form className="space-y-6 crm-page">
+              {currentStep === 1 ? (
+                <Step1BasicInfo />
+              ) : (
+                <Step2StockSelection
+                  selectedItems={selectedItems}
+                  onToggleItem={handleToggleItem}
+                  onUpdateItem={handleUpdateItem}
+                  onRemoveItem={handleRemoveItem}
+                />
+              )}
 
-            <div className="flex justify-between pt-6 border-t">
-              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                {t('common.previous')}
-              </Button>
-              <div className="flex gap-2">
-                {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext}>
-                    {t('common.next')}
-                  </Button>
-                ) : (
-                  <Button type="button" onClick={handleSave} disabled={createMutation.isPending || selectedItems.length === 0}>
-                    {createMutation.isPending ? t('common.saving') : t('common.save')}
-                  </Button>
-                )}
+              <div className="flex justify-between pt-6 border-t">
+                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+                  {t('common.previous')}
+                </Button>
+                <div className="flex gap-2">
+                  {currentStep < steps.length ? (
+                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
+                      {t('common.next')}
+                    </Button>
+                  ) : (
+                    <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || selectedItems.length === 0}>
+                      {createMutation.isPending ? t('common.saving') : t('common.save')}
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </fieldset>
         </Form>
       </FormPageShell>
     </div>

@@ -17,6 +17,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
 import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 
@@ -25,6 +27,7 @@ export function WarehouseOutboundProcessPage(): ReactElement {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.outbound');
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseStockItem[]>([]);
   const validSelectedItems = useMemo(
@@ -140,40 +143,45 @@ export function WarehouseOutboundProcessPage(): ReactElement {
 
       <Card>
         <CardContent>
+          {!permission.canCreate ? (
+            <PermissionNotice />
+          ) : null}
           <Form {...form}>
-            <form className="space-y-6 crm-page">
-              {currentStep === 1 ? (
-                <Step1WarehouseBasicInfo type="outbound" showOperationUsers={false} />
-              ) : (
-                <Step2WarehouseStockSelection
-                  selectedItems={selectedItems}
-                  onToggleItem={handleToggleItem}
-                  onUpdateItem={handleUpdateItem}
-                  onRemoveItem={handleRemoveItem}
-                />
-              )}
+            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+              <form className="space-y-6 crm-page">
+                {currentStep === 1 ? (
+                  <Step1WarehouseBasicInfo type="outbound" showOperationUsers={false} />
+                ) : (
+                  <Step2WarehouseStockSelection
+                    selectedItems={selectedItems}
+                    onToggleItem={handleToggleItem}
+                    onUpdateItem={handleUpdateItem}
+                    onRemoveItem={handleRemoveItem}
+                  />
+                )}
 
-              <div className="flex justify-between pt-6 border-t">
-                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={createMutation.isPending || validSelectedItems.length === 0}
-                    >
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
+                <div className="flex justify-between pt-6 border-t">
+                  <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+                    {t('common.previous')}
+                  </Button>
+                  <div className="flex gap-2">
+                    {currentStep < steps.length ? (
+                      <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
+                        {t('common.next')}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}
+                      >
+                        {createMutation.isPending ? t('common.saving') : t('common.save')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </fieldset>
           </Form>
         </CardContent>
       </Card>
