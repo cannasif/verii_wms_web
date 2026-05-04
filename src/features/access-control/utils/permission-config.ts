@@ -77,6 +77,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
   '/users/mail-settings': 'access-control.mail-settings.view',
   '/hangfire-monitoring': 'access-control.hangfire-monitoring.view',
+  '/trace-explorer': 'access-control.trace-explorer.view',
   '/erp/customers': 'wms.print-management.view',
   '/erp/stocks': 'wms.print-management.view',
   '/erp/warehouses': 'wms.print-management.view',
@@ -143,6 +144,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
   { pattern: /^\/users\/mail-settings(\/|$)/, permission: 'access-control.mail-settings.view' },
   { pattern: /^\/hangfire-monitoring(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
+  { pattern: /^\/trace-explorer(\/|$)/, permission: 'access-control.trace-explorer.view' },
   { pattern: /^\/erp\/customers(\/|$)/, permission: 'wms.print-management.view' },
   { pattern: /^\/erp\/stocks(\/|$)/, permission: 'wms.print-management.view' },
   { pattern: /^\/erp\/warehouses(\/|$)/, permission: 'wms.print-management.view' },
@@ -222,6 +224,7 @@ export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = 
   'access-control.user-group-assignments': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanıcı Grup Atamaları' },
   'access-control.mail-settings': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarları' },
   'access-control.hangfire-monitoring': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire İzleme' },
+  'access-control.trace-explorer': { key: 'sidebar.traceExplorer', fallback: 'Trace Explorer' },
 };
 
 const ACTION_FALLBACKS: Record<PermissionAction, string> = {

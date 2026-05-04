@@ -313,6 +313,7 @@
     "userGroupAssignments": "Kullanıcı Grup Atamaları",
     "mailSettings": "Mail Ayarları",
     "hangfireMonitoring": "Hangfire İzleme",
+    "traceExplorer": "Trace Explorer",
     "erp": "ERP",
     "erpCustomers": "Cariler",
     "erpStocks": "Stoklar",

@@ -479,6 +479,7 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             children: [
               { title: 'sidebar.mailSettings', titleFallback: 'Mail Ayarları', href: '/users/mail-settings' },
               { title: 'sidebar.hangfireMonitoring', titleFallback: 'Hangfire İzleme', href: '/hangfire-monitoring' },
+              { title: 'sidebar.traceExplorer', titleFallback: 'Trace Explorer', href: '/trace-explorer' },
             ],
           },
         ],

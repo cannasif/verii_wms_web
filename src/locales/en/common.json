@@ -313,6 +313,7 @@
     "userGroupAssignments": "User Group Assignments",
     "mailSettings": "Mail Settings",
     "hangfireMonitoring": "Hangfire Monitoring",
+    "traceExplorer": "Trace Explorer",
     "erp": "ERP",
     "erpCustomers": "Customers",
     "erpStocks": "Stocks",

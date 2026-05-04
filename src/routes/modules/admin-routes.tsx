@@ -25,6 +25,10 @@ const HangfireMonitoringPage = lazyNamed(
   () => import('@/features/hangfire-monitoring/components/HangfireMonitoringPage'),
   'HangfireMonitoringPage',
 );
+const TraceExplorerPage = lazyNamed(
+  () => import('@/features/trace-explorer/components/TraceExplorerPage'),
+  'TraceExplorerPage',
+);
 
 export const adminChildRoutes: RouteObject[] = [
   {
@@ -77,6 +81,13 @@ export const adminChildRoutes: RouteObject[] = [
     element: withRoute(HangfireMonitoringPage, {
       routeName: 'hangfire-monitoring',
       namespaces: ['hangfire-monitoring', 'common'],
+    }),
+  },
+  {
+    path: 'trace-explorer',
+    element: withRoute(TraceExplorerPage, {
+      routeName: 'trace-explorer',
+      namespaces: ['trace-explorer', 'common'],
     }),
   },
 ];
