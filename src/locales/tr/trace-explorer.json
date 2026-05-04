@@ -18,6 +18,7 @@
   "auditTitle": "Audit Kayıtları",
   "jobsTitle": "Job Kayıtları",
   "notificationsTitle": "Notification Kayıtları",
+  "integrationsTitle": "Entegrasyon Kayıtları",
   "empty": "Kayıt bulunamadı.",
   "entityId": "Entity Id",
   "source": "Kaynak",
@@ -29,16 +30,26 @@
   "oldValues": "Eski Değerler",
   "newValues": "Yeni Değerler",
   "jobId": "Job Id",
+  "operation": "Operasyon",
   "retryCount": "Retry",
   "startedAt": "Başlangıç",
   "finishedAt": "Bitiş",
   "durationMs": "Süre (ms)",
   "failedAt": "Hata Zamanı",
   "relatedEntity": "İlgili Entity",
+  "requestMetadata": "İstek Metadatası",
+  "responseMetadata": "Yanıt Metadatası",
   "read": "Okundu",
   "unread": "Okunmadı",
   "responseTraceId": "Trace Id: {{traceId}}",
   "traceFooterTitle": "Korelasyon",
   "traceFooterDescription": "Bu görünüm audit, Hangfire ve notification zincirini tek trace etrafında toplar.",
-  "loadError": "Trace kayıtları yüklenemedi."
+  "loadError": "Trace kayıtları yüklenemedi.",
+  "summary": {
+    "audit": "Audit",
+    "jobExecution": "Job Başarı",
+    "jobFailure": "Job Hata",
+    "notification": "Notification",
+    "integration": "Entegrasyon"
+  }
 }

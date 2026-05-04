@@ -17,6 +17,7 @@ export const traceExplorerApi = {
         jobExecutionCount: Number(data?.summary?.jobExecutionCount ?? 0),
         jobFailureCount: Number(data?.summary?.jobFailureCount ?? 0),
         notificationCount: Number(data?.summary?.notificationCount ?? 0),
+        integrationCount: Number(data?.summary?.integrationCount ?? 0),
         firstSeenAt: data?.summary?.firstSeenAt,
         lastSeenAt: data?.summary?.lastSeenAt,
       },
@@ -24,6 +25,7 @@ export const traceExplorerApi = {
       jobExecutions: normalizeArray(data?.jobExecutions),
       jobFailures: normalizeArray(data?.jobFailures),
       notifications: normalizeArray(data?.notifications),
+      integrations: normalizeArray(data?.integrations),
     };
   },
 };

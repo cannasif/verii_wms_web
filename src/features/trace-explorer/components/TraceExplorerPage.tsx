@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, Bell, BriefcaseBusiness, ClipboardList, Search } from 'lucide-react';
+import { Activity, Bell, BriefcaseBusiness, ClipboardList, Search, Waypoints } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -144,6 +144,12 @@ export function TraceExplorerPage(): ReactElement {
                 <CardTitle className="text-3xl">{traceQuery.data?.summary.notificationCount ?? 0}</CardTitle>
               </CardHeader>
             </Card>
+            <Card className="border-slate-200/80 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardDescription>{t('summary.integration')}</CardDescription>
+                <CardTitle className="text-3xl">{traceQuery.data?.summary.integrationCount ?? 0}</CardTitle>
+              </CardHeader>
+            </Card>
           </div>
 
           <Card className="border-slate-200/80 shadow-sm">
@@ -246,6 +252,48 @@ export function TraceExplorerPage(): ReactElement {
                     <div><span className="font-medium">{t('branchCode')}:</span> {item.branchCode}</div>
                   </div>
                   <div className="mt-3"><span className="font-medium">{t('reason')}:</span> {item.reason || item.exceptionMessage || '-'}</div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Waypoints className="h-5 w-5" />{t('integrationsTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(traceQuery.data?.integrations ?? []).length === 0 ? (
+                <div className="text-sm text-slate-500">{t('empty')}</div>
+              ) : traceQuery.data!.integrations.map((item) => (
+                <div key={`integration-${item.id}`} className="rounded-lg border border-slate-200 p-4 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary">{item.targetSystem}</Badge>
+                    <Badge variant="outline">{item.integrationType}</Badge>
+                    <Badge variant={item.status.toLowerCase() === 'succeeded' ? 'secondary' : 'destructive'}>{item.status}</Badge>
+                  </div>
+                  <div className="mt-3 grid gap-2 md:grid-cols-2">
+                    <div><span className="font-medium text-slate-700">{t('operation')}:</span> {item.operation}</div>
+                    <div><span className="font-medium text-slate-700">{t('source')}:</span> {item.source}</div>
+                    <div><span className="font-medium text-slate-700">{t('startedAt')}:</span> {formatDate(item.startedAt)}</div>
+                    <div><span className="font-medium text-slate-700">{t('finishedAt')}:</span> {formatDate(item.finishedAt)}</div>
+                    <div><span className="font-medium text-slate-700">{t('durationMs')}:</span> {item.durationMs}</div>
+                    <div><span className="font-medium text-slate-700">{t('branchCode')}:</span> {item.branchCode}</div>
+                  </div>
+                  {(item.errorMessage || item.errorType) ? (
+                    <div className="mt-3 text-sm text-slate-700">
+                      <span className="font-medium">{t('reason')}:</span> {item.errorMessage || item.errorType}
+                    </div>
+                  ) : null}
+                  <div className="mt-3 grid gap-3 xl:grid-cols-2">
+                    <div>
+                      <div className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">{t('requestMetadata')}</div>
+                      <JsonBlock value={item.requestMetadata} />
+                    </div>
+                    <div>
+                      <div className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">{t('responseMetadata')}</div>
+                      <JsonBlock value={item.responseMetadata} />
+                    </div>
+                  </div>
                 </div>
               ))}
             </CardContent>

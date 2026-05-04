@@ -3,6 +3,7 @@ export interface TraceExplorerSummaryDto {
   jobExecutionCount: number;
   jobFailureCount: number;
   notificationCount: number;
+  integrationCount: number;
   firstSeenAt?: string;
   lastSeenAt?: string;
 }
@@ -78,4 +79,23 @@ export interface TraceExplorerResponseDto {
   jobExecutions: TraceExplorerJobExecutionItemDto[];
   jobFailures: TraceExplorerJobFailureItemDto[];
   notifications: TraceExplorerNotificationItemDto[];
+  integrations: TraceExplorerIntegrationItemDto[];
+}
+
+export interface TraceExplorerIntegrationItemDto {
+  id: number;
+  integrationType: string;
+  targetSystem: string;
+  operation: string;
+  status: string;
+  source: string;
+  requestMetadata?: string;
+  responseMetadata?: string;
+  errorMessage?: string;
+  errorType?: string;
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  branchCode: string;
+  createdDate?: string;
 }

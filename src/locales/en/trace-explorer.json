@@ -18,6 +18,7 @@
   "auditTitle": "Audit Records",
   "jobsTitle": "Job Records",
   "notificationsTitle": "Notification Records",
+  "integrationsTitle": "Integration Records",
   "empty": "No records found.",
   "entityId": "Entity Id",
   "source": "Source",
@@ -29,16 +30,26 @@
   "oldValues": "Old Values",
   "newValues": "New Values",
   "jobId": "Job Id",
+  "operation": "Operation",
   "retryCount": "Retry",
   "startedAt": "Started At",
   "finishedAt": "Finished At",
   "durationMs": "Duration (ms)",
   "failedAt": "Failed At",
   "relatedEntity": "Related Entity",
+  "requestMetadata": "Request Metadata",
+  "responseMetadata": "Response Metadata",
   "read": "Read",
   "unread": "Unread",
   "responseTraceId": "Trace Id: {{traceId}}",
   "traceFooterTitle": "Correlation",
   "traceFooterDescription": "This view brings audit, Hangfire, and notification chains together around one trace.",
-  "loadError": "Trace records could not be loaded."
+  "loadError": "Trace records could not be loaded.",
+  "summary": {
+    "audit": "Audit",
+    "jobExecution": "Job Execution",
+    "jobFailure": "Job Failure",
+    "notification": "Notification",
+    "integration": "Integration"
+  }
 }
