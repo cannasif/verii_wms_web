@@ -2,6 +2,7 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   exceptionMessage: string;
+  traceId?: string;
   errorCode?: string;
   details?: unknown;
   data: T;

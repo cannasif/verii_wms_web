@@ -90,6 +90,9 @@ function normalizeApiEnvelope(payload: unknown): unknown {
   if (normalized.exceptionMessage === undefined && typeof source.ExceptionMessage === 'string') {
     normalized.exceptionMessage = source.ExceptionMessage;
   }
+  if (normalized.traceId === undefined && typeof source.TraceId === 'string') {
+    normalized.traceId = source.TraceId;
+  }
   if (normalized.data === undefined && source.Data !== undefined) {
     normalized.data = source.Data;
   }
@@ -192,8 +195,14 @@ api.interceptors.response.use(
     }
 
     const apiMessage = extractApiErrorMessage(apiError);
+    const apiTraceId = typeof (apiError as { traceId?: unknown })?.traceId === 'string'
+      ? (apiError as { traceId: string }).traceId
+      : null;
     if (apiMessage) {
       error.message = apiMessage;
+    }
+    if (apiTraceId) {
+      (error as Error & { traceId?: string }).traceId = apiTraceId;
     }
 
     return Promise.reject(error);
