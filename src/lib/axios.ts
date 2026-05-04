@@ -198,11 +198,18 @@ api.interceptors.response.use(
     const apiTraceId = typeof (apiError as { traceId?: unknown })?.traceId === 'string'
       ? (apiError as { traceId: string }).traceId
       : null;
+    const isScopeRestricted = error.response?.status === 403;
     if (apiMessage) {
       error.message = apiMessage;
     }
     if (apiTraceId) {
       (error as Error & { traceId?: string }).traceId = apiTraceId;
+    }
+    if (isScopeRestricted) {
+      (error as Error & { scopeRestricted?: boolean }).scopeRestricted = true;
+      if (apiTraceId && !error.message.includes(apiTraceId)) {
+        error.message = `${error.message} (TraceId: ${apiTraceId})`;
+      }
     }
 
     return Promise.reject(error);
