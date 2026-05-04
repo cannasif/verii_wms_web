@@ -13,6 +13,14 @@ const UserGroupAssignmentsPage = lazyNamed(
   () => import('@/features/access-control/components/UserGroupAssignmentsPage'),
   'UserGroupAssignmentsPage',
 );
+const WmsScopePoliciesPage = lazyNamed(
+  () => import('@/features/access-control/components/WmsScopePoliciesPage'),
+  'WmsScopePoliciesPage',
+);
+const WmsScopeAssignmentsPage = lazyNamed(
+  () => import('@/features/access-control/components/WmsScopeAssignmentsPage'),
+  'WmsScopeAssignmentsPage',
+);
 const UserManagementPage = lazyNamed(
   () => import('@/features/user-management/components/UserManagementPage'),
   'UserManagementPage',
@@ -59,6 +67,20 @@ export const adminChildRoutes: RouteObject[] = [
         path: 'user-group-assignments',
         element: withRoute(UserGroupAssignmentsPage, {
           routeName: 'user-group-assignments',
+          namespaces: ['access-control', 'common'],
+        }),
+      },
+      {
+        path: 'wms-scope-policies',
+        element: withRoute(WmsScopePoliciesPage, {
+          routeName: 'wms-scope-policies',
+          namespaces: ['access-control', 'common'],
+        }),
+      },
+      {
+        path: 'wms-scope-assignments',
+        element: withRoute(WmsScopeAssignmentsPage, {
+          routeName: 'wms-scope-assignments',
           namespaces: ['access-control', 'common'],
         }),
       },

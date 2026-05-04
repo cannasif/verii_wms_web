@@ -39,6 +39,7 @@ export interface MyPermissionsDto {
   userId: number;
   roleTitle: string;
   isSystemAdmin: boolean;
+  platform?: string | null;
   permissionGroups: string[];
   permissionCodes: string[];
 }
@@ -64,6 +65,8 @@ export interface PermissionDefinitionDto {
   name: string;
   description?: string;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface CreatePermissionDefinitionDto {
@@ -71,6 +74,8 @@ export interface CreatePermissionDefinitionDto {
   name: string;
   description?: string;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface UpdatePermissionDefinitionDto {
@@ -78,7 +83,8 @@ export interface UpdatePermissionDefinitionDto {
   name?: string;
   description?: string;
   isActive?: boolean;
-
+  availableOnWeb?: boolean;
+  availableOnMobile?: boolean;
 }
 
 export interface SyncPermissionDefinitionItemDto {
@@ -86,6 +92,8 @@ export interface SyncPermissionDefinitionItemDto {
   name?: string | null;
   description?: string | null;
   isActive: boolean;
+  availableOnWeb: boolean;
+  availableOnMobile: boolean;
 }
 
 export interface SyncPermissionDefinitionsDto {
@@ -148,4 +156,77 @@ export interface UserPermissionGroupDto {
 
 export interface SetUserPermissionGroupsDto {
   permissionGroupIds: number[];
+}
+
+export interface WmsScopePolicyDto {
+  id: number;
+  createdDate: string;
+  updatedDate?: string;
+  deletedDate?: string;
+  isDeleted: boolean;
+  code: string;
+  name: string;
+  entityType: string;
+  description?: string;
+  scopeType: string;
+  includeSelf: boolean;
+  isActive: boolean;
+}
+
+export interface CreateWmsScopePolicyDto {
+  code: string;
+  name: string;
+  entityType: string;
+  description?: string;
+  scopeType: string;
+  includeSelf: boolean;
+  isActive: boolean;
+}
+
+export interface UpdateWmsScopePolicyDto {
+  code?: string;
+  name?: string;
+  entityType?: string;
+  description?: string;
+  scopeType?: string;
+  includeSelf?: boolean;
+  isActive?: boolean;
+}
+
+export interface UserWmsScopePolicyAssignmentDto {
+  id: number;
+  createdDate: string;
+  updatedDate?: string;
+  deletedDate?: string;
+  isDeleted: boolean;
+  userId: number;
+  wmsScopePolicyId: number;
+  policyCode: string;
+  policyName: string;
+  entityType: string;
+  scopeType: string;
+  branchCode?: string;
+  warehouseId?: number | null;
+}
+
+export interface UserWmsScopePolicyAssignmentInputDto {
+  wmsScopePolicyId: number;
+  branchCode?: string;
+  warehouseId?: number | null;
+}
+
+export interface SetUserWmsScopePoliciesDto {
+  items: UserWmsScopePolicyAssignmentInputDto[];
+}
+
+export interface WmsScopePolicyResolutionDto {
+  userId: number;
+  entityType: string;
+  hasExplicitPolicy: boolean;
+  isUnrestricted: boolean;
+  requiresAssignedRecords: boolean;
+  includeSelf: boolean;
+  branchCodes: string[];
+  warehouseIds: number[];
+  scopeTypes: string[];
 }

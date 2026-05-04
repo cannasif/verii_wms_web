@@ -23,14 +23,16 @@ import { usePermissionAccess } from '../hooks/usePermissionAccess';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
-import { getPermissionDisplayMeta, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import { getPermissionDisplayMeta, isPermissionCodeAvailableOnMobile, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
 
-type PermissionDefinitionColumnKey = 'code' | 'name' | 'isActive' | 'updatedDate' | 'actions';
+type PermissionDefinitionColumnKey = 'code' | 'name' | 'platforms' | 'isActive' | 'updatedDate' | 'actions';
 
 const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'code', type: 'string', labelKey: 'permissionDefinitions.table.code' },
   { value: 'name', type: 'string', labelKey: 'permissionDefinitions.table.name' },
   { value: 'description', type: 'string', labelKey: 'permissionDefinitions.form.description.label' },
+  { value: 'availableOnWeb', type: 'boolean', labelKey: 'permissionDefinitions.form.availableOnWeb' },
+  { value: 'availableOnMobile', type: 'boolean', labelKey: 'permissionDefinitions.form.availableOnMobile' },
   { value: 'isActive', type: 'boolean', labelKey: 'permissionDefinitions.table.isActive' },
 ];
 
@@ -68,6 +70,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     () => [
       { key: 'code', label: t('permissionDefinitions.table.code') },
       { key: 'name', label: t('permissionDefinitions.table.name') },
+      { key: 'platforms', label: 'Platformlar', sortable: false },
       { key: 'isActive', label: t('permissionDefinitions.table.isActive'), sortable: false },
       { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
       { key: 'actions', label: t('common.actions'), sortable: false },
@@ -115,6 +118,7 @@ export function PermissionDefinitionsPage(): ReactElement {
       return {
         code: item.code,
         name: displayName,
+        platforms: [item.availableOnWeb ? 'Web' : null, item.availableOnMobile ? 'Mobile' : null].filter(Boolean).join(', '),
         isActive: item.isActive ? t('common.yes') : t('common.no'),
         updatedDate: item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-',
       };
@@ -126,10 +130,10 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   const handleSyncFromRoutes = async (): Promise<void> => {
-    const items = PERMISSION_CODE_CATALOG.map((code) => {
+      const items = PERMISSION_CODE_CATALOG.map((code) => {
       const meta = getPermissionDisplayMeta(code);
       const name = meta ? t(meta.key, meta.fallback) : code;
-      return { code, name, isActive: true };
+      return { code, name, isActive: true, availableOnWeb: true, availableOnMobile: isPermissionCodeAvailableOnMobile(code) };
     });
 
     await syncMutation.mutateAsync({ items });
@@ -140,6 +144,8 @@ export function PermissionDefinitionsPage(): ReactElement {
       ...formData,
       isActive: editingItem?.isActive ?? true,
       description: formData.description ?? undefined,
+      availableOnWeb: formData.availableOnWeb,
+      availableOnMobile: formData.availableOnMobile,
     };
     if (editingItem) {
       await updateMutation.mutateAsync({ id: editingItem.id, dto });
@@ -268,6 +274,13 @@ export function PermissionDefinitionsPage(): ReactElement {
                     {item.isActive ? t('common.yes') : t('common.no')}
                   </Badge>
                 );
+              case 'platforms':
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    {item.availableOnWeb ? <Badge variant="secondary">Web</Badge> : null}
+                    {item.availableOnMobile ? <Badge variant="secondary">Mobile</Badge> : null}
+                  </div>
+                );
               case 'updatedDate':
                 return <span className="text-sm text-slate-500">{item.updatedDate ? new Date(item.updatedDate).toLocaleDateString() : '-'}</span>;
               case 'actions':
@@ -278,7 +291,7 @@ export function PermissionDefinitionsPage(): ReactElement {
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(columnKey) => {
-            if (columnKey === 'isActive' || columnKey === 'actions') return;
+            if (columnKey === 'isActive' || columnKey === 'platforms' || columnKey === 'actions') return;
             pagedGrid.handleSort(columnKey);
           }}
           renderSortIcon={renderSortIcon}

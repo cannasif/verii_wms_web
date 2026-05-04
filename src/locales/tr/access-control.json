@@ -19,6 +19,13 @@
       "groups": "Kullanıcı seçilen tüm gruplardan birleşik izinleri alır.",
       "save": "Atamalar bir sonraki yetkilendirme kontrolleri için hemen uygulanır. Kullanıcılar oturumlarını yenileyebilir.",
       "systemAdminNote": "Kullanıcının sistem yöneticisi grubu varsa, ayrıntılı izinler atlanır."
+    },
+    "wmsScopePolicy": {
+      "code": "Policy kodu backend enforcement ve support akışlarında sabit anahtar olarak kullanılır.",
+      "name": "Operasyon ekiplerinin bu politikayı neden kullanacağını açıklayan yönetimsel ad.",
+      "entityType": "Politikanın hangi belge/iş akışı tipi için geçerli olduğunu belirler.",
+      "scopeType": "Kapsam daraltma şekli: tam erişim, şube, depo veya sadece atanan kayıtlar.",
+      "description": "İsteğe bağlı açıklama. Support ve audit tarafında bağlam sağlar."
     }
   },
   "permissionDefinitions": {
@@ -127,6 +134,81 @@
     "noGroups": "Kullanılabilir izin grubu yok",
     "selectAll": "Tümünü seç"
   },
+  "wmsScopePolicies": {
+    "title": "WMS Kapsam Politikaları",
+    "description": "Depo, şube ve atama bazlı veri kapsamı kurallarını yönetin",
+    "add": "Politika Ekle",
+    "stats": {
+      "total": "Toplam Politika",
+      "active": "Aktif Politika",
+      "entities": "Kapsanan Akış"
+    },
+    "form": {
+      "addTitle": "WMS Kapsam Politikası Ekle",
+      "editTitle": "WMS Kapsam Politikasını Düzenle",
+      "addDescription": "Yeni bir veri kapsamı politikası tanımlayın.",
+      "editDescription": "Politika davranışını ve kapsam tipini güncelleyin.",
+      "code": "Kod",
+      "codePlaceholder": "Politika kodu seçin",
+      "codeEmpty": "Uygun politika kodu bulunamadı",
+      "name": "Ad",
+      "namePlaceholder": "Politika görünen adı",
+      "entityType": "Entity Tipi",
+      "entityTypePlaceholder": "Entity tipi seçin",
+      "scopeType": "Kapsam Tipi",
+      "scopeTypePlaceholder": "Kapsam tipi seçin",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Operasyonel bağlamı açıklayın",
+      "includeSelf": "Kendi Kayıtlarını Dahil Et",
+      "includeSelfHint": "Assigned-only veya branch/depo kısıtlarında kullanıcının kendi kayıtlarını ayrıca görmesine izin verir.",
+      "isActive": "Aktif",
+      "isActiveHint": "Pasif politikalar çözümleme ve atama akışlarında dikkate alınmaz."
+    },
+    "table": {
+      "code": "Kod",
+      "name": "Ad",
+      "entityType": "Entity Tipi",
+      "scopeType": "Kapsam Tipi",
+      "includeSelf": "Kendini Dahil Et",
+      "isActive": "Aktif"
+    },
+    "delete": {
+      "confirmTitle": "WMS Kapsam Politikasını Sil",
+      "confirmMessage": "\"{{name}}\" politikasını silmek istediğinizden emin misiniz?"
+    }
+  },
+  "wmsScopeAssignments": {
+    "title": "WMS Kapsam Atamaları",
+    "description": "Kullanıcıların hangi şube/depo ve kayıt kapsamında çalışacağını yönetin",
+    "selectUser": "Kullanıcı Seç",
+    "selectUserPlaceholder": "Ara ve kullanıcı seç...",
+    "selectUserHint": "Scope atamalarını düzenlemek için bir kullanıcı seçin",
+    "noUserSelected": "Henüz kullanıcı seçilmedi",
+    "noUsers": "Kullanıcı bulunamadı",
+    "assignedPolicies": "Atanan Politikalar",
+    "resolutionScope": "İncelenen Akış",
+    "statusLabel": "Durum",
+    "statusPending": "Kaydedilmemiş değişiklik var",
+    "statusCurrent": "Sunucu ile senkron",
+    "editorTitle": "Atama Editörü",
+    "editorDescription": "Kullanıcıya birden fazla entity tipi için şube/depo bazlı kapsam tanımlayabilirsiniz.",
+    "addAssignment": "Atama Ekle",
+    "empty": "Bu kullanıcı için henüz WMS scope ataması yok.",
+    "policyPlaceholder": "Politika seçin",
+    "branchCodePlaceholder": "Şube kodu",
+    "warehousePlaceholder": "Depo seçin",
+    "previewTitle": "Erişim Özeti",
+    "previewDescription": "Seçili entity tipi için effective scope çözümünü gösterir.",
+    "entityTypePlaceholder": "Entity tipi seçin",
+    "previewEmpty": "Bir kullanıcı ve entity tipi seçildiğinde effective scope burada görünür.",
+    "previewUnrestricted": "Tam erişim",
+    "previewIncludeSelf": "Kendi kayıtları dahil",
+    "previewAssignedOnly": "Sadece atanan kayıtlar",
+    "previewBranches": "Şubeler",
+    "previewWarehouses": "Depolar",
+    "previewAssignments": "Eşleşen Atamalar",
+    "noExplicitPolicy": "Açık politika yok"
+  },
   "common": {
     "cancel": "Vazgeç",
     "saving": "Kaydediliyor...",
@@ -147,6 +229,8 @@
     "accessControl": "Erişim Kontrolü",
     "permissionDefinitions": "İzin Tanımları",
     "permissionGroups": "İzin Grupları",
-    "userGroupAssignments": "Kullanıcı Grup Atamaları"
+    "userGroupAssignments": "Kullanıcı Grup Atamaları",
+    "wmsScopePolicies": "WMS Kapsam Politikaları",
+    "wmsScopeAssignments": "WMS Kapsam Atamaları"
   }
 }

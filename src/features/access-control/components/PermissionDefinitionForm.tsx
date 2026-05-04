@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -61,6 +62,8 @@ export function PermissionDefinitionForm({
       name: '',
       description: '',
       isActive: true,
+      availableOnWeb: true,
+      availableOnMobile: false,
     },
   });
   const isFormValid = form.formState.isValid;
@@ -72,6 +75,8 @@ export function PermissionDefinitionForm({
         name: item.name,
         description: item.description ?? '',
         isActive: item.isActive,
+        availableOnWeb: item.availableOnWeb,
+        availableOnMobile: item.availableOnMobile,
       });
     } else {
       form.reset({
@@ -79,6 +84,8 @@ export function PermissionDefinitionForm({
         name: '',
         description: '',
         isActive: true,
+        availableOnWeb: true,
+        availableOnMobile: false,
       });
     }
   }, [item, form, open]);
@@ -221,6 +228,42 @@ export function PermissionDefinitionForm({
                   </FormItem>
                 )}
               />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="availableOnWeb"
+                  render={({ field }) => (
+                    <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-white/3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <FormLabel>Web</FormLabel>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">Bu izin web uygulamasında kullanılabilir.</div>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="availableOnMobile"
+                  render={({ field }) => (
+                    <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-white/3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <FormLabel>Mobile</FormLabel>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">Bu izin mobil akışlarda kullanıcıya verilebilir.</div>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </div>
+                    </FormItem>
+                  )}
+                />
               </div>
             </form>
           </Form>

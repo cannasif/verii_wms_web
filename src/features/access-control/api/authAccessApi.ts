@@ -4,8 +4,10 @@ import type { ApiResponse } from '../types/access-control.types';
 import type { MyPermissionsDto } from '../types/access-control.types';
 
 export const authAccessApi = {
-  getMyPermissions: async (): Promise<MyPermissionsDto> => {
-    const response = await api.get<ApiResponse<MyPermissionsDto>>('/api/auth/me/permissions');
+  getMyPermissions: async (platform: 'web' | 'mobile' = 'web'): Promise<MyPermissionsDto> => {
+    const response = await api.get<ApiResponse<MyPermissionsDto>>('/api/auth/me/permissions', {
+      params: { platform },
+    });
     return extractData(response as ApiResponse<MyPermissionsDto>);
   },
 };

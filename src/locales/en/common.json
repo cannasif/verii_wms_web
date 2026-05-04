@@ -314,6 +314,8 @@
     "mailSettings": "Mail Settings",
     "hangfireMonitoring": "Hangfire Monitoring",
     "traceExplorer": "Trace Explorer",
+    "wmsScopePolicies": "WMS Scope Policies",
+    "wmsScopeAssignments": "WMS Scope Assignments",
     "erp": "ERP",
     "erpCustomers": "Customers",
     "erpStocks": "Stocks",

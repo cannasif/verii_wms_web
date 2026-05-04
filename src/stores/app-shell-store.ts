@@ -66,7 +66,7 @@ export const useAppShellStore = create<AppShellStoreState>()(
           get().setBootstrapStatus('loading', null);
 
           try {
-            const permissions = await authAccessApi.getMyPermissions();
+            const permissions = await authAccessApi.getMyPermissions('web');
             usePermissionsStore.getState().setPermissions(permissions.userId, permissions);
             get().setBootstrapStatus('ready', null);
           } catch (error) {

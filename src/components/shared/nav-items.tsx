@@ -471,6 +471,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.userGroupAssignments', titleFallback: 'Kullanıcı Grup Atamaları', href: '/access-control/user-group-assignments' },
               { title: 'sidebar.permissionGroups', titleFallback: 'Yetki Grupları', href: '/access-control/permission-groups' },
               { title: 'sidebar.permissionDefinitions', titleFallback: 'Yetki Tanımları', href: '/access-control/permission-definitions' },
+              { title: 'sidebar.wmsScopePolicies', titleFallback: 'WMS Kapsam Politikaları', href: '/access-control/wms-scope-policies' },
+              { title: 'sidebar.wmsScopeAssignments', titleFallback: 'WMS Kapsam Atamaları', href: '/access-control/wms-scope-assignments' },
             ],
           },
           {

@@ -75,6 +75,8 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/access-control/permission-definitions': 'access-control.permission-definitions.view',
   '/access-control/permission-groups': 'access-control.permission-groups.view',
   '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
+  '/access-control/wms-scope-policies': 'access-control.wms-scope-policies.view',
+  '/access-control/wms-scope-assignments': 'access-control.wms-scope-assignments.view',
   '/users/mail-settings': 'access-control.mail-settings.view',
   '/hangfire-monitoring': 'access-control.hangfire-monitoring.view',
   '/trace-explorer': 'access-control.trace-explorer.view',
@@ -142,6 +144,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/access-control\/permission-definitions(\/|$)/, permission: 'access-control.permission-definitions.view' },
   { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
+  { pattern: /^\/access-control\/wms-scope-policies(\/|$)/, permission: 'access-control.wms-scope-policies.view' },
+  { pattern: /^\/access-control\/wms-scope-assignments(\/|$)/, permission: 'access-control.wms-scope-assignments.view' },
   { pattern: /^\/users\/mail-settings(\/|$)/, permission: 'access-control.mail-settings.view' },
   { pattern: /^\/hangfire-monitoring(\/|$)/, permission: 'access-control.hangfire-monitoring.view' },
   { pattern: /^\/trace-explorer(\/|$)/, permission: 'access-control.trace-explorer.view' },
@@ -177,6 +181,8 @@ export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
   'access-control.permission-groups.view',
   'access-control.user-management.view',
   'access-control.user-group-assignments.view',
+  'access-control.wms-scope-policies.view',
+  'access-control.wms-scope-assignments.view',
 ] as const;
 
 export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.view' as const;
@@ -188,6 +194,7 @@ export const ACCESS_CONTROL_ADMIN_ONLY_PATTERNS: RegExp[] = [];
 export const PERMISSION_CODE_ALIASES: Record<string, string[]> = {
   'access-control.user-group-assignments.view': ['access-control.user-management.view'],
   'access-control.user-group-assignments.update': ['access-control.user-management.update'],
+  'access-control.wms-scope-assignments.view': ['access-control.wms-scope-policies.view'],
 };
 
 export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = {
@@ -222,6 +229,8 @@ export const PERMISSION_SCOPE_DISPLAY: Record<string, PermissionScopeDisplay> = 
   'access-control.permission-definitions': { key: 'sidebar.permissionDefinitions', fallback: 'İzin Tanımları' },
   'access-control.permission-groups': { key: 'sidebar.permissionGroups', fallback: 'İzin Grupları' },
   'access-control.user-group-assignments': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanıcı Grup Atamaları' },
+  'access-control.wms-scope-policies': { key: 'sidebar.wmsScopePolicies', fallback: 'WMS Kapsam Politikaları' },
+  'access-control.wms-scope-assignments': { key: 'sidebar.wmsScopeAssignments', fallback: 'WMS Kapsam Atamaları' },
   'access-control.mail-settings': { key: 'sidebar.mailSettings', fallback: 'Mail Ayarları' },
   'access-control.hangfire-monitoring': { key: 'sidebar.hangfireMonitoring', fallback: 'Hangfire İzleme' },
   'access-control.trace-explorer': { key: 'sidebar.traceExplorer', fallback: 'Trace Explorer' },
@@ -314,6 +323,17 @@ export const PERMISSION_CODE_CATALOG: string[] = Array.from(
       .map((code) => code.trim())
   )
 ).sort((a, b) => a.localeCompare(b));
+
+export function isPermissionCodeAvailableOnMobile(code: string): boolean {
+  return code === 'dashboard.view'
+    || code.startsWith('wms.goods-receipt.')
+    || code.startsWith('wms.transfer.')
+    || code.startsWith('wms.warehouse.inbound.')
+    || code.startsWith('wms.warehouse.outbound.')
+    || code.startsWith('wms.shipment.')
+    || code.startsWith('wms.inventory-count.')
+    || code.startsWith('wms.package.');
+}
 
 export function getRoutesForPermissionCode(code: string): string[] {
   return Object.entries(ROUTE_PERMISSION_MAP)

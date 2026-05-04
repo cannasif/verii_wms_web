@@ -314,6 +314,8 @@
     "mailSettings": "Mail Ayarları",
     "hangfireMonitoring": "Hangfire İzleme",
     "traceExplorer": "Trace Explorer",
+    "wmsScopePolicies": "WMS Kapsam Politikaları",
+    "wmsScopeAssignments": "WMS Kapsam Atamaları",
     "erp": "ERP",
     "erpCustomers": "Cariler",
     "erpStocks": "Stoklar",

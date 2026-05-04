@@ -5,6 +5,8 @@ export const createPermissionDefinitionSchema = z.object({
   name: z.string().min(1).max(150),
   description: z.string().max(500).optional().nullable(),
   isActive: z.boolean(),
+  availableOnWeb: z.boolean(),
+  availableOnMobile: z.boolean(),
 });
 
 export const updatePermissionDefinitionSchema = createPermissionDefinitionSchema.partial();
