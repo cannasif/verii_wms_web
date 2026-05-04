@@ -13,6 +13,8 @@
   "summaryTitle": "Summary",
   "summaryDescription": "Correlated record summary for trace id {{traceId}}",
   "summaryEmpty": "No trace id has been searched yet.",
+  "timelineTitle": "Timeline",
+  "timelineDescription": "Events within the same trace are listed starting from the newest record.",
   "firstSeen": "First Seen",
   "lastSeen": "Last Seen",
   "auditTitle": "Audit Records",
@@ -45,6 +47,13 @@
   "traceFooterTitle": "Correlation",
   "traceFooterDescription": "This view brings audit, Hangfire, and notification chains together around one trace.",
   "loadError": "Trace records could not be loaded.",
+  "timeline": {
+    "audit": "Audit",
+    "jobExecution": "Job Execution",
+    "jobFailure": "Job Failure",
+    "notification": "Notification",
+    "integration": "Integration"
+  },
   "summary": {
     "audit": "Audit",
     "jobExecution": "Job Execution",

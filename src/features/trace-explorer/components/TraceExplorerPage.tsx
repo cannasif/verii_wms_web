@@ -52,6 +52,56 @@ export function TraceExplorerPage(): ReactElement {
     return error?.traceId ?? null;
   }, [traceQuery.error]);
 
+  const timelineItems = useMemo(() => {
+    const data = traceQuery.data;
+    if (!data) return [];
+
+    return [
+      ...data.auditLogs.map((item) => ({
+        id: `audit-${item.id}`,
+        timestamp: item.createdDate ?? '',
+        kind: t('timeline.audit'),
+        title: `${item.entityType} · ${item.actionType}`,
+        subtitle: item.entityId,
+        status: item.result,
+      })),
+      ...data.jobExecutions.map((item) => ({
+        id: `job-exec-${item.id}`,
+        timestamp: item.startedAt,
+        kind: t('timeline.jobExecution'),
+        title: item.jobName,
+        subtitle: item.jobId,
+        status: item.status,
+      })),
+      ...data.jobFailures.map((item) => ({
+        id: `job-failure-${item.id}`,
+        timestamp: item.failedAt,
+        kind: t('timeline.jobFailure'),
+        title: item.jobName,
+        subtitle: item.jobId,
+        status: item.reason || item.exceptionType || 'Failed',
+      })),
+      ...data.notifications.map((item) => ({
+        id: `notification-${item.id}`,
+        timestamp: item.createdDate ?? item.deliveredAt ?? '',
+        kind: t('timeline.notification'),
+        title: item.title,
+        subtitle: item.channel,
+        status: item.isRead ? t('read') : t('unread'),
+      })),
+      ...data.integrations.map((item) => ({
+        id: `integration-${item.id}`,
+        timestamp: item.createdDate ?? item.startedAt,
+        kind: t('timeline.integration'),
+        title: item.operation,
+        subtitle: item.targetSystem,
+        status: item.status,
+      })),
+    ]
+      .filter((item) => item.timestamp)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [traceQuery.data, t]);
+
   const handleSearch = (): void => {
     const normalized = draftTraceId.trim();
     if (!normalized) return;
@@ -168,6 +218,31 @@ export function TraceExplorerPage(): ReactElement {
                 <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{t('lastSeen')}</div>
                 <div className="mt-1 text-sm text-slate-900">{formatDate(traceQuery.data?.summary.lastSeenAt)}</div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Activity className="h-5 w-5" />{t('timelineTitle')}</CardTitle>
+              <CardDescription>{t('timelineDescription')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {timelineItems.length === 0 ? (
+                <div className="text-sm text-slate-500">{t('empty')}</div>
+              ) : timelineItems.map((item) => (
+                <div key={item.id} className="flex gap-4 rounded-lg border border-slate-200 p-4">
+                  <div className="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full bg-cyan-500" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="outline">{item.kind}</Badge>
+                      <Badge variant="secondary">{item.status}</Badge>
+                    </div>
+                    <div className="mt-2 font-medium text-slate-900">{item.title}</div>
+                    <div className="text-sm text-slate-600">{item.subtitle}</div>
+                    <div className="mt-1 text-xs text-slate-500">{formatDate(item.timestamp)}</div>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 

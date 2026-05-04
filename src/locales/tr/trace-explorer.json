@@ -13,6 +13,8 @@
   "summaryTitle": "Özet",
   "summaryDescription": "{{traceId}} trace id için korele kayıt özeti",
   "summaryEmpty": "Henüz bir trace id aranmadı.",
+  "timelineTitle": "Zaman Çizgisi",
+  "timelineDescription": "Aynı trace içindeki olaylar en son kayıttan başlayarak listelenir.",
   "firstSeen": "İlk Görülme",
   "lastSeen": "Son Görülme",
   "auditTitle": "Audit Kayıtları",
@@ -45,6 +47,13 @@
   "traceFooterTitle": "Korelasyon",
   "traceFooterDescription": "Bu görünüm audit, Hangfire ve notification zincirini tek trace etrafında toplar.",
   "loadError": "Trace kayıtları yüklenemedi.",
+  "timeline": {
+    "audit": "Audit",
+    "jobExecution": "Job Başarı",
+    "jobFailure": "Job Hata",
+    "notification": "Notification",
+    "integration": "Entegrasyon"
+  },
   "summary": {
     "audit": "Audit",
     "jobExecution": "Job Başarı",
