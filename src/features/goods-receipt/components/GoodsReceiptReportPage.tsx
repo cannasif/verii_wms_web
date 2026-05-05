@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -31,6 +33,7 @@ function mapSortBy(value: ColumnKey): string {
 export function GoodsReceiptReportPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.goods-receipt');
   const [selectedGrHeaderId, setSelectedGrHeaderId] = useState<number | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'goods-receipt-report', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageNumber: 1, pageNumberBase: 1, mapSortBy });
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
@@ -57,6 +60,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   const paginationInfoText = t('goodsReceipt.report.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <Card><CardHeader><CardTitle>{t('goodsReceipt.report.title')}</CardTitle></CardHeader><CardContent>
         <PagedDataGrid<GrHeader, ColumnKey>
           columns={columns}
@@ -72,10 +76,10 @@ export function GoodsReceiptReportPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('goodsReceipt.report.error')}
           emptyText={t('goodsReceipt.report.noData')}
-          showActionsColumn
+          showActionsColumn={permission.canView}
           actionsHeaderLabel={t('goodsReceipt.report.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>}
+          renderActionsCell={(row) => <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)} disabled={!permission.canView}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

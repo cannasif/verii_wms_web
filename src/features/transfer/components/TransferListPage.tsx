@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -66,6 +68,7 @@ function mapSortBy(value: TransferColumnKey): string {
 export function TransferListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.transfer');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
 
   const pagedGrid = usePagedDataGrid<TransferColumnKey>({
@@ -171,6 +174,7 @@ export function TransferListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <Card>
         <CardHeader>
           <CardTitle>{t('transfer.list.title')}</CardTitle>
@@ -218,11 +222,11 @@ export function TransferListPage(): ReactElement {
             errorText={t('transfer.list.error')}
             emptyText={t('transfer.list.noData')}
             rowClassName="cursor-pointer"
-            onRowClick={(row) => setSelectedHeaderId(row.id)}
-            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            onRowClick={permission.canView ? (row) => setSelectedHeaderId(row.id) : undefined}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
             actionsHeaderLabel={t('goodsReceipt.report.actions')}
             renderActionsCell={(row) => (
-              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)}>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
                 <Eye className="size-4" />
                 <span className="ml-2">{t('transfer.list.viewDetails')}</span>
               </Button>

@@ -6,6 +6,8 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -86,6 +88,7 @@ export function AssignedShipmentListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.shipment');
   const pageKey = 'shipment-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
 
@@ -178,6 +181,7 @@ export function AssignedShipmentListPage(): ReactElement {
 
   return (
     <div className="space-y-6 crm-page">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
         <PagedDataGrid<ShipmentHeader, AssignedShipmentColumnKey>
           columns={columns}
@@ -227,11 +231,11 @@ export function AssignedShipmentListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('shipment.assignedList.error')}
           emptyText={t('shipment.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)}>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)} disabled={!permission.canView}>
                 {t('shipment.list.viewDetails')}
               </Button>
               <Button
@@ -239,6 +243,7 @@ export function AssignedShipmentListPage(): ReactElement {
                 size="sm"
                 className="bg-emerald-500 text-white hover:bg-emerald-600"
                 onClick={() => navigate(`/shipment/collection/${item.id}`)}
+                disabled={!permission.canUpdate}
               >
                 {t('common.start')}
               </Button>
