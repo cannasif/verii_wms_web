@@ -102,7 +102,7 @@ export function WarehouseInboundApprovalPage(): ReactElement {
   });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
-    if (!permission.canUpdate) {
+    if (!permission.canApprove) {
       return;
     }
 
@@ -151,11 +151,11 @@ export function WarehouseInboundApprovalPage(): ReactElement {
                   <Eye className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.viewDetails')}</span>
                 </Button>
-                <Button variant="default" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}>
+                <Button variant="default" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}>
                   <Check className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.approve')}</span>
                 </Button>
-                <Button variant="destructive" size="sm" disabled={!permission.canUpdate || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}>
+                <Button variant="destructive" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}>
                   <X className="size-4" />
                   <span className="ml-2">{t('warehouse.inbound.approval.reject')}</span>
                 </Button>

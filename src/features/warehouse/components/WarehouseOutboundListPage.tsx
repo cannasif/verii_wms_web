@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -58,6 +60,7 @@ function mapSortBy(value: WarehouseOutboundColumnKey): string {
 export function WarehouseOutboundListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.outbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
 
@@ -162,6 +165,7 @@ export function WarehouseOutboundListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <Card>
         <CardHeader>
           <CardTitle>{t('warehouse.outbound.list.title')}</CardTitle>
@@ -213,11 +217,11 @@ export function WarehouseOutboundListPage(): ReactElement {
             errorText={t('warehouse.outbound.list.error')}
             emptyText={t('warehouse.outbound.list.noData')}
             rowClassName="cursor-pointer"
-            onRowClick={handleRowClick}
-            showActionsColumn
+            onRowClick={permission.canView ? handleRowClick : undefined}
+            showActionsColumn={permission.canView}
             actionsHeaderLabel={t('warehouse.outbound.list.actions')}
             renderActionsCell={(row) => (
-              <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)}>
+              <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)} disabled={!permission.canView}>
                 <Eye className="size-4" />
                 <span className="ml-2">{t('warehouse.outbound.list.viewDetails')}</span>
               </Button>

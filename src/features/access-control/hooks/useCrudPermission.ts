@@ -6,9 +6,10 @@ export interface CrudPermissionAccess {
   canCreate: boolean;
   canUpdate: boolean;
   canDelete: boolean;
+  canApprove: boolean;
   canEdit: boolean;
   canMutate: boolean;
-  can: (action: 'view' | 'create' | 'update' | 'delete') => boolean;
+  can: (action: 'view' | 'create' | 'update' | 'delete' | 'approve') => boolean;
 }
 
 export function useCrudPermission(scope: string): CrudPermissionAccess {
@@ -19,14 +20,16 @@ export function useCrudPermission(scope: string): CrudPermissionAccess {
     const canCreate = permissionAccess.can(`${scope}.create`);
     const canUpdate = permissionAccess.can(`${scope}.update`);
     const canDelete = permissionAccess.can(`${scope}.delete`);
+    const canApprove = permissionAccess.can(`${scope}.approve`) || canUpdate;
 
     return {
       canView,
       canCreate,
       canUpdate,
       canDelete,
+      canApprove,
       canEdit: canUpdate,
-      canMutate: canCreate || canUpdate || canDelete,
+      canMutate: canCreate || canUpdate || canDelete || canApprove,
       can: (action) => permissionAccess.can(`${scope}.${action}`),
     };
   }, [permissionAccess, scope]);

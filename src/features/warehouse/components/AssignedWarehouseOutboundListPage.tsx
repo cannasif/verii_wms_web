@@ -5,6 +5,8 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -60,6 +62,7 @@ function formatDateTime(value: string | null): string {
 export function AssignedWarehouseOutboundListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.warehouse.outbound');
   const pageKey = 'warehouse-outbound-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
@@ -123,6 +126,7 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
 
   return (
     <div className="space-y-6 crm-page">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
         <PagedDataGrid<WarehouseHeader, AssignedWarehouseOutboundColumnKey>
           columns={columns}
@@ -153,7 +157,7 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('warehouse.outbound.assignedList.error')}
           emptyText={t('warehouse.outbound.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <Button
@@ -163,6 +167,7 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
                 setSelectedHeaderId(item.id);
                 setSelectedDocumentType(item.documentType);
               }}
+              disabled={!permission.canView}
             >
               {t('warehouse.outbound.list.viewDetails')}
             </Button>
