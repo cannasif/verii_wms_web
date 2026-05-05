@@ -8,14 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { productionApi } from '../api/production-api';
 import type { ProductionHeaderListItem } from '../types/production';
 
@@ -95,10 +96,11 @@ export function ProductionListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
-  const canUpdateProduction = permissionAccess.can('wms.production.update');
-  const canDeleteProduction = permissionAccess.can('wms.production.delete');
-  const canCreateTransfer = permissionAccess.can('wms.production-transfer.create');
+  const productionPermission = useCrudPermission('wms.production');
+  const productionTransferPermission = useCrudPermission('wms.production-transfer');
+  const canUpdateProduction = productionPermission.canUpdate;
+  const canDeleteProduction = productionPermission.canDelete;
+  const canCreateTransfer = productionTransferPermission.canCreate;
   const pageKey = 'production-list';
   const [itemToDelete, setItemToDelete] = useState<ProductionHeaderListItem | null>(null);
 
@@ -200,6 +202,7 @@ export function ProductionListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!productionPermission.canMutate ? <PermissionNotice message={t('common.accessDeniedMessage')} /> : null}
       <PagedDataGrid<ProductionHeaderListItem, ProductionColumnKey>
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -241,7 +244,7 @@ export function ProductionListPage(): ReactElement {
         isError={Boolean(error)}
         errorText={error instanceof Error ? error.message : t('production.list.error', { defaultValue: 'Missing translation' })}
         emptyText={t('production.list.noData', { defaultValue: 'Missing translation' })}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
+        showActionsColumn={orderedVisibleColumns.includes('actions') && (productionPermission.canView || canUpdateProduction || canDeleteProduction || canCreateTransfer)}
         actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex min-w-[220px] flex-wrap items-center justify-end gap-2">
@@ -268,7 +271,7 @@ export function ProductionListPage(): ReactElement {
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)}>
               {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/production/process/${row.id}`)}>
+            <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/production/process/${row.id}`)} disabled={!canUpdateProduction}>
               {t('production.list.openProcess', { defaultValue: getProcessLabel(row.status) })}
             </Button>
             {row.documentNo && canCreateTransfer ? (

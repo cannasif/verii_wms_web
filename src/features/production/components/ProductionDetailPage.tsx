@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { productionApi } from '../api/production-api';
 import { productionTransferApi } from '@/features/production-transfer/api/production-transfer-api';
 
@@ -29,9 +30,9 @@ export function ProductionDetailPage(): ReactElement {
   const { id } = useParams();
   const headerId = Number(id);
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
-  const canUpdateProduction = permissionAccess.can('wms.production.update');
-  const canDeleteProduction = permissionAccess.can('wms.production.delete');
+  const permission = useCrudPermission('wms.production');
+  const canUpdateProduction = permission.canUpdate;
+  const canDeleteProduction = permission.canDelete;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -121,6 +122,7 @@ export function ProductionDetailPage(): ReactElement {
     >
       {detailQuery.data ? (
         <div className="space-y-6">
+          {!permission.canMutate ? <PermissionNotice /> : null}
           <InfoCallout
             title={t('production.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
             body={

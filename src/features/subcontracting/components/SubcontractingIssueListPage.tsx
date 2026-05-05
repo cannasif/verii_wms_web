@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -18,6 +20,7 @@ type ColumnKey = 'documentNo' | 'documentDate' | 'customerCode' | 'customerName'
 export function SubcontractingIssueListPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.subcontracting.issue');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'subcontracting-issue-list', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
@@ -43,6 +46,7 @@ export function SubcontractingIssueListPage(): ReactElement {
 
   return (
     <div className="space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <Card><CardHeader><CardTitle>{t('subcontracting.issue.list.title')}</CardTitle></CardHeader><CardContent>
         <PagedDataGrid<SubcontractingHeader, ColumnKey>
           columns={columns}
@@ -54,7 +58,7 @@ export function SubcontractingIssueListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.issue.list.error')}
           emptyText={t('subcontracting.issue.list.noData')}
-          showActionsColumn
+          showActionsColumn={permission.canView}
           actionsHeaderLabel={t('subcontracting.issue.list.actions')}
           iconOnlyActions={false}
           renderActionsCell={(row) => <Button variant="ghost" size="sm" onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span></Button>}
