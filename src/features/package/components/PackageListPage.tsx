@@ -24,6 +24,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import type { PHeaderDto } from '../types/package';
 
 type PackageColumnKey =
@@ -224,6 +225,7 @@ export function PackageListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <Card>
         <CardHeader>
           <CardTitle>{t('package.list.title')}</CardTitle>
@@ -284,11 +286,11 @@ export function PackageListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('package.list.error')}
             emptyText={t('package.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
             actionsHeaderLabel={t('package.list.actions')}
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${row.id}`)}>
+                <Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${row.id}`)} disabled={!permission.canView}>
                   <Eye className="size-4" />
                   <span className="ml-2">{t('package.list.detail')}</span>
                 </Button>

@@ -117,7 +117,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
           showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
-            <Button variant="ghost" size="sm" onClick={() => {
+            <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => {
               setSelectedHeaderId(item.id);
               setSelectedDocumentType(item.documentType);
             }}>

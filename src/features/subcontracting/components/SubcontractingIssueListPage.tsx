@@ -61,7 +61,7 @@ export function SubcontractingIssueListPage(): ReactElement {
           showActionsColumn={permission.canView}
           actionsHeaderLabel={t('subcontracting.issue.list.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <Button variant="ghost" size="sm" onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span></Button>}
+          renderActionsCell={(row) => <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span></Button>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}
