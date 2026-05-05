@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 import { loginRequestSchema, type LoginRequest } from '../types/auth';
 import { useLogin } from '../hooks/useLogin';
@@ -25,11 +26,11 @@ export function LoginPage(): React.JSX.Element {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: branches } = useBranches();
-  const { mutate: login, isPending } = useLogin(branches);
+  const { mutate: loginMutate, isPending } = useLogin(branches);
   const { token, isAuthenticated, logout } = useAuthStore();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
-  const [isBgAnimationPaused, setIsBgAnimationPaused] = useState(false);
+  const [isBgAnimationPaused, setIsBgAnimationPaused] = useState(true);
 
   const form = useForm<LoginRequest>({
     resolver: zodResolver(loginRequestSchema),
@@ -55,7 +56,16 @@ export function LoginPage(): React.JSX.Element {
   }, [searchParams, setSearchParams, t, token, isAuthenticated, navigate, logout]);
 
   const onSubmit = (data: LoginRequest): void => {
-    login(data);
+    form.clearErrors('root');
+    loginMutate(data, {
+      onError: (error: Error) => {
+        const status = isAxiosError(error) ? error.response?.status : undefined;
+        const raw = (error.message ?? '').trim();
+        const message =
+          status === 401 ? (raw || t('auth.login.wrongPassword')) : (raw || t('auth.login.loginError'));
+        form.setError('root', { type: 'server', message });
+      },
+    });
   };
 
   return (
@@ -127,38 +137,38 @@ export function LoginPage(): React.JSX.Element {
                   name="branchId"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormControl>
-                        <div className="group relative">
-                          <Building2
-                            className={`absolute left-4 top-1/2 -translate-y-1/2 ${fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
-                            size={18}
-                          />
-                          <Select onValueChange={field.onChange} value={field.value}>
+                      <div className="group relative">
+                        <Building2
+                          className={`absolute left-4 top-1/2 z-10 -translate-y-1/2 ${fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
+                          size={18}
+                        />
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
                             <SelectTrigger
                               className={`h-14 w-full rounded-xl px-12 pr-4 text-sm text-white transition-all focus:ring-0 ${
                                 fieldState.invalid
-                                  ? 'border-red-500/80 bg-red-950/20'
-                                  : 'border-white/15 bg-black/25 focus:border-cyan-500'
+                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                  : 'border border-white/15 bg-black/25 focus:border-cyan-500 focus-visible:!border-cyan-500'
                               }`}
                             >
                               <SelectValue placeholder={t('auth.login.selectBranch')} />
                             </SelectTrigger>
-                            <SelectContent className="border-white/10 bg-[#0b1228] text-white">
-                              {branches?.length ? (
-                                branches.map((branch) => (
-                                  <SelectItem key={branch.id} value={branch.id} className="cursor-pointer focus:bg-cyan-500/20">
-                                    {branch.name}
-                                  </SelectItem>
-                                ))
-                              ) : (
-                                <SelectItem value="no-branch" disabled>
-                                  {t('auth.login.branchNotFound')}
+                          </FormControl>
+                          <SelectContent className="border-white/10 bg-[#0b1228] text-white">
+                            {branches?.length ? (
+                              branches.map((branch) => (
+                                <SelectItem key={branch.id} value={branch.id} className="cursor-pointer focus:bg-cyan-500/20">
+                                  {branch.name}
                                 </SelectItem>
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
+                              ))
+                            ) : (
+                              <SelectItem value="no-branch" disabled>
+                                {t('auth.login.branchNotFound')}
+                              </SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <FormMessage className="text-xs text-red-400" />
                     </FormItem>
                   )}
@@ -167,75 +177,95 @@ export function LoginPage(): React.JSX.Element {
                 <FormField
                   control={form.control}
                   name="email"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormControl>
+                  render={({ field, fieldState }) => {
+                    const authFailed = !!form.formState.errors.root;
+                    const invalid = Boolean(fieldState.error) || authFailed;
+                    return (
+                      <FormItem>
                         <div className="group relative">
                           <Mail
-                            className={`absolute left-4 top-1/2 -translate-y-1/2 ${fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
+                            className={`pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 ${invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
                             size={18}
                           />
-                          <Input
-                            {...field}
-                            type="email"
-                            placeholder={t('auth.login.emailPlaceholder')}
-                            className={`h-14 rounded-xl border px-12 pr-4 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
-                              fieldState.invalid
-                                ? 'border-red-500/80 bg-red-950/20'
-                                : 'border-white/15 bg-black/25 focus-visible:border-cyan-500'
-                            }`}
-                          />
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder={t('auth.login.emailPlaceholder')}
+                              className={`h-14 rounded-xl px-12 pr-4 text-sm text-white placeholder:text-slate-500 ${
+                                invalid
+                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                  : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                              }`}
+                              onChange={(e) => {
+                                form.clearErrors('root');
+                                field.onChange(e);
+                              }}
+                            />
+                          </FormControl>
                         </div>
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-400" />
-                    </FormItem>
-                  )}
+                        <FormMessage className="text-xs text-red-400" />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
                   control={form.control}
                   name="password"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormControl>
+                  render={({ field, fieldState }) => {
+                    const authFailed = !!form.formState.errors.root;
+                    const invalid = Boolean(fieldState.error) || authFailed;
+                    return (
+                      <FormItem>
                         <div className="group relative">
                           <Lock
-                            className={`absolute left-4 top-1/2 -translate-y-1/2 ${fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
+                            className={`pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 ${invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
                             size={18}
                           />
-                          <Input
-                            {...field}
-                            type={isPasswordVisible ? 'text' : 'password'}
-                            placeholder={t('auth.login.passwordPlaceholder')}
-                            className={`h-14 rounded-xl border px-12 pr-11 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 ${
-                              fieldState.invalid
-                                ? 'border-red-500/80 bg-red-950/20'
-                                : 'border-white/15 bg-black/25 focus-visible:border-cyan-500'
-                            }`}
-                            onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
-                            onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
-                          />
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type={isPasswordVisible ? 'text' : 'password'}
+                              placeholder={t('auth.login.passwordPlaceholder')}
+                              className={`h-14 rounded-xl px-12 pr-11 text-sm text-white placeholder:text-slate-500 ${
+                                invalid
+                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                  : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                              }`}
+                              onChange={(e) => {
+                                form.clearErrors('root');
+                                field.onChange(e);
+                              }}
+                              onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
+                              onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
+                            />
+                          </FormControl>
                           <button
                             type="button"
                             onClick={() => setIsPasswordVisible((prev) => !prev)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-cyan-300"
+                            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-slate-400 transition-colors hover:text-cyan-300"
                           >
                             {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
                           </button>
                         </div>
-                      </FormControl>
-                      <div className="min-h-[18px]">
-                        {fieldState.error ? (
-                          <FormMessage className="text-xs text-red-400" />
-                        ) : capsLockActive ? (
-                          <div className="mt-1 flex w-fit items-center gap-1 rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-xs text-amber-300">
-                            <TriangleAlert size={12} />
-                            {t('auth.login.capsLockOn')}
-                          </div>
-                        ) : null}
-                      </div>
-                    </FormItem>
-                  )}
+                        <div className="min-h-[18px]">
+                          {form.formState.errors.root ? (
+                            <p className="text-xs text-red-400" role="alert">
+                              {form.formState.errors.root.message}
+                            </p>
+                          ) : fieldState.error ? (
+                            <FormMessage className="text-xs text-red-400" />
+                          ) : capsLockActive ? (
+                            <div className="mt-1 flex w-fit items-center gap-1 rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-xs text-amber-300">
+                              <TriangleAlert size={12} />
+                              {t('auth.login.capsLockOn')}
+                            </div>
+                          ) : null}
+                        </div>
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <div className="flex justify-end">

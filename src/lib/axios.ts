@@ -179,7 +179,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && error.config?.skipSessionExpiredOn401 !== true) {
       localStorage.removeItem('access_token');
       sessionStorage.removeItem('access_token');
       useAuthStore.getState().logout();
@@ -219,6 +219,7 @@ api.interceptors.response.use(
 declare module 'axios' {
   export interface AxiosRequestConfig {
     skipAuth?: boolean;
+    skipSessionExpiredOn401?: boolean;
   }
 
   export interface AxiosInstance {

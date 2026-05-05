@@ -5,10 +5,14 @@ import type { ApiRequestOptions } from '@/lib/request-utils';
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/api/auth/login', {
-      email: data.email,
-      password: data.password,
-    });
+    const response = await api.post<LoginResponse>(
+      '/api/auth/login',
+      {
+        email: data.email,
+        password: data.password,
+      },
+      { skipSessionExpiredOn401: true },
+    );
     return response;
   },
   register: async (data: LoginRequest): Promise<LoginResponse> => {
