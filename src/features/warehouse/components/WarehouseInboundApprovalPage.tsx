@@ -142,7 +142,7 @@ export function WarehouseInboundApprovalPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('warehouse.inbound.approval.error')}
             emptyText={t('warehouse.inbound.approval.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions')}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canApprove)}
             actionsHeaderLabel={t('warehouse.inbound.approval.actions')}
             iconOnlyActions={false}
             renderActionsCell={(row) => (

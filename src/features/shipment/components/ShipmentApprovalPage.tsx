@@ -77,7 +77,7 @@ export function ShipmentApprovalPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('shipment.approval.error')}
           emptyText={t('shipment.approval.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canApprove)}
           actionsHeaderLabel={t('shipment.approval.actions')}
           iconOnlyActions={false}
           renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => setSelectedHeaderId(row.id)}><Eye className="size-4" /><span className="ml-2">{t('shipment.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('shipment.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('shipment.approval.reject')}</span></Button></div>}

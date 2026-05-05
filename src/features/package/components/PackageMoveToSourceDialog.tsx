@@ -15,6 +15,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { packageApi } from '../api/package-api';
 import type { PHeaderDto, PPackageTreeDto } from '../types/package';
 
@@ -55,10 +57,12 @@ function PackageTreeMoveRow({
   node,
   selectedIds,
   onToggle,
+  disabled = false,
 }: {
   node: PackageTreeNodeRow;
   selectedIds: Set<number>;
   onToggle: (id: number) => void;
+  disabled?: boolean;
 }): ReactElement {
   return (
     <>
@@ -71,6 +75,7 @@ function PackageTreeMoveRow({
           checked={selectedIds.has(node.id)}
           onChange={() => onToggle(node.id)}
           className="h-4 w-4"
+          disabled={disabled}
         />
         <div className="min-w-0">
           <div className="font-medium text-slate-900 dark:text-white">{node.packageNo}</div>
@@ -79,7 +84,7 @@ function PackageTreeMoveRow({
         <Badge variant="outline">{node.status}</Badge>
       </div>
       {node.children.map((child) => (
-        <PackageTreeMoveRow key={child.id} node={child} selectedIds={selectedIds} onToggle={onToggle} />
+        <PackageTreeMoveRow key={child.id} node={child} selectedIds={selectedIds} onToggle={onToggle} disabled={disabled} />
       ))}
     </>
   );
@@ -94,6 +99,9 @@ export function PackageMoveToSourceDialog({
   targetPackageStatus,
 }: PackageMoveToSourceDialogProps): ReactElement {
   const { t } = useTranslation();
+  const packagePermission = useCrudPermission('wms.package');
+  const transferPermission = useCrudPermission('wms.transfer');
+  const shipmentPermission = useCrudPermission('wms.shipment');
   const [sourceHeaderLookupOpen, setSourceHeaderLookupOpen] = useState(false);
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedHeaderLabel, setSelectedHeaderLabel] = useState('');
@@ -107,6 +115,9 @@ export function PackageMoveToSourceDialog({
   });
 
   const treeRows = useMemo(() => mapTree(treeQuery.data ?? []), [treeQuery.data]);
+  const canMoveToSource =
+    packagePermission.canUpdate &&
+    (targetSourceType === 'WT' ? transferPermission.canUpdate : shipmentPermission.canUpdate);
 
   useEffect(() => {
     if (!open) {
@@ -174,6 +185,9 @@ export function PackageMoveToSourceDialog({
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+            {!canMoveToSource ? (
+              <PermissionNotice message={t('common.accessDeniedMessage')} />
+            ) : null}
             <div className="space-y-2">
               <Label>Kaynak Paketleme İşi</Label>
               <PagedLookupDialog<PHeaderDto>
@@ -182,6 +196,7 @@ export function PackageMoveToSourceDialog({
                 title="Kaynak Paketleme İşi"
                 description="Taşınacak koli veya paletin bağlı olduğu paketleme işini seçin"
                 value={selectedHeaderLabel}
+                disabled={!canMoveToSource}
                 placeholder="Paketleme işi seçin"
                 searchPlaceholder="Paket no, müşteri veya kaynak tipine göre ara"
                 emptyText="Taşınabilir paketleme işi bulunamadı"
@@ -211,6 +226,7 @@ export function PackageMoveToSourceDialog({
                 onChange={(event) => setNote(event.target.value)}
                 placeholder="İsteğe bağlı taşıma notu"
                 rows={4}
+                disabled={!canMoveToSource}
               />
             </div>
           </div>
@@ -218,7 +234,7 @@ export function PackageMoveToSourceDialog({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Badge variant="outline">Seçili paket: {selectedIds.size}</Badge>
-              <Button type="button" variant="outline" size="sm" onClick={selectAll} disabled={treeRows.length === 0}>
+              <Button type="button" variant="outline" size="sm" onClick={selectAll} disabled={!canMoveToSource || treeRows.length === 0}>
                 Tümünü Seç
               </Button>
             </div>
@@ -229,7 +245,7 @@ export function PackageMoveToSourceDialog({
                 <div className="text-sm text-slate-500">Taşınabilir paket bulunamadı.</div>
               ) : (
                 treeRows.map((node) => (
-                  <PackageTreeMoveRow key={node.id} node={node} selectedIds={selectedIds} onToggle={toggleSelection} />
+                  <PackageTreeMoveRow key={node.id} node={node} selectedIds={selectedIds} onToggle={toggleSelection} disabled={!canMoveToSource} />
                 ))
               )}
             </div>
@@ -240,7 +256,7 @@ export function PackageMoveToSourceDialog({
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel', { defaultValue: 'Missing translation' })}
           </Button>
-          <Button type="button" onClick={() => moveMutation.mutate()} disabled={moveMutation.isPending || selectedIds.size === 0}>
+          <Button type="button" onClick={() => moveMutation.mutate()} disabled={!canMoveToSource || moveMutation.isPending || selectedIds.size === 0}>
             {moveMutation.isPending
               ? (targetSourceType === 'SH' ? 'Yükleniyor...' : 'Taşınıyor...')
               : (targetSourceType === 'SH' ? 'Paleti Yükle' : 'Paketi Taşı')}
