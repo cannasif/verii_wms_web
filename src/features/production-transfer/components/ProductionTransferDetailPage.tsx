@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useUIStore } from '@/stores/ui-store';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { productionTransferApi } from '../api/production-transfer-api';
 
 function formatDate(dateString?: string | null): string {
@@ -67,10 +68,10 @@ export function ProductionTransferDetailPage(): ReactElement {
   const { id } = useParams<{ id: string }>();
   const { setPageTitle } = useUIStore();
   const detailId = Number(id ?? '');
-  const permissionAccess = usePermissionAccess();
-  const canUpdateTransfer = permissionAccess.can('wms.production-transfer.update');
-  const canCreateTransfer = permissionAccess.can('wms.production-transfer.create');
-  const canDeleteTransfer = permissionAccess.can('wms.production-transfer.delete');
+  const permission = useCrudPermission('wms.production-transfer');
+  const canUpdateTransfer = permission.canUpdate;
+  const canCreateTransfer = permission.canCreate;
+  const canDeleteTransfer = permission.canDelete;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -145,6 +146,7 @@ export function ProductionTransferDetailPage(): ReactElement {
     >
       {detailQuery.data ? (
         <div className="space-y-6">
+          {!permission.canMutate ? <PermissionNotice /> : null}
           <InfoCallout
             title={t('productionTransfer.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
             body={

@@ -25,7 +25,8 @@ import { lookupApi } from '@/services/lookup-api';
 import type { StockLookup, WarehouseLookup, YapKodLookup } from '@/services/lookup-types';
 import { userApi } from '@/features/user-management/api/user-api';
 import { permissionGroupApi } from '@/features/access-control/api/permissionGroupApi';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { productionApi } from '../api/production-api';
 import {
   createEmptyConsumptionDraft,
@@ -287,11 +288,11 @@ export function ProductionCreatePage(): ReactElement {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
+  const permission = useCrudPermission('wms.production');
   const editId = Number(searchParams.get('editId') ?? '');
   const isEditMode = Number.isFinite(editId) && editId > 0;
-  const canCreateProduction = permissionAccess.can('wms.production.create');
-  const canUpdateProduction = permissionAccess.can('wms.production.update');
+  const canCreateProduction = permission.canCreate;
+  const canUpdateProduction = permission.canUpdate;
   const canSaveProduction = isEditMode ? canUpdateProduction : canCreateProduction;
   const [draft, setDraft] = useState<ProductionPlanDraft>(() => createEmptyProductionPlanDraft());
   const [mode, setMode] = useState<'manual' | 'erp'>('manual');
@@ -957,6 +958,7 @@ export function ProductionCreatePage(): ReactElement {
         )}
       >
         <div className="space-y-4 text-sm leading-normal">
+          {!permission.canMutate ? <PermissionNotice /> : null}
           {!canSaveProduction ? (
             <InfoCallout
               title={t('production.create.permissionInfoTitle')}

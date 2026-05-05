@@ -16,7 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { lookupApi } from '@/services/lookup-api';
 import type { StockLookup } from '@/services/lookup-types';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { productionTransferApi } from '../api/production-transfer-api';
 import {
@@ -50,13 +51,13 @@ export function ProductionTransferCreatePage(): ReactElement {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
+  const permission = useCrudPermission('wms.production-transfer');
   const editId = Number(searchParams.get('editId') ?? '');
   const cloneId = Number(searchParams.get('cloneId') ?? '');
   const isEditMode = Number.isFinite(editId) && editId > 0;
   const isCloneMode = !isEditMode && Number.isFinite(cloneId) && cloneId > 0;
-  const canCreateTransfer = permissionAccess.can('wms.production-transfer.create');
-  const canUpdateTransfer = permissionAccess.can('wms.production-transfer.update');
+  const canCreateTransfer = permission.canCreate;
+  const canUpdateTransfer = permission.canUpdate;
   const canSaveTransfer = isEditMode ? canUpdateTransfer : canCreateTransfer;
   const [draft, setDraft] = useState<ProductionTransferDraft>(() => createEmptyProductionTransferDraft());
   const [suggestedLines, setSuggestedLines] = useState<Awaited<ReturnType<typeof productionTransferApi.getSuggestedLines>>>([]);
@@ -298,6 +299,7 @@ export function ProductionTransferCreatePage(): ReactElement {
       )}
     >
       <div className="space-y-6">
+        {!permission.canMutate ? <PermissionNotice /> : null}
         {!canSaveTransfer ? (
           <InfoCallout
             title={t('productionTransfer.create.permissionInfoTitle')}

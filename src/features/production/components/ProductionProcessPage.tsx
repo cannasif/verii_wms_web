@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { FormPageShell } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -95,9 +96,10 @@ export function ProductionProcessPage(): ReactElement {
   const headerId = Number(id);
   const currentUserId = useAuthStore((state) => state.user?.id);
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
-  const canUpdateProduction = permissionAccess.can('wms.production.update');
-  const canCreateTransfer = permissionAccess.can('wms.production-transfer.create');
+  const permission = useCrudPermission('wms.production');
+  const transferPermission = useCrudPermission('wms.production-transfer');
+  const canUpdateProduction = permission.canUpdate;
+  const canCreateTransfer = transferPermission.canCreate;
   const [selectedOrder, setSelectedOrder] = useState<ProductionOrderDetail | null>(null);
   const [activeOperation, setActiveOperation] = useState<ProductionOperation | null>(null);
   const [consumptionLine, setConsumptionLine] = useState<AddProductionOperationLineRequest>(() => buildEmptyLine());
@@ -1271,6 +1273,7 @@ export function ProductionProcessPage(): ReactElement {
                   </div>
                 ) : null}
 
+                {!permission.canMutate ? <PermissionNotice /> : null}
                 {!canUpdateProduction ? (
                   <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
                     {t('production.process.permissionInfo')}

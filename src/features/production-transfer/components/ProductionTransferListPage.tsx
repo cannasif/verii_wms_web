@@ -8,14 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
-import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { productionTransferApi } from '../api/production-transfer-api';
 import type { ProductionTransferListItem } from '../types/production-transfer';
 
@@ -90,10 +91,10 @@ export function ProductionTransferListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
-  const permissionAccess = usePermissionAccess();
-  const canUpdateTransfer = permissionAccess.can('wms.production-transfer.update');
-  const canCreateTransfer = permissionAccess.can('wms.production-transfer.create');
-  const canDeleteTransfer = permissionAccess.can('wms.production-transfer.delete');
+  const permission = useCrudPermission('wms.production-transfer');
+  const canUpdateTransfer = permission.canUpdate;
+  const canCreateTransfer = permission.canCreate;
+  const canDeleteTransfer = permission.canDelete;
   const pageKey = 'production-transfer-list';
   const [itemToDelete, setItemToDelete] = useState<ProductionTransferListItem | null>(null);
 
@@ -191,6 +192,7 @@ export function ProductionTransferListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice /> : null}
       <PagedDataGrid<ProductionTransferListItem, ProductionTransferColumnKey>
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -232,7 +234,7 @@ export function ProductionTransferListPage(): ReactElement {
         isError={Boolean(error)}
         errorText={error instanceof Error ? error.message : t('productionTransfer.list.error', { defaultValue: 'Missing translation' })}
         emptyText={t('productionTransfer.list.noData', { defaultValue: 'Missing translation' })}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
+        showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || canUpdateTransfer || canDeleteTransfer || canCreateTransfer)}
         actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex min-w-[220px] flex-wrap justify-end gap-2">
