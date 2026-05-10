@@ -196,8 +196,9 @@
   },
   "auth": {
     "login": {
-      "title": "System Login",
+      "title": "STOCK & SHIPMENT MANAGEMENT",
       "subtitle": "VERII WMS",
+      "slogan": "\"MANAGE YOUR INVENTORY WITH <brand>v3rii</brand>, DON’T SEARCH FOR IT.\"",
       "branch": "Branch",
       "selectBranch": "Select branch",
       "branchNotFound": "Branch not found",

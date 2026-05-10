@@ -184,8 +184,9 @@
   },
   "auth": {
     "login": {
-      "title": "تسجيل الدخول",
+      "title": "إدارة المخزون والشحن",
       "subtitle": "VERII WMS",
+      "slogan": "\"<brand>v3rii</brand> أدر مخزونك مع ، ولا تبحث عنه.\"",
       "branch": "الفرع",
       "selectBranch": "اختر فرعاً",
       "branchNotFound": "الفرع غير موجود",
