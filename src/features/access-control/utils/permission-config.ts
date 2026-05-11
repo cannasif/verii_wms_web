@@ -8,6 +8,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/transfer/list': 'wms.transfer.view',
   '/transfer/assigned': 'wms.transfer.view',
   '/transfer/approval': 'wms.transfer.update',
+  '/transfer/chains': 'wms.transfer.view',
   '/subcontracting/issue/create': 'wms.subcontracting.issue.create',
   '/subcontracting/issue/process': 'wms.subcontracting.issue.create',
   '/subcontracting/issue/list': 'wms.subcontracting.issue.view',

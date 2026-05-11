@@ -195,6 +195,7 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.transferCreate', titleFallback: 'Transfer Oluştur', href: '/transfer/create' },
               { title: 'sidebar.transferProcess', titleFallback: 'Transfer İşlem', href: '/transfer/process' },
               { title: 'sidebar.transferList', titleFallback: 'Transfer Listesi', href: '/transfer/list' },
+              { title: 'sidebar.transferChains', titleFallback: 'Transfer Zincirleri', href: '/transfer/chains' },
             ],
           },
           {
