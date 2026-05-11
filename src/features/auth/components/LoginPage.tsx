@@ -20,6 +20,15 @@ import { AuthBackground } from './AuthBackground';
 import logo from '@/assets/v3riiwms.png';
 import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert } from 'lucide-react';
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
+import {
+  Mail02Icon,
+  Call02Icon,
+  Globe02Icon,
+  WhatsappIcon,
+  TelegramIcon,
+  InstagramIcon,
+  NewTwitterIcon,
+} from 'hugeicons-react';
 
 export function LoginPage(): React.JSX.Element {
   const { t } = useTranslation('common');
@@ -272,7 +281,7 @@ export function LoginPage(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-30 left-0 right-0 z-10 text-center">
+      <div className="absolute bottom-35 left-0 right-0 z-10 text-center">
         <p className="px-4 text-sm font-light tracking-[0.2em] text-white/50 uppercase sm:text-base">
           <Trans
             i18nKey="auth.login.slogan"
@@ -285,6 +294,48 @@ export function LoginPage(): React.JSX.Element {
             }}
           />
         </p>
+
+      </div>
+      <div className="absolute bottom-15 left-0 right-0 z-10  flex flex-wrap items-center justify-center gap-4 px-4">
+        <a href="tel:+905070123018" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-lime-400 hover:bg-zinc-800 hover:border-lime-500/30 hover:shadow-[0_0_15px_rgba(132,204,22,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Call02Icon size={20} />
+        </a>
+
+        <a href="https://v3rii.com" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Globe02Icon size={20} />
+        </a>
+
+        <a href="mailto:info@v3rii.com" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-orange-400 hover:bg-zinc-800 hover:border-orange-500/30 hover:shadow-[0_0_15px_rgba(251,146,60,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Mail02Icon size={20} />
+        </a>
+
+        <a href="https://wa.me/905070123018" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-emerald-400 hover:bg-zinc-800 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <WhatsappIcon size={20} />
+        </a>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <TelegramIcon size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <InstagramIcon size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <NewTwitterIcon size={20} />
+        </button>
       </div>
     </div>
   );
