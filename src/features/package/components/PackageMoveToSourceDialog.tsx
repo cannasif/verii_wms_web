@@ -98,7 +98,7 @@ export function PackageMoveToSourceDialog({
   targetLabel,
   targetPackageStatus,
 }: PackageMoveToSourceDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const packagePermission = useCrudPermission('wms.package');
   const transferPermission = useCrudPermission('wms.transfer');
   const shipmentPermission = useCrudPermission('wms.shipment');
@@ -137,7 +137,7 @@ export function PackageMoveToSourceDialog({
   const moveMutation = useMutation({
     mutationFn: async () => {
       if (selectedIds.size === 0) {
-        throw new Error('Önce taşınacak paketleri seçin');
+        throw new Error(t('move.selectPackageFirst'));
       }
 
       return await packageApi.movePackagesToSourceHeader({
@@ -149,11 +149,11 @@ export function PackageMoveToSourceDialog({
       });
     },
     onSuccess: (response) => {
-      toast.success(response.message || 'Paketler hedef operasyona taşındı');
+      toast.success(response.message || t('move.success'));
       onOpenChange(false);
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Paket taşıma işlemi başarısız');
+      toast.error(error instanceof Error ? error.message : t('move.failed'));
     },
   });
 
@@ -177,9 +177,9 @@ export function PackageMoveToSourceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{targetSourceType === 'SH' ? 'Paleti Yükle' : 'Paketi Taşı'}</DialogTitle>
+          <DialogTitle>{targetSourceType === 'SH' ? t('move.loadPalletTitle') : t('move.movePackageTitle')}</DialogTitle>
           <DialogDescription>
-            {targetLabel} için mevcut package tree içinden koli veya palet seçip bağlayın.
+            {t('move.description', { target: targetLabel })}
           </DialogDescription>
         </DialogHeader>
 
@@ -189,17 +189,17 @@ export function PackageMoveToSourceDialog({
               <PermissionNotice message={t('common.accessDeniedMessage')} />
             ) : null}
             <div className="space-y-2">
-              <Label>Kaynak Paketleme İşi</Label>
+              <Label>{t('move.sourcePackingJob')}</Label>
               <PagedLookupDialog<PHeaderDto>
                 open={sourceHeaderLookupOpen}
                 onOpenChange={setSourceHeaderLookupOpen}
-                title="Kaynak Paketleme İşi"
-                description="Taşınacak koli veya paletin bağlı olduğu paketleme işini seçin"
+                title={t('move.sourcePackingJob')}
+                description={t('move.sourcePackingJobDescription')}
                 value={selectedHeaderLabel}
                 disabled={!canMoveToSource}
-                placeholder="Paketleme işi seçin"
-                searchPlaceholder="Paket no, müşteri veya kaynak tipine göre ara"
-                emptyText="Taşınabilir paketleme işi bulunamadı"
+                placeholder={t('move.sourcePackingJobPlaceholder')}
+                searchPlaceholder={t('move.sourcePackingJobSearchPlaceholder')}
+                emptyText={t('move.sourcePackingJobEmpty')}
                 queryKey={['package-source-move-headers', targetSourceType, targetSourceHeaderId]}
                 fetchPage={({ pageNumber, pageSize, search, signal }) =>
                   packageApi
@@ -210,21 +210,21 @@ export function PackageMoveToSourceDialog({
                     }))
                 }
                 getKey={(header) => header.id.toString()}
-                getLabel={(header) => `${header.packingNo} · ${header.customerCode || header.sourceType || 'Paketleme'}`}
+                getLabel={(header) => `${header.packingNo} · ${header.customerCode || header.sourceType || t('move.fallbackPacking')}`}
                 onSelect={(header) => {
                   setSelectedHeaderId(header.id);
-                  setSelectedHeaderLabel(`${header.packingNo} · ${header.customerCode || header.sourceType || 'Paketleme'}`);
+                  setSelectedHeaderLabel(`${header.packingNo} · ${header.customerCode || header.sourceType || t('move.fallbackPacking')}`);
                 }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="package-move-note">Not</Label>
+              <Label htmlFor="package-move-note">{t('move.note')}</Label>
               <Textarea
                 id="package-move-note"
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
-                placeholder="İsteğe bağlı taşıma notu"
+                placeholder={t('move.notePlaceholder')}
                 rows={4}
                 disabled={!canMoveToSource}
               />
@@ -233,16 +233,16 @@ export function PackageMoveToSourceDialog({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Badge variant="outline">Seçili paket: {selectedIds.size}</Badge>
+              <Badge variant="outline">{t('move.selectedPackage', { count: selectedIds.size })}</Badge>
               <Button type="button" variant="outline" size="sm" onClick={selectAll} disabled={!canMoveToSource || treeRows.length === 0}>
-                Tümünü Seç
+                {t('move.selectAll')}
               </Button>
             </div>
             <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3">
               {treeQuery.isLoading ? (
-                <div className="text-sm text-slate-500">Package tree yükleniyor...</div>
+                <div className="text-sm text-slate-500">{t('move.treeLoading')}</div>
               ) : treeRows.length === 0 ? (
-                <div className="text-sm text-slate-500">Taşınabilir paket bulunamadı.</div>
+                <div className="text-sm text-slate-500">{t('move.emptyTree')}</div>
               ) : (
                 treeRows.map((node) => (
                   <PackageTreeMoveRow key={node.id} node={node} selectedIds={selectedIds} onToggle={toggleSelection} disabled={!canMoveToSource} />
@@ -254,12 +254,12 @@ export function PackageMoveToSourceDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel', { defaultValue: 'Missing translation' })}
+            {t('common:cancel')}
           </Button>
           <Button type="button" onClick={() => moveMutation.mutate()} disabled={!canMoveToSource || moveMutation.isPending || selectedIds.size === 0}>
             {moveMutation.isPending
-              ? (targetSourceType === 'SH' ? 'Yükleniyor...' : 'Taşınıyor...')
-              : (targetSourceType === 'SH' ? 'Paleti Yükle' : 'Paketi Taşı')}
+              ? (targetSourceType === 'SH' ? t('move.loading') : t('move.moving'))
+              : (targetSourceType === 'SH' ? t('move.loadPalletTitle') : t('move.movePackageTitle'))}
           </Button>
         </DialogFooter>
       </DialogContent>

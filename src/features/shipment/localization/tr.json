@@ -1,0 +1,10 @@
+{
+  "api": {
+    "headersLoaded": "Sevkiyat listesi yüklendi",
+    "linesLoaded": "Sevkiyat satırları yüklendi",
+    "serialsLoaded": "Sevkiyat seri listesi yüklendi"
+  },
+  "detail": {
+    "loadPallet": "Paleti Yükle"
+  }
+}

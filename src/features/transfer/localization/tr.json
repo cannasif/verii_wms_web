@@ -1,0 +1,10 @@
+{
+  "api": {
+    "headersLoaded": "Transfer listesi yüklendi",
+    "linesLoaded": "Transfer satırları yüklendi",
+    "serialsLoaded": "Transfer seri listesi yüklendi"
+  },
+  "detail": {
+    "movePackage": "Paketi Taşı"
+  }
+}

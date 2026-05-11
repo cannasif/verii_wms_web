@@ -1,0 +1,99 @@
+{
+  "title": "Transfer Chains",
+  "breadcrumb": {
+    "operations": "Operations"
+  },
+  "hero": {
+    "eyebrow": "Shared WT + PT flow",
+    "description": "Connect transfer and production transfer orders with ordered dependencies so the next terminal operation cannot start before the previous step is completed.",
+    "create": "Create Chain"
+  },
+  "stats": {
+    "active": "Active",
+    "completed": "Completed",
+    "totalSteps": "Total Steps"
+  },
+  "table": {
+    "code": "Code",
+    "name": "Name",
+    "status": "Status",
+    "type": "Type",
+    "chainType": "Chain Type",
+    "sourceDocument": "Source Document",
+    "sourceDocumentType": "Source Document Type",
+    "progress": "Progress",
+    "createdDate": "Created",
+    "detail": "Detail"
+  },
+  "status": {
+    "Draft": "Draft",
+    "Active": "Active",
+    "Completed": "Completed",
+    "Cancelled": "Cancelled"
+  },
+  "stepStatus": {
+    "Blocked": "Blocked",
+    "Ready": "Ready",
+    "InProgress": "In Progress",
+    "Completed": "Completed",
+    "Skipped": "Skipped",
+    "Cancelled": "Cancelled"
+  },
+  "sourceType": {
+    "WT": "Transfer Order",
+    "PT": "Production Transfer"
+  },
+  "form": {
+    "createTitle": "Create Transfer Chain",
+    "editTitle": "Update Transfer Chain",
+    "description": "Operational chain definition that orders WT/PT documents.",
+    "code": "Code",
+    "name": "Name",
+    "status": "Status",
+    "chainType": "Chain Type",
+    "sourceDocumentType": "Source Document Type",
+    "sourceDocumentTypePlaceholder": "Shipment, Production...",
+    "sourceDocumentId": "Source Document Id",
+    "descriptionLabel": "Description"
+  },
+  "detail": {
+    "fallbackTitle": "Transfer Chain Detail",
+    "loading": "Loading chain detail...",
+    "stepsTitle": "Chain Steps",
+    "stepsDescription": "Steps run from the smallest sequence to the largest. The next step cannot start before the previous required step is completed.",
+    "emptySteps": "No steps yet.",
+    "prepare": "Prepare",
+    "skip": "Skip",
+    "step": "Step"
+  },
+  "stepForm": {
+    "title": "Add Step / Readiness Check",
+    "source": "Source",
+    "headerId": "Header Id",
+    "sequenceNo": "Sequence",
+    "note": "Note",
+    "check": "Check",
+    "add": "Add",
+    "ready": "This order can start now.",
+    "blocked": "Blocked: {{reason}}",
+    "defaultBlockedReason": "Previous steps must be completed."
+  },
+  "delete": {
+    "title": "Delete transfer chain?",
+    "description": "{{name}} will be deleted. If a step has already started, the API will block this operation."
+  },
+  "toast": {
+    "createSuccess": "Transfer chain saved.",
+    "createError": "Transfer chain could not be saved.",
+    "updateSuccess": "Transfer chain updated.",
+    "updateError": "Transfer chain could not be updated.",
+    "deleteSuccess": "Transfer chain deleted.",
+    "deleteError": "Transfer chain could not be deleted.",
+    "stepCreateSuccess": "Transfer chain step added.",
+    "stepCreateError": "Transfer chain step could not be added.",
+    "stepUpdateSuccess": "Transfer chain step updated.",
+    "stepUpdateError": "Transfer chain step could not be updated.",
+    "stepDeleteSuccess": "Transfer chain step deleted.",
+    "stepDeleteError": "Transfer chain step could not be deleted."
+  }
+}

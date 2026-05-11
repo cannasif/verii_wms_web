@@ -97,7 +97,7 @@ export const transferApi = {
 
   getHeaders: async (options?: ApiRequestOptions): Promise<TransferHeadersResponse> => {
     const data = await transferApi.getHeadersPaged({}, options);
-    return toLegacyCollectionResponse(data, 'Transfer listesi yüklendi');
+    return toLegacyCollectionResponse(data, getLocalizedText('transfer.api.headersLoaded'));
   },
 
   getHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<TransferHeader>> => {
@@ -113,7 +113,7 @@ export const transferApi = {
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<TransferLinesResponse> => {
     const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Transfer satırları yüklendi');
+      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('transfer.api.linesLoaded'));
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferLinesLoadFailed'));
   },
@@ -121,7 +121,7 @@ export const transferApi = {
   getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<TransferLineSerialsResponse> => {
     const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Transfer seri listesi yüklendi');
+      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('transfer.api.serialsLoaded'));
     }
     throw new Error(response.message || getLocalizedText('common.errors.transferSerialsLoadFailed'));
   },

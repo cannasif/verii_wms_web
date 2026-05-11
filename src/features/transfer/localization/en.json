@@ -1,0 +1,10 @@
+{
+  "api": {
+    "headersLoaded": "Transfer list loaded",
+    "linesLoaded": "Transfer lines loaded",
+    "serialsLoaded": "Transfer serial list loaded"
+  },
+  "detail": {
+    "movePackage": "Move Package"
+  }
+}

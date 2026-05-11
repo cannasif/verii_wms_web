@@ -40,6 +40,8 @@ interface GoodsReceiptDetailDialogProps {
   onClose: () => void;
 }
 
+const ElectronicDispatchDocumentType = 'E-İrsaliye';
+
 interface ImportLineDetailDialogProps {
   importLine: GrImportLine | null;
   orderLine: GrLine | null;
@@ -53,7 +55,7 @@ function ImportLineDetailDialog({
   isOpen,
   onClose,
 }: ImportLineDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
 
   const formatDateTime = (dateString: string | null): string => {
     if (!dateString) return '-';
@@ -252,10 +254,14 @@ export function GoodsReceiptDetailDialog({
   const getImportLineMessage = (importLine: GrImportLine, orderLine: GrLine | null): string => {
     if (!orderLine) {
       const totalQuantity = importLine.routes.reduce((sum, route) => sum + route.quantity, 0);
-      return `${totalQuantity} ${importLine.stockCode} için sipariş bilgisi bulunamadı`;
+      return t('detail.missingOrderInfo', { quantity: totalQuantity, stockCode: importLine.stockCode });
     }
     const totalImportQuantity = importLine.routes.reduce((sum, route) => sum + route.quantity, 0);
-    return `Siparişte talep edilen ${orderLine.quantity} ${orderLine.unit} stok doğrultusunda ${totalImportQuantity} ${orderLine.unit} kadar giriş yapıldı`;
+    return t('detail.quantitySummary', {
+      orderQuantity: orderLine.quantity,
+      importQuantity: totalImportQuantity,
+      unit: orderLine.unit,
+    });
   };
 
   const filteredImportLines = useMemo(() => {
@@ -327,7 +333,7 @@ export function GoodsReceiptDetailDialog({
                   </div>
                           <div>
                             <span className="text-muted-foreground">{t('goodsReceipt.report.documentType')}: </span>
-                            <Badge variant={data.documentType === 'E-İrsaliye' ? 'secondary' : 'default'} className="ml-1">
+                            <Badge variant={data.documentType === ElectronicDispatchDocumentType ? 'secondary' : 'default'} className="ml-1">
                       {data.documentType || '-'}
                     </Badge>
                   </div>

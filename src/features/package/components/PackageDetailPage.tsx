@@ -428,7 +428,7 @@ export function PackageDetailPage(): ReactElement {
                 disabled={!permission.canCreate && !permission.canUpdate}
               >
                 <Printer className="size-4 mr-2" />
-                Paket Ağacından Yazdır
+                {t('package:print.printFromTree')}
               </Button>
               <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)} disabled={!permission.canUpdate}>
                 <Edit className="size-4 mr-2" />

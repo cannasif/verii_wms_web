@@ -16,6 +16,7 @@ import type { GrHeader } from '../types/goods-receipt';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 
 type ColumnKey = 'id' | 'orderId' | 'customerCode' | 'projectCode' | 'documentType' | 'plannedDate' | 'status' | 'createdDate' | 'actions';
+const ElectronicDispatchDocumentType = 'E-İrsaliye';
 
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
@@ -67,7 +68,7 @@ export function GoodsReceiptReportPage(): ReactElement {
           visibleColumnKeys={['id', 'orderId', 'customerCode', 'projectCode', 'documentType', 'plannedDate', 'status', 'createdDate']}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(row, key) => ({ id: row.id, orderId: <span className="font-medium">{row.orderId || '-'}</span>, customerCode: row.customerCode || '-', projectCode: row.projectCode || '-', documentType: <Badge variant={row.documentType === 'E-İrsaliye' ? 'secondary' : 'default'}>{row.documentType || '-'}</Badge>, plannedDate: formatDate(row.plannedDate), status: statusBadge(row), createdDate: formatDateTime(row.createdDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+          renderCell={(row, key) => ({ id: row.id, orderId: <span className="font-medium">{row.orderId || '-'}</span>, customerCode: row.customerCode || '-', projectCode: row.projectCode || '-', documentType: <Badge variant={row.documentType === ElectronicDispatchDocumentType ? 'secondary' : 'default'}>{row.documentType || '-'}</Badge>, plannedDate: formatDate(row.plannedDate), status: statusBadge(row), createdDate: formatDateTime(row.createdDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(key) => { if (key !== 'status' && key !== 'actions') pagedGrid.handleSort(key); }}

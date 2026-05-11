@@ -51,7 +51,7 @@ export const shipmentApi = {
 
   getHeaders: async (options?: ApiRequestOptions): Promise<ShipmentHeadersResponse> => {
     const data = await shipmentApi.getHeadersPaged({}, options);
-    return toLegacyCollectionResponse(data, 'Sevkiyat listesi yüklendi');
+    return toLegacyCollectionResponse(data, getLocalizedText('shipment.api.headersLoaded'));
   },
 
   getHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<ShipmentHeader>> => {
@@ -83,7 +83,7 @@ export const shipmentApi = {
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<ShipmentLinesResponse> => {
     const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat satırları yüklendi');
+      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.linesLoaded'));
     }
     throw new Error(response.message || getLocalizedText('common.errors.shipmentLinesLoadFailed'));
   },
@@ -91,7 +91,7 @@ export const shipmentApi = {
   getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<ShipmentLineSerialsResponse> => {
     const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Sevkiyat seri listesi yüklendi');
+      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.serialsLoaded'));
     }
     throw new Error(response.message || getLocalizedText('common.errors.shipmentSerialsLoadFailed'));
   },

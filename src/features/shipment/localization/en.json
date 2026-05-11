@@ -1,0 +1,10 @@
+{
+  "api": {
+    "headersLoaded": "Shipment list loaded",
+    "linesLoaded": "Shipment lines loaded",
+    "serialsLoaded": "Shipment serial list loaded"
+  },
+  "detail": {
+    "loadPallet": "Load Pallet"
+  }
+}

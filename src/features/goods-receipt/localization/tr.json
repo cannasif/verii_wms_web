@@ -1,0 +1,6 @@
+{
+  "detail": {
+    "missingOrderInfo": "{{quantity}} {{stockCode}} için sipariş bilgisi bulunamadı",
+    "quantitySummary": "Siparişte talep edilen {{orderQuantity}} {{unit}} stok doğrultusunda {{importQuantity}} {{unit}} kadar giriş yapıldı"
+  }
+}

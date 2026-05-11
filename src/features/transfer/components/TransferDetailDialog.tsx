@@ -111,7 +111,7 @@ export function TransferDetailDialog({
               disabled={!packagePermission.canUpdate}
             >
               <PackagePlus className="mr-2 size-4" />
-              Paketi Taşı
+              {t('transfer:detail.movePackage')}
             </Button>
           </div>
         </DialogHeader>

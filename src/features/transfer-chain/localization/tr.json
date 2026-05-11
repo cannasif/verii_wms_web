@@ -1,0 +1,99 @@
+{
+  "title": "Transfer Zincirleri",
+  "breadcrumb": {
+    "operations": "Operasyonlar"
+  },
+  "hero": {
+    "eyebrow": "WT + PT ortak akış",
+    "description": "Transfer ve üretim transfer emirlerini sıra bağımlılığı ile bağla; önceki adım tamamlanmadan sonraki operasyon terminalde başlayamasın.",
+    "create": "Zincir Oluştur"
+  },
+  "stats": {
+    "active": "Aktif",
+    "completed": "Tamamlanan",
+    "totalSteps": "Toplam Adım"
+  },
+  "table": {
+    "code": "Kod",
+    "name": "Ad",
+    "status": "Durum",
+    "type": "Tip",
+    "chainType": "Zincir Tipi",
+    "sourceDocument": "Kaynak Belge",
+    "sourceDocumentType": "Kaynak Belge Tipi",
+    "progress": "İlerleme",
+    "createdDate": "Oluşturma",
+    "detail": "Detay"
+  },
+  "status": {
+    "Draft": "Taslak",
+    "Active": "Aktif",
+    "Completed": "Tamamlandı",
+    "Cancelled": "İptal"
+  },
+  "stepStatus": {
+    "Blocked": "Blokeli",
+    "Ready": "Hazır",
+    "InProgress": "İşlemde",
+    "Completed": "Tamamlandı",
+    "Skipped": "Atlandı",
+    "Cancelled": "İptal"
+  },
+  "sourceType": {
+    "WT": "Transfer Emri",
+    "PT": "Üretim Transfer"
+  },
+  "form": {
+    "createTitle": "Transfer Zinciri Oluştur",
+    "editTitle": "Transfer Zinciri Güncelle",
+    "description": "WT/PT emirlerini sıraya bağlayan operasyon zinciri tanımı.",
+    "code": "Kod",
+    "name": "Ad",
+    "status": "Durum",
+    "chainType": "Zincir Tipi",
+    "sourceDocumentType": "Kaynak Belge Tipi",
+    "sourceDocumentTypePlaceholder": "Shipment, Production...",
+    "sourceDocumentId": "Kaynak Belge Id",
+    "descriptionLabel": "Açıklama"
+  },
+  "detail": {
+    "fallbackTitle": "Transfer Zinciri Detayı",
+    "loading": "Zincir detayı yükleniyor...",
+    "stepsTitle": "Zincir Adımları",
+    "stepsDescription": "Sıra küçükten büyüğe çalışır. Önceki zorunlu adım tamamlanmadan sonraki adım başlayamaz.",
+    "emptySteps": "Henüz adım yok.",
+    "prepare": "Hazırla",
+    "skip": "Atla",
+    "step": "Adım"
+  },
+  "stepForm": {
+    "title": "Adım Ekle / Uygunluk Kontrolü",
+    "source": "Kaynak",
+    "headerId": "Header Id",
+    "sequenceNo": "Sıra",
+    "note": "Not",
+    "check": "Kontrol",
+    "add": "Ekle",
+    "ready": "Bu emir şu an başlayabilir.",
+    "blocked": "Blokeli: {{reason}}",
+    "defaultBlockedReason": "Önceki adımlar tamamlanmalı."
+  },
+  "delete": {
+    "title": "Transfer zinciri silinsin mi?",
+    "description": "{{name}} zinciri silinecek. Başlamış adım varsa API bu işlemi engeller."
+  },
+  "toast": {
+    "createSuccess": "Transfer zinciri kaydedildi.",
+    "createError": "Transfer zinciri kaydedilemedi.",
+    "updateSuccess": "Transfer zinciri güncellendi.",
+    "updateError": "Transfer zinciri güncellenemedi.",
+    "deleteSuccess": "Transfer zinciri silindi.",
+    "deleteError": "Transfer zinciri silinemedi.",
+    "stepCreateSuccess": "Transfer zinciri adımı eklendi.",
+    "stepCreateError": "Transfer zinciri adımı eklenemedi.",
+    "stepUpdateSuccess": "Transfer zinciri adımı güncellendi.",
+    "stepUpdateError": "Transfer zinciri adımı güncellenemedi.",
+    "stepDeleteSuccess": "Transfer zinciri adımı silindi.",
+    "stepDeleteError": "Transfer zinciri adımı silinemedi."
+  }
+}

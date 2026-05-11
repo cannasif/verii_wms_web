@@ -98,7 +98,7 @@ export function ShipmentDetailDialog({
               disabled={!packagePermission.canUpdate}
             >
               <PackagePlus className="mr-2 size-4" />
-              Paleti Yükle
+              {t('shipment:detail.loadPallet')}
             </Button>
           </div>
         </DialogHeader>

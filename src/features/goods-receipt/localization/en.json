@@ -1,0 +1,6 @@
+{
+  "detail": {
+    "missingOrderInfo": "Order information could not be found for {{quantity}} {{stockCode}}",
+    "quantitySummary": "{{importQuantity}} {{unit}} was received against the requested {{orderQuantity}} {{unit}} stock quantity in the order"
+  }
+}

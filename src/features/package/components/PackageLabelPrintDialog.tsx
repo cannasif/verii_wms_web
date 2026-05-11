@@ -99,11 +99,13 @@ function PackageTreeRow({
   selectedIds,
   onToggle,
   onSelectSubtree,
+  subtreeLabel,
 }: {
   node: PackageTreeNodeRow;
   selectedIds: Set<number>;
   onToggle: (id: number) => void;
   onSelectSubtree: (id: number) => void;
+  subtreeLabel: string;
 }): ReactElement {
   return (
     <>
@@ -125,7 +127,7 @@ function PackageTreeRow({
         </div>
         <Badge className={getStatusTone(node.status)}>{node.status}</Badge>
         <Button type="button" variant="ghost" size="sm" onClick={() => onSelectSubtree(node.id)}>
-          Alt Ağaç
+          {subtreeLabel}
         </Button>
       </div>
       {node.children.map((child) => (
@@ -135,6 +137,7 @@ function PackageTreeRow({
           selectedIds={selectedIds}
           onToggle={onToggle}
           onSelectSubtree={onSelectSubtree}
+          subtreeLabel={subtreeLabel}
         />
       ))}
     </>
@@ -149,7 +152,7 @@ export function PackageLabelPrintDialog({
   title,
   description,
 }: PackageLabelPrintDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [selectedPrinterId, setSelectedPrinterId] = useState('');
   const [selectedPrinterProfileId, setSelectedPrinterProfileId] = useState('');
@@ -259,13 +262,13 @@ export function PackageLabelPrintDialog({
   const printMutation = useMutation({
     mutationFn: async () => {
       if (selectedIds.size === 0) {
-        throw new Error('Önce en az bir paket seçin');
+        throw new Error(t('print.selectPackageFirst'));
       }
       if (!selectedTemplateId) {
-        throw new Error('Önce barkod tasarımı seçin');
+        throw new Error(t('print.selectTemplateFirst'));
       }
       if (!selectedPrinterId) {
-        throw new Error('Önce yazıcı seçin');
+        throw new Error(t('print.selectPrinterFirst'));
       }
 
       return await packageApi.printLabels({
@@ -281,11 +284,11 @@ export function PackageLabelPrintDialog({
       });
     },
     onSuccess: (response) => {
-      toast.success(response.message || 'Paket etiketleri baskı kuyruğuna alındı');
+      toast.success(response.message || t('print.queued'));
       onOpenChange(false);
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Paket etiketi yazdırılamadı');
+      toast.error(error instanceof Error ? error.message : t('print.failed'));
     },
   });
 
@@ -322,18 +325,18 @@ export function PackageLabelPrintDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{title ?? 'Paket Ağacından Yazdır'}</DialogTitle>
+          <DialogTitle>{title ?? t('print.title')}</DialogTitle>
           <DialogDescription>
-            {description ?? 'Koli, palet, parent ve child package etiketlerini seçip toplu baskı kuyruğuna gönderin.'}
+            {description ?? t('print.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline">Seçili Paket: {selectedIds.size}</Badge>
+              <Badge variant="outline">{t('print.selectedPackage', { count: selectedIds.size })}</Badge>
               <Button type="button" variant="outline" size="sm" onClick={selectAll} disabled={allIds.length === 0}>
-                Tümünü Seç
+                {t('print.selectAll')}
               </Button>
               <Button type="button" variant="outline" size="sm" onClick={clearSelection} disabled={selectedIds.size === 0}>
                 Temizle
@@ -341,9 +344,9 @@ export function PackageLabelPrintDialog({
             </div>
             <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3">
               {treeQuery.isLoading ? (
-                <div className="text-sm text-slate-500">Paket ağacı yükleniyor...</div>
+                <div className="text-sm text-slate-500">{t('print.treeLoading')}</div>
               ) : treeRows.length === 0 ? (
-                <div className="text-sm text-slate-500">Yazdırılabilir paket bulunamadı.</div>
+                <div className="text-sm text-slate-500">{t('print.emptyTree')}</div>
               ) : (
                 treeRows.map((node) => (
                   <PackageTreeRow
@@ -352,6 +355,7 @@ export function PackageLabelPrintDialog({
                     selectedIds={selectedIds}
                     onToggle={toggleSelection}
                     onSelectSubtree={selectSubtree}
+                    subtreeLabel={t('print.subtree')}
                   />
                 ))
               )}
@@ -360,10 +364,10 @@ export function PackageLabelPrintDialog({
 
           <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
             <div className="space-y-2">
-              <Label>Barkod Tasarımı</Label>
+              <Label>{t('print.barcodeTemplate')}</Label>
               <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Template seçin" />
+                  <SelectValue placeholder={t('print.templatePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(templatesQuery.data?.data ?? []).map((template) => (
@@ -376,10 +380,10 @@ export function PackageLabelPrintDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Yazıcı</Label>
+              <Label>{t('print.printer')}</Label>
               <Select value={selectedPrinterId} onValueChange={setSelectedPrinterId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Yazıcı seçin" />
+                  <SelectValue placeholder={t('print.printerPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(printersQuery.data?.data ?? []).filter((item) => item.isActive).map((printer) => (
@@ -395,7 +399,7 @@ export function PackageLabelPrintDialog({
               <Label>Printer Profile</Label>
               <Select value={selectedPrinterProfileId} onValueChange={setSelectedPrinterProfileId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Profile seçin" />
+                  <SelectValue placeholder={t('print.profilePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableProfiles.map((profile) => (
@@ -408,7 +412,7 @@ export function PackageLabelPrintDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="package-print-copies">Kopya</Label>
+              <Label htmlFor="package-print-copies">{t('print.copies')}</Label>
               <Input
                 id="package-print-copies"
                 type="number"
@@ -420,9 +424,9 @@ export function PackageLabelPrintDialog({
 
             <div className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-3 dark:border-white/10">
               <div className="space-y-1">
-                <div className="text-sm font-medium">GS1 / SSCC Palet Etiketi</div>
+                <div className="text-sm font-medium">{t('print.gs1Title')}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">
-                  Palet etiketlerinde GS1/SSCC binding üret.
+                  {t('print.gs1Description')}
                 </div>
               </div>
               <Switch checked={useGs1SsccForPallets} onCheckedChange={setUseGs1SsccForPallets} />
@@ -431,21 +435,21 @@ export function PackageLabelPrintDialog({
             <div className="rounded-xl bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:bg-white/3 dark:text-slate-300">
               <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-white">
                 <Printer className="size-4" />
-                Hazır Baskı Özeti
+                {t('print.summary')}
               </div>
               <div className="mt-2">Template: {selectedTemplate?.displayName ?? '-'}</div>
-              <div>Seçili paket: {selectedIds.size}</div>
-              <div>Kopya: {copies}</div>
+              <div>{t('print.selectedPackageSummary', { count: selectedIds.size })}</div>
+              <div>{t('print.copySummary', { count: copies })}</div>
             </div>
           </div>
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel', { defaultValue: 'Missing translation' })}
+            {t('common:cancel')}
           </Button>
           <Button type="button" onClick={() => printMutation.mutate()} disabled={printMutation.isPending || selectedIds.size === 0}>
-            {printMutation.isPending ? 'Yazdırılıyor...' : 'Yazdır'}
+            {printMutation.isPending ? t('print.printing') : t('print.print')}
           </Button>
         </DialogFooter>
       </DialogContent>

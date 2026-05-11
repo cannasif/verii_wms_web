@@ -355,7 +355,7 @@ export function PackagePackageDetailPage(): ReactElement {
                 disabled={!permission.canCreate && !permission.canUpdate}
               >
                 <Printer className="size-4 mr-2" />
-                Etiket Yazdır
+                {t('package:print.printLabel')}
               </Button>
               <Button variant="destructive" onClick={() => permission.canDelete && setDeleteDialogOpen(true)} disabled={!permission.canDelete}>
                 <Trash2 className="size-4 mr-2" />
@@ -589,7 +589,7 @@ export function PackagePackageDetailPage(): ReactElement {
             packingHeaderId={packageData.packingHeaderId}
             initialPackageIds={[packageData.id]}
             title={`${packageData.packageNo} etiketi`}
-            description="Seçili koli veya palet için barkod etiketini yazdırın."
+            description={t('package:print.singlePackageDescription')}
           />
         </Suspense>
       ) : null}

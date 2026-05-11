@@ -14,6 +14,7 @@ import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -41,35 +42,6 @@ import {
 } from '../types/transfer-chain.types';
 
 type ChainColumnKey = 'code' | 'name' | 'status' | 'chainType' | 'sourceDocument' | 'progress' | 'createdDate' | 'actions';
-
-const advancedFilterColumns: readonly FilterColumnConfig[] = [
-  { value: 'Code', type: 'string', labelKey: 'Kod' },
-  { value: 'Name', type: 'string', labelKey: 'Ad' },
-  { value: 'Status', type: 'string', labelKey: 'Durum' },
-  { value: 'ChainType', type: 'string', labelKey: 'Zincir Tipi' },
-  { value: 'SourceDocumentType', type: 'string', labelKey: 'Kaynak Belge Tipi' },
-];
-
-const statusLabels: Record<string, string> = {
-  Draft: 'Taslak',
-  Active: 'Aktif',
-  Completed: 'Tamamlandı',
-  Cancelled: 'İptal',
-};
-
-const stepStatusLabels: Record<string, string> = {
-  Blocked: 'Blokeli',
-  Ready: 'Hazır',
-  InProgress: 'İşlemde',
-  Completed: 'Tamamlandı',
-  Skipped: 'Atlandı',
-  Cancelled: 'İptal',
-};
-
-const sourceTypeLabels: Record<string, string> = {
-  WT: 'Transfer Emri',
-  PT: 'Üretim Transfer',
-};
 
 const emptyChainForm: CreateTransferChainDto = {
   code: '',
@@ -107,13 +79,12 @@ function mapSortBy(value: ChainColumnKey): string {
   }
 }
 
-function formatDate(value?: string | null): string {
+function formatDate(value?: string | null, locale = 'tr-TR'): string {
   if (!value) return '-';
-  return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 }
 
-function statusBadge(status: string): ReactElement {
-  const label = statusLabels[status] ?? status;
+function statusBadge(status: string, label: string): ReactElement {
   if (status === TRANSFER_CHAIN_STATUSES.completed) {
     return <Badge className="rounded-xl border-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">{label}</Badge>;
   }
@@ -126,8 +97,7 @@ function statusBadge(status: string): ReactElement {
   return <Badge variant="secondary">{label}</Badge>;
 }
 
-function stepStatusBadge(status: string): ReactElement {
-  const label = stepStatusLabels[status] ?? status;
+function stepStatusBadge(status: string, label: string): ReactElement {
   if (status === TRANSFER_CHAIN_STEP_STATUSES.completed) {
     return <Badge className="rounded-xl border-0 bg-emerald-100 text-emerald-700">{label}</Badge>;
   }
@@ -141,7 +111,7 @@ function stepStatusBadge(status: string): ReactElement {
 }
 
 export function TransferChainListPage(): ReactElement {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['transfer-chain', 'common']);
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
   const permission = useCrudPermission('wms.transfer');
@@ -165,15 +135,28 @@ export function TransferChainListPage(): ReactElement {
     mapSortBy,
   });
 
+  const locale = getLocaleForFormatting(i18n.resolvedLanguage ?? i18n.language);
+  const labelStatus = (status: string): string => t(`status.${status}`, { defaultValue: status });
+  const labelStepStatus = (status: string): string => t(`stepStatus.${status}`, { defaultValue: status });
+  const labelSourceType = (sourceType: string): string => t(`sourceType.${sourceType}`, { defaultValue: sourceType });
+
+  const advancedFilterColumns = useMemo<readonly FilterColumnConfig[]>(() => [
+    { value: 'Code', type: 'string', labelKey: t('table.code') },
+    { value: 'Name', type: 'string', labelKey: t('table.name') },
+    { value: 'Status', type: 'string', labelKey: t('table.status') },
+    { value: 'ChainType', type: 'string', labelKey: t('table.chainType') },
+    { value: 'SourceDocumentType', type: 'string', labelKey: t('table.sourceDocumentType') },
+  ], [t]);
+
   const columns = useMemo<PagedDataGridColumn<ChainColumnKey>[]>(() => [
-    { key: 'code', label: 'Kod' },
-    { key: 'name', label: 'Ad' },
-    { key: 'status', label: 'Durum' },
-    { key: 'chainType', label: 'Tip' },
-    { key: 'sourceDocument', label: 'Kaynak Belge', sortable: false },
-    { key: 'progress', label: 'İlerleme', sortable: false },
-    { key: 'createdDate', label: 'Oluşturma' },
-    { key: 'actions', label: t('actions'), sortable: false },
+    { key: 'code', label: t('table.code') },
+    { key: 'name', label: t('table.name') },
+    { key: 'status', label: t('table.status') },
+    { key: 'chainType', label: t('table.type') },
+    { key: 'sourceDocument', label: t('table.sourceDocument'), sortable: false },
+    { key: 'progress', label: t('table.progress'), sortable: false },
+    { key: 'createdDate', label: t('table.createdDate') },
+    { key: 'actions', label: t('common:actions'), sortable: false },
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -191,9 +174,9 @@ export function TransferChainListPage(): ReactElement {
   const deleteStepMutation = useDeleteTransferChainStepMutation();
 
   useEffect(() => {
-    setPageTitle('Transfer Zincirleri');
+    setPageTitle(t('title'));
     return () => setPageTitle(null);
-  }, [setPageTitle]);
+  }, [setPageTitle, t]);
 
   useEffect(() => {
     if (!formOpen) return;
@@ -227,12 +210,12 @@ export function TransferChainListPage(): ReactElement {
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
     code: item.code,
     name: item.name,
-    status: statusLabels[item.status] ?? item.status,
+    status: labelStatus(item.status),
     chainType: item.chainType,
     sourceDocument: [item.sourceDocumentType, item.sourceDocumentId].filter(Boolean).join(' #'),
     progress: `${item.completedStepCount}/${item.stepCount}`,
-    createdDate: formatDate(item.createdDate),
-  })), [data?.data]);
+    createdDate: formatDate(item.createdDate, locale),
+  })), [data?.data, locale, t]);
 
   const renderSortIcon = (columnKey: ChainColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -308,19 +291,19 @@ export function TransferChainListPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 crm-page">
-      <Breadcrumb items={[{ label: 'Operasyonlar' }, { label: 'Transfer Zincirleri', isActive: true }]} />
+      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('title'), isActive: true }]} />
 
       <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-linear-to-br from-slate-950 via-cyan-950 to-emerald-950 p-6 text-white shadow-xl shadow-cyan-950/20">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="space-y-3">
             <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.22em] text-cyan-100">
               <GitBranch className="size-4" />
-              WT + PT ortak akış
+              {t('hero.eyebrow')}
             </div>
             <div>
-              <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Transfer Zincirleri</h1>
+              <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{t('title')}</h1>
               <p className="mt-2 max-w-3xl text-sm font-medium text-cyan-50/80">
-                Transfer ve üretim transfer emirlerini sıra bağımlılığı ile bağla; önceki adım tamamlanmadan sonraki operasyon terminalde başlayamasın.
+                {t('hero.description')}
               </p>
             </div>
           </div>
@@ -330,7 +313,7 @@ export function TransferChainListPage(): ReactElement {
               className="h-11 rounded-2xl border border-white/20 bg-white text-slate-950 shadow-lg hover:bg-cyan-50"
             >
               <Plus className="mr-2 size-4" />
-              Zincir Oluştur
+              {t('hero.create')}
             </Button>
           ) : null}
         </div>
@@ -339,19 +322,19 @@ export function TransferChainListPage(): ReactElement {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <div className="flex items-center gap-3">
               <Workflow className="size-5 text-cyan-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">Aktif</p><p className="text-2xl font-black">{activeCount}</p></div>
+              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.active')}</p><p className="text-2xl font-black">{activeCount}</p></div>
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-5 text-emerald-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">Tamamlanan</p><p className="text-2xl font-black">{completedCount}</p></div>
+              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.completed')}</p><p className="text-2xl font-black">{completedCount}</p></div>
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <div className="flex items-center gap-3">
               <Link2 className="size-5 text-amber-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">Toplam Adım</p><p className="text-2xl font-black">{totalStepCount}</p></div>
+              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.totalSteps')}</p><p className="text-2xl font-black">{totalStepCount}</p></div>
             </div>
           </div>
         </div>
@@ -369,7 +352,7 @@ export function TransferChainListPage(): ReactElement {
             case 'name':
               return <button type="button" className="text-left font-semibold text-slate-900 hover:text-cyan-700 dark:text-white" onClick={() => openDetail(item.id)}>{item.name}</button>;
             case 'status':
-              return statusBadge(item.status);
+              return statusBadge(item.status, labelStatus(item.status));
             case 'chainType':
               return <Badge variant="outline">{item.chainType}</Badge>;
             case 'sourceDocument':
@@ -377,11 +360,11 @@ export function TransferChainListPage(): ReactElement {
             case 'progress':
               return <span className="font-semibold">{item.completedStepCount}/{item.stepCount}</span>;
             case 'createdDate':
-              return formatDate(item.createdDate);
+              return formatDate(item.createdDate, locale);
             case 'actions':
               return (
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => openDetail(item.id)}>Detay</Button>
+                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => openDetail(item.id)}>{t('table.detail')}</Button>
                   {permission.canUpdate ? (
                     <Button
                       size="sm"
@@ -393,11 +376,11 @@ export function TransferChainListPage(): ReactElement {
                         setFormOpen(true);
                       }}
                     >
-                      {t('edit')}
+                      {t('common:edit')}
                     </Button>
                   ) : null}
                   {permission.canDelete ? (
-                    <Button size="sm" variant="outline" className="rounded-xl text-rose-600" onClick={() => setDeleteItem(item)}>{t('delete')}</Button>
+                    <Button size="sm" variant="outline" className="rounded-xl text-rose-600" onClick={() => setDeleteItem(item)}>{t('common:delete')}</Button>
                   ) : null}
                 </div>
               );
@@ -412,7 +395,7 @@ export function TransferChainListPage(): ReactElement {
         isLoading={isLoading}
         isError={!!error}
         errorText={error instanceof Error ? error.message : undefined}
-        emptyText={t('noData')}
+        emptyText={t('common:noData')}
         pageSize={data?.pageSize ?? pagedGrid.pageSize}
         pageSizeOptions={pagedGrid.pageSizeOptions}
         onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -422,8 +405,8 @@ export function TransferChainListPage(): ReactElement {
         hasNextPage={Boolean(data?.hasNextPage)}
         onPreviousPage={pagedGrid.goToPreviousPage}
         onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('previous')}
-        nextLabel={t('next')}
+        previousLabel={t('common:previous')}
+        nextLabel={t('common:next')}
         paginationInfoText={paginationInfoText}
         actionBar={{
           pageKey,
@@ -449,9 +432,9 @@ export function TransferChainListPage(): ReactElement {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('search'),
+            placeholder: t('common:search'),
           },
-          refresh: { onRefresh: handleRefresh, isLoading, label: t('refresh', { defaultValue: 'Yenile' }) },
+          refresh: { onRefresh: handleRefresh, isLoading, label: t('common:refresh') },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}
       />
@@ -459,31 +442,31 @@ export function TransferChainListPage(): ReactElement {
       <Dialog open={formOpen} onOpenChange={(next) => { setFormOpen(next); if (!next) setEditingItem(null); }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingItem ? 'Transfer Zinciri Güncelle' : 'Transfer Zinciri Oluştur'}</DialogTitle>
-            <DialogDescription>WT/PT emirlerini sıraya bağlayan operasyon zinciri tanımı.</DialogDescription>
+            <DialogTitle>{editingItem ? t('form.editTitle') : t('form.createTitle')}</DialogTitle>
+            <DialogDescription>{t('form.description')}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Kod"><Input value={chainForm.code} disabled={!!editingItem} onChange={(event) => setChainForm((prev) => ({ ...prev, code: event.target.value }))} /></Field>
-            <Field label="Ad"><Input value={chainForm.name} onChange={(event) => setChainForm((prev) => ({ ...prev, name: event.target.value }))} /></Field>
-            <Field label="Durum">
+            <Field label={t('form.code')}><Input value={chainForm.code} disabled={!!editingItem} onChange={(event) => setChainForm((prev) => ({ ...prev, code: event.target.value }))} /></Field>
+            <Field label={t('form.name')}><Input value={chainForm.name} onChange={(event) => setChainForm((prev) => ({ ...prev, name: event.target.value }))} /></Field>
+            <Field label={t('form.status')}>
               <Select value={chainForm.status ?? TRANSFER_CHAIN_STATUSES.active} onValueChange={(value) => setChainForm((prev) => ({ ...prev, status: value }))}>
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {Object.values(TRANSFER_CHAIN_STATUSES).map((status) => <SelectItem key={status} value={status}>{statusLabels[status] ?? status}</SelectItem>)}
+                  {Object.values(TRANSFER_CHAIN_STATUSES).map((status) => <SelectItem key={status} value={status}>{labelStatus(status)}</SelectItem>)}
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Zincir Tipi"><Input value={chainForm.chainType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, chainType: event.target.value }))} /></Field>
-            <Field label="Kaynak Belge Tipi"><Input value={chainForm.sourceDocumentType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentType: event.target.value }))} placeholder="Shipment, Production..." /></Field>
-            <Field label="Kaynak Belge Id"><Input type="number" value={chainForm.sourceDocumentId ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentId: Number(event.target.value) || undefined }))} /></Field>
+            <Field label={t('form.chainType')}><Input value={chainForm.chainType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, chainType: event.target.value }))} /></Field>
+            <Field label={t('form.sourceDocumentType')}><Input value={chainForm.sourceDocumentType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentType: event.target.value }))} placeholder={t('form.sourceDocumentTypePlaceholder')} /></Field>
+            <Field label={t('form.sourceDocumentId')}><Input type="number" value={chainForm.sourceDocumentId ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentId: Number(event.target.value) || undefined }))} /></Field>
             <div className="sm:col-span-2">
-              <Field label="Açıklama"><Textarea value={chainForm.description ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, description: event.target.value }))} /></Field>
+              <Field label={t('form.descriptionLabel')}><Textarea value={chainForm.description ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, description: event.target.value }))} /></Field>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>{t('cancel')}</Button>
+            <Button variant="outline" onClick={() => setFormOpen(false)}>{t('common:cancel')}</Button>
             <Button disabled={!chainForm.code.trim() || !chainForm.name.trim() || createMutation.isPending || updateMutation.isPending} onClick={handleSubmitChain}>
-              {createMutation.isPending || updateMutation.isPending ? t('processing') : t('save')}
+              {createMutation.isPending || updateMutation.isPending ? t('common:processing') : t('common:save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -492,44 +475,44 @@ export function TransferChainListPage(): ReactElement {
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="max-h-[88vh] max-w-5xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{detail?.name ?? 'Transfer Zinciri Detayı'}</DialogTitle>
-            <DialogDescription>{detail ? `${detail.code} - ${statusLabels[detail.status] ?? detail.status}` : 'Zincir detayı yükleniyor...'}</DialogDescription>
+            <DialogTitle>{detail?.name ?? t('detail.fallbackTitle')}</DialogTitle>
+            <DialogDescription>{detail ? `${detail.code} - ${labelStatus(detail.status)}` : t('detail.loading')}</DialogDescription>
           </DialogHeader>
 
-          {detailLoading ? <div className="py-8 text-center text-sm text-slate-500">Yükleniyor...</div> : null}
+          {detailLoading ? <div className="py-8 text-center text-sm text-slate-500">{t('common:loading')}</div> : null}
           {detail ? (
             <div className="space-y-5">
               <div className="grid gap-3 sm:grid-cols-4">
-                <InfoCard label="Kod" value={detail.code} />
-                <InfoCard label="Durum" value={statusLabels[detail.status] ?? detail.status} />
-                <InfoCard label="Tip" value={detail.chainType} />
-                <InfoCard label="Adım" value={`${detail.steps.filter((step) => step.status === TRANSFER_CHAIN_STEP_STATUSES.completed).length}/${detail.steps.length}`} />
+                <InfoCard label={t('table.code')} value={detail.code} />
+                <InfoCard label={t('table.status')} value={labelStatus(detail.status)} />
+                <InfoCard label={t('table.type')} value={detail.chainType} />
+                <InfoCard label={t('detail.step')} value={`${detail.steps.filter((step) => step.status === TRANSFER_CHAIN_STEP_STATUSES.completed).length}/${detail.steps.length}`} />
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-white/5">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="font-black text-slate-900 dark:text-white">Zincir Adımları</h3>
-                    <p className="text-sm text-slate-500">Sıra küçükten büyüğe çalışır. Önceki zorunlu adım tamamlanmadan sonraki adım başlayamaz.</p>
+                    <h3 className="font-black text-slate-900 dark:text-white">{t('detail.stepsTitle')}</h3>
+                    <p className="text-sm text-slate-500">{t('detail.stepsDescription')}</p>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => { void handleRefresh(); }}><RefreshCw className="mr-2 size-4" />Yenile</Button>
+                  <Button size="sm" variant="outline" onClick={() => { void handleRefresh(); }}><RefreshCw className="mr-2 size-4" />{t('common:refresh')}</Button>
                 </div>
                 <div className="space-y-2">
                   {detail.steps.map((step) => (
                     <div key={step.id} className="grid gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-sm dark:border-white/10 dark:bg-slate-950/40 md:grid-cols-[80px_1fr_140px_120px_auto] md:items-center">
                       <div className="font-black">#{step.sequenceNo}</div>
                       <div>
-                        <div className="font-semibold">{sourceTypeLabels[step.sourceType] ?? step.sourceType} #{step.sourceHeaderId}</div>
+                        <div className="font-semibold">{labelSourceType(step.sourceType)} #{step.sourceHeaderId}</div>
                         <div className="text-xs text-slate-500">{step.note || step.dependencyType}</div>
                       </div>
-                      <div>{stepStatusBadge(step.status)}</div>
-                      <div className="text-xs text-slate-500">{step.completedDate ? formatDate(step.completedDate) : step.readyDate ? formatDate(step.readyDate) : '-'}</div>
+                      <div>{stepStatusBadge(step.status, labelStepStatus(step.status))}</div>
+                      <div className="text-xs text-slate-500">{step.completedDate ? formatDate(step.completedDate, locale) : step.readyDate ? formatDate(step.readyDate, locale) : '-'}</div>
                       <div className="flex justify-end gap-2">
                         {permission.canUpdate && step.status === TRANSFER_CHAIN_STEP_STATUSES.blocked ? (
-                          <Button size="sm" variant="outline" onClick={() => updateStepMutation.mutate({ stepId: step.id, dto: { status: TRANSFER_CHAIN_STEP_STATUSES.ready } })}>Hazırla</Button>
+                          <Button size="sm" variant="outline" onClick={() => updateStepMutation.mutate({ stepId: step.id, dto: { status: TRANSFER_CHAIN_STEP_STATUSES.ready } })}>{t('detail.prepare')}</Button>
                         ) : null}
                         {permission.canUpdate && step.status !== TRANSFER_CHAIN_STEP_STATUSES.completed ? (
-                          <Button size="sm" variant="outline" onClick={() => updateStepMutation.mutate({ stepId: step.id, dto: { status: TRANSFER_CHAIN_STEP_STATUSES.skipped } })}>Atla</Button>
+                          <Button size="sm" variant="outline" onClick={() => updateStepMutation.mutate({ stepId: step.id, dto: { status: TRANSFER_CHAIN_STEP_STATUSES.skipped } })}>{t('detail.skip')}</Button>
                         ) : null}
                         {permission.canDelete ? (
                           <Button size="sm" variant="outline" className="text-rose-600" onClick={() => deleteStepMutation.mutate(step.id)}><Trash2 className="size-4" /></Button>
@@ -537,34 +520,36 @@ export function TransferChainListPage(): ReactElement {
                       </div>
                     </div>
                   ))}
-                  {detail.steps.length === 0 ? <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-slate-500">Henüz adım yok.</div> : null}
+                  {detail.steps.length === 0 ? <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-slate-500">{t('detail.emptySteps')}</div> : null}
                 </div>
               </div>
 
               {permission.canUpdate ? (
                 <div className="rounded-2xl border border-cyan-200 bg-cyan-50/70 p-4 dark:border-cyan-800/40 dark:bg-cyan-950/20">
-                  <h3 className="font-black text-slate-900 dark:text-white">Adım Ekle / Uygunluk Kontrolü</h3>
+                  <h3 className="font-black text-slate-900 dark:text-white">{t('stepForm.title')}</h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-5">
-                    <Field label="Kaynak">
+                    <Field label={t('stepForm.source')}>
                       <Select value={stepForm.sourceType} onValueChange={(value) => setStepForm((prev) => ({ ...prev, sourceType: value }))}>
                         <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={TRANSFER_CHAIN_SOURCE_TYPES.warehouseTransfer}>Transfer Emri</SelectItem>
-                          <SelectItem value={TRANSFER_CHAIN_SOURCE_TYPES.productionTransfer}>Üretim Transfer</SelectItem>
+                          <SelectItem value={TRANSFER_CHAIN_SOURCE_TYPES.warehouseTransfer}>{labelSourceType(TRANSFER_CHAIN_SOURCE_TYPES.warehouseTransfer)}</SelectItem>
+                          <SelectItem value={TRANSFER_CHAIN_SOURCE_TYPES.productionTransfer}>{labelSourceType(TRANSFER_CHAIN_SOURCE_TYPES.productionTransfer)}</SelectItem>
                         </SelectContent>
                       </Select>
                     </Field>
-                    <Field label="Header Id"><Input type="number" value={stepForm.sourceHeaderId || ''} onChange={(event) => setStepForm((prev) => ({ ...prev, sourceHeaderId: Number(event.target.value) || 0 }))} /></Field>
-                    <Field label="Sıra"><Input type="number" value={stepForm.sequenceNo} onChange={(event) => setStepForm((prev) => ({ ...prev, sequenceNo: Number(event.target.value) || 1 }))} /></Field>
-                    <Field label="Not"><Input value={stepForm.note ?? ''} onChange={(event) => setStepForm((prev) => ({ ...prev, note: event.target.value }))} /></Field>
+                    <Field label={t('stepForm.headerId')}><Input type="number" value={stepForm.sourceHeaderId || ''} onChange={(event) => setStepForm((prev) => ({ ...prev, sourceHeaderId: Number(event.target.value) || 0 }))} /></Field>
+                    <Field label={t('stepForm.sequenceNo')}><Input type="number" value={stepForm.sequenceNo} onChange={(event) => setStepForm((prev) => ({ ...prev, sequenceNo: Number(event.target.value) || 1 }))} /></Field>
+                    <Field label={t('stepForm.note')}><Input value={stepForm.note ?? ''} onChange={(event) => setStepForm((prev) => ({ ...prev, note: event.target.value }))} /></Field>
                     <div className="flex items-end gap-2">
-                      <Button type="button" variant="outline" disabled={readinessLoading || !stepForm.sourceHeaderId} onClick={handleReadinessCheck}>Kontrol</Button>
-                      <Button type="button" disabled={addStepMutation.isPending || !stepForm.sourceHeaderId} onClick={handleAddStep}>Ekle</Button>
+                      <Button type="button" variant="outline" disabled={readinessLoading || !stepForm.sourceHeaderId} onClick={handleReadinessCheck}>{t('stepForm.check')}</Button>
+                      <Button type="button" disabled={addStepMutation.isPending || !stepForm.sourceHeaderId} onClick={handleAddStep}>{t('stepForm.add')}</Button>
                     </div>
                   </div>
                   {readiness ? (
                     <div className="mt-3 rounded-2xl border border-white/70 bg-white/75 p-3 text-sm dark:border-white/10 dark:bg-white/5">
-                      {readiness.canStart ? 'Bu emir şu an başlayabilir.' : `Blokeli: ${readiness.blockedReason ?? 'Önceki adımlar tamamlanmalı.'}`}
+                      {readiness.canStart
+                        ? t('stepForm.ready')
+                        : t('stepForm.blocked', { reason: readiness.blockedReason ?? t('stepForm.defaultBlockedReason') })}
                       {readiness.transferChainCode ? <span className="ml-2 font-mono text-xs">({readiness.transferChainCode})</span> : null}
                     </div>
                   ) : null}
@@ -578,11 +563,11 @@ export function TransferChainListPage(): ReactElement {
       <Dialog open={!!deleteItem} onOpenChange={(next) => !next && setDeleteItem(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Transfer zinciri silinsin mi?</DialogTitle>
-            <DialogDescription>{deleteItem?.name ?? deleteItem?.code} zinciri silinecek. Başlamış adım varsa API bu işlemi engeller.</DialogDescription>
+            <DialogTitle>{t('delete.title')}</DialogTitle>
+            <DialogDescription>{t('delete.description', { name: deleteItem?.name ?? deleteItem?.code ?? '' })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteItem(null)}>{t('cancel')}</Button>
+            <Button variant="outline" onClick={() => setDeleteItem(null)}>{t('common:cancel')}</Button>
             <Button
               variant="destructive"
               disabled={deleteMutation.isPending}
@@ -592,7 +577,7 @@ export function TransferChainListPage(): ReactElement {
                 setDeleteItem(null);
               }}
             >
-              {deleteMutation.isPending ? t('processing') : t('delete')}
+              {deleteMutation.isPending ? t('common:processing') : t('common:delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
