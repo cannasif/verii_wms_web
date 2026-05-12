@@ -32,6 +32,14 @@ async function getServerPagedResponse<T>(url: string, params: PagedParams = {}, 
   throw new Error(response.message || getLocalizedText('common.errors.unknown'));
 }
 
+async function getServerListData<T>(url: string, options?: ApiRequestOptions): Promise<T[]> {
+  const response = await api.get<ApiResponse<T[]>>(url, options);
+  if (response.success && response.data) {
+    return response.data;
+  }
+  throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+}
+
 interface WmsCustomerLookupDto {
   id: number;
   branchCode?: string | null;
@@ -268,7 +276,7 @@ export const lookupApi = {
 
   getProjects: async (options?: ApiRequestOptions): Promise<ProjectLookup[]> => {
     try {
-      return await getServerPagedFirstPageData<ProjectLookup>('/api/netsis-read/projects/paged', options);
+      return await getServerListData<ProjectLookup>('/api/netsis-read/projects', options);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpProjectsLoadFailed'));
     }
