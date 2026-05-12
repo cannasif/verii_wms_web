@@ -268,7 +268,7 @@ export const lookupApi = {
 
   getProjects: async (options?: ApiRequestOptions): Promise<ProjectLookup[]> => {
     try {
-      return await getServerPagedFirstPageData<ProjectLookup>('/api/Erp/projects/paged', options);
+      return await getServerPagedFirstPageData<ProjectLookup>('/api/netsis-read/projects/paged', options);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpProjectsLoadFailed'));
     }
@@ -514,7 +514,7 @@ export const lookupApi = {
   },
 
   getBranches: async (options?: ApiRequestOptions): Promise<BranchLookup[]> => {
-    const response = await api.get('/api/Erp/getBranches', { skipAuth: true, ...options }) as ApiResponse<BranchLookup[]>;
+    const response = await api.get('/api/netsis-read/getBranches', { skipAuth: true, ...options }) as ApiResponse<BranchLookup[]>;
     if (response.success && response.data) {
       return response.data;
     }

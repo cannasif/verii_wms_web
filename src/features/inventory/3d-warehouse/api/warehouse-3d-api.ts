@@ -8,7 +8,7 @@ export const warehouse3dApi = {
     depoKodu: string
   ): Promise<WarehouseShelvesWithStockInformationDto[]> => {
     const response = await api.get<ApiResponse<WarehouseShelvesWithStockInformationDto[]>>(
-      `/api/Erp/getWarehouseShelvesWithStockInformation?depoKodu=${depoKodu}`
+      `/api/netsis-read/getWarehouseShelvesWithStockInformation?depoKodu=${depoKodu}`
     );
     
     if (response.success && response.data) {

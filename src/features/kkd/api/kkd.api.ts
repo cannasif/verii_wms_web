@@ -200,7 +200,7 @@ export const kkdApi = {
 
   getStockGroups: async (subeKodu?: string): Promise<KkdStockGroupOption[]> => {
     const response = await api.get<ApiResponse<Array<{ subeKodu: number; grupKod: string; grupIsim?: string | null }>>>(
-      '/api/Erp/stock-groups',
+      '/api/netsis-read/stock-groups',
       { params: { subeKodu } },
     );
     return extractData(response).map((row) => ({
