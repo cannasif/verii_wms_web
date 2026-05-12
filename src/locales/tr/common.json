@@ -196,8 +196,9 @@
   },
   "auth": {
     "login": {
-      "title": "Sistem Girişi",
+      "title": "STOK & SEVKİYAT YÖNETİMİ",
       "subtitle": "VERII WMS",
+      "slogan": "\"ENVANTERİNİ ARAYAN DEĞİL, <brand>v3rii</brand>'YLE YÖNETEN OLUN.\"",
       "branch": "Şube",
       "selectBranch": "Şube seçiniz",
       "branchNotFound": "Şube bulunamadı",

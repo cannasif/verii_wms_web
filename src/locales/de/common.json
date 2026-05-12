@@ -184,8 +184,9 @@
   },
   "auth": {
     "login": {
-      "title": "Systemanmeldung",
+      "title": "BESTANDS- & VERSANDMANAGEMENT",
       "subtitle": "VERII WMS",
+      "slogan": "\"VERWALTEN SIE IHR INVENTAR MIT <brand>v3rii</brand>, STATT ES ZU SUCHEN.\"",
       "branch": "Filiale",
       "selectBranch": "Filiale auswählen",
       "branchNotFound": "Filiale nicht gefunden",

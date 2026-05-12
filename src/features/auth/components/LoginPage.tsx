@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
@@ -17,9 +17,18 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
-import loginImage from '@/assets/login.jpg';
-import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert, ShieldCheck } from 'lucide-react';
+import logo from '@/assets/v3riiwms.png';
+import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert } from 'lucide-react';
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
+import {
+  Mail02Icon,
+  Call02Icon,
+  Globe02Icon,
+  WhatsappIcon,
+  TelegramIcon,
+  InstagramIcon,
+  NewTwitterIcon,
+} from 'hugeicons-react';
 
 export function LoginPage(): React.JSX.Element {
   const { t } = useTranslation('common');
@@ -105,29 +114,14 @@ export function LoginPage(): React.JSX.Element {
       </div>
 
       <div className="relative z-10 flex h-full w-full items-center justify-center px-4 py-8">
-        <div className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1228]/70 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:grid-cols-[44%_56%]">
-          <div className="relative hidden min-h-[620px] lg:block">
-            <img
-              src={loginImage}
-              alt="WMS Login"
-              decoding="async"
-              fetchPriority="high"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-[#070d1f] via-[#070d1f]/45 to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8">
-              
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden p-8 sm:p-10">
+        <div className="w-full max-w-[480px] -translate-y-16 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1228]/70 shadow-[0_0_10px_2px_rgba(255,255,255,0.04),inset_0_0_10px_2px_rgba(255,255,255,0.04),0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <div className="relative overflow-hidden px-6 pt-12 pb-22 sm:px-10">
             <WmsBackgroundAnimation isPaused={isBgAnimationPaused} />
-            <div className="relative z-10 mb-8 text-center">
-<div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
-  <ShieldCheck size={26} />
-</div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">{t('auth.login.title')}</h1>
-              <p className="mt-1 text-sm text-slate-400">{t('auth.login.subtitle')}</p>
+            <div className="relative z-10 mb-6 text-center">
+              <div className="mx-auto mb-4 flex justify-center">
+                <img src={logo} alt="V3RII WMS" className="h-42 w-auto object-contain" />
+              </div>
+              <h1 className="text-sm tracking-tight text-white/70">{t('auth.login.title')}</h1>
             </div>
 
             <Form {...form}>
@@ -145,11 +139,10 @@ export function LoginPage(): React.JSX.Element {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger
-                              className={`h-14 w-full rounded-xl px-12 pr-4 text-sm text-white transition-all focus:ring-0 ${
-                                fieldState.invalid
-                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                  : 'border border-white/15 bg-black/25 focus:border-cyan-500 focus-visible:!border-cyan-500'
-                              }`}
+                              className={`!h-14 w-full rounded-xl px-12 pr-4 text-sm text-white transition-all focus:ring-0 ${fieldState.invalid
+                                ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                : 'border border-white/15 bg-black/25 focus:border-cyan-500 focus-visible:!border-cyan-500'
+                                }`}
                             >
                               <SelectValue placeholder={t('auth.login.selectBranch')} />
                             </SelectTrigger>
@@ -157,12 +150,12 @@ export function LoginPage(): React.JSX.Element {
                           <SelectContent className="border-white/10 bg-[#0b1228] text-white">
                             {branches?.length ? (
                               branches.map((branch) => (
-                                <SelectItem key={branch.id} value={branch.id} className="cursor-pointer focus:bg-cyan-500/20">
+                                <SelectItem key={branch.id} value={branch.id} className="h-14 cursor-pointer focus:bg-cyan-500/20 focus:text-white">
                                   {branch.name}
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem value="no-branch" disabled>
+                              <SelectItem value="no-branch" disabled className="h-14 focus:text-white">
                                 {t('auth.login.branchNotFound')}
                               </SelectItem>
                             )}
@@ -192,11 +185,10 @@ export function LoginPage(): React.JSX.Element {
                               {...field}
                               type="email"
                               placeholder={t('auth.login.emailPlaceholder')}
-                              className={`h-14 rounded-xl px-12 pr-4 text-sm text-white placeholder:text-slate-500 ${
-                                invalid
-                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                  : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
-                              }`}
+                              className={`h-14 rounded-xl px-12 pr-4 text-sm text-white placeholder:text-slate-500 ${invalid
+                                ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                                }`}
                               onChange={(e) => {
                                 form.clearErrors('root');
                                 field.onChange(e);
@@ -228,11 +220,10 @@ export function LoginPage(): React.JSX.Element {
                               {...field}
                               type={isPasswordVisible ? 'text' : 'password'}
                               placeholder={t('auth.login.passwordPlaceholder')}
-                              className={`h-14 rounded-xl px-12 pr-11 text-sm text-white placeholder:text-slate-500 ${
-                                invalid
-                                  ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                  : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
-                              }`}
+                              className={`h-14 rounded-xl px-12 pr-11 text-sm text-white placeholder:text-slate-500 ${invalid
+                                ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
+                                : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                                }`}
                               onChange={(e) => {
                                 form.clearErrors('root');
                                 field.onChange(e);
@@ -280,7 +271,7 @@ export function LoginPage(): React.JSX.Element {
 
                 <Button
                   type="submit"
-                  className="mt-2 h-12 w-full rounded-xl bg-linear-to-r from-cyan-600 via-blue-600 to-indigo-600 text-sm font-semibold uppercase tracking-wide text-white hover:opacity-95"
+                  className="mt-2 h-12 w-full rounded-xl bg-linear-to-r from-cyan-600 via-blue-600 to-orange-400 text-sm font-semibold uppercase tracking-wide text-white hover:opacity-95"
                   disabled={isPending}
                 >
                   {isPending ? t('auth.login.loggingIn') : t('auth.login.loginButton')}
@@ -289,6 +280,62 @@ export function LoginPage(): React.JSX.Element {
             </Form>
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-35 left-0 right-0 z-10 text-center">
+        <p className="px-4 text-sm font-light tracking-[0.2em] text-white/50 uppercase sm:text-base">
+          <Trans
+            i18nKey="auth.login.slogan"
+            components={{
+              brand: (
+                <span className="bg-linear-to-r from-pink-400 to-yellow-400 bg-clip-text font-bold text-transparent border-b border-pink-500/20 pb-0.5">
+                  v3rii
+                </span>
+              ),
+            }}
+          />
+        </p>
+
+      </div>
+      <div className="absolute bottom-15 left-0 right-0 z-10  flex flex-wrap items-center justify-center gap-4 px-4">
+        <a href="tel:+905070123018" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-lime-400 hover:bg-zinc-800 hover:border-lime-500/30 hover:shadow-[0_0_15px_rgba(132,204,22,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Call02Icon size={20} />
+        </a>
+
+        <a href="https://v3rii.com" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Globe02Icon size={20} />
+        </a>
+
+        <a href="mailto:info@v3rii.com" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-orange-400 hover:bg-zinc-800 hover:border-orange-500/30 hover:shadow-[0_0_15px_rgba(251,146,60,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <Mail02Icon size={20} />
+        </a>
+
+        <a href="https://wa.me/905070123018" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-emerald-400 hover:bg-zinc-800 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+          <WhatsappIcon size={20} />
+        </a>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <TelegramIcon size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <InstagramIcon size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
+        >
+          <NewTwitterIcon size={20} />
+        </button>
       </div>
     </div>
   );

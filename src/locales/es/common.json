@@ -184,8 +184,9 @@
   },
   "auth": {
     "login": {
-      "title": "Inicio de Sesión",
+      "title": "GESTIÓN DE STOCK & ENVÍOS",
       "subtitle": "VERII WMS",
+      "slogan": "\"GESTIONE SU INVENTARIO CON <brand>v3rii</brand>, NO LO BUSQUE.\"",
       "branch": "Sucursal",
       "selectBranch": "Seleccionar sucursal",
       "branchNotFound": "Sucursal no encontrada",
