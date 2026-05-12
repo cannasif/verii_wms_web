@@ -41,7 +41,21 @@
   },
   "sourceType": {
     "WT": "Transfer Emri",
-    "PT": "Üretim Transfer"
+    "PT": "Üretim Transfer",
+    "SH": "Sevk Emri"
+  },
+  "readiness": {
+    "loading": "Zincir durumu kontrol ediliyor...",
+    "error": "Zincir durumu kontrol edilemedi.",
+    "retry": "Tekrar dene",
+    "readyTitle": "İşleme hazır",
+    "blockedTitle": "Transfer zinciri nedeniyle blokeli",
+    "chainCode": "Zincir: {{code}}",
+    "chained": "Bu emir operasyonel bir zincire bağlı.",
+    "step": "Sıra {{step}}",
+    "defaultBlockedReason": "Önceki zorunlu adımlar tamamlanmalı.",
+    "blockingStep": "{{source}} #{{id}} / Sıra {{step}}",
+    "readyDescription": "Önceki zorunlu adımlar tamamlandı. Bu işlem devam edebilir."
   },
   "form": {
     "createTitle": "Transfer Zinciri Oluştur",

@@ -5,6 +5,7 @@ export type { ApiResponse, PagedParams, PagedResponse };
 export const TRANSFER_CHAIN_SOURCE_TYPES = {
   warehouseTransfer: 'WT',
   productionTransfer: 'PT',
+  shipping: 'SH',
 } as const;
 
 export const TRANSFER_CHAIN_STATUSES = {
@@ -108,7 +109,7 @@ export interface UpdateTransferChainDto {
 }
 
 export interface TransferChainBlockingStepDto {
-  id: number;
+  stepId: number;
   sourceType: string;
   sourceHeaderId: number;
   sequenceNo: number;
@@ -122,8 +123,9 @@ export interface TransferChainReadinessDto {
   canStart: boolean;
   transferChainId?: number | null;
   transferChainCode?: string | null;
-  currentStepId?: number | null;
-  currentStepStatus?: string | null;
+  stepId?: number | null;
+  sequenceNo?: number | null;
+  status?: string | null;
   blockedReason?: string | null;
   blockingSteps: TransferChainBlockingStepDto[];
 }

@@ -22,6 +22,8 @@ import type { BarcodeMatchCandidate } from '@/services/barcode-types';
 import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
 import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { isTransferChainBlocked, TransferChainReadinessCard } from '@/features/transfer-chain';
+import { useTransferChainReadinessQuery } from '@/features/transfer-chain/hooks/useTransferChainQueries';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
 import {
   createDefaultScannerConfig,
@@ -54,6 +56,7 @@ export function ShipmentCollectionPage(): ReactElement {
   const headerIdNum = headerId ? parseInt(headerId, 10) : 0;
 
   const { data: orderLinesData, isLoading: isLoadingOrderLines } = useAssignedShipmentOrderLines(headerIdNum);
+  const readinessQuery = useTransferChainReadinessQuery('SH', headerIdNum);
   const { data: collectedData } = useCollectedBarcodes(headerIdNum);
   const { data: barcodeData, isLoading: isSearching, error: barcodeError, isError: isBarcodeError } = useStokBarcode(searchBarcode, enableSearch);
   const barcodeDefinitionQuery = useQuery({
@@ -63,6 +66,7 @@ export function ShipmentCollectionPage(): ReactElement {
 
   const addBarcodeMutation = useAddBarcode();
   const completeShipmentMutation = useCompleteShipment();
+  const isChainBlocked = isTransferChainBlocked(readinessQuery.data);
 
   useEffect(() => {
     setPageTitle(t('shipment.collection.title'));
@@ -105,6 +109,11 @@ export function ShipmentCollectionPage(): ReactElement {
       return;
     }
 
+    if (isChainBlocked) {
+      toast.error(readinessQuery.data?.blockedReason || t('transfer-chain:readiness.defaultBlockedReason'));
+      return;
+    }
+
     if (!barcodeInput.trim()) {
       toast.error(t('shipment.collection.enterBarcode'));
       return;
@@ -119,6 +128,11 @@ export function ShipmentCollectionPage(): ReactElement {
   const handleCollect = (): void => {
     if (!permission.canUpdate) {
       toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
+      return;
+    }
+
+    if (isChainBlocked) {
+      toast.error(readinessQuery.data?.blockedReason || t('transfer-chain:readiness.defaultBlockedReason'));
       return;
     }
 
@@ -537,10 +551,14 @@ export function ShipmentCollectionPage(): ReactElement {
         )}
       </div>
 
+      <div className="shrink-0 px-4 pt-4">
+        <TransferChainReadinessCard sourceType="SH" sourceHeaderId={headerIdNum} compact />
+      </div>
+
       <div className="shrink-0 p-4 border-t bg-background">
         <Button
           onClick={handleComplete}
-          disabled={!permission.canUpdate || completeShipmentMutation.isPending}
+          disabled={!permission.canUpdate || isChainBlocked || completeShipmentMutation.isPending}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           size="lg"
         >

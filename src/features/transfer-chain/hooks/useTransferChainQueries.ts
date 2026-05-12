@@ -14,6 +14,7 @@ export const transferChainQueryKeys = {
   all: ['transfer-chain'] as const,
   list: (params: PagedParams) => [...transferChainQueryKeys.all, 'list', params] as const,
   detail: (id: number | null) => [...transferChainQueryKeys.all, 'detail', id] as const,
+  readiness: (sourceType: string, sourceHeaderId: number | null) => [...transferChainQueryKeys.all, 'readiness', sourceType, sourceHeaderId] as const,
 };
 
 export function useTransferChainsQuery(params: PagedParams) {
@@ -28,6 +29,14 @@ export function useTransferChainDetailQuery(id: number | null) {
     queryKey: transferChainQueryKeys.detail(id),
     queryFn: () => transferChainApi.getById(id ?? 0),
     enabled: Number.isFinite(id) && id != null && id > 0,
+  });
+}
+
+export function useTransferChainReadinessQuery(sourceType: string, sourceHeaderId: number | null) {
+  return useQuery({
+    queryKey: transferChainQueryKeys.readiness(sourceType, sourceHeaderId),
+    queryFn: () => transferChainApi.getReadiness(sourceType, sourceHeaderId ?? 0),
+    enabled: Boolean(sourceType) && Number.isFinite(sourceHeaderId) && sourceHeaderId != null && sourceHeaderId > 0,
   });
 }
 

@@ -41,7 +41,21 @@
   },
   "sourceType": {
     "WT": "Transfer Order",
-    "PT": "Production Transfer"
+    "PT": "Production Transfer",
+    "SH": "Shipment"
+  },
+  "readiness": {
+    "loading": "Checking chain readiness...",
+    "error": "Could not check chain status.",
+    "retry": "Retry",
+    "readyTitle": "Ready to process",
+    "blockedTitle": "Blocked by transfer chain",
+    "chainCode": "Chain: {{code}}",
+    "chained": "This order is part of an operational chain.",
+    "step": "Step {{step}}",
+    "defaultBlockedReason": "Previous required steps must be completed first.",
+    "blockingStep": "{{source}} #{{id}} / Step {{step}}",
+    "readyDescription": "Previous required steps are complete. This operation can continue."
   },
   "form": {
     "createTitle": "Create Transfer Chain",
