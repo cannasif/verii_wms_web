@@ -81,7 +81,7 @@ export const shipmentApi = {
   },
 
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<ShipmentLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.linesLoaded'));
     }
