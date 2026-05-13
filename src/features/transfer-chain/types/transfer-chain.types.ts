@@ -123,9 +123,11 @@ export interface TransferChainReadinessDto {
   canStart: boolean;
   transferChainId?: number | null;
   transferChainCode?: string | null;
+  transferChainStatus?: string | null;
   stepId?: number | null;
   sequenceNo?: number | null;
   status?: string | null;
   blockedReason?: string | null;
+  steps: TransferChainStepDto[];
   blockingSteps: TransferChainBlockingStepDto[];
 }

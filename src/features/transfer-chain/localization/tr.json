@@ -53,6 +53,7 @@
     "chainCode": "Zincir: {{code}}",
     "chained": "Bu emir operasyonel bir zincire bağlı.",
     "step": "Sıra {{step}}",
+    "timelineStep": "{{step}}. {{source}} #{{id}}",
     "defaultBlockedReason": "Önceki zorunlu adımlar tamamlanmalı.",
     "blockingStep": "{{source}} #{{id}} / Sıra {{step}}",
     "readyDescription": "Önceki zorunlu adımlar tamamlandı. Bu işlem devam edebilir."

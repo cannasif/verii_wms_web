@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { AlertTriangle, CheckCircle2, Link2, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Circle, Link2, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -63,6 +63,7 @@ function ReadinessContent({ readiness, compact }: { readiness: TransferChainRead
   const icon = blocked
     ? <AlertTriangle className="size-5 text-amber-600" />
     : <CheckCircle2 className="size-5 text-emerald-600" />;
+  const steps = readiness.steps ?? [];
 
   return (
     <Card className={statusTone}>
@@ -82,10 +83,52 @@ function ReadinessContent({ readiness, compact }: { readiness: TransferChainRead
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {readiness.transferChainStatus ? <Badge variant="outline">{t(`status.${readiness.transferChainStatus}`, { defaultValue: readiness.transferChainStatus })}</Badge> : null}
             {readiness.sequenceNo ? <Badge variant="outline">{t('readiness.step', { step: readiness.sequenceNo })}</Badge> : null}
             {readiness.status ? <Badge variant={blocked ? 'secondary' : 'default'}>{t(`stepStatus.${readiness.status}`, { defaultValue: readiness.status })}</Badge> : null}
           </div>
         </div>
+
+        {steps.length > 0 ? (
+          <div className="grid gap-2 md:grid-cols-3">
+            {steps.map((step) => {
+              const isCurrent = step.id === readiness.stepId;
+              const isCompleted = step.status === 'Completed' || step.status === 'Skipped';
+              const isBlocked = step.status === 'Blocked';
+              const stepTone = isCurrent
+                ? 'border-blue-300 bg-blue-50 text-blue-950 dark:border-blue-400/40 dark:bg-blue-500/15 dark:text-blue-50'
+                : isCompleted
+                  ? 'border-emerald-200 bg-white/80 text-emerald-950 dark:border-emerald-400/30 dark:bg-black/10 dark:text-emerald-50'
+                  : isBlocked
+                    ? 'border-slate-200 bg-white/70 text-slate-700 dark:border-white/10 dark:bg-black/10 dark:text-slate-200'
+                    : 'border-amber-200 bg-white/80 text-amber-950 dark:border-amber-400/30 dark:bg-black/10 dark:text-amber-50';
+              const StepIcon = isCompleted ? CheckCircle2 : isBlocked ? Circle : Link2;
+              return (
+                <div key={step.id} className={`rounded-xl border p-3 ${stepTone}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <StepIcon className="size-4 shrink-0" />
+                      <div>
+                        <div className="text-xs font-semibold">
+                          {t('readiness.timelineStep', {
+                            step: step.sequenceNo,
+                            source: t(`sourceType.${step.sourceType}`, { defaultValue: step.sourceType }),
+                            id: step.sourceHeaderId,
+                            defaultValue: `${step.sequenceNo}. ${step.sourceType} #${step.sourceHeaderId}`,
+                          })}
+                        </div>
+                        {step.note ? <div className="mt-1 text-[11px] opacity-80">{step.note}</div> : null}
+                      </div>
+                    </div>
+                    <Badge variant={isCurrent ? 'default' : 'outline'} className="shrink-0">
+                      {t(`stepStatus.${step.status}`, { defaultValue: step.status })}
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
 
         {blocked ? (
           <div className="rounded-lg border border-amber-200/80 bg-white/70 p-3 text-sm text-amber-950 dark:border-amber-400/20 dark:bg-black/10 dark:text-amber-50">
