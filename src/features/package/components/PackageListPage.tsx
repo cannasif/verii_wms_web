@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Eye, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 import { usePHeaders } from '../hooks/usePHeaders';
@@ -105,6 +105,7 @@ export function PackageListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.package');
+  const canUpdate = permission.canUpdate;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PHeaderDto | null>(null);
 
@@ -286,13 +287,17 @@ export function PackageListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('package.list.error')}
             emptyText={t('package.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('package.list.actions')}
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${row.id}`)} disabled={!permission.canView}>
                   <Eye className="size-4" />
                   <span className="ml-2">{t('package.list.detail')}</span>
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => navigate(`/package/edit/${row.id}`)} disabled={!canUpdate}>
+                  <Pencil className="size-4" />
+                  <span className="ml-2">{t('common.edit')}</span>
                 </Button>
                 <Button
                   variant="ghost"
