@@ -1971,6 +1971,12 @@
         "success": "Lagerausgangsauftrag erfolgreich erstellt",
         "error": "Fehler beim Erstellen des Lagerausgangsauftrags"
       },
+      "edit": {
+        "title": "Edit Warehouse Outbound",
+        "subtitle": "Update warehouse outbound header information without changing line or collection flow",
+        "success": "Warehouse outbound order updated successfully",
+        "error": "An error occurred while updating warehouse outbound order"
+      },
       "approval": {
         "title": "Lagerausgangsaufträge auf Genehmigung wartend",
         "approveSuccess": "Auftrag erfolgreich genehmigt",

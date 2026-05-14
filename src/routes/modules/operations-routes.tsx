@@ -93,6 +93,10 @@ const WarehouseOutboundCreatePage = lazyNamed(
   () => import('@/features/warehouse/components/WarehouseOutboundCreatePage'),
   'WarehouseOutboundCreatePage',
 );
+const WarehouseOutboundEditPage = lazyNamed(
+  () => import('@/features/warehouse/components/WarehouseOutboundEditPage'),
+  'WarehouseOutboundEditPage',
+);
 const WarehouseOutboundProcessPage = lazyNamed(
   () => import('@/features/warehouse/components/WarehouseOutboundProcessPage'),
   'WarehouseOutboundProcessPage',
@@ -333,6 +337,7 @@ export const operationsChildRoutes: RouteObject[] = [
         path: 'outbound',
         children: [
           { path: 'create', element: withRoute(WarehouseOutboundCreatePage, { routeName: 'warehouse-outbound-create' }) },
+          { path: 'edit/:id', element: withRoute(WarehouseOutboundEditPage, { routeName: 'warehouse-outbound-edit' }) },
           { path: 'process', element: withRoute(WarehouseOutboundProcessPage, { routeName: 'warehouse-outbound-process' }) },
           { path: 'list', element: withRoute(WarehouseOutboundListPage, { routeName: 'warehouse-outbound-list' }) },
           { path: 'assigned', element: withRoute(AssignedWarehouseOutboundListPage, { routeName: 'warehouse-outbound-assigned' }) },

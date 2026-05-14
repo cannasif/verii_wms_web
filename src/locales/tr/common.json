@@ -2520,6 +2520,12 @@
         "success": "Ambar çıkış emri başarıyla oluşturuldu",
         "error": "Ambar çıkış emri oluşturulurken bir hata oluştu"
       },
+      "edit": {
+        "title": "Ambar Çıkış Düzenle",
+        "subtitle": "Ambar çıkış başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+        "success": "Ambar çıkış emri başarıyla güncellendi",
+        "error": "Ambar çıkış emri güncellenirken bir hata oluştu"
+      },
       "approval": {
         "title": "Onay Bekleyen Ambar Çıkış Emirleri",
         "approveSuccess": "Emir başarıyla onaylandı",

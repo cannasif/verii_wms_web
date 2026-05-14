@@ -1971,6 +1971,12 @@
         "success": "Ambar çıkış emri başarıyla oluşturuldu",
         "error": "Ambar çıkış emri oluşturulurken bir hata oluştu"
       },
+      "edit": {
+        "title": "Edit Warehouse Outbound",
+        "subtitle": "Update warehouse outbound header information without changing line or collection flow",
+        "success": "Warehouse outbound order updated successfully",
+        "error": "An error occurred while updating warehouse outbound order"
+      },
       "approval": {
         "title": "Onay Bekleyen Ambar Çıkış Emirleri",
         "approveSuccess": "Emir başarıyla onaylandı",

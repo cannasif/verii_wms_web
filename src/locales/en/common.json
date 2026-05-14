@@ -2520,6 +2520,12 @@
         "success": "Warehouse outbound order created successfully",
         "error": "An error occurred while creating warehouse outbound order"
       },
+      "edit": {
+        "title": "Edit Warehouse Outbound",
+        "subtitle": "Update warehouse outbound header information without changing line or collection flow",
+        "success": "Warehouse outbound order updated successfully",
+        "error": "An error occurred while updating warehouse outbound order"
+      },
       "approval": {
         "title": "Warehouse Outbound Orders Awaiting Approval",
         "approveSuccess": "Order approved successfully",
