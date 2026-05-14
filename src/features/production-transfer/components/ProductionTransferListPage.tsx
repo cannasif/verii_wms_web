@@ -246,7 +246,7 @@ export function ProductionTransferListPage(): ReactElement {
                 type="button"
                 variant="default"
                 size="sm"
-                onClick={() => navigate(`/production-transfer/create?editId=${row.id}`)}
+                onClick={() => navigate(`/production-transfer/edit/${row.id}`)}
                 disabled={!canUpdateTransfer || Boolean(row.isCompleted)}
               >
                 {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}

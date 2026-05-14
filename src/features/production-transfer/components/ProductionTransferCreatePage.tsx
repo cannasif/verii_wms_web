@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'lucide-react';
@@ -49,10 +49,11 @@ function InfoCallout({ title, body }: { title: string; body: string }): ReactEle
 export function ProductionTransferCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id: routeEditId } = useParams<{ id?: string }>();
   const [searchParams] = useSearchParams();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.production-transfer');
-  const editId = Number(searchParams.get('editId') ?? '');
+  const editId = Number(routeEditId ?? searchParams.get('editId') ?? '');
   const cloneId = Number(searchParams.get('cloneId') ?? '');
   const isEditMode = Number.isFinite(editId) && editId > 0;
   const isCloneMode = !isEditMode && Number.isFinite(cloneId) && cloneId > 0;

@@ -393,6 +393,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'production-transfer',
     children: [
       { path: 'create', element: withRoute(ProductionTransferCreatePage, { routeName: 'production-transfer-create' }) },
+      { path: 'edit/:id', element: withRoute(ProductionTransferCreatePage, { routeName: 'production-transfer-edit' }) },
       { path: 'detail/:id', element: withRoute(ProductionTransferDetailPage, { routeName: 'production-transfer-detail' }) },
       { path: 'list', element: withRoute(ProductionTransferListPage, { routeName: 'production-transfer-list' }) },
       { path: 'approval', element: withRoute(ProductionTransferApprovalPage, { routeName: 'production-transfer-approval' }) },

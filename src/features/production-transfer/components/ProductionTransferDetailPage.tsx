@@ -135,7 +135,7 @@ export function ProductionTransferDetailPage(): ReactElement {
                 </Button>
               ) : null}
               {canUpdateTransfer ? (
-                <Button type="button" onClick={() => navigate(`/production-transfer/create?editId=${detailQuery.data.id}`)} disabled={detailQuery.data.isCompleted}>
+                <Button type="button" onClick={() => navigate(`/production-transfer/edit/${detailQuery.data.id}`)} disabled={detailQuery.data.isCompleted}>
                   {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
                 </Button>
               ) : null}
