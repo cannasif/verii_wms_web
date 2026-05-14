@@ -3312,11 +3312,15 @@
       "searchPlaceholder": "Belge no, depo ya da stok ara"
     },
     "actions": {
+      "edit": "Edit",
       "process": "Direkt Giris"
     },
     "create": {
       "title": "Sayim Emrini Olusturma",
+      "editTitle": "Edit Count Order",
+      "editDescription": "Update document and scope details for a draft count order before lines are prepared.",
       "success": "Sayim emri kaydedildi. Satirlar hazirlandi, simdi direkt girise geciyorsunuz.",
+      "updateSuccess": "Count order updated.",
       "error": "Sayim emri kaydedilemedi.",
       "description": "Ne sayacagini sec, emri kaydet, sonra direkt giris ekraninda miktarlari okut ya da yaz.",
       "saveAndPrepare": "Kaydet ve Satirlari Hazirla",

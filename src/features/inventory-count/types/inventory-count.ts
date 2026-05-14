@@ -119,6 +119,7 @@ export interface InventoryCountCreateDraft {
 }
 
 export interface InventoryCountScopeDraft {
+  id?: number | null;
   sequenceNo: number;
   scopeType: InventoryScopeType;
   warehouseCode: string;
@@ -159,6 +160,8 @@ export interface CreateInventoryCountScopeRequest {
   cellCode?: string | null;
   isActive: boolean;
 }
+
+export type UpdateInventoryCountScopeRequest = Omit<Partial<CreateInventoryCountScopeRequest>, 'headerId'>;
 
 export interface CreateInventoryCountEntryRequest {
   lineId: number;

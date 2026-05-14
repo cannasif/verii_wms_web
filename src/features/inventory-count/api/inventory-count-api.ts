@@ -9,6 +9,7 @@ import type {
   InventoryCountHeader,
   InventoryCountLine,
   InventoryCountScope,
+  UpdateInventoryCountScopeRequest,
 } from '../types/inventory-count';
 
 export const inventoryCountApi = {
@@ -55,6 +56,18 @@ export const inventoryCountApi = {
     const response = await api.post<ApiResponse<InventoryCountScope>>('/api/IcScope', request);
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Sayim kapsami kaydedilemedi');
+  },
+
+  updateScope: async (id: number, request: UpdateInventoryCountScopeRequest): Promise<InventoryCountScope> => {
+    const response = await api.put<ApiResponse<InventoryCountScope>>(`/api/IcScope/${id}`, request);
+    if (response.success && response.data) return response.data;
+    throw new Error(response.message || 'Sayim kapsami guncellenemedi');
+  },
+
+  softDeleteScope: async (id: number): Promise<boolean> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/IcScope/${id}`);
+    if (response.success) return Boolean(response.data);
+    throw new Error(response.message || 'Sayim kapsami silinemedi');
   },
 
   getScopesByHeader: async (headerId: number): Promise<InventoryCountScope[]> => {

@@ -3540,8 +3540,11 @@
     "create": {
       "title": "Create Count Order",
       "description": "Pick what will be counted, save the order, then enter quantities from the direct-entry screen.",
+      "editTitle": "Edit Count Order",
+      "editDescription": "Update document and scope details for a draft count order before lines are prepared.",
       "saveAndPrepare": "Save and Prepare Lines",
       "success": "Count order saved. Lines are ready, moving to direct entry now.",
+      "updateSuccess": "Count order updated.",
       "error": "Count order could not be saved.",
       "permissionInfo": "You can view this page but you do not have permission to create a new count order.",
       "whatToCountTitle": "What will we count?",
@@ -3646,6 +3649,7 @@
       "emptyHeaderMessage": "No count header selected"
     },
     "actions": {
+      "edit": "Edit",
       "process": "Direct Entry"
     },
     "fields": {

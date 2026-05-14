@@ -3540,8 +3540,11 @@
     "create": {
       "title": "Sayım Emrini Oluşturma",
       "description": "Ne sayacağını seç, emri kaydet, sonra direkt giriş ekranında miktarları okut ya da yaz.",
+      "editTitle": "Sayım Emrini Düzenle",
+      "editDescription": "Satırları hazırlanmamış taslak sayım emrinin kapsam ve belge bilgilerini güncelle.",
       "saveAndPrepare": "Kaydet ve Satırları Hazırla",
       "success": "Sayım emri kaydedildi. Satırlar hazırlandı, şimdi direkt girişe geçiyorsunuz.",
+      "updateSuccess": "Sayım emri güncellendi.",
       "error": "Sayım emri kaydedilemedi.",
       "permissionInfo": "Bu ekranı görebiliyorsunuz ama yeni sayım emri açma yetkiniz yok.",
       "whatToCountTitle": "Ne sayacağız?",
@@ -3646,6 +3649,7 @@
       "emptyHeaderMessage": "Seçili sayım başlığı yok"
     },
     "actions": {
+      "edit": "Düzenle",
       "process": "Direkt Giriş"
     },
     "fields": {

@@ -403,6 +403,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'inventory-count',
     children: [
       { path: 'create', element: withRoute(InventoryCountCreatePage, { routeName: 'inventory-count-create' }) },
+      { path: 'edit/:id', element: withRoute(InventoryCountCreatePage, { routeName: 'inventory-count-edit' }) },
       { path: 'process', element: withRoute(InventoryCountProcessPage, { routeName: 'inventory-count-process' }) },
       { path: 'list', element: withRoute(InventoryCountListPage, { routeName: 'inventory-count-list' }) },
       { path: 'assigned', element: withRoute(AssignedInventoryCountListPage, { routeName: 'inventory-count-assigned' }) },

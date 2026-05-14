@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -77,6 +77,10 @@ function getCountTypeLabel(value?: string | null): string {
     case 'Combined': return 'Birlesik';
     default: return value || '-';
   }
+}
+
+function canEditInventoryCount(row: InventoryCountHeader): boolean {
+  return (row.status || 'Draft') === 'Draft' && (row.lineCount ?? 0) === 0;
 }
 
 export function InventoryCountListPage(): ReactElement {
@@ -220,6 +224,10 @@ export function InventoryCountListPage(): ReactElement {
         actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button type="button" variant="secondary" size="sm" onClick={() => navigate('/inventory-count/edit/' + String(row.id))} disabled={!permission.canUpdate || !canEditInventoryCount(row)}>
+              <Pencil className="mr-1 h-3.5 w-3.5" />
+              {t('inventoryCount.actions.edit', { defaultValue: 'Düzenle' })}
+            </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))} disabled={!permission.canUpdate}>
               {t('inventoryCount.actions.process', { defaultValue: 'Missing translation' })}
             </Button>

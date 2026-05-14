@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Plus, Trash2 } from 'lucide-react';
@@ -24,6 +24,8 @@ import {
   type CreateInventoryCountHeaderRequest,
   type CreateInventoryCountScopeRequest,
   type InventoryCountCreateDraft,
+  type InventoryCountHeader,
+  type InventoryCountScope,
   type InventoryCountScopeDraft,
 } from '../types/inventory-count';
 
@@ -35,6 +37,10 @@ type LookupTarget =
 function toNullable(value: string): string | null {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function dateToInput(value?: string | null): string {
+  return value ? value.slice(0, 10) : '';
 }
 
 function getScopeMode(draft: InventoryCountCreateDraft): string {
@@ -118,6 +124,48 @@ function buildScopeRequest(headerId: number, scope: InventoryCountScopeDraft): C
   };
 }
 
+function hasScopeData(scope: InventoryCountScopeDraft): boolean {
+  return Boolean(
+    scope.warehouseCode.trim()
+    || scope.stockCode.trim()
+    || scope.rackCode.trim()
+    || scope.cellCode.trim(),
+  );
+}
+
+function mapHeaderToDraft(header: InventoryCountHeader, scopes: InventoryCountScope[]): InventoryCountCreateDraft {
+  return {
+    documentNo: header.documentNo ?? '',
+    documentDate: dateToInput(header.documentDate) || new Date().toISOString().slice(0, 10),
+    description1: header.description1 ?? '',
+    countType: header.countType,
+    countMode: header.countMode,
+    freezeMode: (header.freezeMode || 'None') as InventoryCountCreateDraft['freezeMode'],
+    plannedStartDate: dateToInput(header.plannedStartDate),
+    plannedEndDate: dateToInput(header.plannedEndDate),
+    isFirstCount: header.isFirstCount,
+    warehouseCode: header.warehouseCode ?? '',
+    stockId: header.stockId ?? null,
+    stockCode: header.stockCode ?? '',
+    yapKod: header.yapKod ?? '',
+    rackCode: header.rackCode ?? '',
+    cellCode: header.cellCode ?? '',
+    scopes: scopes.length > 0
+      ? scopes.map((scope, index) => ({
+          id: scope.id,
+          sequenceNo: scope.sequenceNo ?? index + 1,
+          scopeType: scope.scopeType as InventoryCountScopeDraft['scopeType'],
+          warehouseCode: scope.warehouseCode ?? '',
+          stockId: scope.stockId ?? null,
+          stockCode: scope.stockCode ?? '',
+          yapKod: scope.yapKod ?? '',
+          rackCode: scope.rackCode ?? '',
+          cellCode: scope.cellCode ?? '',
+        }))
+      : [createEmptyInventoryCountScopeDraft(1)],
+  };
+}
+
 function validateDraft(t: (key: string) => string, draft: InventoryCountCreateDraft): string | null {
   if (!draft.documentNo.trim()) {
     return t('inventoryCount.create.validation.documentNoRequired');
@@ -170,9 +218,14 @@ function validateDraft(t: (key: string) => string, draft: InventoryCountCreateDr
 export function InventoryCountCreatePage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id: routeEditId } = useParams<{ id?: string }>();
   const { setPageTitle } = useUIStore();
   const permissionAccess = usePermissionAccess();
+  const editId = Number(routeEditId ?? '');
+  const isEditMode = Number.isFinite(editId) && editId > 0;
   const canCreate = permissionAccess.can('wms.inventory-count.create');
+  const canUpdate = permissionAccess.can('wms.inventory-count.update');
+  const canSave = isEditMode ? canUpdate : canCreate;
   const [draft, setDraft] = useState<InventoryCountCreateDraft>(() => createEmptyInventoryCountDraft());
   const [lookupTarget, setLookupTarget] = useState<LookupTarget | null>(null);
 
@@ -216,15 +269,77 @@ export function InventoryCountCreatePage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.create.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t(isEditMode ? 'inventoryCount.create.editTitle' : 'inventoryCount.create.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
-  }, [setPageTitle, t]);
+  }, [isEditMode, setPageTitle, t]);
 
-  const createMutation = useMutation({
+  const headerQuery = useQuery({
+    queryKey: ['inventory-count-edit-header', editId],
+    queryFn: () => inventoryCountApi.getHeaderById(editId),
+    enabled: isEditMode,
+  });
+
+  const scopesQuery = useQuery({
+    queryKey: ['inventory-count-edit-scopes', editId],
+    queryFn: () => inventoryCountApi.getScopesByHeader(editId),
+    enabled: isEditMode,
+  });
+
+  useEffect(() => {
+    if (!isEditMode || !headerQuery.data || !scopesQuery.data) {
+      return;
+    }
+
+    setDraft(mapHeaderToDraft(headerQuery.data, scopesQuery.data));
+  }, [headerQuery.data, isEditMode, scopesQuery.data]);
+
+  const saveMutation = useMutation({
     mutationFn: async () => {
       const error = validateDraft(t, draft);
       if (error) {
         throw new Error(error);
+      }
+
+      if (isEditMode) {
+        const updatedHeader = await inventoryCountApi.updateHeader(editId, buildHeaderRequest(draft));
+        const existingScopes = scopesQuery.data ?? [];
+
+        if (draft.countType === 'Combined') {
+          const retainedScopeIds = new Set<number>();
+
+          for (const scope of draft.scopes.filter(hasScopeData)) {
+            const scopePayload = buildScopeRequest(editId, scope);
+
+            if (scope.id) {
+              retainedScopeIds.add(scope.id);
+              await inventoryCountApi.updateScope(scope.id, {
+                sequenceNo: scopePayload.sequenceNo,
+                scopeType: scopePayload.scopeType,
+                warehouseCode: scopePayload.warehouseCode,
+                stockCode: scopePayload.stockCode,
+                yapKod: scopePayload.yapKod,
+                rackCode: scopePayload.rackCode,
+                cellCode: scopePayload.cellCode,
+                isActive: true,
+              });
+            } else {
+              const createdScope = await inventoryCountApi.createScope(scopePayload);
+              retainedScopeIds.add(createdScope.id);
+            }
+          }
+
+          for (const scope of existingScopes) {
+            if (!retainedScopeIds.has(scope.id)) {
+              await inventoryCountApi.softDeleteScope(scope.id);
+            }
+          }
+        } else {
+          for (const scope of existingScopes) {
+            await inventoryCountApi.softDeleteScope(scope.id);
+          }
+        }
+
+        return updatedHeader;
       }
 
       const createdHeader = await inventoryCountApi.createHeader(buildHeaderRequest(draft));
@@ -232,14 +347,8 @@ export function InventoryCountCreatePage(): ReactElement {
       if (draft.countType === 'Combined') {
         for (const scope of draft.scopes) {
           const scopeRequest = buildScopeRequest(createdHeader.id, scope);
-          const hasScopeData = Boolean(
-            scopeRequest.warehouseCode
-            || scopeRequest.stockCode
-            || scopeRequest.rackCode
-            || scopeRequest.cellCode,
-          );
 
-          if (hasScopeData) {
+          if (hasScopeData(scope)) {
             await inventoryCountApi.createScope(scopeRequest);
           }
         }
@@ -249,10 +358,10 @@ export function InventoryCountCreatePage(): ReactElement {
       return createdHeader;
     },
     onSuccess: (header) => {
-      toast.success(t('inventoryCount.create.success', {
+      toast.success(t(isEditMode ? 'inventoryCount.create.updateSuccess' : 'inventoryCount.create.success', {
         defaultValue: 'Missing translation',
       }));
-      navigate('/inventory-count/process?headerId=' + String(header.id));
+      navigate(isEditMode ? '/inventory-count/list' : '/inventory-count/process?headerId=' + String(header.id));
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : t('inventoryCount.create.error', { defaultValue: 'Missing translation' }));
@@ -338,24 +447,36 @@ export function InventoryCountCreatePage(): ReactElement {
   return (
     <div className="space-y-6">
       <FormPageShell
-        title={t('inventoryCount.create.title', { defaultValue: 'Missing translation' })}
-        description={t('inventoryCount.create.description', {
+        title={t(isEditMode ? 'inventoryCount.create.editTitle' : 'inventoryCount.create.title', { defaultValue: 'Missing translation' })}
+        description={t(isEditMode ? 'inventoryCount.create.editDescription' : 'inventoryCount.create.description', {
           defaultValue: 'Missing translation',
         })}
+        isLoading={headerQuery.isLoading || scopesQuery.isLoading}
+        isError={headerQuery.isError || scopesQuery.isError}
+        errorTitle={t('common.error', { defaultValue: 'Missing translation' })}
+        errorDescription={
+          headerQuery.error instanceof Error
+            ? headerQuery.error.message
+            : scopesQuery.error instanceof Error
+              ? scopesQuery.error.message
+              : t('inventoryCount.create.error', { defaultValue: 'Missing translation' })
+        }
         actions={(
           <div className="flex items-center gap-2">
             <Button type="button" variant="outline" onClick={() => navigate('/inventory-count/list')}>
               {t('common.cancel', { defaultValue: 'Missing translation' })}
             </Button>
-            <Button type="button" onClick={() => createMutation.mutate()} disabled={!canCreate || createMutation.isPending}>
-              {createMutation.isPending
+            <Button type="button" onClick={() => saveMutation.mutate()} disabled={!canSave || saveMutation.isPending}>
+              {saveMutation.isPending
                 ? t('common.saving', { defaultValue: 'Missing translation' })
-                : t('inventoryCount.create.saveAndPrepare', { defaultValue: 'Missing translation' })}
+                : isEditMode
+                  ? t('common.update', { defaultValue: 'Missing translation' })
+                  : t('inventoryCount.create.saveAndPrepare', { defaultValue: 'Missing translation' })}
             </Button>
           </div>
         )}
       >
-        {!canCreate ? (
+        {!canSave ? (
           <Card className="mb-6 border-amber-200 bg-amber-50/80">
             <CardContent className="py-4 text-sm text-amber-900">
               {t('inventoryCount.create.permissionInfo', {
