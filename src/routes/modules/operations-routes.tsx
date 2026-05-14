@@ -65,8 +65,10 @@ const TransferApprovalPage = lazyNamed(
 const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'), 'TransferChainListPage');
 
 const SubcontractingIssueCreatePage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueCreatePage');
+const SubcontractingIssueEditPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueEditPage');
 const SubcontractingIssueProcessPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueProcessPage');
 const SubcontractingReceiptCreatePage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingReceiptCreatePage');
+const SubcontractingReceiptEditPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingReceiptEditPage');
 const SubcontractingReceiptProcessPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingReceiptProcessPage');
 const SubcontractingReceiptListPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingReceiptListPage');
 const SubcontractingIssueListPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueListPage');
@@ -303,6 +305,7 @@ export const operationsChildRoutes: RouteObject[] = [
         path: 'issue',
         children: [
           { path: 'create', element: withRoute(SubcontractingIssueCreatePage, { routeName: 'subcontracting-issue-create' }) },
+          { path: 'edit/:id', element: withRoute(SubcontractingIssueEditPage, { routeName: 'subcontracting-issue-edit' }) },
           { path: 'process', element: withRoute(SubcontractingIssueProcessPage, { routeName: 'subcontracting-issue-process' }) },
           { path: 'list', element: withRoute(SubcontractingIssueListPage, { routeName: 'subcontracting-issue-list' }) },
           { path: 'assigned', element: withRoute(AssignedSitListPage, { routeName: 'subcontracting-issue-assigned' }) },
@@ -314,6 +317,7 @@ export const operationsChildRoutes: RouteObject[] = [
         path: 'receipt',
         children: [
           { path: 'create', element: withRoute(SubcontractingReceiptCreatePage, { routeName: 'subcontracting-receipt-create' }) },
+          { path: 'edit/:id', element: withRoute(SubcontractingReceiptEditPage, { routeName: 'subcontracting-receipt-edit' }) },
           { path: 'process', element: withRoute(SubcontractingReceiptProcessPage, { routeName: 'subcontracting-receipt-process' }) },
           { path: 'list', element: withRoute(SubcontractingReceiptListPage, { routeName: 'subcontracting-receipt-list' }) },
           { path: 'assigned', element: withRoute(AssignedSrtListPage, { routeName: 'subcontracting-receipt-assigned' }) },

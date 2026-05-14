@@ -14,7 +14,13 @@ import type { Customer, Project, Warehouse } from '@/features/goods-receipt/type
 import type { UserDto } from '@/features/auth/types/auth';
 import type { SubcontractingFormData } from '../../types/subcontracting';
 
-export function Step1SubcontractingBasicInfo(): ReactElement {
+interface Step1SubcontractingBasicInfoProps {
+  showOperationUsers?: boolean;
+}
+
+export function Step1SubcontractingBasicInfo({
+  showOperationUsers = true,
+}: Step1SubcontractingBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<SubcontractingFormData>();
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
@@ -192,33 +198,35 @@ export function Step1SubcontractingBasicInfo(): ReactElement {
         />
       </div>
 
-      <FormField
-        control={form.control}
-        name="userIds"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('subcontracting.step1.operationUsers')}</FormLabel>
-            <FormControl>
-              <SearchableMultiSelect<UserDto>
-                value={field.value || []}
-                onValueChange={(values) => field.onChange(values)}
-                options={activeUsers || []}
-                getOptionValue={(opt) => String(opt.id)}
-                getOptionLabel={(opt) => {
-                  const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                  return opt.email ? `${name} (${opt.email})` : name;
-                }}
-                placeholder={t('subcontracting.step1.selectOperationUsers')}
-                searchPlaceholder={t('common.search')}
-                emptyText={t('common.notFound')}
-                isLoading={isLoadingUsers}
-                itemLimit={100}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {showOperationUsers ? (
+        <FormField
+          control={form.control}
+          name="userIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('subcontracting.step1.operationUsers')}</FormLabel>
+              <FormControl>
+                <SearchableMultiSelect<UserDto>
+                  value={field.value || []}
+                  onValueChange={(values) => field.onChange(values)}
+                  options={activeUsers || []}
+                  getOptionValue={(opt) => String(opt.id)}
+                  getOptionLabel={(opt) => {
+                    const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
+                    return opt.email ? `${name} (${opt.email})` : name;
+                  }}
+                  placeholder={t('subcontracting.step1.selectOperationUsers')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
+                  isLoading={isLoadingUsers}
+                  itemLimit={100}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      ) : null}
 
       <FormField
         control={form.control}

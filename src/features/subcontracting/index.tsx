@@ -1,6 +1,8 @@
 export { SubcontractingIssueCreatePage } from './components/SubcontractingIssueCreatePage';
+export { SubcontractingIssueEditPage } from './components/SubcontractingEditPage';
 export { SubcontractingIssueProcessPage } from './components/SubcontractingIssueProcessPage';
 export { SubcontractingReceiptCreatePage } from './components/SubcontractingReceiptCreatePage';
+export { SubcontractingReceiptEditPage } from './components/SubcontractingEditPage';
 export { SubcontractingReceiptProcessPage } from './components/SubcontractingReceiptProcessPage';
 export { SubcontractingReceiptListPage } from './components/SubcontractingReceiptListPage';
 export { SubcontractingIssueListPage } from './components/SubcontractingIssueListPage';

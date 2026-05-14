@@ -1232,6 +1232,12 @@
         "success": "Subcontracting issue order created successfully",
         "error": "An error occurred while creating subcontracting issue order"
       },
+      "edit": {
+        "title": "Edit Subcontracting Issue",
+        "subtitle": "Update subcontracting issue header information without changing line or collection flow",
+        "success": "Subcontracting issue order updated successfully",
+        "error": "An error occurred while updating subcontracting issue order"
+      },
       "list": {
         "title": "Subcontracting Issue Order List",
         "error": "An error occurred while loading data",
@@ -1319,6 +1325,12 @@
         "title": "New Subcontracting Receipt Order",
         "success": "Subcontracting receipt order created successfully",
         "error": "An error occurred while creating subcontracting receipt order"
+      },
+      "edit": {
+        "title": "Edit Subcontracting Receipt",
+        "subtitle": "Update subcontracting receipt header information without changing line or collection flow",
+        "success": "Subcontracting receipt order updated successfully",
+        "error": "An error occurred while updating subcontracting receipt order"
       },
       "list": {
         "title": "Subcontracting Receipt Order List",

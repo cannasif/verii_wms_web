@@ -1232,6 +1232,12 @@
         "success": "Fason çıkış emri başarıyla oluşturuldu",
         "error": "Fason çıkış emri oluşturulurken bir hata oluştu"
       },
+      "edit": {
+        "title": "Edit Subcontracting Issue",
+        "subtitle": "Update subcontracting issue header information without changing line or collection flow",
+        "success": "Subcontracting issue order updated successfully",
+        "error": "An error occurred while updating subcontracting issue order"
+      },
       "list": {
         "title": "Fason Çıkış Emri Listesi",
         "error": "Veri yüklenirken bir hata oluştu",
@@ -1319,6 +1325,12 @@
         "title": "Yeni Fason Giriş Emri",
         "success": "Fason giriş emri başarıyla oluşturuldu",
         "error": "Fason giriş emri oluşturulurken bir hata oluştu"
+      },
+      "edit": {
+        "title": "Edit Subcontracting Receipt",
+        "subtitle": "Update subcontracting receipt header information without changing line or collection flow",
+        "success": "Subcontracting receipt order updated successfully",
+        "error": "An error occurred while updating subcontracting receipt order"
       },
       "list": {
         "title": "Fason Giriş Emri Listesi",

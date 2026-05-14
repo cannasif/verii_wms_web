@@ -195,6 +195,33 @@ export const subcontractingApi = {
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptHeadersLoadFailed'));
   },
 
+  getReceiptHeaderById: async (id: number, options?: ApiRequestOptions): Promise<SubcontractingHeader> => {
+    const response = await api.get<ApiResponse<SubcontractingHeader>>(`/api/SrtHeader/${id}`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptHeadersLoadFailed'));
+  },
+
+  updateReceiptHeader: async (id: number, formData: SubcontractingFormData): Promise<ApiResponse<SubcontractingHeader>> => {
+    return await api.put<ApiResponse<SubcontractingHeader>>(`/api/SrtHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      plannedDate: formData.transferDate,
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse || '',
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse || '',
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'SRT',
+    });
+  },
+
   getIssueHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const requestBody = buildPagedRequest(params);
 
@@ -203,6 +230,33 @@ export const subcontractingApi = {
       return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueHeadersLoadFailed'));
+  },
+
+  getIssueHeaderById: async (id: number, options?: ApiRequestOptions): Promise<SubcontractingHeader> => {
+    const response = await api.get<ApiResponse<SubcontractingHeader>>(`/api/SitHeader/${id}`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueHeadersLoadFailed'));
+  },
+
+  updateIssueHeader: async (id: number, formData: SubcontractingFormData): Promise<ApiResponse<SubcontractingHeader>> => {
+    return await api.put<ApiResponse<SubcontractingHeader>>(`/api/SitHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      plannedDate: formData.transferDate,
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse || '',
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse || '',
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'SIT',
+    });
   },
 
   getReceiptLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {

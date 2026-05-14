@@ -1781,6 +1781,12 @@
         "success": "Fason çıkış emri başarıyla oluşturuldu",
         "error": "Fason çıkış emri oluşturulurken bir hata oluştu"
       },
+      "edit": {
+        "title": "Fason Çıkış Düzenle",
+        "subtitle": "Fason çıkış başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+        "success": "Fason çıkış emri başarıyla güncellendi",
+        "error": "Fason çıkış emri güncellenirken bir hata oluştu"
+      },
       "list": {
         "title": "Fason Çıkış Emri Listesi",
         "error": "Veri yüklenirken bir hata oluştu",
@@ -1868,6 +1874,12 @@
         "title": "Yeni Fason Giriş Emri",
         "success": "Fason giriş emri başarıyla oluşturuldu",
         "error": "Fason giriş emri oluşturulurken bir hata oluştu"
+      },
+      "edit": {
+        "title": "Fason Giriş Düzenle",
+        "subtitle": "Fason giriş başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+        "success": "Fason giriş emri başarıyla güncellendi",
+        "error": "Fason giriş emri güncellenirken bir hata oluştu"
       },
       "list": {
         "title": "Fason Giriş Emri Listesi",

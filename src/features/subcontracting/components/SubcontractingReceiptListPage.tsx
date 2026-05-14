@@ -1,7 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
@@ -51,6 +52,7 @@ const formatDateTime = (value: string | null): string => !value ? '-' : new Date
 
 export function SubcontractingReceiptListPage(): ReactElement {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.subcontracting.receipt');
   const pageKey = 'subcontracting-receipt-list';
@@ -129,7 +131,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.receipt.list.error')}
           emptyText={t('subcontracting.receipt.list.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
@@ -138,6 +140,10 @@ export function SubcontractingReceiptListPage(): ReactElement {
                 setSelectedDocumentType(item.documentType);
               }}>
                 {t('subcontracting.receipt.list.viewDetails')}
+              </Button>
+              <Button variant="secondary" size="sm" disabled={!permission.canUpdate || item.isCompleted} onClick={() => navigate(`/subcontracting/receipt/edit/${item.id}`)}>
+                <Pencil className="size-4" />
+                <span className="ml-2">{t('common.edit')}</span>
               </Button>
               <Button variant="destructive" size="sm" disabled={!permission.canDelete || deleteMutation.isPending} onClick={() => setHeaderToDelete(item)}>
                 <Trash2 className="size-4" />

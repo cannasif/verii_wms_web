@@ -1232,6 +1232,12 @@
         "success": "Fremdarbeitsausgangsauftrag erfolgreich erstellt",
         "error": "Fehler beim Erstellen des Fremdarbeitsausgangsauftrags"
       },
+      "edit": {
+        "title": "Edit Subcontracting Issue",
+        "subtitle": "Update subcontracting issue header information without changing line or collection flow",
+        "success": "Subcontracting issue order updated successfully",
+        "error": "An error occurred while updating subcontracting issue order"
+      },
       "list": {
         "title": "Fremdarbeitsausgangsauftragsliste",
         "error": "Fehler beim Laden der Daten",
@@ -1319,6 +1325,12 @@
         "title": "Neuer Fremdarbeitseingangsauftrag",
         "success": "Fremdarbeitseingangsauftrag erfolgreich erstellt",
         "error": "Fehler beim Erstellen des Fremdarbeitseingangsauftrags"
+      },
+      "edit": {
+        "title": "Edit Subcontracting Receipt",
+        "subtitle": "Update subcontracting receipt header information without changing line or collection flow",
+        "success": "Subcontracting receipt order updated successfully",
+        "error": "An error occurred while updating subcontracting receipt order"
       },
       "list": {
         "title": "Fremdarbeitseingangsauftragsliste",
