@@ -2640,6 +2640,12 @@
         "error": "Veri yüklenirken bir hata oluştu",
         "searchPlaceholder": "Belge No, Cari Kodu, Depo...",
         "noData": "Veri bulunamadı"
+      },
+      "edit": {
+        "title": "Depo Giriş Düzenle",
+        "subtitle": "Depo giriş başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+        "success": "Depo giriş emri başarıyla güncellendi",
+        "error": "Depo giriş emri güncellenirken bir hata oluştu"
       }
     },
     "list": {

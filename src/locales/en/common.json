@@ -2640,6 +2640,12 @@
         "error": "An error occurred while loading data",
         "searchPlaceholder": "Document No, Customer Code, Warehouse...",
         "noData": "No data found"
+      },
+      "edit": {
+        "title": "Edit Warehouse Inbound",
+        "subtitle": "Update warehouse inbound header information without changing line or collection flow",
+        "success": "Warehouse inbound order updated successfully",
+        "error": "An error occurred while updating warehouse inbound order"
       }
     },
     "list": {

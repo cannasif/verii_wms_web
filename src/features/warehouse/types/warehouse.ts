@@ -44,11 +44,17 @@ export const warehouseInboundTypeOptions = [
   { value: WarehouseInboundType.TRANSFER_IN.toString(), labelKey: 'warehouse.operationTypes.inbound.transferIn' },
 ];
 
-export const createWarehouseFormSchema = (t: TFunction, type: 'inbound' | 'outbound') => z.object({
+export const createWarehouseFormSchema = (
+  t: TFunction,
+  type: 'inbound' | 'outbound',
+  requireDocumentSeries: boolean = true,
+) => z.object({
   operationType: z.string().min(1, t('warehouse.validation.operationTypeRequired')),
   transferDate: z.string().min(1, t('warehouse.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('warehouse.validation.documentNoRequired')),
-  documentSeriesDefinitionId: z.number().min(1, t('documentSeries.messages.definitionRequired')),
+  documentSeriesDefinitionId: requireDocumentSeries
+    ? z.number().min(1, t('documentSeries.messages.definitionRequired'))
+    : z.number().optional(),
   requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: z.string().min(1, t('warehouse.validation.customerRequired')),

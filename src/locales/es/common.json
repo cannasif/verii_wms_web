@@ -2091,6 +2091,12 @@
         "title": "Warehouse Inbound Process",
         "success": "Warehouse inbound process created successfully",
         "error": "An error occurred while creating warehouse inbound process"
+      },
+      "edit": {
+        "title": "Edit Warehouse Inbound",
+        "subtitle": "Update warehouse inbound header information without changing line or collection flow",
+        "success": "Warehouse inbound order updated successfully",
+        "error": "An error occurred while updating warehouse inbound order"
       }
     },
     "list": {

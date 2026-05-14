@@ -125,6 +125,35 @@ export const warehouseApi = {
     throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundHeadersLoadFailed'));
   },
 
+  getInboundHeaderById: async (id: number, options?: ApiRequestOptions): Promise<WarehouseHeader> => {
+    const response = await api.get<ApiResponse<WarehouseHeader>>(`/api/WiHeader/${id}`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundHeaderDetailLoadFailed'));
+  },
+
+  updateInboundHeader: async (id: number, formData: WarehouseFormData): Promise<ApiResponse<WarehouseHeader>> => {
+    return await api.put<ApiResponse<WarehouseHeader>>(`/api/WiHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      plannedDate: formData.transferDate,
+      inboundType: formData.operationType || '',
+      type: Number(formData.operationType || 0),
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse || '',
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse || '',
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'WI',
+    });
+  },
+
   getOutboundHeadersPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<WarehouseHeader>> => {
     const requestBody = buildPagedRequest(params);
 

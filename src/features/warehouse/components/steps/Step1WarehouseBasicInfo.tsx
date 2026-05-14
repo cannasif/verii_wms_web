@@ -22,11 +22,13 @@ type WarehouseType = 'inbound' | 'outbound';
 interface Step1WarehouseBasicInfoProps {
   type: WarehouseType;
   showOperationUsers?: boolean;
+  hideDocumentSeries?: boolean;
 }
 
 export function Step1WarehouseBasicInfo({
   type,
   showOperationUsers = true,
+  hideDocumentSeries = false,
 }: Step1WarehouseBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<WarehouseFormData>();
@@ -171,11 +173,13 @@ export function Step1WarehouseBasicInfo({
           )}
         />
 
-        <OperationDocumentSeriesSelector
-          operationType={type === 'inbound' ? 'WI' : 'WO'}
-          warehouseId={type === 'inbound' ? form.watch('targetWarehouseId') : form.watch('sourceWarehouseId')}
-          customerId={form.watch('customerRefId')}
-        />
+        {!hideDocumentSeries ? (
+          <OperationDocumentSeriesSelector
+            operationType={type === 'inbound' ? 'WI' : 'WO'}
+            warehouseId={type === 'inbound' ? form.watch('targetWarehouseId') : form.watch('sourceWarehouseId')}
+            customerId={form.watch('customerRefId')}
+          />
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
