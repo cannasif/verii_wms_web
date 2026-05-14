@@ -238,4 +238,12 @@ export const warehouseApi = {
       params: { approved },
     });
   },
+
+  deleteInboundHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/WiHeader/${id}`);
+  },
+
+  deleteOutboundHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/WoHeader/${id}`);
+  },
 };

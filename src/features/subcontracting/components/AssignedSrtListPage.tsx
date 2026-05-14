@@ -1,8 +1,11 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -13,6 +16,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
+import { subcontractingApi } from '../api/subcontracting-api';
 import { useAssignedSrtHeadersPaged } from '../hooks/useSubcontractingHeaders';
 import { SubcontractingDetailDialog } from './SubcontractingDetailDialog';
 import type { SubcontractingHeader } from '../types/subcontracting';
@@ -54,6 +58,7 @@ export function AssignedSrtListPage(): ReactElement {
   const pageKey = 'subcontracting-srt-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<SubcontractingHeader | null>(null);
   const pagedGrid = usePagedDataGrid<AssignedSrtColumnKey>({ pageKey, defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
   const columns = useMemo<PagedDataGridColumn<AssignedSrtColumnKey>[]>(() => [
     { key: 'id', label: t('subcontracting.srt.assignedList.id') },
@@ -68,7 +73,22 @@ export function AssignedSrtListPage(): ReactElement {
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey, columns: columns.map(({ key, label }) => ({ key, label })), idColumnKey: 'id' });
-  const { data, isLoading, error } = useAssignedSrtHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useAssignedSrtHeadersPaged(pagedGrid.queryParams);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => subcontractingApi.deleteReceiptHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      }
+      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+    },
+  });
 
   useEffect(() => {
     setPageTitle(t('subcontracting.srt.assignedList.title'));
@@ -116,7 +136,7 @@ export function AssignedSrtListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.srt.assignedList.error')}
           emptyText={t('subcontracting.srt.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate)}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
@@ -128,6 +148,10 @@ export function AssignedSrtListPage(): ReactElement {
               </Button>
               <Button variant="default" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/subcontracting/receipt/collection/${item.id}`)} disabled={!permission.canUpdate}>
                 {t('common.start')}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+                {t('common.delete')}
               </Button>
             </div>
           )}
@@ -185,6 +209,18 @@ export function AssignedSrtListPage(): ReactElement {
           }}
         />
       )}
+
+      <DeleteConfirmDialog
+        open={headerToDelete != null}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        itemLabel={headerToDelete?.documentNo || (headerToDelete ? `#${headerToDelete.id}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

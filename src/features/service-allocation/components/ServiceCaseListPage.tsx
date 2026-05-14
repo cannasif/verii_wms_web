@@ -1,9 +1,12 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
-import { ArrowDown, ArrowUp, Edit, Eye, Plus } from 'lucide-react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { ArrowDown, ArrowUp, Edit, Eye, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -13,6 +16,7 @@ import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import type { ServiceCaseRow } from '../types/service-allocation.types';
 import { useServiceCasesQuery } from '../hooks/useServiceCasesQuery';
 import { renderServiceCaseStatus } from '../utils/service-allocation-display';
+import { serviceAllocationApi } from '../api/service-allocation.api';
 
 type ColumnKey =
   | 'caseNo'
@@ -62,6 +66,7 @@ export function ServiceCaseListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
+  const [itemToDelete, setItemToDelete] = useState<ServiceCaseRow | null>(null);
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
     pageKey: 'service-allocation-case-list',
@@ -92,6 +97,21 @@ export function ServiceCaseListPage(): ReactElement {
 
   const { data, isLoading, isFetching, error, refetch } = useServiceCasesQuery(pagedGrid.queryParams);
   const rows = data?.data ?? [];
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => serviceAllocationApi.deleteServiceCase(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      }
+      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setItemToDelete(null);
+      await refetch();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+    },
+  });
 
   const renderSortIcon = (columnKey: ColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -152,16 +172,30 @@ export function ServiceCaseListPage(): ReactElement {
             emptyText={t('serviceAllocation.caseList.empty', { defaultValue: 'Missing translation' })}
             rowClassName="cursor-pointer"
             onRowClick={(row) => navigate(`/service-allocation/cases/${row.id}`)}
-            showActionsColumn
+            showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
             actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
             renderActionsCell={(row) => (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => navigate(`/service-allocation/cases/${row.id}`)}>
+                <Button variant="ghost" size="sm" onClick={(event) => {
+                  event.stopPropagation();
+                  navigate(`/service-allocation/cases/${row.id}`);
+                }} disabled={!permission.canView}>
                   <Eye className="size-4" />
                 </Button>
                 {permission.canUpdate ? (
-                  <Button variant="ghost" size="sm" onClick={() => navigate(`/service-allocation/cases/${row.id}/edit`)}>
+                  <Button variant="ghost" size="sm" onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/service-allocation/cases/${row.id}/edit`);
+                  }}>
                     <Edit className="size-4" />
+                  </Button>
+                ) : null}
+                {permission.canDelete ? (
+                  <Button variant="destructive" size="sm" onClick={(event) => {
+                    event.stopPropagation();
+                    setItemToDelete(row);
+                  }} disabled={deleteMutation.isPending}>
+                    <Trash2 className="size-4" />
                   </Button>
                 ) : null}
               </div>
@@ -209,6 +243,18 @@ export function ServiceCaseListPage(): ReactElement {
           />
         </CardContent>
       </Card>
+
+      <DeleteConfirmDialog
+        open={itemToDelete != null}
+        onOpenChange={(open) => {
+          if (!open) setItemToDelete(null);
+        }}
+        itemLabel={itemToDelete?.caseNo || (itemToDelete ? `#${itemToDelete.id}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+      />
     </div>
   );
 }

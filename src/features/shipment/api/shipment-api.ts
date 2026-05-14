@@ -159,4 +159,8 @@ export const shipmentApi = {
       params: { approved },
     });
   },
+
+  deleteShipmentHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/ShHeader/${id}`);
+  },
 };

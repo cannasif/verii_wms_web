@@ -1,6 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +10,14 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useGrHeaders } from '../hooks/useGrHeaders';
 import type { GrHeader } from '../types/goods-receipt';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
+import { goodsReceiptApi } from '../api/goods-receipt-api';
 
 type ColumnKey = 'id' | 'orderId' | 'customerCode' | 'projectCode' | 'documentType' | 'plannedDate' | 'status' | 'createdDate' | 'actions';
 const ElectronicDispatchDocumentType = 'E-İrsaliye';
@@ -36,6 +40,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
   const [selectedGrHeaderId, setSelectedGrHeaderId] = useState<number | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<GrHeader | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'goods-receipt-report', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageNumber: 1, pageNumberBase: 1, mapSortBy });
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: t('goodsReceipt.report.id') },
@@ -48,7 +53,21 @@ export function GoodsReceiptReportPage(): ReactElement {
     { key: 'createdDate', label: t('goodsReceipt.report.createdDate') },
     { key: 'actions', label: t('goodsReceipt.report.actions'), sortable: false },
   ], [t]);
-  const { data, isLoading, error } = useGrHeaders(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useGrHeaders(pagedGrid.queryParams);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => goodsReceiptApi.deleteGoodsReceiptHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.errors.deleteFailed'));
+      }
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || t('common.errors.deleteFailed'));
+    },
+  });
   useEffect(() => { setPageTitle(t('goodsReceipt.report.title')); return () => setPageTitle(null); }, [setPageTitle, t]);
   const formatDate = (value: string | null): string => value ? new Date(value).toLocaleDateString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -77,10 +96,15 @@ export function GoodsReceiptReportPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('goodsReceipt.report.error')}
           emptyText={t('goodsReceipt.report.noData')}
-          showActionsColumn={permission.canView}
+          showActionsColumn={permission.canView || permission.canDelete}
           actionsHeaderLabel={t('goodsReceipt.report.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)} disabled={!permission.canView}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>}
+          renderActionsCell={(row) => (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)} disabled={!permission.canView}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>
+              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}><Trash2 className="size-4" /><span className="ml-2">{t('common.delete')}</span></Button>
+            </div>
+          )}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -97,6 +121,17 @@ export function GoodsReceiptReportPage(): ReactElement {
         />
       </CardContent></Card>
       {selectedGrHeaderId && <GoodsReceiptDetailDialog grHeaderId={selectedGrHeaderId} isOpen onClose={() => setSelectedGrHeaderId(null)} />}
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.orderId || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

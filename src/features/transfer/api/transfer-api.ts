@@ -169,4 +169,8 @@ export const transferApi = {
       params: { approved, id },
     });
   },
+
+  deleteTransferHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/WtHeader/${id}`);
+  },
 };

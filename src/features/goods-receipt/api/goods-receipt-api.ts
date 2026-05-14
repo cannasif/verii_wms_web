@@ -163,4 +163,8 @@ export const goodsReceiptApi = {
   completeGoodsReceipt: async (headerId: number): Promise<ApiResponse<unknown>> => {
     return await api.post<ApiResponse<unknown>>(`/api/GrHeader/complete/${headerId}`);
   },
+
+  deleteGoodsReceiptHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/GrHeader/${id}`);
+  },
 };

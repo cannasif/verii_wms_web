@@ -276,4 +276,12 @@ export const subcontractingApi = {
       params: { approved },
     });
   },
+
+  deleteIssueHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/SitHeader/${id}`);
+  },
+
+  deleteReceiptHeader: async (id: number): Promise<ApiResponse<boolean>> => {
+    return await api.delete<ApiResponse<boolean>>(`/api/SrtHeader/${id}`);
+  },
 };

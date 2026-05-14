@@ -1,12 +1,16 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -74,7 +78,9 @@ export function AssignedProductionListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const authUserId = useAuthStore((state) => state.user?.id);
+  const permission = useCrudPermission('wms.production');
   const pageKey = 'production-assigned-list';
+  const [itemToDelete, setItemToDelete] = useState<ProductionHeaderListItem | null>(null);
 
   const pagedGrid = usePagedDataGrid<AssignedProductionColumnKey>({
     pageKey,
@@ -107,7 +113,7 @@ export function AssignedProductionListPage(): ReactElement {
     idColumnKey: 'documentNo',
   });
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['production-assigned-headers-paged', authUserId, pagedGrid.queryParams],
     queryFn: () => productionApi.getAssignedHeaders(authUserId || 0, {
       ...pagedGrid.queryParams,
@@ -117,6 +123,21 @@ export function AssignedProductionListPage(): ReactElement {
       ],
     }),
     enabled: Boolean(authUserId),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => productionApi.softDeleteProductionPlan(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('production.list.deleteError', { defaultValue: 'Üretim planı silinemedi.' }));
+      }
+      toast.success(t('production.list.deleteSuccess', { defaultValue: 'Üretim planı silindi.' }));
+      setItemToDelete(null);
+      await refetch();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('production.list.deleteError', { defaultValue: 'Üretim planı silinemedi.' }));
+    },
   });
 
   const exportColumns = useMemo(
@@ -164,6 +185,7 @@ export function AssignedProductionListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice message={t('common.accessDeniedMessage')} /> : null}
       <PagedDataGrid<ProductionHeaderListItem, AssignedProductionColumnKey>
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -203,15 +225,19 @@ export function AssignedProductionListPage(): ReactElement {
         isError={Boolean(error)}
         errorText={error instanceof Error ? error.message : t('production.assigned.error', { defaultValue: 'Missing translation' })}
         emptyText={t('production.assigned.noData', { defaultValue: 'Missing translation' })}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
+        showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
         actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)} disabled={!permission.canView}>
               {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
             </Button>
-            <Button type="button" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/production/process/${row.id}`)}>
+            <Button type="button" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/production/process/${row.id}`)} disabled={!permission.canUpdate}>
               {t('common.start', { defaultValue: 'Missing translation' })}
+            </Button>
+            <Button type="button" variant="destructive" size="sm" onClick={() => setItemToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
+              <Trash2 className="mr-1 h-3.5 w-3.5" />
+              {t('common.delete')}
             </Button>
           </div>
         )}
@@ -254,6 +280,17 @@ export function AssignedProductionListPage(): ReactElement {
             placeholder: t('production.assigned.searchPlaceholder', { defaultValue: 'Missing translation' }),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+        }}
+      />
+      <DeleteConfirmDialog
+        open={itemToDelete != null}
+        onOpenChange={(open) => {
+          if (!open) setItemToDelete(null);
+        }}
+        itemLabel={itemToDelete?.documentNo || (itemToDelete ? `#${itemToDelete.id}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
         }}
       />
     </div>

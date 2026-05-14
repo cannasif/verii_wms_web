@@ -1,6 +1,8 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +10,7 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -15,6 +18,7 @@ import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useWarehouseInboundHeadersPaged } from '../hooks/useWarehouseHeaders';
 import type { WarehouseHeader } from '../types/warehouse';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
+import { warehouseApi } from '../api/warehouse-api';
 
 type WarehouseInboundColumnKey =
   | 'documentNo'
@@ -63,6 +67,7 @@ export function WarehouseInboundListPage(): ReactElement {
   const permission = useCrudPermission('wms.warehouse.inbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<WarehouseHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<WarehouseInboundColumnKey>({
     pageKey: 'warehouse-inbound-list',
@@ -91,7 +96,22 @@ export function WarehouseInboundListPage(): ReactElement {
     [t],
   );
 
-  const { data, isLoading, error } = useWarehouseInboundHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useWarehouseInboundHeadersPaged(pagedGrid.queryParams);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => warehouseApi.deleteInboundHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.errors.deleteFailed'));
+      }
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || t('common.errors.deleteFailed'));
+    },
+  });
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
@@ -218,13 +238,19 @@ export function WarehouseInboundListPage(): ReactElement {
             emptyText={t('warehouse.inbound.list.noData')}
             rowClassName="cursor-pointer"
             onRowClick={permission.canView ? handleRowClick : undefined}
-            showActionsColumn={permission.canView}
+            showActionsColumn={permission.canView || permission.canDelete}
             actionsHeaderLabel={t('warehouse.inbound.list.actions')}
             renderActionsCell={(row) => (
-              <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)} disabled={!permission.canView}>
-                <Eye className="size-4" />
-                <span className="ml-2">{t('warehouse.inbound.list.viewDetails')}</span>
-              </Button>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => handleRowClick(row)} disabled={!permission.canView}>
+                  <Eye className="size-4" />
+                  <span className="ml-2">{t('warehouse.inbound.list.viewDetails')}</span>
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                  <Trash2 className="size-4" />
+                  <span className="ml-2">{t('common.delete')}</span>
+                </Button>
+              </div>
             )}
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
@@ -274,6 +300,17 @@ export function WarehouseInboundListPage(): ReactElement {
         onClose={() => {
           setSelectedHeaderId(null);
           setSelectedDocumentType(null);
+        }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
     </div>

@@ -1,6 +1,8 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +10,7 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -16,6 +19,7 @@ import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useShipmentHeadersPaged } from '../hooks/useShipmentHeaders';
 import type { ShipmentHeader } from '../types/shipment';
 import { ShipmentDetailDialog } from './ShipmentDetailDialog';
+import { shipmentApi } from '../api/shipment-api';
 
 type ShipmentColumnKey =
   | 'documentNo'
@@ -67,6 +71,7 @@ export function ShipmentListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<ShipmentHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<ShipmentColumnKey>({
     pageKey: 'shipment-list',
@@ -101,7 +106,22 @@ export function ShipmentListPage(): ReactElement {
     columns: columns.map(({ key, label }) => ({ key, label })),
   });
 
-  const { data, isLoading, error } = useShipmentHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useShipmentHeadersPaged(pagedGrid.queryParams);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => shipmentApi.deleteShipmentHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.errors.deleteFailed'));
+      }
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || t('common.errors.deleteFailed'));
+    },
+  });
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
@@ -231,13 +251,19 @@ export function ShipmentListPage(): ReactElement {
             emptyText={t('shipment.list.noData')}
             rowClassName="cursor-pointer"
             onRowClick={permission.canView ? (row) => setSelectedHeaderId(row.id) : undefined}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
             actionsHeaderLabel={t('shipment.list.actions')}
             renderActionsCell={(row) => (
-              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
-                <Eye className="size-4" />
-                <span className="ml-2">{t('shipment.list.viewDetails')}</span>
-              </Button>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
+                  <Eye className="size-4" />
+                  <span className="ml-2">{t('shipment.list.viewDetails')}</span>
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                  <Trash2 className="size-4" />
+                  <span className="ml-2">{t('common.delete')}</span>
+                </Button>
+              </div>
             )}
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
@@ -293,6 +319,17 @@ export function ShipmentListPage(): ReactElement {
         headerId={selectedHeaderId ?? 0}
         isOpen={selectedHeaderId !== null}
         onClose={() => setSelectedHeaderId(null)}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
       />
     </div>
   );

@@ -1,8 +1,11 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -16,6 +19,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAssignedGrHeaders } from '../hooks/useAssignedGrHeaders';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 import type { GrHeader } from '../types/goods-receipt';
+import { goodsReceiptApi } from '../api/goods-receipt-api';
 
 type AssignedGrColumnKey =
   | 'id'
@@ -83,6 +87,7 @@ export function AssignedGrListPage(): ReactElement {
   const permission = useCrudPermission('wms.goods-receipt');
   const pageKey = 'goods-receipt-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<GrHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<AssignedGrColumnKey>({
     pageKey,
@@ -110,7 +115,17 @@ export function AssignedGrListPage(): ReactElement {
     idColumnKey: 'id',
   });
 
-  const { data, isLoading, error } = useAssignedGrHeaders(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useAssignedGrHeaders(pagedGrid.queryParams);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => goodsReceiptApi.deleteGoodsReceiptHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => toast.error(err.message || t('common.errors.deleteFailed')),
+  });
 
   useEffect(() => {
     setPageTitle(t('goodsReceipt.assignedList.title'));
@@ -211,7 +226,7 @@ export function AssignedGrListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('goodsReceipt.assignedList.error')}
           emptyText={t('goodsReceipt.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate)}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
@@ -226,6 +241,10 @@ export function AssignedGrListPage(): ReactElement {
                 disabled={!permission.canUpdate}
               >
                 {t('common.start')}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                <Trash2 className="size-4" />
+                <span className="ml-2">{t('common.delete')}</span>
               </Button>
             </div>
           )}
@@ -285,6 +304,17 @@ export function AssignedGrListPage(): ReactElement {
           onClose={() => setSelectedHeaderId(null)}
         />
       )}
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.orderId || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

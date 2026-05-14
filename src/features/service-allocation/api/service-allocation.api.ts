@@ -113,6 +113,10 @@ export const serviceAllocationApi = {
     return response.data;
   },
 
+  async deleteServiceCase(id: number): Promise<ApiResponse<boolean>> {
+    return await api.delete<ApiResponse<boolean>>(`/api/ServiceCase/${id}`);
+  },
+
   async createServiceCaseLine(payload: CreateServiceCaseLineRequest) {
     const response = await api.post<ApiResponse<unknown>>('/api/ServiceCaseLine', payload);
     if (!response.success) {

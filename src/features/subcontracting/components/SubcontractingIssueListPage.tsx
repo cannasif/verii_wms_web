@@ -1,6 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +10,14 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useSubcontractingIssueHeadersPaged } from '../hooks/useSubcontractingHeaders';
 import type { SubcontractingHeader } from '../types/subcontracting';
 import { SubcontractingDetailDialog } from './SubcontractingDetailDialog';
+import { subcontractingApi } from '../api/subcontracting-api';
 
 type ColumnKey = 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'sourceWarehouse' | 'targetWarehouse' | 'documentType' | 'status' | 'createdDate' | 'actions';
 
@@ -23,6 +27,7 @@ export function SubcontractingIssueListPage(): ReactElement {
   const permission = useCrudPermission('wms.subcontracting.issue');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<SubcontractingHeader | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'subcontracting-issue-list', defaultSortBy: 'createdDate', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'documentNo', label: t('subcontracting.issue.list.documentNo'), sortable: false },
@@ -36,7 +41,17 @@ export function SubcontractingIssueListPage(): ReactElement {
     { key: 'createdDate', label: t('subcontracting.issue.list.createdDate'), sortable: false },
     { key: 'actions', label: t('subcontracting.issue.list.actions'), sortable: false },
   ], [t]);
-  const { data, isLoading, error } = useSubcontractingIssueHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useSubcontractingIssueHeadersPaged(pagedGrid.queryParams);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => subcontractingApi.deleteIssueHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => toast.error(err.message || t('common.errors.deleteFailed')),
+  });
   useEffect(() => { setPageTitle(t('subcontracting.issue.list.title')); return () => setPageTitle(null); }, [setPageTitle, t]);
   const formatDate = (value: string | null): string => value ? new Date(value).toLocaleDateString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -58,10 +73,15 @@ export function SubcontractingIssueListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.issue.list.error')}
           emptyText={t('subcontracting.issue.list.noData')}
-          showActionsColumn={permission.canView}
+          showActionsColumn={permission.canView || permission.canDelete}
           actionsHeaderLabel={t('subcontracting.issue.list.actions')}
           iconOnlyActions={false}
-          renderActionsCell={(row) => <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span></Button>}
+          renderActionsCell={(row) => (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-4" /><span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span></Button>
+              <Button variant="destructive" size="sm" disabled={!permission.canDelete || deleteMutation.isPending} onClick={() => setHeaderToDelete(row)}><Trash2 className="size-4" /><span className="ml-2">{t('common.delete')}</span></Button>
+            </div>
+          )}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -78,6 +98,17 @@ export function SubcontractingIssueListPage(): ReactElement {
         />
       </CardContent></Card>
       {selectedHeaderId && selectedDocumentType && <SubcontractingDetailDialog headerId={selectedHeaderId} documentType={selectedDocumentType} isOpen onClose={() => { setSelectedHeaderId(null); setSelectedDocumentType(null); }} />}
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

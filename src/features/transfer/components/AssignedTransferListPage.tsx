@@ -1,8 +1,11 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -16,6 +19,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAssignedTransferHeaders } from '../hooks/useAssignedTransferHeaders';
 import { TransferDetailDialog } from './TransferDetailDialog';
 import type { TransferHeader } from '../types/transfer';
+import { transferApi } from '../api/transfer-api';
 
 type TransferAssignedColumnKey =
   | 'id'
@@ -89,6 +93,7 @@ export function AssignedTransferListPage(): ReactElement {
   const permission = useCrudPermission('wms.transfer');
   const pageKey = 'transfer-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<TransferHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<TransferAssignedColumnKey>({
     pageKey,
@@ -117,7 +122,17 @@ export function AssignedTransferListPage(): ReactElement {
     idColumnKey: 'id',
   });
 
-  const { data, isLoading, error } = useAssignedTransferHeaders(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useAssignedTransferHeaders(pagedGrid.queryParams);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => transferApi.deleteTransferHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => toast.error(err.message || t('common.errors.deleteFailed')),
+  });
 
   useEffect(() => {
     setPageTitle(t('transfer.assignedList.title'));
@@ -211,7 +226,7 @@ export function AssignedTransferListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('transfer.assignedList.error')}
           emptyText={t('transfer.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate)}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
@@ -226,6 +241,10 @@ export function AssignedTransferListPage(): ReactElement {
                 disabled={!permission.canUpdate}
               >
                 {t('common.start')}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                <Trash2 className="size-4" />
+                <span className="ml-2">{t('common.delete')}</span>
               </Button>
             </div>
           )}
@@ -285,6 +304,17 @@ export function AssignedTransferListPage(): ReactElement {
           onClose={() => setSelectedHeaderId(null)}
         />
       )}
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

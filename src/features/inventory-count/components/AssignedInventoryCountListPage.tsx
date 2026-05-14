@@ -1,12 +1,16 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -67,7 +71,9 @@ export function AssignedInventoryCountListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const authUserId = useAuthStore((state) => state.user?.id);
+  const permission = useCrudPermission('wms.inventory-count');
   const pageKey = 'inventory-count-assigned-list';
+  const [itemToDelete, setItemToDelete] = useState<InventoryCountHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<AssignedInventoryCountColumnKey>({
     pageKey,
@@ -98,10 +104,22 @@ export function AssignedInventoryCountListPage(): ReactElement {
     idColumnKey: 'documentNo',
   });
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['inventory-count-assigned-list', authUserId, pagedGrid.queryParams],
     queryFn: () => inventoryCountApi.getAssignedHeadersPaged(authUserId || 0, pagedGrid.queryParams),
     enabled: Boolean(authUserId),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => inventoryCountApi.softDeleteHeader(id),
+    onSuccess: async () => {
+      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setItemToDelete(null);
+      await refetch();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+    },
   });
 
   const exportColumns = useMemo(
@@ -144,6 +162,7 @@ export function AssignedInventoryCountListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
+      {!permission.canMutate ? <PermissionNotice message={t('common.accessDeniedMessage')} /> : null}
       <PagedDataGrid<InventoryCountHeader, AssignedInventoryCountColumnKey>
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -177,12 +196,16 @@ export function AssignedInventoryCountListPage(): ReactElement {
         isError={Boolean(error)}
         errorText={error instanceof Error ? error.message : t('inventoryCount.assigned.error')}
         emptyText={t('inventoryCount.assigned.noData')}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
+        showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canUpdate || permission.canDelete)}
         actionsHeaderLabel={t('common.actions')}
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))}>
+            <Button type="button" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))} disabled={!permission.canUpdate}>
               {t('inventoryCount.actions.process')}
+            </Button>
+            <Button type="button" variant="destructive" size="sm" onClick={() => setItemToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
+              <Trash2 className="mr-1 h-3.5 w-3.5" />
+              {t('common.delete')}
             </Button>
           </div>
         )}
@@ -225,6 +248,17 @@ export function AssignedInventoryCountListPage(): ReactElement {
             placeholder: t('inventoryCount.assigned.searchPlaceholder'),
           },
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+        }}
+      />
+      <DeleteConfirmDialog
+        open={itemToDelete != null}
+        onOpenChange={(open) => {
+          if (!open) setItemToDelete(null);
+        }}
+        itemLabel={itemToDelete?.documentNo || (itemToDelete ? `#${itemToDelete.id}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
         }}
       />
     </div>

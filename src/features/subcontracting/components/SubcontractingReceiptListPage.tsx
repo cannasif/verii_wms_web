@@ -1,7 +1,10 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -15,6 +18,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useSubcontractingReceiptHeadersPaged } from '../hooks/useSubcontractingHeaders';
 import { SubcontractingDetailDialog } from './SubcontractingDetailDialog';
 import type { SubcontractingHeader } from '../types/subcontracting';
+import { subcontractingApi } from '../api/subcontracting-api';
 
 type SubcontractingReceiptColumnKey = 'documentNo' | 'documentDate' | 'customerCode' | 'customerName' | 'sourceWarehouse' | 'targetWarehouse' | 'documentType' | 'status' | 'createdDate' | 'actions';
 
@@ -52,6 +56,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
   const pageKey = 'subcontracting-receipt-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<SubcontractingHeader | null>(null);
   const pagedGrid = usePagedDataGrid<SubcontractingReceiptColumnKey>({ pageKey, defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
   const columns = useMemo<PagedDataGridColumn<SubcontractingReceiptColumnKey>[]>(() => [
     { key: 'documentNo', label: t('subcontracting.receipt.list.documentNo') },
@@ -66,7 +71,17 @@ export function SubcontractingReceiptListPage(): ReactElement {
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey, columns: columns.map(({ key, label }) => ({ key, label })) });
-  const { data, isLoading, error } = useSubcontractingReceiptHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useSubcontractingReceiptHeadersPaged(pagedGrid.queryParams);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => subcontractingApi.deleteReceiptHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
+      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (err: Error) => toast.error(err.message || t('common.errors.deleteFailed')),
+  });
 
   useEffect(() => {
     setPageTitle(t('subcontracting.receipt.list.title'));
@@ -114,15 +129,21 @@ export function SubcontractingReceiptListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.receipt.list.error')}
           emptyText={t('subcontracting.receipt.list.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
-            <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => {
-              setSelectedHeaderId(item.id);
-              setSelectedDocumentType(item.documentType);
-            }}>
-              {t('subcontracting.receipt.list.viewDetails')}
-            </Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => {
+                setSelectedHeaderId(item.id);
+                setSelectedDocumentType(item.documentType);
+              }}>
+                {t('subcontracting.receipt.list.viewDetails')}
+              </Button>
+              <Button variant="destructive" size="sm" disabled={!permission.canDelete || deleteMutation.isPending} onClick={() => setHeaderToDelete(item)}>
+                <Trash2 className="size-4" />
+                <span className="ml-2">{t('common.delete')}</span>
+              </Button>
+            </div>
           )}
           pageSize={data?.pageSize ?? pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
@@ -178,6 +199,17 @@ export function SubcontractingReceiptListPage(): ReactElement {
           }}
         />
       )}
+      <DeleteConfirmDialog
+        open={Boolean(headerToDelete)}
+        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }

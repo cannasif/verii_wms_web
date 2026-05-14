@@ -1,7 +1,10 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -12,6 +15,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
+import { warehouseApi } from '../api/warehouse-api';
 import { useAssignedWarehouseOutboundHeadersPaged } from '../hooks/useWarehouseHeaders';
 import { WarehouseDetailDialog } from './WarehouseDetailDialog';
 import type { WarehouseHeader } from '../types/warehouse';
@@ -66,6 +70,7 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
   const pageKey = 'warehouse-outbound-assigned-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
+  const [headerToDelete, setHeaderToDelete] = useState<WarehouseHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<AssignedWarehouseOutboundColumnKey>({
     pageKey,
@@ -92,7 +97,22 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
     columns: columns.map(({ key, label }) => ({ key, label })),
   });
 
-  const { data, isLoading, error } = useAssignedWarehouseOutboundHeadersPaged(pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useAssignedWarehouseOutboundHeadersPaged(pagedGrid.queryParams);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => warehouseApi.deleteOutboundHeader(id),
+    onSuccess: async (response) => {
+      if (!response.success) {
+        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      }
+      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      setHeaderToDelete(null);
+      await refetch();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+    },
+  });
 
   useEffect(() => {
     setPageTitle(t('warehouse.outbound.assignedList.title'));
@@ -157,20 +177,31 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('warehouse.outbound.assignedList.error')}
           emptyText={t('warehouse.outbound.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && permission.canView}
+          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(item) => (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSelectedHeaderId(item.id);
-                setSelectedDocumentType(item.documentType);
-              }}
-              disabled={!permission.canView}
-            >
-              {t('warehouse.outbound.list.viewDetails')}
-            </Button>
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedHeaderId(item.id);
+                  setSelectedDocumentType(item.documentType);
+                }}
+                disabled={!permission.canView}
+              >
+                {t('warehouse.outbound.list.viewDetails')}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setHeaderToDelete(item)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+                {t('common.delete')}
+              </Button>
+            </div>
           )}
           pageSize={data?.pageSize ?? pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
@@ -226,6 +257,18 @@ export function AssignedWarehouseOutboundListPage(): ReactElement {
           }}
         />
       )}
+
+      <DeleteConfirmDialog
+        open={headerToDelete != null}
+        onOpenChange={(open) => {
+          if (!open) setHeaderToDelete(null);
+        }}
+        itemLabel={headerToDelete?.documentNo || (headerToDelete ? `#${headerToDelete.id}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
+        }}
+      />
     </div>
   );
 }
