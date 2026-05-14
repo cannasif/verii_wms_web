@@ -1203,6 +1203,12 @@
         "stock": "Stok bazlı"
       }
     },
+    "edit": {
+      "title": "Sevkiyat Emri Düzenle",
+      "subtitle": "Sevkiyat başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+      "success": "Sevkiyat emri başarıyla güncellendi",
+      "error": "Sevkiyat emri güncellenirken bir hata oluştu"
+    },
     "list": {
       "title": "Sevkiyat Emri Listesi",
       "searchPlaceholder": "Belge No, Cari Kodu, Depo...",

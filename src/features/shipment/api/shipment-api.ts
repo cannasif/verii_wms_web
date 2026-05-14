@@ -64,6 +64,32 @@ export const shipmentApi = {
     throw new Error(response.message || getLocalizedText('common.errors.shipmentHeadersLoadFailed'));
   },
 
+  getHeaderById: async (id: number, options?: ApiRequestOptions): Promise<ShipmentHeader> => {
+    const response = await api.get<ApiResponse<ShipmentHeader>>(`/api/ShHeader/${id}`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.shipmentHeadersLoadFailed'));
+  },
+
+  updateHeader: async (id: number, formData: ShipmentFormData): Promise<ApiResponse<ShipmentHeader>> => {
+    return await api.put<ApiResponse<ShipmentHeader>>(`/api/ShHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      plannedDate: formData.transferDate,
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse || '',
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'SH',
+      type: 0,
+    });
+  },
+
   getAssignedHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<ShipmentHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<ShipmentHeader>>>(
       `/api/ShHeader/assigned/${userId}/paged`,

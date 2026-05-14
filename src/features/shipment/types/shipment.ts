@@ -6,10 +6,12 @@ import type {
 } from '@/types/detail-models';
 import type { TFunction } from 'i18next';
 
-export const createShipmentFormSchema = (t: TFunction) => z.object({
+export const createShipmentFormSchema = (t: TFunction, requireDocumentSeries: boolean = true) => z.object({
   transferDate: z.string().min(1, t('shipment.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('shipment.validation.documentNoRequired')),
-  documentSeriesDefinitionId: z.number().min(1, t('documentSeries.messages.definitionRequired')),
+  documentSeriesDefinitionId: requireDocumentSeries
+    ? z.number().min(1, t('documentSeries.messages.definitionRequired'))
+    : z.number().optional(),
   requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: z.string().min(1, t('shipment.validation.customerRequired')),
@@ -178,9 +180,12 @@ export interface ShipmentHeader {
   documentDate: string;
   documentType: string;
   customerCode: string;
+  customerId?: number | null;
   customerName: string;
   sourceWarehouse: string;
+  sourceWarehouseId?: number | null;
   targetWarehouse: string;
+  targetWarehouseId?: number | null;
   priority: string;
   yearCode: string;
   description1: string;

@@ -15,7 +15,15 @@ import type { Customer, Project, Warehouse } from '@/features/goods-receipt/type
 import type { UserDto } from '@/features/auth/types/auth';
 import type { ShipmentFormData } from '../../types/shipment';
 
-export function Step1ShipmentBasicInfo(): ReactElement {
+interface Step1ShipmentBasicInfoProps {
+  hideDocumentSeries?: boolean;
+  showOperationUsers?: boolean;
+}
+
+export function Step1ShipmentBasicInfo({
+  hideDocumentSeries = false,
+  showOperationUsers = true,
+}: Step1ShipmentBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<ShipmentFormData>();
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
@@ -57,11 +65,13 @@ export function Step1ShipmentBasicInfo(): ReactElement {
           )}
         />
 
-        <OperationDocumentSeriesSelector
-          operationType="SH"
-          warehouseId={form.watch('sourceWarehouseId')}
-          customerId={form.watch('customerRefId')}
-        />
+        {!hideDocumentSeries ? (
+          <OperationDocumentSeriesSelector
+            operationType="SH"
+            warehouseId={form.watch('sourceWarehouseId')}
+            customerId={form.watch('customerRefId')}
+          />
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -161,33 +171,35 @@ export function Step1ShipmentBasicInfo(): ReactElement {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="userIds"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('shipment.step1.operationUsers')}</FormLabel>
-            <FormControl>
-              <SearchableMultiSelect<UserDto>
-                value={field.value || []}
-                onValueChange={(values) => field.onChange(values)}
-                options={activeUsers || []}
-                getOptionValue={(opt) => String(opt.id)}
-                getOptionLabel={(opt) => {
-                  const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                  return opt.email ? `${name} (${opt.email})` : name;
-                }}
-                placeholder={t('shipment.step1.selectOperationUsers')}
-                searchPlaceholder={t('common.search')}
-                emptyText={t('common.notFound')}
-                isLoading={isLoadingUsers}
-                itemLimit={100}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {showOperationUsers ? (
+        <FormField
+          control={form.control}
+          name="userIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipment.step1.operationUsers')}</FormLabel>
+              <FormControl>
+                <SearchableMultiSelect<UserDto>
+                  value={field.value || []}
+                  onValueChange={(values) => field.onChange(values)}
+                  options={activeUsers || []}
+                  getOptionValue={(opt) => String(opt.id)}
+                  getOptionLabel={(opt) => {
+                    const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
+                    return opt.email ? `${name} (${opt.email})` : name;
+                  }}
+                  placeholder={t('shipment.step1.selectOperationUsers')}
+                  searchPlaceholder={t('common.search')}
+                  emptyText={t('common.notFound')}
+                  isLoading={isLoadingUsers}
+                  itemLimit={100}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      ) : null}
 
       <FormField
         control={form.control}
@@ -205,6 +217,5 @@ export function Step1ShipmentBasicInfo(): ReactElement {
     </div>
   );
 }
-
 
 

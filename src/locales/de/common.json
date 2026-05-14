@@ -672,6 +672,12 @@
         "stock": "Stok bazlı"
       }
     },
+    "edit": {
+      "title": "Edit Shipment Order",
+      "subtitle": "Update shipment header information without changing line or collection flow",
+      "success": "Shipment order updated successfully",
+      "error": "An error occurred while updating shipment order"
+    },
     "list": {
       "title": "Versandauftragsliste",
       "searchPlaceholder": "Belegnummer, Kundencode, Lager...",

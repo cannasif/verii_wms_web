@@ -1,7 +1,8 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,7 @@ function mapSortBy(value: ShipmentColumnKey): string {
 
 export function ShipmentListPage(): ReactElement {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
@@ -251,13 +253,17 @@ export function ShipmentListPage(): ReactElement {
             emptyText={t('shipment.list.noData')}
             rowClassName="cursor-pointer"
             onRowClick={permission.canView ? (row) => setSelectedHeaderId(row.id) : undefined}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
+            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('shipment.list.actions')}
             renderActionsCell={(row) => (
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
                   <Eye className="size-4" />
                   <span className="ml-2">{t('shipment.list.viewDetails')}</span>
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => navigate(`/shipment/edit/${row.id}`)} disabled={!permission.canUpdate || row.isCompleted}>
+                  <Pencil className="size-4" />
+                  <span className="ml-2">{t('common.edit')}</span>
                 </Button>
                 <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
                   <Trash2 className="size-4" />

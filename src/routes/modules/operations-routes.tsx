@@ -130,6 +130,10 @@ const ShipmentCreatePage = lazyNamed(
   () => import('@/features/shipment/components/ShipmentCreatePage'),
   'ShipmentCreatePage',
 );
+const ShipmentEditPage = lazyNamed(
+  () => import('@/features/shipment/components/ShipmentEditPage'),
+  'ShipmentEditPage',
+);
 const ShipmentProcessPage = lazyNamed(
   () => import('@/features/shipment/components/ShipmentProcessPage'),
   'ShipmentProcessPage',
@@ -350,6 +354,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'shipment',
     children: [
       { path: 'create', element: withRoute(ShipmentCreatePage, { routeName: 'shipment-create', namespaces: ['shipment', 'common'] }) },
+      { path: 'edit/:id', element: withRoute(ShipmentEditPage, { routeName: 'shipment-edit', namespaces: ['shipment', 'common'] }) },
       { path: 'process', element: withRoute(ShipmentProcessPage, { routeName: 'shipment-process', namespaces: ['shipment', 'common'] }) },
       { path: 'list', element: withRoute(ShipmentListPage, { routeName: 'shipment-list', namespaces: ['shipment', 'common'] }) },
       { path: 'assigned', element: withRoute(AssignedShipmentListPage, { routeName: 'shipment-assigned', namespaces: ['shipment', 'common'] }) },
