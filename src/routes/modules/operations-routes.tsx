@@ -34,6 +34,10 @@ const TransferCreatePage = lazyNamed(
   () => import('@/features/transfer/components/TransferCreatePage'),
   'TransferCreatePage',
 );
+const TransferEditPage = lazyNamed(
+  () => import('@/features/transfer/components/TransferEditPage'),
+  'TransferEditPage',
+);
 const TransferProcessPage = lazyNamed(
   () => import('@/features/transfer/components/TransferProcessPage'),
   'TransferProcessPage',
@@ -270,6 +274,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'transfer',
     children: [
       { path: 'create', element: withRoute(TransferCreatePage, { routeName: 'transfer-create', namespaces: ['transfer', 'common'] }) },
+      { path: 'edit/:id', element: withRoute(TransferEditPage, { routeName: 'transfer-edit', namespaces: ['transfer', 'common'] }) },
       { path: 'process', element: withRoute(TransferProcessPage, { routeName: 'transfer-process', namespaces: ['transfer', 'common'] }) },
       { path: 'list', element: withRoute(TransferListPage, { routeName: 'transfer-list', namespaces: ['transfer', 'common'] }) },
       { path: 'assigned', element: withRoute(AssignedTransferListPage, { routeName: 'transfer-assigned', namespaces: ['transfer', 'common'] }) },

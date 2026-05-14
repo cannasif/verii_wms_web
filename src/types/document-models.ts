@@ -61,6 +61,7 @@ export interface BaseDocumentHeaderDto {
   projectCode: string;
   documentNo: string;
   documentDate: string;
+  plannedDate?: string | null;
   documentType: string;
   customerId?: number | null;
   customerCode: string;

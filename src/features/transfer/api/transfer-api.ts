@@ -110,6 +110,34 @@ export const transferApi = {
     throw new Error(response.message || getLocalizedText('common.errors.transferHeadersLoadFailed'));
   },
 
+  getHeaderById: async (id: number, options?: ApiRequestOptions): Promise<TransferHeader> => {
+    const response = await api.get<ApiResponse<TransferHeader>>(`/api/WtHeader/${id}`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.transferHeaderDetailLoadFailed'));
+  },
+
+  updateTransferHeader: async (id: number, formData: TransferFormData, type: number): Promise<ApiResponse<TransferHeader>> => {
+    return await api.put<ApiResponse<TransferHeader>>(`/api/WtHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.transferDate,
+      plannedDate: formData.transferDate,
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      sourceWarehouse: formData.sourceWarehouse || '',
+      targetWarehouseId: formData.targetWarehouseId,
+      targetWarehouse: formData.targetWarehouse || '',
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'WT',
+      type,
+    });
+  },
+
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<TransferLinesResponse> => {
     const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {

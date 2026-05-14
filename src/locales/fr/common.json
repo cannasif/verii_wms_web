@@ -1031,6 +1031,12 @@
     },
     "orderDetails": {
       "orderQuantity": "Quantité de commande"
+    },
+    "edit": {
+      "title": "Edit Transfer",
+      "subtitle": "Update transfer header information without changing line or collection flow",
+      "success": "Transfer updated successfully",
+      "error": "An error occurred while updating transfer"
     }
   },
   "inventory": {

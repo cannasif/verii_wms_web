@@ -17,9 +17,10 @@ import type { TransferFormData } from '../../types/transfer';
 
 interface Step1TransferBasicInfoProps {
   isFreeTransfer?: boolean;
+  hideDocumentSeries?: boolean;
 }
 
-export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1TransferBasicInfoProps): ReactElement {
+export function Step1TransferBasicInfo({ isFreeTransfer = false, hideDocumentSeries = false }: Step1TransferBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<TransferFormData>();
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
@@ -63,11 +64,13 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false }: Step1Transfer
           )}
         />
 
-        <OperationDocumentSeriesSelector
-          operationType="WT"
-          warehouseId={form.watch('targetWarehouseId')}
-          customerId={form.watch('customerRefId')}
-        />
+        {!hideDocumentSeries ? (
+          <OperationDocumentSeriesSelector
+            operationType="WT"
+            warehouseId={form.watch('targetWarehouseId')}
+            customerId={form.watch('customerRefId')}
+          />
+        ) : null}
       </div>
 
       {!isFreeTransfer && (

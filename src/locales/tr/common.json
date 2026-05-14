@@ -1562,6 +1562,12 @@
     },
     "orderDetails": {
       "orderQuantity": "Sipariş miktarı"
+    },
+    "edit": {
+      "title": "Transfer Düzenle",
+      "subtitle": "Transfer başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+      "success": "Transfer başarıyla güncellendi",
+      "error": "Transfer güncellenirken bir hata oluştu"
     }
   },
   "inventory": {
