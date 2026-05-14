@@ -94,6 +94,23 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptHeaderDetailLoadFailed'));
   },
 
+  updateGoodsReceiptHeader: async (id: number, formData: GoodsReceiptFormData): Promise<ApiResponse<GrHeader>> => {
+    return await api.put<ApiResponse<GrHeader>>(`/api/GrHeader/${id}`, {
+      documentNo: formData.documentNo,
+      documentDate: formData.receiptDate,
+      plannedDate: formData.receiptDate,
+      projectCode: formData.projectCode || '',
+      customerId: formData.customerRefId,
+      customerCode: formData.customerId,
+      returnCode: false,
+      ocrSource: false,
+      description1: formData.notes || '',
+      description2: '',
+      isPlanned: true,
+      documentType: 'GR',
+    });
+  },
+
   getGrLines: async (headerId: number, options?: ApiRequestOptions): Promise<GrLine[]> => {
     const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data?.data) {

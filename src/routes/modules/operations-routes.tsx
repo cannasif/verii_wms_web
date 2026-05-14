@@ -5,6 +5,10 @@ const GoodsReceiptCreatePage = lazyNamed(
   () => import('@/features/goods-receipt/components/GoodsReceiptCreatePage'),
   'GoodsReceiptCreatePage',
 );
+const GoodsReceiptEditPage = lazyNamed(
+  () => import('@/features/goods-receipt/components/GoodsReceiptEditPage'),
+  'GoodsReceiptEditPage',
+);
 const GoodsReceiptProcessPage = lazyNamed(
   () => import('@/features/goods-receipt/components/GoodsReceiptProcessPage'),
   'GoodsReceiptProcessPage',
@@ -254,6 +258,7 @@ export const operationsChildRoutes: RouteObject[] = [
     path: 'goods-receipt',
     children: [
       { path: 'create', element: withRoute(GoodsReceiptCreatePage, { routeName: 'goods-receipt-create', namespaces: ['goods-receipt', 'common'] }) },
+      { path: 'edit/:id', element: withRoute(GoodsReceiptEditPage, { routeName: 'goods-receipt-edit', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'process', element: withRoute(GoodsReceiptProcessPage, { routeName: 'goods-receipt-process', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'list', element: withRoute(GoodsReceiptListPage, { routeName: 'goods-receipt-list', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'assigned', element: withRoute(AssignedGrListPage, { routeName: 'goods-receipt-assigned', namespaces: ['goods-receipt', 'common'] }) },

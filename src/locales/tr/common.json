@@ -745,6 +745,12 @@
       "scanBarcode": "Barkod Okut",
       "scanBarcodeDescription": "Barkodu kameraya hizalayın",
       "yapKod": "Yapı"
+    },
+    "edit": {
+      "title": "Mal Kabul Düzenle",
+      "subtitle": "Mal kabul başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+      "success": "Mal kabul başarıyla güncellendi",
+      "error": "Mal kabul güncellenirken bir hata oluştu"
     }
   },
   "vehicleCheckIn": {

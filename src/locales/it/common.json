@@ -648,6 +648,12 @@
       "approve": "Approve",
       "reject": "Reject",
       "noData": "No goods receipt orders awaiting approval"
+    },
+    "edit": {
+      "title": "Edit Goods Receipt",
+      "subtitle": "Update goods receipt header information without changing line or collection flow",
+      "success": "Goods receipt updated successfully",
+      "error": "An error occurred while updating goods receipt"
     }
   },
   "shipment": {

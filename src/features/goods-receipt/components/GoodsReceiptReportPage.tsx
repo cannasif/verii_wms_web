@@ -1,7 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ function mapSortBy(value: ColumnKey): string {
 
 export function GoodsReceiptReportPage(): ReactElement {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
   const [selectedGrHeaderId, setSelectedGrHeaderId] = useState<number | null>(null);
@@ -96,12 +98,13 @@ export function GoodsReceiptReportPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('goodsReceipt.report.error')}
           emptyText={t('goodsReceipt.report.noData')}
-          showActionsColumn={permission.canView || permission.canDelete}
+          showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
           actionsHeaderLabel={t('goodsReceipt.report.actions')}
           iconOnlyActions={false}
           renderActionsCell={(row) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)} disabled={!permission.canView}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>
+              <Button variant="secondary" size="sm" onClick={() => navigate(`/goods-receipt/edit/${row.id}`)} disabled={!permission.canUpdate || row.isCompleted}><Pencil className="size-4" /><span className="ml-2">{t('common.edit')}</span></Button>
               <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}><Trash2 className="size-4" /><span className="ml-2">{t('common.delete')}</span></Button>
             </div>
           )}

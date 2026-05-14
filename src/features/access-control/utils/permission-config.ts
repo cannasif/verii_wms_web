@@ -1,6 +1,7 @@
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/dashboard': 'dashboard.view',
   '/goods-receipt/create': 'wms.goods-receipt.create',
+  '/goods-receipt/edit/:id': 'wms.goods-receipt.update',
   '/goods-receipt/approval': 'wms.goods-receipt.update',
   '/goods-receipt/list': 'wms.goods-receipt.view',
   '/goods-receipt/assigned': 'wms.goods-receipt.view',
@@ -99,6 +100,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
   { pattern: /^\/dashboard(\/|$)/, permission: 'dashboard.view' },
   { pattern: /^\/goods-receipt\/create(\/|$)/, permission: 'wms.goods-receipt.create' },
+  { pattern: /^\/goods-receipt\/edit\/\d+(\/|$)/, permission: 'wms.goods-receipt.update' },
   { pattern: /^\/goods-receipt\/approval(\/|$)/, permission: 'wms.goods-receipt.update' },
   { pattern: /^\/goods-receipt(\/|$)/, permission: 'wms.goods-receipt.view' },
   { pattern: /^\/transfer\/create(\/|$)/, permission: 'wms.transfer.create' },

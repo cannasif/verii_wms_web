@@ -62,9 +62,12 @@ export interface BaseDocumentHeaderDto {
   documentNo: string;
   documentDate: string;
   documentType: string;
+  customerId?: number | null;
   customerCode: string;
   customerName: string;
+  sourceWarehouseId?: number | null;
   sourceWarehouse: string;
+  targetWarehouseId?: number | null;
   targetWarehouse: string;
   priority: string;
   yearCode: string;

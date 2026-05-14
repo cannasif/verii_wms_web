@@ -745,6 +745,12 @@
       "scanBarcode": "Scan Barcode",
       "scanBarcodeDescription": "Align barcode to camera",
       "yapKod": "Structure"
+    },
+    "edit": {
+      "title": "Edit Goods Receipt",
+      "subtitle": "Update goods receipt header information without changing line or collection flow",
+      "success": "Goods receipt updated successfully",
+      "error": "An error occurred while updating goods receipt"
     }
   },
   "vehicleCheckIn": {
