@@ -2,6 +2,7 @@ import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { HeaderQuantityPolicyFields } from '@/components/shared';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,10 +17,12 @@ import type { SubcontractingFormData } from '../../types/subcontracting';
 
 interface Step1SubcontractingBasicInfoProps {
   showOperationUsers?: boolean;
+  permissionCode?: string;
 }
 
 export function Step1SubcontractingBasicInfo({
   showOperationUsers = true,
+  permissionCode = 'wms.subcontracting.receipt.quantity-policy',
 }: Step1SubcontractingBasicInfoProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<SubcontractingFormData>();
@@ -241,6 +244,8 @@ export function Step1SubcontractingBasicInfo({
           </FormItem>
         )}
       />
+
+      <HeaderQuantityPolicyFields permissionCode={permissionCode} />
     </div>
   );
 }

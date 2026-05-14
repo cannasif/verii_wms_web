@@ -39,6 +39,8 @@ export const createTransferFormSchema = (
   customerRefId: z.number().optional(),
   sourceWarehouseId: z.number().optional(),
   targetWarehouseId: z.number().optional(),
+  allowLessQuantityBasedOnOrder: z.boolean().optional(),
+  allowMoreQuantityBasedOnOrder: z.boolean().optional(),
 });
 
 export type TransferFormData = z.infer<ReturnType<typeof createTransferFormSchema>>;

@@ -80,6 +80,8 @@ export function buildSubcontractingIssueRequest(
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: isStockBased ? 1 : 0,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
     lines,
     lineSerials,
@@ -160,6 +162,8 @@ export function buildSubcontractingReceiptRequest(
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: isStockBased ? 1 : 0,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
     lines,
     lineSerials,
@@ -204,6 +208,8 @@ function buildSubcontractingProcessRequest(
       targetWarehouse: formData.targetWarehouse,
       priority: '',
       type: 1,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
     routes: selectedItems
       .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)

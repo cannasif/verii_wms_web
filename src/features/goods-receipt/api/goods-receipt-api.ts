@@ -108,6 +108,8 @@ export const goodsReceiptApi = {
       description2: '',
       isPlanned: true,
       documentType: 'GR',
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 

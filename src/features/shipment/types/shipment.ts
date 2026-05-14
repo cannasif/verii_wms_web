@@ -20,6 +20,8 @@ export const createShipmentFormSchema = (t: TFunction, requireDocumentSeries: bo
   userIds: z.array(z.string()).optional(),
   customerRefId: z.number().optional(),
   sourceWarehouseId: z.number().optional(),
+  allowLessQuantityBasedOnOrder: z.boolean().optional(),
+  allowMoreQuantityBasedOnOrder: z.boolean().optional(),
 });
 
 export type ShipmentFormData = z.infer<ReturnType<typeof createShipmentFormSchema>>;
@@ -119,6 +121,8 @@ export interface ShipmentGenerateRequest {
     documentSeriesDefinitionId?: number;
     requiresEDispatch?: boolean;
     type: number;
+    allowLessQuantityBasedOnOrder?: boolean;
+    allowMoreQuantityBasedOnOrder?: boolean;
   };
   lines: {
     clientKey: string;
@@ -212,6 +216,8 @@ export interface ShipmentHeader {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
+  allowLessQuantityBasedOnOrder?: boolean | null;
+  allowMoreQuantityBasedOnOrder?: boolean | null;
 }
 
 export interface ShipmentLine {

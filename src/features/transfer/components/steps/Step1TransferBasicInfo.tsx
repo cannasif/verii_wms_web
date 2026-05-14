@@ -2,6 +2,7 @@ import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { HeaderQuantityPolicyFields } from '@/components/shared';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -282,6 +283,8 @@ export function Step1TransferBasicInfo({ isFreeTransfer = false, hideDocumentSer
           </FormItem>
         )}
       />
+
+      <HeaderQuantityPolicyFields permissionCode="wms.transfer.quantity-policy" />
     </div>
   );
 }

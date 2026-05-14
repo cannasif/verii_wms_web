@@ -39,6 +39,8 @@ function toFormValues(header: GrHeader): GoodsReceiptFormData {
     customerId: header.customerCode || '',
     customerRefId: header.customerId ?? undefined,
     notes: header.description1 || '',
+    allowLessQuantityBasedOnOrder: header.allowLessQuantityBasedOnOrder ?? false,
+    allowMoreQuantityBasedOnOrder: header.allowMoreQuantityBasedOnOrder ?? false,
   };
 }
 

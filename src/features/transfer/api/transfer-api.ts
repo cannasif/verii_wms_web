@@ -135,6 +135,8 @@ export const transferApi = {
       isPlanned: true,
       documentType: 'WT',
       type,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 

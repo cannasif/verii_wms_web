@@ -188,7 +188,7 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
         <Form {...form}>
           <form className="crm-page space-y-6">
             {currentStep === 1 ? (
-              <Step1SubcontractingBasicInfo />
+              <Step1SubcontractingBasicInfo permissionCode={`wms.subcontracting.${mode}.quantity-policy`} />
             ) : (
               <ProcessStockSelection
                 selectedItems={selectedItems}

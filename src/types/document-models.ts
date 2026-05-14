@@ -23,6 +23,8 @@ export interface BaseDocumentHeaderRequest {
   priority: string;
   documentSeriesDefinitionId?: number;
   requiresEDispatch?: boolean;
+  allowLessQuantityBasedOnOrder?: boolean;
+  allowMoreQuantityBasedOnOrder?: boolean;
 }
 
 export interface BaseDocumentLineRequest {
@@ -95,6 +97,8 @@ export interface BaseDocumentHeaderDto {
   createdByFullUser: string;
   updatedByFullUser: string;
   deletedByFullUser: string;
+  allowLessQuantityBasedOnOrder?: boolean | null;
+  allowMoreQuantityBasedOnOrder?: boolean | null;
 }
 
 export interface BaseDocumentLineDto {

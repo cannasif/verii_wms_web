@@ -219,6 +219,8 @@ export const subcontractingApi = {
       description2: '',
       isPlanned: true,
       documentType: 'SRT',
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 
@@ -256,6 +258,8 @@ export const subcontractingApi = {
       description2: '',
       isPlanned: true,
       documentType: 'SIT',
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 

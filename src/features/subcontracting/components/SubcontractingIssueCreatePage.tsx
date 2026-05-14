@@ -185,7 +185,7 @@ export function SubcontractingIssueCreatePage(): ReactElement {
   const renderStepContent = (): ReactElement => {
     switch (currentStep) {
       case 1:
-        return <Step1SubcontractingBasicInfo />;
+        return <Step1SubcontractingBasicInfo permissionCode="wms.subcontracting.issue.quantity-policy" />;
       case 2:
         return (
           <Step2SubcontractingOrderSelection

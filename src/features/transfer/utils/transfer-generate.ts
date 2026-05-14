@@ -91,6 +91,8 @@ export function buildTransferGenerateRequest(
       documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
       requiresEDispatch: formData.requiresEDispatch,
       type: isStockBased ? 1 : 0,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
     lines,
     lineSerials,
@@ -134,6 +136,8 @@ export function buildTransferProcessRequest(
       documentSeriesDefinitionId: formData.documentSeriesDefinitionId,
       requiresEDispatch: formData.requiresEDispatch,
       type: 1,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
     routes: selectedItems
       .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)

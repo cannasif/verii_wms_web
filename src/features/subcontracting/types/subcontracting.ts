@@ -28,6 +28,8 @@ export const createSubcontractingFormSchema = (t: TFunction) => z.object({
   customerRefId: z.number().optional(),
   sourceWarehouseId: z.number().optional(),
   targetWarehouseId: z.number().optional(),
+  allowLessQuantityBasedOnOrder: z.boolean().optional(),
+  allowMoreQuantityBasedOnOrder: z.boolean().optional(),
 });
 
 export type SubcontractingFormData = z.infer<ReturnType<typeof createSubcontractingFormSchema>>;

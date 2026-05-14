@@ -87,6 +87,8 @@ export const shipmentApi = {
       isPlanned: true,
       documentType: 'SH',
       type: 0,
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 

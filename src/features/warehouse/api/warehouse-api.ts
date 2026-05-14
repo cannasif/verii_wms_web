@@ -151,6 +151,8 @@ export const warehouseApi = {
       description2: '',
       isPlanned: true,
       documentType: 'WI',
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 
@@ -190,6 +192,8 @@ export const warehouseApi = {
       description2: '',
       isPlanned: true,
       documentType: 'WO',
+      allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder ?? false,
+      allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder ?? false,
     });
   },
 

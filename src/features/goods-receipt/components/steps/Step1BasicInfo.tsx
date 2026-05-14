@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { HeaderQuantityPolicyFields } from '@/components/shared';
 import { lookupApi } from '@/services/lookup-api';
 import type { GoodsReceiptFormData, Customer, Project } from '../../types/goods-receipt';
 import { useProjects } from '../../hooks/useProjects';
@@ -155,6 +156,8 @@ export function Step1BasicInfo(): ReactElement {
           </FormItem>
         )}
       />
+
+      <HeaderQuantityPolicyFields permissionCode="wms.goods-receipt.quantity-policy" />
 
       {selectedCustomerId && (
         <Card>

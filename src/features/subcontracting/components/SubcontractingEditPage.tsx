@@ -69,6 +69,8 @@ function toFormValues(header: SubcontractingHeader): SubcontractingFormData {
     targetWarehouseId: header.targetWarehouseId ?? undefined,
     notes: header.description1 || '',
     userIds: [],
+    allowLessQuantityBasedOnOrder: header.allowLessQuantityBasedOnOrder ?? false,
+    allowMoreQuantityBasedOnOrder: header.allowMoreQuantityBasedOnOrder ?? false,
   };
 }
 
@@ -153,7 +155,7 @@ function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }):
         <Form {...form}>
           <form className="space-y-6 crm-page">
             <fieldset disabled={!permission.canUpdate || isBusy} className={!permission.canUpdate || isBusy ? 'pointer-events-none opacity-75' : undefined}>
-              <Step1SubcontractingBasicInfo showOperationUsers={false} />
+              <Step1SubcontractingBasicInfo showOperationUsers={false} permissionCode={`${config.permission}.quantity-policy`} />
             </fieldset>
 
             <div className="flex justify-between border-t pt-6">

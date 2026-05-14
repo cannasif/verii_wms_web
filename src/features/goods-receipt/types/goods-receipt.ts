@@ -25,6 +25,8 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   customerId: z.string().min(1, t('goodsReceipt.validation.customerRequired')),
   notes: z.string().optional(),
   customerRefId: z.number().optional(),
+  allowLessQuantityBasedOnOrder: z.boolean().optional(),
+  allowMoreQuantityBasedOnOrder: z.boolean().optional(),
 }).superRefine((data, ctx) => {
   const documentNo = normalizeDocumentNo(data.documentNo);
 
@@ -184,6 +186,8 @@ export interface BulkCreateRequest {
     description3?: string;
     description4?: string;
     description5?: string;
+    allowLessQuantityBasedOnOrder?: boolean;
+    allowMoreQuantityBasedOnOrder?: boolean;
   };
   documents?: Array<{ base64: string }> | null;
   lines?: Array<BaseDocumentLineRequest>;

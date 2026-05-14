@@ -69,6 +69,8 @@ export const createWarehouseFormSchema = (
   customerRefId: z.number().optional(),
   sourceWarehouseId: z.number().optional(),
   targetWarehouseId: z.number().optional(),
+  allowLessQuantityBasedOnOrder: z.boolean().optional(),
+  allowMoreQuantityBasedOnOrder: z.boolean().optional(),
 });
 
 export type WarehouseFormData = z.infer<ReturnType<typeof createWarehouseFormSchema>>;

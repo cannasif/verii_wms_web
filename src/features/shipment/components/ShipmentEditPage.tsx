@@ -38,6 +38,8 @@ function toFormValues(header: ShipmentHeader): ShipmentFormData {
     sourceWarehouseId: header.sourceWarehouseId ?? undefined,
     notes: header.description1 || '',
     userIds: [],
+    allowLessQuantityBasedOnOrder: header.allowLessQuantityBasedOnOrder ?? false,
+    allowMoreQuantityBasedOnOrder: header.allowMoreQuantityBasedOnOrder ?? false,
   };
 }
 

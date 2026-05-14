@@ -40,6 +40,8 @@ function toFormValues(header: TransferHeader): TransferFormData {
     targetWarehouseId: header.targetWarehouseId ?? undefined,
     notes: header.description1 || '',
     userIds: [],
+    allowLessQuantityBasedOnOrder: header.allowLessQuantityBasedOnOrder ?? false,
+    allowMoreQuantityBasedOnOrder: header.allowMoreQuantityBasedOnOrder ?? false,
   };
 }
 
