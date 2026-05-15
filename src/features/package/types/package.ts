@@ -17,6 +17,33 @@ export interface StokBarcodeDto {
 
 export type StokBarcodeResponse = ApiResponse<StokBarcodeDto[]>;
 
+export type PackageHeaderStatus =
+  | 'Draft'
+  | 'Open'
+  | 'Packing'
+  | 'Packed'
+  | 'Closed'
+  | 'Released'
+  | 'Staged'
+  | 'Shipped'
+  | 'Transferred'
+  | 'Cancelled'
+  | 'Completed';
+
+export type PackageStatus =
+  | 'Draft'
+  | 'Open'
+  | 'Packing'
+  | 'Packed'
+  | 'Closed'
+  | 'Released'
+  | 'Staged'
+  | 'Transferred'
+  | 'Shipped'
+  | 'Cancelled'
+  | 'Sealed'
+  | 'Loaded';
+
 export interface PHeaderDto {
   id: number;
   warehouseCode?: string;
@@ -27,7 +54,7 @@ export interface PHeaderDto {
   customerCode?: string;
   customerName?: string;
   customerAddress?: string;
-  status: 'Draft' | 'Packing' | 'Packed' | 'Shipped' | 'Cancelled';
+  status: PackageHeaderStatus;
   totalPackageCount?: number;
   totalQuantity?: number;
   totalNetWeight?: number;
@@ -50,7 +77,7 @@ export interface CreatePHeaderDto {
   sourceHeaderId?: number;
   customerCode?: string;
   customerAddress?: string;
-  status?: 'Draft' | 'Packing' | 'Packed' | 'Shipped' | 'Cancelled';
+  status?: PackageHeaderStatus;
   totalPackageCount?: number;
   totalQuantity?: number;
   totalNetWeight?: number;
@@ -69,7 +96,7 @@ export interface UpdatePHeaderDto {
   sourceHeaderId?: number;
   customerCode?: string;
   customerAddress?: string;
-  status?: 'Draft' | 'Packing' | 'Packed' | 'Shipped' | 'Cancelled';
+  status?: PackageHeaderStatus;
   totalPackageCount?: number;
   totalQuantity?: number;
   totalNetWeight?: number;
@@ -111,7 +138,7 @@ export interface PPackageDto {
   totalGrossWeight?: number;
   totalVolume?: number;
   isMixed: boolean;
-  status: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
+  status: PackageStatus;
   createdDate?: string;
   updatedDate?: string;
   isDeleted: boolean;
@@ -134,7 +161,7 @@ export interface CreatePPackageDto {
   tareWeight?: number;
   grossWeight?: number;
   isMixed?: boolean;
-  status?: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
+  status?: PackageStatus;
 }
 
 export interface UpdatePPackageDto {
@@ -153,7 +180,7 @@ export interface UpdatePPackageDto {
   tareWeight?: number;
   grossWeight?: number;
   isMixed?: boolean;
-  status?: 'Draft' | 'Packed' | 'Sealed' | 'Loaded' | 'Transferred' | 'Shipped' | 'Cancelled' | 'Open' | 'Closed';
+  status?: PackageStatus;
 }
 
 export interface PPackageTreeDto {
@@ -301,7 +328,7 @@ export const pHeaderFormSchema = (t: TFunction) => {
     sourceHeaderId: z.number().optional(),
     customerCode: z.string().optional(),
     customerAddress: z.string().optional(),
-    status: z.enum(['Draft', 'Packing', 'Packed', 'Shipped', 'Cancelled']).optional(),
+    status: z.enum(['Draft', 'Open', 'Packing', 'Packed', 'Closed', 'Released', 'Staged', 'Shipped', 'Transferred', 'Cancelled', 'Completed']).optional(),
     carrierId: z.number().optional(),
     carrierServiceType: z.string().optional(),
     trackingNo: z.string().optional(),
@@ -349,7 +376,7 @@ export const pPackageFormSchema = (t: TFunction) => {
     tareWeight: z.number().optional(),
     grossWeight: z.number().optional(),
     isMixed: z.boolean().optional(),
-    status: z.enum(['Draft', 'Packed', 'Sealed', 'Loaded', 'Transferred', 'Shipped', 'Cancelled', 'Open', 'Closed']).optional(),
+    status: z.enum(['Draft', 'Open', 'Packing', 'Packed', 'Closed', 'Released', 'Staged', 'Transferred', 'Shipped', 'Cancelled', 'Sealed', 'Loaded']).optional(),
   });
 };
 

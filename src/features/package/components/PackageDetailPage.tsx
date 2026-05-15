@@ -889,9 +889,15 @@ export function PackageDetailPage(): ReactElement {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
+                            <SelectItem value="Draft">{t('package.packageStatus.draft')}</SelectItem>
                             <SelectItem value="Open">{t('package.packageStatus.open')}</SelectItem>
+                            <SelectItem value="Packing">{t('package.packageStatus.packing')}</SelectItem>
+                            <SelectItem value="Packed">{t('package.packageStatus.packed')}</SelectItem>
                             <SelectItem value="Closed">{t('package.packageStatus.closed')}</SelectItem>
-                            <SelectItem value="Loaded">{t('package.packageStatus.loaded')}</SelectItem>
+                            <SelectItem value="Released">{t('package.packageStatus.released')}</SelectItem>
+                            <SelectItem value="Staged">{t('package.packageStatus.staged')}</SelectItem>
+                            <SelectItem value="Transferred">{t('package.packageStatus.transferred')}</SelectItem>
+                            <SelectItem value="Shipped">{t('package.packageStatus.shipped')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

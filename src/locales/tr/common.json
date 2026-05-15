@@ -2413,9 +2413,18 @@
       "sh": "Sevkiyat"
     },
     "packageStatus": {
+      "draft": "Taslak",
       "open": "Açık",
+      "packing": "Paketleniyor",
+      "packed": "Paketlendi",
       "closed": "Kapalı",
-      "loaded": "Yüklendi"
+      "released": "Serbest Bırakıldı",
+      "staged": "Sevk Alanında",
+      "loaded": "Sevk Alanında",
+      "transferred": "Transfer Edildi",
+      "shipped": "Sevk Edildi",
+      "cancelled": "İptal Edildi",
+      "completed": "Tamamlandı"
     },
     "packageType": {
       "box": "Kutu",

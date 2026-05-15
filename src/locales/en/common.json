@@ -2413,9 +2413,18 @@
       "WO": "Warehouse Outbound"
     },
     "packageStatus": {
+      "draft": "Draft",
       "open": "Open",
+      "packing": "Packing",
+      "packed": "Packed",
       "closed": "Closed",
-      "loaded": "Loaded"
+      "released": "Released",
+      "staged": "Staged",
+      "loaded": "Staged",
+      "transferred": "Transferred",
+      "shipped": "Shipped",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
     },
     "packageType": {
       "box": "Box",
