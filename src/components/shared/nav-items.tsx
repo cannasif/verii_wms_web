@@ -196,6 +196,7 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.transferProcess', titleFallback: 'Transfer İşlem', href: '/transfer/process' },
               { title: 'sidebar.transferList', titleFallback: 'Transfer Listesi', href: '/transfer/list' },
               { title: 'sidebar.transferChains', titleFallback: 'Transfer Zincirleri', href: '/transfer/chains' },
+              { title: 'sidebar.bilginogluHakEdis', titleFallback: 'Bilginoğlu Hakediş', href: '/transfer/bilginoglu-hakedis' },
             ],
           },
           {
