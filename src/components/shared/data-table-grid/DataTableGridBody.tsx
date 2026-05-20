@@ -27,6 +27,9 @@ interface DataTableGridBodyProps<TRow, TKey extends string> {
   handleRowDoubleClick: (row: TRow) => void;
 }
 
+const ACTIONS_CELL_BASE =
+  'border-l border-slate-200/70 dark:border-white/10 bg-inherit';
+
 export function DataTableGridBody<TRow, TKey extends string>({
   columns,
   visibleColumnKeys,
@@ -54,13 +57,16 @@ export function DataTableGridBody<TRow, TKey extends string>({
       {isLoading &&
         Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
           <TableRow key={`skeleton-${i}`}>
-            {visibleColumnKeys.map((key) => (
-              <TableCell key={key}>
-                <div className="h-5 w-full max-w-[120px] animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
-              </TableCell>
-            ))}
+            {visibleColumnKeys.map((key, index) => {
+              const isLast = index === visibleColumnKeys.length - 1 && !showActionsColumn;
+              return (
+                <TableCell key={key} className={cn(!isLast && 'border-r border-slate-200/70 dark:border-white/[0.08]')}>
+                  <div className="h-5 w-full max-w-[120px] animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
+                </TableCell>
+              );
+            })}
             {showActionsColumn && (
-              <TableCell className="sticky right-0 bg-white text-right shadow-[-10px_0_16px_-14px_rgba(15,23,42,0.28)] dark:bg-[#130822]">
+              <TableCell className={ACTIONS_CELL_BASE}>
                 <div className="ml-auto h-8 w-32 animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
               </TableCell>
             )}
@@ -83,40 +89,45 @@ export function DataTableGridBody<TRow, TKey extends string>({
         </TableRow>
       )}
 
-      {!isLoading && !isError && rows.map((row) => {
-        const customRowClass = typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
-        return (
-          <TableRow
-            key={rowKey(row)}
-            className={customRowClass}
-            onClick={onRowClick || onRowDoubleClick ? () => handleRowClick(row) : undefined}
-            onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
-          >
-            {visibleColumnKeys.map((key) => {
-              const column = findColumn(columns, key);
-              return (
-                <TableCell key={`${rowKey(row)}-${key}`} className={column?.cellClassName}>
-                  {renderCell(row, key)}
+      {!isLoading &&
+        !isError &&
+        rows.map((row) => {
+          const customRowClass = typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
+          return (
+            <TableRow
+              key={rowKey(row)}
+              className={cn('hover:bg-slate-50/70 dark:hover:bg-white/[0.03] transition-colors', customRowClass)}
+              onClick={onRowClick || onRowDoubleClick ? () => handleRowClick(row) : undefined}
+              onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
+            >
+              {visibleColumnKeys.map((key, index) => {
+                const column = findColumn(columns, key);
+                const isLast = index === visibleColumnKeys.length - 1 && !showActionsColumn;
+                return (
+                  <TableCell
+                    key={`${rowKey(row)}-${key}`}
+                    className={cn(
+                      !isLast && 'border-r border-slate-200/70 dark:border-white/[0.08]',
+                      column?.cellClassName,
+                    )}
+                  >
+                    {renderCell(row, key)}
+                  </TableCell>
+                );
+              })}
+
+              {showActionsColumn && (
+                <TableCell
+                  className={cn(ACTIONS_CELL_BASE, actionsCellClassName, iconOnlyActions && '[&_button]:h-8 [&_button]:w-8 [&_button]:min-w-8 [&_button]:p-0 [&_button]:text-[0px] [&_button]:leading-none [&_button_span]:hidden [&_button_svg]:mx-auto [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:shrink-0')}
+                  onClick={(event) => event.stopPropagation()}
+                  data-no-drag-scroll="true"
+                >
+                  {renderActionsCell?.(row)}
                 </TableCell>
-              );
-            })}
-            {showActionsColumn && (
-              <TableCell
-                className={cn(
-                  'sticky right-0 bg-white shadow-[-10px_0_16px_-14px_rgba(15,23,42,0.28)] dark:bg-[#130822]',
-                  actionsCellClassName,
-                  iconOnlyActions &&
-                    '[&_button]:h-8 [&_button]:w-8 [&_button]:min-w-8 [&_button]:p-0 [&_button]:text-[0px] [&_button]:leading-none [&_button_span]:hidden [&_button_svg]:mx-auto [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:shrink-0'
-                )}
-                onClick={(event) => event.stopPropagation()}
-                data-no-drag-scroll="true"
-              >
-                {renderActionsCell?.(row)}
-              </TableCell>
-            )}
-          </TableRow>
-        );
-      })}
+              )}
+            </TableRow>
+          );
+        })}
     </TableBody>
   );
 }

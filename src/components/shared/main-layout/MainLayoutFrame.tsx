@@ -17,8 +17,8 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
   return (
     <div className="relative flex h-screen flex-col overflow-hidden bg-[#f8f9fc] transition-colors duration-300 dark:bg-[#090114]">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-[14%] -top-[14%] h-[720px] w-[720px] rounded-full bg-pink-300/25 blur-[120px] dark:bg-pink-600/5" />
-        <div className="absolute -bottom-[14%] -right-[14%] h-[620px] w-[620px] rounded-full bg-orange-300/25 blur-[110px] dark:bg-orange-600/5" />
+        <div className="absolute -left-[5%] -top-[1%] h-[720px] w-[720px] rounded-full bg-cyan-300/25 blur-[120px] dark:bg-cyan-600/5" />
+        <div className="absolute -bottom-[7%] -right-[7%] h-[620px] w-[620px] rounded-full bg-orange-300/25 blur-[100px] dark:bg-orange-600/5" />
       </div>
 
       <div className="relative z-10 flex h-full overflow-hidden">
