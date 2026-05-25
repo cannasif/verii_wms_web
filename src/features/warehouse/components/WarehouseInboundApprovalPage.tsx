@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Check, Eye, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Eye, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,19 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'completionDate', type: 'date', labelKey: 'warehouse.inbound.approval.completionDate' },
 ];
 
+function mapSortBy(value: ColumnKey): string {
+  switch (value) {
+    case 'id': return 'id';
+    case 'documentNo': return 'documentNo';
+    case 'documentDate': return 'documentDate';
+    case 'customerCode': return 'customerCode';
+    case 'customerName': return 'customerName';
+    case 'targetWarehouse': return 'targetWarehouse';
+    case 'completionDate': return 'completionDate';
+    default: return 'id';
+  }
+}
+
 export function WarehouseInboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
@@ -40,17 +53,17 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     pageKey: 'warehouse-inbound-approval-list',
     defaultSortBy: 'id',
     defaultSortDirection: 'desc',
-    mapSortBy: () => 'Id',
+    mapSortBy,
   });
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'id', label: t('warehouse.inbound.approval.id'), sortable: false },
-    { key: 'documentNo', label: t('warehouse.inbound.approval.documentNo'), sortable: false },
-    { key: 'documentDate', label: t('warehouse.inbound.approval.documentDate'), sortable: false },
-    { key: 'customerCode', label: t('warehouse.inbound.approval.customerCode'), sortable: false },
-    { key: 'customerName', label: t('warehouse.inbound.approval.customerName'), sortable: false },
-    { key: 'targetWarehouse', label: t('warehouse.inbound.approval.targetWarehouse'), sortable: false },
-    { key: 'completionDate', label: t('warehouse.inbound.approval.completionDate'), sortable: false },
+    { key: 'id', label: t('warehouse.inbound.approval.id') },
+    { key: 'documentNo', label: t('warehouse.inbound.approval.documentNo') },
+    { key: 'documentDate', label: t('warehouse.inbound.approval.documentDate') },
+    { key: 'customerCode', label: t('warehouse.inbound.approval.customerCode') },
+    { key: 'customerName', label: t('warehouse.inbound.approval.customerName') },
+    { key: 'targetWarehouse', label: t('warehouse.inbound.approval.targetWarehouse') },
+    { key: 'completionDate', label: t('warehouse.inbound.approval.completionDate') },
     { key: 'actions', label: t('warehouse.inbound.approval.actions'), sortable: false },
   ], [t]);
 
@@ -137,6 +150,13 @@ export function WarehouseInboundApprovalPage(): ReactElement {
                 case 'completionDate': return formatDateTime(row.completionDate);
                 default: return null;
               }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={(key) => { if (key !== 'actions') pagedGrid.handleSort(key); }}
+            renderSortIcon={(key) => {
+              if (key !== pagedGrid.sortBy) return null;
+              return pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
             }}
             isLoading={isLoading}
             isError={Boolean(error)}

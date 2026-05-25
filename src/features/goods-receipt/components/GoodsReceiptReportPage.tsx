@@ -13,14 +13,26 @@ import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermis
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useGrHeaders } from '../hooks/useGrHeaders';
 import type { GrHeader } from '../types/goods-receipt';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 import { goodsReceiptApi } from '../api/goods-receipt-api';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 
 type ColumnKey = 'id' | 'orderId' | 'customerCode' | 'projectCode' | 'documentType' | 'plannedDate' | 'status' | 'createdDate' | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'id', type: 'number', labelKey: 'goodsReceipt.report.id' },
+  { value: 'orderId', type: 'string', labelKey: 'goodsReceipt.report.orderId' },
+  { value: 'customerCode', type: 'string', labelKey: 'goodsReceipt.report.customerCode' },
+  { value: 'projectCode', type: 'string', labelKey: 'goodsReceipt.report.projectCode' },
+  { value: 'documentType', type: 'string', labelKey: 'goodsReceipt.report.documentType' },
+  { value: 'plannedDate', type: 'date', labelKey: 'goodsReceipt.report.plannedDate' },
+  { value: 'createdDate', type: 'date', labelKey: 'goodsReceipt.report.createdDate' },
+];
 const ElectronicDispatchDocumentType = 'E-İrsaliye';
 
 function mapSortBy(value: ColumnKey): string {
@@ -55,6 +67,11 @@ export function GoodsReceiptReportPage(): ReactElement {
     { key: 'createdDate', label: t('goodsReceipt.report.createdDate') },
     { key: 'actions', label: t('goodsReceipt.report.actions'), sortable: false },
   ], [t]);
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+    pageKey: 'goods-receipt-report',
+    columns: columns.map(({ key, label }) => ({ key, label })),
+    idColumnKey: 'id',
+  });
   const { data, isLoading, error, refetch } = useGrHeaders(pagedGrid.queryParams);
   const deleteMutation = useMutation({
     mutationFn: (id: number) => goodsReceiptApi.deleteGoodsReceiptHeader(id),
@@ -78,6 +95,8 @@ export function GoodsReceiptReportPage(): ReactElement {
     if (columnKey !== pagedGrid.sortBy) return null;
     return pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
   };
+  const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, orderId: item.orderId || '-', customerCode: item.customerCode || '-', projectCode: item.projectCode || '-', documentType: item.documentType || '-', plannedDate: formatDate(item.plannedDate), status: item.isCompleted ? t('goodsReceipt.report.completed') : item.isPendingApproval ? t('goodsReceipt.report.pendingApproval') : t('goodsReceipt.report.inProgress'), createdDate: formatDateTime(item.createdDate) })), [data?.data, t]);
   const range = getPagedRange(data, 1);
   const paginationInfoText = t('goodsReceipt.report.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
   return (
@@ -86,7 +105,7 @@ export function GoodsReceiptReportPage(): ReactElement {
       <Card><CardHeader><CardTitle>{t('goodsReceipt.report.title')}</CardTitle></CardHeader><CardContent>
         <PagedDataGrid<GrHeader, ColumnKey>
           columns={columns}
-          visibleColumnKeys={['id', 'orderId', 'customerCode', 'projectCode', 'documentType', 'plannedDate', 'status', 'createdDate']}
+          visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[]}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, key) => ({ id: row.id, orderId: <span className="font-medium">{row.orderId || '-'}</span>, customerCode: row.customerCode || '-', projectCode: row.projectCode || '-', documentType: <Badge variant={row.documentType === ElectronicDispatchDocumentType ? 'secondary' : 'default'}>{row.documentType || '-'}</Badge>, plannedDate: formatDate(row.plannedDate), status: statusBadge(row), createdDate: formatDateTime(row.createdDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
@@ -120,7 +139,30 @@ export function GoodsReceiptReportPage(): ReactElement {
           previousLabel={t('common.previous')}
           nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
-          actionBar={{ pageKey: 'goods-receipt-report', columns: columns.map(({ key, label }) => ({ key, label })), visibleColumns: columns.map(({ key }) => key), columnOrder: columns.map(({ key }) => key), onVisibleColumnsChange: () => undefined, onColumnOrderChange: () => undefined, exportFileName: 'goods-receipt-report', exportColumns: columns.filter((c) => c.key !== 'actions').map(({ key, label }) => ({ key, label })), exportRows: (data?.data ?? []).map((item) => ({ id: item.id, orderId: item.orderId || '-', customerCode: item.customerCode || '-', projectCode: item.projectCode || '-', documentType: item.documentType || '-', plannedDate: formatDate(item.plannedDate), status: item.isCompleted ? t('goodsReceipt.report.completed') : item.isPendingApproval ? t('goodsReceipt.report.pendingApproval') : t('goodsReceipt.report.inProgress'), createdDate: formatDateTime(item.createdDate) })), filterColumns: [], defaultFilterColumn: 'orderId', draftFilterRows: [], onDraftFilterRowsChange: () => undefined, onApplyFilters: () => undefined, onClearFilters: () => undefined, appliedFilterCount: 0, search: { ...pagedGrid.searchConfig, placeholder: t('goodsReceipt.report.searchPlaceholder'), className: 'h-9 w-full md:w-64' }, leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" /> }}
+          actionBar={{
+            pageKey: 'goods-receipt-report',
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: 'goods-receipt-report',
+            exportColumns,
+            exportRows,
+            filterColumns,
+            defaultFilterColumn: 'orderId',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            translationNamespace: 'common',
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: { ...pagedGrid.searchConfig, placeholder: t('goodsReceipt.report.searchPlaceholder'), className: 'h-9 w-full md:w-64' },
+            leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />
+          }}
         />
       </CardContent></Card>
       {selectedGrHeaderId && <GoodsReceiptDetailDialog grHeaderId={selectedGrHeaderId} isOpen onClose={() => setSelectedGrHeaderId(null)} />}

@@ -63,6 +63,7 @@ const TransferApprovalPage = lazyNamed(
   'TransferApprovalPage',
 );
 const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'), 'TransferChainListPage');
+const BilginogluHakEdisPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPage');
 
 const SubcontractingIssueCreatePage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueCreatePage');
 const SubcontractingIssueEditPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueEditPage');
@@ -296,6 +297,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'collected/:headerId', element: withRoute(CollectedBarcodesPage, { routeName: 'transfer-collected-barcodes', namespaces: ['transfer', 'common'] }) },
       { path: 'approval', element: withRoute(TransferApprovalPage, { routeName: 'transfer-approval', namespaces: ['transfer', 'common'] }) },
       { path: 'chains', element: withRoute(TransferChainListPage, { routeName: 'transfer-chain-list', namespaces: ['transfer-chain', 'common'] }) },
+      { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'bilginoglu-hakedis', namespaces: ['common'] }) },
     ],
   },
   {

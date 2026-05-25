@@ -282,6 +282,7 @@
     "transferList": "Transfer Order List",
     "transferAssigned": "Assigned Transfer Orders",
     "transferApproval": "Orders Awaiting Approval",
+    "bilginogluHakEdis": "Bilginoglu Entitlement",
     "subcontractingIssueAssigned": "Assigned SIT Orders",
     "subcontractingReceiptAssigned": "Assigned SRT Orders",
     "subcontractingIssueApproval": "Orders Awaiting Approval - SIT",
