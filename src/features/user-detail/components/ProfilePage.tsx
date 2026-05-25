@@ -1,165 +1,78 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
-import { Loader2, Upload, Trash2, Shield, Lock, Eye, EyeOff } from 'lucide-react';
+import { Building2, Camera, Loader2, Mail, Settings } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
-import { getApiBaseUrl } from '@/lib/axios';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUserDetail } from '../hooks/useUserDetail';
-import { useCreateUserDetail } from '../hooks/useCreateUserDetail';
-import { useUpdateUserDetail } from '../hooks/useUpdateUserDetail';
 import { useUploadProfilePicture } from '../hooks/useUploadProfilePicture';
-import { useDeleteProfilePicture } from '../hooks/useDeleteProfilePicture';
-import { createUserDetailFormSchema, type UserDetailFormData, Gender } from '../types/user-detail';
-import { useChangePassword } from '@/features/auth/hooks/useChangePassword';
-import type { ChangePasswordRequest } from '@/features/auth/types/auth';
+import { getFullProfileImageUrl } from '../utils/profile-image';
+import { cn } from '@/lib/utils';
+import { ProfileSettingsModal } from './ProfileSettingsModal';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024;
+const PROFILE_IMAGE_ACCEPT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'] as const;
+const PROFILE_IMAGE_ACCEPT_ATTR = PROFILE_IMAGE_ACCEPT_TYPES.join(',');
 
 export function ProfilePage(): ReactElement {
   const { t } = useTranslation();
-  const { user } = useAuthStore();
+  const { user, branch } = useAuthStore();
   const { setPageTitle } = useUIStore();
+  const { data: userDetail, isLoading: isLoadingUserDetail } = useUserDetail();
+  const uploadPictureMutation = useUploadProfilePicture();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
-  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
-
-  const { data: userDetail, isLoading: isLoadingUserDetail, refetch } = useUserDetail();
-  const createMutation = useCreateUserDetail();
-  const updateMutation = useUpdateUserDetail();
-  const uploadMutation = useUploadProfilePicture();
-  const deleteMutation = useDeleteProfilePicture();
-  const changePasswordMutation = useChangePassword();
+  const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
 
   useEffect(() => {
     setPageTitle(t('profile.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const schema = useMemo(() => createUserDetailFormSchema(t), [t]);
+  const displayName = user?.name || user?.email || t('dashboard.user');
+  const normalizedDisplayName = displayName.trim().toLowerCase();
+  const isSystemLikeDisplayName =
+    normalizedDisplayName.startsWith('system') || normalizedDisplayName.startsWith('sistem');
+  const emptyAvatarLetter = isSystemLikeDisplayName ? 'S' : displayName.charAt(0).toUpperCase();
+  const imageUrl = getFullProfileImageUrl(userDetail?.profilePictureUrl);
+  const emailLine = user?.email ?? '—';
+  const branchCodeTrimmed = branch?.code?.trim();
+  const branchCodeDisplay =
+    branchCodeTrimmed && branchCodeTrimmed.toLowerCase() !== '0'
+      ? branchCodeTrimmed.toUpperCase()
+      : undefined;
+  const branchLine =
+    branch != null
+      ? [branchCodeDisplay, branch.name?.trim()]
+          .filter((part): part is string => Boolean(part?.trim()))
+          .join(' · ') || '—'
+      : '—';
 
-  const form = useForm<UserDetailFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      profilePictureUrl: '',
-      height: null,
-      weight: null,
-      description: '',
-      gender: null,
-    },
-  });
-
-  const changePasswordSchema = useMemo(
-    () =>
-      z
-        .object({
-          currentPassword: z.string().min(1, t('userDetail.currentPasswordRequired')),
-          newPassword: z
-            .string()
-            .min(6, t('userDetail.newPasswordMinLength'))
-            .max(100, t('userDetail.newPasswordMaxLength')),
-        })
-        .refine((data) => data.currentPassword !== data.newPassword, {
-          message: t('userDetail.newPasswordSameAsCurrent'),
-          path: ['newPassword'],
-        }),
-    [t]
-  );
-
-  const changePasswordForm = useForm<ChangePasswordRequest>({
-    resolver: zodResolver(changePasswordSchema),
-    defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-    },
-  });
-
-  const getFullImageUrl = (url: string | null | undefined): string | null => {
-    if (!url) return null;
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    const apiBaseUrl = getApiBaseUrl();
-    return `${apiBaseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  const handleAvatarPickClick = (): void => {
+    if (uploadPictureMutation.isPending) return;
+    fileInputRef.current?.click();
   };
 
-  useEffect(() => {
-    if (userDetail) {
-      form.reset({
-        profilePictureUrl: userDetail.profilePictureUrl || '',
-        height: userDetail.height ?? null,
-        weight: userDetail.weight ?? null,
-        description: userDetail.description || '',
-        gender: userDetail.gender ?? null,
-      });
-      setPreviewImage(getFullImageUrl(userDetail.profilePictureUrl));
-    } else if (!isLoadingUserDetail) {
-      form.reset({
-        profilePictureUrl: '',
-        height: null,
-        weight: null,
-        description: '',
-        gender: null,
-      });
-      setPreviewImage(null);
-    }
-  }, [userDetail, isLoadingUserDetail, form]);
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0];
+  const handleProfileImageSelected = (event: ChangeEvent<HTMLInputElement>): void => {
+    const input = event.target;
+    const file = input.files?.[0];
+    input.value = '';
     if (!file) return;
 
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      form.setError('profilePictureUrl', {
-        type: 'manual',
-        message: t('userDetail.invalidFileFormat'),
-      });
+    const allowedTypes: readonly string[] = PROFILE_IMAGE_ACCEPT_TYPES;
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(t('userDetail.invalidFileFormat'));
+      return;
+    }
+    if (file.size > MAX_PROFILE_IMAGE_BYTES) {
+      toast.error(t('userDetail.fileSizeExceeded'));
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      form.setError('profilePictureUrl', {
-        type: 'manual',
-        message: t('userDetail.fileSizeExceeded'),
-      });
-      return;
-    }
-
-    form.clearErrors('profilePictureUrl');
-    setSelectedFile(file);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target?.result) {
-        setPreviewImage(e.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUploadPicture = (): void => {
-    if (!selectedFile) return;
-    uploadMutation.mutate(selectedFile, {
+    uploadPictureMutation.mutate(file, {
       onSuccess: (response) => {
         if (response.success && response.data) {
           toast.success(t('userDetail.profilePictureUploadedSuccessfully'));
-          form.setValue('profilePictureUrl', response.data);
-          setPreviewImage(getFullImageUrl(response.data));
-          setSelectedFile(null);
-          refetch();
         } else {
           toast.error(response.message || t('userDetail.profilePictureUploadError'));
         }
@@ -170,355 +83,146 @@ export function ProfilePage(): ReactElement {
     });
   };
 
-  const handleDeletePicture = (): void => {
-    if (!userDetail?.profilePictureUrl) return;
-    const confirmed = window.confirm(t('userDetail.deletePictureMessage'));
-    if (!confirmed) return;
-
-    deleteMutation.mutate(undefined as never, {
-      onSuccess: (response) => {
-        if (response.success) {
-          toast.success(t('userDetail.profilePictureDeletedSuccessfully'));
-          form.setValue('profilePictureUrl', '');
-          setPreviewImage(null);
-          setSelectedFile(null);
-          refetch();
-        } else {
-          toast.error(response.message || t('userDetail.profilePictureDeleteError'));
-        }
-      },
-      onError: (error: Error) => {
-        toast.error(error.message || t('userDetail.profilePictureDeleteError'));
-      },
-    });
-  };
-
-  const handleSubmit = (data: UserDetailFormData): void => {
-    if (userDetail) {
-      updateMutation.mutate(
-        {
-          profilePictureUrl: data.profilePictureUrl || undefined,
-          height: data.height ?? undefined,
-          weight: data.weight ?? undefined,
-          description: data.description || undefined,
-          gender: (data.gender ?? undefined) as Gender | undefined,
-        },
-        {
-          onSuccess: () => toast.success(t('userDetail.updatedSuccessfully')),
-          onError: (error: Error) =>
-            toast.error(error.message || t('userDetail.updateError')),
-        }
-      );
-      return;
-    }
-
-    if (!user?.id) {
-      toast.error(t('userDetail.userNotFound'));
-      return;
-    }
-
-    createMutation.mutate(
-      {
-        userId: user.id,
-        profilePictureUrl: data.profilePictureUrl || undefined,
-        height: data.height ?? undefined,
-        weight: data.weight ?? undefined,
-        description: data.description || undefined,
-        gender: (data.gender ?? undefined) as Gender | undefined,
-      },
-      {
-        onSuccess: () => toast.success(t('userDetail.createdSuccessfully')),
-        onError: (error: Error) =>
-          toast.error(error.message || t('userDetail.createError')),
-      }
-    );
-  };
-
-  const handleChangePasswordSubmit = async (data: ChangePasswordRequest): Promise<void> => {
-    await changePasswordMutation.mutateAsync(data);
-    changePasswordForm.reset();
-  };
-
-  const descriptionLength = form.watch('description')?.length || 0;
-  const isLoading = isLoadingUserDetail || createMutation.isPending || updateMutation.isPending;
-  const isUploading = uploadMutation.isPending;
-  const isDeleting = deleteMutation.isPending;
-  const isChangingPassword = changePasswordMutation.isPending;
-
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-4">
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-[#130822]/85 sm:p-6">
+    <div className="mx-auto w-full max-w-6xl space-y-8 px-4 pb-12 pt-2 md:px-6">
+      <section
+        aria-label={t('profile.title')}
+        className={cn(
+          'relative overflow-hidden rounded-[1.75rem] border p-6 backdrop-blur-2xl backdrop-saturate-150 md:rounded-[2rem] md:p-8',
+          'border-slate-200/45 bg-white/[0.62] shadow-[0_10px_36px_rgba(15,23,42,0.055),0_2px_14px_rgba(15,23,42,0.035)] ring-1 ring-white/65',
+          'dark:border-white/[0.062] dark:bg-[rgba(22,17,30,0.34)] dark:shadow-[0_22px_52px_rgba(0,0,0,0.44),inset_0_1px_0_0_rgba(255,255,255,0.05)]',
+          'dark:ring-white/[0.04]'
+        )}
+      >
         {isLoadingUserDetail ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          <div className="flex w-full items-center justify-center py-16">
+            <Loader2 className="size-8 animate-spin text-slate-400 dark:text-zinc-500" aria-hidden />
           </div>
         ) : (
           <>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="relative">
-                      {previewImage ? (
-                        <img src={previewImage} alt={t('userDetail.profilePicture')} className="size-32 rounded-full border-2 border-border object-cover" />
-                      ) : (
-                        <div className="flex size-32 items-center justify-center rounded-full border-2 border-border bg-muted">
-                          <span className="text-sm text-muted-foreground">{t('userDetail.noImage')}</span>
-                        </div>
-                      )}
-                      {userDetail?.profilePictureUrl && !selectedFile && (
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -bottom-2 -right-2 size-8 rounded-full"
-                          onClick={handleDeletePicture}
-                          disabled={isDeleting}
-                        >
-                          {isDeleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
-                        </Button>
-                      )}
-                    </div>
+            <div className="absolute right-6 top-6 z-10 md:right-8 md:top-8">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setProfileSettingsOpen(true)}
+                className={cn(
+                  'h-11 rounded-full border border-sky-700/15 px-6 font-semibold shadow-none backdrop-blur-xl transition-colors',
+                  'bg-gradient-to-r from-sky-500/[0.08] via-white/55 to-orange-500/[0.1] text-slate-800 ring-1 ring-inset ring-white/35',
+                  'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.48)]',
+                  'hover:border-sky-600/25 hover:from-sky-500/[0.12] hover:via-white/60 hover:to-orange-500/[0.14] hover:ring-sky-200/45 hover:text-slate-900',
+                  'dark:border-sky-400/18 dark:bg-gradient-to-r dark:from-sky-950/65 dark:via-[rgba(22,17,30,0.48)] dark:to-orange-950/50 dark:text-white dark:ring-sky-400/12',
+                  'dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]',
+                  'dark:hover:border-orange-400/22 dark:hover:from-sky-900/55 dark:hover:via-[rgba(28,20,34,0.55)] dark:hover:to-orange-900/45 dark:hover:ring-orange-400/15 dark:hover:text-white'
+                )}
+              >
+                <Settings className="mr-2 size-4 shrink-0 text-sky-600 dark:text-sky-400" strokeWidth={1.85} aria-hidden />
+                {t('profile.profileSettings')}
+              </Button>
+            </div>
 
-                    <div className="w-full max-w-md space-y-2">
-                      <Input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                        onChange={handleFileSelect}
-                        className="hidden"
+            <div className="flex max-md:pr-[11rem] flex-row items-start gap-5 md:gap-8 md:pr-44">
+              <div className="relative shrink-0">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={PROFILE_IMAGE_ACCEPT_ATTR}
+                  className="sr-only"
+                  tabIndex={-1}
+                  onChange={handleProfileImageSelected}
+                />
+                <button
+                  type="button"
+                  disabled={uploadPictureMutation.isPending}
+                  onClick={handleAvatarPickClick}
+                  aria-label={t('profile.changePhoto')}
+                  className={cn(
+                    'group relative size-[8rem] shrink-0 overflow-hidden rounded-[1.4rem] md:size-[9rem] md:rounded-[1.45rem]',
+                    'ring-2 ring-fuchsia-500/55 shadow-[0_0_0_1px_rgba(217,70,239,0.35),0_0_22px_rgba(192,38,211,0.22),inset_0_2px_32px_rgba(0,0,0,0.5)]',
+                    'transition-[transform,box-shadow] duration-200 hover:shadow-[0_0_0_1px_rgba(232,121,249,0.55),0_0_28px_rgba(217,70,239,0.32),inset_0_2px_32px_rgba(0,0,0,0.45)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:ring-fuchsia-400/45 dark:focus-visible:ring-offset-zinc-950',
+                    'disabled:pointer-events-none disabled:opacity-70 dark:shadow-[0_0_0_1px_rgba(217,70,239,0.35),0_0_26px_rgba(168,85,247,0.2),inset_0_2px_36px_rgba(0,0,0,0.65)]'
+                  )}
+                >
+                  {uploadPictureMutation.isPending ? (
+                    <span className="flex size-full items-center justify-center bg-zinc-950/80">
+                      <Loader2 className="size-9 animate-spin text-fuchsia-300" aria-hidden />
+                    </span>
+                  ) : imageUrl ? (
+                    <>
+                      <img src={imageUrl} alt="" className="size-full object-cover" />
+                      <span
+                        className="pointer-events-none absolute inset-0 rounded-[inherit] bg-black/0 shadow-[inset_0_0_36px_rgba(0,0,0,0.42)] ring-1 ring-inset ring-fuchsia-400/25 transition-colors duration-200 group-hover:bg-black/48 group-focus-visible:bg-black/48 dark:shadow-[inset_0_0_42px_rgba(0,0,0,0.55)] dark:ring-fuchsia-400/30"
+                        aria-hidden
                       />
-                      <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="w-full">
-                        <Upload className="mr-2 size-4" />
-                        {t('userDetail.selectFile')}
-                      </Button>
-                      {selectedFile && (
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                          </p>
-                          <Button type="button" onClick={handleUploadPicture} disabled={isUploading} className="w-full">
-                            {isUploading ? (
-                              <>
-                                <Loader2 className="mr-2 size-4 animate-spin" />
-                                {t('userDetail.uploading')}
-                              </>
-                            ) : (
-                              <>
-                                <Upload className="mr-2 size-4" />
-                                {t('userDetail.upload')}
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      )}
-                      <FormField control={form.control} name="profilePictureUrl" render={() => <FormMessage />} />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="height"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('userDetail.height')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              max="300"
-                              placeholder="175.5"
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={(e) => field.onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="weight"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('userDetail.weight')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              max="500"
-                              placeholder="75.5"
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={(e) => field.onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('userDetail.gender')}</FormLabel>
-                        <Select
-                          value={field.value?.toString() ?? Gender.NotSpecified.toString()}
-                          onValueChange={(value) => {
-                            const numValue = parseInt(value, 10);
-                            field.onChange(numValue === Gender.NotSpecified ? null : (numValue as Gender));
-                          }}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('userDetail.selectGender')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={Gender.NotSpecified.toString()}>{t('userDetail.gender.notSpecified')}</SelectItem>
-                            <SelectItem value={Gender.Male.toString()}>{t('userDetail.gender.male')}</SelectItem>
-                            <SelectItem value={Gender.Female.toString()}>{t('userDetail.gender.female')}</SelectItem>
-                            <SelectItem value={Gender.Other.toString()}>{t('userDetail.gender.other')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('userDetail.description')}</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder={t('userDetail.descriptionPlaceholder')}
-                            maxLength={2000}
-                            className="min-h-24"
-                            {...field}
-                          />
-                        </FormControl>
-                        <div className="flex items-center justify-between">
-                          <FormMessage />
-                          <span className="text-xs text-muted-foreground">{descriptionLength}/2000</span>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end">
-                  <Button type="submit" disabled={isLoading || isUploading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 size-4 animate-spin" />
-                        {t('common.saving')}
-                      </>
-                    ) : userDetail ? (
-                      t('common.update')
-                    ) : (
-                      t('common.save')
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-
-            <div className="mt-4">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="change-password">
-                  <AccordionTrigger>{t('userDetail.changePassword')}</AccordionTrigger>
-                  <AccordionContent>
-                    <Form {...changePasswordForm}>
-                      <form onSubmit={changePasswordForm.handleSubmit(handleChangePasswordSubmit)} className="space-y-4 pt-2">
-                        <FormField
-                          control={changePasswordForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t('userDetail.currentPassword')}</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                                  <Input {...field} type={isCurrentPasswordVisible ? 'text' : 'password'} placeholder="••••••••" className="pl-10 pr-10" />
-                                  <button
-                                    type="button"
-                                    onClick={() => setIsCurrentPasswordVisible((v) => !v)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                  >
-                                    {isCurrentPasswordVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                                  </button>
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                        <Camera
+                          className="size-8 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.55)] md:size-9"
+                          strokeWidth={1.75}
+                          aria-hidden
                         />
+                      </span>
+                    </>
+                  ) : isSystemLikeDisplayName ? (
+                    <span className="relative flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
+                      <span
+                        className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_2px_28px_rgba(0,0,0,0.18)] ring-1 ring-inset ring-white/30"
+                        aria-hidden
+                      />
+                      <span className="relative z-[1] text-5xl font-bold tracking-tight text-white drop-shadow-md transition-[opacity,filter] duration-200 group-hover:opacity-40 group-hover:brightness-[0.68] group-focus-visible:opacity-40 group-focus-visible:brightness-[0.68] md:text-6xl">
+                        {emptyAvatarLetter}
+                      </span>
+                      <span
+                        className="pointer-events-none absolute inset-0 z-[2] rounded-[inherit] bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
+                        aria-hidden
+                      />
+                      <Camera
+                        className="pointer-events-none absolute inset-0 z-[3] m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.65)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                    </span>
+                  ) : (
+                    <span className="relative flex size-full items-center justify-center bg-[radial-gradient(circle_at_50%_42%,rgb(82,38,40)_0%,rgb(32,14,22)_40%,rgb(56,20,58)_100%)] dark:bg-[radial-gradient(circle_at_50%_42%,rgb(72,32,34)_0%,rgb(26,10,20)_38%,rgb(48,16,52)_100%)]">
+                      <span
+                        className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_36px_rgba(0,0,0,0.72)] ring-1 ring-inset ring-fuchsia-500/35 transition-[box-shadow,ring-color] duration-200 group-hover:shadow-[inset_0_0_56px_rgba(0,0,0,0.92)] group-hover:ring-fuchsia-400/45 group-focus-visible:shadow-[inset_0_0_56px_rgba(0,0,0,0.92)] group-focus-visible:ring-fuchsia-400/45"
+                        aria-hidden
+                      />
+                      <span
+                        className="pointer-events-none absolute inset-0 z-[1] rounded-[inherit] bg-black/0 transition-colors duration-200 group-hover:bg-black/52 group-focus-visible:bg-black/52"
+                        aria-hidden
+                      />
+                      <Camera
+                        className="pointer-events-none absolute inset-0 z-[2] m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.6)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                    </span>
+                  )}
+                </button>
+              </div>
 
-                        <FormField
-                          control={changePasswordForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t('userDetail.newPassword')}</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                                  <Input
-                                    {...field}
-                                    type={isNewPasswordVisible ? 'text' : 'password'}
-                                    placeholder={t('userDetail.newPasswordPlaceholder')}
-                                    className="pl-10 pr-10"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => setIsNewPasswordVisible((v) => !v)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                  >
-                                    {isNewPasswordVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                                  </button>
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="flex justify-end">
-                          <Button type="submit" variant="outline" disabled={isChangingPassword}>
-                            {isChangingPassword ? (
-                              <>
-                                <Loader2 className="mr-2 size-4 animate-spin" />
-                                {t('userDetail.changingPassword')}
-                              </>
-                            ) : (
-                              <>
-                                <Shield className="mr-2 size-4" />
-                                {t('userDetail.changePasswordButton')}
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <div className="min-w-0 flex-1 text-left">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl dark:text-white">{displayName}</h1>
+                <div className="mt-2 flex flex-row flex-wrap items-center justify-start gap-0 text-sm text-slate-600 md:mt-2.5 md:text-[0.9375rem] dark:text-zinc-300">
+                  <span className="inline-flex min-w-0 items-center gap-2 md:pr-4">
+                    <Mail className="size-4 shrink-0 text-slate-500 dark:text-zinc-400" aria-hidden />
+                    <span className="truncate">{emailLine}</span>
+                  </span>
+                  <span className="mx-2 h-5 w-px shrink-0 bg-slate-300/90 dark:bg-white/15" aria-hidden />
+                  <span className="inline-flex items-center gap-2" aria-label={t('profile.branchLabel')}>
+                    <Building2 className="size-4 shrink-0 text-slate-500 dark:text-zinc-400" aria-hidden />
+                    <span>{branchLine}</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </>
         )}
-      </div>
+      </section>
+
+      <ProfileSettingsModal open={profileSettingsOpen} onOpenChange={setProfileSettingsOpen} />
+
+      <div className="min-h-[min(42vh,360px)] w-full" aria-hidden />
     </div>
   );
 }
-

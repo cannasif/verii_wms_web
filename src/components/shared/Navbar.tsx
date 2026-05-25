@@ -131,6 +131,11 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
 
   const displayName = user?.name || user?.email || t('common.user');
   const displayInitial = displayName.charAt(0).toUpperCase();
+  const navbarBranchCodeTrimmed = branch?.code?.trim();
+  const navbarBranchCodePrefix =
+    navbarBranchCodeTrimmed && navbarBranchCodeTrimmed.toLowerCase() !== '0'
+      ? `${navbarBranchCodeTrimmed} • `
+      : '';
 
   return (
     <>
@@ -227,16 +232,25 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 className="group flex items-center gap-3"
               >
                 <div className="hidden text-right lg:block">
-                  <p className="max-w-[170px] truncate text-sm font-semibold text-slate-700 transition-colors group-hover:text-pink-500 dark:text-slate-200">
-                    {branch?.code ? `${branch.code} • ` : ''}
+                  <p className="max-w-[170px] truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    {navbarBranchCodePrefix}
                     {displayName}
                   </p>
                   <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                     {branch?.name || t('roles.admin')}
                   </p>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-tr from-pink-500 via-orange-500 to-yellow-500 p-[2px]">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white text-xs font-bold text-orange-500 dark:bg-[#0c0516]">
+                <div
+                  className={cn(
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-b from-sky-300 via-sky-400 to-orange-400 p-[2px]',
+                    'transition-[box-shadow,filter] duration-300 ease-out',
+                    'group-hover:shadow-[0_0_12px_rgba(14,165,233,0.28),0_0_26px_rgba(251,146,60,0.18),0_0_40px_rgba(56,189,248,0.1)]',
+                    'group-hover:brightness-[1.03]',
+                    'dark:from-sky-400 dark:via-sky-500 dark:to-orange-400',
+                    'dark:group-hover:shadow-[0_0_14px_rgba(56,189,248,0.22),0_0_28px_rgba(251,146,60,0.15),0_0_42px_rgba(34,211,238,0.08)]',
+                  )}
+                >
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white text-xs font-bold text-orange-600 dark:bg-[#0c0516] dark:text-orange-400">
                     {displayInitial}
                   </div>
                 </div>
