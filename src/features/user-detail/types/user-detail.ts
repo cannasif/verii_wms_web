@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/api';
 import type { TFunction } from 'i18next';
+import { serializeProfileMeta } from '../utils/profile-description-meta';
 
 export const Gender = {
   NotSpecified: 0,
@@ -44,44 +45,62 @@ export type UserDetailResponse = ApiResponse<UserDetailDto>;
 export type CreateUserDetailResponse = ApiResponse<UserDetailDto>;
 export type UpdateUserDetailResponse = ApiResponse<UserDetailDto>;
 
-export const createUserDetailFormSchema = (t: TFunction) => z.object({
-  profilePictureUrl: z
-    .string()
-    .max(500)
-    .refine((val) => {
-      if (val === '') return true;
-      if (val.startsWith('http://') || val.startsWith('https://')) {
-        return z.string().url().safeParse(val).success;
-      }
-      if (val.startsWith('/')) {
-        return true;
-      }
-      return false;
-    }, {
-      message: t('userDetail.invalidUrl'),
+export const createUserDetailFormSchema = (t: TFunction) =>
+  z
+    .object({
+      profilePictureUrl: z
+        .string()
+        .max(500)
+        .refine((val) => {
+          if (val === '') return true;
+          if (val.startsWith('http://') || val.startsWith('https://')) {
+            return z.string().url().safeParse(val).success;
+          }
+          if (val.startsWith('/')) {
+            return true;
+          }
+          return false;
+        }, {
+          message: t('userDetail.invalidUrl'),
+        })
+        .optional()
+        .or(z.literal('')),
+      height: z
+        .number()
+        .min(0, t('userDetail.heightMin'))
+        .max(300, t('userDetail.heightMax'))
+        .nullable()
+        .optional(),
+      weight: z
+        .number()
+        .min(0, t('userDetail.weightMin'))
+        .max(500, t('userDetail.weightMax'))
+        .nullable()
+        .optional(),
+      note: z.string().max(1900).optional().or(z.literal('')),
+      phone: z.string().max(40).optional().or(z.literal('')),
+      linkedInUrl: z.union([z.literal(''), z.string().url({ message: t('userDetail.invalidUrl') })]).optional(),
+      gender: z
+        .number()
+        .refine((val) => Object.values(Gender).includes(val as Gender), {
+          message: t('userDetail.invalidGender'),
+        })
+        .nullable()
+        .optional(),
     })
-    .optional()
-    .or(z.literal('')),
-  height: z
-    .number()
-    .min(0, t('userDetail.heightMin'))
-    .max(300, t('userDetail.heightMax'))
-    .nullable()
-    .optional(),
-  weight: z
-    .number()
-    .min(0, t('userDetail.weightMin'))
-    .max(500, t('userDetail.weightMax'))
-    .nullable()
-    .optional(),
-  description: z.string().max(2000, t('userDetail.descriptionMax')).optional().or(z.literal('')),
-  gender: z
-    .number()
-    .refine((val) => Object.values(Gender).includes(val as Gender), {
-      message: t('userDetail.invalidGender'),
-    })
-    .nullable()
-    .optional(),
-});
+    .superRefine((data, ctx) => {
+      const serialized = serializeProfileMeta({
+        note: data.note ?? '',
+        phone: data.phone ?? '',
+        linkedInUrl: data.linkedInUrl ?? '',
+      });
+      if (serialized.length > 2000) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('userDetail.descriptionMax'),
+          path: ['note'],
+        });
+      }
+    });
 
 export type UserDetailFormData = z.infer<ReturnType<typeof createUserDetailFormSchema>>;

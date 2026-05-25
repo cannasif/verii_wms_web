@@ -2479,16 +2479,17 @@
     "height": "Height (cm)",
     "weight": "Weight (kg)",
     "gender": {
-      "notSpecified": "Belirtilmemiş",
-      "male": "Erkek",
-      "female": "Kadın",
-      "other": "Diğer"
+      "notSpecified": "Not specified",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
     },
     "selectGender": "Select gender",
     "gender.notSpecified": "Not Specified",
     "gender.male": "Male",
     "gender.female": "Female",
     "gender.other": "Other",
+    "genderFieldLabel": "Gender",
     "description": "Description",
     "descriptionPlaceholder": "Enter description...",
     "deletePictureTitle": "Delete Profile Picture",
@@ -2522,13 +2523,32 @@
     "newPasswordMinLength": "New password must be at least 6 characters",
     "newPasswordMaxLength": "New password must be at most 100 characters",
     "newPasswordSameAsCurrent": "New password cannot be the same as current password",
-    "invalidGender": "Invalid gender value"
+    "invalidGender": "Invalid gender value",
+    "phoneNumber": "Phone number",
+    "emailAddress": "Email address",
+    "linkedInProfile": "LinkedIn profile",
+    "placeholderHeight": "e.g. 175",
+    "placeholderWeight": "e.g. 70",
+    "placeholderPhone": "+1 XXX XXX XXXX",
+    "placeholderEmail": "you@company.com",
+    "placeholderLinkedIn": "https://linkedin.com/in/..."
   },
   "roles": {
     "admin": "Admin"
   },
   "profile": {
-    "title": "Profile"
+    "title": "Profile",
+    "settingsProfileInfo": "Profile information",
+    "settingsProfileHint": "Update customer information",
+    "settingsLanguage": "Language option",
+    "settingsAppearance": "Appearance mode",
+    "organizationBadge": "V3RII.CO",
+    "profileSettings": "Profile settings",
+    "branchLabel": "Branch",
+    "changePhoto": "Choose or change profile photo",
+    "settingsModalSubtitle": "Manage your profile information and security settings here.",
+    "tabPersonal": "Personal information",
+    "tabSecurity": "Security"
   },
   "language_choice": "Language",
   "appearance": "Appearance",

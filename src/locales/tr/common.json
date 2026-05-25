@@ -2489,6 +2489,7 @@
     "gender.male": "Erkek",
     "gender.female": "Kadın",
     "gender.other": "Diğer",
+    "genderFieldLabel": "Cinsiyet",
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama giriniz...",
     "deletePictureTitle": "Profil Resmini Sil",
@@ -2522,13 +2523,32 @@
     "newPasswordMinLength": "Yeni şifre en az 6 karakter olmalıdır",
     "newPasswordMaxLength": "Yeni şifre en fazla 100 karakter olabilir",
     "newPasswordSameAsCurrent": "Yeni şifre mevcut şifre ile aynı olamaz",
-    "invalidGender": "Geçersiz cinsiyet değeri"
+    "invalidGender": "Geçersiz cinsiyet değeri",
+    "phoneNumber": "Telefon numarası",
+    "emailAddress": "E-posta adresi",
+    "linkedInProfile": "LinkedIn profili",
+    "placeholderHeight": "Örn: 175",
+    "placeholderWeight": "Örn: 70",
+    "placeholderPhone": "+90 5XX XXX XX XX",
+    "placeholderEmail": "ornek@sirket.com",
+    "placeholderLinkedIn": "https://linkedin.com/in/..."
   },
   "roles": {
     "admin": "Yönetici"
   },
   "profile": {
-    "title": "Profil"
+    "title": "Profil",
+    "settingsProfileInfo": "Profil Bilgileri",
+    "settingsProfileHint": "Müşteri bilgilerini güncelleyin",
+    "settingsLanguage": "Dil Seçeneği",
+    "settingsAppearance": "Görünüm Modu",
+    "organizationBadge": "V3RII.CO",
+    "profileSettings": "Profil Ayarları",
+    "branchLabel": "Şube",
+    "changePhoto": "Profil resmini seç veya değiştir",
+    "settingsModalSubtitle": "Profil bilgilerinizi ve güvenlik ayarlarınızı buradan yönetebilirsiniz.",
+    "tabPersonal": "Kişisel Bilgiler",
+    "tabSecurity": "Güvenlik"
   },
   "language_choice": "Dil",
   "appearance": "Görünüm",
