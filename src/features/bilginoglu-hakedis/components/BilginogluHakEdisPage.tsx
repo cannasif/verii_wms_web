@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Boxes, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck } from 'lucide-react';
+import { Boxes, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useUIStore } from '@/stores/ui-store';
-import type { BilginogluHakEdisBatch, BilginogluHakEdisOrderHeader, BilginogluHakEdisPlan } from '../types/bilginoglu-hakedis.types';
+import type { BilginogluHakEdisBatch, BilginogluHakEdisOrderActivity, BilginogluHakEdisOrderHeader, BilginogluHakEdisPlan } from '../types/bilginoglu-hakedis.types';
 import {
   useBilginogluHakEdisBatchesQuery,
+  useBilginogluHakEdisOrderActivitiesQuery,
   useBilginogluHakEdisOrderPlansQuery,
   useBilginogluHakEdisOrdersQuery,
   useBilginogluHakEdisStepsQuery,
@@ -70,6 +71,7 @@ export function BilginogluHakEdisPage(): ReactElement {
   const params = useMemo(() => ({ pageNumber: 1, pageSize: 50, search, sortBy: 'LastEvaluationDate', sortDirection: 'desc' }), [search]);
   const ordersQuery = useBilginogluHakEdisOrdersQuery(params);
   const plansQuery = useBilginogluHakEdisOrderPlansQuery(selectedOrder?.id ?? null);
+  const activitiesQuery = useBilginogluHakEdisOrderActivitiesQuery(selectedOrder?.id ?? null);
   const batchesQuery = useBilginogluHakEdisBatchesQuery(selectedPlan?.id ?? null);
   const stepsQuery = useBilginogluHakEdisStepsQuery(selectedBatch?.id ?? null);
   const evaluateMutation = useEvaluateBilginogluHakEdisMutation();
@@ -108,6 +110,24 @@ export function BilginogluHakEdisPage(): ReactElement {
       missing: Math.max(0, required - canCreate),
     };
   }, [plans]);
+  const activities = activitiesQuery.data ?? [];
+  const activitySummary = useMemo(() => {
+    const datHeaders = new Set<number>();
+    const shipmentHeaders = new Set<number>();
+    let completed = 0;
+
+    activities.forEach((activity) => {
+      if (activity.sourceType === 'WT' && activity.sourceHeaderId) datHeaders.add(activity.sourceHeaderId);
+      if (activity.sourceType === 'SH' && activity.sourceHeaderId) shipmentHeaders.add(activity.sourceHeaderId);
+      if (activity.status === 'Completed' || activity.isCompleted) completed += 1;
+    });
+
+    return {
+      datCount: datHeaders.size,
+      shipmentCount: shipmentHeaders.size,
+      completedCount: completed,
+    };
+  }, [activities]);
 
   return (
     <div className="space-y-6">
@@ -281,6 +301,50 @@ export function BilginogluHakEdisPage(): ReactElement {
               {!plansQuery.isLoading && plans.length === 0 ? <span className="text-sm text-muted-foreground">{t('detail.noLines')}</span> : null}
             </div>
           </div>
+          <div className="rounded-2xl border p-3">
+            <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 className="text-sm font-semibold">{t('activity.title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('activity.description')}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="rounded-xl">{t('activity.datCount', { count: activitySummary.datCount })}</Badge>
+                <Badge variant="secondary" className="rounded-xl">{t('activity.shipmentCount', { count: activitySummary.shipmentCount })}</Badge>
+                <Badge variant="secondary" className="rounded-xl">{t('activity.completedCount', { count: activitySummary.completedCount })}</Badge>
+              </div>
+            </div>
+            {activitiesQuery.isLoading ? (
+              <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                {t('loading')}
+              </div>
+            ) : activities.length === 0 ? (
+              <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-4 text-sm text-muted-foreground">
+                <FileClock className="size-4" />
+                {t('activity.empty')}
+              </div>
+            ) : (
+              <div className="max-h-72 overflow-auto rounded-2xl border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('activity.step')}</TableHead>
+                      <TableHead>{t('activity.document')}</TableHead>
+                      <TableHead>{t('activity.erp')}</TableHead>
+                      <TableHead>{t('activity.actor')}</TableHead>
+                      <TableHead>{t('activity.collectors')}</TableHead>
+                      <TableHead className="text-right">{t('detail.quantity')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {activities.map((activity) => (
+                      <ActivityRow key={`${activity.batchId}-${activity.sequenceNo}-${activity.sourceHeaderId ?? 0}`} activity={activity} statusLabel={statusLabel} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
             <div className="rounded-2xl border">
               <Table>
@@ -362,6 +426,50 @@ function BatchActionButton({ batch, action, label, pending, allowed, run }: { ba
     <Button type="button" size="sm" variant="outline" className="rounded-xl" disabled={disabled} onClick={() => run(action)}>
       {label}
     </Button>
+  );
+}
+
+function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrderActivity; statusLabel: (status: string) => string }): ReactElement {
+  const { t } = useTranslation('bilginoglu-hakedis');
+  const documentText = activity.documentNo
+    ? `${activity.sourceType ?? '-'} #${activity.sourceHeaderId ?? '-'} / ${activity.documentNo}`
+    : `${activity.sourceType ?? '-'} #${activity.sourceHeaderId ?? '-'}`;
+  const erpText = activity.erpReferenceNumber
+    ? `${activity.erpIntegrationStatus ?? '-'} / ${activity.erpReferenceNumber}`
+    : activity.erpIntegrationStatus ?? (activity.isErpIntegrated ? t('activity.erpIntegrated') : '-');
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="font-semibold">{activity.sequenceNo}. {statusLabel(activity.stepType)}</div>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <span>{activity.batchNo}</span>
+          {statusBadge(activity.status, statusLabel(activity.status))}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{documentText}</div>
+        <div className="text-xs text-muted-foreground">
+          {t('activity.series')}: {activity.documentSeries ?? '-'} / {t('activity.type')}: {activity.documentType ?? '-'}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{erpText}</div>
+        <div className="text-xs text-muted-foreground">{formatDate(activity.erpIntegrationDate)}</div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{activity.actionByUserName ?? '-'}</div>
+        <div className="text-xs text-muted-foreground">{formatDate(activity.actionDate ?? activity.completionDate)}</div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{activity.collectedByUsers ?? '-'}</div>
+        <div className="text-xs text-muted-foreground">{t('activity.collectorCount', { count: activity.collectedUserCount })}</div>
+      </TableCell>
+      <TableCell className="text-right">
+        <div className="font-semibold">{formatQty(activity.quantity)}</div>
+        <div className="text-xs text-muted-foreground">{activity.stockCode ?? '-'}</div>
+      </TableCell>
+    </TableRow>
   );
 }
 

@@ -62,6 +62,23 @@
     "steps": "Batch steps",
     "chooseBatch": "Select a batch to see its steps."
   },
+  "activity": {
+    "title": "Completed operations",
+    "description": "Document, ERP, and collection trace for related DAT, entitlement, return, and shipment stages.",
+    "datCount": "DAT: {{count}}",
+    "shipmentCount": "Shipment: {{count}}",
+    "completedCount": "Completed: {{count}}",
+    "empty": "There is no operation history for this order yet.",
+    "step": "Stage",
+    "document": "Document",
+    "erp": "ERP",
+    "actor": "Actor",
+    "collectors": "Collectors",
+    "series": "Series",
+    "type": "Type",
+    "collectorCount": "{{count}} user",
+    "erpIntegrated": "Integrated to ERP"
+  },
   "policy": {
     "allocation": "Allocation policy",
     "shipment": "Shipment policy",

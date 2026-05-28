@@ -108,6 +108,37 @@ export interface BilginogluHakEdisBatchStep {
   note?: string | null;
 }
 
+export interface BilginogluHakEdisOrderActivity {
+  batchId: number;
+  batchNo: string;
+  planId?: number | null;
+  siparisNo: string;
+  orderId: number;
+  stockCode?: string | null;
+  stockName?: string | null;
+  quantity: number;
+  sequenceNo: number;
+  stepType: string;
+  status: string;
+  sourceType?: string | null;
+  sourceHeaderId?: number | null;
+  documentNo?: string | null;
+  documentType?: string | null;
+  documentSeries?: string | null;
+  isCompleted?: boolean | null;
+  completionDate?: string | null;
+  isErpIntegrated?: boolean | null;
+  erpReferenceNumber?: string | null;
+  erpIntegrationStatus?: string | null;
+  erpIntegrationDate?: string | null;
+  actionByUserId?: number | null;
+  actionByUserName?: string | null;
+  actionDate?: string | null;
+  collectedByUsers?: string | null;
+  collectedUserCount: number;
+  note?: string | null;
+}
+
 export interface BilginogluHakEdisEvaluationRun {
   id: number;
   runNo: string;

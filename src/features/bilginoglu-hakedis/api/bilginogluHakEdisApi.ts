@@ -6,6 +6,7 @@ import type {
   BilginogluHakEdisBatch,
   BilginogluHakEdisBatchStep,
   BilginogluHakEdisEvaluationResult,
+  BilginogluHakEdisOrderActivity,
   BilginogluHakEdisOrderHeader,
   BilginogluHakEdisPlan,
   PagedParams,
@@ -37,6 +38,11 @@ export const bilginogluHakEdisApi = {
   getOrderPlans: async (orderHeaderId: number): Promise<BilginogluHakEdisPlan[]> => {
     const response = await api.get<ApiResponse<BilginogluHakEdisPlan[]>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/plans`);
     return extractData(response as ApiResponse<BilginogluHakEdisPlan[]>);
+  },
+
+  getOrderActivities: async (orderHeaderId: number): Promise<BilginogluHakEdisOrderActivity[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisOrderActivity[]>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/activities`);
+    return extractData(response as ApiResponse<BilginogluHakEdisOrderActivity[]>);
   },
 
   updateOrderPolicy: async (orderHeaderId: number, input: UpdateBilginogluHakEdisOrderPolicy): Promise<BilginogluHakEdisOrderHeader> => {

@@ -62,6 +62,23 @@
     "steps": "Batch adimlari",
     "chooseBatch": "Adimlari gormek icin bir batch secin."
   },
+  "activity": {
+    "title": "Tamamlanan islemler",
+    "description": "Siparise bagli DAT, hakedis, donus ve sevk adimlarinin belge, ERP ve toplama izleri.",
+    "datCount": "DAT: {{count}}",
+    "shipmentCount": "Sevk: {{count}}",
+    "completedCount": "Tamamlanan: {{count}}",
+    "empty": "Bu siparis icin henuz operasyon gecmisi yok.",
+    "step": "Asama",
+    "document": "Belge",
+    "erp": "ERP",
+    "actor": "Islem yapan",
+    "collectors": "Toplayanlar",
+    "series": "Seri",
+    "type": "Tip",
+    "collectorCount": "{{count}} kisi",
+    "erpIntegrated": "ERP'ye aktarildi"
+  },
   "policy": {
     "allocation": "Aktarim politikasi",
     "shipment": "Sevk politikasi",

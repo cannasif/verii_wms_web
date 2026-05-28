@@ -8,6 +8,7 @@ export const bilginogluHakEdisQueryKeys = {
   all: ['bilginoglu-hakedis'] as const,
   orders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'orders', params] as const,
   orderPlans: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-plans', orderHeaderId] as const,
+  orderActivities: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-activities', orderHeaderId] as const,
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
@@ -24,6 +25,14 @@ export function useBilginogluHakEdisOrderPlansQuery(orderHeaderId: number | null
   return useQuery({
     queryKey: bilginogluHakEdisQueryKeys.orderPlans(orderHeaderId),
     queryFn: () => bilginogluHakEdisApi.getOrderPlans(orderHeaderId ?? 0),
+    enabled: Number.isFinite(orderHeaderId) && orderHeaderId != null && orderHeaderId > 0,
+  });
+}
+
+export function useBilginogluHakEdisOrderActivitiesQuery(orderHeaderId: number | null) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.orderActivities(orderHeaderId),
+    queryFn: () => bilginogluHakEdisApi.getOrderActivities(orderHeaderId ?? 0),
     enabled: Number.isFinite(orderHeaderId) && orderHeaderId != null && orderHeaderId > 0,
   });
 }
