@@ -1,0 +1,93 @@
+{
+  "title": "Bilginoglu Hakedis",
+  "breadcrumb": {
+    "operations": "Operasyonlar"
+  },
+  "hero": {
+    "eyebrow": "Hakedis planlama havuzu",
+    "description": "Netsis sevk siparislerini ilk anda sevk emrine cevirmeden, depo bakiyesi kadar hakedis batch'i planlar. Hazir parcalar DAT, geri donus ve sevk zincirinde siparis bazinda izlenir."
+  },
+  "actions": {
+    "evaluate": "Degerlendir",
+    "refresh": "Yenile",
+    "savePolicy": "Politikayi Kaydet",
+    "createDat": "DAT Ac",
+    "atHakEdis": "Hakediste",
+    "createReturnDat": "Donus DAT",
+    "markReady": "Sevke Hazir",
+    "createShipment": "Sevk Ac"
+  },
+  "metrics": {
+    "remaining": "Siparis Kalan",
+    "allocated": "Hakedise Ayrilan",
+    "ready": "Sevke Hazir",
+    "waiting": "Bekleyen"
+  },
+  "table": {
+    "title": "Hakedis Siparis Havuzu",
+    "search": "Siparis, cari veya stok ara...",
+    "order": "Siparis",
+    "customer": "Cari",
+    "transferAll": "Tumunu Transfer Et",
+    "orderDetail": "Siparis Detayi",
+    "allocation": "Aktarim",
+    "shipmentPolicy": "Sevk Politikasi",
+    "remaining": "Kalan",
+    "stock": "Bakiye",
+    "allocated": "Hakedise Ayrilan",
+    "ready": "Sevke Hazir",
+    "status": "Durum",
+    "evaluatedAt": "Son Degerlendirme"
+  },
+  "detail": {
+    "title": "{{order}} hakedis akisi",
+    "description": "Siparisin kalemleri, ayrilan batch miktarlari ve bagli DAT/sevk adimlari.",
+    "lines": "Siparis kalemleri",
+    "stock": "Stok",
+    "noLines": "Kalem bulunamadi.",
+    "batch": "Batch",
+    "quantity": "Miktar",
+    "stage": "Asama",
+    "noBatches": "Henuz batch yok.",
+    "steps": "Batch adimlari",
+    "chooseBatch": "Adimlari gormek icin bir batch secin."
+  },
+  "policy": {
+    "allocation": "Aktarim politikasi",
+    "shipment": "Sevk politikasi",
+    "StockBalanceAuto": "Depo bakiyesi kadar otomatik",
+    "FullOrderOnly": "Siparis tamamsa aktar",
+    "ManualOnly": "Sadece manuel",
+    "ManualShipment": "Manuel sevk",
+    "AutoPartialShipment": "Hazir parcayi otomatik sevk",
+    "AutoFullShipment": "Tamami hazirsa otomatik sevk"
+  },
+  "status": {
+    "Open": "Acik",
+    "WaitingStock": "Stok Bekliyor",
+    "ReadyToTransfer": "Transfer Hazir",
+    "InHakEdisFlow": "Hakedis Akisinda",
+    "ReadyForShipment": "Sevke Hazir",
+    "ShipmentCreated": "Sevk Olustu",
+    "Completed": "Tamamlandi",
+    "Blocked": "Blokeli",
+    "Cancelled": "Iptal",
+    "Planned": "Planlandi",
+    "TransferToHakEdis": "Hakedise Transfer",
+    "AtHakEdis": "Hakediste",
+    "ReturnFromHakEdis": "Hakedisten Donus",
+    "Pending": "Bekliyor",
+    "Ready": "Hazir",
+    "InProgress": "Islemde"
+  },
+  "loading": "Yukleniyor...",
+  "empty": "Kayit bulunamadi.",
+  "messages": {
+    "evaluated": "Hakedis degerlendirildi. Batch: {{count}}",
+    "evaluationFailed": "Hakedis degerlendirmesi calistirilamadi.",
+    "batchCompleted": "Hakedis batch aksiyonu tamamlandi.",
+    "batchFailed": "Hakedis batch aksiyonu calistirilamadi.",
+    "policyUpdated": "Hakedis siparis politikasi guncellendi.",
+    "policyFailed": "Hakedis siparis politikasi guncellenemedi."
+  }
+}

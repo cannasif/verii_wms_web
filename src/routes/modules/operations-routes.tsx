@@ -297,7 +297,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'collected/:headerId', element: withRoute(CollectedBarcodesPage, { routeName: 'transfer-collected-barcodes', namespaces: ['transfer', 'common'] }) },
       { path: 'approval', element: withRoute(TransferApprovalPage, { routeName: 'transfer-approval', namespaces: ['transfer', 'common'] }) },
       { path: 'chains', element: withRoute(TransferChainListPage, { routeName: 'transfer-chain-list', namespaces: ['transfer-chain', 'common'] }) },
-      { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'bilginoglu-hakedis', namespaces: ['common'] }) },
+      { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'bilginoglu-hakedis', namespaces: ['bilginoglu-hakedis', 'common'] }) },
     ],
   },
   {

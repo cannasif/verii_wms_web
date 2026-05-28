@@ -2,8 +2,38 @@ import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 
 export type { ApiResponse, PagedParams, PagedResponse };
 
+export interface BilginogluHakEdisOrderHeader {
+  id: number;
+  branchCode: string;
+  siparisNo: string;
+  customerId?: number | null;
+  customerCode?: string | null;
+  customerName?: string | null;
+  orderDate?: string | null;
+  transferAllFlag: string;
+  orderDetail?: string | null;
+  totalOrderQty: number;
+  totalRemainingQty: number;
+  totalAllocatedQty: number;
+  totalAtHakEdisQty: number;
+  totalReadyForShipmentQty: number;
+  totalShipmentCreatedQty: number;
+  totalShippedQty: number;
+  totalWaitingQty: number;
+  allocationPolicy: string;
+  shipmentPolicy: string;
+  status: string;
+  lastEvaluationDate?: string | null;
+}
+
+export interface UpdateBilginogluHakEdisOrderPolicy {
+  allocationPolicy: string;
+  shipmentPolicy: string;
+}
+
 export interface BilginogluHakEdisPlan {
   id: number;
+  orderHeaderId?: number | null;
   branchCode: string;
   siparisNo: string;
   orderId: number;

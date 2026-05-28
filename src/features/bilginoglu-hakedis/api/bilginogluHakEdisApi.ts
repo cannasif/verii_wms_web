@@ -6,9 +6,11 @@ import type {
   BilginogluHakEdisBatch,
   BilginogluHakEdisBatchStep,
   BilginogluHakEdisEvaluationResult,
+  BilginogluHakEdisOrderHeader,
   BilginogluHakEdisPlan,
   PagedParams,
   PagedResponse,
+  UpdateBilginogluHakEdisOrderPolicy,
 } from '../types/bilginoglu-hakedis.types';
 
 function extractData<T>(response: ApiResponse<T>): T {
@@ -24,6 +26,24 @@ function normalizePaged<T>(response: PagedResponse<T>): PagedResponse<T> {
 }
 
 export const bilginogluHakEdisApi = {
+  getOrders: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisOrderHeader>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisOrderHeader>>>(
+      '/api/BilginogluHakEdis/orders/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'LastEvaluationDate', sortDirection: 'desc' }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisOrderHeader>>));
+  },
+
+  getOrderPlans: async (orderHeaderId: number): Promise<BilginogluHakEdisPlan[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisPlan[]>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/plans`);
+    return extractData(response as ApiResponse<BilginogluHakEdisPlan[]>);
+  },
+
+  updateOrderPolicy: async (orderHeaderId: number, input: UpdateBilginogluHakEdisOrderPolicy): Promise<BilginogluHakEdisOrderHeader> => {
+    const response = await api.put<ApiResponse<BilginogluHakEdisOrderHeader>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/policies`, input);
+    return extractData(response as ApiResponse<BilginogluHakEdisOrderHeader>);
+  },
+
   getPlans: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisPlan>> => {
     const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisPlan>>>(
       '/api/BilginogluHakEdis/plans/paged',
@@ -53,5 +73,10 @@ export const bilginogluHakEdisApi = {
       createPlannedBatches: true,
     });
     return extractData(response as ApiResponse<BilginogluHakEdisEvaluationResult>);
+  },
+
+  runBatchAction: async (batchId: number, action: string): Promise<BilginogluHakEdisBatch> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisBatch>>(`/api/BilginogluHakEdis/batches/${batchId}/${action}`, {});
+    return extractData(response as ApiResponse<BilginogluHakEdisBatch>);
   },
 };

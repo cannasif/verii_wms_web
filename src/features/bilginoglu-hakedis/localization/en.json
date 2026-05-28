@@ -1,0 +1,93 @@
+{
+  "title": "Bilginoglu Entitlement",
+  "breadcrumb": {
+    "operations": "Operations"
+  },
+  "hero": {
+    "eyebrow": "Entitlement planning pool",
+    "description": "Plans batches from Netsis shipping orders up to available warehouse balance without creating shipment orders immediately. Ready quantities are traceable through outbound transfer, return, and shipment stages."
+  },
+  "actions": {
+    "evaluate": "Evaluate",
+    "refresh": "Refresh",
+    "savePolicy": "Save Policy",
+    "createDat": "Create DAT",
+    "atHakEdis": "At Entitlement",
+    "createReturnDat": "Return DAT",
+    "markReady": "Ready to Ship",
+    "createShipment": "Create Shipment"
+  },
+  "metrics": {
+    "remaining": "Order Remaining",
+    "allocated": "Allocated",
+    "ready": "Ready to Ship",
+    "waiting": "Waiting"
+  },
+  "table": {
+    "title": "Entitlement Order Pool",
+    "search": "Search order, customer or stock...",
+    "order": "Order",
+    "customer": "Customer",
+    "transferAll": "Transfer All",
+    "orderDetail": "Order Detail",
+    "allocation": "Allocation",
+    "shipmentPolicy": "Shipment Policy",
+    "remaining": "Remaining",
+    "stock": "Balance",
+    "allocated": "Allocated",
+    "ready": "Ready",
+    "status": "Status",
+    "evaluatedAt": "Last Evaluation"
+  },
+  "detail": {
+    "title": "{{order}} entitlement flow",
+    "description": "Order lines, allocated batch quantities, and related DAT/shipment stages.",
+    "lines": "Order lines",
+    "stock": "Stock",
+    "noLines": "No lines found.",
+    "batch": "Batch",
+    "quantity": "Quantity",
+    "stage": "Stage",
+    "noBatches": "No batches yet.",
+    "steps": "Batch steps",
+    "chooseBatch": "Select a batch to see its steps."
+  },
+  "policy": {
+    "allocation": "Allocation policy",
+    "shipment": "Shipment policy",
+    "StockBalanceAuto": "Auto by available balance",
+    "FullOrderOnly": "Allocate full order only",
+    "ManualOnly": "Manual only",
+    "ManualShipment": "Manual shipment",
+    "AutoPartialShipment": "Auto ship ready quantities",
+    "AutoFullShipment": "Auto ship when fully ready"
+  },
+  "status": {
+    "Open": "Open",
+    "WaitingStock": "Waiting Stock",
+    "ReadyToTransfer": "Ready to Transfer",
+    "InHakEdisFlow": "In Entitlement Flow",
+    "ReadyForShipment": "Ready to Ship",
+    "ShipmentCreated": "Shipment Created",
+    "Completed": "Completed",
+    "Blocked": "Blocked",
+    "Cancelled": "Cancelled",
+    "Planned": "Planned",
+    "TransferToHakEdis": "Transfer to Entitlement",
+    "AtHakEdis": "At Entitlement",
+    "ReturnFromHakEdis": "Return from Entitlement",
+    "Pending": "Pending",
+    "Ready": "Ready",
+    "InProgress": "In Progress"
+  },
+  "loading": "Loading...",
+  "empty": "No records found.",
+  "messages": {
+    "evaluated": "Entitlement evaluated. Batches: {{count}}",
+    "evaluationFailed": "Entitlement evaluation could not be executed.",
+    "batchCompleted": "Entitlement batch action completed.",
+    "batchFailed": "Entitlement batch action could not be completed.",
+    "policyUpdated": "Entitlement order policy updated.",
+    "policyFailed": "Entitlement order policy could not be updated."
+  }
+}
