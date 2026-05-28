@@ -14,6 +14,10 @@ export interface BilginogluHakEdisOrderHeader {
   orderDetail?: string | null;
   totalOrderQty: number;
   totalRemainingQty: number;
+  totalRequiredQty: number;
+  totalWarehouseAvailableQty: number;
+  totalMissingQty: number;
+  canCreateNewBatchQty: number;
   totalAllocatedQty: number;
   totalAtHakEdisQty: number;
   totalReadyForShipmentQty: number;

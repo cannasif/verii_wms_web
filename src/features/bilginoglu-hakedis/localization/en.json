@@ -19,8 +19,10 @@
   },
   "metrics": {
     "remaining": "Order Remaining",
+    "available": "Available Stock",
     "allocated": "Allocated",
     "ready": "Ready to Ship",
+    "missing": "Missing",
     "waiting": "Waiting"
   },
   "table": {
@@ -34,10 +36,18 @@
     "shipmentPolicy": "Shipment Policy",
     "remaining": "Remaining",
     "stock": "Balance",
+    "canCreate": "Can Create",
     "allocated": "Allocated",
     "ready": "Ready",
     "status": "Status",
     "evaluatedAt": "Last Evaluation"
+  },
+  "need": {
+    "required": "Required",
+    "available": "Available",
+    "canCreate": "New Batch",
+    "allocated": "Allocated",
+    "missing": "Missing"
   },
   "detail": {
     "title": "{{order}} entitlement flow",

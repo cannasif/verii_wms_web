@@ -83,14 +83,31 @@ export function BilginogluHakEdisPage(): ReactElement {
     return orders.reduce(
       (acc, order) => {
         acc.remaining += order.totalRemainingQty;
+        acc.available += order.totalWarehouseAvailableQty;
         acc.allocated += order.totalAllocatedQty;
         acc.ready += order.totalReadyForShipmentQty;
+        acc.missing += order.totalMissingQty;
         acc.waiting += order.totalWaitingQty;
         return acc;
       },
-      { remaining: 0, allocated: 0, ready: 0, waiting: 0 },
+      { remaining: 0, available: 0, allocated: 0, ready: 0, missing: 0, waiting: 0 },
     );
   }, [orders]);
+  const selectedOrderNeed = useMemo(() => {
+    const required = plans.reduce((sum, plan) => sum + Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty), 0);
+    const available = plans.reduce((sum, plan) => sum + Math.max(0, plan.warehouseAvailableQty), 0);
+    const canCreate = plans.reduce((sum, plan) => {
+      const lineNeed = Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty);
+      return sum + Math.min(lineNeed, Math.max(0, plan.warehouseAvailableQty));
+    }, 0);
+
+    return {
+      required,
+      available,
+      canCreate,
+      missing: Math.max(0, required - canCreate),
+    };
+  }, [plans]);
 
   return (
     <div className="space-y-6">
@@ -128,9 +145,9 @@ export function BilginogluHakEdisPage(): ReactElement {
 
       <div className="grid gap-4 md:grid-cols-4">
         <MetricCard icon={<Boxes className="size-5" />} label={t('metrics.remaining')} value={formatQty(totals.remaining)} />
-        <MetricCard icon={<GitBranch className="size-5" />} label={t('metrics.allocated')} value={formatQty(totals.allocated)} />
+        <MetricCard icon={<GitBranch className="size-5" />} label={t('metrics.available')} value={formatQty(totals.available)} />
         <MetricCard icon={<PackageCheck className="size-5" />} label={t('metrics.ready')} value={formatQty(totals.ready)} />
-        <MetricCard icon={<Truck className="size-5" />} label={t('metrics.waiting')} value={formatQty(totals.waiting)} />
+        <MetricCard icon={<Truck className="size-5" />} label={t('metrics.missing')} value={formatQty(totals.missing)} />
       </div>
 
       <Card className="rounded-3xl border-slate-200 shadow-sm">
@@ -179,7 +196,10 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <TableCell>{order.allocationPolicy}</TableCell>
                       <TableCell>{order.shipmentPolicy}</TableCell>
                       <TableCell className="text-right">{formatQty(order.totalRemainingQty)}</TableCell>
-                      <TableCell className="text-right">-</TableCell>
+                      <TableCell className="text-right">
+                        <div className="font-semibold">{formatQty(order.totalWarehouseAvailableQty)}</div>
+                        <div className="text-xs text-muted-foreground">{t('table.canCreate')}: {formatQty(order.canCreateNewBatchQty)}</div>
+                      </TableCell>
                       <TableCell className="text-right">{formatQty(order.totalAllocatedQty)}</TableCell>
                       <TableCell className="text-right">{formatQty(order.totalReadyForShipmentQty)}</TableCell>
                       <TableCell>{statusBadge(order.status, statusLabel(order.status))}</TableCell>
@@ -205,40 +225,49 @@ export function BilginogluHakEdisPage(): ReactElement {
             <DialogDescription>{t('detail.description')}</DialogDescription>
           </DialogHeader>
           {selectedOrder ? (
-            <div className="flex flex-wrap items-end gap-3 rounded-2xl border p-3">
-              <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
-                <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
-                <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common:common.yes', { defaultValue: 'Evet' }) : t('common:common.no', { defaultValue: 'Hayır' })}</div>
+            <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-5">
+                <NeedCard label={t('need.required')} value={formatQty(selectedOrderNeed.required || selectedOrder.totalRequiredQty)} tone="slate" />
+                <NeedCard label={t('need.available')} value={formatQty(selectedOrderNeed.available || selectedOrder.totalWarehouseAvailableQty)} tone="cyan" />
+                <NeedCard label={t('need.canCreate')} value={formatQty(selectedOrderNeed.canCreate || selectedOrder.canCreateNewBatchQty)} tone="emerald" />
+                <NeedCard label={t('need.allocated')} value={formatQty(selectedOrder.totalAllocatedQty)} tone="blue" />
+                <NeedCard label={t('need.missing')} value={formatQty(selectedOrderNeed.missing || selectedOrder.totalMissingQty)} tone="amber" />
               </div>
-              <div className="min-w-48 rounded-2xl bg-slate-50 p-3">
-                <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
-                <div className="text-sm font-bold">{selectedOrder.orderDetail ?? '-'}</div>
+              <div className="flex flex-wrap items-end gap-3 rounded-2xl border p-3">
+                <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
+                  <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common:common.yes', { defaultValue: 'Evet' }) : t('common:common.no', { defaultValue: 'Hayır' })}</div>
+                </div>
+                <div className="min-w-48 rounded-2xl bg-slate-50 p-3">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
+                  <div className="text-sm font-bold">{selectedOrder.orderDetail ?? '-'}</div>
+                </div>
+                <div className="min-w-48 space-y-1">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('policy.allocation')}</div>
+                  <Select value={allocationPolicy} onValueChange={setAllocationPolicy} disabled={!permission.canUpdate}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="StockBalanceAuto">{t('policy.StockBalanceAuto')}</SelectItem>
+                      <SelectItem value="FullOrderOnly">{t('policy.FullOrderOnly')}</SelectItem>
+                      <SelectItem value="ManualOnly">{t('policy.ManualOnly')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="min-w-48 space-y-1">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('policy.shipment')}</div>
+                  <Select value={shipmentPolicy} onValueChange={setShipmentPolicy} disabled={!permission.canUpdate}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ManualShipment">{t('policy.ManualShipment')}</SelectItem>
+                      <SelectItem value="AutoPartialShipment">{t('policy.AutoPartialShipment')}</SelectItem>
+                      <SelectItem value="AutoFullShipment">{t('policy.AutoFullShipment')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button type="button" size="sm" disabled={!permission.canUpdate || policyMutation.isPending} onClick={() => policyMutation.mutate({ orderHeaderId: selectedOrder.id, input: { allocationPolicy, shipmentPolicy } })}>
+                  {t('actions.savePolicy')}
+                </Button>
               </div>
-              <div className="min-w-48 space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">{t('policy.allocation')}</div>
-                <Select value={allocationPolicy} onValueChange={setAllocationPolicy} disabled={!permission.canUpdate}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="StockBalanceAuto">{t('policy.StockBalanceAuto')}</SelectItem>
-                    <SelectItem value="FullOrderOnly">{t('policy.FullOrderOnly')}</SelectItem>
-                    <SelectItem value="ManualOnly">{t('policy.ManualOnly')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="min-w-48 space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">{t('policy.shipment')}</div>
-                <Select value={shipmentPolicy} onValueChange={setShipmentPolicy} disabled={!permission.canUpdate}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ManualShipment">{t('policy.ManualShipment')}</SelectItem>
-                    <SelectItem value="AutoPartialShipment">{t('policy.AutoPartialShipment')}</SelectItem>
-                    <SelectItem value="AutoFullShipment">{t('policy.AutoFullShipment')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="button" size="sm" disabled={!permission.canUpdate || policyMutation.isPending} onClick={() => policyMutation.mutate({ orderHeaderId: selectedOrder.id, input: { allocationPolicy, shipmentPolicy } })}>
-                {t('actions.savePolicy')}
-              </Button>
             </div>
           ) : null}
           <div className="rounded-2xl border p-3">
@@ -246,7 +275,7 @@ export function BilginogluHakEdisPage(): ReactElement {
             <div className="flex flex-wrap gap-2">
               {plans.map((plan) => (
                 <Button key={plan.id} type="button" size="sm" variant={selectedPlan?.id === plan.id ? 'default' : 'outline'} onClick={() => { setSelectedPlan(plan); setSelectedBatch(null); }}>
-                  {plan.stockCode ?? t('detail.stock')} / {formatQty(plan.remainingOrderQty)}
+                  {plan.stockCode ?? t('detail.stock')} / {t('need.required')}: {formatQty(Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty))} / {t('need.available')}: {formatQty(plan.warehouseAvailableQty)}
                 </Button>
               ))}
               {!plansQuery.isLoading && plans.length === 0 ? <span className="text-sm text-muted-foreground">{t('detail.noLines')}</span> : null}
@@ -333,6 +362,23 @@ function BatchActionButton({ batch, action, label, pending, allowed, run }: { ba
     <Button type="button" size="sm" variant="outline" className="rounded-xl" disabled={disabled} onClick={() => run(action)}>
       {label}
     </Button>
+  );
+}
+
+function NeedCard({ label, value, tone }: { label: string; value: string; tone: 'slate' | 'cyan' | 'emerald' | 'blue' | 'amber' }): ReactElement {
+  const toneClass = {
+    slate: 'bg-slate-50 text-slate-800',
+    cyan: 'bg-cyan-50 text-cyan-800',
+    emerald: 'bg-emerald-50 text-emerald-800',
+    blue: 'bg-blue-50 text-blue-800',
+    amber: 'bg-amber-50 text-amber-800',
+  }[tone];
+
+  return (
+    <div className={`rounded-2xl border border-white/70 p-3 shadow-sm ${toneClass}`}>
+      <div className="text-xs font-semibold uppercase tracking-wide opacity-70">{label}</div>
+      <div className="mt-1 text-xl font-black">{value}</div>
+    </div>
   );
 }
 

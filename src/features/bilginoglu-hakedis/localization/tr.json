@@ -19,8 +19,10 @@
   },
   "metrics": {
     "remaining": "Siparis Kalan",
+    "available": "Depoda Var",
     "allocated": "Hakedise Ayrilan",
     "ready": "Sevke Hazir",
+    "missing": "Eksik",
     "waiting": "Bekleyen"
   },
   "table": {
@@ -34,10 +36,18 @@
     "shipmentPolicy": "Sevk Politikasi",
     "remaining": "Kalan",
     "stock": "Bakiye",
+    "canCreate": "Acilabilir",
     "allocated": "Hakedise Ayrilan",
     "ready": "Sevke Hazir",
     "status": "Durum",
     "evaluatedAt": "Son Degerlendirme"
+  },
+  "need": {
+    "required": "Lazim",
+    "available": "Depoda Var",
+    "canCreate": "Yeni Batch",
+    "allocated": "Ayrilmis",
+    "missing": "Eksik"
   },
   "detail": {
     "title": "{{order}} hakedis akisi",
