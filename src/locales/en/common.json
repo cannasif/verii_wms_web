@@ -188,6 +188,7 @@
     "deactivate": "Deactivate",
     "clearForm": "Clear form",
     "date": "Date",
+    "updatedDate": "Updated Date",
     "warning": "Warning",
     "barcodeFormat": "Active barcode format: {{format}}",
     "selectStockFirst": "Select a stock first",

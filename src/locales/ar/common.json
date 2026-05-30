@@ -176,6 +176,7 @@
     "deactivate": "إلغاء التفعيل",
     "clearForm": "مسح النموذج",
     "date": "التاريخ",
+    "updatedDate": "تاريخ التحديث",
     "warning": "تحذير",
     "barcodeFormat": "تنسيق الباركود النشط: {{format}}",
     "selectStockFirst": "اختر مخزونًا أولاً",

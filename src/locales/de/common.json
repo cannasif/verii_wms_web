@@ -176,6 +176,7 @@
     "deactivate": "Deaktivieren",
     "clearForm": "Formular leeren",
     "date": "Datum",
+    "updatedDate": "Aktualisierungsdatum",
     "warning": "Warnung",
     "barcodeFormat": "Aktives Barcode-Format: {{format}}",
     "selectStockFirst": "Bitte zuerst einen Bestand auswählen",

@@ -2,6 +2,12 @@ import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
+import {
+  normalizeKkdEmployee,
+  normalizeKkdEmployeeDepartment,
+  normalizeKkdEmployeeRole,
+  normalizePagedResponse,
+} from './kkd-mappers';
 import type {
   AddKkdDistributionLineDto,
   CreateKkdDistributionDraftDto,
@@ -54,72 +60,96 @@ function extractData<T>(response: ApiResponse<T>): T {
   return response.data;
 }
 
+function extractVoidResult(response: ApiResponse<boolean> | unknown): void {
+  if (response == null || response === '') {
+    return;
+  }
+
+  if (typeof response !== 'object') {
+    return;
+  }
+
+  const envelope = response as ApiResponse<boolean>;
+  if (envelope.success === false) {
+    throw new Error(envelope.message || envelope.exceptionMessage || 'Request failed');
+  }
+}
+
 function extractPaged<T>(response: ApiResponse<PagedResponse<T>>): PagedResponse<T> {
   return extractData(response);
 }
 
 export const kkdApi = {
   getDepartments: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeDepartmentDto>> => {
-    const response = await api.post<ApiResponse<PagedResponse<KkdEmployeeDepartmentDto>>>(
+    const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployeeDepartment/paged',
       buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'DepartmentCode', sortDirection: 'asc' }),
       options,
     );
-    return extractPaged(response);
+    return normalizePagedResponse(extractData(response), normalizeKkdEmployeeDepartment);
   },
   createDepartment: async (dto: CreateKkdEmployeeDepartmentDto): Promise<KkdEmployeeDepartmentDto> => {
-    const response = await api.post<ApiResponse<KkdEmployeeDepartmentDto>>('/api/KkdEmployeeDepartment', dto);
-    return extractData(response);
+    const response = await api.post<ApiResponse<Record<string, unknown>>>('/api/KkdEmployeeDepartment', dto);
+    return normalizeKkdEmployeeDepartment(extractData(response));
   },
   updateDepartment: async (id: number, dto: UpdateKkdEmployeeDepartmentDto): Promise<KkdEmployeeDepartmentDto> => {
-    const response = await api.put<ApiResponse<KkdEmployeeDepartmentDto>>(`/api/KkdEmployeeDepartment/${id}`, dto);
-    return extractData(response);
+    const response = await api.put<ApiResponse<Record<string, unknown>>>(`/api/KkdEmployeeDepartment/${id}`, dto);
+    return normalizeKkdEmployeeDepartment(extractData(response));
   },
   deleteDepartment: async (id: number): Promise<void> => {
+    if (!id) {
+      throw new Error('Invalid department id');
+    }
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEmployeeDepartment/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
 
   getRoles: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeRoleDto>> => {
-    const response = await api.post<ApiResponse<PagedResponse<KkdEmployeeRoleDto>>>(
+    const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployeeRole/paged',
       buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'RoleCode', sortDirection: 'asc' }),
       options,
     );
-    return extractPaged(response);
+    return normalizePagedResponse(extractData(response), normalizeKkdEmployeeRole);
   },
   createRole: async (dto: CreateKkdEmployeeRoleDto): Promise<KkdEmployeeRoleDto> => {
-    const response = await api.post<ApiResponse<KkdEmployeeRoleDto>>('/api/KkdEmployeeRole', dto);
-    return extractData(response);
+    const response = await api.post<ApiResponse<Record<string, unknown>>>('/api/KkdEmployeeRole', dto);
+    return normalizeKkdEmployeeRole(extractData(response));
   },
   updateRole: async (id: number, dto: UpdateKkdEmployeeRoleDto): Promise<KkdEmployeeRoleDto> => {
-    const response = await api.put<ApiResponse<KkdEmployeeRoleDto>>(`/api/KkdEmployeeRole/${id}`, dto);
-    return extractData(response);
+    const response = await api.put<ApiResponse<Record<string, unknown>>>(`/api/KkdEmployeeRole/${id}`, dto);
+    return normalizeKkdEmployeeRole(extractData(response));
   },
   deleteRole: async (id: number): Promise<void> => {
+    if (!id) {
+      throw new Error('Invalid role id');
+    }
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEmployeeRole/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
 
   getEmployees: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeDto>> => {
-    const response = await api.post<ApiResponse<PagedResponse<KkdEmployeeDto>>>(
+    const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployee/paged',
       buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'EmployeeCode', sortDirection: 'asc' }),
       options,
     );
-    return extractPaged(response);
+    return normalizePagedResponse(extractData(response), normalizeKkdEmployee);
   },
   createEmployee: async (dto: CreateKkdEmployeeDto): Promise<KkdEmployeeDto> => {
-    const response = await api.post<ApiResponse<KkdEmployeeDto>>('/api/KkdEmployee', dto);
-    return extractData(response);
+    const response = await api.post<ApiResponse<Record<string, unknown>>>('/api/KkdEmployee', dto);
+    return normalizeKkdEmployee(extractData(response));
   },
   updateEmployee: async (id: number, dto: UpdateKkdEmployeeDto): Promise<KkdEmployeeDto> => {
-    const response = await api.put<ApiResponse<KkdEmployeeDto>>(`/api/KkdEmployee/${id}`, dto);
-    return extractData(response);
+    const response = await api.put<ApiResponse<Record<string, unknown>>>(`/api/KkdEmployee/${id}`, dto);
+    return normalizeKkdEmployee(extractData(response));
   },
   deleteEmployee: async (id: number): Promise<void> => {
+    if (!id) {
+      throw new Error('Invalid employee id');
+    }
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEmployee/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
   resolveEmployeeQr: async (dto: ResolveKkdEmployeeQrDto): Promise<KkdResolvedEmployeeDto> => {
     const response = await api.post<ApiResponse<KkdResolvedEmployeeDto>>('/api/KkdEmployee/qr-resolve', dto);
@@ -144,7 +174,7 @@ export const kkdApi = {
   },
   deleteEntitlementMatrixRow: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEntitlementMatrix/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
 
   getEntitlementOverrides: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementOverrideDto>> => {
@@ -165,7 +195,7 @@ export const kkdApi = {
   },
   deleteEntitlementOverride: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEntitlementOverride/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
 
   getAdditionalEntitlements: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementOverrideDto>> =>
@@ -195,7 +225,7 @@ export const kkdApi = {
   },
   deleteEntitlementPolicy: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdEntitlementPolicy/${id}`);
-    extractData(response);
+    extractVoidResult(response);
   },
 
   getStockGroups: async (subeKodu?: string): Promise<KkdStockGroupOption[]> => {
@@ -278,7 +308,7 @@ export const kkdApi = {
   },
   deleteDistributionLine: async (headerId: number, lineId: number): Promise<void> => {
     const response = await api.delete<ApiResponse<boolean>>(`/api/KkdDistribution/${headerId}/lines/${lineId}`);
-    extractData(response);
+    extractVoidResult(response);
   },
   completeDistribution: async (headerId: number): Promise<void> => {
     const response = await api.post<ApiResponse<boolean>>(`/api/KkdDistribution/${headerId}/complete`);
