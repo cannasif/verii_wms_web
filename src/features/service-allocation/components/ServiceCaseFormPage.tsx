@@ -221,7 +221,7 @@ export function ServiceCaseFormPage(): ReactElement {
 
       <Form {...form}>
         <form className="space-y-6" onSubmit={onSubmit}>
-          <fieldset disabled={isReadOnly} className={isReadOnly ? 'pointer-events-none opacity-75' : undefined}>
+          <fieldset disabled={isReadOnly} className={`space-y-6 ${isReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
             <ServiceCaseHeaderSection
               form={form}
               isEdit={isEdit}

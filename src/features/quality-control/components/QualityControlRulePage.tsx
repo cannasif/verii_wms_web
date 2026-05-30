@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { FormPageShell } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -138,7 +137,6 @@ export function QualityControlRulePage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
-      <Badge variant="secondary">{t('qualityControl.badge')}</Badge>
 
       <FormPageShell title={t('qualityControl.rules.title')} description={t('qualityControl.rules.description')}>
         <div className="space-y-6">

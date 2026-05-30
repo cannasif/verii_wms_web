@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -150,113 +149,112 @@ export function QualityControlRuleListPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle>{t('qualityControl.rules.list.pageTitle')}</CardTitle>
+      <FormPageShell
+        title={t('qualityControl.rules.list.pageTitle')}
+        actions={
           <Button type="button" onClick={() => navigate('/quality-control/rules')}>
             {t('common.add')}
           </Button>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>
-            pageKey={pageKey}
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={query.data?.data ?? []}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'scopeType':
-                  return row.scopeType === 'Stock' ? t('qualityControl.rules.scopeTypes.stock') : t('qualityControl.rules.scopeTypes.stockGroup');
-                case 'stock':
-                  return [row.stockCode, row.stockName].filter(Boolean).join(' - ') || '-';
-                case 'stockGroup':
-                  return [row.stockGroupCode, row.stockGroupName].filter(Boolean).join(' - ') || '-';
-                case 'inspectionMode':
-                  return t(`qualityControl.rules.inspectionModes.${row.inspectionMode.charAt(0).toLowerCase()}${row.inspectionMode.slice(1)}`);
-                case 'onFailAction':
-                  return t(`qualityControl.rules.failActions.${row.onFailAction.charAt(0).toLowerCase()}${row.onFailAction.slice(1)}`);
-                case 'autoQuarantine':
-                case 'requireLot':
-                case 'requireSerial':
-                case 'requireExpiry':
-                  return row[columnKey] ? t('common.yes') : t('common.no');
-                case 'isActive':
-                  return row.isActive ? t('ocrGoodsReceiptMatch.options.active') : t('ocrGoodsReceiptMatch.options.passive');
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={(columnKey) => {
-              if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
-            }}
-            renderSortIcon={renderSortIcon}
-            isLoading={query.isLoading}
-            isError={Boolean(query.error)}
-            errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
-            emptyText={t('qualityControl.rules.list.empty')}
-            showActionsColumn={orderedVisibleColumns.includes('actions')}
-            actionsHeaderLabel={t('common.actions')}
-            renderActionsCell={(row) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/quality-control/rules?id=${row.id}`)}>
-                  {t('common.update')}
-                </Button>
-                <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
-                  {t('common.delete')}
-                </Button>
-              </div>
-            )}
-            pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
-            totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
-            hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
-            hasNextPage={Boolean(query.data?.hasNextPage)}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey,
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'quality-control-rules',
-              exportColumns,
-              exportRows,
-              filterColumns,
-              defaultFilterColumn: 'stockCode',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              translationNamespace: 'common',
-              search: {
-                value: pagedGrid.searchInput,
-                onValueChange: pagedGrid.searchConfig.onValueChange,
-                onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: t('qualityControl.rules.list.searchPlaceholder'),
-              },
-              refresh: {
-                onRefresh: () => { void query.refetch(); },
-                isLoading: query.isLoading,
-                label: t('common.refresh'),
-              },
-            }}
-          />
-        </CardContent>
-      </Card>
+        }
+      >
+        <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>
+          pageKey={pageKey}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={query.data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => {
+            switch (columnKey) {
+              case 'scopeType':
+                return row.scopeType === 'Stock' ? t('qualityControl.rules.scopeTypes.stock') : t('qualityControl.rules.scopeTypes.stockGroup');
+              case 'stock':
+                return [row.stockCode, row.stockName].filter(Boolean).join(' - ') || '-';
+              case 'stockGroup':
+                return [row.stockGroupCode, row.stockGroupName].filter(Boolean).join(' - ') || '-';
+              case 'inspectionMode':
+                return t(`qualityControl.rules.inspectionModes.${row.inspectionMode.charAt(0).toLowerCase()}${row.inspectionMode.slice(1)}`);
+              case 'onFailAction':
+                return t(`qualityControl.rules.failActions.${row.onFailAction.charAt(0).toLowerCase()}${row.onFailAction.slice(1)}`);
+              case 'autoQuarantine':
+              case 'requireLot':
+              case 'requireSerial':
+              case 'requireExpiry':
+                return row[columnKey] ? t('common.yes') : t('common.no');
+              case 'isActive':
+                return row.isActive ? t('ocrGoodsReceiptMatch.options.active') : t('ocrGoodsReceiptMatch.options.passive');
+              default:
+                return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={query.isLoading}
+          isError={Boolean(query.error)}
+          errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
+          emptyText={t('qualityControl.rules.list.empty')}
+          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          actionsHeaderLabel={t('common.actions')}
+          renderActionsCell={(row) => (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/quality-control/rules?id=${row.id}`)}>
+                {t('common.update')}
+              </Button>
+              <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
+                {t('common.delete')}
+              </Button>
+            </div>
+          )}
+          pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+          totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
+          hasNextPage={Boolean(query.data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: 'quality-control-rules',
+            exportColumns,
+            exportRows,
+            filterColumns,
+            defaultFilterColumn: 'stockCode',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            translationNamespace: 'common',
+            search: {
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('qualityControl.rules.list.searchPlaceholder'),
+            },
+            refresh: {
+              onRefresh: () => { void query.refetch(); },
+              isLoading: query.isLoading,
+              label: t('common.refresh'),
+            },
+          }}
+        />
+      </FormPageShell>
     </div>
   );
 }

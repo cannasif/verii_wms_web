@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { FormPageShell } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -125,7 +124,6 @@ export function QualityControlSettingsPage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
-      <Badge variant="secondary">{t('qualityControl.badge')}</Badge>
 
       <FormPageShell
         title={t('qualityControl.settings.title')}

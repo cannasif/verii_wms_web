@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -340,104 +341,108 @@ export function TransferChainListPage(): ReactElement {
         </div>
       </div>
 
-      <PagedDataGrid<TransferChainPagedRowDto, ChainColumnKey>
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={data?.data ?? []}
-        rowKey={(row) => row.id}
-        renderCell={(item, columnKey) => {
-          switch (columnKey) {
-            case 'code':
-              return <span className="font-mono text-xs font-bold text-cyan-700 dark:text-cyan-300">{item.code}</span>;
-            case 'name':
-              return <button type="button" className="text-left font-semibold text-slate-900 hover:text-cyan-700 dark:text-white" onClick={() => openDetail(item.id)}>{item.name}</button>;
-            case 'status':
-              return statusBadge(item.status, labelStatus(item.status));
-            case 'chainType':
-              return <Badge variant="outline">{item.chainType}</Badge>;
-            case 'sourceDocument':
-              return item.sourceDocumentType ? <span className="text-sm">{item.sourceDocumentType} {item.sourceDocumentId ? `#${item.sourceDocumentId}` : ''}</span> : '-';
-            case 'progress':
-              return <span className="font-semibold">{item.completedStepCount}/{item.stepCount}</span>;
-            case 'createdDate':
-              return formatDate(item.createdDate, locale);
-            case 'actions':
-              return (
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => openDetail(item.id)}>{t('table.detail')}</Button>
-                  {permission.canUpdate ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl"
-                      onClick={async () => {
-                        const chain = await transferChainApi.getById(item.id);
-                        setEditingItem(chain);
-                        setFormOpen(true);
-                      }}
-                    >
-                      {t('common:edit')}
-                    </Button>
-                  ) : null}
-                  {permission.canDelete ? (
-                    <Button size="sm" variant="outline" className="rounded-xl text-rose-600" onClick={() => setDeleteItem(item)}>{t('common:delete')}</Button>
-                  ) : null}
-                </div>
-              );
-            default:
-              return null;
-          }
-        }}
-        sortBy={pagedGrid.sortBy}
-        sortDirection={pagedGrid.sortDirection}
-        onSort={pagedGrid.handleSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={!!error}
-        errorText={error instanceof Error ? error.message : undefined}
-        emptyText={t('common:noData')}
-        pageSize={data?.pageSize ?? pagedGrid.pageSize}
-        pageSizeOptions={pagedGrid.pageSizeOptions}
-        onPageSizeChange={pagedGrid.handlePageSizeChange}
-        pageNumber={pagedGrid.getDisplayPageNumber(data)}
-        totalPages={Math.max(data?.totalPages ?? 1, 1)}
-        hasPreviousPage={Boolean(data?.hasPreviousPage)}
-        hasNextPage={Boolean(data?.hasNextPage)}
-        onPreviousPage={pagedGrid.goToPreviousPage}
-        onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common:previous')}
-        nextLabel={t('common:next')}
-        paginationInfoText={paginationInfoText}
-        actionBar={{
-          pageKey,
-          userId,
-          columns: columns.map(({ key, label }) => ({ key, label })),
-          visibleColumns,
-          columnOrder,
-          onVisibleColumnsChange: setVisibleColumns,
-          onColumnOrderChange: setColumnOrder,
-          exportFileName: 'transfer-chain',
-          exportColumns,
-          exportRows,
-          filterColumns: advancedFilterColumns,
-          defaultFilterColumn: 'Code',
-          draftFilterRows: pagedGrid.draftFilterRows,
-          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-          filterLogic: pagedGrid.filterLogic,
-          onFilterLogicChange: pagedGrid.setFilterLogic,
-          onApplyFilters: pagedGrid.applyAdvancedFilters,
-          onClearFilters: pagedGrid.clearAdvancedFilters,
-          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-          search: {
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('common:search'),
-          },
-          refresh: { onRefresh: handleRefresh, isLoading, label: t('common:refresh') },
-          leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
-        }}
-      />
+      <Card>
+        <CardContent className="pt-6">
+          <PagedDataGrid<TransferChainPagedRowDto, ChainColumnKey>
+            columns={columns}
+            visibleColumnKeys={visibleColumnKeys}
+            rows={data?.data ?? []}
+            rowKey={(row) => row.id}
+            renderCell={(item, columnKey) => {
+              switch (columnKey) {
+                case 'code':
+                  return <span className="font-mono text-xs font-bold text-cyan-700 dark:text-cyan-300">{item.code}</span>;
+                case 'name':
+                  return <button type="button" className="text-left font-semibold text-slate-900 hover:text-cyan-700 dark:text-white" onClick={() => openDetail(item.id)}>{item.name}</button>;
+                case 'status':
+                  return statusBadge(item.status, labelStatus(item.status));
+                case 'chainType':
+                  return <Badge variant="outline">{item.chainType}</Badge>;
+                case 'sourceDocument':
+                  return item.sourceDocumentType ? <span className="text-sm">{item.sourceDocumentType} {item.sourceDocumentId ? `#${item.sourceDocumentId}` : ''}</span> : '-';
+                case 'progress':
+                  return <span className="font-semibold">{item.completedStepCount}/{item.stepCount}</span>;
+                case 'createdDate':
+                  return formatDate(item.createdDate, locale);
+                case 'actions':
+                  return (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button size="sm" variant="outline" className="rounded-xl" onClick={() => openDetail(item.id)}>{t('table.detail')}</Button>
+                      {permission.canUpdate ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-xl"
+                          onClick={async () => {
+                            const chain = await transferChainApi.getById(item.id);
+                            setEditingItem(chain);
+                            setFormOpen(true);
+                          }}
+                        >
+                          {t('common:edit')}
+                        </Button>
+                      ) : null}
+                      {permission.canDelete ? (
+                        <Button size="sm" variant="outline" className="rounded-xl text-rose-600" onClick={() => setDeleteItem(item)}>{t('common:delete')}</Button>
+                      ) : null}
+                    </div>
+                  );
+                default:
+                  return null;
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={pagedGrid.handleSort}
+            renderSortIcon={renderSortIcon}
+            isLoading={isLoading}
+            isError={!!error}
+            errorText={error instanceof Error ? error.message : undefined}
+            emptyText={t('common:noData')}
+            pageSize={data?.pageSize ?? pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(data)}
+            totalPages={Math.max(data?.totalPages ?? 1, 1)}
+            hasPreviousPage={Boolean(data?.hasPreviousPage)}
+            hasNextPage={Boolean(data?.hasNextPage)}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common:previous')}
+            nextLabel={t('common:next')}
+            paginationInfoText={paginationInfoText}
+            actionBar={{
+              pageKey,
+              userId,
+              columns: columns.map(({ key, label }) => ({ key, label })),
+              visibleColumns,
+              columnOrder,
+              onVisibleColumnsChange: setVisibleColumns,
+              onColumnOrderChange: setColumnOrder,
+              exportFileName: 'transfer-chain',
+              exportColumns,
+              exportRows,
+              filterColumns: advancedFilterColumns,
+              defaultFilterColumn: 'Code',
+              draftFilterRows: pagedGrid.draftFilterRows,
+              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+              filterLogic: pagedGrid.filterLogic,
+              onFilterLogicChange: pagedGrid.setFilterLogic,
+              onApplyFilters: pagedGrid.applyAdvancedFilters,
+              onClearFilters: pagedGrid.clearAdvancedFilters,
+              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+              search: {
+                value: pagedGrid.searchInput,
+                onValueChange: pagedGrid.searchConfig.onValueChange,
+                onSearchChange: pagedGrid.searchConfig.onSearchChange,
+                placeholder: t('common:search'),
+              },
+              refresh: { onRefresh: handleRefresh, isLoading, label: t('common:refresh') },
+              leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+            }}
+          />
+        </CardContent>
+      </Card>
 
       <Dialog open={formOpen} onOpenChange={(next) => { setFormOpen(next); if (!next) setEditingItem(null); }}>
         <DialogContent className="max-w-2xl">

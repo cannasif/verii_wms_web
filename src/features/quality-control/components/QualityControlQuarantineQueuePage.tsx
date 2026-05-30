@@ -3,19 +3,27 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { qualityControlApi } from '../api/quality-control.api';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import type { InventoryQualityInspectionDto, InventoryQualityQuarantinePagedRowDto } from '../types/quality-control.types';
 
 type ColumnKey = 'documentType' | 'documentNumber' | 'warehouse' | 'supplier' | 'inspectionDate' | 'lineCount' | 'totalQuantity' | 'serialTrackedLineCount' | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'documentType', type: 'string', labelKey: 'qualityControl.quarantine.columns.documentType' },
+  { value: 'documentNumber', type: 'string', labelKey: 'qualityControl.quarantine.columns.documentNumber' },
+  { value: 'warehouseCode', type: 'string', labelKey: 'qualityControl.quarantine.columns.warehouse' },
+  { value: 'supplierCode', type: 'string', labelKey: 'qualityControl.quarantine.columns.supplier' },
+  { value: 'inspectionDate', type: 'date', labelKey: 'qualityControl.quarantine.columns.inspectionDate' },
+];
 
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
@@ -177,104 +185,104 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
 
   return (
     <div className="crm-page space-y-6">
-      <div className="space-y-2">
-        <Badge variant="secondary">{t('qualityControl.badge')}</Badge>
-        <h1 className="text-2xl font-semibold">{t('qualityControl.quarantine.title')}</h1>
-        <p className="text-sm text-muted-foreground">{t('qualityControl.quarantine.description')}</p>
-      </div>
-
-      <PagedDataGrid<InventoryQualityQuarantinePagedRowDto, ColumnKey>
-        pageKey={pageKey}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={query.data?.data ?? []}
-        rowKey={(row) => row.id}
-        renderCell={(row, columnKey) => {
-          switch (columnKey) {
-            case 'documentType':
-              return row.documentType;
-            case 'documentNumber':
-              return row.documentNumber || '-';
-            case 'warehouse':
-              return [row.warehouseCode, row.warehouseName].filter(Boolean).join(' - ');
-            case 'supplier':
-              return [row.supplierCode, row.supplierName].filter(Boolean).join(' - ') || '-';
-            case 'inspectionDate':
-              return formatDateTime(row.inspectionDate);
-            case 'lineCount':
-              return row.lineCount;
-            case 'totalQuantity':
-              return formatNumber(row.totalQuantity);
-            case 'serialTrackedLineCount':
-              return row.serialTrackedLineCount;
-            default:
-              return null;
-          }
-        }}
-        sortBy={pagedGrid.sortBy}
-        sortDirection={pagedGrid.sortDirection}
-        onSort={(columnKey) => {
-          if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
-        }}
-        renderSortIcon={renderSortIcon}
-        isLoading={query.isLoading}
-        isError={Boolean(query.error)}
-        errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
-        emptyText={t('qualityControl.quarantine.empty')}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
-        actionsHeaderLabel={t('common.actions')}
-        renderActionsCell={(row) => (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => openDialog(row.id)}>
-              {t('qualityControl.quarantine.review')}
-            </Button>
-          </div>
-        )}
-        pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
-        pageSizeOptions={pagedGrid.pageSizeOptions}
-        onPageSizeChange={pagedGrid.handlePageSizeChange}
-        pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
-        totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
-        hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
-        hasNextPage={Boolean(query.data?.hasNextPage)}
-        onPreviousPage={pagedGrid.goToPreviousPage}
-        onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common.previous')}
-        nextLabel={t('common.next')}
-        paginationInfoText={paginationInfoText}
-        actionBar={{
-          pageKey,
-          userId,
-          columns: columns.map(({ key, label }) => ({ key, label })),
-          visibleColumns,
-          columnOrder,
-          onVisibleColumnsChange: setVisibleColumns,
-          onColumnOrderChange: setColumnOrder,
-          exportFileName: 'quality-control-quarantine-queue',
-          exportColumns,
-          exportRows,
-          filterColumns: [],
-          defaultFilterColumn: '',
-          draftFilterRows: [],
-          onDraftFilterRowsChange: () => undefined,
-          filterLogic: 'and',
-          onFilterLogicChange: () => undefined,
-          onApplyFilters: () => undefined,
-          onClearFilters: () => undefined,
-          appliedFilterCount: 0,
-          search: {
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('qualityControl.quarantine.searchPlaceholder'),
-          },
-          refresh: {
-            onRefresh: () => { void query.refetch(); },
-            isLoading: query.isLoading,
-            label: t('common.refresh'),
-          },
-        }}
-      />
+      <FormPageShell
+        title={t('qualityControl.quarantine.title')}
+        description={t('qualityControl.quarantine.description')}
+      >
+        <PagedDataGrid<InventoryQualityQuarantinePagedRowDto, ColumnKey>
+          pageKey={pageKey}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={query.data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => {
+            switch (columnKey) {
+              case 'documentType':
+                return row.documentType;
+              case 'documentNumber':
+                return row.documentNumber || '-';
+              case 'warehouse':
+                return [row.warehouseCode, row.warehouseName].filter(Boolean).join(' - ');
+              case 'supplier':
+                return [row.supplierCode, row.supplierName].filter(Boolean).join(' - ') || '-';
+              case 'inspectionDate':
+                return formatDateTime(row.inspectionDate);
+              case 'lineCount':
+                return row.lineCount;
+              case 'totalQuantity':
+                return formatNumber(row.totalQuantity);
+              case 'serialTrackedLineCount':
+                return row.serialTrackedLineCount;
+              default:
+                return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={query.isLoading}
+          isError={Boolean(query.error)}
+          errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
+          emptyText={t('qualityControl.quarantine.empty')}
+          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          actionsHeaderLabel={t('common.actions')}
+          renderActionsCell={(row) => (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button type="button" size="sm" variant="outline" onClick={() => openDialog(row.id)}>
+                {t('qualityControl.quarantine.review')}
+              </Button>
+            </div>
+          )}
+          pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+          totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
+          hasNextPage={Boolean(query.data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: 'quality-control-quarantine-queue',
+            exportColumns,
+            exportRows,
+            filterColumns,
+            defaultFilterColumn: 'documentNumber',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            translationNamespace: 'common',
+            search: {
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('qualityControl.quarantine.searchPlaceholder'),
+            },
+            refresh: {
+              onRefresh: () => { void query.refetch(); },
+              isLoading: query.isLoading,
+              label: t('common.refresh'),
+            },
+          }}
+        />
+      </FormPageShell>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl">
