@@ -176,6 +176,7 @@
     "deactivate": "Desactivar",
     "clearForm": "Limpiar formulario",
     "date": "Fecha",
+    "updatedDate": "Fecha de actualización",
     "warning": "Advertencia",
     "barcodeFormat": "Formato de código de barras activo: {{format}}",
     "selectStockFirst": "Seleccione primero un stock",

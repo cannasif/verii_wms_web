@@ -188,6 +188,7 @@
     "deactivate": "Pasife Al",
     "clearForm": "Formu temizle",
     "date": "Tarih",
+    "updatedDate": "Güncellenme Tarihi",
     "warning": "Uyarı",
     "barcodeFormat": "Aktif barkod formatı: {{format}}",
     "selectStockFirst": "Önce bir stok seçin",

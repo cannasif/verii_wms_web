@@ -152,6 +152,16 @@ api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
   config.headers['X-Language'] = getLanguageForHttpHeader();
 
+  const method = config.method?.toLowerCase();
+  const hasBody = config.data !== undefined && config.data !== null && config.data !== '';
+  if ((method === 'get' || method === 'delete' || method === 'head') && !hasBody) {
+    if (typeof config.headers.delete === 'function') {
+      config.headers.delete('Content-Type');
+    } else if (config.headers && typeof config.headers === 'object') {
+      delete config.headers['Content-Type'];
+    }
+  }
+
   const skipAuth = config.skipAuth === true;
   if (!skipAuth) {
     const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
@@ -171,6 +181,19 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
+    if (response.status === 204 || response.data === '' || response.data == null) {
+      return {
+        success: true,
+        message: '',
+        exceptionMessage: '',
+        data: true,
+        errors: [],
+        timestamp: '',
+        statusCode: response.status,
+        className: '',
+      };
+    }
+
     response.data = normalizeApiEnvelope(response.data);
     return response.data;
   },
