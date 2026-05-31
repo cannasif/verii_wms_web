@@ -1,0 +1,237 @@
+[
+  {
+    "key": "ocrGoodsReceiptMatch.badge",
+    "en": "OCR Match 1",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.pageTitle",
+    "en": "OCR Customer Stock Match",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.title",
+    "en": "OCR Customer Stock Match Form",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.description",
+    "en": "Match the stock code used by the customer on the dispatch note with our stock card. OCR lines will be converted through this definition later.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.guidance.title",
+    "en": "Business Rule",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.guidance.line1",
+    "en": "The same customer stock code can only be defined once for the same customer.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.guidance.line2",
+    "en": "This screen does not perform OCR; it only manages the mapping between customer stock codes and our stock cards.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerPlaceholder",
+    "en": "Select customer",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerStockCode",
+    "en": "Customer Stock Code",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerStockCodePlaceholder",
+    "en": "The stock code used by the customer on the dispatch note",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerStockName",
+    "en": "Customer Stock Name",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerStockNamePlaceholder",
+    "en": "The stock name on the customer's document",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerBarcode",
+    "en": "Customer Barcode",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerBarcodePlaceholder",
+    "en": "Customer barcode if available",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.ourStock",
+    "en": "Our Stock Card",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.ourStockPlaceholder",
+    "en": "Select our stock card",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.unit",
+    "en": "Unit",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.unitPlaceholder",
+    "en": "Unit of measure",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.isActive",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.description",
+    "en": "Description",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.descriptionPlaceholder",
+    "en": "Operational note or additional description",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.customerLookup.title",
+    "en": "Select Customer",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.customerLookup.description",
+    "en": "Select the customer for which the mapping will be created.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.customerLookup.searchPlaceholder",
+    "en": "Search by customer code or name",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.stockLookup.title",
+    "en": "Select Our Stock Card",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.stockLookup.description",
+    "en": "Select the WMS/ERP stock card that matches the customer's stock code.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.stockLookup.searchPlaceholder",
+    "en": "Search by stock code or name",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.options.active",
+    "en": "Active",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.options.passive",
+    "en": "Passive",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.customerRequired",
+    "en": "Customer selection is required",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.customerStockCodeRequired",
+    "en": "Customer stock code is required",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.ourStockRequired",
+    "en": "Our stock card selection is required",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.created",
+    "en": "OCR customer stock match record created",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.updated",
+    "en": "OCR customer stock match record updated",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.pageTitle",
+    "en": "OCR Match Records",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.empty",
+    "en": "No OCR customer stock match records found.",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.searchPlaceholder",
+    "en": "Search by customer, customer stock code, or our stock code",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.customer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.customerStockCode",
+    "en": "Customer Stock Code",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.customerStockName",
+    "en": "Customer Stock Name",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.customerBarcode",
+    "en": "Customer Barcode",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.ourStockCode",
+    "en": "Our Stock Code",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.ourStockName",
+    "en": "Our Stock Name",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.unit",
+    "en": "Unit",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.isActive",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.description",
+    "en": "Description",
+    "current": null
+  }
+]

@@ -1,0 +1,242 @@
+[
+  {
+    "key": "warehouseBalance.stock.columns.warehouse",
+    "en": "Warehouse",
+    "current": "Warehouse"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.yapKod",
+    "en": "YapKod",
+    "current": "YapKod"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.quantity",
+    "en": "Quantity",
+    "current": "Quantity"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.available",
+    "en": "Available",
+    "current": "Available"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.serialCount",
+    "en": "Serial count",
+    "current": "Serial count"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.shelfCount",
+    "en": "Shelf count",
+    "current": "Shelf count"
+  },
+  {
+    "key": "warehouseBalance.stock.columns.updatedAt",
+    "en": "Updated at",
+    "current": "Updated at"
+  },
+  {
+    "key": "warehouseBalance.stock.rebuildAll",
+    "en": "Rebuild all summaries",
+    "current": "Rebuild all summaries"
+  },
+  {
+    "key": "warehouseBalance.stock.cards.rows",
+    "en": "Rows",
+    "current": "Rows"
+  },
+  {
+    "key": "warehouseBalance.stock.cards.quantity",
+    "en": "Total quantity",
+    "current": "Total quantity"
+  },
+  {
+    "key": "warehouseBalance.stock.cards.serials",
+    "en": "Visible serial count",
+    "current": "Visible serial count"
+  },
+  {
+    "key": "warehouseBalance.stock.empty",
+    "en": "No warehouse stock balance found",
+    "current": "No warehouse stock balance found"
+  },
+  {
+    "key": "warehouseBalance.stock.searchPlaceholder",
+    "en": "Search warehouse, stock or yapkod...",
+    "current": "Search warehouse, stock or yapkod..."
+  },
+  {
+    "key": "warehouseBalance.stock.rebuildWarehouse",
+    "en": "Rebuild warehouse",
+    "current": "Rebuild warehouse"
+  },
+  {
+    "key": "warehouseBalance.stock.rebuildStock",
+    "en": "Rebuild stock",
+    "current": "Rebuild stock"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.issueType",
+    "en": "Issue type",
+    "current": "Issue type"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.warehouse",
+    "en": "Warehouse",
+    "current": "Warehouse"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.yapKod",
+    "en": "YapKod",
+    "current": "YapKod"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.quantityDelta",
+    "en": "Quantity delta",
+    "current": "Quantity delta"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.availableDelta",
+    "en": "Available delta",
+    "current": "Available delta"
+  },
+  {
+    "key": "warehouseBalance.consistency.columns.serialDelta",
+    "en": "Serial delta",
+    "current": "Serial delta"
+  },
+  {
+    "key": "warehouseBalance.consistency.issueTypes.missingSummary",
+    "en": "Missing summary",
+    "current": "Missing summary"
+  },
+  {
+    "key": "warehouseBalance.consistency.issueTypes.extraSummary",
+    "en": "Extra summary",
+    "current": "Extra summary"
+  },
+  {
+    "key": "warehouseBalance.consistency.issueTypes.metricMismatch",
+    "en": "Metric mismatch",
+    "current": "Metric mismatch"
+  },
+  {
+    "key": "warehouseBalance.consistency.title",
+    "en": "Balance consistency check",
+    "current": "Balance consistency check"
+  },
+  {
+    "key": "warehouseBalance.consistency.description",
+    "en": "Track differences between detail and summary balances.",
+    "current": "Track differences between detail and summary balances."
+  },
+  {
+    "key": "warehouseBalance.consistency.cards.summaryRows",
+    "en": "Summary rows",
+    "current": "Summary rows"
+  },
+  {
+    "key": "warehouseBalance.consistency.cards.detailGroups",
+    "en": "Detail groups",
+    "current": "Detail groups"
+  },
+  {
+    "key": "warehouseBalance.consistency.cards.mismatch",
+    "en": "Total mismatch",
+    "current": "Total mismatch"
+  },
+  {
+    "key": "warehouseBalance.consistency.cards.missingSummary",
+    "en": "Missing summary",
+    "current": "Missing summary"
+  },
+  {
+    "key": "warehouseBalance.consistency.cards.extraSummary",
+    "en": "Extra summary",
+    "current": "Extra summary"
+  },
+  {
+    "key": "warehouseBalance.consistency.empty",
+    "en": "No inconsistency found",
+    "current": "No inconsistency found"
+  },
+  {
+    "key": "warehouseBalance.consistency.searchPlaceholder",
+    "en": "Search warehouse, stock, yapkod or issue type...",
+    "current": "Search warehouse, stock, yapkod or issue type..."
+  },
+  {
+    "key": "warehouseBalance.serial.columns.warehouse",
+    "en": "Warehouse",
+    "current": "Warehouse"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.shelf",
+    "en": "Shelf / Cell",
+    "current": "Shelf / Cell"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.yapKod",
+    "en": "YapKod",
+    "current": "YapKod"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.serials",
+    "en": "Serials",
+    "current": "Serials"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.quantity",
+    "en": "Quantity",
+    "current": "Quantity"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.status",
+    "en": "Stock status",
+    "current": "Stock status"
+  },
+  {
+    "key": "warehouseBalance.serial.columns.transactionDate",
+    "en": "Last transaction",
+    "current": "Last transaction"
+  },
+  {
+    "key": "warehouseBalance.serial.cards.rows",
+    "en": "Rows",
+    "current": "Rows"
+  },
+  {
+    "key": "warehouseBalance.serial.cards.quantity",
+    "en": "Total quantity",
+    "current": "Total quantity"
+  },
+  {
+    "key": "warehouseBalance.serial.cards.filtered",
+    "en": "Visible rows",
+    "current": "Visible rows"
+  },
+  {
+    "key": "warehouseBalance.serial.empty",
+    "en": "No warehouse serial balance found",
+    "current": "No warehouse serial balance found"
+  },
+  {
+    "key": "warehouseBalance.serial.searchPlaceholder",
+    "en": "Search warehouse, shelf, stock or serial...",
+    "current": "Search warehouse, shelf, stock or serial..."
+  }
+]

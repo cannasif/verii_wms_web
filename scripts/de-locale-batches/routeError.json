@@ -1,0 +1,22 @@
+[
+  {
+    "key": "routeError.title",
+    "en": "An unexpected error occurred",
+    "current": "An unexpected error occurred"
+  },
+  {
+    "key": "routeError.description",
+    "en": "The app may have moved to a newer version. Refresh the page and try again.",
+    "current": "The app may have moved to a newer version. Refresh the page and try again."
+  },
+  {
+    "key": "routeError.refresh",
+    "en": "Refresh page",
+    "current": "Refresh page"
+  },
+  {
+    "key": "routeError.home",
+    "en": "Home",
+    "current": "Home"
+  }
+]

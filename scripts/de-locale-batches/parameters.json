@@ -1,0 +1,197 @@
+[
+  {
+    "key": "parameters.list.title",
+    "en": "Parameter List",
+    "current": "Parameterliste"
+  },
+  {
+    "key": "parameters.list.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "parameters.list.requireAllOrderItemsCollected",
+    "en": "Require All Order Items Collected",
+    "current": "Alle Bestellpositionen müssen gesammelt werden"
+  },
+  {
+    "key": "parameters.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "parameters.list.updatedDate",
+    "en": "Updated Date",
+    "current": "Aktualisierungsdatum"
+  },
+  {
+    "key": "parameters.list.addNew",
+    "en": "Add New",
+    "current": "Neu hinzufügen"
+  },
+  {
+    "key": "parameters.form.allowMoreQuantityDescription",
+    "en": "Allows entering more quantity than the order. When this option is active, quantities more than the order quantity can be entered.",
+    "current": "Eingabe einer höheren Menge als die Bestellung erlauben"
+  },
+  {
+    "key": "parameters.form.requireAllOrderItemsCollected",
+    "en": "Require All Order Items Collected",
+    "current": "Alle Bestellpositionen müssen gesammelt werden"
+  },
+  {
+    "key": "parameters.form.requireAllOrderItemsCollectedDescription",
+    "en": "When this parameter is active, all items in the order must be collected.",
+    "current": "Wenn dieser Parameter aktiv ist, müssen alle Positionen in der Bestellung gesammelt werden."
+  },
+  {
+    "key": "parameters.form.editDescription",
+    "en": "You can edit existing parameter settings",
+    "current": "Sie können die bestehenden Parametereinstellungen bearbeiten"
+  },
+  {
+    "key": "parameters.form.createDescription",
+    "en": "You can create new parameter settings",
+    "current": "Sie können neue Parametereinstellungen erstellen"
+  },
+  {
+    "key": "parameters.delete.title",
+    "en": "Delete Parameter",
+    "current": "Parameter löschen"
+  },
+  {
+    "key": "parameters.delete.description",
+    "en": "Are you sure you want to delete this parameter?",
+    "current": "Möchten Sie diesen Parameter wirklich löschen?"
+  },
+  {
+    "key": "parameters.delete.success",
+    "en": "Parameter deleted successfully",
+    "current": "Parameter erfolgreich gelöscht"
+  },
+  {
+    "key": "parameters.delete.error",
+    "en": "An error occurred while deleting parameter",
+    "current": "Fehler beim Löschen des Parameters"
+  },
+  {
+    "key": "parameters.gr.title",
+    "en": "Goods Receipt Parameters",
+    "current": "Wareneingangsparameter"
+  },
+  {
+    "key": "parameters.gr.createTitle",
+    "en": "Goods Receipt Parameters - Add New",
+    "current": "Wareneingangsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.wt.title",
+    "en": "Warehouse Transfer Parameters",
+    "current": "Lagerübertragungsparameter"
+  },
+  {
+    "key": "parameters.wt.createTitle",
+    "en": "Warehouse Transfer Parameters - Add New",
+    "current": "Lagerübertragungsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.wt.editTitle",
+    "en": "Warehouse Transfer Parameters - Edit",
+    "current": "Lagerübertragungsparameter - Bearbeiten"
+  },
+  {
+    "key": "parameters.wo.title",
+    "en": "Warehouse Outbound Parameters",
+    "current": "Lagerausgangsparameter"
+  },
+  {
+    "key": "parameters.wo.createTitle",
+    "en": "Warehouse Outbound Parameters - Add New",
+    "current": "Lagerausgangsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.wi.title",
+    "en": "Warehouse Inbound Parameters",
+    "current": "Lagereingangsparameter"
+  },
+  {
+    "key": "parameters.wi.createTitle",
+    "en": "Warehouse Inbound Parameters - Add New",
+    "current": "Lagereingangsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.sh.title",
+    "en": "Shipment Parameters",
+    "current": "Versandparameter"
+  },
+  {
+    "key": "parameters.sh.createTitle",
+    "en": "Shipment Parameters - Add New",
+    "current": "Versandparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.srt.title",
+    "en": "Subcontracting Receipt Transfer Parameters",
+    "current": "Subunternehmer-Eingangsparameter"
+  },
+  {
+    "key": "parameters.srt.createTitle",
+    "en": "Subcontracting Receipt Transfer Parameters - Add New",
+    "current": "Subunternehmer-Eingangsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.sit.title",
+    "en": "Subcontracting Issue Transfer Parameters",
+    "current": "Subunternehmer-Ausgangsparameter"
+  },
+  {
+    "key": "parameters.sit.createTitle",
+    "en": "Subcontracting Issue Transfer Parameters - Add New",
+    "current": "Subunternehmer-Ausgangsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.pt.title",
+    "en": "Production Transfer Parameters",
+    "current": "Produktionsübertragungsparameter"
+  },
+  {
+    "key": "parameters.pt.createTitle",
+    "en": "Production Transfer Parameters - Add New",
+    "current": "Produktionsübertragungsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.pt.editTitle",
+    "en": "Production Transfer Parameters - Edit",
+    "current": "Produktionsübertragungsparameter - Bearbeiten"
+  },
+  {
+    "key": "parameters.pr.title",
+    "en": "Production Parameters",
+    "current": "Produktionsparameter"
+  },
+  {
+    "key": "parameters.pr.createTitle",
+    "en": "Production Parameters - Add New",
+    "current": "Produktionsparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.ic.title",
+    "en": "Inventory Count Parameters",
+    "current": "Inventurparameter"
+  },
+  {
+    "key": "parameters.ic.createTitle",
+    "en": "Inventory Count Parameters - Add New",
+    "current": "Inventurparameter - Neu hinzufügen"
+  },
+  {
+    "key": "parameters.p.title",
+    "en": "Package Parameters",
+    "current": "Paketparameter"
+  },
+  {
+    "key": "parameters.p.createTitle",
+    "en": "Package Parameters - Add New",
+    "current": "Paketparameter - Neu hinzufügen"
+  }
+]

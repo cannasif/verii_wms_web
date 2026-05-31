@@ -1,0 +1,120 @@
+{
+  "title": "Bilginoglu Abschlagszahlung",
+  "breadcrumb": {
+    "operations": "Operationen"
+  },
+  "hero": {
+    "eyebrow": "Abschlagszahlungs-Planungspool",
+    "description": "Plant Abschlagszahlungs-Batches aus Netsis-Versandaufträgen bis zur verfügbaren Lagerbestandsmenge, ohne sofort Versandaufträge zu erstellen. Bereite Mengen werden über Umlagerung, Rückführung und Versand auftragsbezogen nachverfolgt."
+  },
+  "actions": {
+    "evaluate": "Auswerten",
+    "refresh": "Aktualisieren",
+    "savePolicy": "Richtlinie speichern",
+    "createDat": "DAT erstellen",
+    "atHakEdis": "In Abschlagszahlung",
+    "createReturnDat": "Rückführungs-DAT",
+    "markReady": "Versandbereit",
+    "createShipment": "Versand erstellen"
+  },
+  "metrics": {
+    "remaining": "Auftragsrest",
+    "available": "Lager verfügbar",
+    "allocated": "Für Abschlagszahlung reserviert",
+    "ready": "Versandbereit",
+    "missing": "Fehlmenge",
+    "waiting": "Wartend"
+  },
+  "table": {
+    "title": "Abschlagszahlungs-Auftragspool",
+    "search": "Auftrag, Kunde oder Bestand suchen...",
+    "order": "Auftrag",
+    "customer": "Kunde",
+    "transferAll": "Alles transferieren",
+    "orderDetail": "Auftragsdetail",
+    "allocation": "Zuweisung",
+    "shipmentPolicy": "Versandrichtlinie",
+    "remaining": "Rest",
+    "stock": "Bestand",
+    "canCreate": "Erstellbar",
+    "allocated": "Reserviert",
+    "ready": "Bereit",
+    "status": "Status",
+    "evaluatedAt": "Letzte Auswertung"
+  },
+  "need": {
+    "required": "Benötigt",
+    "available": "Lager verfügbar",
+    "canCreate": "Neuer Batch",
+    "allocated": "Reserviert",
+    "missing": "Fehlmenge"
+  },
+  "detail": {
+    "title": "{{order}} Abschlagszahlungs-Ablauf",
+    "description": "Auftragspositionen, reservierte Batch-Mengen und zugehörige DAT-/Versandstufen.",
+    "lines": "Auftragspositionen",
+    "stock": "Bestand",
+    "noLines": "Keine Positionen gefunden.",
+    "batch": "Batch",
+    "quantity": "Menge",
+    "stage": "Stufe",
+    "noBatches": "Noch keine Batches vorhanden.",
+    "steps": "Batch-Schritte",
+    "chooseBatch": "Wählen Sie einen Batch, um die Schritte anzuzeigen."
+  },
+  "activity": {
+    "title": "Abgeschlossene Vorgänge",
+    "description": "Dokument-, ERP- und Erfassungshistorie zu DAT-, Abschlagszahlungs-, Rückführungs- und Versandstufen des Auftrags.",
+    "datCount": "DAT: {{count}}",
+    "shipmentCount": "Versand: {{count}}",
+    "completedCount": "Abgeschlossen: {{count}}",
+    "empty": "Für diesen Auftrag liegt noch keine Vorgangshistorie vor.",
+    "step": "Stufe",
+    "document": "Beleg",
+    "erp": "ERP",
+    "actor": "Bearbeiter",
+    "collectors": "Erfasser",
+    "series": "Serie",
+    "type": "Typ",
+    "collectorCount": "{{count}} Benutzer",
+    "erpIntegrated": "An ERP übertragen"
+  },
+  "policy": {
+    "allocation": "Zuweisungsrichtlinie",
+    "shipment": "Versandrichtlinie",
+    "StockBalanceAuto": "Automatisch nach Lagerbestand",
+    "FullOrderOnly": "Nur bei vollständigem Auftrag zuweisen",
+    "ManualOnly": "Nur manuell",
+    "ManualShipment": "Manueller Versand",
+    "AutoPartialShipment": "Bereite Mengen automatisch versenden",
+    "AutoFullShipment": "Automatisch versenden, wenn vollständig bereit"
+  },
+  "status": {
+    "Open": "Offen",
+    "WaitingStock": "Wartet auf Bestand",
+    "ReadyToTransfer": "Transferbereit",
+    "InHakEdisFlow": "Im Abschlagszahlungsprozess",
+    "ReadyForShipment": "Versandbereit",
+    "ShipmentCreated": "Versand erstellt",
+    "Completed": "Abgeschlossen",
+    "Blocked": "Blockiert",
+    "Cancelled": "Storniert",
+    "Planned": "Geplant",
+    "TransferToHakEdis": "Transfer zur Abschlagszahlung",
+    "AtHakEdis": "In Abschlagszahlung",
+    "ReturnFromHakEdis": "Rückführung von Abschlagszahlung",
+    "Pending": "Ausstehend",
+    "Ready": "Bereit",
+    "InProgress": "In Bearbeitung"
+  },
+  "loading": "Wird geladen...",
+  "empty": "Keine Datensätze gefunden.",
+  "messages": {
+    "evaluated": "Abschlagszahlung ausgewertet. Batches: {{count}}",
+    "evaluationFailed": "Abschlagszahlungs-Auswertung konnte nicht ausgeführt werden.",
+    "batchCompleted": "Abschlagszahlungs-Batch-Aktion abgeschlossen.",
+    "batchFailed": "Abschlagszahlungs-Batch-Aktion konnte nicht ausgeführt werden.",
+    "policyUpdated": "Abschlagszahlungs-Auftragsrichtlinie aktualisiert.",
+    "policyFailed": "Abschlagszahlungs-Auftragsrichtlinie konnte nicht aktualisiert werden."
+  }
+}

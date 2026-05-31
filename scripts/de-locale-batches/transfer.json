@@ -1,0 +1,507 @@
+[
+  {
+    "key": "transfer.create.title",
+    "en": "New Transfer Order",
+    "current": "Neuer Transferauftrag"
+  },
+  {
+    "key": "transfer.create.steps.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "transfer.create.steps.stockSelection",
+    "en": "Stock Selection",
+    "current": "Bestandsauswahl"
+  },
+  {
+    "key": "transfer.create.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "transfer.create.success",
+    "en": "Transfer order created successfully",
+    "current": "Transferauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "transfer.create.mode.stock",
+    "en": "Stok bazlı",
+    "current": "Stok bazlı"
+  },
+  {
+    "key": "transfer.process.title",
+    "en": "Transfer Process Without Order",
+    "current": "Transfer Process Without Order"
+  },
+  {
+    "key": "transfer.process.subtitle",
+    "en": "Create a transfer operation without an order by selecting stocks",
+    "current": "Create a transfer operation without an order by selecting stocks"
+  },
+  {
+    "key": "transfer.process.success",
+    "en": "Transfer process created successfully",
+    "current": "Transfer process created successfully"
+  },
+  {
+    "key": "transfer.process.error",
+    "en": "An error occurred while creating transfer process",
+    "current": "An error occurred while creating transfer process"
+  },
+  {
+    "key": "transfer.list.title",
+    "en": "Transfer Order List",
+    "current": "Transferauftragsliste"
+  },
+  {
+    "key": "transfer.list.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "transfer.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "transfer.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "transfer.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "transfer.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "transfer.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "transfer.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "transfer.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "transfer.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "transfer.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "transfer.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "transfer.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "transfer.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "transfer.list.paginationInfo",
+    "en": "{{current}} - {{total}} of {{totalCount}}",
+    "current": "{{current}} - {{total}} von {{totalCount}}"
+  },
+  {
+    "key": "transfer.list.detailTitle",
+    "en": "Transfer Order Detail",
+    "current": "Transferauftragsdetails"
+  },
+  {
+    "key": "transfer.list.lines",
+    "en": "Lines",
+    "current": "Positionen"
+  },
+  {
+    "key": "transfer.list.lineDetails",
+    "en": "Line Details",
+    "current": "Positionsdetails"
+  },
+  {
+    "key": "transfer.list.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "transfer.list.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "transfer.list.sourceCellCode",
+    "en": "Source Bin",
+    "current": "Ausgangszelle"
+  },
+  {
+    "key": "transfer.list.targetCellCode",
+    "en": "Target Bin",
+    "current": "Zielzelle"
+  },
+  {
+    "key": "transfer.list.detailDescription",
+    "en": "Detailed information of the transfer order",
+    "current": "Detaillierte Informationen zum Transferauftrag"
+  },
+  {
+    "key": "transfer.list.documentInfo",
+    "en": "Document Information",
+    "current": "Beleginformationen"
+  },
+  {
+    "key": "transfer.list.customerInfo",
+    "en": "Customer Information",
+    "current": "Kundeninformationen"
+  },
+  {
+    "key": "transfer.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "current": "Lagerinformationen"
+  },
+  {
+    "key": "transfer.step1.transferDate",
+    "en": "Transfer Date",
+    "current": "Transferdatum"
+  },
+  {
+    "key": "transfer.step1.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "transfer.step1.documentNoPlaceholder",
+    "en": "Enter document number",
+    "current": "Belegnummer eingeben"
+  },
+  {
+    "key": "transfer.step1.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "transfer.step1.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "transfer.step1.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "transfer.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "current": "Benutzer für die Durchführung"
+  },
+  {
+    "key": "transfer.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "current": "Benutzer für die Durchführung auswählen"
+  },
+  {
+    "key": "transfer.step2.orders",
+    "en": "Orders",
+    "current": "Bestellungen"
+  },
+  {
+    "key": "transfer.step2.noOrderSelected",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "transfer.step2.orderContent",
+    "en": "Order Content",
+    "current": "Bestellinhalt"
+  },
+  {
+    "key": "transfer.step2.noOrders",
+    "en": "No orders found for this customer",
+    "current": "Keine Bestellungen für diesen Kunden gefunden"
+  },
+  {
+    "key": "transfer.step2.ordered",
+    "en": "Ordered",
+    "current": "Bestellt"
+  },
+  {
+    "key": "transfer.step2.started",
+    "en": "Started",
+    "current": "Begonnen"
+  },
+  {
+    "key": "transfer.step2.itemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "transfer.step2.pending",
+    "en": "Pending",
+    "current": "Ausstehend"
+  },
+  {
+    "key": "transfer.step2.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "transfer.step2.stockSelection",
+    "en": "Stock Selection",
+    "current": "Bestandsauswahl"
+  },
+  {
+    "key": "transfer.step2.selectedItems",
+    "en": "Selected Items",
+    "current": "Selected Items"
+  },
+  {
+    "key": "transfer.step2.selectedItemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} items"
+  },
+  {
+    "key": "transfer.step2.noSelectedItems",
+    "en": "No selected items yet",
+    "current": "No selected items yet"
+  },
+  {
+    "key": "transfer.details.transferQuantity",
+    "en": "Transfer Quantity",
+    "current": "Transfermenge"
+  },
+  {
+    "key": "transfer.details.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "transfer.details.selectSourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "transfer.details.lotNo",
+    "en": "Lot No",
+    "current": "Chargennummer"
+  },
+  {
+    "key": "transfer.details.lotNoPlaceholder",
+    "en": "Enter lot number",
+    "current": "Chargennummer eingeben"
+  },
+  {
+    "key": "transfer.details.configCode",
+    "en": "Config Code",
+    "current": "Konfigurationscode"
+  },
+  {
+    "key": "transfer.details.configCodePlaceholder",
+    "en": "Enter configuration code",
+    "current": "Konfigurationscode eingeben"
+  },
+  {
+    "key": "transfer.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "transfer.collection.collected",
+    "en": "Product collected",
+    "current": "Produkt gesammelt"
+  },
+  {
+    "key": "transfer.collection.collectError",
+    "en": "Collection error",
+    "current": "Sammlungsfehler"
+  },
+  {
+    "key": "transfer.collection.invalidHeaderId",
+    "en": "Invalid transfer order",
+    "current": "Ungültiger Transferauftrag"
+  },
+  {
+    "key": "transfer.collection.completed",
+    "en": "Transfer order completed successfully",
+    "current": "Transferauftrag erfolgreich abgeschlossen"
+  },
+  {
+    "key": "transfer.collection.completeError",
+    "en": "Completion error",
+    "current": "Abschlussfehler"
+  },
+  {
+    "key": "transfer.collection.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "transfer.collection.viewCollected",
+    "en": "Collected",
+    "current": "Gesammelt"
+  },
+  {
+    "key": "transfer.collection.collect",
+    "en": "Collect",
+    "current": "Sammeln"
+  },
+  {
+    "key": "transfer.collection.yapKod",
+    "en": "Structure Code",
+    "current": "Strukturcode"
+  },
+  {
+    "key": "transfer.collection.yapAcik",
+    "en": "Structure Description",
+    "current": "Strukturbeschreibung"
+  },
+  {
+    "key": "transfer.collection.barcode",
+    "en": "Barcode",
+    "current": "Barcode"
+  },
+  {
+    "key": "transfer.collection.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "transfer.collection.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "transfer.collection.packageNo",
+    "en": "Package No",
+    "current": "Paketnummer"
+  },
+  {
+    "key": "transfer.collection.packageHeaderId",
+    "en": "Package Record No",
+    "current": "Paketdatensatznummer"
+  },
+  {
+    "key": "transfer.collection.itemsCollected",
+    "en": "items collected",
+    "current": "Artikel gesammelt"
+  },
+  {
+    "key": "transfer.collection.deleteSuccess",
+    "en": "Barcode deleted successfully",
+    "current": "Barcode erfolgreich gelöscht"
+  },
+  {
+    "key": "transfer.collection.deleteError",
+    "en": "Barcode could not be deleted",
+    "current": "Barcode konnte nicht gelöscht werden"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmTitle",
+    "en": "Delete Product",
+    "current": "Produkt löschen"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmWithPackage",
+    "en": "The selected product will be removed from both the package and the process. Are you sure you want to proceed?",
+    "current": "Das ausgewählte Produkt wird sowohl aus dem Paket als auch aus dem Prozess entfernt. Sind Sie sicher, dass Sie fortfahren möchten?"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmWithoutPackage",
+    "en": "The product will be removed from the collection. Are you sure you want to proceed?",
+    "current": "Das Produkt wird aus der Sammlung entfernt. Sind Sie sicher, dass Sie fortfahren möchten?"
+  },
+  {
+    "key": "transfer.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "transfer.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "transfer.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "transfer.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "transfer.approval.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "transfer.approval.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "transfer.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "transfer.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "transfer.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "transfer.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "transfer.orderDetails.orderQuantity",
+    "en": "Order quantity",
+    "current": "Bestellmenge"
+  },
+  {
+    "key": "transfer.edit.title",
+    "en": "Edit Transfer",
+    "current": "Edit Transfer"
+  },
+  {
+    "key": "transfer.edit.subtitle",
+    "en": "Update transfer header information without changing line or collection flow",
+    "current": "Update transfer header information without changing line or collection flow"
+  },
+  {
+    "key": "transfer.edit.success",
+    "en": "Transfer updated successfully",
+    "current": "Transfer updated successfully"
+  },
+  {
+    "key": "transfer.edit.error",
+    "en": "An error occurred while updating transfer",
+    "current": "An error occurred while updating transfer"
+  }
+]

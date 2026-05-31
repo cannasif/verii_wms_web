@@ -356,7 +356,7 @@ export function ProductionTransferCreatePage(): ReactElement {
           <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]">
             <CardHeader>
               <CardDescription>{t('productionTransfer.create.summary.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
-              <CardTitle className="text-2xl">{draft.transferPurpose}</CardTitle>
+              <CardTitle className="text-2xl">{transferPurposeLabel(draft.transferPurpose)}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]">

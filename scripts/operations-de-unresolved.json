@@ -1,0 +1,1444 @@
+[
+  {
+    "key": "vehicleCheckIn.fields.platePh",
+    "en": "34ABC123",
+    "tr": "34ABC123",
+    "de": "34ABC123",
+    "source": "34ABC123"
+  },
+  {
+    "key": "qualityControl.rules.list.columns.requireLot",
+    "en": "Lot",
+    "tr": "Lot",
+    "de": "Lot",
+    "source": "Lot"
+  },
+  {
+    "key": "package.detail.yapKod",
+    "en": "Yap Code",
+    "tr": "Yap Kodu",
+    "de": "Yap-Code",
+    "source": "Yap Kodu"
+  },
+  {
+    "key": "package.packageDetail.yapKod",
+    "en": "Yap Code",
+    "tr": "Yap Kodu",
+    "de": "Yap-Code",
+    "source": "Yap Kodu"
+  },
+  {
+    "key": "package.cargoCompany.YurtiçiKargo",
+    "en": "Yurtiçi Kargo",
+    "tr": "Yurtiçi Kargo",
+    "de": "Yurtiçi Kargo",
+    "source": "Yurtiçi Kargo"
+  },
+  {
+    "key": "package.cargoCompany.ArasKargo",
+    "en": "Aras Kargo",
+    "tr": "Aras Kargo",
+    "de": "Aras Kargo",
+    "source": "Aras Kargo"
+  },
+  {
+    "key": "package.cargoCompany.MNGKargo",
+    "en": "MNG Kargo",
+    "tr": "MNG Kargo",
+    "de": "MNG Kargo",
+    "source": "MNG Kargo"
+  },
+  {
+    "key": "package.cargoCompany.PTTKargo",
+    "en": "PTT Kargo",
+    "tr": "PTT Kargo",
+    "de": "PTT Kargo",
+    "source": "PTT Kargo"
+  },
+  {
+    "key": "package.cargoCompany.SüratKargo",
+    "en": "Sürat Kargo",
+    "tr": "Sürat Kargo",
+    "de": "Sürat Kargo",
+    "source": "Sürat Kargo"
+  },
+  {
+    "key": "package.cargoCompany.UPS",
+    "en": "UPS",
+    "tr": "UPS",
+    "de": "UPS",
+    "source": "UPS"
+  },
+  {
+    "key": "package.cargoCompany.DHL",
+    "en": "DHL",
+    "tr": "DHL",
+    "de": "DHL",
+    "source": "DHL"
+  },
+  {
+    "key": "package.cargoCompany.FedEx",
+    "en": "FedEx",
+    "tr": "FedEx",
+    "de": "FedEx",
+    "source": "FedEx"
+  },
+  {
+    "key": "package.cargoCompany.TNT",
+    "en": "TNT",
+    "tr": "TNT",
+    "de": "TNT",
+    "source": "TNT"
+  },
+  {
+    "key": "package.cargoCompany.CEVA",
+    "en": "CEVA",
+    "tr": "CEVA",
+    "de": "CEVA",
+    "source": "CEVA"
+  },
+  {
+    "key": "package.cargoCompany.KargoTurk",
+    "en": "Kargo Türk",
+    "tr": "Kargo Türk",
+    "de": "Kargo Türk",
+    "source": "Kargo Türk"
+  },
+  {
+    "key": "package.cargoCompany.HepsiJET",
+    "en": "HepsiJET",
+    "tr": "HepsiJET",
+    "de": "HepsiJET",
+    "source": "HepsiJET"
+  },
+  {
+    "key": "package.cargoCompany.TrendyolExpress",
+    "en": "Trendyol Express",
+    "tr": "Trendyol Express",
+    "de": "Trendyol Express",
+    "source": "Trendyol Express"
+  },
+  {
+    "key": "package.cargoCompany.Scotty",
+    "en": "Scotty",
+    "tr": "Scotty",
+    "de": "Scotty",
+    "source": "Scotty"
+  },
+  {
+    "key": "package.cargoCompany.KolayGelsin",
+    "en": "Kolay Gelsin",
+    "tr": "Kolay Gelsin",
+    "de": "Kolay Gelsin",
+    "source": "Kolay Gelsin"
+  },
+  {
+    "key": "package.cargoCompany.BirGundeKargo",
+    "en": "Bir Günde Kargo",
+    "tr": "Bir Günde Kargo",
+    "de": "Bir Günde Kargo",
+    "source": "Bir Günde Kargo"
+  },
+  {
+    "key": "production.approval.mainYapKod",
+    "en": "Main YapKod",
+    "tr": "Ana YapKod",
+    "de": "Haupt-YapKod",
+    "source": "Ana YapKod"
+  },
+  {
+    "key": "production.create.summary.outputs",
+    "en": "Outputs",
+    "tr": "Çıktı",
+    "de": "Outputs",
+    "source": "Outputs"
+  },
+  {
+    "key": "production.create.mainYapKod",
+    "en": "Main YapKod",
+    "tr": "Ana YapKod",
+    "de": "Haupt-YapKod",
+    "source": "Ana YapKod"
+  },
+  {
+    "key": "production.create.producedYapKod",
+    "en": "YapKod to produce",
+    "tr": "Üretilecek YapKod",
+    "de": "Zu produzierender YapKod",
+    "source": "Üretilecek YapKod"
+  },
+  {
+    "key": "production.create.yapKodSelect",
+    "en": "Ana yapkod secin",
+    "tr": "Ana yapkod secin",
+    "de": "Haupt-YapKod auswählen",
+    "source": "Ana yapkod secin"
+  },
+  {
+    "key": "production.create.yapKodEmpty",
+    "en": "Bu urune uygun yapkod bulunamadi",
+    "tr": "Bu urune uygun yapkod bulunamadi",
+    "de": "Kein passender YapKod für dieses Produkt gefunden",
+    "source": "Bu urune uygun yapkod bulunamadi"
+  },
+  {
+    "key": "production.create.info.headerBody",
+    "en": "Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz.",
+    "tr": "Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz.",
+    "de": "Das Hauptprodukt ist das Endprodukt des Plans. Der Haupt-YapKod beschreibt die Variante. Mit Schnellerfassung können vorhandene Arbeitsauftrags- oder Bestandsdaten diese Felder automatisch füllen.",
+    "source": "Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz."
+  },
+  {
+    "key": "production.create.info.consumptionBody",
+    "en": "Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir.",
+    "tr": "Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir.",
+    "de": "Verbrauch ist das Material, das zum Abschluss der Stufe benötigt wird. Im Planungsbildschirm wird der Bedarf erfasst; verwendete Serie oder Los werden später im Prozessbildschirm erfasst oder über ERP/Netsis verifiziert.",
+    "source": "Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir."
+  },
+  {
+    "key": "production.create.yapKod",
+    "en": "Yap Kod",
+    "tr": "Yap Kod",
+    "de": "Yap-Kod",
+    "source": "Yap Kod"
+  },
+  {
+    "key": "production.process.operationNone",
+    "en": "-",
+    "tr": "-",
+    "de": "-",
+    "source": "-"
+  },
+  {
+    "key": "production.process.predecessorStatus",
+    "en": "Status: {{status}}",
+    "tr": "Durum: {{status}}",
+    "de": "Status: {{status}}",
+    "source": "Status: {{status}}"
+  },
+  {
+    "key": "production.process.outputs",
+    "en": "Outputs",
+    "tr": "Çıktılar",
+    "de": "Outputs",
+    "source": "Outputs"
+  },
+  {
+    "key": "production.process.start",
+    "en": "Start",
+    "tr": "Başlat",
+    "de": "Start",
+    "source": "Start"
+  },
+  {
+    "key": "production.process.pause",
+    "en": "Pause",
+    "tr": "Duraklat",
+    "de": "Pause",
+    "source": "Pause"
+  },
+  {
+    "key": "production.process.lineHistoryStockPlaceholder",
+    "en": "STK…",
+    "tr": "STK…",
+    "de": "STK…",
+    "source": "STK…"
+  },
+  {
+    "key": "production.process.warehouseCellSeparator",
+    "en": " → ",
+    "tr": " → ",
+    "de": " → ",
+    "source": " → "
+  },
+  {
+    "key": "production.process.barcode",
+    "en": "Barcode",
+    "tr": "Barkod",
+    "de": "Barcode",
+    "source": "Barcode"
+  },
+  {
+    "key": "production.process.quickEntrySubtitle",
+    "en": "Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun.",
+    "tr": "Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun.",
+    "de": "Geben Sie Bestandscode, YapKod oder einen Barcode ein; das System füllt die passende Planzeile.",
+    "source": "Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun."
+  },
+  {
+    "key": "production.process.quickEntryPlaceholder",
+    "en": "Stok kodu / YapKod / Barkod girin",
+    "tr": "Stok kodu / YapKod / Barkod girin",
+    "de": "Bestandscode / YapKod / Barcode eingeben",
+    "source": "Stok kodu / YapKod / Barkod girin"
+  },
+  {
+    "key": "productionTransfer.list.planLink",
+    "en": "Plan #{{id}}",
+    "tr": "Plan #{{id}}",
+    "de": "Plan #{{id}}",
+    "source": "Plan #{{id}}"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectYapKod",
+    "en": "Select YapKod",
+    "tr": "YapKod seç",
+    "de": "YapKod auswählen",
+    "source": "YapKod seç"
+  },
+  {
+    "key": "serviceAllocation.closedAt",
+    "en": "Closed At",
+    "tr": "Kapanış Tarihi",
+    "de": "Closed At",
+    "source": "Closed At"
+  },
+  {
+    "key": "serviceAllocation.diagnosisNote",
+    "en": "Diagnosis Note",
+    "tr": "Teşhis Notu",
+    "de": "Diagnosis Note",
+    "source": "Diagnosis Note"
+  },
+  {
+    "key": "serviceAllocation.allocatedQuantity",
+    "en": "Allocated",
+    "tr": "Tahsis Edilen",
+    "de": "Allocated",
+    "source": "Allocated"
+  },
+  {
+    "key": "serviceAllocation.documentModule",
+    "en": "Module",
+    "tr": "Modül",
+    "de": "Module",
+    "source": "Module"
+  },
+  {
+    "key": "serviceAllocation.sequence",
+    "en": "Seq",
+    "tr": "Sıra",
+    "de": "Seq",
+    "source": "Seq"
+  },
+  {
+    "key": "serviceAllocation.fromWarehouse",
+    "en": "From Wh",
+    "tr": "Çıkış Deposu",
+    "de": "From Wh",
+    "source": "From Wh"
+  },
+  {
+    "key": "serviceAllocation.toWarehouse",
+    "en": "To Wh",
+    "tr": "Varış Deposu",
+    "de": "To Wh",
+    "source": "To Wh"
+  },
+  {
+    "key": "serviceAllocation.timeline.lastMovement",
+    "en": "Last Movement",
+    "tr": "Son Hareket",
+    "de": "Last Movement",
+    "source": "Last Movement"
+  },
+  {
+    "key": "serviceAllocation.recompute.missingStock",
+    "en": "Incoming stock is not defined for this case.",
+    "tr": "Bu vaka için giriş stoku tanımlı değil.",
+    "de": "Incoming Bestand is not defined for this Vorgang.",
+    "source": "Bu vaka için giriş stoku tanımlı değil."
+  },
+  {
+    "key": "kkd.columns.routine",
+    "en": "Routine",
+    "tr": "Rutin",
+    "de": "Routine",
+    "source": "Routine"
+  },
+  {
+    "key": "kkd.messages.groupNotFound",
+    "en": "Group not found",
+    "tr": "Grup bulunamadı",
+    "de": "Group not found",
+    "source": "Grup bulunamadı"
+  },
+  {
+    "key": "kkd.operational.initialOrder.cardStock",
+    "en": "Initial rights and stock selection",
+    "tr": "İlk Giriş Hakları ve Stok Seçimi",
+    "de": "Initial rights and stock selection",
+    "source": "Initial rights and stock selection"
+  },
+  {
+    "key": "kkd.operational.initialOrder.resolveQr",
+    "en": "Resolve QR",
+    "tr": "QR Çöz",
+    "de": "Resolve QR",
+    "source": "Resolve QR"
+  },
+  {
+    "key": "kkd.operational.initialOrder.initialEntitlement",
+    "en": "Initial right",
+    "tr": "İlk Giriş Hakkı",
+    "de": "Initial right",
+    "source": "Initial right"
+  },
+  {
+    "key": "kkd.operational.initialOrder.totalQty",
+    "en": "Total quantity",
+    "tr": "Toplam Miktar",
+    "de": "Total quantity",
+    "source": "Total quantity"
+  },
+  {
+    "key": "kkd.operational.initialOrder.clearCart",
+    "en": "Clear cart",
+    "tr": "Sepeti Temizle",
+    "de": "Clear cart",
+    "source": "Clear cart"
+  },
+  {
+    "key": "kkd.operational.initialOrder.lineCountN",
+    "en": "Items",
+    "tr": "Kalem",
+    "de": "Items",
+    "source": "Items"
+  },
+  {
+    "key": "kkd.operational.initialOrder.headerPrefix",
+    "en": "Header",
+    "tr": "Kayıt",
+    "de": "Header",
+    "source": "Header"
+  },
+  {
+    "key": "kkd.operational.remaining.resolve",
+    "en": "Resolve",
+    "tr": "Çöz",
+    "de": "Resolve",
+    "source": "Resolve"
+  },
+  {
+    "key": "kkd.operational.remaining.errQr",
+    "en": "Could not resolve QR.",
+    "tr": "QR çözümlenemedi.",
+    "de": "Could not resolve QR.",
+    "source": "QR çözümlenemedi."
+  },
+  {
+    "key": "kkd.operational.remaining.errList",
+    "en": "Could not load remaining entitlements.",
+    "tr": "Kalan haklar getirilemedi.",
+    "de": "Could not load remaining entitlements.",
+    "source": "Kalan haklar getirilemedi."
+  },
+  {
+    "key": "kkd.operational.remaining.mainShort",
+    "en": "Main",
+    "tr": "Ana",
+    "de": "Main",
+    "source": "Main"
+  },
+  {
+    "key": "kkd.operational.remaining.addShort",
+    "en": "Extra",
+    "tr": "Ek",
+    "de": "Extra",
+    "source": "Extra"
+  },
+  {
+    "key": "kkd.operational.remaining.totalShort",
+    "en": "Total",
+    "tr": "Toplam",
+    "de": "Total",
+    "source": "Total"
+  },
+  {
+    "key": "kkd.operational.remaining.lastUse",
+    "en": "Last usage",
+    "tr": "Son kullanım",
+    "de": "Last usage",
+    "source": "Last usage"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.cardResult",
+    "en": "Entitlement result",
+    "tr": "Hak Sonucu",
+    "de": "Entitlement result",
+    "source": "Entitlement result"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.txnDate",
+    "en": "Transaction date",
+    "tr": "İşlem Tarihi",
+    "de": "Transaction date",
+    "source": "Transaction date"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.resultAllowed",
+    "en": "Eligible",
+    "tr": "Kullanıma Uygun",
+    "de": "Eligible",
+    "source": "Eligible"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.resultBlocked",
+    "en": "Not eligible",
+    "tr": "Kullanıma Kapalı",
+    "de": "Not eligible",
+    "source": "Kullanıma Kapalı"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.mainEntitlement",
+    "en": "Main",
+    "tr": "Ana Hak",
+    "de": "Main",
+    "source": "Main"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.extraEntitlement",
+    "en": "Extra",
+    "tr": "Ek Hak",
+    "de": "Extra",
+    "source": "Extra"
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.total",
+    "en": "Total",
+    "tr": "Toplam",
+    "de": "Total",
+    "source": "Total"
+  },
+  {
+    "key": "kkd.operational.dist.resolveQr",
+    "en": "Resolve",
+    "tr": "Çöz",
+    "de": "Resolve",
+    "source": "Resolve"
+  },
+  {
+    "key": "kkd.operational.dist.scanTitle",
+    "en": "Product scan",
+    "tr": "Ürün Okutma",
+    "de": "Product scan",
+    "source": "Product scan"
+  },
+  {
+    "key": "kkd.operational.dist.barcodePh",
+    "en": "Scan product barcode",
+    "tr": "Ürün barkodu okutun",
+    "de": "Scan product barcode",
+    "source": "Scan product barcode"
+  },
+  {
+    "key": "kkd.operational.dist.resolveBarcode",
+    "en": "Resolve barcode",
+    "tr": "Barkodu Çöz",
+    "de": "Resolve barcode",
+    "source": "Resolve barcode"
+  },
+  {
+    "key": "kkd.operational.dist.openOrderN",
+    "en": "Not on open order",
+    "tr": "Açık Siparişte Yok",
+    "de": "Açık Siparişte Keine",
+    "source": "Açık Siparişte Yok"
+  },
+  {
+    "key": "kkd.operational.dist.matchWarehouse",
+    "en": "This stock exists on an open order, but the selected warehouse does not match the order warehouse.",
+    "tr": "Bu stok açık siparişte var ancak seçili depo ile siparişteki depo aynı değil. Doğru depoyu seçmeden işlem yapılamaz.",
+    "de": "This stock exists on an open order, but the selected warehouse does not match the order warehouse.",
+    "source": "Bu stok açık siparişte var ancak seçili depo ile siparişteki depo aynı değil. Doğru depoyu seçmeden işlem yapılamaz."
+  },
+  {
+    "key": "kkd.operational.dist.matchNo",
+    "en": "This stock is not on open PPE orders for the customer.",
+    "tr": "Bu stok kodu, cariye bağlı açık KKD siparişleri içinde bulunmuyor.",
+    "de": "This stock is not on open PPE orders for the customer.",
+    "source": "Bu stok kodu, cariye bağlı açık KKD siparişleri içinde bulunmuyor."
+  },
+  {
+    "key": "kkd.operational.dist.entOk",
+    "en": "Entitlement ok",
+    "tr": "Hak Uygun",
+    "de": "Entitlement ok",
+    "source": "Entitlement ok"
+  },
+  {
+    "key": "kkd.operational.dist.activePhase",
+    "en": "Active phase",
+    "tr": "Aktif Faz",
+    "de": "Active phase",
+    "source": "Active phase"
+  },
+  {
+    "key": "kkd.operational.dist.groupMatchN",
+    "en": "Mismatch",
+    "tr": "Uyumsuz",
+    "de": "Mismatch",
+    "source": "Mismatch"
+  },
+  {
+    "key": "kkd.operational.dist.phaseUsable",
+    "en": "Available",
+    "tr": "Kullanılabilir",
+    "de": "Available",
+    "source": "Available"
+  },
+  {
+    "key": "kkd.operational.dist.defined",
+    "en": "Defined",
+    "tr": "Tanımlı",
+    "de": "Defined",
+    "source": "Defined"
+  },
+  {
+    "key": "kkd.operational.dist.reasonWarehouseMismatch",
+    "en": "The open-order warehouse for this stock does not match the selected warehouse.",
+    "tr": "Bu stok için açık siparişteki depo ile seçtiğiniz depo farklı.",
+    "de": "The open-order warehouse for this stock does not match the selected warehouse.",
+    "source": "Bu stok için açık siparişteki depo ile seçtiğiniz depo farklı."
+  },
+  {
+    "key": "kkd.operational.dist.reasonMissingOpenOrder",
+    "en": "This stock does not exist on an open PPE order for the selected warehouse.",
+    "tr": "Bu stok seçili depo için açık KKD siparişinde bulunmuyor.",
+    "de": "This stock does not exist on an open PPE order for the selected warehouse.",
+    "source": "Bu stok seçili depo için açık KKD siparişinde bulunmuyor."
+  },
+  {
+    "key": "kkd.operational.dist.totalQ",
+    "en": "Total quantity",
+    "tr": "Toplam Miktar",
+    "de": "Total quantity",
+    "source": "Total quantity"
+  },
+  {
+    "key": "kkd.operational.dist.clearCart",
+    "en": "Clear cart",
+    "tr": "Sepeti Temizle",
+    "de": "Clear cart",
+    "source": "Clear cart"
+  },
+  {
+    "key": "kkd.operational.dist.headerIdBadge",
+    "en": "Header #{{id}}",
+    "tr": "Header #{{id}}",
+    "de": "Header #{{id}}",
+    "source": "Header #{{id}}"
+  },
+  {
+    "key": "kkd.operational.dist.warehouseIdBadge",
+    "en": "Wh #{{id}}",
+    "tr": "Depo #{{id}}",
+    "de": "Wh #{{id}}",
+    "source": "Wh #{{id}}"
+  },
+  {
+    "key": "kkd.operational.dist.lineExcess",
+    "en": "Entitled: {{e}} | Excess: {{x}}",
+    "tr": "Hak: {{e}} | Fazla Alım: {{x}}",
+    "de": "Entitled: {{e}} | Excess: {{x}}",
+    "source": "Entitled: {{e}} | Excess: {{x}}"
+  },
+  {
+    "key": "kkd.operational.dist.firstEntry",
+    "en": "Initial",
+    "tr": "İlk Giriş",
+    "de": "Initial",
+    "source": "Initial"
+  },
+  {
+    "key": "kkd.operational.dist.month3",
+    "en": "3M",
+    "tr": "3 Ay",
+    "de": "3M",
+    "source": "3M"
+  },
+  {
+    "key": "kkd.operational.dist.routine",
+    "en": "Routine",
+    "tr": "Rutin",
+    "de": "Routine",
+    "source": "Routine"
+  },
+  {
+    "key": "kkd.operational.dist.totalRem",
+    "en": "Total",
+    "tr": "Toplam",
+    "de": "Total",
+    "source": "Total"
+  },
+  {
+    "key": "kkd.operational.dist.extraH",
+    "en": "Extra",
+    "tr": "Ek",
+    "de": "Extra",
+    "source": "Extra"
+  },
+  {
+    "key": "kkd.operational.dist.excessIssue",
+    "en": "Excess",
+    "tr": "Fazla Alım",
+    "de": "Excess",
+    "source": "Excess"
+  },
+  {
+    "key": "kkd.operational.dist.orderMeta",
+    "en": "Date: {{d}} | Customer: {{c}}",
+    "tr": "Tarih: {{d}} | Cari: {{c}}",
+    "de": "Date: {{d}} | Customer: {{c}}",
+    "source": "Date: {{d}} | Customer: {{c}}"
+  },
+  {
+    "key": "kkd.operational.dist.badgeFis",
+    "en": "Doc",
+    "tr": "Fiş",
+    "de": "Doc",
+    "source": "Doc"
+  },
+  {
+    "key": "kkd.operational.dist.stockBalance",
+    "en": "Balance",
+    "tr": "Bakiye",
+    "de": "Balance",
+    "source": "Balance"
+  },
+  {
+    "key": "kkd.operational.dist.matchN",
+    "en": "Mismatch",
+    "tr": "Uyumsuz",
+    "de": "Mismatch",
+    "source": "Mismatch"
+  },
+  {
+    "key": "kkd.operational.dist.usable",
+    "en": "Available",
+    "tr": "Kullanılabilir",
+    "de": "Available",
+    "source": "Available"
+  },
+  {
+    "key": "kkd.operational.dist.definedQty",
+    "en": "Defined",
+    "tr": "Tanımlı",
+    "de": "Defined",
+    "source": "Defined"
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptDesc",
+    "en": "This employee still has initial-entry entitlement. If the initial-entry order has not been opened yet, continue in the initial order screen first.",
+    "tr": "Bu çalışanın ilk giriş hakkı hâlâ kullanılabilir görünüyor. İlk giriş siparişi açılmadıysa önce KKD İlk Giriş Siparişi ekranından ilerleyin.",
+    "de": "This employee still has initial-entry entitlement. If the initial-entry order has not been opened yet, continue in the initial order screen first.",
+    "source": "Bu çalışanın ilk giriş hakkı hâlâ kullanılabilir görünüyor. İlk giriş siparişi açılmadıysa önce KKD İlk Giriş Siparişi ekranından ilerleyin."
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptYes",
+    "en": "Yes, continue here",
+    "tr": "Evet, burada devam et",
+    "de": "Yes, continue here",
+    "source": "Yes, continue here"
+  },
+  {
+    "key": "kkd.operational.reports.colEmployees",
+    "en": "Employees",
+    "tr": "Çalışan",
+    "de": "Employees",
+    "source": "Employees"
+  },
+  {
+    "key": "kkd.operational.reports.colDocs",
+    "en": "Documents",
+    "tr": "Belge",
+    "de": "Documents",
+    "source": "Documents"
+  },
+  {
+    "key": "kkd.operational.reports.colQty",
+    "en": "Total quantity",
+    "tr": "Toplam Miktar",
+    "de": "Total quantity",
+    "source": "Total quantity"
+  },
+  {
+    "key": "kkd.operational.reports.summaryRole",
+    "en": "Role usage",
+    "tr": "Görev Bazlı Kullanım",
+    "de": "Role usage",
+    "source": "Role usage"
+  },
+  {
+    "key": "kkd.operational.reports.lastMove",
+    "en": "Last move",
+    "tr": "Son hareket",
+    "de": "Last move",
+    "source": "Last move"
+  },
+  {
+    "key": "kkd.operational.reports.roleSearchPh",
+    "en": "Search role code or name",
+    "tr": "Görev kodu veya adı ara",
+    "de": "Search role code or name",
+    "source": "Search role code or name"
+  },
+  {
+    "key": "kkd.operational.reports.errRole",
+    "en": "Could not load role report.",
+    "tr": "Görev raporu yüklenemedi.",
+    "de": "Could not load role report.",
+    "source": "Görev raporu yüklenemedi."
+  },
+  {
+    "key": "kkd.operational.reports.errDept",
+    "en": "Could not load department report.",
+    "tr": "Bölüm raporu yüklenemedi.",
+    "de": "Could not load department report.",
+    "source": "Bölüm raporu yüklenemedi."
+  },
+  {
+    "key": "kkd.operational.reports.errGroup",
+    "en": "Could not load group report.",
+    "tr": "Grup raporu yüklenemedi.",
+    "de": "Could not load group report.",
+    "source": "Grup raporu yüklenemedi."
+  },
+  {
+    "key": "kkd.operational.reports.labelQty",
+    "en": "Total quantity",
+    "tr": "Toplam Miktar",
+    "de": "Total quantity",
+    "source": "Total quantity"
+  },
+  {
+    "key": "kkd.operational.validationLog.detailTitle",
+    "en": "Log detail",
+    "tr": "Kayıt Detayı",
+    "de": "Log detail",
+    "source": "Log detail"
+  },
+  {
+    "key": "kkd.operational.validationLog.time",
+    "en": "Time",
+    "tr": "Zaman",
+    "de": "Time",
+    "source": "Time"
+  },
+  {
+    "key": "kkd.operational.validationLog.account",
+    "en": "Account",
+    "tr": "Cari",
+    "de": "Account",
+    "source": "Account"
+  },
+  {
+    "key": "kkd.operational.validationLog.message",
+    "en": "Message",
+    "tr": "Mesaj",
+    "de": "Message",
+    "source": "Message"
+  },
+  {
+    "key": "kkd.operational.validationLog.metaDevice",
+    "en": "Device",
+    "tr": "Cihaz",
+    "de": "Device",
+    "source": "Device"
+  },
+  {
+    "key": "kkd.operational.matrix.intro",
+    "en": "This screen defines entitlements by group code; stock code is not the main decision field here. The employee first uses the initial entitlement, then the 3-month entitlement, and afterwards the recurring entitlement.",
+    "tr": "Bu ekranda hak tanımı grup kodu üzerinden yapılır; stok kodu burada ana karar alanı değildir. Çalışan önce ilk giriş hakkını, işe giriş tarihinden 3 ay sonra ikinci hakkını, sonrasında da rutin dönem hakkını kullanır.",
+    "de": "This screen defines entitlements by group code; stock code is not the main decision field here. The employee first uses the initial entitlement, then the 3-month entitlement, and afterwards the recurring entitlement.",
+    "source": "Bu ekranda hak tanımı grup kodu üzerinden yapılır; stok kodu burada ana karar alanı değildir. Çalışan önce ilk giriş hakkını, işe giriş tarihinden 3 ay sonra ikinci hakkını, sonrasında da rutin dönem hakkını kullanır."
+  },
+  {
+    "key": "kkd.operational.matrix.groupEmpty",
+    "en": "Group not found",
+    "tr": "Grup bulunamadı",
+    "de": "Group not found",
+    "source": "Grup bulunamadı"
+  },
+  {
+    "key": "kkd.operational.matrix.periodPlaceholder",
+    "en": "Year / Month / Day",
+    "tr": "Year / Month / Day",
+    "de": "Year / Month / Day",
+    "source": "Year / Month / Day"
+  },
+  {
+    "key": "kkd.operational.matrix.lblRole",
+    "en": "Role *",
+    "tr": "Görev *",
+    "de": "Role *",
+    "source": "Role *"
+  },
+  {
+    "key": "kkd.operational.overview.summaryMatrix",
+    "en": "Role Matrix",
+    "tr": "Gorev Matrisi",
+    "de": "Role Matrix",
+    "source": "Role Matrix"
+  },
+  {
+    "key": "kkd.operational.overview.summaryOverride",
+    "en": "Override",
+    "tr": "Istisna",
+    "de": "Override",
+    "source": "Override"
+  },
+  {
+    "key": "kkd.operational.overview.govOrganizationTitle",
+    "en": "Organization",
+    "tr": "Organizasyon",
+    "de": "Organization",
+    "source": "Organization"
+  },
+  {
+    "key": "kkd.operational.overview.govMatrixTitle",
+    "en": "Role Matrix",
+    "tr": "Gorev Matrisi",
+    "de": "Role Matrix",
+    "source": "Role Matrix"
+  },
+  {
+    "key": "kkd.operational.distributionList.colErpStatus",
+    "en": "ERP Status",
+    "tr": "ERP Durumu",
+    "de": "ERP Status",
+    "source": "ERP Status"
+  },
+  {
+    "key": "kkd.operational.distributionList.headerBadge",
+    "en": "Header #{{id}}",
+    "tr": "Header #{{id}}",
+    "de": "Header #{{id}}",
+    "source": "Header #{{id}}"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.searchPh",
+    "en": "Search D-Code, stock, or serial",
+    "tr": "D-KODU, stok veya seri ara",
+    "de": "Search D-Code, stock, or serial",
+    "source": "Search D-Code, stock, or serial"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.errForm",
+    "en": "Placement form is not ready",
+    "tr": "Yerleştirme formu hazır değil",
+    "de": "Placement form is not ready",
+    "source": "Yerleştirme formu hazır değil"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.area",
+    "en": "Yard code",
+    "tr": "Saha Kodu",
+    "de": "Yard code",
+    "source": "Yard code"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.areaPh",
+    "en": "Yard / area code",
+    "tr": "Saha / alan kodu",
+    "de": "Yard / area code",
+    "source": "Yard / area code"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.saving",
+    "en": "Saving...",
+    "tr": "Kaydediliyor...",
+    "de": "Saving...",
+    "source": "Saving..."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.sameLocationTitle",
+    "en": "Plates at same location",
+    "tr": "Aynı Lokasyondaki Mevcut Levhalar",
+    "de": "Plates at same location",
+    "source": "Plates at same location"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.approvedQty",
+    "en": "Approved quantity",
+    "tr": "Onaylanan miktar",
+    "de": "Approved quantity",
+    "source": "Approved quantity"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.stackBadge",
+    "en": "Stack {{n}}",
+    "tr": "İstif {{n}}",
+    "de": "Stack {{n}}",
+    "source": "Stack {{n}}"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.stacked",
+    "en": "Stacked",
+    "tr": "Üst Üste",
+    "de": "Stacked",
+    "source": "Stacked"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBesideTitle",
+    "en": "Place Beside",
+    "tr": "Yanına koy",
+    "de": "Place Beside",
+    "source": "Place Beside"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBehindTitle",
+    "en": "Place Behind",
+    "tr": "Arkasına koy",
+    "de": "Place Behind",
+    "source": "Place Behind"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetAboveTitle",
+    "en": "Place Above",
+    "tr": "Üstüne koy",
+    "de": "Place Above",
+    "source": "Place Above"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeBeside",
+    "en": "Place Beside",
+    "tr": "Yanına Yerleştir",
+    "de": "Place Beside",
+    "source": "Place Beside"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeBehind",
+    "en": "Place Behind",
+    "tr": "Arkasına Yerleştir",
+    "de": "Place Behind",
+    "source": "Place Behind"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeAbove",
+    "en": "Place Above",
+    "tr": "Üstüne Yerleştir",
+    "de": "Place Above",
+    "source": "Place Above"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.description",
+    "en": "Select lines with approved quantity that were not yet transferred. Creates a local receipt without Netsis integration.",
+    "tr": "Sadece onaylanan miktarı olan ve daha önce aktarılmamış levha satırlarını seçin. Netsis entegrasyonu olmadan yerel irsaliye oluşturulur.",
+    "de": "Wählen Sie lines with approved quantity that were not yet transferred. Creates a local receipt without Netsis integration aus.",
+    "source": "Sadece onaylanan miktarı olan ve daha önce aktarılmamış levha satırlarını seçin. Netsis entegrasyonu olmadan yerel irsaliye oluşturulur."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.searchPh",
+    "en": "Search D-Code, stock, serial, or supplier",
+    "tr": "D-KODU, stok, seri veya tedarikçi ara",
+    "de": "Search D-Code, stock, serial, or supplier",
+    "source": "Search D-Code, stock, serial, or supplier"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.selLines",
+    "en": "Selected lines",
+    "tr": "Seçili satır",
+    "de": "Selected lines",
+    "source": "Selected lines"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.createPending",
+    "en": "Creating...",
+    "tr": "Oluşturuluyor...",
+    "de": "Creating...",
+    "source": "Creating..."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.expected",
+    "en": "Expected",
+    "tr": "Beklenen",
+    "de": "Expected",
+    "source": "Expected"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.errForm",
+    "en": "Inspection form is not ready",
+    "tr": "Kontrol formu hazır değil",
+    "de": "Inspection form is not ready",
+    "source": "Kontrol formu hazır değil"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.formTitle",
+    "en": "Inspection form",
+    "tr": "Kontrol Formu",
+    "de": "Inspection form",
+    "source": "Inspection form"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.expQty",
+    "en": "Expected quantity",
+    "tr": "Beklenen Miktar",
+    "de": "Expected quantity",
+    "source": "Expected quantity"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.arrQ",
+    "en": "Arrived?",
+    "tr": "Geldi mi?",
+    "de": "Arrived?",
+    "source": "Arrived?"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.apprQ",
+    "en": "Approved?",
+    "tr": "Onaylandı mı?",
+    "de": "Approved?",
+    "source": "Approved?"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.nAp",
+    "en": "Not approved",
+    "tr": "Onaylanmadı",
+    "de": "Not approved",
+    "source": "Onaylanmadı"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.arrivedQty",
+    "en": "Arrived quantity",
+    "tr": "Gelen Miktar",
+    "de": "Arrived quantity",
+    "source": "Arrived quantity"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.approvedQty",
+    "en": "Approved quantity",
+    "tr": "Onaylanan Miktar",
+    "de": "Approved quantity",
+    "source": "Approved quantity"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectedQty",
+    "en": "Rejected quantity",
+    "tr": "Red Miktarı",
+    "de": "Rejected quantity",
+    "source": "Rejected quantity"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.statusNote",
+    "en": "Status note",
+    "tr": "Durum Notu",
+    "de": "Status note",
+    "source": "Status note"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.statusNotePh",
+    "en": "Inspection note",
+    "tr": "Kontrol notu",
+    "de": "Inspection note",
+    "source": "Inspection note"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectPh",
+    "en": "Rejection reason",
+    "tr": "Red nedeni",
+    "de": "Rejection reason",
+    "source": "Rejection reason"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.saveP",
+    "en": "Saving...",
+    "tr": "Kaydediliyor...",
+    "de": "Saving...",
+    "source": "Saving..."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.photosTitle",
+    "en": "Inspection photos",
+    "tr": "Kontrol Fotoğrafları",
+    "de": "Inspection photos",
+    "source": "Inspection photos"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.photo",
+    "en": "Photo",
+    "tr": "Fotoğraf",
+    "de": "Photo",
+    "source": "Photo"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.flowGuideTitle",
+    "en": "Inspection Flow Guide",
+    "tr": "Kontrol Akışı Rehberi",
+    "de": "Inspection Flow Guide",
+    "source": "Inspection Flow Guide"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectDesc",
+    "en": "If plate arrived but is not suitable, reject it. Rejection reason is mandatory when rejected quantity exists.",
+    "tr": "Levha geldi ama uygun değilse red verilir. Red miktarı varsa red nedeni girmek zorunludur.",
+    "de": "If plate arrived but is not suitable, reject it. Rejection reason is mandatory when rejected quantity exists.",
+    "source": "Levha geldi ama uygun değilse red verilir. Red miktarı varsa red nedeni girmek zorunludur."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.partialDesc",
+    "en": "If the plate did not arrive, mark as missing. For partial arrivals, record arrived, approved and rejected quantities separately.",
+    "tr": "Levha hiç gelmediyse gelmedi olarak bırakılır. Kısmi geldiyse gelen, onaylanan ve red miktarlarını ayrı işleyebilirsin.",
+    "de": "If the plate did not arrive, mark as missing. For partial arrivals, record arrived, approved and rejected quantities separately.",
+    "source": "Levha hiç gelmediyse gelmedi olarak bırakılır. Kısmi geldiyse gelen, onaylanan ve red miktarlarını ayrı işleyebilirsin."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.findBatch",
+    "en": "1. Find Excel Batch",
+    "tr": "1. Excel Partisini Bul",
+    "de": "1. Find Excel Batch",
+    "source": "1. Find Excel Batch"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.findBatchBtn",
+    "en": "Find Batch",
+    "tr": "Partiyi Bul",
+    "de": "Find Batch",
+    "source": "Find Batch"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesCount",
+    "en": "{{n}} series",
+    "tr": "{{n}} seri",
+    "de": "{{n}} series",
+    "source": "{{n}} series"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesStepKicker",
+    "en": "Step 2",
+    "tr": "Adım 2",
+    "de": "Step 2",
+    "source": "Step 2"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesFilterLabel",
+    "en": "Status filter",
+    "tr": "Durum filtresi",
+    "de": "Status filter",
+    "source": "Status filter"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesFilterOther",
+    "en": "Other",
+    "tr": "Diğer",
+    "de": "Other",
+    "source": "Other"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesVisibleCount",
+    "en": "{{n}} / {{total}} series",
+    "tr": "{{n}} / {{total}} seri",
+    "de": "{{n}} / {{total}} series",
+    "source": "{{n}} / {{total}} series"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickApprove",
+    "en": "Quick Approve",
+    "tr": "Hızlı Onay",
+    "de": "Quick Approve",
+    "source": "Quick Approve"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickMissing",
+    "en": "Mark Missing",
+    "tr": "Gelmedi İşaretle",
+    "de": "Mark Missing",
+    "source": "Mark Missing"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickReject",
+    "en": "Quick Reject",
+    "tr": "Hızlı Red",
+    "de": "Quick Reject",
+    "source": "Quick Reject"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickApproveNote",
+    "en": "Quick approve applied",
+    "tr": "Hızlı onay uygulandı",
+    "de": "Quick approve applied",
+    "source": "Quick approve applied"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickMissingNote",
+    "en": "Plate not found in yard",
+    "tr": "Levha sahada bulunamadı",
+    "de": "Plate not found in yard",
+    "source": "Levha sahada bulunamadı"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickRejectReason",
+    "en": "Quality reject",
+    "tr": "Kalite red",
+    "de": "Quality reject",
+    "source": "Quality reject"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickRejectNote",
+    "en": "Quick reject applied",
+    "tr": "Hızlı red uygulandı",
+    "de": "Quick reject applied",
+    "source": "Quick reject applied"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectReasonLabel",
+    "en": "Reject Reason",
+    "tr": "Red Nedeni",
+    "de": "Reject Reason",
+    "source": "Reject Reason"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colExp",
+    "en": "Expected",
+    "tr": "Beklenen",
+    "de": "Expected",
+    "source": "Expected"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colOrderLine",
+    "en": "Netsis Order Line No",
+    "tr": "Netsis Sip. Sıra No",
+    "de": "Netsis Order Line No",
+    "source": "Netsis Sip. Sıra No"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colCombinedSize",
+    "en": "Combined Size",
+    "tr": "Kombine Size",
+    "de": "Combined Size",
+    "source": "Combined Size"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colDepot",
+    "en": "Depot Code",
+    "tr": "Depo Kodu",
+    "de": "Depot Code",
+    "source": "Depot Code"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colMaterialQuality",
+    "en": "Material Quality",
+    "tr": "Material Quality",
+    "de": "Material Quality",
+    "source": "Material Quality"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colHeatNumber",
+    "en": "Heat Number",
+    "tr": "Heat Number",
+    "de": "Heat Number",
+    "source": "Heat Number"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colCertificateNumber",
+    "en": "Certificate Number",
+    "tr": "Certificate Number",
+    "de": "Certificate Number",
+    "source": "Certificate Number"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.file",
+    "en": "Excel file",
+    "tr": "Excel Dosyası",
+    "de": "Excel file",
+    "source": "Excel file"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewP",
+    "en": "Previewing...",
+    "tr": "Ön izleniyor...",
+    "de": "Previewing...",
+    "source": "Previewing..."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewBtn",
+    "en": "Get preview",
+    "tr": "Ön İzleme Al",
+    "de": "Get preview",
+    "source": "Get preview"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.commitP",
+    "en": "Importing...",
+    "tr": "Aktarılıyor...",
+    "de": "Importing...",
+    "source": "Importing..."
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.errPayload",
+    "en": "Import data is not ready",
+    "tr": "Aktarım verisi hazır değil",
+    "de": "Import data is not ready",
+    "source": "Aktarım verisi hazır değil"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewOk",
+    "en": "Excel preview is ready",
+    "tr": "Excel ön izleme hazırlandı",
+    "de": "Excel preview is ready",
+    "source": "Excel preview is ready"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.readOk",
+    "en": "Read {{n}} lines",
+    "tr": "{{n}} satır okundu",
+    "de": "Read {{n}} lines",
+    "source": "Read {{n}} lines"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.readErr",
+    "en": "Could not read Excel",
+    "tr": "Excel okunamadı",
+    "de": "Could not read Excel",
+    "source": "Excel okunamadı"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableRow",
+    "en": "Row",
+    "tr": "Satır",
+    "de": "Row",
+    "source": "Row"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableExp",
+    "en": "Expected",
+    "tr": "Beklenen",
+    "de": "Expected",
+    "source": "Expected"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeTotal",
+    "en": "Total lines: {{n}}",
+    "tr": "Toplam Satır: {{n}}",
+    "de": "Total lines: {{n}}",
+    "source": "Total lines: {{n}}"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeNew",
+    "en": "New: {{n}}",
+    "tr": "Yeni: {{n}}",
+    "de": "New: {{n}}",
+    "source": "New: {{n}}"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeErr",
+    "en": "Errors: {{n}}",
+    "tr": "Hata: {{n}}",
+    "de": "Errors: {{n}}",
+    "source": "Errors: {{n}}"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.notePh",
+    "en": "Photo note",
+    "tr": "Fotoğraf notu",
+    "de": "Photo note",
+    "source": "Photo note"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.uploadP",
+    "en": "Upload photos",
+    "tr": "Fotoğrafları yükle",
+    "de": "Upload photos",
+    "source": "Upload photos"
+  }
+]

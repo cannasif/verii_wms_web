@@ -1711,8 +1711,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">{isEditMode ? 'Update' : 'Create'}</Badge>
-              <Badge variant="secondary">Designer</Badge>
+              <Badge variant="secondary">{isEditMode ? t('barcodeDesigner.form.badgeUpdate') : t('barcodeDesigner.form.badgeCreate')}</Badge>
+              <Badge variant="secondary">{t('barcodeDesigner.form.badgeDesigner')}</Badge>
             </div>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
@@ -1721,7 +1721,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' })}
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                Template bilgisini yönetin, canvas üzerinde label tasarlayın, JSON draft saklayın ve preview/export akışını tek yerden yönetin.
+                {t('barcodeDesigner.form.heroDescription')}
               </p>
             </div>
           </div>
@@ -1730,27 +1730,27 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 <div className="mb-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <div className="text-sm font-medium text-slate-900 dark:text-white">Akilli Preset Onerisi</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">Sube, musteri ve isleme gore en uygun 3 preset one cikarilir.</div>
+                      <div className="text-sm font-medium text-slate-900 dark:text-white">{t('barcodeDesigner.form.smartPresetTitle')}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeDesigner.form.smartPresetDescription')}</div>
                     </div>
-                    <Badge variant="outline">Recommendation Layer</Badge>
+                    <Badge variant="outline">{t('barcodeDesigner.form.recommendationLayer')}</Badge>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    <Input value={recommendationContext.branchCode} onChange={(event) => setRecommendationContext((current) => ({ ...current, branchCode: event.target.value }))} placeholder="Sube Kodu" />
+                    <Input value={recommendationContext.branchCode} onChange={(event) => setRecommendationContext((current) => ({ ...current, branchCode: event.target.value }))} placeholder={t('barcodeDesigner.form.branchCodePlaceholder')} />
                     <Select value={recommendationContext.customerType} onValueChange={(value) => setRecommendationContext((current) => ({ ...current, customerType: value }))}>
-                      <SelectTrigger><SelectValue placeholder="Musteri tipi" /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('barcodeDesigner.form.customerTypePlaceholder')} /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="standard">Standart</SelectItem>
-                        <SelectItem value="gs1">GS1</SelectItem>
-                        <SelectItem value="retail">Retail</SelectItem>
+                        <SelectItem value="standard">{t('barcodeDesigner.form.customerTypes.standard')}</SelectItem>
+                        <SelectItem value="gs1">{t('barcodeDesigner.form.customerTypes.gs1')}</SelectItem>
+                        <SelectItem value="retail">{t('barcodeDesigner.form.customerTypes.retail')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Select value={recommendationContext.processType} onValueChange={(value) => setRecommendationContext((current) => ({ ...current, processType: value }))}>
-                      <SelectTrigger><SelectValue placeholder="Surec tipi" /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('barcodeDesigner.form.processTypePlaceholder')} /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="warehouse-inbound">Ambar Giris</SelectItem>
-                        <SelectItem value="shipment">Sevkiyat</SelectItem>
-                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="warehouse-inbound">{t('barcodeDesigner.form.processTypes.warehouseInbound')}</SelectItem>
+                        <SelectItem value="shipment">{t('barcodeDesigner.form.processTypes.shipment')}</SelectItem>
+                        <SelectItem value="transfer">{t('barcodeDesigner.form.processTypes.transfer')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1773,15 +1773,15 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       variant="outline"
                       onClick={() => saveBarcodeDesignerDefaults({ ...recommendationContext, preferredPresetId: selectedPresetId })}
                     >
-                      Varsayilan Olarak Kaydet
+                      {t('barcodeDesigner.form.saveAsDefault')}
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">Hazir Template Galerisi</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">Koli, palet ve lojistik etiketlerini wizard mantigi ile hizli baslat.</div>
+                    <div className="text-sm font-medium text-slate-900 dark:text-white">{t('barcodeDesigner.form.templateGalleryTitle')}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeDesigner.form.templateGalleryDescription')}</div>
                   </div>
                   <Badge variant="secondary">3 Adimli Wizard</Badge>
                 </div>
@@ -1919,15 +1919,15 @@ export function BarcodeDesignerFormPage(): ReactElement {
       <div className="grid gap-6 xl:grid-cols-[0.34fr_0.66fr]">
         <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
-            <CardTitle>Template Bilgisi</CardTitle>
+            <CardTitle>{t('barcodeDesigner.form.templateInfoTitle')}</CardTitle>
           </CardHeader>
           <CardContent className={`space-y-4 ${readOnlyClassName ?? ''}`}>
             <div className="space-y-2">
-              <Label>Kod</Label>
+              <Label>{t('barcodeDesigner.form.codeLabel')}</Label>
               <Input value={templateRequest.templateCode} onChange={(event) => setTemplateRequest((current) => ({ ...current, templateCode: event.target.value }))} />
             </div>
             <div className="space-y-2">
-              <Label>Ad</Label>
+              <Label>{t('barcodeDesigner.form.nameLabel')}</Label>
               <Input value={templateRequest.displayName} onChange={(event) => setTemplateRequest((current) => ({ ...current, displayName: event.target.value }))} />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">

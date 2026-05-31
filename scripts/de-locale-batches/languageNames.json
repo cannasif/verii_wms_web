@@ -1,0 +1,37 @@
+[
+  {
+    "key": "languageNames.tr",
+    "en": "Türkçe",
+    "current": null
+  },
+  {
+    "key": "languageNames.en",
+    "en": "English",
+    "current": null
+  },
+  {
+    "key": "languageNames.de",
+    "en": "Deutsch",
+    "current": null
+  },
+  {
+    "key": "languageNames.fr",
+    "en": "Français",
+    "current": null
+  },
+  {
+    "key": "languageNames.ar",
+    "en": "العربية",
+    "current": null
+  },
+  {
+    "key": "languageNames.es",
+    "en": "Español",
+    "current": null
+  },
+  {
+    "key": "languageNames.it",
+    "en": "Italiano",
+    "current": null
+  }
+]

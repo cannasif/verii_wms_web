@@ -1,0 +1,327 @@
+[
+  {
+    "key": "inventory.outsideWarehouse.confirmRemoveMessage",
+    "en": "Are you sure you want to remove this product from the rack?",
+    "current": "Sind Sie sicher, dass Sie dieses Produkt aus dem Regal entfernen möchten?"
+  },
+  {
+    "key": "inventory.outsideWarehouse.confirmMoveTitle",
+    "en": "Move to another area",
+    "current": "In anderen Bereich verschieben"
+  },
+  {
+    "key": "inventory.outsideWarehouse.confirmMoveMessage",
+    "en": "Are you sure you want to move this product to the selected area?",
+    "current": "Sind Sie sicher, dass Sie dieses Produkt in den ausgewählten Bereich verschieben möchten?"
+  },
+  {
+    "key": "inventory.outsideWarehouse.realSubtitle",
+    "en": "Visualize steel acceptance placements by warehouse in 2D or 3D. Side-by-side placements can expand to the side and back, while stacked placements respect stack order.",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.selectWarehousePrompt",
+    "en": "Select a warehouse to visualize",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode2d",
+    "en": "2D View",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode3d",
+    "en": "3D View",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode2dHint",
+    "en": "Simplified 2D view for lower-end devices or quick checks.",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode3dHint",
+    "en": "3D view for visualizing side, back and stacked placement depth.",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.totalLocations",
+    "en": "Total Locations",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.totalPlates",
+    "en": "Total Plates",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.selectedLocation",
+    "en": "Selected Location",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.detailTitle",
+    "en": "Plate Detail",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.placementType",
+    "en": "Placement Type",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.stackOrder",
+    "en": "Stack Order",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.supplier",
+    "en": "Supplier",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.noPlacementData",
+    "en": "No placement data found for the selected filters.",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.noImage",
+    "en": "No stock image",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.security",
+    "en": "Security",
+    "current": "Sicherheit"
+  },
+  {
+    "key": "inventory.outsideWarehouse.parking",
+    "en": "Parking",
+    "current": "Parkplatz"
+  },
+  {
+    "key": "inventory.outsideWarehouse.factory",
+    "en": "Factory",
+    "current": "Fabrik"
+  },
+  {
+    "key": "inventory.outsideWarehouse.depot",
+    "en": "Depot",
+    "current": "Depot"
+  },
+  {
+    "key": "inventory.outsideWarehouse.portalClickArea",
+    "en": "Clickable portal area",
+    "current": "Klickbarer Portalbereich"
+  },
+  {
+    "key": "inventory.outsideWarehouse.clickable",
+    "en": "Clickable",
+    "current": "Klickbar"
+  },
+  {
+    "key": "inventory.outsideWarehouse.portalArea",
+    "en": "Portal Area (Sheet Metal Zone)",
+    "current": "Portalbereich (Bereich mit Blechen)"
+  },
+  {
+    "key": "inventory.outsideWarehouse.drawnBy",
+    "en": "Drawn by",
+    "current": "Gezeichnet von"
+  },
+  {
+    "key": "inventory.outsideWarehouse.portalSchema",
+    "en": "Portal Rack Schema",
+    "current": "Portal-Regalschema"
+  },
+  {
+    "key": "inventory.outsideWarehouse.addProduct",
+    "en": "Add Product",
+    "current": "Produkt hinzufügen"
+  },
+  {
+    "key": "inventory.outsideWarehouse.addToRegion",
+    "en": "Add to Region",
+    "current": "Zum Bereich hinzufügen"
+  },
+  {
+    "key": "inventory.outsideWarehouse.product",
+    "en": "Product",
+    "current": "Produkt"
+  },
+  {
+    "key": "inventory.outsideWarehouse.serialNo",
+    "en": "Serial No",
+    "current": "Seriennr."
+  },
+  {
+    "key": "inventory.outsideWarehouse.dCode",
+    "en": "D-Code",
+    "current": null
+  },
+  {
+    "key": "inventory.outsideWarehouse.move",
+    "en": "Move to Another Area",
+    "current": "In anderen Bereich verschieben"
+  },
+  {
+    "key": "inventory.outsideWarehouse.allTypes",
+    "en": "All",
+    "current": "Alle"
+  },
+  {
+    "key": "inventory.outsideWarehouse.typeSolarPanel",
+    "en": "Solar Panel",
+    "current": "Solarmodul"
+  },
+  {
+    "key": "inventory.outsideWarehouse.typeSolarFrame",
+    "en": "Solar Frame",
+    "current": "Solarrahmen"
+  },
+  {
+    "key": "inventory.outsideWarehouse.typeGalvPipe",
+    "en": "Galvanized Pipe",
+    "current": "Verzinktes Rohr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.typeSheetMetal",
+    "en": "Sheet Metal",
+    "current": "Blech"
+  },
+  {
+    "key": "inventory.outsideWarehouse.typeAlumProfile",
+    "en": "Aluminium Profile",
+    "current": "Aluminiumprofil"
+  },
+  {
+    "key": "inventory.outsideWarehouse.legendOccupiedSlot",
+    "en": "Occupied Slot",
+    "current": "Belegter Slot"
+  },
+  {
+    "key": "inventory.outsideWarehouse.legendEmptySlot",
+    "en": "Empty Slot",
+    "current": "Leerer Slot"
+  },
+  {
+    "key": "inventory.outsideWarehouse.legendDropTarget",
+    "en": "Drop Target",
+    "current": "Ablageziel"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraIso",
+    "en": "Isometric View",
+    "current": "Isometrische Ansicht"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraTop",
+    "en": "Top-Down View",
+    "current": "Draufsicht"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraFront",
+    "en": "Front View",
+    "current": "Vorderansicht"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraEye",
+    "en": "Eye Level (Operator)",
+    "current": "Augenhöhe (Bediener)"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraReset",
+    "en": "Reset Camera",
+    "current": "Kamera zurücksetzen"
+  },
+  {
+    "key": "inventory.outsideWarehouse.interactionHint",
+    "en": "Left-click: rotate · Right-click: pan · Wheel: zoom",
+    "current": "Linksklick: drehen · Rechtsklick: schwenken · Mausrad: zoomen"
+  },
+  {
+    "key": "inventory.outsideWarehouse.legendHover",
+    "en": "Hovered",
+    "current": "Überflogen"
+  },
+  {
+    "key": "inventory.warehouse3d.title",
+    "en": "3D Warehouse Visualization",
+    "current": "3D-Lagervisualisierung"
+  },
+  {
+    "key": "inventory.warehouse3d.description",
+    "en": "3D visualization of the warehouse",
+    "current": "3D-Visualisierung des Lagers"
+  },
+  {
+    "key": "inventory.warehouse3d.totalStock",
+    "en": "Total Stock",
+    "current": "Gesamtbestand"
+  },
+  {
+    "key": "inventory.warehouse3d.empty",
+    "en": "Empty",
+    "current": "Leer"
+  },
+  {
+    "key": "inventory.warehouse3d.emptyCell",
+    "en": "This cell is empty",
+    "current": "Diese Zelle ist leer"
+  },
+  {
+    "key": "inventory.warehouse3d.desktopOnly",
+    "en": "3D warehouse modeling feature is only available on desktop devices.",
+    "current": "Die 3D-Lagermodellierungsfunktion ist nur auf Desktop-Geräten verfügbar."
+  },
+  {
+    "key": "inventory.warehouse3d.controls",
+    "en": "Controls",
+    "current": "Steuerung"
+  },
+  {
+    "key": "inventory.warehouse3d.rotate",
+    "en": "Rotate",
+    "current": "Drehen"
+  },
+  {
+    "key": "inventory.warehouse3d.pan",
+    "en": "Pan",
+    "current": "Verschieben"
+  },
+  {
+    "key": "inventory.warehouse3d.zoom",
+    "en": "Zoom In/Out",
+    "current": "Vergrößern/Verkleinern"
+  },
+  {
+    "key": "inventory.warehouse3d.leftClickDrag",
+    "en": "🖱️ Left Click + Drag",
+    "current": "🖱️ Linksklick + Ziehen"
+  },
+  {
+    "key": "inventory.warehouse3d.rightClickDrag",
+    "en": "🖱️ Right Click + Drag",
+    "current": "🖱️ Rechtsklick + Ziehen"
+  },
+  {
+    "key": "inventory.warehouse3d.scroll",
+    "en": "🖱️ Scroll",
+    "current": "🖱️ Scrollen"
+  },
+  {
+    "key": "inventory.warehouse3d.clickShelf",
+    "en": "🖱️ Click Shelf",
+    "current": "🖱️ Regal anklicken"
+  },
+  {
+    "key": "inventory.warehouse3d.lazyLoadHint",
+    "en": "3D warehouse view is heavy. To keep first render fast, model and stock layers load only when you request it.",
+    "current": null
+  },
+  {
+    "key": "inventory.warehouse3d.load3dView",
+    "en": "Load 3D View",
+    "current": null
+  }
+]

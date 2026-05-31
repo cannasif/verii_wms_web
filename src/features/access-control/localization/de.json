@@ -19,134 +19,218 @@
       "groups": "Benutzer erhält kombinierte Berechtigungen aus allen ausgewählten Gruppen.",
       "save": "Zuweisungen gelten sofort für die nächsten Autorisierungsprüfungen. Benutzer müssen möglicherweise ihre Sitzung aktualisieren.",
       "systemAdminNote": "Hat der Benutzer eine System-Admin-Gruppe, werden detaillierte Berechtigungen umgangen."
+    },
+    "wmsScopePolicy": {
+      "code": "Der Richtliniencode ist der stabile Schlüssel für Backend-Durchsetzung und Support-Abläufe.",
+      "name": "Operativer Anzeigename, der den Zweck der Richtlinie erklärt.",
+      "entityType": "Legt fest, auf welchen Dokument- oder Workflow-Typ diese Richtlinie angewendet wird.",
+      "scopeType": "Definiert, ob der Zugriff uneingeschränkt, filial-, lager- oder zuweisungsbasiert ist.",
+      "description": "Optionale interne Notiz für Support- und Audit-Kontext."
     }
   },
   "permissionDefinitions": {
-    "title": "Permission Definitions",
-    "description": "Manage permission codes used in the system",
-    "add": "Add Definition",
+    "title": "Berechtigungsdefinitionen",
+    "description": "Berechtigungscodes im System verwalten",
+    "add": "Definition hinzufügen",
     "form": {
-      "editTitle": "Edit Permission Definition",
-      "addTitle": "Add Permission Definition",
-      "editDescription": "Update permission definition details",
-      "addDescription": "Create a new permission definition",
+      "editTitle": "Berechtigungsdefinition bearbeiten",
+      "addTitle": "Berechtigungsdefinition hinzufügen",
+      "editDescription": "Details der Berechtigungsdefinition aktualisieren",
+      "addDescription": "Neue Berechtigungsdefinition erstellen",
       "code": "Code",
-      "name": "Name",
-      "namePlaceholder": "Display name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isActive": "Active",
       "codePlaceholder": "Code auswählen",
       "affectedRoutes": "Betroffene Seiten",
       "affectedRoutesNone": "Für diesen Code wurde keine passende Route gefunden",
+      "name": "Name",
+      "namePlaceholder": "Anzeigename",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "isActive": "Aktiv",
       "codeSearchPlaceholder": "Suchen...",
       "codeEmpty": "Keine Ergebnisse gefunden"
     },
     "table": {
       "code": "Code",
       "name": "Name",
-      "isActive": "Active",
-      "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "isActive": "Aktiv",
+      "updatedDate": "Aktualisiert",
+      "showing": "{{from}}-{{to}} von {{total}}"
     },
     "delete": {
-      "confirmTitle": "Delete Permission Definition",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Berechtigungsdefinition löschen",
+      "confirmMessage": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "syncFromRoutes": "Von Routen synchronisieren"
   },
   "permissionGroups": {
-    "title": "Permission Groups",
-    "description": "Manage permission groups and their assignments",
-    "add": "Add Group",
-    "selectAll": "Select all",
-    "noDefinitions": "No permission definitions available",
+    "title": "Berechtigungsgruppen",
+    "description": "Berechtigungsgruppen und deren Zuweisungen verwalten",
+    "add": "Gruppe hinzufügen",
+    "selectAll": "Alle auswählen",
+    "noDefinitions": "Keine Berechtigungsdefinitionen verfügbar",
     "form": {
-      "editTitle": "Edit Permission Group",
-      "addTitle": "Add Permission Group",
-      "editDescription": "Update permission group details",
-      "addDescription": "Create a new permission group",
+      "editTitle": "Berechtigungsgruppe bearbeiten",
+      "addTitle": "Berechtigungsgruppe hinzufügen",
+      "editDescription": "Details der Berechtigungsgruppe aktualisieren",
+      "addDescription": "Neue Berechtigungsgruppe erstellen",
       "name": "Name",
-      "namePlaceholder": "Group name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissions": "Permissions"
+      "namePlaceholder": "Gruppenname",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "isSystemAdmin": "System-Administrator",
+      "isActive": "Aktiv",
+      "permissions": "Berechtigungen"
     },
     "table": {
       "name": "Name",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}"
+      "isSystemAdmin": "System-Administrator",
+      "isActive": "Aktiv",
+      "permissionCount": "Berechtigungen",
+      "showing": "{{from}}-{{to}} von {{total}}"
     },
-    "managePermissions": "Manage permissions",
+    "managePermissions": "Berechtigungen verwalten",
     "permissionsPanel": {
-      "title": "Edit Group Permissions",
-      "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes",
-      "introTitle": "What can this group do?",
-      "introBody": "Below, you choose which modules this group can view, create, update, or delete. Every user assigned to this group receives the same permission set.",
-      "selectionSummaryTitle": "Selected CRUD summary",
-      "selectionSummaryBody": "This summary helps you quickly see which operation types are currently granted to the group.",
-      "searchPlaceholder": "Search by module, action, or permission name...",
-      "selectActionGroup": "Select all {{action}} permissions"
+      "title": "Gruppenberechtigungen bearbeiten",
+      "description": "Berechtigungen für diese Gruppe auswählen",
+      "currentCodes": "Aktuelle Berechtigungscodes",
+      "introTitle": "Was kann diese Gruppe tun?",
+      "introBody": "Unten wählen Sie aus, welche Module diese Gruppe anzeigen, erstellen, aktualisieren oder löschen darf. Jeder dieser Gruppe zugewiesene Benutzer erhält denselben Berechtigungssatz.",
+      "selectionSummaryTitle": "Ausgewählte CRUD-Zusammenfassung",
+      "selectionSummaryBody": "Diese Zusammenfassung hilft Ihnen schnell zu erkennen, welche Operationstypen der Gruppe derzeit gewährt sind.",
+      "searchPlaceholder": "Nach Modul, Aktion oder Berechtigungsname suchen...",
+      "selectActionGroup": "Alle {{action}}-Berechtigungen auswählen"
     },
     "delete": {
-      "confirmTitle": "Delete Permission Group",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Berechtigungsgruppe löschen",
+      "confirmMessage": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "search": "Suchen...",
     "systemAdminLocked": "Die System-Admin-Gruppe kann nicht geändert werden"
   },
+  "accessControl": {
+    "permissionActions": {
+      "view": {
+        "description": "Öffnet Listen-, Detail- und schreibgeschützte Überwachungsbildschirme."
+      },
+      "create": {
+        "description": "Öffnet die Erstellung neuer Datensätze und die ersten Speicherschritte."
+      },
+      "update": {
+        "description": "Öffnet Bearbeitungs-, Prozess- und Änderungsspeicherschritte für vorhandene Datensätze."
+      },
+      "delete": {
+        "description": "Erlaubt Soft Delete, Deaktivierung oder Löschaktionen."
+      }
+    }
+  },
   "userGroupAssignments": {
-    "title": "User Group Assignments",
-    "description": "Assign permission groups to users",
-    "selectUser": "Select User",
-    "selectUserPlaceholder": "Search and select user...",
-    "selectUserHint": "Select a user to manage their permission group assignments",
-    "assignedGroups": "Assigned Permission Groups",
-    "noUsers": "No users found",
-    "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "title": "Benutzergruppenzuweisungen",
+    "description": "Berechtigungsgruppen Benutzern zuweisen",
+    "selectUser": "Benutzer auswählen",
+    "selectUserPlaceholder": "Benutzer suchen und auswählen...",
+    "selectUserHint": "Wählen Sie einen Benutzer, um dessen Berechtigungsgruppenzuweisungen zu verwalten",
+    "assignedGroups": "Zugewiesene Berechtigungsgruppen",
+    "noUsers": "Keine Benutzer gefunden",
+    "noGroups": "Keine Berechtigungsgruppen verfügbar",
+    "selectAll": "Alle auswählen"
+  },
+  "wmsScopePolicies": {
+    "title": "WMS-Bereichsrichtlinien",
+    "description": "Filial-, Lager- und zuweisungsbasierte Datenbereichsregeln verwalten",
+    "add": "Richtlinie hinzufügen",
+    "stats": {
+      "total": "Richtlinien gesamt",
+      "active": "Aktive Richtlinien",
+      "entities": "Abgedeckte Abläufe"
+    },
+    "form": {
+      "addTitle": "WMS-Bereichsrichtlinie hinzufügen",
+      "editTitle": "WMS-Bereichsrichtlinie bearbeiten",
+      "addDescription": "Neue Datenbereichsrichtlinie definieren.",
+      "editDescription": "Richtlinienverhalten und Bereichstyp aktualisieren.",
+      "code": "Code",
+      "codePlaceholder": "Richtliniencode auswählen",
+      "codeEmpty": "Kein passender Richtliniencode gefunden",
+      "name": "Name",
+      "namePlaceholder": "Anzeigename der Richtlinie",
+      "entityType": "Entitätstyp",
+      "entityTypePlaceholder": "Entitätstyp auswählen",
+      "scopeType": "Bereichstyp",
+      "scopeTypePlaceholder": "Bereichstyp auswählen",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Operativen Kontext erläutern",
+      "includeSelf": "Eigene Datensätze einschließen",
+      "includeSelfHint": "Erlaubt dem Benutzer, bei zuweisungs-, filial- oder lagerbasierter Richtlinie auch eigene Datensätze zu sehen.",
+      "isActive": "Aktiv",
+      "isActiveHint": "Inaktive Richtlinien werden bei Auflösungs- und Zuweisungsabläufen ignoriert."
+    },
+    "table": {
+      "code": "Code",
+      "name": "Name",
+      "entityType": "Entitätstyp",
+      "scopeType": "Bereichstyp",
+      "includeSelf": "Eigene einschließen",
+      "isActive": "Aktiv"
+    },
+    "delete": {
+      "confirmTitle": "WMS-Bereichsrichtlinie löschen",
+      "confirmMessage": "Möchten Sie „{{name}}“ wirklich löschen?"
+    }
+  },
+  "wmsScopeAssignments": {
+    "title": "WMS-Bereichszuweisungen",
+    "description": "Verwalten, auf welchen Filial-, Lager- und Datensatzbereich jeder Benutzer zugreifen darf",
+    "selectUser": "Benutzer auswählen",
+    "selectUserPlaceholder": "Benutzer suchen und auswählen...",
+    "selectUserHint": "Wählen Sie einen Benutzer, um dessen Bereichszuweisungen zu bearbeiten.",
+    "noUserSelected": "Noch kein Benutzer ausgewählt",
+    "noUsers": "Keine Benutzer gefunden",
+    "assignedPolicies": "Zugewiesene Richtlinien",
+    "resolutionScope": "Geprüfter Ablauf",
+    "statusLabel": "Status",
+    "statusPending": "Ungespeicherte Änderungen",
+    "statusCurrent": "Mit Server synchron",
+    "editorTitle": "Zuweisungseditor",
+    "editorDescription": "Sie können filial- und lagerbasierte Bereiche für mehrere Entitätstypen definieren.",
+    "addAssignment": "Zuweisung hinzufügen",
+    "empty": "Dieser Benutzer hat noch keine WMS-Bereichszuweisungen.",
+    "policyPlaceholder": "Richtlinie auswählen",
+    "branchCodePlaceholder": "Filialcode",
+    "warehousePlaceholder": "Lager auswählen",
+    "previewTitle": "Zugriffsvorschau",
+    "previewDescription": "Zeigt die effektive Bereichsauflösung für den ausgewählten Entitätstyp.",
+    "entityTypePlaceholder": "Entitätstyp auswählen",
+    "previewEmpty": "Wählen Sie einen Benutzer und Entitätstyp, um den effektiven Bereich hier zu sehen.",
+    "previewUnrestricted": "Uneingeschränkter Zugriff",
+    "previewIncludeSelf": "Eigene Datensätze eingeschlossen",
+    "previewAssignedOnly": "Nur zugewiesene Datensätze",
+    "previewBranches": "Filialen",
+    "previewWarehouses": "Lager",
+    "previewAssignments": "Passende Zuweisungen",
+    "noExplicitPolicy": "Keine explizite Richtlinie"
   },
   "common": {
-    "cancel": "Stornieren",
-    "saving": "Sparen...",
+    "cancel": "Abbrechen",
+    "saving": "Speichern...",
     "save": "Speichern und anwenden",
     "loading": "Laden...",
     "search": "Suchen...",
     "noData": "Keine Daten",
     "actions": "Aktionen",
     "yes": "Ja",
-    "no": "NEIN",
+    "no": "Nein",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "previous": "Vorherige",
-    "next": "Nächste",
+    "previous": "Zurück",
+    "next": "Weiter",
     "processing": "Verarbeitung..."
   },
   "sidebar": {
     "accessControl": "Zugangskontrolle",
     "permissionDefinitions": "Berechtigungsdefinitionen",
     "permissionGroups": "Berechtigungsgruppen",
-    "userGroupAssignments": "Benutzergruppenzuweisungen"
-  },
-  "accessControl": {
-    "permissionActions": {
-      "view": {
-        "description": "Opens list, detail, and read-only monitoring screens."
-      },
-      "create": {
-        "description": "Opens new record creation and first-save steps."
-      },
-      "update": {
-        "description": "Opens edit, process, and change-saving steps for existing records."
-      },
-      "delete": {
-        "description": "Allows soft delete, deactivation, or delete actions."
-      }
-    }
+    "userGroupAssignments": "Benutzergruppenzuweisungen",
+    "wmsScopePolicies": "WMS-Bereichsrichtlinien",
+    "wmsScopeAssignments": "WMS-Bereichszuweisungen"
   }
 }

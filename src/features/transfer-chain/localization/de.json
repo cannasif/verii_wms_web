@@ -1,0 +1,114 @@
+{
+  "title": "Transferketten",
+  "breadcrumb": {
+    "operations": "Operationen"
+  },
+  "hero": {
+    "eyebrow": "WT + PT Gemeinsamer Ablauf",
+    "description": "Verknüpfen Sie Transfer- und Fertigungstransferaufträge mit Sequenzabhängigkeit; der nächste Vorgang am Terminal darf erst starten, wenn der vorherige Schritt abgeschlossen ist.",
+    "create": "Kette erstellen"
+  },
+  "stats": {
+    "active": "Aktiv",
+    "completed": "Abgeschlossen",
+    "totalSteps": "Gesamt Schritte"
+  },
+  "table": {
+    "code": "Code",
+    "name": "Name",
+    "status": "Status",
+    "type": "Typ",
+    "chainType": "Kettentyp",
+    "sourceDocument": "Quelldokument",
+    "sourceDocumentType": "Quelldokumenttyp",
+    "progress": "Fortschritt",
+    "createdDate": "Erstellt am",
+    "detail": "Details"
+  },
+  "status": {
+    "Draft": "Entwurf",
+    "Active": "Aktiv",
+    "Completed": "Abgeschlossen",
+    "Cancelled": "Storniert"
+  },
+  "stepStatus": {
+    "Blocked": "Blockiert",
+    "Ready": "Bereit",
+    "InProgress": "In Bearbeitung",
+    "Completed": "Abgeschlossen",
+    "Skipped": "Übersprungen",
+    "Cancelled": "Storniert"
+  },
+  "sourceType": {
+    "WT": "Transferauftrag",
+    "PT": "Fertigungstransfer",
+    "SH": "Versandauftrag"
+  },
+  "readiness": {
+    "loading": "Kettenstatus wird geprüft...",
+    "error": "Kettenstatus konnte nicht geprüft werden.",
+    "retry": "Erneut versuchen",
+    "readyTitle": "Bereit zur Bearbeitung",
+    "blockedTitle": "Durch Transferkette blockiert",
+    "chainCode": "Kette: {{code}}",
+    "chained": "Dieser Auftrag ist Teil einer operativen Kette.",
+    "step": "Schritt {{step}}",
+    "timelineStep": "{{step}}. {{source}} #{{id}}",
+    "defaultBlockedReason": "Zuerst müssen die vorherigen Pflichtschritte abgeschlossen werden.",
+    "blockingStep": "{{source}} #{{id}} / Schritt {{step}}",
+    "readyDescription": "Die vorherigen Pflichtschritte sind abgeschlossen. Dieser Vorgang kann fortgesetzt werden."
+  },
+  "form": {
+    "createTitle": "Transferkette erstellen",
+    "editTitle": "Transferkette aktualisieren",
+    "description": "Operative Kettendefinition, die WT-/PT-Aufträge in eine Reihenfolge bringt.",
+    "code": "Code",
+    "name": "Name",
+    "status": "Status",
+    "chainType": "Kettentyp",
+    "sourceDocumentType": "Quelldokumenttyp",
+    "sourceDocumentTypePlaceholder": "Versand, Produktion...",
+    "sourceDocumentId": "Quelldokument-ID",
+    "descriptionLabel": "Beschreibung"
+  },
+  "detail": {
+    "fallbackTitle": "Transferketten-Details",
+    "loading": "Kettendetails werden geladen...",
+    "stepsTitle": "Kettenschritte",
+    "stepsDescription": "Die Schritte laufen von der kleinsten zur größten Sequenznummer. Der nächste Schritt darf erst starten, wenn der vorherige Pflichtschritt abgeschlossen ist.",
+    "emptySteps": "Noch keine Schritte vorhanden.",
+    "prepare": "Vorbereiten",
+    "skip": "Überspringen",
+    "step": "Schritt"
+  },
+  "stepForm": {
+    "title": "Schritt hinzufügen / Bereitschaftsprüfung",
+    "source": "Quelle",
+    "headerId": "Kopf-ID",
+    "sequenceNo": "Reihenfolge",
+    "note": "Notiz",
+    "check": "Prüfen",
+    "add": "Hinzufügen",
+    "ready": "Dieser Auftrag kann jetzt gestartet werden.",
+    "blocked": "Blockiert: {{reason}}",
+    "defaultBlockedReason": "Vorherige Schritte müssen abgeschlossen werden."
+  },
+  "delete": {
+    "title": "Transferkette löschen?",
+    "description": "{{name}} wird gelöscht. Wenn bereits ein Schritt gestartet wurde, blockiert die API diesen Vorgang."
+  },
+  "toast": {
+    "createSuccess": "Transferkette gespeichert.",
+    "createError": "Transferkette konnte nicht gespeichert werden.",
+    "updateSuccess": "Transferkette aktualisiert.",
+    "updateError": "Transferkette konnte nicht aktualisiert werden.",
+    "deleteSuccess": "Transferkette gelöscht.",
+    "deleteError": "Transferkette konnte nicht gelöscht werden.",
+    "stepCreateSuccess": "Kettenschritt hinzugefügt.",
+    "stepCreateError": "Kettenschritt konnte nicht hinzugefügt werden.",
+    "stepUpdateSuccess": "Kettenschritt aktualisiert.",
+    "stepUpdateError": "Kettenschritt konnte nicht aktualisiert werden.",
+    "stepDeleteSuccess": "Kettenschritt gelöscht.",
+    "stepDeleteError": "Kettenschritt konnte nicht gelöscht werden."
+  }
+}

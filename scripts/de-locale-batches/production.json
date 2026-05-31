@@ -1,0 +1,2237 @@
+[
+  {
+    "key": "production.approval.title",
+    "en": "Production Plans Awaiting Approval",
+    "current": "Production Plans Awaiting Approval"
+  },
+  {
+    "key": "production.approval.approveSuccess",
+    "en": "Production plan approved successfully",
+    "current": "Production plan approved successfully"
+  },
+  {
+    "key": "production.approval.approveError",
+    "en": "Production plan could not be approved",
+    "current": "Production plan could not be approved"
+  },
+  {
+    "key": "production.approval.rejectSuccess",
+    "en": "Production plan rejected successfully",
+    "current": "Production plan rejected successfully"
+  },
+  {
+    "key": "production.approval.rejectError",
+    "en": "Production plan could not be rejected",
+    "current": "Production plan could not be rejected"
+  },
+  {
+    "key": "production.approval.error",
+    "en": "An error occurred while loading data",
+    "current": "An error occurred while loading data"
+  },
+  {
+    "key": "production.approval.searchPlaceholder",
+    "en": "Search by plan no, main stock, or variant",
+    "current": "Search by plan no, main stock, or variant"
+  },
+  {
+    "key": "production.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "production.approval.documentNo",
+    "en": "Plan No",
+    "current": "Plan No"
+  },
+  {
+    "key": "production.approval.documentDate",
+    "en": "Document Date",
+    "current": "Document Date"
+  },
+  {
+    "key": "production.approval.mainStockCode",
+    "en": "Main Stock",
+    "current": "Main Stock"
+  },
+  {
+    "key": "production.approval.mainYapKod",
+    "en": "Main YapKod",
+    "current": "Main YapKod"
+  },
+  {
+    "key": "production.approval.plannedQuantity",
+    "en": "Planned",
+    "current": "Planned"
+  },
+  {
+    "key": "production.approval.completedQuantity",
+    "en": "Completed",
+    "current": "Completed"
+  },
+  {
+    "key": "production.approval.actions",
+    "en": "Actions",
+    "current": "Actions"
+  },
+  {
+    "key": "production.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "production.approval.approve",
+    "en": "Approve",
+    "current": "Approve"
+  },
+  {
+    "key": "production.approval.reject",
+    "en": "Reject",
+    "current": "Reject"
+  },
+  {
+    "key": "production.approval.noData",
+    "en": "No production plans awaiting approval",
+    "current": "No production plans awaiting approval"
+  },
+  {
+    "key": "production.detail.title",
+    "en": "Production Detail",
+    "current": "Uretim Detayi"
+  },
+  {
+    "key": "production.detail.subtitle",
+    "en": "Review the plan, orders, dependencies, and linked transfers in a management view.",
+    "current": "Plan, emir, dependency ve bagli transferleri yonetim gorunumunde izleyin."
+  },
+  {
+    "key": "production.detail.openProcess",
+    "en": "Open Process Screen",
+    "current": "Process Ekranina Git"
+  },
+  {
+    "key": "production.detail.error",
+    "en": "Production detail could not be loaded.",
+    "current": "Uretim detayi yuklenemedi"
+  },
+  {
+    "key": "production.detail.statusInfoTitle",
+    "en": "Status and permission information",
+    "current": "Durum ve izin bilgisi"
+  },
+  {
+    "key": "production.detail.statusInfoDraft",
+    "en": "This plan is still in draft. If it has not been processed on the floor, you can go back to edit mode and update it.",
+    "current": "Bu plan taslak durumda. Henüz sahada işlenmediyse düzenleme ekranına dönüp planı güncelleyebilirsiniz."
+  },
+  {
+    "key": "production.detail.statusInfoLocked",
+    "en": "This plan may already be in operational flow. For that reason this detail screen stays read-only and editing remains locked.",
+    "current": "Bu plan operasyonel akışa girmiş olabilir. Bu yüzden detail ekranı yalnızca izleme içindir; düzenleme kilitli tutulur."
+  },
+  {
+    "key": "production.detail.headerAssignments",
+    "en": "Header Assignments",
+    "current": "Plan Atamalari"
+  },
+  {
+    "key": "production.detail.orders",
+    "en": "Production Orders",
+    "current": "Uretim Emirleri"
+  },
+  {
+    "key": "production.detail.ordersSubtitle",
+    "en": "Review order, quantity, assignment, and actual summary in one place.",
+    "current": "Emir, miktar, atama ve gerceklesen ozetini okuyun."
+  },
+  {
+    "key": "production.detail.orderVariance",
+    "en": "Order-Based Variance Summary",
+    "current": "Order Bazli Sapma Ozeti"
+  },
+  {
+    "key": "production.detail.orderVarianceSubtitle",
+    "en": "Track output and consumption planned-vs-actual gaps for each order.",
+    "current": "Her emir icin output ve consumption plan-gerceklesen farkini izleyin."
+  },
+  {
+    "key": "production.detail.orderTransferBreakdown",
+    "en": "Order-Based Linked Transfers",
+    "current": "Order Bazli Linked Transferler"
+  },
+  {
+    "key": "production.detail.orderTransferBreakdownSubtitle",
+    "en": "Review production transfers linked to each order separately.",
+    "current": "Her emre bagli production transferleri ayri ayri izleyin."
+  },
+  {
+    "key": "production.detail.dependencies",
+    "en": "Dependency Map",
+    "current": "Dependency Haritasi"
+  },
+  {
+    "key": "production.detail.transferLinks",
+    "en": "Linked Production Transfers",
+    "current": "Bagli Production Transferler"
+  },
+  {
+    "key": "production.detail.statusInfoNoUpdate",
+    "en": "You can view this plan, but you cannot switch to edit mode because you do not have production update permission.",
+    "current": "You can view this plan, but you cannot switch to edit mode because you do not have production update permission."
+  },
+  {
+    "key": "production.detail.columns.order",
+    "en": "Order",
+    "current": "Order"
+  },
+  {
+    "key": "production.detail.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "production.detail.columns.planned",
+    "en": "Planned",
+    "current": "Planned"
+  },
+  {
+    "key": "production.detail.columns.actual",
+    "en": "Actual",
+    "current": "Actual"
+  },
+  {
+    "key": "production.detail.columns.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "production.detail.columns.assignment",
+    "en": "Assignment",
+    "current": "Assignment"
+  },
+  {
+    "key": "production.detail.outputGap",
+    "en": "Output Gap: {{value}}",
+    "current": "Output Gap: {{value}}"
+  },
+  {
+    "key": "production.detail.consumptionGap",
+    "en": "Consumption Gap: {{value}}",
+    "current": "Consumption Gap: {{value}}"
+  },
+  {
+    "key": "production.detail.noOrderTransfer",
+    "en": "There is no transfer linked to this order.",
+    "current": "There is no transfer linked to this order."
+  },
+  {
+    "key": "production.detail.noPlanTransfer",
+    "en": "There is no transfer linked to this plan.",
+    "current": "There is no transfer linked to this plan."
+  },
+  {
+    "key": "production.detail.transferColumns.document",
+    "en": "Document",
+    "current": "Document"
+  },
+  {
+    "key": "production.detail.transferColumns.purpose",
+    "en": "Purpose",
+    "current": "Purpose"
+  },
+  {
+    "key": "production.detail.transferColumns.source",
+    "en": "Source",
+    "current": "Source"
+  },
+  {
+    "key": "production.detail.transferColumns.target",
+    "en": "Target",
+    "current": "Target"
+  },
+  {
+    "key": "production.detail.transferColumns.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "production.detail.dependencyColumns.predecessor",
+    "en": "Predecessor Order",
+    "current": "Predecessor Order"
+  },
+  {
+    "key": "production.detail.dependencyColumns.successor",
+    "en": "Successor Order",
+    "current": "Successor Order"
+  },
+  {
+    "key": "production.detail.dependencyColumns.type",
+    "en": "Type",
+    "current": "Type"
+  },
+  {
+    "key": "production.detail.dependencyColumns.rules",
+    "en": "Rules",
+    "current": "Rules"
+  },
+  {
+    "key": "production.detail.badges.transfer",
+    "en": "Transfer",
+    "current": "Transfer"
+  },
+  {
+    "key": "production.detail.badges.output",
+    "en": "Output",
+    "current": "Output"
+  },
+  {
+    "key": "production.detail.badges.lag",
+    "en": "Lag {{minutes}} min",
+    "current": "Lag {{minutes}} min"
+  },
+  {
+    "key": "production.create.title",
+    "en": "Create Production Plan",
+    "current": "Create Production Plan"
+  },
+  {
+    "key": "production.create.editTitle",
+    "en": "Edit Production Plan",
+    "current": "Uretim Planini Duzenle"
+  },
+  {
+    "key": "production.create.subtitle",
+    "en": "You can start quickly from a work order or stock information, then complete the plan normally on this screen.",
+    "current": "You can start quickly from a work order or stock information, then complete the plan normally on this screen."
+  },
+  {
+    "key": "production.create.editSubtitle",
+    "en": "Only draft plans with no shopfloor activity can be updated here.",
+    "current": "Sadece draft durumundaki ve islem gormemis planlari guncelleyebilirsiniz."
+  },
+  {
+    "key": "production.create.erpLoaded",
+    "en": "Quick entry applied. Main product, variant, and quantity fields were filled.",
+    "current": "Quick entry applied. Main product, variant, and quantity fields were filled."
+  },
+  {
+    "key": "production.create.erpError",
+    "en": "Could not load ERP template",
+    "current": "Could not load ERP template"
+  },
+  {
+    "key": "production.create.success",
+    "en": "Production plan saved",
+    "current": "Production plan saved"
+  },
+  {
+    "key": "production.create.updateSuccess",
+    "en": "Production plan updated",
+    "current": "Uretim plani guncellendi"
+  },
+  {
+    "key": "production.create.error",
+    "en": "Production plan could not be saved",
+    "current": "Production plan could not be saved"
+  },
+  {
+    "key": "production.create.editModeTitle",
+    "en": "Update mode",
+    "current": "Kayit guncelleme modu"
+  },
+  {
+    "key": "production.create.editModeBody",
+    "en": "This plan has already been saved and you are updating it here. When you save, the system updates the existing draft plan instead of creating a new one.",
+    "current": "Bu plan daha once kaydedildi, burada guncelliyorsunuz. Kaydettiginizde draft plani yeni bir kayit acmadan mevcut haliyle guncelleyecegiz."
+  },
+  {
+    "key": "production.create.orderDraftLabel",
+    "en": "Order {{index}}",
+    "current": "Order {{index}}"
+  },
+  {
+    "key": "production.create.selectOrderPlaceholder",
+    "en": "Order",
+    "current": "Order"
+  },
+  {
+    "key": "production.create.review.source",
+    "en": "Source",
+    "current": "Source"
+  },
+  {
+    "key": "production.create.review.sourceErp",
+    "en": "ERP",
+    "current": "ERP"
+  },
+  {
+    "key": "production.create.review.sourceManual",
+    "en": "Manual",
+    "current": "Manual"
+  },
+  {
+    "key": "production.create.review.execution",
+    "en": "Mode",
+    "current": "Mode"
+  },
+  {
+    "key": "production.create.review.mainStock",
+    "en": "Main stock",
+    "current": "Main stock"
+  },
+  {
+    "key": "production.create.validation.documentNo",
+    "en": "Plan number is missing.",
+    "current": "Plan number is missing."
+  },
+  {
+    "key": "production.create.validation.mainStock",
+    "en": "Main stock is not selected.",
+    "current": "Main stock is not selected."
+  },
+  {
+    "key": "production.create.validation.orderNo",
+    "en": "An order number is empty.",
+    "current": "An order number is empty."
+  },
+  {
+    "key": "production.create.validation.outputOrder",
+    "en": "An output row has no linked order.",
+    "current": "An output row has no linked order."
+  },
+  {
+    "key": "production.create.validation.consumptionOrder",
+    "en": "A consumption row has no linked order.",
+    "current": "A consumption row has no linked order."
+  },
+  {
+    "key": "production.create.summary.orders",
+    "en": "Orders",
+    "current": "Orders"
+  },
+  {
+    "key": "production.create.summary.outputs",
+    "en": "Outputs",
+    "current": "Outputs"
+  },
+  {
+    "key": "production.create.summary.consumptions",
+    "en": "Consumption",
+    "current": "Consumption"
+  },
+  {
+    "key": "production.create.summary.dependencies",
+    "en": "Dependencies",
+    "current": "Dependencies"
+  },
+  {
+    "key": "production.create.summary.totalOutput",
+    "en": "Total output qty",
+    "current": "Total output qty"
+  },
+  {
+    "key": "production.create.summary.totalConsumption",
+    "en": "Total consumption qty",
+    "current": "Total consumption qty"
+  },
+  {
+    "key": "production.create.source.title",
+    "en": "Quick entry",
+    "current": "Quick entry"
+  },
+  {
+    "key": "production.create.source.subtitle",
+    "en": "Fill the basic fields from a work order or stock information, then complete the rest of the plan here.",
+    "current": "Fill the basic fields from a work order or stock information, then complete the rest of the plan here."
+  },
+  {
+    "key": "production.create.modeManual",
+    "en": "Manual planning",
+    "current": "Manuel Planlama"
+  },
+  {
+    "key": "production.create.modeErp",
+    "en": "Quick entry",
+    "current": "Quick entry"
+  },
+  {
+    "key": "production.create.modeManualDescription",
+    "en": "You define every order, output, and consumption breakdown. ERP may still be used as reference.",
+    "current": "You define every order, output, and consumption breakdown. ERP may still be used as reference."
+  },
+  {
+    "key": "production.create.mainStockCode",
+    "en": "Main product code",
+    "current": "Ana Stok"
+  },
+  {
+    "key": "production.create.mainYapKod",
+    "en": "Main YapKod",
+    "current": "Ana YapKod"
+  },
+  {
+    "key": "production.create.plannedQuantity",
+    "en": "Planned quantity",
+    "current": "Miktar"
+  },
+  {
+    "key": "production.create.erp.fetch",
+    "en": "Fill fields",
+    "current": "Fill fields"
+  },
+  {
+    "key": "production.create.erp.fetchByWorkOrder",
+    "en": "Load by work order",
+    "current": "Is emrinden getir"
+  },
+  {
+    "key": "production.create.erp.fetchByWorkOrderDescription",
+    "en": "If a work order already exists, enter it here. The system fills the main product, variant, and key planning fields in Step 1.",
+    "current": "ERP tarafinda hazir bir is emri varsa sadece is emrini secin. Sistem gerekli alt kirilimlari taslak olarak forma getirir."
+  },
+  {
+    "key": "production.create.erp.fetchByStock",
+    "en": "Load by stock",
+    "current": "Stok bilgisinden getir"
+  },
+  {
+    "key": "production.create.erp.fetchByStockDescription",
+    "en": "If no work order exists yet, choose the main product, optional variant, and quantity. The system fills Step 1 based on stock information.",
+    "current": "Hazir bir is emri yoksa ana urunu, varsa yapkodunu ve miktari secin. Sistem stok bilgisinden uygun uretim taslagini getirir."
+  },
+  {
+    "key": "production.create.erpNote.title",
+    "en": "Quick entry is only the start",
+    "current": "Quick entry is only the start"
+  },
+  {
+    "key": "production.create.erpNote.body",
+    "en": "The fetched information fills Step 1 and, when available, the initial plan draft. Final review and saving still happen on this screen.",
+    "current": "The fetched information fills Step 1 and, when available, the initial plan draft. Final review and saving still happen on this screen."
+  },
+  {
+    "key": "production.create.readiness.title",
+    "en": "Save readiness",
+    "current": "Save readiness"
+  },
+  {
+    "key": "production.create.readiness.subtitle",
+    "en": "See what is missing before you save the plan.",
+    "current": "See what is missing before you save the plan."
+  },
+  {
+    "key": "production.create.readiness.ready",
+    "en": "Core fields look ready. Review details, then save.",
+    "current": "Core fields look ready. Review details, then save."
+  },
+  {
+    "key": "production.create.readiness.missing",
+    "en": "Review before saving",
+    "current": "Review before saving"
+  },
+  {
+    "key": "production.create.header.title",
+    "en": "Plan header",
+    "current": "Plan header"
+  },
+  {
+    "key": "production.create.header.subtitle",
+    "en": "These fields map to the production plan header (PR_HEADER).",
+    "current": "These fields map to the production plan header (PR_HEADER)."
+  },
+  {
+    "key": "production.create.planType",
+    "en": "Plan type",
+    "current": "Plan type"
+  },
+  {
+    "key": "production.create.executionMode",
+    "en": "Execution mode",
+    "current": "Mod"
+  },
+  {
+    "key": "production.create.plannedStartDate",
+    "en": "Planned start",
+    "current": "Planned start"
+  },
+  {
+    "key": "production.create.plannedEndDate",
+    "en": "Planned end",
+    "current": "Planned end"
+  },
+  {
+    "key": "production.create.headerAssignments.title",
+    "en": "Plan assignments",
+    "current": "Plan assignments"
+  },
+  {
+    "key": "production.create.headerAssignments.subtitle",
+    "en": "Assign team, role, or primary owner at PR_HEADER_ASSIGNMENT level.",
+    "current": "Assign team, role, or primary owner at PR_HEADER_ASSIGNMENT level."
+  },
+  {
+    "key": "production.create.headerAssignments.empty",
+    "en": "Header assignments are optional but recommended to clarify shopfloor ownership.",
+    "current": "Header assignments are optional but recommended to clarify shopfloor ownership."
+  },
+  {
+    "key": "production.create.assignedUserId",
+    "en": "User ID",
+    "current": "User ID"
+  },
+  {
+    "key": "production.create.assignedRoleId",
+    "en": "Role ID",
+    "current": "Role ID"
+  },
+  {
+    "key": "production.create.assignedTeamId",
+    "en": "Team ID",
+    "current": "Team ID"
+  },
+  {
+    "key": "production.create.orders.title",
+    "en": "Production orders",
+    "current": "Production orders"
+  },
+  {
+    "key": "production.create.orders.subtitle",
+    "en": "Manage PR_ORDER records per order. Each order owns its outputs, consumption, and dependencies.",
+    "current": "Manage PR_ORDER records per order. Each order owns its outputs, consumption, and dependencies."
+  },
+  {
+    "key": "production.create.addOrder",
+    "en": "Add order",
+    "current": "Add order"
+  },
+  {
+    "key": "production.create.addHeaderAssignment",
+    "en": "Add assignment",
+    "current": "Add assignment"
+  },
+  {
+    "key": "production.create.addOrderAssignment",
+    "en": "Add assignment",
+    "current": "Add assignment"
+  },
+  {
+    "key": "production.create.addOutput",
+    "en": "Add output",
+    "current": "Add output"
+  },
+  {
+    "key": "production.create.addConsumption",
+    "en": "Add consumption",
+    "current": "Add consumption"
+  },
+  {
+    "key": "production.create.addDependency",
+    "en": "Add dependency",
+    "current": "Add dependency"
+  },
+  {
+    "key": "production.create.planner.dragHandleAria",
+    "en": "Drag to reorder",
+    "current": "Drag to reorder"
+  },
+  {
+    "key": "production.create.planner.dragReorderHint",
+    "en": "Drag the handle on the left and drop on another card to update flow numbers and rebuild dependencies for the current execution mode. (No links in parallel mode.)",
+    "current": "Drag the handle on the left and drop on another card to update flow numbers and rebuild dependencies for the current execution mode. (No links in parallel mode.)"
+  },
+  {
+    "key": "production.create.planner.expandStage",
+    "en": "Expand stage details",
+    "current": "Expand stage details"
+  },
+  {
+    "key": "production.create.planner.collapseStage",
+    "en": "Collapse stage details",
+    "current": "Collapse stage details"
+  },
+  {
+    "key": "production.create.planner.steps.header",
+    "en": "Plan Temeli",
+    "current": "Plan Temeli"
+  },
+  {
+    "key": "production.create.planner.steps.headerDesc",
+    "en": "Ne uretecegini ve kac adet olacagini belirle",
+    "current": "Ne uretecegini ve kac adet olacagini belirle"
+  },
+  {
+    "key": "production.create.planner.steps.stages",
+    "en": "Asamalar",
+    "current": "Asamalar"
+  },
+  {
+    "key": "production.create.planner.steps.stagesDesc",
+    "en": "Uretimi hangi asamalara bolecegini kurgula",
+    "current": "Uretimi hangi asamalara bolecegini kurgula"
+  },
+  {
+    "key": "production.create.planner.steps.materials",
+    "en": "Cikti ve Tuketim",
+    "current": "Cikti ve Tuketim"
+  },
+  {
+    "key": "production.create.planner.steps.materialsDesc",
+    "en": "Her asama icin ne uretilip ne tuketilecegini yaz",
+    "current": "Her asama icin ne uretilip ne tuketilecegini yaz"
+  },
+  {
+    "key": "production.create.planner.steps.flow",
+    "en": "Akis ve Atama",
+    "current": "Akis ve Atama"
+  },
+  {
+    "key": "production.create.planner.steps.flowDesc",
+    "en": "Seri, paralel ve sorumlu dagilimini netlestir",
+    "current": "Seri, paralel ve sorumlu dagilimini netlestir"
+  },
+  {
+    "key": "production.create.planner.title",
+    "en": "Uretim Planlama Akisi",
+    "current": "Uretim Planlama Akisi"
+  },
+  {
+    "key": "production.create.planner.subtitle",
+    "en": "Planlamacinin once urunu, sonra asamalari, en son akis ve sorumlulari kurmasi icin sade akisi takip edin.",
+    "current": "Planlamacinin once urunu, sonra asamalari, en son akis ve sorumlulari kurmasi icin sade akisi takip edin."
+  },
+  {
+    "key": "production.create.planner.stepMissingTitle",
+    "en": "Bu adimda tamamlanmasi gerekenler",
+    "current": "Bu adimda tamamlanmasi gerekenler"
+  },
+  {
+    "key": "production.create.planner.stepReadyTitle",
+    "en": "Bu adim tamam gibi gorunuyor",
+    "current": "Bu adim tamam gibi gorunuyor"
+  },
+  {
+    "key": "production.create.planner.stepReadyBody",
+    "en": "Zorunlu alanlar dolu. Isterseniz bir sonraki adıma gecebilirsiniz.",
+    "current": "Zorunlu alanlar dolu. Isterseniz bir sonraki adıma gecebilirsiniz."
+  },
+  {
+    "key": "production.create.planner.header.title",
+    "en": "Ne Uretecegiz?",
+    "current": "Ne Uretecegiz?"
+  },
+  {
+    "key": "production.create.planner.header.subtitle",
+    "en": "Planin ana urununu, miktarini ve kaynagini secin.",
+    "current": "Planin ana urununu, miktarini ve kaynagini secin."
+  },
+  {
+    "key": "production.create.planner.header.side",
+    "en": "Planin dogru kurulmasi icin ilk kontrol noktalari.",
+    "current": "Planin dogru kurulmasi icin ilk kontrol noktalari."
+  },
+  {
+    "key": "production.create.planner.modeHintTitle",
+    "en": "Plan modu ne demek?",
+    "current": "Plan modu ne demek?"
+  },
+  {
+    "key": "production.create.planner.serialHint",
+    "en": "Seri modda bir asama bitmeden sonraki asama baslamaz.",
+    "current": "Seri modda bir asama bitmeden sonraki asama baslamaz."
+  },
+  {
+    "key": "production.create.planner.parallelHint",
+    "en": "Paralel modda asamalar ayni anda ilerleyebilir.",
+    "current": "Paralel modda asamalar ayni anda ilerleyebilir."
+  },
+  {
+    "key": "production.create.planner.hybridHint",
+    "en": "Karma modda bazi asamalar ayni anda, bazi asamalar sirayla ilerler.",
+    "current": "Karma modda bazi asamalar ayni anda, bazi asamalar sirayla ilerler."
+  },
+  {
+    "key": "production.create.planner.stageTemplates.title",
+    "en": "Hazir Asama Kurgulari",
+    "current": "Hazir Asama Kurgulari"
+  },
+  {
+    "key": "production.create.planner.stageTemplates.subtitle",
+    "en": "Planlamaciya hiz kazandirmak icin hazir iskeletler sunuyoruz. Gerekirse sonra duzenlenir.",
+    "current": "Planlamaciya hiz kazandirmak icin hazir iskeletler sunuyoruz. Gerekirse sonra duzenlenir."
+  },
+  {
+    "key": "production.create.planner.stageTemplates.single",
+    "en": "Tek Asamali Plan",
+    "current": "Tek Asamali Plan"
+  },
+  {
+    "key": "production.create.planner.stageTemplates.serial",
+    "en": "2 Asamali Seri Plan",
+    "current": "2 Asamali Seri Plan"
+  },
+  {
+    "key": "production.create.planner.stageTemplates.parallel",
+    "en": "Paralel Hazirlik + Son Montaj",
+    "current": "Paralel Hazirlik + Son Montaj"
+  },
+  {
+    "key": "production.create.planner.ordersGuide",
+    "en": "Her kart tek bir uretim asamasidir. Planlamaci bu kartlari asama mantigiyla doldurur.",
+    "current": "Her kart tek bir uretim asamasidir. Planlamaci bu kartlari asama mantigiyla doldurur."
+  },
+  {
+    "key": "production.create.planner.stageCardHint",
+    "en": "Asamanin urunu, miktari ve akistaki yeri burada belirlenir.",
+    "current": "Asamanin urunu, miktari ve akistaki yeri burada belirlenir."
+  },
+  {
+    "key": "production.create.planner.flowBadge",
+    "en": "Akis",
+    "current": "Akis"
+  },
+  {
+    "key": "production.create.planner.stageSimpleTitle",
+    "en": "Bu asamayi basitce kurun",
+    "current": "Bu asamayi basitce kurun"
+  },
+  {
+    "key": "production.create.planner.stageSimpleBody",
+    "en": "Asama tipi secin, bu asamanin ne uretecegini yazin, sonra da once mi ayni anda mi yoksa sonra mi ilerleyecegini secin. Sistem teknik baglantiyi arka planda kurar.",
+    "current": "Asama tipi secin, bu asamanin ne uretecegini yazin, sonra da once mi ayni anda mi yoksa sonra mi ilerleyecegini secin. Sistem teknik baglantiyi arka planda kurar."
+  },
+  {
+    "key": "production.create.planner.firstStage",
+    "en": "Ilk asama",
+    "current": "Ilk asama"
+  },
+  {
+    "key": "production.create.planner.parallelStage",
+    "en": "Oncekiyle ayni anda",
+    "current": "Oncekiyle ayni anda"
+  },
+  {
+    "key": "production.create.planner.afterStage",
+    "en": "Oncekinden sonra",
+    "current": "Oncekinden sonra"
+  },
+  {
+    "key": "production.create.planner.stagePreset",
+    "en": "Bu asama ne yapiyor?",
+    "current": "Bu asama ne yapiyor?"
+  },
+  {
+    "key": "production.create.planner.stagePresetPlaceholder",
+    "en": "Asama tipini secin",
+    "current": "Asama tipini secin"
+  },
+  {
+    "key": "production.create.planner.flowChoice",
+    "en": "Akista yeri ne olsun?",
+    "current": "Akista yeri ne olsun?"
+  },
+  {
+    "key": "production.create.planner.stageName",
+    "en": "Asama adi",
+    "current": "Asama adi"
+  },
+  {
+    "key": "production.create.planner.stageNamePlaceholder",
+    "en": "Ornek: Govde Hazirlama, Son Montaj",
+    "current": "Ornek: Govde Hazirlama, Son Montaj"
+  },
+  {
+    "key": "production.create.planner.stageMissingTitle",
+    "en": "Bu asamada eksik kalanlar",
+    "current": "Bu asamada eksik kalanlar"
+  },
+  {
+    "key": "production.create.planner.stageReadyTitle",
+    "en": "Bu asama gecmeye hazir",
+    "current": "Bu asama gecmeye hazir"
+  },
+  {
+    "key": "production.create.planner.stageReadyBody",
+    "en": "Asama adi, uretilecek stok ve miktar tamam. Isterseniz bir sonraki asamaya gecebilirsiniz.",
+    "current": "Asama adi, uretilecek stok ve miktar tamam. Isterseniz bir sonraki asamaya gecebilirsiniz."
+  },
+  {
+    "key": "production.create.planner.outputsGuide",
+    "en": "Her asamanin ne uretecegini planlayin. Gerekirse ayni asamaya birden fazla cikti ekleyebilirsiniz.",
+    "current": "Her asamanin ne uretecegini planlayin. Gerekirse ayni asamaya birden fazla cikti ekleyebilirsiniz."
+  },
+  {
+    "key": "production.create.planner.outputsMissingTitle",
+    "en": "Cikti tarafinda eksik kalanlar",
+    "current": "Cikti tarafinda eksik kalanlar"
+  },
+  {
+    "key": "production.create.planner.consumptionsGuide",
+    "en": "Her asamanin ne tuketecegini planlayin. Gercekte kullanilan seri daha sonra operasyon sirasinda secilir.",
+    "current": "Her asamanin ne tuketecegini planlayin. Gercekte kullanilan seri daha sonra operasyon sirasinda secilir."
+  },
+  {
+    "key": "production.create.planner.consumptionsMissingTitle",
+    "en": "Tuketim tarafinda kontrol edilmesi gerekenler",
+    "current": "Tuketim tarafinda kontrol edilmesi gerekenler"
+  },
+  {
+    "key": "production.create.planner.consumptionForStage",
+    "en": "Bu asama icin gerekli tuketimler",
+    "current": "Bu asama icin gerekli tuketimler"
+  },
+  {
+    "key": "production.create.planner.flowGuide",
+    "en": "Planlamaci asamalarin sirayla mi ayni anda mi ilerleyecegini burada kontrol eder. Sistem isterseniz baglantilari otomatik kurar.",
+    "current": "Planlamaci asamalarin sirayla mi ayni anda mi ilerleyecegini burada kontrol eder. Sistem isterseniz baglantilari otomatik kurar."
+  },
+  {
+    "key": "production.create.planner.applyFlow",
+    "en": "Akisi Otomatik Kur",
+    "current": "Akisi Otomatik Kur"
+  },
+  {
+    "key": "production.create.planner.flowMissingTitle",
+    "en": "Akis tarafinda tamamlanmasi gerekenler",
+    "current": "Akis tarafinda tamamlanmasi gerekenler"
+  },
+  {
+    "key": "production.create.planner.summary.stages",
+    "en": "Asama",
+    "current": "Asama"
+  },
+  {
+    "key": "production.create.planner.summary.ordered",
+    "en": "Sirali Asama",
+    "current": "Sirali Asama"
+  },
+  {
+    "key": "production.create.planner.summary.assigned",
+    "en": "Atanmis Asama",
+    "current": "Atanmis Asama"
+  },
+  {
+    "key": "production.create.planner.flowEmpty",
+    "en": "Henuz asamalar arasi baglanti kurulmamıs. Seri veya karma planlarda otomatik akis kur butonunu kullanin.",
+    "current": "Henuz asamalar arasi baglanti kurulmamıs. Seri veya karma planlarda otomatik akis kur butonunu kullanin."
+  },
+  {
+    "key": "production.create.planner.headerAssignmentGuide",
+    "en": "Plani yonetecek ana ekip veya sorumluyu burada belirleyin.",
+    "current": "Plani yonetecek ana ekip veya sorumluyu burada belirleyin."
+  },
+  {
+    "key": "production.create.planner.orderAssignmentGuide",
+    "en": "Her asama farkli operatore veya role atanabilir.",
+    "current": "Her asama farkli operatore veya role atanabilir."
+  },
+  {
+    "key": "production.create.orderBadge",
+    "en": "Order {{index}}",
+    "current": "Order {{index}}"
+  },
+  {
+    "key": "production.create.orderPlaceholder",
+    "en": "New order",
+    "current": "New order"
+  },
+  {
+    "key": "production.create.stockPlaceholder",
+    "en": "No stock selected",
+    "current": "No stock selected"
+  },
+  {
+    "key": "production.create.orderNo",
+    "en": "Order no.",
+    "current": "Order no."
+  },
+  {
+    "key": "production.create.columns.order",
+    "en": "Order",
+    "current": "Order"
+  },
+  {
+    "key": "production.create.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "production.create.columns.quantity",
+    "en": "Qty",
+    "current": "Qty"
+  },
+  {
+    "key": "production.create.orderType",
+    "en": "Order type",
+    "current": "Order type"
+  },
+  {
+    "key": "production.create.producedStockCode",
+    "en": "Stock to produce",
+    "current": "Stok"
+  },
+  {
+    "key": "production.create.producedYapKod",
+    "en": "YapKod to produce",
+    "current": "YapKod to produce"
+  },
+  {
+    "key": "production.create.sourceWarehouse",
+    "en": "Source warehouse",
+    "current": "Kaynak Depo"
+  },
+  {
+    "key": "production.create.targetWarehouse",
+    "en": "Target warehouse",
+    "current": "Hedef Depo"
+  },
+  {
+    "key": "production.create.sequenceNo",
+    "en": "Sequence no.",
+    "current": "Sequence no."
+  },
+  {
+    "key": "production.create.canStartManually",
+    "en": "Allow manual start",
+    "current": "Allow manual start"
+  },
+  {
+    "key": "production.create.canStartManuallyHint",
+    "en": "Operator can start the order before dependencies complete.",
+    "current": "Operator can start the order before dependencies complete."
+  },
+  {
+    "key": "production.create.autoStart",
+    "en": "Auto-start when dependencies done",
+    "current": "Auto-start when dependencies done"
+  },
+  {
+    "key": "production.create.autoStartHint",
+    "en": "Let ERP or shopfloor open the next step automatically.",
+    "current": "Let ERP or shopfloor open the next step automatically."
+  },
+  {
+    "key": "production.create.orderAssignments.title",
+    "en": "Order assignments",
+    "current": "Order assignments"
+  },
+  {
+    "key": "production.create.orderAssignments.subtitle",
+    "en": "Define who owns this order on the shopfloor.",
+    "current": "Define who owns this order on the shopfloor."
+  },
+  {
+    "key": "production.create.orderAssignments.empty",
+    "en": "No assignment rows for this order.",
+    "current": "No assignment rows for this order."
+  },
+  {
+    "key": "production.create.assignmentNote",
+    "en": "Note",
+    "current": "Note"
+  },
+  {
+    "key": "production.create.outputs.title",
+    "en": "Planned outputs",
+    "current": "Planned outputs"
+  },
+  {
+    "key": "production.create.outputs.subtitle",
+    "en": "PR_ORDER_OUTPUT defines what each order will produce.",
+    "current": "PR_ORDER_OUTPUT defines what each order will produce."
+  },
+  {
+    "key": "production.create.trackingMode",
+    "en": "Tracking",
+    "current": "Tracking"
+  },
+  {
+    "key": "production.create.consumptions.title",
+    "en": "Planned consumption",
+    "current": "Planned consumption"
+  },
+  {
+    "key": "production.create.consumptions.subtitle",
+    "en": "PR_ORDER_CONSUMPTION lines; operators can enter actual serial/lot later.",
+    "current": "PR_ORDER_CONSUMPTION lines; operators can enter actual serial/lot later."
+  },
+  {
+    "key": "production.create.sourceStock",
+    "en": "Consumption stock",
+    "current": "Consumption stock"
+  },
+  {
+    "key": "production.create.serialEntryMode",
+    "en": "Serial entry",
+    "current": "Serial entry"
+  },
+  {
+    "key": "production.create.dependencies.title",
+    "en": "Order dependencies",
+    "current": "Order dependencies"
+  },
+  {
+    "key": "production.create.dependencies.subtitle",
+    "en": "Define when an order may start in serial, parallel, or hybrid flow. Add transfer completion rules if needed.",
+    "current": "Define when an order may start in serial, parallel, or hybrid flow. Add transfer completion rules if needed."
+  },
+  {
+    "key": "production.create.dependencies.empty",
+    "en": "No dependencies yet. Leave empty for parallel flow or link orders for serial flow.",
+    "current": "No dependencies yet. Leave empty for parallel flow or link orders for serial flow."
+  },
+  {
+    "key": "production.create.predecessor",
+    "en": "Predecessor order",
+    "current": "Predecessor order"
+  },
+  {
+    "key": "production.create.successor",
+    "en": "Successor order",
+    "current": "Successor order"
+  },
+  {
+    "key": "production.create.lagMinutes",
+    "en": "Lag (min)",
+    "current": "Lag (min)"
+  },
+  {
+    "key": "production.create.outputReady",
+    "en": "Output ready",
+    "current": "Output ready"
+  },
+  {
+    "key": "production.create.transferReady",
+    "en": "Transfer ready",
+    "current": "Transfer ready"
+  },
+  {
+    "key": "production.create.enums.executionMode.Serial",
+    "en": "Serial",
+    "current": "Serial"
+  },
+  {
+    "key": "production.create.enums.executionMode.Parallel",
+    "en": "Parallel",
+    "current": "Parallel"
+  },
+  {
+    "key": "production.create.enums.executionMode.Hybrid",
+    "en": "Hybrid",
+    "current": "Hybrid"
+  },
+  {
+    "key": "production.create.enums.planType.Production",
+    "en": "Production",
+    "current": "Production"
+  },
+  {
+    "key": "production.create.enums.planType.Assembly",
+    "en": "Assembly",
+    "current": "Assembly"
+  },
+  {
+    "key": "production.create.enums.planType.Packaging",
+    "en": "Packaging",
+    "current": "Packaging"
+  },
+  {
+    "key": "production.create.enums.planType.Rework",
+    "en": "Rework",
+    "current": "Rework"
+  },
+  {
+    "key": "production.create.enums.orderType.Production",
+    "en": "Production",
+    "current": "Production"
+  },
+  {
+    "key": "production.create.enums.orderType.SemiFinished",
+    "en": "Semi-finished",
+    "current": "Semi-finished"
+  },
+  {
+    "key": "production.create.enums.orderType.Assembly",
+    "en": "Assembly",
+    "current": "Assembly"
+  },
+  {
+    "key": "production.create.enums.orderType.Packaging",
+    "en": "Packaging",
+    "current": "Packaging"
+  },
+  {
+    "key": "production.create.enums.orderType.Rework",
+    "en": "Rework",
+    "current": "Rework"
+  },
+  {
+    "key": "production.create.enums.trackingMode.None",
+    "en": "None",
+    "current": "None"
+  },
+  {
+    "key": "production.create.enums.trackingMode.Lot",
+    "en": "Lot",
+    "current": "Lot"
+  },
+  {
+    "key": "production.create.enums.trackingMode.Serial",
+    "en": "Serial",
+    "current": "Serial"
+  },
+  {
+    "key": "production.create.enums.serialMode.Optional",
+    "en": "Optional",
+    "current": "Optional"
+  },
+  {
+    "key": "production.create.enums.serialMode.Required",
+    "en": "Required",
+    "current": "Required"
+  },
+  {
+    "key": "production.create.enums.dependencyType.FinishToStart",
+    "en": "Finish to start",
+    "current": "Finish to start"
+  },
+  {
+    "key": "production.create.enums.dependencyType.StartToStart",
+    "en": "Start to start",
+    "current": "Start to start"
+  },
+  {
+    "key": "production.create.enums.dependencyType.FinishToFinish",
+    "en": "Finish to finish",
+    "current": "Finish to finish"
+  },
+  {
+    "key": "production.create.enums.dependencyType.StartToFinish",
+    "en": "Start to finish",
+    "current": "Start to finish"
+  },
+  {
+    "key": "production.create.enums.assignmentType.Primary",
+    "en": "Primary",
+    "current": "Primary"
+  },
+  {
+    "key": "production.create.enums.assignmentType.Support",
+    "en": "Support",
+    "current": "Support"
+  },
+  {
+    "key": "production.create.enums.assignmentType.Supervisor",
+    "en": "Supervisor",
+    "current": "Supervisor"
+  },
+  {
+    "key": "production.create.enums.assignmentType.Observer",
+    "en": "Observer",
+    "current": "Observer"
+  },
+  {
+    "key": "production.create.permissionInfoTitle",
+    "en": "Permission information",
+    "current": "Permission information"
+  },
+  {
+    "key": "production.create.permissionInfoCreate",
+    "en": "You need production create permission to save this plan.",
+    "current": "You need production create permission to save this plan."
+  },
+  {
+    "key": "production.create.permissionInfoUpdate",
+    "en": "You need production update permission to update this plan.",
+    "current": "You need production update permission to update this plan."
+  },
+  {
+    "key": "production.create.sourceWarehouseSelect",
+    "en": "Kaynak depo secin",
+    "current": "Kaynak depo secin"
+  },
+  {
+    "key": "production.create.warehouseSearch",
+    "en": "Depolarda ara",
+    "current": "Depolarda ara"
+  },
+  {
+    "key": "production.create.warehouseEmpty",
+    "en": "Depo bulunamadi",
+    "current": "Depo bulunamadi"
+  },
+  {
+    "key": "production.create.targetWarehouseSelect",
+    "en": "Hedef depo secin",
+    "current": "Hedef depo secin"
+  },
+  {
+    "key": "production.create.mainOrderNo",
+    "en": "Ana Is Emri No",
+    "current": "Ana Is Emri No"
+  },
+  {
+    "key": "production.create.mainOrderNoPlaceholder",
+    "en": "Is emri no ile alanlari doldurun",
+    "current": "Is emri no ile alanlari doldurun"
+  },
+  {
+    "key": "production.create.productSelect",
+    "en": "Ana urun secin",
+    "current": "Ana urun secin"
+  },
+  {
+    "key": "production.create.productSearch",
+    "en": "Urunlerde ara",
+    "current": "Urunlerde ara"
+  },
+  {
+    "key": "production.create.productEmpty",
+    "en": "Urun bulunamadi",
+    "current": "Urun bulunamadi"
+  },
+  {
+    "key": "production.create.yapKodSelect",
+    "en": "Ana yapkod secin",
+    "current": "Ana yapkod secin"
+  },
+  {
+    "key": "production.create.yapKodSearch",
+    "en": "Yapkodlarda ara",
+    "current": "Yapkodlarda ara"
+  },
+  {
+    "key": "production.create.yapKodEmpty",
+    "en": "Bu urune uygun yapkod bulunamadi",
+    "current": "Bu urune uygun yapkod bulunamadi"
+  },
+  {
+    "key": "production.create.plannerTab",
+    "en": "Planlamaci Modu",
+    "current": "Planlamaci Modu"
+  },
+  {
+    "key": "production.create.advancedTab",
+    "en": "Gelismis Teknik Mod",
+    "current": "Gelismis Teknik Mod"
+  },
+  {
+    "key": "production.create.info.overviewTitle",
+    "en": "Bu ekran ne yapiyor?",
+    "current": "Bu ekran ne yapiyor?"
+  },
+  {
+    "key": "production.create.info.overviewBody",
+    "en": "Bu ekran once ana urunu ve miktari secmenizi, sonra uretimi asamalara bolmenizi, en son da hangi asamanin once veya ayni anda ilerleyecegini belirlemenizi saglar. Kayit aninda sistem plani uretim emirlerine cevirir.",
+    "current": "Bu ekran once ana urunu ve miktari secmenizi, sonra uretimi asamalara bolmenizi, en son da hangi asamanin once veya ayni anda ilerleyecegini belirlemenizi saglar. Kayit aninda sistem plani uretim emirlerine cevirir."
+  },
+  {
+    "key": "production.create.info.headerTitle",
+    "en": "Ana urun secimi nasil dusunulmeli?",
+    "current": "Ana urun secimi nasil dusunulmeli?"
+  },
+  {
+    "key": "production.create.info.headerBody",
+    "en": "Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz.",
+    "current": "Ana urun, planin sonunda elde etmek istediginiz mamuldur. Ana yapkod bu mamulun varyantini anlatir. Hazir bir is emri veya stok bilgisi varsa hizli giris ile bu alanlari otomatik doldurabilirsiniz."
+  },
+  {
+    "key": "production.create.info.stageTitle",
+    "en": "Asama nedir?",
+    "current": "Asama nedir?"
+  },
+  {
+    "key": "production.create.info.stageBody",
+    "en": "Her kart tek bir uretim asamasidir. Ornek: govde hazirlama, montaj, paketleme. Seri modda bir asama bitmeden sonraki baslamaz. Paralel veya karma modda ayni sequence numarasina sahip asamalar birlikte ilerleyebilir.",
+    "current": "Her kart tek bir uretim asamasidir. Ornek: govde hazirlama, montaj, paketleme. Seri modda bir asama bitmeden sonraki baslamaz. Paralel veya karma modda ayni sequence numarasina sahip asamalar birlikte ilerleyebilir."
+  },
+  {
+    "key": "production.create.info.outputTitle",
+    "en": "Cikti neyi anlatir?",
+    "current": "Cikti neyi anlatir?"
+  },
+  {
+    "key": "production.create.info.outputBody",
+    "en": "Cikti, ilgili asama sonunda elde edilen urundur. Ara mamul olabilir, nihai mamul olabilir. Burada planlanan miktar yazilir; gercekte ne kadar uretildigi process ekraninda kaydedilir.",
+    "current": "Cikti, ilgili asama sonunda elde edilen urundur. Ara mamul olabilir, nihai mamul olabilir. Burada planlanan miktar yazilir; gercekte ne kadar uretildigi process ekraninda kaydedilir."
+  },
+  {
+    "key": "production.create.info.consumptionTitle",
+    "en": "Tuketim neyi anlatir?",
+    "current": "Tuketim neyi anlatir?"
+  },
+  {
+    "key": "production.create.info.consumptionBody",
+    "en": "Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir.",
+    "current": "Tuketim, bu asamayi tamamlamak icin gereken malzemedir. Planlama ekraninda neyin gerekli oldugu yazilir. Hangi seri veya lotun kullanildigi ise daha sonra operator tarafinda process ekraninda girilir veya ERP/Netsis tarafindan dogrulanir."
+  },
+  {
+    "key": "production.create.info.flowTitle",
+    "en": "Akis neyi kontrol eder?",
+    "current": "Akis neyi kontrol eder?"
+  },
+  {
+    "key": "production.create.info.flowBody",
+    "en": "Akis, hangi asamanin once bitecegini ve hangisinin onu bekleyecegini belirler. Bu alan sayesinde birlestirme veya son montaj gibi asamalar, gerekli onceki asamalar bitmeden baslatilmaz.",
+    "current": "Akis, hangi asamanin once bitecegini ve hangisinin onu bekleyecegini belirler. Bu alan sayesinde birlestirme veya son montaj gibi asamalar, gerekli onceki asamalar bitmeden baslatilmaz."
+  },
+  {
+    "key": "production.create.sourceStockSelect",
+    "en": "Tuketilecek stok secin",
+    "current": "Tuketilecek stok secin"
+  },
+  {
+    "key": "production.create.isBackflush",
+    "en": "Backflush",
+    "current": "Backflush"
+  },
+  {
+    "key": "production.create.assignedUserSelect",
+    "en": "Sorumlu kullanici secin",
+    "current": "Sorumlu kullanici secin"
+  },
+  {
+    "key": "production.create.userSearch",
+    "en": "Kullanicilarda ara",
+    "current": "Kullanicilarda ara"
+  },
+  {
+    "key": "production.create.userEmpty",
+    "en": "Kullanici bulunamadi",
+    "current": "Kullanici bulunamadi"
+  },
+  {
+    "key": "production.create.assignedRoleSelect",
+    "en": "Rol secin",
+    "current": "Rol secin"
+  },
+  {
+    "key": "production.create.roleSearch",
+    "en": "Rollerde ara",
+    "current": "Rollerde ara"
+  },
+  {
+    "key": "production.create.roleEmpty",
+    "en": "Rol bulunamadi",
+    "current": "Rol bulunamadi"
+  },
+  {
+    "key": "production.create.yapKod",
+    "en": "Yap Kod",
+    "current": "Yap Kod"
+  },
+  {
+    "key": "production.process.title",
+    "en": "Production process",
+    "current": "Production process"
+  },
+  {
+    "key": "production.process.subtitle",
+    "en": "Review the plan, start operations per order, and record actual consumption and output movements.",
+    "current": "Review the plan, start operations per order, and record actual consumption and output movements."
+  },
+  {
+    "key": "production.process.openDetail",
+    "en": "Open plan detail",
+    "current": "Open plan detail"
+  },
+  {
+    "key": "production.process.error",
+    "en": "Could not load production plan detail.",
+    "current": "Could not load production plan detail."
+  },
+  {
+    "key": "production.process.startSuccess",
+    "en": "Operation started.",
+    "current": "Operation started."
+  },
+  {
+    "key": "production.process.startError",
+    "en": "Operation could not be started.",
+    "current": "Operation could not be started."
+  },
+  {
+    "key": "production.process.pauseSuccess",
+    "en": "Operation paused.",
+    "current": "Operation paused."
+  },
+  {
+    "key": "production.process.pauseError",
+    "en": "Operation could not be paused.",
+    "current": "Operation could not be paused."
+  },
+  {
+    "key": "production.process.resumeSuccess",
+    "en": "Operation resumed.",
+    "current": "Operation resumed."
+  },
+  {
+    "key": "production.process.resumeError",
+    "en": "Operation could not be resumed.",
+    "current": "Operation could not be resumed."
+  },
+  {
+    "key": "production.process.completeSuccess",
+    "en": "Operation completed.",
+    "current": "Operation completed."
+  },
+  {
+    "key": "production.process.completeError",
+    "en": "Operation could not be completed.",
+    "current": "Operation could not be completed."
+  },
+  {
+    "key": "production.process.consumptionSuccess",
+    "en": "Consumption recorded.",
+    "current": "Consumption recorded."
+  },
+  {
+    "key": "production.process.consumptionError",
+    "en": "Consumption could not be recorded.",
+    "current": "Consumption could not be recorded."
+  },
+  {
+    "key": "production.process.outputSuccess",
+    "en": "Output recorded.",
+    "current": "Output recorded."
+  },
+  {
+    "key": "production.process.outputError",
+    "en": "Output could not be recorded.",
+    "current": "Output could not be recorded."
+  },
+  {
+    "key": "production.process.orders",
+    "en": "Orders",
+    "current": "Orders"
+  },
+  {
+    "key": "production.process.operation",
+    "en": "Active operation",
+    "current": "Active operation"
+  },
+  {
+    "key": "production.process.operationNone",
+    "en": "-",
+    "current": "-"
+  },
+  {
+    "key": "production.process.timeline",
+    "en": "Operation timeline",
+    "current": "Operation timeline"
+  },
+  {
+    "key": "production.process.timelineSubtitle",
+    "en": "Follow start, pause, resume, and complete events in chronological order.",
+    "current": "Follow start, pause, resume, and complete events in chronological order."
+  },
+  {
+    "key": "production.process.timelineEmpty",
+    "en": "No operation events yet. Select an order and start an operation to see the timeline here.",
+    "current": "No operation events yet. Select an order and start an operation to see the timeline here."
+  },
+  {
+    "key": "production.process.minutesShort",
+    "en": "{{count}} min",
+    "current": "{{count}} min"
+  },
+  {
+    "key": "production.process.reasonCode",
+    "en": "Reason code",
+    "current": "Reason code"
+  },
+  {
+    "key": "production.process.planDetail",
+    "en": "Plan detail",
+    "current": "Plan detail"
+  },
+  {
+    "key": "production.process.planDetailSubtitle",
+    "en": "Assignments, orders, outputs, and consumptions in one place.",
+    "current": "Assignments, orders, outputs, and consumptions in one place."
+  },
+  {
+    "key": "production.process.filterAllOrders",
+    "en": "All orders",
+    "current": "All orders"
+  },
+  {
+    "key": "production.process.orderSearchLabel",
+    "en": "Search stock / order",
+    "current": "Search stock / order"
+  },
+  {
+    "key": "production.process.orderSearchPlaceholder",
+    "en": "e.g. order no. or stock code",
+    "current": "e.g. order no. or stock code"
+  },
+  {
+    "key": "production.process.gap.summary",
+    "en": "Selected order — remaining quantity",
+    "current": "Selected order — remaining quantity"
+  },
+  {
+    "key": "production.process.gap.output",
+    "en": "Output gap: {{value}}",
+    "current": "Output gap: {{value}}"
+  },
+  {
+    "key": "production.process.gap.consumption",
+    "en": "Consumption gap: {{value}}",
+    "current": "Consumption gap: {{value}}"
+  },
+  {
+    "key": "production.process.dependencies",
+    "en": "Dependency status",
+    "current": "Blokaj Kontrolu"
+  },
+  {
+    "key": "production.process.dependenciesBlocked",
+    "en": "Selected order is blocked. Waiting on: {{orders}}",
+    "current": "Selected order is blocked. Waiting on: {{orders}}"
+  },
+  {
+    "key": "production.process.dependenciesReady",
+    "en": "No active dependency block for the selected order.",
+    "current": "No active dependency block for the selected order."
+  },
+  {
+    "key": "production.process.dependenciesEmpty",
+    "en": "This order is not waiting on a direct predecessor.",
+    "current": "This order is not waiting on a direct predecessor."
+  },
+  {
+    "key": "production.process.dependencyBlocked",
+    "en": "Blocked",
+    "current": "Blocked"
+  },
+  {
+    "key": "production.process.dependencyReady",
+    "en": "Ready",
+    "current": "Ready"
+  },
+  {
+    "key": "production.process.predecessorStatus",
+    "en": "Status: {{status}}",
+    "current": "Status: {{status}}"
+  },
+  {
+    "key": "production.process.badgeTransferRequired",
+    "en": "Transfer required",
+    "current": "Transfer required"
+  },
+  {
+    "key": "production.process.badgeOutputRequired",
+    "en": "Output required",
+    "current": "Output required"
+  },
+  {
+    "key": "production.process.lagMinutes",
+    "en": "Lag {{minutes}} min",
+    "current": "Lag {{minutes}} min"
+  },
+  {
+    "key": "production.process.assignmentBadge",
+    "en": "{{type}} / U:{{user}} / R:{{role}}",
+    "current": "{{type}} / U:{{user}} / R:{{role}}"
+  },
+  {
+    "key": "production.process.selectOrder",
+    "en": "Select this order",
+    "current": "Select this order"
+  },
+  {
+    "key": "production.process.outputs",
+    "en": "Outputs",
+    "current": "Outputs"
+  },
+  {
+    "key": "production.process.consumptions",
+    "en": "Consumptions",
+    "current": "Consumptions"
+  },
+  {
+    "key": "production.process.gapBadge",
+    "en": "Gap: {{value}}",
+    "current": "Gap: {{value}}"
+  },
+  {
+    "key": "production.process.completeBadge",
+    "en": "Done",
+    "current": "Done"
+  },
+  {
+    "key": "production.process.prefillFromPlan",
+    "en": "Prefill from plan",
+    "current": "Prefill from plan"
+  },
+  {
+    "key": "production.process.controls",
+    "en": "Operation controls",
+    "current": "Operation controls"
+  },
+  {
+    "key": "production.process.pickOrder",
+    "en": "Select an order to continue.",
+    "current": "Select an order to continue."
+  },
+  {
+    "key": "production.process.controlsDescription",
+    "en": "{{orderNo}} / {{stock}}",
+    "current": "{{orderNo}} / {{stock}}"
+  },
+  {
+    "key": "production.process.controlsDescriptionBlocked",
+    "en": "{{orderNo}} / {{stock}} — blocked",
+    "current": "{{orderNo}} / {{stock}} — blocked"
+  },
+  {
+    "key": "production.process.duration",
+    "en": "Duration (min)",
+    "current": "Duration (min)"
+  },
+  {
+    "key": "production.process.start",
+    "en": "Start",
+    "current": "Start"
+  },
+  {
+    "key": "production.process.pause",
+    "en": "Pause",
+    "current": "Pause"
+  },
+  {
+    "key": "production.process.resume",
+    "en": "Resume",
+    "current": "Resume"
+  },
+  {
+    "key": "production.process.complete",
+    "en": "Complete",
+    "current": "Complete"
+  },
+  {
+    "key": "production.process.startBlocked",
+    "en": "This order cannot be started. Complete these orders first: {{orders}}",
+    "current": "This order cannot be started. Complete these orders first: {{orders}}"
+  },
+  {
+    "key": "production.process.lineHistory",
+    "en": "Operation line history",
+    "current": "Kayitlar"
+  },
+  {
+    "key": "production.process.lineHistorySubtitle",
+    "en": "Track consumption and output lines for the active operation.",
+    "current": "Track consumption and output lines for the active operation."
+  },
+  {
+    "key": "production.process.lineHistoryRole",
+    "en": "Role",
+    "current": "Role"
+  },
+  {
+    "key": "production.process.lineHistoryStock",
+    "en": "Stock code",
+    "current": "Stock code"
+  },
+  {
+    "key": "production.process.lineHistoryStockPlaceholder",
+    "en": "STK…",
+    "current": "STK…"
+  },
+  {
+    "key": "production.process.lineHistoryFilterAll",
+    "en": "All movements",
+    "current": "All movements"
+  },
+  {
+    "key": "production.process.lineRoleConsumption",
+    "en": "Consumption",
+    "current": "Consumption"
+  },
+  {
+    "key": "production.process.lineRoleOutput",
+    "en": "Output",
+    "current": "Output"
+  },
+  {
+    "key": "production.process.lineHistoryEmpty",
+    "en": "No movement lines match the filters.",
+    "current": "No movement lines match the filters."
+  },
+  {
+    "key": "production.process.lineHistoryColTime",
+    "en": "Time",
+    "current": "Time"
+  },
+  {
+    "key": "production.process.lineHistoryColRole",
+    "en": "Role",
+    "current": "Role"
+  },
+  {
+    "key": "production.process.lineHistoryColStock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "production.process.lineHistoryColQty",
+    "en": "Qty",
+    "current": "Qty"
+  },
+  {
+    "key": "production.process.lineHistoryColSerial",
+    "en": "Serial",
+    "current": "Serial"
+  },
+  {
+    "key": "production.process.lineHistoryColLocation",
+    "en": "Warehouse / cell",
+    "current": "Warehouse / cell"
+  },
+  {
+    "key": "production.process.warehouseCellSeparator",
+    "en": " → ",
+    "current": " → "
+  },
+  {
+    "key": "production.process.addConsumption",
+    "en": "Enter consumption",
+    "current": "Enter consumption"
+  },
+  {
+    "key": "production.process.addOutput",
+    "en": "Enter output",
+    "current": "Enter output"
+  },
+  {
+    "key": "production.process.lookupHint",
+    "en": "Pick stock from the selected order's planned lines.",
+    "current": "Pick stock from the selected order's planned lines."
+  },
+  {
+    "key": "production.process.lookupSearch",
+    "en": "Search planned lines",
+    "current": "Search planned lines"
+  },
+  {
+    "key": "production.process.lookupEmpty",
+    "en": "No matching stock for the selected order.",
+    "current": "No matching stock for the selected order."
+  },
+  {
+    "key": "production.process.serial",
+    "en": "Serial",
+    "current": "Serial"
+  },
+  {
+    "key": "production.process.barcode",
+    "en": "Barcode",
+    "current": "Barcode"
+  },
+  {
+    "key": "production.process.recordConsumption",
+    "en": "Save consumption",
+    "current": "Save consumption"
+  },
+  {
+    "key": "production.process.recordOutput",
+    "en": "Save output",
+    "current": "Save output"
+  },
+  {
+    "key": "production.process.cellSearch",
+    "en": "Search planned cells",
+    "current": "Search planned cells"
+  },
+  {
+    "key": "production.process.cellEmpty",
+    "en": "No matching source cell for the selected order.",
+    "current": "No matching source cell for the selected order."
+  },
+  {
+    "key": "production.process.cellEmptyTarget",
+    "en": "No matching target cell for the selected order.",
+    "current": "No matching target cell for the selected order."
+  },
+  {
+    "key": "production.process.sourceCellSelect",
+    "en": "Select source cell",
+    "current": "Select source cell"
+  },
+  {
+    "key": "production.process.targetCellSelect",
+    "en": "Select target cell",
+    "current": "Select target cell"
+  },
+  {
+    "key": "production.process.orderStatus.Draft",
+    "en": "Draft",
+    "current": "Draft"
+  },
+  {
+    "key": "production.process.orderStatus.Ready",
+    "en": "Ready",
+    "current": "Ready"
+  },
+  {
+    "key": "production.process.orderStatus.InProgress",
+    "en": "In progress",
+    "current": "In progress"
+  },
+  {
+    "key": "production.process.orderStatus.Paused",
+    "en": "Paused",
+    "current": "Paused"
+  },
+  {
+    "key": "production.process.orderStatus.Completed",
+    "en": "Completed",
+    "current": "Completed"
+  },
+  {
+    "key": "production.process.orderStatus.Unknown",
+    "en": "Unknown",
+    "current": "Unknown"
+  },
+  {
+    "key": "production.process.defaultDraft",
+    "en": "Draft",
+    "current": "Draft"
+  },
+  {
+    "key": "production.process.operationEventType.Started",
+    "en": "Started",
+    "current": "Started"
+  },
+  {
+    "key": "production.process.operationEventType.Paused",
+    "en": "Paused",
+    "current": "Paused"
+  },
+  {
+    "key": "production.process.operationEventType.Resumed",
+    "en": "Resumed",
+    "current": "Resumed"
+  },
+  {
+    "key": "production.process.operationEventType.Completed",
+    "en": "Completed",
+    "current": "Completed"
+  },
+  {
+    "key": "production.process.operationEventType.Cancelled",
+    "en": "Cancelled",
+    "current": "Cancelled"
+  },
+  {
+    "key": "production.process.permissionInfo",
+    "en": "You need production update permission to operate on this stage. Operation buttons stay disabled for that reason.",
+    "current": "You need production update permission to operate on this stage. Operation buttons stay disabled for that reason."
+  },
+  {
+    "key": "production.process.pickAssignedOrderFirst",
+    "en": "Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir.",
+    "current": "Once size atanmis bir asama secin. Tuketim kalemleri secilen asamadan otomatik gelir."
+  },
+  {
+    "key": "production.process.startCardHint",
+    "en": "Secili asamayi operasyona alir.",
+    "current": "Secili asamayi operasyona alir."
+  },
+  {
+    "key": "production.process.pauseCardHint",
+    "en": "Makine durusu, ara veya bekleme icin kullanin.",
+    "current": "Makine durusu, ara veya bekleme icin kullanin."
+  },
+  {
+    "key": "production.process.resumeCardHint",
+    "en": "Duraklayan asamayi kaldigi yerden devam ettirir.",
+    "current": "Duraklayan asamayi kaldigi yerden devam ettirir."
+  },
+  {
+    "key": "production.process.completeCardHint",
+    "en": "Bu asamadaki operasyonu kapatir ve durumu gunceller.",
+    "current": "Bu asamadaki operasyonu kapatir ve durumu gunceller."
+  },
+  {
+    "key": "production.process.pickConsumptionLine",
+    "en": "Atanmis tuketim kalemini secin",
+    "current": "Atanmis tuketim kalemini secin"
+  },
+  {
+    "key": "production.process.quantityMustBePositive",
+    "en": "Miktar sifirdan buyuk olmali.",
+    "current": "Miktar sifirdan buyuk olmali."
+  },
+  {
+    "key": "production.process.serialRequiredGuard",
+    "en": "Bu kalem icin seri girmek zorunlu.",
+    "current": "Bu kalem icin seri girmek zorunlu."
+  },
+  {
+    "key": "production.process.pickAssignedOrderFirstOutput",
+    "en": "Once size atanmis bir asama secin. Uretilecek cikti kalemleri secilen asamadan otomatik gelir.",
+    "current": "Once size atanmis bir asama secin. Uretilecek cikti kalemleri secilen asamadan otomatik gelir."
+  },
+  {
+    "key": "production.process.pickOutputLine",
+    "en": "Atanmis cikti kalemini secin",
+    "current": "Atanmis cikti kalemini secin"
+  },
+  {
+    "key": "production.process.quickEntryNoMatch",
+    "en": "Girilen bilgi ile eslesen plan satiri bulunamadi.",
+    "current": "Girilen bilgi ile eslesen plan satiri bulunamadi."
+  },
+  {
+    "key": "production.process.quickEntryApplied",
+    "en": "Plan satiri hizli kayit alanina tasindi.",
+    "current": "Plan satiri hizli kayit alanina tasindi."
+  },
+  {
+    "key": "production.process.webMode",
+    "en": "Web Modu",
+    "current": "Web Modu"
+  },
+  {
+    "key": "production.process.kioskMode",
+    "en": "Kiosk Modu",
+    "current": "Kiosk Modu"
+  },
+  {
+    "key": "production.process.selectedOrder",
+    "en": "Secili Asama",
+    "current": "Secili Asama"
+  },
+  {
+    "key": "production.process.outputProgress",
+    "en": "Cikti ilerlemesi",
+    "current": "Cikti ilerlemesi"
+  },
+  {
+    "key": "production.process.lastOperation",
+    "en": "Son Operasyon Ozeti",
+    "current": "Son Operasyon Ozeti"
+  },
+  {
+    "key": "production.process.materialProgress",
+    "en": "Tuketim ilerlemesi",
+    "current": "Tuketim ilerlemesi"
+  },
+  {
+    "key": "production.process.operatorFlow",
+    "en": "Operator Akisi",
+    "current": "Operator Akisi"
+  },
+  {
+    "key": "production.process.operatorFlowSubtitle",
+    "en": "Kioskta tek ekrandan ilerlemek icin asamanin su anki gerekli adimlarini takip edin.",
+    "current": "Kioskta tek ekrandan ilerlemek icin asamanin su anki gerekli adimlarini takip edin."
+  },
+  {
+    "key": "production.process.currentAction",
+    "en": "Siradaki Islem",
+    "current": "Siradaki Islem"
+  },
+  {
+    "key": "production.process.quickEntryTitle",
+    "en": "Hizli Giris",
+    "current": "Hizli Giris"
+  },
+  {
+    "key": "production.process.quickEntrySubtitle",
+    "en": "Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun.",
+    "current": "Stok kodu, yapkod veya barkod benzeri bir bilgi girin; sistem uygun plan satirini doldursun."
+  },
+  {
+    "key": "production.process.quickEntryPlaceholder",
+    "en": "Stok kodu / YapKod / Barkod girin",
+    "current": "Stok kodu / YapKod / Barkod girin"
+  },
+  {
+    "key": "production.process.quickEntryApply",
+    "en": "Satiri Doldur",
+    "current": "Satiri Doldur"
+  },
+  {
+    "key": "production.process.remainingQuantity",
+    "en": "Kalan",
+    "current": "Kalan"
+  },
+  {
+    "key": "production.process.requiredConsumptions",
+    "en": "Tuketilmesi Gereken Kalemler",
+    "current": "Tuketilmesi Gereken Kalemler"
+  },
+  {
+    "key": "production.process.requiredConsumptionsSubtitle",
+    "en": "Secili asama icin zorunlu ve planli tuketim satirlarini seri/lokasyon bilgisiyle inceleyin.",
+    "current": "Secili asama icin zorunlu ve planli tuketim satirlarini seri/lokasyon bilgisiyle inceleyin."
+  },
+  {
+    "key": "production.process.materialMandatory",
+    "en": "Zorunlu malzeme",
+    "current": "Zorunlu malzeme"
+  },
+  {
+    "key": "production.process.materialBackflush",
+    "en": "Backflush",
+    "current": "Backflush"
+  },
+  {
+    "key": "production.process.expectedOutputs",
+    "en": "Uretilmesi Gereken Ciktilar",
+    "current": "Uretilmesi Gereken Ciktilar"
+  },
+  {
+    "key": "production.process.expectedOutputsSubtitle",
+    "en": "Secili asamanin hedef ciktilarini takip ve seri gereksinimleriyle izleyin.",
+    "current": "Secili asamanin hedef ciktilarini takip ve seri gereksinimleriyle izleyin."
+  },
+  {
+    "key": "production.process.outputReadyTarget",
+    "en": "Hedef cikti",
+    "current": "Hedef cikti"
+  },
+  {
+    "key": "production.process.assignmentScope",
+    "en": "Asama gorunumu",
+    "current": "Asama gorunumu"
+  },
+  {
+    "key": "production.process.onlyAssignedOrders",
+    "en": "Sadece bana atanmis asamalar",
+    "current": "Sadece bana atanmis asamalar"
+  },
+  {
+    "key": "production.process.allOrders",
+    "en": "Tum asamalar",
+    "current": "Tum asamalar"
+  },
+  {
+    "key": "production.process.openTransfer",
+    "en": "Bu Asama Icin Transfer Ac",
+    "current": "Bu Asama Icin Transfer Ac"
+  },
+  {
+    "key": "production.process.quickTransferTitle",
+    "en": "Bu asama icin hizli transfer",
+    "current": "Bu asama icin hizli transfer"
+  },
+  {
+    "key": "production.process.quickTransferDescription",
+    "en": "{{orderNo}} asamasinin malzeme besleme, yari mamul veya cikti tasima transferini tek tikla baslat.",
+    "current": "{{orderNo}} asamasinin malzeme besleme, yari mamul veya cikti tasima transferini tek tikla baslat."
+  },
+  {
+    "key": "production.process.consumptionSimpleHint",
+    "en": "1. Tuketim kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.",
+    "current": "1. Tuketim kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin."
+  },
+  {
+    "key": "production.process.selectedConsumptionInfo",
+    "en": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}",
+    "current": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}"
+  },
+  {
+    "key": "production.process.outputSimpleHint",
+    "en": "1. Uretilecek cikti kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin.",
+    "current": "1. Uretilecek cikti kalemini secin. 2. Miktari kontrol edin. 3. Gerekirse seri girip kaydedin."
+  },
+  {
+    "key": "production.process.selectedOutputInfo",
+    "en": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}",
+    "current": "Secili kalem: {{stock}} / plan {{planned}} / kalan {{remaining}}"
+  },
+  {
+    "key": "production.list.title",
+    "en": "Production Plans",
+    "current": "Uretim Planlari"
+  },
+  {
+    "key": "production.list.completedQuantity",
+    "en": "Actual",
+    "current": "Gerceklesen"
+  },
+  {
+    "key": "production.list.error",
+    "en": "Production plans could not be loaded.",
+    "current": "Uretim planlari yuklenemedi"
+  },
+  {
+    "key": "production.list.noData",
+    "en": "No production plan found.",
+    "current": "Uretim plani bulunamadi"
+  },
+  {
+    "key": "production.list.deleteTitle",
+    "en": "Delete production plan",
+    "current": "Delete production plan"
+  },
+  {
+    "key": "production.list.deleteDescription",
+    "en": "We will soft delete \"{{documentNo}}\". Only draft plans with no shopfloor activity can be deleted.",
+    "current": "We will soft delete \"{{documentNo}}\". Only draft plans with no shopfloor activity can be deleted."
+  },
+  {
+    "key": "production.list.deleteSuccess",
+    "en": "Production plan was deactivated.",
+    "current": "Production plan was deactivated."
+  },
+  {
+    "key": "production.list.deleteError",
+    "en": "Production plan could not be deleted.",
+    "current": "Production plan could not be deleted."
+  },
+  {
+    "key": "production.list.editPlan",
+    "en": "Edit",
+    "current": "Duzenle"
+  },
+  {
+    "key": "production.list.editDisabledHelp",
+    "en": "Only draft plans with no shopfloor activity can be edited. Processed plans stay locked to protect field activity.",
+    "current": "Sadece draft ve henüz islem gormemis planlar duzenlenebilir. Islem gormus planlar sahadaki hareketi bozmamak icin kilitlenir."
+  },
+  {
+    "key": "production.list.openDetail",
+    "en": "Detail",
+    "current": "Detay"
+  },
+  {
+    "key": "production.list.openProcess",
+    "en": "Process",
+    "current": "Process"
+  },
+  {
+    "key": "production.list.searchPlaceholder",
+    "en": "Search document no, main stock, or project",
+    "current": "Belge no, ana stok veya proje ara"
+  },
+  {
+    "key": "production.list.editDisabledPermission",
+    "en": "You need production update permission to edit this plan.",
+    "current": "You need production update permission to edit this plan."
+  },
+  {
+    "key": "production.assigned.title",
+    "en": "Atanmis Uretim Emirleri",
+    "current": "Atanmis Uretim Emirleri"
+  },
+  {
+    "key": "production.assigned.error",
+    "en": "Atanmis uretim emirleri yuklenemedi",
+    "current": "Atanmis uretim emirleri yuklenemedi"
+  },
+  {
+    "key": "production.assigned.noData",
+    "en": "Size atanmis bekleyen uretim emri bulunamadi",
+    "current": "Size atanmis bekleyen uretim emri bulunamadi"
+  },
+  {
+    "key": "production.assigned.searchPlaceholder",
+    "en": "Belge no veya ana stok ara",
+    "current": "Belge no veya ana stok ara"
+  }
+]

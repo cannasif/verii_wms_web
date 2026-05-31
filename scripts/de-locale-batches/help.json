@@ -1,0 +1,132 @@
+[
+  {
+    "key": "help.kkd.employee.user",
+    "en": "This links the PPE card to a system user. First name and last name are filled from the selected user.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.customer",
+    "en": "Select the customer/company the employee belongs to. This is shown on documents and reports.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.employeeCode",
+    "en": "Enter the internal personnel or registry code used to identify the employee.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.department",
+    "en": "Select the employee's department. The role list is filtered by this selection.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.role",
+    "en": "Select the employee's actual role definition. PPE entitlement is calculated from role plus group code.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.employmentStartDate",
+    "en": "Initial and 3-month entitlements are calculated from this date. A wrong date means a wrong entitlement result.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.employee.qrCode",
+    "en": "Unique QR value scanned in the field to select the employee quickly.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.department",
+    "en": "Select the department this entitlement rule belongs to.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.role",
+    "en": "Select the role definition the entitlement belongs to. The system always resolves entitlement by role and group code.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.groupCode",
+    "en": "The main key of this screen is the group code. Entitlement matching runs by group, not by stock code. Different stocks in the same group share the same rule; if a stock code exists, treat it as informational only.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.initialQuantity",
+    "en": "Total quantity the employee can receive for this group when first joining.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.initialFrequencyDays",
+    "en": "Frequency controls whether the entitlement is taken all at once or in parts. If you enter 30, the employee must wait at least 30 days after one issue before another issue from the same entitlement. Leave empty if no day-gap rule is needed.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.initialBulk",
+    "en": "When enabled, the employee may receive the full initial entitlement in one issue. When disabled, the system forces partial usage and applies the frequency-day rule if defined.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.initialFrequencyQuantity",
+    "en": "Maximum quantity allowed in one issue or in each frequency window. Example: if total entitlement is 3 and frequency quantity is 1, the employee can receive at most 1 item each time.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.threeMonthQuantity",
+    "en": "Extra entitlement that becomes available 3 months after employment start.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.threeMonthFrequencyDays",
+    "en": "If the 3-month entitlement will be used in parts, this defines how many days must pass between issues.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.threeMonthBulk",
+    "en": "When enabled, the full 3-month entitlement can be taken in one issue. Otherwise the system allows only partial usage.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.threeMonthFrequencyQuantity",
+    "en": "If the 3-month entitlement is used in parts, this defines the maximum quantity per issue.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routineQuantity",
+    "en": "Standard quantity granted again in every recurring period after the initial and 3-month phases are completed.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routinePeriodType",
+    "en": "Defines the time unit used to renew the recurring entitlement. Usually day, month, or year.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routinePeriodInterval",
+    "en": "Defines how often the recurring entitlement renews. Example: year + 1 means every year; day + 30 means every 30 days.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routineFrequencyDays",
+    "en": "If the recurring entitlement is used in parts, this defines how many days must pass between issues.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routineBulk",
+    "en": "When enabled, the full recurring entitlement can be taken in one issue. Otherwise the system enforces partial usage.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.routineFrequencyQuantity",
+    "en": "If recurring entitlement is used in parts, this defines the maximum quantity per issue.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.isActive",
+    "en": "Inactive rows are ignored by entitlement calculation.",
+    "current": null
+  },
+  {
+    "key": "help.kkd.matrix.isMandatory",
+    "en": "Enable this if the group is mandatory for occupational safety; it can be used in controls and reporting.",
+    "current": null
+  }
+]

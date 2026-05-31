@@ -75,7 +75,6 @@ export function OperationDocumentSeriesSelector({
 
   const branchCode = useAuthStore((state) => state.branch?.code?.trim() || '0');
   const userId = useAuthStore((state) => state.user?.id);
-  const currentDocumentNo = form.watch('documentNo');
 
   const resolveKey = useMemo(
     () => [operationType, branchCode, userId ?? null, warehouseId ?? null, customerId ?? null].join('|'),
@@ -107,15 +106,31 @@ export function OperationDocumentSeriesSelector({
       return;
     }
 
-    form.setValue('documentSeriesDefinitionId', resolved.documentSeriesDefinitionId, { shouldDirty: false });
-    form.setValue('requiresEDispatch', resolved.isEDispatchSeries, { shouldDirty: false });
-    setSelectedLabel(`${resolved.code} - ${resolved.name} (${resolved.seriesPrefix})`);
-
-    if (!currentDocumentNo || currentDocumentNo === lastAutoDocumentNo) {
-      form.setValue('documentNo', resolved.previewDocumentNo, { shouldDirty: false, shouldValidate: true });
-      setLastAutoDocumentNo(resolved.previewDocumentNo);
+    const currentSeriesId = form.getValues('documentSeriesDefinitionId');
+    if (currentSeriesId !== resolved.documentSeriesDefinitionId) {
+      form.setValue('documentSeriesDefinitionId', resolved.documentSeriesDefinitionId, { shouldDirty: false });
     }
-  }, [currentDocumentNo, form, lastAutoDocumentNo, manualSelection, resolutionQuery.data]);
+
+    const currentRequiresEDispatch = form.getValues('requiresEDispatch');
+    if (currentRequiresEDispatch !== resolved.isEDispatchSeries) {
+      form.setValue('requiresEDispatch', resolved.isEDispatchSeries, { shouldDirty: false });
+    }
+
+    const nextLabel = `${resolved.code} - ${resolved.name} (${resolved.seriesPrefix})`;
+    setSelectedLabel((current) => (current === nextLabel ? current : nextLabel));
+
+    const autoDocumentNo = resolved.previewDocumentNo;
+    const existingDocumentNo = form.getValues('documentNo');
+
+    if (!existingDocumentNo || existingDocumentNo === lastAutoDocumentNo) {
+      if (existingDocumentNo !== autoDocumentNo) {
+        form.setValue('documentNo', autoDocumentNo, { shouldDirty: false, shouldValidate: true });
+      }
+      if (lastAutoDocumentNo !== autoDocumentNo) {
+        setLastAutoDocumentNo(autoDocumentNo);
+      }
+    }
+  }, [form, lastAutoDocumentNo, manualSelection, resolutionQuery.data]);
 
   const resolutionMeta = resolutionQuery.data;
   const resolutionText = resolutionMeta

@@ -1,0 +1,57 @@
+[
+  {
+    "key": "barcodePrint.noPrintableLines",
+    "en": "No printable lines found for the selected document",
+    "current": "Für das ausgewählte Dokument wurden keine druckbaren Zeilen gefunden"
+  },
+  {
+    "key": "barcodePrint.printQueued",
+    "en": "Print job queued",
+    "current": "Druckauftrag in die Warteschlange gestellt"
+  },
+  {
+    "key": "barcodePrint.badge",
+    "en": "WMS Print",
+    "current": "WMS-Druck"
+  },
+  {
+    "key": "barcodePrint.operation",
+    "en": "Operation",
+    "current": "Vorgang"
+  },
+  {
+    "key": "barcodePrint.operationAndDocumentList",
+    "en": "Operation and document list",
+    "current": "Vorgangs- und Dokumentliste"
+  },
+  {
+    "key": "barcodePrint.documentListEmpty",
+    "en": "No documents found for this operation.",
+    "current": "Für diesen Vorgang wurden keine Dokumente gefunden."
+  },
+  {
+    "key": "barcodePrint.clearSelection",
+    "en": "Clear selection",
+    "current": "Auswahl löschen"
+  },
+  {
+    "key": "barcodePrint.documentLines",
+    "en": "Document lines",
+    "current": "Dokumentzeilen"
+  },
+  {
+    "key": "barcodePrint.linesEmpty",
+    "en": "No lines found for this document.",
+    "current": "Für dieses Dokument wurden keine Zeilen gefunden."
+  },
+  {
+    "key": "barcodePrint.selectSingleDocument",
+    "en": "Select one document for line-based printing.",
+    "current": "Für zeilenbasierten Druck ein Dokument auswählen."
+  },
+  {
+    "key": "barcodePrint.printSettings",
+    "en": "Print settings",
+    "current": "Druckeinstellungen"
+  }
+]

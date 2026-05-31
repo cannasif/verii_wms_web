@@ -59,25 +59,10 @@ export const useAuthStore = create<AuthState>()(
         const token = state.token || getStoredToken();
 
         if (!token || !isTokenValid(token)) {
-          if (state.token || state.user || state.branch) {
-            clearStoredAuth();
-            set({ user: null, token: null, branch: null });
-          }
           return false;
         }
 
-        const user = state.user ?? getUserFromToken(token);
-        if (!user) {
-          clearStoredAuth();
-          set({ user: null, token: null, branch: null });
-          return false;
-        }
-
-        if (state.token !== token || !state.user) {
-          set({ user, token, branch: state.branch });
-        }
-
-        return true;
+        return !!(state.user ?? getUserFromToken(token));
       },
     }),
     {

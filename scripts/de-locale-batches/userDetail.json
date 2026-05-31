@@ -1,0 +1,157 @@
+[
+  {
+    "key": "userDetail.title",
+    "en": "User Details",
+    "current": "Benutzerdetails"
+  },
+  {
+    "key": "userDetail.profilePicture",
+    "en": "Profile Picture",
+    "current": "Profilbild"
+  },
+  {
+    "key": "userDetail.height",
+    "en": "Height (cm)",
+    "current": "Größe (cm)"
+  },
+  {
+    "key": "userDetail.weight",
+    "en": "Weight (kg)",
+    "current": "Gewicht (kg)"
+  },
+  {
+    "key": "userDetail.gender.female",
+    "en": "Female",
+    "current": "Weiblich"
+  },
+  {
+    "key": "userDetail.gender.other",
+    "en": "Other",
+    "current": "Andere"
+  },
+  {
+    "key": "userDetail.genderFieldLabel",
+    "en": "Gender",
+    "current": null
+  },
+  {
+    "key": "userDetail.deletePictureTitle",
+    "en": "Delete Profile Picture",
+    "current": "Profilbild löschen"
+  },
+  {
+    "key": "userDetail.deletePictureMessage",
+    "en": "Are you sure you want to delete the profile picture?",
+    "current": "Sind Sie sicher, dass Sie das Profilbild löschen möchten?"
+  },
+  {
+    "key": "userDetail.invalidFileFormat",
+    "en": "Invalid file format. Only JPG, PNG, GIF, WEBP formats are supported.",
+    "current": "Ungültiges Dateiformat. Nur JPG, PNG, GIF, WEBP Formate werden unterstützt."
+  },
+  {
+    "key": "userDetail.fileSizeExceeded",
+    "en": "File size is too large. Maximum 5 MB allowed.",
+    "current": "Dateigröße ist zu groß. Maximum 5 MB erlaubt."
+  },
+  {
+    "key": "userDetail.invalidUrl",
+    "en": "Invalid URL format",
+    "current": "Ungültiges URL-Format"
+  },
+  {
+    "key": "userDetail.heightMin",
+    "en": "Height cannot be less than 0",
+    "current": "Größe darf nicht kleiner als 0 sein"
+  },
+  {
+    "key": "userDetail.heightMax",
+    "en": "Height cannot be greater than 300",
+    "current": "Größe darf nicht größer als 300 sein"
+  },
+  {
+    "key": "userDetail.weightMax",
+    "en": "Weight cannot be greater than 500",
+    "current": "Gewicht darf nicht größer als 500 sein"
+  },
+  {
+    "key": "userDetail.createdSuccessfully",
+    "en": "User detail created successfully",
+    "current": "Benutzerdetails erfolgreich erstellt"
+  },
+  {
+    "key": "userDetail.updatedSuccessfully",
+    "en": "User detail updated successfully",
+    "current": "Benutzerdetails erfolgreich aktualisiert"
+  },
+  {
+    "key": "userDetail.profilePictureUploadedSuccessfully",
+    "en": "Profile picture uploaded successfully",
+    "current": "Profilbild erfolgreich hochgeladen"
+  },
+  {
+    "key": "userDetail.profilePictureDeletedSuccessfully",
+    "en": "Profile picture deleted successfully",
+    "current": "Profilbild erfolgreich gelöscht"
+  },
+  {
+    "key": "userDetail.profilePictureDeleteError",
+    "en": "An error occurred while deleting profile picture",
+    "current": "Beim Löschen des Profilbilds ist ein Fehler aufgetreten"
+  },
+  {
+    "key": "userDetail.newPasswordMaxLength",
+    "en": "New password must be at most 100 characters",
+    "current": "Das neue Passwort darf höchstens 100 Zeichen lang sein"
+  },
+  {
+    "key": "userDetail.newPasswordSameAsCurrent",
+    "en": "New password cannot be the same as current password",
+    "current": "Das neue Passwort darf nicht mit dem aktuellen übereinstimmen"
+  },
+  {
+    "key": "userDetail.invalidGender",
+    "en": "Invalid gender value",
+    "current": "Ungültiger Geschlechtswert"
+  },
+  {
+    "key": "userDetail.phoneNumber",
+    "en": "Phone number",
+    "current": null
+  },
+  {
+    "key": "userDetail.emailAddress",
+    "en": "Email address",
+    "current": null
+  },
+  {
+    "key": "userDetail.linkedInProfile",
+    "en": "LinkedIn profile",
+    "current": null
+  },
+  {
+    "key": "userDetail.placeholderHeight",
+    "en": "e.g. 175",
+    "current": null
+  },
+  {
+    "key": "userDetail.placeholderWeight",
+    "en": "e.g. 70",
+    "current": null
+  },
+  {
+    "key": "userDetail.placeholderPhone",
+    "en": "+1 XXX XXX XXXX",
+    "current": null
+  },
+  {
+    "key": "userDetail.placeholderEmail",
+    "en": "you@company.com",
+    "current": null
+  },
+  {
+    "key": "userDetail.placeholderLinkedIn",
+    "en": "https://linkedin.com/in/...",
+    "current": null
+  }
+]
