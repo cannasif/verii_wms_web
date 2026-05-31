@@ -1,0 +1,442 @@
+[
+  {
+    "key": "shipment.create.title",
+    "en": "New Shipment Order",
+    "current": "Neuer Versandauftrag"
+  },
+  {
+    "key": "shipment.create.steps.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "shipment.create.steps.orderSelection",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "shipment.create.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "shipment.create.success",
+    "en": "Shipment order created successfully",
+    "current": "Versandauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "shipment.create.mode.order",
+    "en": "Sipariş bazlı",
+    "current": "Sipariş bazlı"
+  },
+  {
+    "key": "shipment.create.mode.stock",
+    "en": "Stok bazlı",
+    "current": "Stok bazlı"
+  },
+  {
+    "key": "shipment.edit.title",
+    "en": "Edit Shipment Order",
+    "current": "Edit Shipment Order"
+  },
+  {
+    "key": "shipment.edit.subtitle",
+    "en": "Update shipment header information without changing line or collection flow",
+    "current": "Update shipment header information without changing line or collection flow"
+  },
+  {
+    "key": "shipment.edit.success",
+    "en": "Shipment order updated successfully",
+    "current": "Shipment order updated successfully"
+  },
+  {
+    "key": "shipment.edit.error",
+    "en": "An error occurred while updating shipment order",
+    "current": "An error occurred while updating shipment order"
+  },
+  {
+    "key": "shipment.list.title",
+    "en": "Shipment Order List",
+    "current": "Versandauftragsliste"
+  },
+  {
+    "key": "shipment.list.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "shipment.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "shipment.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "shipment.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "shipment.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "shipment.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "shipment.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "shipment.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "shipment.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "shipment.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "shipment.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "shipment.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "shipment.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "shipment.list.detailTitle",
+    "en": "Shipment Order Detail",
+    "current": "Versandauftragsdetails"
+  },
+  {
+    "key": "shipment.list.detailDescription",
+    "en": "Detailed information of the shipment order",
+    "current": "Detaillierte Informationen zum Versandauftrag"
+  },
+  {
+    "key": "shipment.list.documentInfo",
+    "en": "Document Information",
+    "current": "Dokumentinformationen"
+  },
+  {
+    "key": "shipment.list.customerInfo",
+    "en": "Customer Information",
+    "current": "Kundeninformationen"
+  },
+  {
+    "key": "shipment.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "current": "Lagerinformationen"
+  },
+  {
+    "key": "shipment.list.lines",
+    "en": "Lines",
+    "current": "Positionen"
+  },
+  {
+    "key": "shipment.list.orderNo",
+    "en": "Order No",
+    "current": "Bestellnummer"
+  },
+  {
+    "key": "shipment.list.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "shipment.list.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "shipment.step1.transferDate",
+    "en": "Shipment Date",
+    "current": "Versanddatum"
+  },
+  {
+    "key": "shipment.step1.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "shipment.step1.documentNoPlaceholder",
+    "en": "Enter document number",
+    "current": "Belegnummer eingeben"
+  },
+  {
+    "key": "shipment.step1.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "shipment.step1.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "shipment.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "current": "Benutzer für die Durchführung"
+  },
+  {
+    "key": "shipment.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "current": "Benutzer für die Durchführung auswählen"
+  },
+  {
+    "key": "shipment.step2.orders",
+    "en": "Orders",
+    "current": "Bestellungen"
+  },
+  {
+    "key": "shipment.step2.orderContent",
+    "en": "Order Content",
+    "current": "Bestellinhalt"
+  },
+  {
+    "key": "shipment.step2.noOrderSelected",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "shipment.step2.itemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "shipment.step2.started",
+    "en": "Started",
+    "current": "Begonnen"
+  },
+  {
+    "key": "shipment.step2.ordered",
+    "en": "Ordered",
+    "current": "Bestellt"
+  },
+  {
+    "key": "shipment.step2.pending",
+    "en": "Pending",
+    "current": "Ausstehend"
+  },
+  {
+    "key": "shipment.step2.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "shipment.details.lotNo",
+    "en": "Lot No",
+    "current": "Chargennummer"
+  },
+  {
+    "key": "shipment.details.lotNoPlaceholder",
+    "en": "Enter lot number",
+    "current": "Chargennummer eingeben"
+  },
+  {
+    "key": "shipment.details.configCode",
+    "en": "Config Code",
+    "current": "Konfigurationscode"
+  },
+  {
+    "key": "shipment.details.configCodePlaceholder",
+    "en": "Enter configuration code",
+    "current": "Konfigurationscode eingeben"
+  },
+  {
+    "key": "shipment.details.serialNo2",
+    "en": "Serial no 2",
+    "current": "Seriennr. 2"
+  },
+  {
+    "key": "shipment.details.serialNo2Placeholder",
+    "en": "Enter serial no 2",
+    "current": "Seriennr. 2 eingeben"
+  },
+  {
+    "key": "shipment.collection.title",
+    "en": "Shipment Collection",
+    "current": "Versandsammlung"
+  },
+  {
+    "key": "shipment.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "shipment.collection.collected",
+    "en": "Product collected",
+    "current": "Produkt gesammelt"
+  },
+  {
+    "key": "shipment.collection.collectError",
+    "en": "Collection error",
+    "current": "Sammelfehler"
+  },
+  {
+    "key": "shipment.collection.invalidHeaderId",
+    "en": "Invalid shipment order",
+    "current": "Ungültiger Versandauftrag"
+  },
+  {
+    "key": "shipment.collection.completed",
+    "en": "Shipment order completed successfully",
+    "current": "Versandauftrag erfolgreich abgeschlossen"
+  },
+  {
+    "key": "shipment.collection.completeError",
+    "en": "Completion error",
+    "current": "Abschlussfehler"
+  },
+  {
+    "key": "shipment.collection.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "shipment.collection.viewCollected",
+    "en": "Collected",
+    "current": "Gesammelt"
+  },
+  {
+    "key": "shipment.collection.collect",
+    "en": "Collect",
+    "current": "Sammeln"
+  },
+  {
+    "key": "shipment.collection.yapKod",
+    "en": "Structure",
+    "current": "Struktur"
+  },
+  {
+    "key": "shipment.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "shipment.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "shipment.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "shipment.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "shipment.approval.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "shipment.approval.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "shipment.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "shipment.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "shipment.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "shipment.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "shipment.process.title",
+    "en": "Ad-hoc Shipment Process",
+    "current": "Ad-hoc Shipment Process"
+  },
+  {
+    "key": "shipment.process.subtitle",
+    "en": "Create a shipment using header + import line + route flow.",
+    "current": "Create a shipment using header + import line + route flow."
+  },
+  {
+    "key": "shipment.process.success",
+    "en": "Shipment process created",
+    "current": "Shipment process created"
+  },
+  {
+    "key": "shipment.process.error",
+    "en": "Shipment process could not be created",
+    "current": "Shipment process could not be created"
+  },
+  {
+    "key": "shipment.process.badge",
+    "en": "Ad-hoc Process",
+    "current": "Ad-hoc Process"
+  },
+  {
+    "key": "shipment.process.stocks",
+    "en": "Stocks",
+    "current": "Stocks"
+  },
+  {
+    "key": "shipment.process.selectedItems",
+    "en": "Selected Items",
+    "current": "Selected Items"
+  },
+  {
+    "key": "shipment.process.selectedItemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} items"
+  },
+  {
+    "key": "shipment.process.searchStocks",
+    "en": "Search by stock code or name...",
+    "current": "Search by stock code or name..."
+  },
+  {
+    "key": "shipment.process.searchItems",
+    "en": "Search selected items...",
+    "current": "Search selected items..."
+  },
+  {
+    "key": "shipment.process.noSelectedItems",
+    "en": "No stock selected",
+    "current": "No stock selected"
+  },
+  {
+    "key": "shipment.process.steps.stockSelection",
+    "en": "Stock Selection",
+    "current": "Stock Selection"
+  }
+]

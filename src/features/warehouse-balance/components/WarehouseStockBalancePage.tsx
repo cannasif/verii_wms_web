@@ -133,33 +133,33 @@ export function WarehouseStockBalancePage(): ReactElement {
   const rebuildAllMutation = useMutation({
     mutationFn: async () => await warehouseBalanceApi.rebuild(),
     onSuccess: async (response) => {
-      toast.success(response.message || 'Depo stok bakiyesi yeniden olusturuldu');
+      toast.success(response.message || t('warehouseBalance.stock.toastRebuildAllOk'));
       await queryClient.invalidateQueries({ queryKey: ['warehouse-balance'] });
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Depo stok bakiyesi yeniden olusturulamadi');
+      toast.error(error instanceof Error ? error.message : t('warehouseBalance.stock.toastRebuildAllFailed'));
     },
   });
 
   const rebuildWarehouseMutation = useMutation({
     mutationFn: async (warehouseId: number) => await warehouseBalanceApi.rebuildByWarehouse(warehouseId),
     onSuccess: async (response) => {
-      toast.success(response.message || 'Depo bazli bakiye yeniden olusturuldu');
+      toast.success(response.message || t('warehouseBalance.stock.toastRebuildWarehouseOk'));
       await queryClient.invalidateQueries({ queryKey: ['warehouse-balance'] });
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Depo bazli bakiye yeniden olusturulamadi');
+      toast.error(error instanceof Error ? error.message : t('warehouseBalance.stock.toastRebuildWarehouseFailed'));
     },
   });
 
   const rebuildStockMutation = useMutation({
     mutationFn: async (stockId: number) => await warehouseBalanceApi.rebuildByStock(stockId),
     onSuccess: async (response) => {
-      toast.success(response.message || 'Stok bazli bakiye yeniden olusturuldu');
+      toast.success(response.message || t('warehouseBalance.stock.toastRebuildStockOk'));
       await queryClient.invalidateQueries({ queryKey: ['warehouse-balance'] });
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Stok bazli bakiye yeniden olusturulamadi');
+      toast.error(error instanceof Error ? error.message : t('warehouseBalance.stock.toastRebuildStockFailed'));
     },
   });
 
@@ -230,14 +230,14 @@ export function WarehouseStockBalancePage(): ReactElement {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">WarehouseBalance</Badge>
-              <Badge variant="secondary">Summary</Badge>
+              <Badge variant="outline">{t('warehouseBalance.stock.badgeModule')}</Badge>
+              <Badge variant="secondary">{t('warehouseBalance.stock.badgeSummary')}</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpWarehouseStockBalance', { defaultValue: 'Missing translation' })}
+              {t('sidebar.erpWarehouseStockBalance')}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Depo bazli kümüle stok, yapkod, seri sayisi ve raf yayilimini tek ekranda izleyin.
+              {t('warehouseBalance.stock.subtitle')}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

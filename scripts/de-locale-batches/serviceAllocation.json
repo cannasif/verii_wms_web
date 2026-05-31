@@ -1,0 +1,627 @@
+[
+  {
+    "key": "serviceAllocation.caseNo",
+    "en": "Case No",
+    "current": "Case No"
+  },
+  {
+    "key": "serviceAllocation.customerCode",
+    "en": "Customer",
+    "current": "Customer"
+  },
+  {
+    "key": "serviceAllocation.customerId",
+    "en": "Customer Id",
+    "current": "Customer Id"
+  },
+  {
+    "key": "serviceAllocation.stockCode",
+    "en": "Stock Code",
+    "current": "Stock Code"
+  },
+  {
+    "key": "serviceAllocation.stockId",
+    "en": "Stock Id",
+    "current": "Stock Id"
+  },
+  {
+    "key": "serviceAllocation.serialNo",
+    "en": "Serial No",
+    "current": "Serial No"
+  },
+  {
+    "key": "serviceAllocation.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "serviceAllocation.receivedAt",
+    "en": "Received At",
+    "current": "Received At"
+  },
+  {
+    "key": "serviceAllocation.closedAt",
+    "en": "Closed At",
+    "current": "Closed At"
+  },
+  {
+    "key": "serviceAllocation.lines",
+    "en": "Service Lines",
+    "current": "Service Lines"
+  },
+  {
+    "key": "serviceAllocation.lineType",
+    "en": "Line Type",
+    "current": "Line Type"
+  },
+  {
+    "key": "serviceAllocation.processType",
+    "en": "Process Type",
+    "current": "Process Type"
+  },
+  {
+    "key": "serviceAllocation.quantity",
+    "en": "Quantity",
+    "current": "Quantity"
+  },
+  {
+    "key": "serviceAllocation.unit",
+    "en": "Unit",
+    "current": "Unit"
+  },
+  {
+    "key": "serviceAllocation.erpOrderNo",
+    "en": "ERP Order No",
+    "current": "ERP Order No"
+  },
+  {
+    "key": "serviceAllocation.erpOrderId",
+    "en": "ERP Order Id",
+    "current": "ERP Order Id"
+  },
+  {
+    "key": "serviceAllocation.description",
+    "en": "Description",
+    "current": "Description"
+  },
+  {
+    "key": "serviceAllocation.intakeWarehouseId",
+    "en": "Intake Warehouse Id",
+    "current": "Intake Warehouse Id"
+  },
+  {
+    "key": "serviceAllocation.currentWarehouseId",
+    "en": "Current Warehouse Id",
+    "current": "Current Warehouse Id"
+  },
+  {
+    "key": "serviceAllocation.diagnosisNote",
+    "en": "Diagnosis Note",
+    "current": "Diagnosis Note"
+  },
+  {
+    "key": "serviceAllocation.allocatedQuantity",
+    "en": "Allocated",
+    "current": "Allocated"
+  },
+  {
+    "key": "serviceAllocation.priority",
+    "en": "Priority",
+    "current": "Priority"
+  },
+  {
+    "key": "serviceAllocation.documentModule",
+    "en": "Module",
+    "current": "Module"
+  },
+  {
+    "key": "serviceAllocation.documentHeaderId",
+    "en": "Document Id",
+    "current": "Document Id"
+  },
+  {
+    "key": "serviceAllocation.linkPurpose",
+    "en": "Link Purpose",
+    "current": "Link Purpose"
+  },
+  {
+    "key": "serviceAllocation.sequence",
+    "en": "Seq",
+    "current": "Seq"
+  },
+  {
+    "key": "serviceAllocation.serviceCaseId",
+    "en": "Service Case",
+    "current": "Service Case"
+  },
+  {
+    "key": "serviceAllocation.orderAllocationLineId",
+    "en": "Allocation Line",
+    "current": "Allocation Line"
+  },
+  {
+    "key": "serviceAllocation.linkedAt",
+    "en": "Linked At",
+    "current": "Linked At"
+  },
+  {
+    "key": "serviceAllocation.fromWarehouse",
+    "en": "From Wh",
+    "current": "From Wh"
+  },
+  {
+    "key": "serviceAllocation.toWarehouse",
+    "en": "To Wh",
+    "current": "To Wh"
+  },
+  {
+    "key": "serviceAllocation.createCase",
+    "en": "Create Service Case",
+    "current": "Create Service Case"
+  },
+  {
+    "key": "serviceAllocation.caseList.title",
+    "en": "Service Cases",
+    "current": "Service Cases"
+  },
+  {
+    "key": "serviceAllocation.caseList.error",
+    "en": "Service cases could not be loaded.",
+    "current": "Service cases could not be loaded."
+  },
+  {
+    "key": "serviceAllocation.caseList.empty",
+    "en": "No service cases found.",
+    "current": "No service cases found."
+  },
+  {
+    "key": "serviceAllocation.caseList.search",
+    "en": "Search service cases...",
+    "current": "Search service cases..."
+  },
+  {
+    "key": "serviceAllocation.allocationQueue.title",
+    "en": "Allocation Queue",
+    "current": "Allocation Queue"
+  },
+  {
+    "key": "serviceAllocation.allocationQueue.error",
+    "en": "Allocation queue could not be loaded.",
+    "current": "Allocation queue could not be loaded."
+  },
+  {
+    "key": "serviceAllocation.allocationQueue.empty",
+    "en": "No allocation rows found.",
+    "current": "No allocation rows found."
+  },
+  {
+    "key": "serviceAllocation.allocationQueue.search",
+    "en": "Search allocation queue...",
+    "current": "Search allocation queue..."
+  },
+  {
+    "key": "serviceAllocation.documentLinks.title",
+    "en": "Document Links",
+    "current": "Document Links"
+  },
+  {
+    "key": "serviceAllocation.documentLinks.error",
+    "en": "Document links could not be loaded.",
+    "current": "Document links could not be loaded."
+  },
+  {
+    "key": "serviceAllocation.documentLinks.empty",
+    "en": "No document links found.",
+    "current": "No document links found."
+  },
+  {
+    "key": "serviceAllocation.documentLinks.search",
+    "en": "Search document links...",
+    "current": "Search document links..."
+  },
+  {
+    "key": "serviceAllocation.timeline.title",
+    "en": "Service Case Timeline",
+    "current": "Service Case Timeline"
+  },
+  {
+    "key": "serviceAllocation.timeline.events",
+    "en": "Warehouse Timeline",
+    "current": "Warehouse Timeline"
+  },
+  {
+    "key": "serviceAllocation.timeline.linkCount",
+    "en": "Linked Documents",
+    "current": "Linked Documents"
+  },
+  {
+    "key": "serviceAllocation.timeline.lastMovement",
+    "en": "Last Movement",
+    "current": "Last Movement"
+  },
+  {
+    "key": "serviceAllocation.recompute.missingStock",
+    "en": "Incoming stock is not defined for this case.",
+    "current": "Incoming stock is not defined for this case."
+  },
+  {
+    "key": "serviceAllocation.recompute.success",
+    "en": "Allocation recomputed. {{count}} line(s) processed.",
+    "current": "Allocation recomputed. {{count}} line(s) processed."
+  },
+  {
+    "key": "serviceAllocation.recompute.error",
+    "en": "Allocation recompute failed.",
+    "current": "Allocation recompute failed."
+  },
+  {
+    "key": "serviceAllocation.recompute.action",
+    "en": "Recompute Allocation",
+    "current": "Recompute Allocation"
+  },
+  {
+    "key": "serviceAllocation.form.createTitle",
+    "en": "Create Service Case",
+    "current": "Create Service Case"
+  },
+  {
+    "key": "serviceAllocation.form.editTitle",
+    "en": "Edit Service Case",
+    "current": "Edit Service Case"
+  },
+  {
+    "key": "serviceAllocation.form.createSuccess",
+    "en": "Service case created.",
+    "current": "Service case created."
+  },
+  {
+    "key": "serviceAllocation.form.updateSuccess",
+    "en": "Service case updated.",
+    "current": "Service case updated."
+  },
+  {
+    "key": "serviceAllocation.form.saveError",
+    "en": "Service case could not be saved.",
+    "current": "Service case could not be saved."
+  },
+  {
+    "key": "serviceAllocation.form.initialLine",
+    "en": "Initial / Additional Service Line",
+    "current": "Initial / Additional Service Line"
+  },
+  {
+    "key": "serviceAllocation.form.selectCustomer",
+    "en": "Select customer",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.selectStock",
+    "en": "Select stock",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.selectWarehouse",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.noCustomers",
+    "en": "No customers found.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.noStocks",
+    "en": "No stocks found.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.noWarehouses",
+    "en": "No warehouses found.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.customerLookupDescription",
+    "en": "Pick the customer record directly instead of typing an id; the system fills the customer code and identifier together.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.incomingStockLookupDescription",
+    "en": "Select the ERP stock record for the incoming item; stock code and stock identifier are filled together.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.initialLineStockLookupDescription",
+    "en": "Select the stock card used on the service line; the system carries stock code, identifier and unit together.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.form.warehouseLookupDescription",
+    "en": "Select the warehouse directly instead of entering an id; the system binds the correct warehouse record in the background.",
+    "current": null
+  },
+  {
+    "key": "serviceAllocation.reports.title",
+    "en": "Service Reports",
+    "current": "Service Reports"
+  },
+  {
+    "key": "serviceAllocation.reports.totalCases",
+    "en": "Total Service Cases",
+    "current": "Total Service Cases"
+  },
+  {
+    "key": "serviceAllocation.reports.openCases",
+    "en": "Open cases",
+    "current": "Open cases"
+  },
+  {
+    "key": "serviceAllocation.reports.waitingParts",
+    "en": "Waiting For Parts",
+    "current": "Waiting For Parts"
+  },
+  {
+    "key": "serviceAllocation.reports.reviewWaitingCases",
+    "en": "Review waiting cases",
+    "current": "Review waiting cases"
+  },
+  {
+    "key": "serviceAllocation.reports.partialAllocations",
+    "en": "Partial Allocations",
+    "current": "Partial Allocations"
+  },
+  {
+    "key": "serviceAllocation.reports.openPartialAllocations",
+    "en": "Open allocation queue",
+    "current": "Open allocation queue"
+  },
+  {
+    "key": "serviceAllocation.reports.documentLinks",
+    "en": "Document Links",
+    "current": "Document Links"
+  },
+  {
+    "key": "serviceAllocation.reports.openDocumentLinks",
+    "en": "Open document links",
+    "current": "Open document links"
+  },
+  {
+    "key": "serviceAllocation.reports.criticalQueue",
+    "en": "Critical Queue",
+    "current": "Critical Queue"
+  },
+  {
+    "key": "serviceAllocation.reports.openQueue",
+    "en": "Open Queue",
+    "current": "Open Queue"
+  },
+  {
+    "key": "serviceAllocation.reports.waitingCasesTable",
+    "en": "Cases Waiting For Parts",
+    "current": "Cases Waiting For Parts"
+  },
+  {
+    "key": "serviceAllocation.reports.noWaitingCases",
+    "en": "No cases waiting for parts.",
+    "current": "No cases waiting for parts."
+  },
+  {
+    "key": "serviceAllocation.reports.partialAllocationTable",
+    "en": "Partial Allocation Rows",
+    "current": "Partial Allocation Rows"
+  },
+  {
+    "key": "serviceAllocation.reports.noPartialAllocations",
+    "en": "No partial allocations found.",
+    "current": "No partial allocations found."
+  },
+  {
+    "key": "serviceAllocation.reports.caseDistribution",
+    "en": "Case Status Distribution",
+    "current": "Case Status Distribution"
+  },
+  {
+    "key": "serviceAllocation.reports.linkDistribution",
+    "en": "Link Purpose Distribution",
+    "current": "Link Purpose Distribution"
+  },
+  {
+    "key": "serviceAllocation.reports.noDistribution",
+    "en": "No distribution data.",
+    "current": "No distribution data."
+  },
+  {
+    "key": "serviceAllocation.reports.recentMovements",
+    "en": "Recent Warehouse Movements",
+    "current": "Recent Warehouse Movements"
+  },
+  {
+    "key": "serviceAllocation.reports.shipmentLinks",
+    "en": "shipment links",
+    "current": "shipment links"
+  },
+  {
+    "key": "serviceAllocation.reports.openLinks",
+    "en": "Open Links",
+    "current": "Open Links"
+  },
+  {
+    "key": "serviceAllocation.reports.noRecentMovements",
+    "en": "No recent warehouse movements found.",
+    "current": "No recent warehouse movements found."
+  },
+  {
+    "key": "serviceAllocation.reports.allocationRows",
+    "en": "Allocation Rows",
+    "current": "Allocation Rows"
+  },
+  {
+    "key": "serviceAllocation.reports.activeRepairCases",
+    "en": "Active Repair Cases",
+    "current": "Active Repair Cases"
+  },
+  {
+    "key": "serviceAllocation.reports.shipmentLinksCount",
+    "en": "Shipment Link Count",
+    "current": "Shipment Link Count"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.0",
+    "en": "Draft",
+    "current": "Draft"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.1",
+    "en": "Waiting For Intake",
+    "current": "Waiting For Intake"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.2",
+    "en": "Received",
+    "current": "Received"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.3",
+    "en": "In Diagnosis",
+    "current": "In Diagnosis"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.4",
+    "en": "Waiting For Parts",
+    "current": "Waiting For Parts"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.5",
+    "en": "In Repair",
+    "current": "In Repair"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.6",
+    "en": "Ready For Return",
+    "current": "Ready For Return"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.7",
+    "en": "Returned To Main Warehouse",
+    "current": "Returned To Main Warehouse"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.8",
+    "en": "Closed",
+    "current": "Closed"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseStatus.9",
+    "en": "Cancelled",
+    "current": "Cancelled"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseLineType.0",
+    "en": "Incoming Product",
+    "current": "Incoming Product"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseLineType.1",
+    "en": "Spare Part",
+    "current": "Spare Part"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseLineType.2",
+    "en": "Labor",
+    "current": "Labor"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceCaseLineType.3",
+    "en": "Replacement Product",
+    "current": "Replacement Product"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceProcessType.0",
+    "en": "Normal Sales Order",
+    "current": "Normal Sales Order"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceProcessType.1",
+    "en": "Service Repair",
+    "current": "Service Repair"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceProcessType.2",
+    "en": "Spare Part Supply",
+    "current": "Spare Part Supply"
+  },
+  {
+    "key": "serviceAllocation.enum.serviceProcessType.3",
+    "en": "Repair Return",
+    "current": "Repair Return"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.0",
+    "en": "Waiting",
+    "current": "Waiting"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.1",
+    "en": "Blocked",
+    "current": "Blocked"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.2",
+    "en": "Allocated",
+    "current": "Allocated"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.3",
+    "en": "Partially Allocated",
+    "current": "Partially Allocated"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.4",
+    "en": "Shipped",
+    "current": "Shipped"
+  },
+  {
+    "key": "serviceAllocation.enum.allocationStatus.5",
+    "en": "Cancelled",
+    "current": "Cancelled"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.0",
+    "en": "Intake",
+    "current": "Intake"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.1",
+    "en": "Internal Transfer",
+    "current": "Internal Transfer"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.2",
+    "en": "Spare Part Supply",
+    "current": "Spare Part Supply"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.3",
+    "en": "Repair Operation",
+    "current": "Repair Operation"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.4",
+    "en": "Return To Main Warehouse",
+    "current": "Return To Main Warehouse"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.5",
+    "en": "Shipment",
+    "current": "Shipment"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.6",
+    "en": "Allocation Source",
+    "current": "Allocation Source"
+  },
+  {
+    "key": "serviceAllocation.enum.documentLinkPurpose.7",
+    "en": "Allocation Result",
+    "current": "Allocation Result"
+  }
+]

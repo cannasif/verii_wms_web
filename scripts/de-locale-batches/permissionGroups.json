@@ -1,0 +1,32 @@
+[
+  {
+    "key": "permissionGroups.permissionsPanel.introTitle",
+    "en": "Bu grup hangi işlemleri yapabilir?",
+    "current": "Bu grup hangi işlemleri yapabilir?"
+  },
+  {
+    "key": "permissionGroups.permissionsPanel.introBody",
+    "en": "Aşağıda bu grubun hangi modülleri görebileceğini, kayıt açabileceğini, güncelleyebileceğini veya silebileceğini seçersiniz. Bu gruba atanan tüm kullanıcılar aynı yetki setini alır.",
+    "current": "Aşağıda bu grubun hangi modülleri görebileceğini, kayıt açabileceğini, güncelleyebileceğini veya silebileceğini seçersiniz. Bu gruba atanan tüm kullanıcılar aynı yetki setini alır."
+  },
+  {
+    "key": "permissionGroups.permissionsPanel.selectionSummaryTitle",
+    "en": "Seçili CRUD özeti",
+    "current": "Seçili CRUD özeti"
+  },
+  {
+    "key": "permissionGroups.permissionsPanel.selectionSummaryBody",
+    "en": "Bu özet, grubun şu an hangi işlem tiplerinde yetki aldığını hızlıca görmenizi sağlar.",
+    "current": "Bu özet, grubun şu an hangi işlem tiplerinde yetki aldığını hızlıca görmenizi sağlar."
+  },
+  {
+    "key": "permissionGroups.permissionsPanel.searchPlaceholder",
+    "en": "Modül, işlem veya izin adı ara...",
+    "current": "Modül, işlem veya izin adı ara..."
+  },
+  {
+    "key": "permissionGroups.permissionsPanel.selectActionGroup",
+    "en": "Tüm {{action}} izinlerini seç",
+    "current": "Tüm {{action}} izinlerini seç"
+  }
+]

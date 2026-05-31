@@ -1,0 +1,72 @@
+[
+  {
+    "key": "dashboard.title",
+    "en": "Dashboard",
+    "current": "Dashboard"
+  },
+  {
+    "key": "dashboard.totalStock",
+    "en": "Total Stock",
+    "current": "Gesamtbestand"
+  },
+  {
+    "key": "dashboard.totalStockChange",
+    "en": "compared to last month",
+    "current": "im Vergleich zum Vormonat"
+  },
+  {
+    "key": "dashboard.goodsReceiptPending",
+    "en": "Pending transactions today",
+    "current": "Ausstehende Transaktionen heute"
+  },
+  {
+    "key": "dashboard.shipmentPrepared",
+    "en": "Prepared shipments",
+    "current": "Vorbereitete Sendungen"
+  },
+  {
+    "key": "dashboard.recentTransactions",
+    "en": "Recent Transactions",
+    "current": "Letzte Transaktionen"
+  },
+  {
+    "key": "dashboard.recentTransactionsSubtitle",
+    "en": "Transactions in the last 24 hours",
+    "current": "Transaktionen der letzten 24 Stunden"
+  },
+  {
+    "key": "dashboard.quickAccess",
+    "en": "Quick Access",
+    "current": "Schnellzugriff"
+  },
+  {
+    "key": "dashboard.newShipment",
+    "en": "New Shipment",
+    "current": "Neue Sendung"
+  },
+  {
+    "key": "dashboard.stockQuery",
+    "en": "Stock Query",
+    "current": "Bestandsabfrage"
+  },
+  {
+    "key": "dashboard.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "dashboard.shipmentNumber",
+    "en": "Shipment #{{number}}",
+    "current": "Sendung #{{number}}"
+  },
+  {
+    "key": "dashboard.inventoryUpdate",
+    "en": "Inventory Update",
+    "current": "Inventaraktualisierung"
+  },
+  {
+    "key": "dashboard.hoursAgo",
+    "en": "{{hours}} hours ago",
+    "current": "vor {{hours}} Stunden"
+  }
+]

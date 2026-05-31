@@ -1,0 +1,582 @@
+[
+  {
+    "key": "goodsReceipt.create.steps.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "goodsReceipt.create.steps.stockSelection",
+    "en": "Stock Selection",
+    "current": "Bestandsauswahl"
+  },
+  {
+    "key": "goodsReceipt.create.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "goodsReceipt.create.mode.order",
+    "en": "Order Based",
+    "current": "Bestellbasiert"
+  },
+  {
+    "key": "goodsReceipt.create.mode.stock",
+    "en": "Stock Based",
+    "current": "Bestandsbasiert"
+  },
+  {
+    "key": "goodsReceipt.process.title",
+    "en": "Goods Receipt Process",
+    "current": "Goods Receipt Process"
+  },
+  {
+    "key": "goodsReceipt.process.success",
+    "en": "Goods receipt process created successfully",
+    "current": "Goods receipt process created successfully"
+  },
+  {
+    "key": "goodsReceipt.process.error",
+    "en": "An error occurred while creating goods receipt process",
+    "current": "An error occurred while creating goods receipt process"
+  },
+  {
+    "key": "goodsReceipt.approval.title",
+    "en": "Goods Receipt Orders Awaiting Approval",
+    "current": "Goods Receipt Orders Awaiting Approval"
+  },
+  {
+    "key": "goodsReceipt.approval.approveSuccess",
+    "en": "Goods receipt order approved successfully",
+    "current": "Goods receipt order approved successfully"
+  },
+  {
+    "key": "goodsReceipt.approval.approveError",
+    "en": "Goods receipt order could not be approved",
+    "current": "Goods receipt order could not be approved"
+  },
+  {
+    "key": "goodsReceipt.approval.rejectSuccess",
+    "en": "Goods receipt order rejected successfully",
+    "current": "Goods receipt order rejected successfully"
+  },
+  {
+    "key": "goodsReceipt.approval.rejectError",
+    "en": "Goods receipt order could not be rejected",
+    "current": "Goods receipt order could not be rejected"
+  },
+  {
+    "key": "goodsReceipt.approval.error",
+    "en": "An error occurred while loading data",
+    "current": "An error occurred while loading data"
+  },
+  {
+    "key": "goodsReceipt.approval.searchPlaceholder",
+    "en": "Search by document no, customer code, or planned date",
+    "current": "Search by document no, customer code, or planned date"
+  },
+  {
+    "key": "goodsReceipt.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "goodsReceipt.approval.documentNo",
+    "en": "Document No",
+    "current": "Document No"
+  },
+  {
+    "key": "goodsReceipt.approval.documentDate",
+    "en": "Document Date",
+    "current": "Document Date"
+  },
+  {
+    "key": "goodsReceipt.approval.customerCode",
+    "en": "Customer Code",
+    "current": "Customer Code"
+  },
+  {
+    "key": "goodsReceipt.approval.customerName",
+    "en": "Customer Name",
+    "current": "Customer Name"
+  },
+  {
+    "key": "goodsReceipt.approval.plannedDate",
+    "en": "Planned Date",
+    "current": "Planned Date"
+  },
+  {
+    "key": "goodsReceipt.approval.actions",
+    "en": "Actions",
+    "current": "Actions"
+  },
+  {
+    "key": "goodsReceipt.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "goodsReceipt.approval.approve",
+    "en": "Approve",
+    "current": "Approve"
+  },
+  {
+    "key": "goodsReceipt.approval.reject",
+    "en": "Reject",
+    "current": "Reject"
+  },
+  {
+    "key": "goodsReceipt.approval.noData",
+    "en": "No goods receipt orders awaiting approval",
+    "current": "No goods receipt orders awaiting approval"
+  },
+  {
+    "key": "goodsReceipt.list.title",
+    "en": "Goods Receipt List",
+    "current": "Wareneingangsliste"
+  },
+  {
+    "key": "goodsReceipt.step1.receiptDate",
+    "en": "Goods Receipt Date",
+    "current": "Wareneingangsdatum"
+  },
+  {
+    "key": "goodsReceipt.step1.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "goodsReceipt.step1.documentNoPlaceholder",
+    "en": "Enter document number",
+    "current": "Belegnummer eingeben"
+  },
+  {
+    "key": "goodsReceipt.step1.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "goodsReceipt.step1.isInvoice",
+    "en": "E - Invoice",
+    "current": "E - Rechnung"
+  },
+  {
+    "key": "goodsReceipt.step2.orders",
+    "en": "Orders",
+    "current": "Bestellungen"
+  },
+  {
+    "key": "goodsReceipt.step2.noOrderSelected",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "goodsReceipt.step2.orderContent",
+    "en": "Order Content",
+    "current": "Bestellinhalt"
+  },
+  {
+    "key": "goodsReceipt.step2.itemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "goodsReceipt.step2.started",
+    "en": "Started",
+    "current": "Begonnen"
+  },
+  {
+    "key": "goodsReceipt.step2.pending",
+    "en": "Pending",
+    "current": "Ausstehend"
+  },
+  {
+    "key": "goodsReceipt.step2.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "goodsReceipt.step2.noOrders",
+    "en": "No orders found for this customer",
+    "current": "Keine Bestellungen für diesen Kunden gefunden"
+  },
+  {
+    "key": "goodsReceipt.step2.selectedItemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.title",
+    "en": "Order Details",
+    "current": "Bestelldetails"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.description",
+    "en": "You can select order items to add to the goods receipt list",
+    "current": "Sie können Bestellpositionen auswählen, um sie zur Wareneingangsliste hinzuzufügen"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.ordered",
+    "en": "Ordered",
+    "current": "Bestellt"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.orderQuantity",
+    "en": "Order Quantity",
+    "current": "Bestellmenge"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.unitPrice",
+    "en": "Unit Price",
+    "current": "Einzelpreis"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.unit",
+    "en": "Pcs",
+    "current": "Stk"
+  },
+  {
+    "key": "goodsReceipt.details.lotNo",
+    "en": "Lot No",
+    "current": "Chargennummer"
+  },
+  {
+    "key": "goodsReceipt.details.lotNoPlaceholder",
+    "en": "Enter lot number",
+    "current": "Chargennummer eingeben"
+  },
+  {
+    "key": "goodsReceipt.details.configCode",
+    "en": "Config Code",
+    "current": "Konfigurationscode"
+  },
+  {
+    "key": "goodsReceipt.details.configCodePlaceholder",
+    "en": "Enter configuration code",
+    "current": "Konfigurationscode eingeben"
+  },
+  {
+    "key": "goodsReceipt.validation.documentNoLength",
+    "en": "Document number must be exactly 15 digits",
+    "current": "Document number must be exactly 15 digits"
+  },
+  {
+    "key": "goodsReceipt.validation.documentNoInvoiceLength",
+    "en": "For e-invoice, document number must be exactly 16 digits",
+    "current": "For e-invoice, document number must be exactly 16 digits"
+  },
+  {
+    "key": "goodsReceipt.report.title",
+    "en": "Goods Receipt Report",
+    "current": "Wareneingangsbericht"
+  },
+  {
+    "key": "goodsReceipt.report.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "goodsReceipt.report.orderId",
+    "en": "Order No",
+    "current": "Bestellnummer"
+  },
+  {
+    "key": "goodsReceipt.report.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "goodsReceipt.report.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "goodsReceipt.report.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "goodsReceipt.report.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "goodsReceipt.report.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "goodsReceipt.report.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "goodsReceipt.report.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "goodsReceipt.report.paginationInfo",
+    "en": "{{current}} - {{total}} of {{totalCount}}",
+    "current": "{{current}} - {{total}} von {{totalCount}}"
+  },
+  {
+    "key": "goodsReceipt.report.detailTitle",
+    "en": "Goods Receipt Detail",
+    "current": "Wareneingangsdetails"
+  },
+  {
+    "key": "goodsReceipt.report.detailDescription",
+    "en": "Detailed information of the goods receipt transaction",
+    "current": "Detaillierte Informationen zur Wareneingangstransaktion"
+  },
+  {
+    "key": "goodsReceipt.report.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.branchCode",
+    "en": "Branch Code",
+    "current": "Filialcode"
+  },
+  {
+    "key": "goodsReceipt.report.yearCode",
+    "en": "Year Code",
+    "current": "Jahrscode"
+  },
+  {
+    "key": "goodsReceipt.report.isPlanned",
+    "en": "Planned",
+    "current": "Geplant"
+  },
+  {
+    "key": "goodsReceipt.report.statusInfo",
+    "en": "Status Information",
+    "current": "Statusinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.isCompleted",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "goodsReceipt.report.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "goodsReceipt.report.isPendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "goodsReceipt.report.approvalStatus",
+    "en": "Approval Status",
+    "current": "Genehmigungsstatus"
+  },
+  {
+    "key": "goodsReceipt.report.approvalDate",
+    "en": "Approval Date",
+    "current": "Genehmigungsdatum"
+  },
+  {
+    "key": "goodsReceipt.report.erpInfo",
+    "en": "ERP Integration Information",
+    "current": "ERP-Integrationsinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.erp",
+    "en": "ERP",
+    "current": "ERP"
+  },
+  {
+    "key": "goodsReceipt.report.isERPIntegrated",
+    "en": "ERP Integrated",
+    "current": "ERP integriert"
+  },
+  {
+    "key": "goodsReceipt.report.erpReferenceNumber",
+    "en": "ERP Reference No",
+    "current": "ERP-Referenznummer"
+  },
+  {
+    "key": "goodsReceipt.report.erpIntegrationDate",
+    "en": "ERP Integration Date",
+    "current": "ERP-Integrationsdatum"
+  },
+  {
+    "key": "goodsReceipt.report.erpIntegrationStatus",
+    "en": "ERP Integration Status",
+    "current": "ERP-Integrationsstatus"
+  },
+  {
+    "key": "goodsReceipt.report.erpErrorMessage",
+    "en": "ERP Error Message",
+    "current": "ERP-Fehlermeldung"
+  },
+  {
+    "key": "goodsReceipt.report.returnCode",
+    "en": "Return Code",
+    "current": "Rückgabecode"
+  },
+  {
+    "key": "goodsReceipt.report.ocrSource",
+    "en": "OCR Source",
+    "current": "OCR-Quelle"
+  },
+  {
+    "key": "goodsReceipt.report.auditInfo",
+    "en": "Audit Information",
+    "current": "Prüfinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.audit",
+    "en": "Audit",
+    "current": "Prüfung"
+  },
+  {
+    "key": "goodsReceipt.report.createdBy",
+    "en": "Created By",
+    "current": "Erstellt von"
+  },
+  {
+    "key": "goodsReceipt.report.updatedBy",
+    "en": "Updated By",
+    "current": "Aktualisiert von"
+  },
+  {
+    "key": "goodsReceipt.report.updatedDate",
+    "en": "Updated Date",
+    "current": "Aktualisierungsdatum"
+  },
+  {
+    "key": "goodsReceipt.report.importLineDetail",
+    "en": "Import Line Detail",
+    "current": "Importzeilendetail"
+  },
+  {
+    "key": "goodsReceipt.report.orderInfo",
+    "en": "Order Information",
+    "current": "Bestellinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.importInfo",
+    "en": "Import Information",
+    "current": "Importinformationen"
+  },
+  {
+    "key": "goodsReceipt.report.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "goodsReceipt.report.erpOrderNo",
+    "en": "ERP Order No",
+    "current": "ERP-Bestellnummer"
+  },
+  {
+    "key": "goodsReceipt.report.erpOrderId",
+    "en": "ERP Order ID",
+    "current": "ERP-Bestell-ID"
+  },
+  {
+    "key": "goodsReceipt.report.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "goodsReceipt.report.totalImportQuantity",
+    "en": "Total Import Quantity",
+    "current": "Gesamtimportmenge"
+  },
+  {
+    "key": "goodsReceipt.report.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "goodsReceipt.report.info",
+    "en": "Information",
+    "current": "Informationen"
+  },
+  {
+    "key": "goodsReceipt.report.content",
+    "en": "Goods Receipt Content",
+    "current": "Wareneingangsinhalt"
+  },
+  {
+    "key": "goodsReceipt.collection.title",
+    "en": "Goods Receipt Collection",
+    "current": "Wareneingangssammlung"
+  },
+  {
+    "key": "goodsReceipt.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "goodsReceipt.collection.collected",
+    "en": "Product collected",
+    "current": "Produkt gesammelt"
+  },
+  {
+    "key": "goodsReceipt.collection.collectError",
+    "en": "Collection error",
+    "current": "Sammelfehler"
+  },
+  {
+    "key": "goodsReceipt.collection.invalidHeaderId",
+    "en": "Invalid goods receipt order",
+    "current": "Ungültiger Wareneingangsauftrag"
+  },
+  {
+    "key": "goodsReceipt.collection.completed",
+    "en": "Goods receipt order completed successfully",
+    "current": "Wareneingangsauftrag erfolgreich abgeschlossen"
+  },
+  {
+    "key": "goodsReceipt.collection.completeError",
+    "en": "Completion error",
+    "current": "Abschlussfehler"
+  },
+  {
+    "key": "goodsReceipt.collection.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "goodsReceipt.collection.viewCollected",
+    "en": "Collected",
+    "current": "Gesammelt"
+  },
+  {
+    "key": "goodsReceipt.collection.collect",
+    "en": "Collect",
+    "current": "Sammeln"
+  },
+  {
+    "key": "goodsReceipt.collection.yapKod",
+    "en": "Structure",
+    "current": "Struktur"
+  },
+  {
+    "key": "goodsReceipt.edit.title",
+    "en": "Edit Goods Receipt",
+    "current": "Edit Goods Receipt"
+  },
+  {
+    "key": "goodsReceipt.edit.subtitle",
+    "en": "Update goods receipt header information without changing line or collection flow",
+    "current": "Update goods receipt header information without changing line or collection flow"
+  },
+  {
+    "key": "goodsReceipt.edit.success",
+    "en": "Goods receipt updated successfully",
+    "current": "Goods receipt updated successfully"
+  },
+  {
+    "key": "goodsReceipt.edit.error",
+    "en": "An error occurred while updating goods receipt",
+    "current": "An error occurred while updating goods receipt"
+  }
+]

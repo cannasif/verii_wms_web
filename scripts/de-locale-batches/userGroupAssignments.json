@@ -1,0 +1,27 @@
+[
+  {
+    "key": "userGroupAssignments.noUserSelected",
+    "en": "Henüz kullanıcı seçilmedi",
+    "current": "Henüz kullanıcı seçilmedi"
+  },
+  {
+    "key": "userGroupAssignments.statusLabel",
+    "en": "Durum",
+    "current": "Durum"
+  },
+  {
+    "key": "userGroupAssignments.statusPending",
+    "en": "Kaydedilmedi",
+    "current": "Kaydedilmedi"
+  },
+  {
+    "key": "userGroupAssignments.statusCurrent",
+    "en": "Güncel",
+    "current": "Güncel"
+  },
+  {
+    "key": "userGroupAssignments.readOnlyInfo",
+    "en": "Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir.",
+    "current": "Bu ekrani goruntuleyebilirsiniz ancak grup atamalarini guncellemek icin update yetkisi gerekir."
+  }
+]

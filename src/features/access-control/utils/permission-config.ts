@@ -293,6 +293,35 @@ export function getPermissionDisplayMeta(code: string): { key: string; fallback:
   return PERMISSION_CODE_DISPLAY[code] ?? null;
 }
 
+type PermissionTranslateFn = (key: string, fallback?: string) => string;
+
+export function resolvePermissionDisplayLabel(
+  code: string,
+  name: string | null | undefined,
+  translate: PermissionTranslateFn,
+): string {
+  const meta = getPermissionDisplayMeta(code);
+  if (!meta) {
+    const trimmedName = (name ?? '').trim();
+    return trimmedName || code;
+  }
+
+  const scope = getPermissionScope(code);
+  const scopeMeta = getPermissionScopeDisplayMeta(scope);
+  const parts = code.split('.').filter(Boolean);
+  const action = parts[parts.length - 1];
+  const isCrudAction = Boolean(action && PERMISSION_ACTIONS.includes(action as PermissionAction));
+
+  if (scopeMeta && isCrudAction) {
+    const scopeLabel = translate(scopeMeta.key, scopeMeta.fallback);
+    const actionLabel = getPermissionActionLabel(`scope.${action}`);
+    const actionText = translate(actionLabel.key, actionLabel.fallback);
+    return `${scopeLabel} ${actionText}`;
+  }
+
+  return translate(meta.key, meta.fallback);
+}
+
 export function getPermissionScope(code: string): string {
   const parts = code.split('.').filter(Boolean);
   const last = parts[parts.length - 1];

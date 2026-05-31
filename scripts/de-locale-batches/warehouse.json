@@ -1,0 +1,627 @@
+[
+  {
+    "key": "warehouse.outbound.create.title",
+    "en": "New Warehouse Outbound Order",
+    "current": "Neuer Lagerausgangsauftrag"
+  },
+  {
+    "key": "warehouse.outbound.create.success",
+    "en": "Warehouse outbound order created successfully",
+    "current": "Lagerausgangsauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "warehouse.outbound.edit.title",
+    "en": "Edit Warehouse Outbound",
+    "current": "Edit Warehouse Outbound"
+  },
+  {
+    "key": "warehouse.outbound.edit.subtitle",
+    "en": "Update warehouse outbound header information without changing line or collection flow",
+    "current": "Update warehouse outbound header information without changing line or collection flow"
+  },
+  {
+    "key": "warehouse.outbound.edit.success",
+    "en": "Warehouse outbound order updated successfully",
+    "current": "Warehouse outbound order updated successfully"
+  },
+  {
+    "key": "warehouse.outbound.edit.error",
+    "en": "An error occurred while updating warehouse outbound order",
+    "current": "An error occurred while updating warehouse outbound order"
+  },
+  {
+    "key": "warehouse.outbound.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "warehouse.outbound.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.outbound.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "warehouse.outbound.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "warehouse.outbound.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "warehouse.outbound.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "warehouse.outbound.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "warehouse.outbound.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "warehouse.outbound.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.outbound.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "warehouse.outbound.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "warehouse.outbound.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "warehouse.outbound.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "warehouse.outbound.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "warehouse.outbound.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "warehouse.outbound.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "warehouse.outbound.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "warehouse.outbound.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "warehouse.outbound.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "warehouse.outbound.list.title",
+    "en": "Warehouse Outbound Order List",
+    "current": "Lagerausgangsauftragsliste"
+  },
+  {
+    "key": "warehouse.outbound.process.title",
+    "en": "New Warehouse Outbound Process",
+    "current": "New Warehouse Outbound Process"
+  },
+  {
+    "key": "warehouse.outbound.process.success",
+    "en": "Warehouse outbound process saved successfully",
+    "current": "Warehouse outbound process saved successfully"
+  },
+  {
+    "key": "warehouse.outbound.process.error",
+    "en": "An error occurred while saving warehouse outbound process",
+    "current": "An error occurred while saving warehouse outbound process"
+  },
+  {
+    "key": "warehouse.create.steps.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "warehouse.create.steps.orderSelection",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "warehouse.create.steps.stockSelection",
+    "en": "Stock Selection",
+    "current": "Stock Selection"
+  },
+  {
+    "key": "warehouse.create.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "warehouse.create.mode.order",
+    "en": "Sipariş bazlı",
+    "current": "Sipariş bazlı"
+  },
+  {
+    "key": "warehouse.create.mode.stock",
+    "en": "Stok bazlı",
+    "current": "Stok bazlı"
+  },
+  {
+    "key": "warehouse.inbound.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "warehouse.inbound.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.inbound.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "warehouse.inbound.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "warehouse.inbound.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "warehouse.inbound.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "warehouse.inbound.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "warehouse.inbound.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "warehouse.inbound.create.title",
+    "en": "New Warehouse Inbound Order",
+    "current": "Neuer Lagereingangsauftrag"
+  },
+  {
+    "key": "warehouse.inbound.create.success",
+    "en": "Warehouse inbound order created successfully",
+    "current": "Lagereingangsauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "warehouse.inbound.process.title",
+    "en": "Warehouse Inbound Process",
+    "current": "Warehouse Inbound Process"
+  },
+  {
+    "key": "warehouse.inbound.process.success",
+    "en": "Warehouse inbound process created successfully",
+    "current": "Warehouse inbound process created successfully"
+  },
+  {
+    "key": "warehouse.inbound.process.error",
+    "en": "An error occurred while creating warehouse inbound process",
+    "current": "An error occurred while creating warehouse inbound process"
+  },
+  {
+    "key": "warehouse.inbound.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.inbound.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "warehouse.inbound.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "warehouse.inbound.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "warehouse.inbound.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "warehouse.inbound.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "warehouse.inbound.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "warehouse.inbound.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "warehouse.inbound.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "warehouse.inbound.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "warehouse.inbound.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "warehouse.inbound.list.title",
+    "en": "Warehouse Inbound Order List",
+    "current": "Lagereingangsauftragsliste"
+  },
+  {
+    "key": "warehouse.inbound.edit.title",
+    "en": "Edit Warehouse Inbound",
+    "current": "Edit Warehouse Inbound"
+  },
+  {
+    "key": "warehouse.inbound.edit.subtitle",
+    "en": "Update warehouse inbound header information without changing line or collection flow",
+    "current": "Update warehouse inbound header information without changing line or collection flow"
+  },
+  {
+    "key": "warehouse.inbound.edit.success",
+    "en": "Warehouse inbound order updated successfully",
+    "current": "Warehouse inbound order updated successfully"
+  },
+  {
+    "key": "warehouse.inbound.edit.error",
+    "en": "An error occurred while updating warehouse inbound order",
+    "current": "An error occurred while updating warehouse inbound order"
+  },
+  {
+    "key": "warehouse.list.detailTitle",
+    "en": "Warehouse Transfer Order Detail",
+    "current": "Lagerübertragungsauftrag-Detail"
+  },
+  {
+    "key": "warehouse.list.detailDescription",
+    "en": "Detailed information of the warehouse transfer order",
+    "current": "Detaillierte Informationen zum Lagerübertragungsauftrag"
+  },
+  {
+    "key": "warehouse.list.documentInfo",
+    "en": "Document Information",
+    "current": "Beleginformationen"
+  },
+  {
+    "key": "warehouse.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "warehouse.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "warehouse.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "warehouse.list.customerInfo",
+    "en": "Customer Information",
+    "current": "Kundeninformationen"
+  },
+  {
+    "key": "warehouse.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "warehouse.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "warehouse.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "warehouse.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "warehouse.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "warehouse.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "current": "Lagerinformationen"
+  },
+  {
+    "key": "warehouse.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "warehouse.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "warehouse.list.lines",
+    "en": "Lines",
+    "current": "Positionen"
+  },
+  {
+    "key": "warehouse.list.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "warehouse.list.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "warehouse.step1.operationType",
+    "en": "Operation Type",
+    "current": "Vorgangstyp"
+  },
+  {
+    "key": "warehouse.step1.entryWarehouse",
+    "en": "Entry Warehouse",
+    "current": "Eingangslager"
+  },
+  {
+    "key": "warehouse.step1.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "warehouse.step1.transferDate",
+    "en": "Transfer Date",
+    "current": "Transferdatum"
+  },
+  {
+    "key": "warehouse.step1.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "warehouse.step1.documentNoPlaceholder",
+    "en": "Enter document number",
+    "current": "Belegnummer eingeben"
+  },
+  {
+    "key": "warehouse.step1.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "warehouse.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "current": "Benutzer für die Durchführung"
+  },
+  {
+    "key": "warehouse.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "current": "Benutzer für die Durchführung auswählen"
+  },
+  {
+    "key": "warehouse.step2.orders",
+    "en": "Orders",
+    "current": "Bestellungen"
+  },
+  {
+    "key": "warehouse.step2.orderContent",
+    "en": "Order Content",
+    "current": "Bestellinhalt"
+  },
+  {
+    "key": "warehouse.step2.noOrderSelected",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "warehouse.step2.itemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "warehouse.step2.started",
+    "en": "Started",
+    "current": "Begonnen"
+  },
+  {
+    "key": "warehouse.step2.ordered",
+    "en": "Ordered",
+    "current": "Bestellt"
+  },
+  {
+    "key": "warehouse.step2.pending",
+    "en": "Pending",
+    "current": "Ausstehend"
+  },
+  {
+    "key": "warehouse.step2.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "warehouse.step2.stocks",
+    "en": "Stocks",
+    "current": "Stocks"
+  },
+  {
+    "key": "warehouse.step2.selectedItems",
+    "en": "Selected Items",
+    "current": "Selected Items"
+  },
+  {
+    "key": "warehouse.step2.selectedItemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} items"
+  },
+  {
+    "key": "warehouse.step2.noSelectedItems",
+    "en": "No selected stock",
+    "current": "No selected stock"
+  },
+  {
+    "key": "warehouse.step2.searchStocks",
+    "en": "Search by stock code or name...",
+    "current": "Search by stock code or name..."
+  },
+  {
+    "key": "warehouse.step2.enterQuantityToSelect",
+    "en": "Enter quantity to select the item.",
+    "current": "Enter quantity to select the item."
+  },
+  {
+    "key": "warehouse.step2.unit",
+    "en": "Unit",
+    "current": "Unit"
+  },
+  {
+    "key": "warehouse.details.configCode",
+    "en": "Configuration Code",
+    "current": "Konfigurationscode"
+  },
+  {
+    "key": "warehouse.details.lotNo",
+    "en": "Lot No",
+    "current": "Chargennummer"
+  },
+  {
+    "key": "warehouse.details.lotNoPlaceholder",
+    "en": "Enter lot number",
+    "current": "Chargennummer eingeben"
+  },
+  {
+    "key": "warehouse.details.configCodePlaceholder",
+    "en": "Enter configuration code",
+    "current": "Konfigurationscode eingeben"
+  },
+  {
+    "key": "warehouse.details.serialNo2",
+    "en": "Serial No 2",
+    "current": "Serial No 2"
+  },
+  {
+    "key": "warehouse.details.serialNo2Placeholder",
+    "en": "Enter second serial information",
+    "current": "Enter second serial information"
+  },
+  {
+    "key": "warehouse.details.sourceCellCode",
+    "en": "Source Cell",
+    "current": "Source Cell"
+  },
+  {
+    "key": "warehouse.details.sourceCellCodePlaceholder",
+    "en": "Enter source cell code",
+    "current": "Enter source cell code"
+  },
+  {
+    "key": "warehouse.details.targetCellCode",
+    "en": "Target Cell",
+    "current": "Target Cell"
+  },
+  {
+    "key": "warehouse.details.targetCellCodePlaceholder",
+    "en": "Enter target cell code",
+    "current": "Enter target cell code"
+  },
+  {
+    "key": "warehouse.operationTypes.outbound.shippingInvoice",
+    "en": "Shipping Invoice",
+    "current": "Shipping Invoice"
+  },
+  {
+    "key": "warehouse.operationTypes.outbound.wasteOut",
+    "en": "Waste Output",
+    "current": "Waste Output"
+  },
+  {
+    "key": "warehouse.operationTypes.outbound.correctionOut",
+    "en": "Correction Output",
+    "current": "Correction Output"
+  },
+  {
+    "key": "warehouse.operationTypes.outbound.transferOut",
+    "en": "Transfer Output",
+    "current": "Transfer Output"
+  },
+  {
+    "key": "warehouse.operationTypes.inbound.shippingInvoiceIn",
+    "en": "Shipping Invoice Inbound",
+    "current": "Shipping Invoice Inbound"
+  },
+  {
+    "key": "warehouse.operationTypes.inbound.wasteIn",
+    "en": "Waste Input",
+    "current": "Waste Input"
+  },
+  {
+    "key": "warehouse.operationTypes.inbound.correctionIn",
+    "en": "Correction Input",
+    "current": "Correction Input"
+  },
+  {
+    "key": "warehouse.operationTypes.inbound.transferIn",
+    "en": "Transfer Input",
+    "current": "Transfer Input"
+  }
+]

@@ -1,0 +1,942 @@
+[
+  {
+    "key": "steelGoodReceiptAcceptance.badge",
+    "en": "Steel plate acceptance",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.pageTitle",
+    "en": "Steel plate placement",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.title",
+    "en": "Yard / cell placement",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.description",
+    "en": "Place invoiced sheets to a yard or cell. Stack order is required for stacked storage.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.searchPh",
+    "en": "Search D-Code, stock, or serial",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.saveOk",
+    "en": "Placement saved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.errView",
+    "en": "Select warehouse and shelf or yard code to open the view",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.errForm",
+    "en": "Placement form is not ready",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.noPending",
+    "en": "No plates waiting for placement.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.whTitle",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.whPh",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.shelfTitle",
+    "en": "Select cell / shelf",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.shelfPh",
+    "en": "Select cell",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.area",
+    "en": "Yard code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.areaPh",
+    "en": "Yard / area code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.stackOrder",
+    "en": "Stack order",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.row",
+    "en": "Row no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.pos",
+    "en": "Position no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.notePh",
+    "en": "Placement note",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.saving",
+    "en": "Saving...",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.saveBtn",
+    "en": "Save placement",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.open2d",
+    "en": "Open in 2D",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.open3d",
+    "en": "Open in 3D",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.pickPlate",
+    "en": "Select a plate on the left.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.sameLocationTitle",
+    "en": "Plates at same location",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.noOther",
+    "en": "No other plates at this location.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.approvedQty",
+    "en": "Approved quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.stackBadge",
+    "en": "Stack {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.sideBySide",
+    "en": "Side by side",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.stacked",
+    "en": "Stacked",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.guideTitle",
+    "en": "Placement Guide",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.formTitle",
+    "en": "Placement Form",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placementType",
+    "en": "Placement Type",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBesideTitle",
+    "en": "Place Beside",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBesideDesc",
+    "en": "Places on the same row at the next free position to the right of the current plate. Suitable for side-by-side layouts.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBehindTitle",
+    "en": "Place Behind",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetBehindDesc",
+    "en": "Moves one row deeper in the same column logic. Use for deep yard placement scenarios.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetAboveTitle",
+    "en": "Place Above",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.presetAboveDesc",
+    "en": "Stacks on top of the same position. System suggests the next stack order automatically.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.quickSuggestTitle",
+    "en": "Quick Suggestions for 3D Placement Logic",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.quickSuggestDesc",
+    "en": "Suggest position beside, behind, or above existing plates with one click.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeBeside",
+    "en": "Place Beside",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeBehind",
+    "en": "Place Behind",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.placeAbove",
+    "en": "Place Above",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.placement.noOccupancyHelp",
+    "en": "No placed plate exists in this location yet. For the first plate, enter row/position manually or check empty areas in 2D/3D view.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.pageTitle",
+    "en": "Steel receipt (purchase)",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.title",
+    "en": "Create purchase receipt",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.description",
+    "en": "Select lines with approved quantity that were not yet transferred. Creates a local receipt without Netsis integration.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.searchPh",
+    "en": "Search D-Code, stock, serial, or supplier",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.noLines",
+    "en": "No lines available for the receipt.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.selLines",
+    "en": "Selected lines",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.totalAppr",
+    "en": "Total approved quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.supCount",
+    "en": "Supplier count",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.notePh",
+    "en": "Receipt note",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.createPending",
+    "en": "Creating...",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.createBtn",
+    "en": "Create local purchase receipt",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.noHeaders",
+    "en": "No local purchase receipt created yet.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.lineMeta",
+    "en": "Lines: {{l}} | Qty: {{q}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.expected",
+    "en": "Expected",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.arrived",
+    "en": "Arrived",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.approved",
+    "en": "Approved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.receipt.order",
+    "en": "Order",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.pageTitle",
+    "en": "Steel yard inspection",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.title",
+    "en": "Yard acceptance inspection",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.description",
+    "en": "Search by plate or serial, then record arrived/approved/rejected and partial acceptance.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.searchPh",
+    "en": "Search serial or plate no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.errForm",
+    "en": "Inspection form is not ready",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.saveOk",
+    "en": "Inspection saved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.noHit",
+    "en": "No matching record for this search.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.formTitle",
+    "en": "Inspection form",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.dcode",
+    "en": "D-Code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.stock",
+    "en": "Stock code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.plate",
+    "en": "Plate no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.expQty",
+    "en": "Expected quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.arrQ",
+    "en": "Arrived?",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.y",
+    "en": "Yes",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.n",
+    "en": "No",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.apprQ",
+    "en": "Approved?",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.yAp",
+    "en": "Approved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.nAp",
+    "en": "Not approved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.arrivedQty",
+    "en": "Arrived quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.approvedQty",
+    "en": "Approved quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectedQty",
+    "en": "Rejected quantity",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.statusNote",
+    "en": "Status note",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.statusNotePh",
+    "en": "Inspection note",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectPh",
+    "en": "Rejection reason",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.openGap",
+    "en": "Open gap",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.status",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.saveP",
+    "en": "Saving...",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.save",
+    "en": "Save inspection",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.photosTitle",
+    "en": "Inspection photos",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.photo",
+    "en": "Photo",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.noPhotos",
+    "en": "No photos yet.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.flowGuideTitle",
+    "en": "Inspection Flow Guide",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.approveTitle",
+    "en": "Approve",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.approveDesc",
+    "en": "If the plate arrived and is suitable in quality/documents, approve it. Only approved quantity proceeds to the next step.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectTitle",
+    "en": "Reject",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectDesc",
+    "en": "If plate arrived but is not suitable, reject it. Rejection reason is mandatory when rejected quantity exists.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.partialTitle",
+    "en": "Missing / Partial Acceptance",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.partialDesc",
+    "en": "If the plate did not arrive, mark as missing. For partial arrivals, record arrived, approved and rejected quantities separately.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.findBatch",
+    "en": "1. Find Excel Batch",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.batchSearchPh",
+    "en": "Enter excel record no or export ref no",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.findBatchBtn",
+    "en": "Find Batch",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesCount",
+    "en": "{{n}} series",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.pendingCount",
+    "en": "{{n}} pending",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.noHeaderDoc",
+    "en": "No header document no",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.pickSeries",
+    "en": "2. Select Series to Process",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesStepKicker",
+    "en": "Step 2",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.pickSeriesSubtitle",
+    "en": "Filter by status, then pick the series to inspect.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesFilterLabel",
+    "en": "Status filter",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesFilterAll",
+    "en": "All",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesFilterOther",
+    "en": "Other",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesEmptyFilter",
+    "en": "No series match this filter. Try another status or adjust your search.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.seriesVisibleCount",
+    "en": "{{n}} / {{total}} series",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickApprove",
+    "en": "Quick Approve",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickMissing",
+    "en": "Mark Missing",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickReject",
+    "en": "Quick Reject",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickApproveNote",
+    "en": "Quick approve applied",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickMissingNote",
+    "en": "Plate not found in yard",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickRejectReason",
+    "en": "Quality reject",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.quickRejectNote",
+    "en": "Quick reject applied",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.pickFlowHelp",
+    "en": "First select the relevant Excel batch, then select the plate series you want to inspect.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectReasonLabel",
+    "en": "Reject Reason",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.pageTitle",
+    "en": "Steel expected list",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.title",
+    "en": "Expected plate list",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.description",
+    "en": "Track expected plate lines from Excel import by D-Code, order, and serial.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.searchPh",
+    "en": "Search D-Code, stock, serial, or order no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colD",
+    "en": "D-Code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colSup",
+    "en": "Supplier",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colOrd",
+    "en": "Order",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colSt",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colPlate",
+    "en": "Plate no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colExp",
+    "en": "Expected",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colArr",
+    "en": "Arrived",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colAp",
+    "en": "Approved",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colStat",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.empty",
+    "en": "No records",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.refresh",
+    "en": "Refresh",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colRecNo",
+    "en": "Excel Record No",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colLineSeq",
+    "en": "Line Seq No",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colOrderLine",
+    "en": "Netsis Order Line No",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colStockName",
+    "en": "Stock Name",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colCombinedSize",
+    "en": "Combined Size",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colSerial2",
+    "en": "Serial-2 (Pos No)",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colDepot",
+    "en": "Depot Code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colMaterialQuality",
+    "en": "Material Quality",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colHeatNumber",
+    "en": "Heat Number",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colCertificateNumber",
+    "en": "Certificate Number",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colExportRef",
+    "en": "Export Ref No",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colRejected",
+    "en": "Rejected",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.pageTitle",
+    "en": "Steel Excel import",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.title",
+    "en": "Steel plate Excel import",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.description",
+    "en": "Upload the supplier list, run preview, and import with D-Code protection.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.supplier",
+    "en": "Supplier",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.dialogTitle",
+    "en": "Select supplier",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.dialogPh",
+    "en": "Select supplier",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.recNo",
+    "en": "Excel record no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.recNoPh",
+    "en": "Excel record no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.expRef",
+    "en": "Export ref no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.expRefPh",
+    "en": "Export ref no. (optional)",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.file",
+    "en": "Excel file",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewP",
+    "en": "Previewing...",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewBtn",
+    "en": "Get preview",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.commitP",
+    "en": "Importing...",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.commitBtn",
+    "en": "Complete import",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.errPayload",
+    "en": "Import data is not ready",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.previewOk",
+    "en": "Excel preview is ready",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.commitOk",
+    "en": "Steel import completed",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.readOk",
+    "en": "Read {{n}} lines",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.readErr",
+    "en": "Could not read Excel",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableRow",
+    "en": "Row",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableAction",
+    "en": "Action",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableD",
+    "en": "D-Code",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableSt",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tablePlate",
+    "en": "Plate no.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableExp",
+    "en": "Expected",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableStat",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableErr",
+    "en": "Error",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeTotal",
+    "en": "Total lines: {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeNew",
+    "en": "New: {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeUp",
+    "en": "To update: {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeErr",
+    "en": "Errors: {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.badgeExp",
+    "en": "Total expected: {{n}}",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.addTitle",
+    "en": "Add inspection photo",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.addHint",
+    "en": "Add photos for rejection or inspection evidence.",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.select",
+    "en": "Choose photos",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.notePh",
+    "en": "Photo note",
+    "current": null
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.photos.uploadP",
+    "en": "Upload photos",
+    "current": null
+  }
+]

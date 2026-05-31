@@ -1,0 +1,72 @@
+[
+  {
+    "key": "barcodeDesigner.list.badge",
+    "en": "List",
+    "current": "List"
+  },
+  {
+    "key": "barcodeDesigner.list.description",
+    "en": "List barcode templates, create a new design, edit existing templates, or jump directly to the label printing screen.",
+    "current": "List barcode templates, create a new design, edit existing templates, or jump directly to the label printing screen."
+  },
+  {
+    "key": "barcodeDesigner.list.create",
+    "en": "New Template",
+    "current": "New Template"
+  },
+  {
+    "key": "barcodeDesigner.list.tableTitle",
+    "en": "Template List",
+    "current": "Template List"
+  },
+  {
+    "key": "barcodeDesigner.list.code",
+    "en": "Code",
+    "current": "Code"
+  },
+  {
+    "key": "barcodeDesigner.list.name",
+    "en": "Name",
+    "current": "Name"
+  },
+  {
+    "key": "barcodeDesigner.list.type",
+    "en": "Type",
+    "current": "Type"
+  },
+  {
+    "key": "barcodeDesigner.list.size",
+    "en": "Size",
+    "current": "Size"
+  },
+  {
+    "key": "barcodeDesigner.list.draft",
+    "en": "Draft",
+    "current": "Draft"
+  },
+  {
+    "key": "barcodeDesigner.list.empty",
+    "en": "No barcode templates yet.",
+    "current": "No barcode templates yet."
+  },
+  {
+    "key": "barcodeDesigner.list.deleteSuccess",
+    "en": "Template deleted.",
+    "current": "Template deleted."
+  },
+  {
+    "key": "barcodeDesigner.list.deleteError",
+    "en": "Template could not be deleted.",
+    "current": "Template could not be deleted."
+  },
+  {
+    "key": "barcodeDesigner.list.statusUpdateSuccess",
+    "en": "Template status updated.",
+    "current": "Template status updated."
+  },
+  {
+    "key": "barcodeDesigner.list.statusUpdateError",
+    "en": "Template status could not be updated.",
+    "current": "Template status could not be updated."
+  }
+]

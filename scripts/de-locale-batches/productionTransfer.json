@@ -1,0 +1,677 @@
+[
+  {
+    "key": "productionTransfer.approval.title",
+    "en": "Production Transfer Orders Awaiting Approval",
+    "current": "Production Transfer Orders Awaiting Approval"
+  },
+  {
+    "key": "productionTransfer.approval.approveSuccess",
+    "en": "Production transfer order approved successfully",
+    "current": "Production transfer order approved successfully"
+  },
+  {
+    "key": "productionTransfer.approval.approveError",
+    "en": "Production transfer order could not be approved",
+    "current": "Production transfer order could not be approved"
+  },
+  {
+    "key": "productionTransfer.approval.rejectSuccess",
+    "en": "Production transfer order rejected successfully",
+    "current": "Production transfer order rejected successfully"
+  },
+  {
+    "key": "productionTransfer.approval.rejectError",
+    "en": "Production transfer order could not be rejected",
+    "current": "Production transfer order could not be rejected"
+  },
+  {
+    "key": "productionTransfer.approval.error",
+    "en": "An error occurred while loading data",
+    "current": "An error occurred while loading data"
+  },
+  {
+    "key": "productionTransfer.approval.searchPlaceholder",
+    "en": "Search by document no, transfer purpose, or warehouse",
+    "current": "Search by document no, transfer purpose, or warehouse"
+  },
+  {
+    "key": "productionTransfer.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "productionTransfer.approval.documentNo",
+    "en": "Document No",
+    "current": "Document No"
+  },
+  {
+    "key": "productionTransfer.approval.documentDate",
+    "en": "Document Date",
+    "current": "Document Date"
+  },
+  {
+    "key": "productionTransfer.approval.transferPurpose",
+    "en": "Transfer Purpose",
+    "current": "Transfer Purpose"
+  },
+  {
+    "key": "productionTransfer.approval.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Source Warehouse"
+  },
+  {
+    "key": "productionTransfer.approval.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Target Warehouse"
+  },
+  {
+    "key": "productionTransfer.approval.actions",
+    "en": "Actions",
+    "current": "Actions"
+  },
+  {
+    "key": "productionTransfer.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "productionTransfer.approval.approve",
+    "en": "Approve",
+    "current": "Approve"
+  },
+  {
+    "key": "productionTransfer.approval.reject",
+    "en": "Reject",
+    "current": "Reject"
+  },
+  {
+    "key": "productionTransfer.approval.noData",
+    "en": "No production transfer orders awaiting approval",
+    "current": "No production transfer orders awaiting approval"
+  },
+  {
+    "key": "productionTransfer.list.productionLink",
+    "en": "Production Link",
+    "current": "Uretim Baglantisi"
+  },
+  {
+    "key": "productionTransfer.list.error",
+    "en": "Production transfers could not be loaded.",
+    "current": "Uretim transferleri yuklenemedi"
+  },
+  {
+    "key": "productionTransfer.list.deleteTitle",
+    "en": "Delete production transfer",
+    "current": "Delete production transfer"
+  },
+  {
+    "key": "productionTransfer.list.deleteDescription",
+    "en": "We will soft delete \"{{documentNo}}\". Only open transfers with no field processing can be deleted.",
+    "current": "We will soft delete \"{{documentNo}}\". Only open transfers with no field processing can be deleted."
+  },
+  {
+    "key": "productionTransfer.list.deleteSuccess",
+    "en": "Production transfer was deactivated.",
+    "current": "Production transfer was deactivated."
+  },
+  {
+    "key": "productionTransfer.list.deleteError",
+    "en": "Production transfer could not be deleted.",
+    "current": "Production transfer could not be deleted."
+  },
+  {
+    "key": "productionTransfer.list.editTransfer",
+    "en": "Edit",
+    "current": "Duzenle"
+  },
+  {
+    "key": "productionTransfer.list.cloneTransfer",
+    "en": "Clone",
+    "current": "Kopyala"
+  },
+  {
+    "key": "productionTransfer.list.openDetail",
+    "en": "Detail",
+    "current": "Detay"
+  },
+  {
+    "key": "productionTransfer.list.searchPlaceholder",
+    "en": "Search document no or linked plan",
+    "current": "Belge no veya bagli plan ara"
+  },
+  {
+    "key": "productionTransfer.list.editDisabledPermission",
+    "en": "You need production transfer update permission to edit this transfer.",
+    "current": "You need production transfer update permission to edit this transfer."
+  },
+  {
+    "key": "productionTransfer.list.orderLink",
+    "en": "Order #{{id}}",
+    "current": "Order #{{id}}"
+  },
+  {
+    "key": "productionTransfer.list.planLink",
+    "en": "Plan #{{id}}",
+    "current": "Plan #{{id}}"
+  },
+  {
+    "key": "productionTransfer.detail.subtitle",
+    "en": "Review the linked production plan, transfer purpose, and lines in one place.",
+    "current": "Transferin baglandigi uretim plani, amaci ve kalemlerini tek ekranda izleyin."
+  },
+  {
+    "key": "productionTransfer.detail.statusInfoTitle",
+    "en": "Status and permission information",
+    "current": "Durum ve izin bilgisi"
+  },
+  {
+    "key": "productionTransfer.detail.statusInfoLocked",
+    "en": "This transfer is completed. For safety it is read-only; clone it if you need a new transfer.",
+    "current": "Bu transfer tamamlanmış durumda. Güvenlik için yalnızca izlenebilir; değişiklik yapmak yerine kopyalayıp yeni transfer açabilirsiniz."
+  },
+  {
+    "key": "productionTransfer.detail.statusInfoOpen",
+    "en": "This transfer is still open. If it has not been processed on the floor, you can switch to edit mode and update it.",
+    "current": "Bu transfer henüz açık durumda. Sahada işlem görmediyse düzenleme ekranına geçip güncelleyebilirsiniz."
+  },
+  {
+    "key": "productionTransfer.detail.completed",
+    "en": "Completed",
+    "current": "Tamamlandi"
+  },
+  {
+    "key": "productionTransfer.detail.open",
+    "en": "Open",
+    "current": "Acik"
+  },
+  {
+    "key": "productionTransfer.detail.linkTitle",
+    "en": "Production Link",
+    "current": "Uretim Baglantisi"
+  },
+  {
+    "key": "productionTransfer.detail.linkSubtitle",
+    "en": "See which plan or order need this transfer belongs to.",
+    "current": "Bu transferin hangi plan veya emir ihtiyacina bagli oldugunu gorun."
+  },
+  {
+    "key": "productionTransfer.detail.descriptionTitle",
+    "en": "Description",
+    "current": "Aciklama"
+  },
+  {
+    "key": "productionTransfer.detail.descriptionSubtitle",
+    "en": "Team note or work description entered for this transfer.",
+    "current": "Transferi acan ekibin notu veya is aciklamasi."
+  },
+  {
+    "key": "productionTransfer.detail.noDescription",
+    "en": "No description entered.",
+    "current": "Aciklama girilmemis."
+  },
+  {
+    "key": "productionTransfer.detail.linesSubtitle",
+    "en": "Review which stocks move for which purpose, line by line.",
+    "current": "Hangi stoklarin hangi amacla tasindigini satir bazinda inceleyin."
+  },
+  {
+    "key": "productionTransfer.detail.statusInfoNoUpdate",
+    "en": "You can view this transfer, but you cannot switch to edit mode because you do not have production transfer update permission.",
+    "current": "You can view this transfer, but you cannot switch to edit mode because you do not have production transfer update permission."
+  },
+  {
+    "key": "productionTransfer.create.subtitle",
+    "en": "Define material supply, semi-finished movement, or finished goods putaway flows linked to production.",
+    "current": "Uretim planina bagli hammadde besleme, yari mamul tasima veya mamul cikis akislarini tanimlayin."
+  },
+  {
+    "key": "productionTransfer.create.editSubtitle",
+    "en": "You can update transfer orders here as long as they are not completed and have not been processed.",
+    "current": "Tamamlanmamis ve henüz islenmemis transfer emirlerini burada guncelleyebilirsiniz."
+  },
+  {
+    "key": "productionTransfer.create.editModeTitle",
+    "en": "Update mode",
+    "current": "Kayit guncelleme modu"
+  },
+  {
+    "key": "productionTransfer.create.cloneModeTitle",
+    "en": "Clone mode",
+    "current": "Kopya olusturma modu"
+  },
+  {
+    "key": "productionTransfer.create.suggestions.empty",
+    "en": "No suggested lines were found for the selected plan or order.",
+    "current": "No suggested lines were found for the selected plan or order."
+  },
+  {
+    "key": "productionTransfer.create.suggestions.success",
+    "en": "Suggested transfer lines were prepared based on the production requirement.",
+    "current": "Suggested transfer lines were prepared based on the production requirement."
+  },
+  {
+    "key": "productionTransfer.create.suggestions.error",
+    "en": "Transfer suggestions could not be loaded.",
+    "current": "Transfer suggestions could not be loaded."
+  },
+  {
+    "key": "productionTransfer.create.suggestions.appliedAppend",
+    "en": "The selected suggested lines were added to the current draft.",
+    "current": "The selected suggested lines were added to the current draft."
+  },
+  {
+    "key": "productionTransfer.create.suggestions.appliedReplace",
+    "en": "The selected suggested lines replaced the current draft lines.",
+    "current": "The selected suggested lines replaced the current draft lines."
+  },
+  {
+    "key": "productionTransfer.create.permissionInfoTitle",
+    "en": "Permission information",
+    "current": "Permission information"
+  },
+  {
+    "key": "productionTransfer.create.permissionInfoCreate",
+    "en": "You need production transfer create permission to save this transfer.",
+    "current": "You need production transfer create permission to save this transfer."
+  },
+  {
+    "key": "productionTransfer.create.permissionInfoUpdate",
+    "en": "You need production transfer update permission to update this transfer.",
+    "current": "You need production transfer update permission to update this transfer."
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.title",
+    "en": "Suggestions From Production Need",
+    "current": "Suggestions From Production Need"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.description",
+    "en": "The system suggests ready transfer lines based on the need in the selected plan or order.",
+    "current": "The system suggests ready transfer lines based on the need in the selected plan or order."
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.hint",
+    "en": "First choose the required lines. Then either add them to the current draft or replace the current lines.",
+    "current": "First choose the required lines. Then either add them to the current draft or replace the current lines."
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.noSuggestions",
+    "en": "There are no suggestions yet. Choose the plan/order and transfer purpose to load suggestions.",
+    "current": "There are no suggestions yet. Choose the plan/order and transfer purpose to load suggestions."
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.applyModeLabel",
+    "en": "Apply Mode",
+    "current": "Apply Mode"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.applyMode.append",
+    "en": "Add To Current Lines",
+    "current": "Add To Current Lines"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.applyMode.replace",
+    "en": "Replace Current Lines",
+    "current": "Replace Current Lines"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.actions.select",
+    "en": "Select",
+    "current": "Select"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.actions.selected",
+    "en": "Selected",
+    "current": "Selected"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.actions.selectAll",
+    "en": "Select All",
+    "current": "Select All"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.actions.clearSelection",
+    "en": "Clear Selection",
+    "current": "Clear Selection"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.actions.applySelected",
+    "en": "Apply Selected To Lines",
+    "current": "Apply Selected To Lines"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.selection",
+    "en": "Selection",
+    "current": "Selection"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.order",
+    "en": "Order",
+    "current": "Order"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.lineRole",
+    "en": "What does this line do?",
+    "current": "What does this line do?"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.quantity",
+    "en": "Quantity",
+    "current": "Quantity"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.source",
+    "en": "Source",
+    "current": "Source"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.columns.target",
+    "en": "Target",
+    "current": "Target"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.lineRole.consumptionSupply",
+    "en": "Supply Consumption",
+    "current": "Supply Consumption"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.lineRole.semiFinishedMove",
+    "en": "Move Semi-Finished",
+    "current": "Move Semi-Finished"
+  },
+  {
+    "key": "productionTransfer.create.suggestPanel.lineRole.outputMove",
+    "en": "Move Output",
+    "current": "Move Output"
+  },
+  {
+    "key": "productionTransfer.create.steps.connect.eyebrow",
+    "en": "1. Connect",
+    "current": "1. Connect"
+  },
+  {
+    "key": "productionTransfer.create.steps.connect.title",
+    "en": "Choose the plan or order",
+    "current": "Choose the plan or order"
+  },
+  {
+    "key": "productionTransfer.create.steps.connect.body",
+    "en": "Choose which production need this transfer serves.",
+    "current": "Choose which production need this transfer serves."
+  },
+  {
+    "key": "productionTransfer.create.steps.purpose.eyebrow",
+    "en": "2. Choose Purpose",
+    "current": "2. Choose Purpose"
+  },
+  {
+    "key": "productionTransfer.create.steps.purpose.title",
+    "en": "Why is it being moved?",
+    "current": "Why is it being moved?"
+  },
+  {
+    "key": "productionTransfer.create.steps.purpose.body",
+    "en": "Specify whether it is material supply, semi-finished movement, or finished goods output.",
+    "current": "Specify whether it is material supply, semi-finished movement, or finished goods output."
+  },
+  {
+    "key": "productionTransfer.create.steps.lines.eyebrow",
+    "en": "3. Build Lines",
+    "current": "3. Build Lines"
+  },
+  {
+    "key": "productionTransfer.create.steps.lines.title",
+    "en": "Use suggestions or choose manually",
+    "current": "Use suggestions or choose manually"
+  },
+  {
+    "key": "productionTransfer.create.steps.lines.body",
+    "en": "Load suggestions and add the selected lines to the draft in a controlled way.",
+    "current": "Load suggestions and add the selected lines to the draft in a controlled way."
+  },
+  {
+    "key": "productionTransfer.create.purpose",
+    "en": "Transfer Amaci",
+    "current": "Transfer Amaci"
+  },
+  {
+    "key": "productionTransfer.create.productionDocument",
+    "en": "Uretim Plani No",
+    "current": "Uretim Plani No"
+  },
+  {
+    "key": "productionTransfer.create.productionOrder",
+    "en": "Uretim Emri No",
+    "current": "Uretim Emri No"
+  },
+  {
+    "key": "productionTransfer.create.lineRole",
+    "en": "Kalem Rolu",
+    "current": "Kalem Rolu"
+  },
+  {
+    "key": "productionTransfer.create.sourceCell",
+    "en": "Kaynak Hucre",
+    "current": "Kaynak Hucre"
+  },
+  {
+    "key": "productionTransfer.create.targetCell",
+    "en": "Hedef Hucre",
+    "current": "Hedef Hucre"
+  },
+  {
+    "key": "productionTransfer.create.guide.materialSupply",
+    "en": "Malzeme Besleme",
+    "current": "Malzeme Besleme"
+  },
+  {
+    "key": "productionTransfer.create.guide.semiFinishedMove",
+    "en": "Yari Mamul Tasima",
+    "current": "Yari Mamul Tasima"
+  },
+  {
+    "key": "productionTransfer.create.guide.outputMove",
+    "en": "Mamul Depoya Cikis",
+    "current": "Mamul Depoya Cikis"
+  },
+  {
+    "key": "productionTransfer.create.guide.scrapMove",
+    "en": "Fire Tasima",
+    "current": "Fire Tasima"
+  },
+  {
+    "key": "productionTransfer.create.guide.returnToStock",
+    "en": "Stoga Iade",
+    "current": "Stoga Iade"
+  },
+  {
+    "key": "productionTransfer.create.guide.title",
+    "en": "Transfer Rehberi",
+    "current": "Transfer Rehberi"
+  },
+  {
+    "key": "productionTransfer.create.guide.subtitle",
+    "en": "Bu ekran PT tarafinda hangi rol ile neden acildigini netlestirir.",
+    "current": "Bu ekran PT tarafinda hangi rol ile neden acildigini netlestirir."
+  },
+  {
+    "key": "productionTransfer.create.guide.materialSupplyBody",
+    "en": "Uretim tuketimi icin gerekli hammaddeleri besleme alanina cekmek icin kullanilir.",
+    "current": "Uretim tuketimi icin gerekli hammaddeleri besleme alanina cekmek icin kullanilir."
+  },
+  {
+    "key": "productionTransfer.create.guide.semiFinishedMoveBody",
+    "en": "Bir emrin ciktisini sonraki emrin tuketimine veya istasyonuna tasir.",
+    "current": "Bir emrin ciktisini sonraki emrin tuketimine veya istasyonuna tasir."
+  },
+  {
+    "key": "productionTransfer.create.guide.outputMoveBody",
+    "en": "Tamamlanan urunun uretimden mamul depoya cikisini yonetir.",
+    "current": "Tamamlanan urunun uretimden mamul depoya cikisini yonetir."
+  },
+  {
+    "key": "productionTransfer.create.lineRoleConsumption",
+    "en": "Tuketimi Besle",
+    "current": "Tuketimi Besle"
+  },
+  {
+    "key": "productionTransfer.create.lineRoleSemiFinished",
+    "en": "Ara Mamul Tasi",
+    "current": "Ara Mamul Tasi"
+  },
+  {
+    "key": "productionTransfer.create.lineRoleOutput",
+    "en": "Ciktiyi Tasi",
+    "current": "Ciktiyi Tasi"
+  },
+  {
+    "key": "productionTransfer.create.info.overviewTitle",
+    "en": "Bu ekran ne yapiyor?",
+    "current": "Bu ekran ne yapiyor?"
+  },
+  {
+    "key": "productionTransfer.create.info.overviewBody",
+    "en": "Bu ekran, uretim planindaki bir asamaya malzeme beslemek, ara mamulu sonraki istasyona tasimak veya tamamlanan urunu mamul depoya almak icin transfer emri olusturur. Oneri paneli, secili plan veya emrin ihtiyacindan otomatik satir uretir.",
+    "current": "Bu ekran, uretim planindaki bir asamaya malzeme beslemek, ara mamulu sonraki istasyona tasimak veya tamamlanan urunu mamul depoya almak icin transfer emri olusturur. Oneri paneli, secili plan veya emrin ihtiyacindan otomatik satir uretir."
+  },
+  {
+    "key": "productionTransfer.create.info.linkTitle",
+    "en": "Uretim baglantisi neden onemli?",
+    "current": "Uretim baglantisi neden onemli?"
+  },
+  {
+    "key": "productionTransfer.create.info.linkBody",
+    "en": "Plan veya emir baglantisi kuruldugunda sistem, bu transferin hangi uretim ihtiyacini karşıladığını bilir. Boylece hangi tuketim satirinin beslendigi veya hangi ciktinin tasindigi izlenebilir olur.",
+    "current": "Plan veya emir baglantisi kuruldugunda sistem, bu transferin hangi uretim ihtiyacini karşıladığını bilir. Boylece hangi tuketim satirinin beslendigi veya hangi ciktinin tasindigi izlenebilir olur."
+  },
+  {
+    "key": "productionTransfer.create.info.linesTitle",
+    "en": "Kalemleri nasil kullanmaliyim?",
+    "current": "Kalemleri nasil kullanmaliyim?"
+  },
+  {
+    "key": "productionTransfer.create.info.linesBody",
+    "en": "Once onerileri getirerek sistemin uretim ihtiyacindan tavsiye uretmesini saglayin. Sonra gerekli satirlari secip mevcut taslaga ekleyin veya degistirin. Bu ekran planlamaciya malzeme besleme ve ara istasyon hareketlerini kontrollu kurdurmak icin tasarlandi.",
+    "current": "Once onerileri getirerek sistemin uretim ihtiyacindan tavsiye uretmesini saglayin. Sonra gerekli satirlari secip mevcut taslaga ekleyin veya degistirin. Bu ekran planlamaciya malzeme besleme ve ara istasyon hareketlerini kontrollu kurdurmak icin tasarlandi."
+  },
+  {
+    "key": "productionTransfer.create.summary.purpose",
+    "en": "Transfer Amaci",
+    "current": "Transfer Amaci"
+  },
+  {
+    "key": "productionTransfer.create.summary.lines",
+    "en": "Kalem",
+    "current": "Kalem"
+  },
+  {
+    "key": "productionTransfer.create.summary.quantity",
+    "en": "Toplam Miktar",
+    "current": "Toplam Miktar"
+  },
+  {
+    "key": "productionTransfer.create.header.title",
+    "en": "Transfer Ust Bilgisi",
+    "current": "Transfer Ust Bilgisi"
+  },
+  {
+    "key": "productionTransfer.create.header.subtitle",
+    "en": "Transferin hangi uretim plani veya emri icin acildigini belirtin.",
+    "current": "Transferin hangi uretim plani veya emri icin acildigini belirtin."
+  },
+  {
+    "key": "productionTransfer.create.productionOrderSelect",
+    "en": "Bagli emri secin",
+    "current": "Bagli emri secin"
+  },
+  {
+    "key": "productionTransfer.create.productionOrderSearch",
+    "en": "Uretim emirlerinde ara",
+    "current": "Uretim emirlerinde ara"
+  },
+  {
+    "key": "productionTransfer.create.productionOrderEmpty",
+    "en": "Once onerileri getirerek emir listesini olusturun",
+    "current": "Once onerileri getirerek emir listesini olusturun"
+  },
+  {
+    "key": "productionTransfer.create.lines.title",
+    "en": "Transfer Kalemleri",
+    "current": "Transfer Kalemleri"
+  },
+  {
+    "key": "productionTransfer.create.lines.subtitle",
+    "en": "Uretim tuketimlerini besleyen veya ciktisini tasiyan satirlari tanimlayin.",
+    "current": "Uretim tuketimlerini besleyen veya ciktisini tasiyan satirlari tanimlayin."
+  },
+  {
+    "key": "productionTransfer.create.lines.fetchSuggestions",
+    "en": "Ihtiyactan Oneri Getir",
+    "current": "Ihtiyactan Oneri Getir"
+  },
+  {
+    "key": "productionTransfer.create.lineCardTitle",
+    "en": "Transfer Kalemi {{index}}",
+    "current": "Transfer Kalemi {{index}}"
+  },
+  {
+    "key": "productionTransfer.create.lineCardHintLinked",
+    "en": "Bu kalem {{orderNo}} emrine bagli ihtiyaci tasir.",
+    "current": "Bu kalem {{orderNo}} emrine bagli ihtiyaci tasir."
+  },
+  {
+    "key": "productionTransfer.create.lineCardHint",
+    "en": "Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin.",
+    "current": "Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin."
+  },
+  {
+    "key": "productionTransfer.create.stockSelect",
+    "en": "Stok secin",
+    "current": "Stok secin"
+  },
+  {
+    "key": "productionTransfer.create.stockSearch",
+    "en": "Transfer stoklarinda ara",
+    "current": "Transfer stoklarinda ara"
+  },
+  {
+    "key": "productionTransfer.create.stockEmpty",
+    "en": "Bu emre bagli onerili stok bulunmuyor",
+    "current": "Bu emre bagli onerili stok bulunmuyor"
+  },
+  {
+    "key": "productionTransfer.create.cellSearch",
+    "en": "Hucrelerde ara",
+    "current": "Hucrelerde ara"
+  },
+  {
+    "key": "productionTransfer.create.sourceCellEmpty",
+    "en": "Bu secim icin kaynak hucre onerisi yok",
+    "current": "Bu secim icin kaynak hucre onerisi yok"
+  },
+  {
+    "key": "productionTransfer.create.targetCellEmpty",
+    "en": "Bu secim icin hedef hucre onerisi yok",
+    "current": "Bu secim icin hedef hucre onerisi yok"
+  },
+  {
+    "key": "productionTransfer.create.review.header",
+    "en": "Plan No",
+    "current": "Plan No"
+  },
+  {
+    "key": "productionTransfer.create.review.order",
+    "en": "Emir No",
+    "current": "Emir No"
+  },
+  {
+    "key": "productionTransfer.create.review.purpose",
+    "en": "Amac",
+    "current": "Amac"
+  }
+]

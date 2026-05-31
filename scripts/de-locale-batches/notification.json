@@ -1,0 +1,32 @@
+[
+  {
+    "key": "notification.new",
+    "en": "new",
+    "current": "neu"
+  },
+  {
+    "key": "notification.unreadCount",
+    "en": "unread",
+    "current": "ungelesen"
+  },
+  {
+    "key": "notification.markAllAsRead",
+    "en": "Mark all as read",
+    "current": "Alle als gelesen markieren"
+  },
+  {
+    "key": "notification.markAsRead",
+    "en": "Mark as read",
+    "current": "Als gelesen markieren"
+  },
+  {
+    "key": "notification.disconnected",
+    "en": "Connection disconnected",
+    "current": "Verbindung getrennt"
+  },
+  {
+    "key": "notification.connectionDisconnected",
+    "en": "Connection disconnected",
+    "current": "Verbindung getrennt"
+  }
+]

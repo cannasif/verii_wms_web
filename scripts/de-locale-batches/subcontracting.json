@@ -1,0 +1,807 @@
+[
+  {
+    "key": "subcontracting.sit.assignedList.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.sit.collection.title",
+    "en": "SIT Collection",
+    "current": "SIT-Sammlung"
+  },
+  {
+    "key": "subcontracting.sit.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "subcontracting.sit.collection.collected",
+    "en": "Product collected",
+    "current": "Produkt gesammelt"
+  },
+  {
+    "key": "subcontracting.sit.collection.collectError",
+    "en": "Collection error",
+    "current": "Sammelfehler"
+  },
+  {
+    "key": "subcontracting.sit.collection.invalidHeaderId",
+    "en": "Invalid SIT order",
+    "current": "Ungültiger SIT-Auftrag"
+  },
+  {
+    "key": "subcontracting.sit.collection.completed",
+    "en": "SIT order completed successfully",
+    "current": "SIT-Auftrag erfolgreich abgeschlossen"
+  },
+  {
+    "key": "subcontracting.sit.collection.completeError",
+    "en": "Completion error",
+    "current": "Abschlussfehler"
+  },
+  {
+    "key": "subcontracting.sit.collection.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "subcontracting.sit.collection.viewCollected",
+    "en": "Collected",
+    "current": "Gesammelt"
+  },
+  {
+    "key": "subcontracting.sit.collection.collect",
+    "en": "Collect",
+    "current": "Sammeln"
+  },
+  {
+    "key": "subcontracting.sit.collection.yapKod",
+    "en": "Structure",
+    "current": "Struktur"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.srt.collection.title",
+    "en": "SRT Collection",
+    "current": "SRT-Sammlung"
+  },
+  {
+    "key": "subcontracting.srt.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "subcontracting.srt.collection.collected",
+    "en": "Product collected",
+    "current": "Produkt gesammelt"
+  },
+  {
+    "key": "subcontracting.srt.collection.collectError",
+    "en": "Collection error",
+    "current": "Sammelfehler"
+  },
+  {
+    "key": "subcontracting.srt.collection.invalidHeaderId",
+    "en": "Invalid SRT order",
+    "current": "Ungültiger SRT-Auftrag"
+  },
+  {
+    "key": "subcontracting.srt.collection.completed",
+    "en": "SRT order completed successfully",
+    "current": "SRT-Auftrag erfolgreich abgeschlossen"
+  },
+  {
+    "key": "subcontracting.srt.collection.completeError",
+    "en": "Completion error",
+    "current": "Abschlussfehler"
+  },
+  {
+    "key": "subcontracting.srt.collection.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "subcontracting.srt.collection.viewCollected",
+    "en": "Collected",
+    "current": "Gesammelt"
+  },
+  {
+    "key": "subcontracting.srt.collection.collect",
+    "en": "Collect",
+    "current": "Sammeln"
+  },
+  {
+    "key": "subcontracting.srt.collection.yapKod",
+    "en": "Structure",
+    "current": "Struktur"
+  },
+  {
+    "key": "subcontracting.issue.create.title",
+    "en": "New Subcontracting Issue Order",
+    "current": "Neuer Fremdarbeitsausgangsauftrag"
+  },
+  {
+    "key": "subcontracting.issue.create.success",
+    "en": "Subcontracting issue order created successfully",
+    "current": "Fremdarbeitsausgangsauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "subcontracting.issue.edit.title",
+    "en": "Edit Subcontracting Issue",
+    "current": "Edit Subcontracting Issue"
+  },
+  {
+    "key": "subcontracting.issue.edit.subtitle",
+    "en": "Update subcontracting issue header information without changing line or collection flow",
+    "current": "Update subcontracting issue header information without changing line or collection flow"
+  },
+  {
+    "key": "subcontracting.issue.edit.success",
+    "en": "Subcontracting issue order updated successfully",
+    "current": "Subcontracting issue order updated successfully"
+  },
+  {
+    "key": "subcontracting.issue.edit.error",
+    "en": "An error occurred while updating subcontracting issue order",
+    "current": "An error occurred while updating subcontracting issue order"
+  },
+  {
+    "key": "subcontracting.issue.list.title",
+    "en": "Subcontracting Issue Order List",
+    "current": "Fremdarbeitsausgangsauftragsliste"
+  },
+  {
+    "key": "subcontracting.issue.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.issue.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.issue.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.issue.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.issue.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.issue.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "subcontracting.issue.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "subcontracting.issue.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "subcontracting.issue.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "subcontracting.issue.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "subcontracting.issue.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "subcontracting.issue.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.issue.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "subcontracting.issue.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.issue.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.issue.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.issue.approval.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.issue.approval.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.issue.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "subcontracting.issue.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.issue.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "subcontracting.issue.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "subcontracting.issue.process.title",
+    "en": "Emirsiz Fason Çıkış İşlemi",
+    "current": "Emirsiz Fason Çıkış İşlemi"
+  },
+  {
+    "key": "subcontracting.issue.process.success",
+    "en": "Fason çıkış işlemi oluşturuldu",
+    "current": "Fason çıkış işlemi oluşturuldu"
+  },
+  {
+    "key": "subcontracting.issue.process.error",
+    "en": "Fason çıkış işlemi oluşturulamadı",
+    "current": "Fason çıkış işlemi oluşturulamadı"
+  },
+  {
+    "key": "subcontracting.issue.process.subtitle",
+    "en": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun.",
+    "current": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun."
+  },
+  {
+    "key": "subcontracting.create.steps.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "subcontracting.create.steps.orderSelection",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "subcontracting.create.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "subcontracting.create.mode.order",
+    "en": "Sipariş bazlı",
+    "current": "Sipariş bazlı"
+  },
+  {
+    "key": "subcontracting.create.mode.stock",
+    "en": "Stok bazlı",
+    "current": "Stok bazlı"
+  },
+  {
+    "key": "subcontracting.receipt.approval.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "subcontracting.receipt.approval.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.receipt.approval.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.receipt.approval.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.receipt.approval.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.receipt.approval.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.receipt.approval.completionDate",
+    "en": "Completion Date",
+    "current": "Abschlussdatum"
+  },
+  {
+    "key": "subcontracting.receipt.approval.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.receipt.approval.approve",
+    "en": "Approve",
+    "current": "Genehmigen"
+  },
+  {
+    "key": "subcontracting.receipt.approval.reject",
+    "en": "Reject",
+    "current": "Ablehnen"
+  },
+  {
+    "key": "subcontracting.receipt.create.title",
+    "en": "New Subcontracting Receipt Order",
+    "current": "Neuer Fremdarbeitseingangsauftrag"
+  },
+  {
+    "key": "subcontracting.receipt.create.success",
+    "en": "Subcontracting receipt order created successfully",
+    "current": "Fremdarbeitseingangsauftrag erfolgreich erstellt"
+  },
+  {
+    "key": "subcontracting.receipt.edit.title",
+    "en": "Edit Subcontracting Receipt",
+    "current": "Edit Subcontracting Receipt"
+  },
+  {
+    "key": "subcontracting.receipt.edit.subtitle",
+    "en": "Update subcontracting receipt header information without changing line or collection flow",
+    "current": "Update subcontracting receipt header information without changing line or collection flow"
+  },
+  {
+    "key": "subcontracting.receipt.edit.success",
+    "en": "Subcontracting receipt order updated successfully",
+    "current": "Subcontracting receipt order updated successfully"
+  },
+  {
+    "key": "subcontracting.receipt.edit.error",
+    "en": "An error occurred while updating subcontracting receipt order",
+    "current": "An error occurred while updating subcontracting receipt order"
+  },
+  {
+    "key": "subcontracting.receipt.list.title",
+    "en": "Subcontracting Receipt Order List",
+    "current": "Fremdarbeitseingangsauftragsliste"
+  },
+  {
+    "key": "subcontracting.receipt.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.receipt.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.receipt.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.receipt.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.receipt.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.receipt.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "subcontracting.receipt.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "subcontracting.receipt.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "subcontracting.receipt.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "subcontracting.receipt.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "subcontracting.receipt.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "subcontracting.receipt.list.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "subcontracting.receipt.process.title",
+    "en": "Emirsiz Fason Giriş İşlemi",
+    "current": "Emirsiz Fason Giriş İşlemi"
+  },
+  {
+    "key": "subcontracting.receipt.process.success",
+    "en": "Fason giriş işlemi oluşturuldu",
+    "current": "Fason giriş işlemi oluşturuldu"
+  },
+  {
+    "key": "subcontracting.receipt.process.error",
+    "en": "Fason giriş işlemi oluşturulamadı",
+    "current": "Fason giriş işlemi oluşturulamadı"
+  },
+  {
+    "key": "subcontracting.receipt.process.subtitle",
+    "en": "Header + ImportLine + Route mantığında fason giriş işlemi oluşturun.",
+    "current": "Header + ImportLine + Route mantığında fason giriş işlemi oluşturun."
+  },
+  {
+    "key": "subcontracting.list.detailTitle",
+    "en": "Subcontracting Transfer Order Detail",
+    "current": "Fremdarbeitstransferauftrag-Detail"
+  },
+  {
+    "key": "subcontracting.list.detailDescription",
+    "en": "Detailed information of the subcontracting transfer order",
+    "current": "Detaillierte Informationen zum Fremdarbeitstransferauftrag"
+  },
+  {
+    "key": "subcontracting.list.documentInfo",
+    "en": "Document Information",
+    "current": "Beleginformationen"
+  },
+  {
+    "key": "subcontracting.list.id",
+    "en": "ID",
+    "current": "ID"
+  },
+  {
+    "key": "subcontracting.list.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.list.documentDate",
+    "en": "Document Date",
+    "current": "Belegdatum"
+  },
+  {
+    "key": "subcontracting.list.documentType",
+    "en": "Document Type",
+    "current": "Belegtyp"
+  },
+  {
+    "key": "subcontracting.list.createdDate",
+    "en": "Created Date",
+    "current": "Erstellungsdatum"
+  },
+  {
+    "key": "subcontracting.list.customerInfo",
+    "en": "Customer Information",
+    "current": "Kundeninformationen"
+  },
+  {
+    "key": "subcontracting.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "subcontracting.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "subcontracting.list.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "subcontracting.list.pendingApproval",
+    "en": "Pending Approval",
+    "current": "Genehmigung ausstehend"
+  },
+  {
+    "key": "subcontracting.list.inProgress",
+    "en": "In Progress",
+    "current": "In Bearbeitung"
+  },
+  {
+    "key": "subcontracting.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "current": "Lagerinformationen"
+  },
+  {
+    "key": "subcontracting.list.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.list.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.list.lines",
+    "en": "Lines",
+    "current": "Positionen"
+  },
+  {
+    "key": "subcontracting.list.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "subcontracting.list.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "subcontracting.step1.transferDate",
+    "en": "Transfer Date",
+    "current": "Transferdatum"
+  },
+  {
+    "key": "subcontracting.step1.documentNo",
+    "en": "Document No",
+    "current": "Belegnummer"
+  },
+  {
+    "key": "subcontracting.step1.documentNoPlaceholder",
+    "en": "Enter document number",
+    "current": "Belegnummer eingeben"
+  },
+  {
+    "key": "subcontracting.step1.projectCode",
+    "en": "Project Code",
+    "current": "Projektcode"
+  },
+  {
+    "key": "subcontracting.step1.sourceWarehouse",
+    "en": "Source Warehouse",
+    "current": "Ausgangslager"
+  },
+  {
+    "key": "subcontracting.step1.targetWarehouse",
+    "en": "Target Warehouse",
+    "current": "Ziellager"
+  },
+  {
+    "key": "subcontracting.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "current": "Benutzer für die Durchführung"
+  },
+  {
+    "key": "subcontracting.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "current": "Benutzer für die Durchführung auswählen"
+  },
+  {
+    "key": "subcontracting.step2.orders",
+    "en": "Orders",
+    "current": "Bestellungen"
+  },
+  {
+    "key": "subcontracting.step2.orderContent",
+    "en": "Order Content",
+    "current": "Bestellinhalt"
+  },
+  {
+    "key": "subcontracting.step2.noOrderSelected",
+    "en": "Order Selection",
+    "current": "Bestellauswahl"
+  },
+  {
+    "key": "subcontracting.step2.itemsCount",
+    "en": "{{count}} items",
+    "current": "{{count}} Positionen"
+  },
+  {
+    "key": "subcontracting.step2.started",
+    "en": "Started",
+    "current": "Begonnen"
+  },
+  {
+    "key": "subcontracting.step2.ordered",
+    "en": "Ordered",
+    "current": "Bestellt"
+  },
+  {
+    "key": "subcontracting.step2.pending",
+    "en": "Pending",
+    "current": "Ausstehend"
+  },
+  {
+    "key": "subcontracting.step2.completed",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "subcontracting.details.configCode",
+    "en": "Configuration Code",
+    "current": "Konfigurationscode"
+  },
+  {
+    "key": "subcontracting.details.lotNo",
+    "en": "Lot No",
+    "current": "Chargennummer"
+  },
+  {
+    "key": "subcontracting.details.lotNoPlaceholder",
+    "en": "Enter lot number",
+    "current": "Chargennummer eingeben"
+  },
+  {
+    "key": "subcontracting.details.configCodePlaceholder",
+    "en": "Enter configuration code",
+    "current": "Konfigurationscode eingeben"
+  },
+  {
+    "key": "subcontracting.details.serialNo2",
+    "en": "Serial no 2",
+    "current": "Seriennr. 2"
+  },
+  {
+    "key": "subcontracting.details.serialNo2Placeholder",
+    "en": "Enter serial no 2",
+    "current": "Seriennr. 2 eingeben"
+  },
+  {
+    "key": "subcontracting.process.steps.stockSelection",
+    "en": "Stok Seçimi",
+    "current": "Stok Seçimi"
+  },
+  {
+    "key": "subcontracting.process.stocks",
+    "en": "Stoklar",
+    "current": "Stoklar"
+  },
+  {
+    "key": "subcontracting.process.selectedItems",
+    "en": "Seçilen Kalemler",
+    "current": "Seçilen Kalemler"
+  },
+  {
+    "key": "subcontracting.process.selectedItemsCount",
+    "en": "{{count}} kalem",
+    "current": "{{count}} kalem"
+  },
+  {
+    "key": "subcontracting.process.searchStocks",
+    "en": "Stok kodu veya adı ile ara...",
+    "current": "Stok kodu veya adı ile ara..."
+  },
+  {
+    "key": "subcontracting.process.searchItems",
+    "en": "Seçilenleri ara...",
+    "current": "Seçilenleri ara..."
+  },
+  {
+    "key": "subcontracting.process.noSelectedItems",
+    "en": "Seçili stok bulunmamaktadır",
+    "current": "Seçili stok bulunmamaktadır"
+  },
+  {
+    "key": "subcontracting.process.badge",
+    "en": "Emirsiz Process",
+    "current": "Emirsiz Process"
+  }
+]
