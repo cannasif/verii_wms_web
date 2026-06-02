@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { HeaderQuantityPolicyFields } from '@/components/shared';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { GoodsReceiptFormData, Customer, Project } from '../../types/goods-receipt';
 import { useProjects } from '../../hooks/useProjects';
 import { SearchableSelect } from './components/SearchableSelect';

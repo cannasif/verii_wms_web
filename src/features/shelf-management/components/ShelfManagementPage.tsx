@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useUIStore } from '@/stores/ui-store';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import type { ShelfUpsertRequest } from '../types/shelf-management.types';
 import { shelfManagementApi } from '../api/shelf-management.api';

@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { cn } from '@/lib/utils';
 import type { OrderItem, SelectedOrderItem, SelectedStockItem, Warehouse } from '../../../types/goods-receipt';
-import type { YapKodLookup } from '@/services/lookup-types';
+import type { YapKodLookup } from '@/features/shared/api/lookup-types';
 
 interface ReceivingItemRowProps {
     item: OrderItem;

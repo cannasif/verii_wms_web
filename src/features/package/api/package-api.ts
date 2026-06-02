@@ -1,7 +1,7 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
-import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
+import { barcodeApi, toLegacyBarcodeStock } from '@/features/shared/api/barcode-api';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   PHeaderDto,

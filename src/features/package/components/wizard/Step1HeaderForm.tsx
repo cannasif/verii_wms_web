@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 
 interface Step1HeaderFormProps {

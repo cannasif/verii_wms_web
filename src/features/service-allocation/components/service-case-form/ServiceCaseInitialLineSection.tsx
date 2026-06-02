@@ -6,8 +6,8 @@ import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/for
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { lookupApi } from '@/services/lookup-api';
-import type { StockLookup } from '@/services/lookup-types';
+import { lookupApi } from '@/features/shared/api/lookup-api';
+import type { StockLookup } from '@/features/shared/api/lookup-types';
 import {
   serviceCaseLineTypeOptions,
   serviceProcessTypeOptions,

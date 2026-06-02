@@ -22,7 +22,7 @@ import { buildTransferGenerateRequest, buildTransferProcessRequest } from '../ut
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
-import { barcodeApi, toLegacyBarcodeStock } from '@/services/barcode-api';
+import { barcodeApi, toLegacyBarcodeStock } from '@/features/shared/api/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 
 function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {

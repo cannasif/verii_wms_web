@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { serviceAllocationApi } from '../api/service-allocation.api';
 import { useServiceCaseTimelineQuery } from '../hooks/useServiceCaseTimelineQuery';
 import { ServiceCaseExistingLinesSection } from './service-case-form/ServiceCaseExistingLinesSection';

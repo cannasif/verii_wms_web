@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { toast } from 'sonner';
 import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';

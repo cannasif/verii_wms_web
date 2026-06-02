@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
-import type { BarcodeMatchCandidate } from '@/services/barcode-types';
+import type { BarcodeMatchCandidate } from '@/features/shared/api/barcode-types';
 import { getBarcodeCandidateLabel } from './barcode-feedback';
 
 interface BarcodeCandidatePickerProps {

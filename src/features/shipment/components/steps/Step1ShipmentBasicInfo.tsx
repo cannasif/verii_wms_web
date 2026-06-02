@@ -11,7 +11,7 @@ import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { ShipmentFormData } from '../../types/shipment';

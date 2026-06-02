@@ -13,7 +13,7 @@ import type {
   BaseWorkflowRouteDetail,
 } from '@/types/detail-models';
 import type { TFunction } from 'i18next';
-import type { CustomerLookup, ProjectLookup, StockLookup, WarehouseLookup } from '@/services/lookup-types';
+import type { CustomerLookup, ProjectLookup, StockLookup, WarehouseLookup } from '@/features/shared/api/lookup-types';
 
 const normalizeDocumentNo = (value: string) => value.replace(/\D/g, '');
 

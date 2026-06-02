@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useUIStore } from '@/stores/ui-store';
-import { lookupApi } from '@/services/lookup-api';
-import type { CustomerLookup } from '@/services/lookup-types';
+import { lookupApi } from '@/features/shared/api/lookup-api';
+import type { CustomerLookup } from '@/features/shared/api/lookup-types';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 import type {
   SteelGoodReciptAcceptanseExcelRowDto,

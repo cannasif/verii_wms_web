@@ -9,7 +9,7 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseFormData, SelectedWarehouseStockItem, WarehouseStockItem } from '../../types/warehouse';
 import { WarehouseBulkItemRow } from './components/WarehouseBulkItemRow';
 

@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { lookupApi } from '@/services/lookup-api';
-import type { CustomerLookup, StockLookup } from '@/services/lookup-types';
+import { lookupApi } from '@/features/shared/api/lookup-api';
+import type { CustomerLookup, StockLookup } from '@/features/shared/api/lookup-types';
 import type { CreateOcrGoodsReceiptCustomerStockMatchDto } from '../../types/ocr-goods-receipt-match.types';
 
 interface OcrGoodsReceiptMatchFormSectionProps {

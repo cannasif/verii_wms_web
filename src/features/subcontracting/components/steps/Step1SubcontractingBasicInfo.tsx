@@ -10,7 +10,7 @@ import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { SubcontractingFormData } from '../../types/subcontracting';

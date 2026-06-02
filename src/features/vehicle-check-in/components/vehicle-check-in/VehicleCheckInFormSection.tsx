@@ -6,7 +6,7 @@ import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { CustomerLookup } from '@/services/lookup-types';
+import type { CustomerLookup } from '@/features/shared/api/lookup-types';
 import type { CreateOrUpdateVehicleCheckInDto } from '../../types/vehicle-check-in.types';
 import { buildCustomerLabel } from './shared';
 

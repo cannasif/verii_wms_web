@@ -1,7 +1,7 @@
 import { type ReactElement, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Combobox } from '@/components/ui/combobox';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { shelfManagementApi } from '../api/shelf-management.api';
 
 interface ShelfLookupComboboxProps {

@@ -14,10 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
 import { inventoryCountApi } from '../api/inventory-count-api';
-import type { StockLookup, WarehouseLookup, YapKodLookup } from '@/services/lookup-types';
+import type { StockLookup, WarehouseLookup, YapKodLookup } from '@/features/shared/api/lookup-types';
 import {
   createEmptyInventoryCountDraft,
   createEmptyInventoryCountScopeDraft,

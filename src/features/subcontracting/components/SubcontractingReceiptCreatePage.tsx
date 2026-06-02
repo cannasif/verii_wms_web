@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1SubcontractingBasicInfo } from './steps/Step1SubcontractingBasicInfo';
 import { Step2SubcontractingOrderSelection } from './steps/Step2SubcontractingOrderSelection';
-import { ProcessStockSelection } from '@/components/shared';
+import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedSubcontractingStockItem } from '../types/subcontracting';
 

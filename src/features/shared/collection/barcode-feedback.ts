@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { ApiResponse } from '@/types/api';
-import { isBarcodeResolutionError, type BarcodeMatchCandidate, type ResolvedBarcode } from '@/services/barcode-types';
+import { isBarcodeResolutionError, type BarcodeMatchCandidate, type ResolvedBarcode } from '@/features/shared/api/barcode-types';
 
 export interface BarcodeFeedbackState {
   message: string;

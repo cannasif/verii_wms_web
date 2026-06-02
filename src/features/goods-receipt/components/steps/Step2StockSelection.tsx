@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useOrdersByCustomer } from '../../hooks/useOrdersByCustomer';
 import { goodsReceiptApi } from '../../api/goods-receipt-api';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type {
   GoodsReceiptFormData,
   SelectedStockItem,

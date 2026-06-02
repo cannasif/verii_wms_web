@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { kkdApi } from '../../api/kkd.api';
-import { lookupApi } from '@/services/lookup-api';
-import type { WarehouseLookup } from '@/services/lookup-types';
+import { lookupApi } from '@/features/shared/api/lookup-api';
+import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import type { KkdDistributionHeaderDto, KkdEmployeeDto, KkdResolvedEmployeeDto } from '../../types/kkd.types';
 
 interface KkdDistributionEmployeeSectionProps {

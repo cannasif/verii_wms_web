@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { lookupApi } from '@/services/lookup-api';
-import type { YapKodLookup } from '@/services/lookup-types';
+import { lookupApi } from '@/features/shared/api/lookup-api';
+import type { YapKodLookup } from '@/features/shared/api/lookup-types';
 import { cn } from '@/lib/utils';
 import type { ShipmentOrderItem, SelectedShipmentOrderItem } from '../../../types/shipment';
 

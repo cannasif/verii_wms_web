@@ -15,7 +15,7 @@ import type {
   KkdResolvedEmployeeDto,
   KkdResolvedStockDto,
 } from '../types/kkd.types';
-import type { WarehouseLookup } from '@/services/lookup-types';
+import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { KkdDistributionCartSection } from './distribution/KkdDistributionCartSection';
 import { KkdDistributionEmployeeSection } from './distribution/KkdDistributionEmployeeSection';
 import { KkdDistributionEntitlementsSection } from './distribution/KkdDistributionEntitlementsSection';

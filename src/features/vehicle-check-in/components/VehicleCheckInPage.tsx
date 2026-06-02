@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
 import { vehicleCheckInApi } from '../api/vehicle-check-in.api';
 import type { CreateOrUpdateVehicleCheckInDto, VehicleCheckInHeaderDto } from '../types/vehicle-check-in.types';

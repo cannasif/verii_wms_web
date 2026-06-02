@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Branch } from '../types/auth';
 import { AUTH_QUERY_KEYS } from '../utils/query-keys';
 

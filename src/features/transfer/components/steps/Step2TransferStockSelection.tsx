@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { lookupApi } from '@/services/lookup-api';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedTransferStockItem } from '../../types/transfer';
 import { TransferStockItemRow } from './components/TransferStockItemRow';

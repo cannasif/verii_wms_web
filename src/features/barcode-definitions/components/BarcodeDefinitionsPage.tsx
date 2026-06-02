@@ -25,9 +25,9 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useUIStore } from '@/stores/ui-store';
-import { barcodeApi } from '@/services/barcode-api';
-import type { BarcodeDefinition, BarcodeMatchCandidate, ResolvedBarcode, SaveBarcodeDefinitionRequest } from '@/services/barcode-types';
-import { BarcodeResolutionError } from '@/services/barcode-types';
+import { barcodeApi } from '@/features/shared/api/barcode-api';
+import type { BarcodeDefinition, BarcodeMatchCandidate, ResolvedBarcode, SaveBarcodeDefinitionRequest } from '@/features/shared/api/barcode-types';
+import { BarcodeResolutionError } from '@/features/shared/api/barcode-types';
 
 type BarcodeDefinitionFormState = SaveBarcodeDefinitionRequest;
 

@@ -17,8 +17,8 @@ import { useCompleteSrt } from '../hooks/useCompleteSrt';
 import { Barcode, Package, ArrowLeft, Loader2, CheckCircle2, List, Camera, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { barcodeApi } from '@/services/barcode-api';
-import type { BarcodeMatchCandidate } from '@/services/barcode-types';
+import { barcodeApi } from '@/features/shared/api/barcode-api';
+import type { BarcodeMatchCandidate } from '@/features/shared/api/barcode-types';
 import { BarcodeCandidatePicker } from '@/features/shared/collection/BarcodeCandidatePicker';
 import { extractBarcodeFeedback } from '@/features/shared/collection/barcode-feedback';
 import { ShelfLookupCombobox } from '@/features/shelf-management';

@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1ShipmentBasicInfo } from './steps/Step1ShipmentBasicInfo';
 import { Step2ShipmentOrderSelection } from './steps/Step2ShipmentOrderSelection';
-import { ProcessStockSelection } from '@/components/shared';
+import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
 import type { Product } from '@/features/goods-receipt/types/goods-receipt';
 import type { SelectedShipmentStockItem } from '../types/shipment';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
@@ -270,5 +270,4 @@ export function ShipmentCreatePage(): ReactElement {
     </div>
   );
 }
-
 
