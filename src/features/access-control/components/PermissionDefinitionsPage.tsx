@@ -23,7 +23,7 @@ import { usePermissionAccess } from '../hooks/usePermissionAccess';
 import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
-import { getPermissionDisplayMeta, isPermissionCodeAvailableOnMobile, PERMISSION_CODE_CATALOG } from '../utils/permission-config';
+import { isPermissionCodeAvailableOnMobile, PERMISSION_CODE_CATALOG, resolvePermissionDisplayLabel } from '../utils/permission-config';
 
 type PermissionDefinitionColumnKey = 'code' | 'name' | 'platforms' | 'isActive' | 'updatedDate' | 'actions';
 
@@ -113,8 +113,7 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
     return (data?.data ?? []).map((item) => {
-      const meta = getPermissionDisplayMeta(item.code);
-      const displayName = meta ? t(meta.key, meta.fallback) : item.name;
+      const displayName = resolvePermissionDisplayLabel(item.code, item.name, (key, fallback) => t(key, fallback ?? key));
       return {
         code: item.code,
         name: displayName,
@@ -131,8 +130,7 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const handleSyncFromRoutes = async (): Promise<void> => {
       const items = PERMISSION_CODE_CATALOG.map((code) => {
-      const meta = getPermissionDisplayMeta(code);
-      const name = meta ? t(meta.key, meta.fallback) : code;
+      const name = resolvePermissionDisplayLabel(code, null, (key, fallback) => t(key, fallback ?? key));
       return { code, name, isActive: true, availableOnWeb: true, availableOnMobile: isPermissionCodeAvailableOnMobile(code) };
     });
 
@@ -256,9 +254,8 @@ export function PermissionDefinitionsPage(): ReactElement {
               case 'code':
                 return <span className="font-mono text-sm">{item.code}</span>;
               case 'name': {
-                const meta = getPermissionDisplayMeta(item.code);
-                const displayName = meta ? t(meta.key, meta.fallback) : item.name;
-                const showOriginal = Boolean(meta && item.name.trim().toLowerCase() !== displayName.trim().toLowerCase());
+                const displayName = resolvePermissionDisplayLabel(item.code, item.name, (key, fallback) => t(key, fallback ?? key));
+                const showOriginal = Boolean(item.name.trim() && item.name.trim().toLowerCase() !== displayName.trim().toLowerCase());
                 return (
                   <div className="flex flex-col">
                     <span>{displayName}</span>

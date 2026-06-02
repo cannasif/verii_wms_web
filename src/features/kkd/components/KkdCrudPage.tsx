@@ -71,6 +71,31 @@ function formatCellValue(value: unknown): string {
   return String(value);
 }
 
+function resolveRowId<TItem extends { id: number }>(item: TItem): number {
+  const record = item as Record<string, unknown>;
+  const rawId = record.id ?? record.Id;
+  if (typeof rawId === 'number' && !Number.isNaN(rawId)) {
+    return rawId;
+  }
+  if (typeof rawId === 'string' && rawId.trim() !== '' && !Number.isNaN(Number(rawId))) {
+    return Number(rawId);
+  }
+  return 0;
+}
+
+function formatExportCellValue(columnKey: string, value: unknown, activeLabel: string, passiveLabel: string): string | number {
+  if (value == null || value === '') {
+    return '-';
+  }
+  if (typeof value === 'boolean') {
+    return value ? activeLabel : passiveLabel;
+  }
+  if (columnKey === 'updatedDate' && typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return new Date(value).toLocaleDateString(getLocaleForFormatting(i18n.language));
+  }
+  return typeof value === 'number' ? value : String(value);
+}
+
 export function KkdCrudPage<TItem extends { id: number }, TForm extends object, TColumnKey extends string>({
   pageKey,
   title,
@@ -116,11 +141,16 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     queryFn: () => getList(pagedGrid.queryParams),
   });
 
+  const refreshList = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey });
+    await queryClient.refetchQueries({ queryKey, type: 'active' });
+  };
+
   const createMutation = useMutation({
     mutationFn: createItem,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(t('common.saveSuccess'));
-      void queryClient.invalidateQueries({ queryKey });
+      await refreshList();
       setDialogOpen(false);
       setEditingItem(null);
       setFormState(initialForm);
@@ -130,9 +160,9 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
 
   const updateMutation = useMutation({
     mutationFn: ({ id, dto }: { id: number; dto: Partial<TForm> }) => updateItem(id, dto),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(t('common.saveSuccess'));
-      void queryClient.invalidateQueries({ queryKey });
+      await refreshList();
       setDialogOpen(false);
       setEditingItem(null);
       setFormState(initialForm);
@@ -142,9 +172,9 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
 
   const deleteMutation = useMutation({
     mutationFn: deleteItem,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(t('common.deleteSuccess'));
-      void queryClient.invalidateQueries({ queryKey });
+      await refreshList();
       setDeleteDialogOpen(false);
       setItemToDelete(null);
     },
@@ -174,6 +204,29 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     [columns],
   );
 
+  const exportColumns = useMemo(
+    () => columns.map(({ key, label }) => ({ key, label })),
+    [columns],
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => {
+    const activeLabel = t('common.active');
+    const passiveLabel = t('common.passive');
+
+    return (query.data?.data ?? []).map((row) => {
+      const record: Record<string, unknown> = {};
+      columns.forEach((column) => {
+        record[column.key] = formatExportCellValue(
+          column.key,
+          (row as Record<string, unknown>)[column.key],
+          activeLabel,
+          passiveLabel,
+        );
+      });
+      return record;
+    });
+  }, [columns, query.data?.data, t]);
+
   const renderSortIcon = (columnKey: TColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
     return pagedGrid.sortDirection === 'asc'
@@ -199,7 +252,12 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
 
   const handleSubmit = (): void => {
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, dto: formState });
+      const rowId = resolveRowId(editingItem);
+      if (!rowId) {
+        toast.error(t('common.generalError'));
+        return;
+      }
+      updateMutation.mutate({ id: rowId, dto: formState });
       return;
     }
     createMutation.mutate(formState);
@@ -249,7 +307,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             pageKey={pageKey}
             columns={columns}
             rows={query.data?.data ?? []}
-            rowKey={(row) => row.id}
+            rowKey={(row) => resolveRowId(row)}
             renderCell={renderCell}
             sortBy={pagedGrid.sortBy}
             sortDirection={pagedGrid.sortDirection}
@@ -317,6 +375,9 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
               isLoading: query.isFetching,
               label: t('common.refresh'),
             }}
+            exportFileName={pageKey}
+            exportColumns={exportColumns}
+            exportRows={exportRows}
           />
         </CardContent>
       </Card>
@@ -412,7 +473,12 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
               variant="destructive"
               onClick={() => {
                 if (!itemToDelete) return;
-                deleteMutation.mutate(itemToDelete.id);
+                const rowId = resolveRowId(itemToDelete);
+                if (!rowId) {
+                  toast.error(t('common.generalError'));
+                  return;
+                }
+                deleteMutation.mutate(rowId);
               }}
               disabled={deleteMutation.isPending}
             >

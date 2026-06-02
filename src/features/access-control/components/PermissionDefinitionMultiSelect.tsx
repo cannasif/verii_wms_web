@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { usePermissionDefinitionsQuery } from '../hooks/usePermissionDefinitionsQuery';
 import {
   getPermissionActionLabel,
-  getPermissionDisplayMeta,
   getPermissionModuleDisplayMeta,
   getPermissionScope,
   getPermissionScopeDisplayMeta,
   isLeafPermissionCode,
+  resolvePermissionDisplayLabel,
 } from '../utils/permission-config';
 
 interface PermissionDefinitionMultiSelectProps {
@@ -35,14 +35,9 @@ export function PermissionDefinitionMultiSelect({
   const [search, setSearch] = useState('');
 
   const getDisplayLabel = useCallback(
-    (code: string, name: string | null | undefined): string => {
-      const trimmedName = (name ?? '').trim();
-      if (trimmedName) return trimmedName;
-      const meta = getPermissionDisplayMeta(code);
-      if (meta) return t(meta.key, meta.fallback);
-      return code;
-    },
-    [t]
+    (code: string, name: string | null | undefined): string =>
+      resolvePermissionDisplayLabel(code, name, (key, fallback) => t(key, fallback ?? key)),
+    [t],
   );
 
   const filteredItems = useMemo(() => {

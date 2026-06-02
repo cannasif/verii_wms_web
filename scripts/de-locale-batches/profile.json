@@ -1,0 +1,62 @@
+[
+  {
+    "key": "profile.title",
+    "en": "Profile",
+    "current": "Profil"
+  },
+  {
+    "key": "profile.settingsProfileInfo",
+    "en": "Profile information",
+    "current": null
+  },
+  {
+    "key": "profile.settingsProfileHint",
+    "en": "Update customer information",
+    "current": null
+  },
+  {
+    "key": "profile.settingsLanguage",
+    "en": "Language option",
+    "current": null
+  },
+  {
+    "key": "profile.settingsAppearance",
+    "en": "Appearance mode",
+    "current": null
+  },
+  {
+    "key": "profile.organizationBadge",
+    "en": "V3RII.CO",
+    "current": null
+  },
+  {
+    "key": "profile.profileSettings",
+    "en": "Profile settings",
+    "current": null
+  },
+  {
+    "key": "profile.branchLabel",
+    "en": "Branch",
+    "current": null
+  },
+  {
+    "key": "profile.changePhoto",
+    "en": "Choose or change profile photo",
+    "current": null
+  },
+  {
+    "key": "profile.settingsModalSubtitle",
+    "en": "Manage your profile information and security settings here.",
+    "current": null
+  },
+  {
+    "key": "profile.tabPersonal",
+    "en": "Personal information",
+    "current": null
+  },
+  {
+    "key": "profile.tabSecurity",
+    "en": "Security",
+    "current": null
+  }
+]

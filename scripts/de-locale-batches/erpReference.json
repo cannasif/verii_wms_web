@@ -1,0 +1,92 @@
+[
+  {
+    "key": "erpReference.badge",
+    "en": "ERP Mirror",
+    "current": "ERP Mirror"
+  },
+  {
+    "key": "erpReference.columns.code",
+    "en": "Code",
+    "current": "Kod"
+  },
+  {
+    "key": "erpReference.columns.name",
+    "en": "Name",
+    "current": "Ad"
+  },
+  {
+    "key": "erpReference.columns.branch",
+    "en": "Branch",
+    "current": "Şube"
+  },
+  {
+    "key": "erpReference.columns.city",
+    "en": "City",
+    "current": "Şehir"
+  },
+  {
+    "key": "erpReference.columns.phone",
+    "en": "Phone",
+    "current": "Telefon"
+  },
+  {
+    "key": "erpReference.columns.unit",
+    "en": "Unit",
+    "current": "Birim"
+  },
+  {
+    "key": "erpReference.columns.group",
+    "en": "Group",
+    "current": "Grup"
+  },
+  {
+    "key": "erpReference.columns.linkedStock",
+    "en": "Linked Stock",
+    "current": "Bağlı Stok"
+  },
+  {
+    "key": "erpReference.columns.lastSyncDate",
+    "en": "Last Sync",
+    "current": "Son Sync"
+  },
+  {
+    "key": "erpReference.customer.title",
+    "en": "Customer Mirror",
+    "current": "Cari Mirror"
+  },
+  {
+    "key": "erpReference.customer.description",
+    "en": "View customer records synchronized from ERP.",
+    "current": "ERP tarafindan senkronlanan cari kayıtlarını izleyin."
+  },
+  {
+    "key": "erpReference.stock.title",
+    "en": "Stock Mirror",
+    "current": "Stok Mirror"
+  },
+  {
+    "key": "erpReference.stock.description",
+    "en": "View stock cards synchronized from ERP.",
+    "current": "ERP tarafindan senkronlanan stok kartlarını izleyin."
+  },
+  {
+    "key": "erpReference.warehouse.title",
+    "en": "Warehouse Mirror",
+    "current": "Depo Mirror"
+  },
+  {
+    "key": "erpReference.warehouse.description",
+    "en": "View warehouse records synchronized from ERP.",
+    "current": "ERP tarafindan senkronlanan depo kayıtlarını izleyin."
+  },
+  {
+    "key": "erpReference.yapkod.title",
+    "en": "YapKod Mirror",
+    "current": "YapKod Mirror"
+  },
+  {
+    "key": "erpReference.yapkod.description",
+    "en": "View structure codes synchronized from ERP.",
+    "current": "ERP tarafindan senkronlanan yapı kodlarını izleyin."
+  }
+]

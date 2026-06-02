@@ -1,0 +1,297 @@
+[
+  {
+    "key": "printerManagement.badges.serverPrinting",
+    "en": "Server-side Printing",
+    "current": "Server-side Printing"
+  },
+  {
+    "key": "printerManagement.badges.queue",
+    "en": "Queue",
+    "current": "Queue"
+  },
+  {
+    "key": "printerManagement.description",
+    "en": "Manage printers defined on the server, queue print jobs, and monitor centralized print flows handled by the agent or server.",
+    "current": "Manage printers defined on the server, queue print jobs, and monitor centralized print flows handled by the agent or server."
+  },
+  {
+    "key": "printerManagement.messages.printerUpdated",
+    "en": "Printer updated.",
+    "current": "Printer updated."
+  },
+  {
+    "key": "printerManagement.messages.printerCreated",
+    "en": "Printer created.",
+    "current": "Printer created."
+  },
+  {
+    "key": "printerManagement.messages.printerSaveError",
+    "en": "Printer could not be saved.",
+    "current": "Printer could not be saved."
+  },
+  {
+    "key": "printerManagement.messages.profileUpdated",
+    "en": "Profile updated.",
+    "current": "Profile updated."
+  },
+  {
+    "key": "printerManagement.messages.profileCreated",
+    "en": "Profile created.",
+    "current": "Profile created."
+  },
+  {
+    "key": "printerManagement.messages.profileSaveError",
+    "en": "Profile could not be saved.",
+    "current": "Profile could not be saved."
+  },
+  {
+    "key": "printerManagement.messages.templateRequired",
+    "en": "No template selected.",
+    "current": "No template selected."
+  },
+  {
+    "key": "printerManagement.messages.mappingSaved",
+    "en": "Template-printer profile mapping saved.",
+    "current": "Template-printer profile mapping saved."
+  },
+  {
+    "key": "printerManagement.messages.mappingSaveError",
+    "en": "Template-printer profile mapping could not be saved.",
+    "current": "Template-printer profile mapping could not be saved."
+  },
+  {
+    "key": "printerManagement.messages.retryQueued",
+    "en": "Print job queued again.",
+    "current": "Print job queued again."
+  },
+  {
+    "key": "printerManagement.printerForm.title",
+    "en": "Printer Form",
+    "current": "Printer Form"
+  },
+  {
+    "key": "printerManagement.printerForm.code",
+    "en": "Kod",
+    "current": "Kod"
+  },
+  {
+    "key": "printerManagement.printerForm.displayName",
+    "en": "Display Name",
+    "current": "Display Name"
+  },
+  {
+    "key": "printerManagement.printerForm.connectionType",
+    "en": "Connection Type",
+    "current": "Connection Type"
+  },
+  {
+    "key": "printerManagement.printerForm.outputType",
+    "en": "Output Type",
+    "current": "Output Type"
+  },
+  {
+    "key": "printerManagement.printerForm.host",
+    "en": "Host",
+    "current": "Host"
+  },
+  {
+    "key": "printerManagement.printerForm.queue",
+    "en": "Queue",
+    "current": "Queue"
+  },
+  {
+    "key": "printerManagement.printerForm.rawCommand",
+    "en": "Raw Command",
+    "current": "Raw Command"
+  },
+  {
+    "key": "printerManagement.printerForm.create",
+    "en": "Create Printer",
+    "current": "Create Printer"
+  },
+  {
+    "key": "printerManagement.printerForm.update",
+    "en": "Update Printer",
+    "current": "Update Printer"
+  },
+  {
+    "key": "printerManagement.profileForm.title",
+    "en": "Printer Profile Form",
+    "current": "Printer Profile Form"
+  },
+  {
+    "key": "printerManagement.profileForm.printer",
+    "en": "Linked Printer",
+    "current": "Linked Printer"
+  },
+  {
+    "key": "printerManagement.profileForm.selectPrinter",
+    "en": "Select printer",
+    "current": "Select printer"
+  },
+  {
+    "key": "printerManagement.profileForm.code",
+    "en": "Profile Code",
+    "current": "Profile Code"
+  },
+  {
+    "key": "printerManagement.profileForm.displayName",
+    "en": "Profile Name",
+    "current": "Profile Name"
+  },
+  {
+    "key": "printerManagement.profileForm.width",
+    "en": "Width (mm)",
+    "current": "Width (mm)"
+  },
+  {
+    "key": "printerManagement.profileForm.height",
+    "en": "Height (mm)",
+    "current": "Height (mm)"
+  },
+  {
+    "key": "printerManagement.profileForm.outputType",
+    "en": "Output Type",
+    "current": "Output Type"
+  },
+  {
+    "key": "printerManagement.profileForm.transportType",
+    "en": "Transport Type",
+    "current": "Transport Type"
+  },
+  {
+    "key": "printerManagement.profileForm.defaultProfile",
+    "en": "Default Profile",
+    "current": "Default Profile"
+  },
+  {
+    "key": "printerManagement.profileForm.create",
+    "en": "Create Profile",
+    "current": "Create Profile"
+  },
+  {
+    "key": "printerManagement.profileForm.update",
+    "en": "Update Profile",
+    "current": "Update Profile"
+  },
+  {
+    "key": "printerManagement.profileForm.clear",
+    "en": "Clear Profile Form",
+    "current": "Clear Profile Form"
+  },
+  {
+    "key": "printerManagement.tables.printers",
+    "en": "Defined Printers",
+    "current": "Defined Printers"
+  },
+  {
+    "key": "printerManagement.tables.profiles",
+    "en": "Printer Profiles",
+    "current": "Printer Profiles"
+  },
+  {
+    "key": "printerManagement.tables.mappings",
+    "en": "Template - Printer Profile Mappings",
+    "current": "Template - Printer Profile Mappings"
+  },
+  {
+    "key": "printerManagement.tables.jobs",
+    "en": "Recent Print Jobs",
+    "current": "Recent Print Jobs"
+  },
+  {
+    "key": "printerManagement.table.code",
+    "en": "Kod",
+    "current": "Kod"
+  },
+  {
+    "key": "printerManagement.table.name",
+    "en": "Ad",
+    "current": "Ad"
+  },
+  {
+    "key": "printerManagement.table.connection",
+    "en": "Connection",
+    "current": "Connection"
+  },
+  {
+    "key": "printerManagement.table.output",
+    "en": "Output",
+    "current": "Output"
+  },
+  {
+    "key": "printerManagement.table.profile",
+    "en": "Profile",
+    "current": "Profile"
+  },
+  {
+    "key": "printerManagement.table.printer",
+    "en": "Printer",
+    "current": "Printer"
+  },
+  {
+    "key": "printerManagement.table.size",
+    "en": "Size",
+    "current": "Size"
+  },
+  {
+    "key": "printerManagement.table.format",
+    "en": "Format",
+    "current": "Format"
+  },
+  {
+    "key": "printerManagement.mappingForm.template",
+    "en": "Template",
+    "current": "Template"
+  },
+  {
+    "key": "printerManagement.mappingForm.selectTemplate",
+    "en": "Select template",
+    "current": "Select template"
+  },
+  {
+    "key": "printerManagement.mappingForm.profile",
+    "en": "Printer Profile",
+    "current": "Printer Profile"
+  },
+  {
+    "key": "printerManagement.mappingForm.selectProfile",
+    "en": "Select profile",
+    "current": "Select profile"
+  },
+  {
+    "key": "printerManagement.mappingForm.add",
+    "en": "Add Mapping",
+    "current": "Add Mapping"
+  },
+  {
+    "key": "printerManagement.mappingForm.addDefault",
+    "en": "Add as Default",
+    "current": "Add as Default"
+  },
+  {
+    "key": "printerManagement.mappingForm.attached",
+    "en": "Attached",
+    "current": "Attached"
+  },
+  {
+    "key": "printerManagement.mappingForm.makeDefault",
+    "en": "Make Default",
+    "current": "Make Default"
+  },
+  {
+    "key": "printerManagement.mappingForm.empty",
+    "en": "No mapping exists for the selected template yet.",
+    "current": "No mapping exists for the selected template yet."
+  },
+  {
+    "key": "printerManagement.jobs.jobName",
+    "en": "Job Name",
+    "current": "Job Name"
+  },
+  {
+    "key": "printerManagement.jobs.retry",
+    "en": "Retry",
+    "current": "Erneut versuchen"
+  }
+]

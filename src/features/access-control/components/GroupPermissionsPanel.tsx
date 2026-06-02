@@ -14,7 +14,7 @@ import { usePermissionGroupQuery } from '../hooks/usePermissionGroupQuery';
 import { useSetPermissionGroupPermissionsMutation } from '../hooks/useSetPermissionGroupPermissionsMutation';
 import { PermissionDefinitionMultiSelect } from './PermissionDefinitionMultiSelect';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
-import { getPermissionActionLabel, getPermissionDisplayMeta, getPermissionScope, getPermissionScopeDisplayMeta } from '../utils/permission-config';
+import { getPermissionActionLabel, getPermissionScope, getPermissionScopeDisplayMeta, resolvePermissionDisplayLabel } from '../utils/permission-config';
 import { Settings, Sparkles } from 'lucide-react';
 
 interface GroupPermissionsPanelProps {
@@ -48,8 +48,7 @@ export function GroupPermissionsPanel({
       const parts = code.split('.').filter(Boolean);
       const action = parts[parts.length - 1] ?? 'view';
       const actionLabel = t(getPermissionActionLabel(`scope.${action}`).key, getPermissionActionLabel(`scope.${action}`).fallback);
-      const displayMeta = getPermissionDisplayMeta(code);
-      const codeLabel = displayMeta ? t(displayMeta.key, displayMeta.fallback) : code;
+      const codeLabel = resolvePermissionDisplayLabel(code, null, (key, fallback) => t(key, fallback ?? key));
 
       if (!grouped.has(scopeLabel)) {
         grouped.set(scopeLabel, new Map());

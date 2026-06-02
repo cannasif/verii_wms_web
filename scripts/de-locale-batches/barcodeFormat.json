@@ -1,0 +1,7 @@
+[
+  {
+    "key": "barcodeFormat",
+    "en": "Active barcode format: {{format}}",
+    "current": "Active barcode format: {{format}}"
+  }
+]

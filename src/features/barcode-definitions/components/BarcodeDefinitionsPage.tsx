@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Barcode,
@@ -45,73 +45,48 @@ interface PatternPreset {
   hintText: string;
 }
 
-const moduleOptions: ModuleOption[] = [
-  { value: 'goods-receipt', label: 'Mal Kabul', category: 'Giriş' },
-  { value: 'transfer', label: 'Transfer', category: 'Depo Hareketi' },
-  { value: 'warehouse-inbound', label: 'Ambar Giriş', category: 'Depo Hareketi' },
-  { value: 'warehouse-outbound', label: 'Ambar Çıkış', category: 'Depo Hareketi' },
-  { value: 'shipment', label: 'Sevkiyat', category: 'Çıkış' },
-  { value: 'subcontracting-issue', label: 'Fason Çıkış', category: 'Fason' },
-  { value: 'subcontracting-receipt', label: 'Fason Giriş', category: 'Fason' },
-  { value: 'package', label: 'Paketleme', category: 'Paket' },
-  { value: 'production-transfer', label: 'Üretim Transfer', category: 'Üretim' },
-];
+const MODULE_DEFS = [
+  { value: 'goods-receipt', moduleKey: 'goodsReceipt', categoryKey: 'inbound' },
+  { value: 'transfer', moduleKey: 'transfer', categoryKey: 'warehouseMovement' },
+  { value: 'warehouse-inbound', moduleKey: 'warehouseInbound', categoryKey: 'warehouseMovement' },
+  { value: 'warehouse-outbound', moduleKey: 'warehouseOutbound', categoryKey: 'warehouseMovement' },
+  { value: 'shipment', moduleKey: 'shipment', categoryKey: 'outbound' },
+  { value: 'subcontracting-issue', moduleKey: 'subcontractingIssue', categoryKey: 'subcontracting' },
+  { value: 'subcontracting-receipt', moduleKey: 'subcontractingReceipt', categoryKey: 'subcontracting' },
+  { value: 'package', moduleKey: 'package', categoryKey: 'package' },
+  { value: 'production-transfer', moduleKey: 'productionTransfer', categoryKey: 'production' },
+] as const;
 
-const patternPresets: PatternPreset[] = [
-  {
-    value: 'stock-only',
-    label: 'Sadece stok kodu',
-    requiredSegments: 'StockCode',
-    segmentPattern: 'StockCode',
-    hintText: 'Örnek: STK-0001',
-  },
-  {
-    value: 'stock-yapkod',
-    label: 'Stok + yapkod',
-    requiredSegments: 'StockCode,YapKod',
-    segmentPattern: 'StockCode///YapKod',
-    hintText: 'Örnek: STK-0001///RED-L',
-  },
+const PRESET_DEFS = [
+  { value: 'stock-only', presetKey: 'stockOnly', requiredSegments: 'StockCode', segmentPattern: 'StockCode' },
+  { value: 'stock-yapkod', presetKey: 'stockYapkod', requiredSegments: 'StockCode,YapKod', segmentPattern: 'StockCode///YapKod' },
   {
     value: 'stock-yapkod-serial',
-    label: 'Stok + yapkod + seri',
+    presetKey: 'stockYapkodSerial',
     requiredSegments: 'StockCode,YapKod,SerialNumber',
     segmentPattern: 'StockCode///YapKod///SerialNumber',
-    hintText: 'Örnek: STK-0001///RED-L///SN000245',
   },
-  {
-    value: 'stock-lot',
-    label: 'Stok + lot',
-    requiredSegments: 'StockCode,LotNo',
-    segmentPattern: 'StockCode///LotNo',
-    hintText: 'Örnek: STK-0001///LOT2026-04',
-  },
-  {
-    value: 'package-no',
-    label: 'Paket numarası',
-    requiredSegments: 'PackageNo',
-    segmentPattern: 'PackageNo',
-    hintText: 'Örnek: PK-2026-00045',
-  },
-];
+  { value: 'stock-lot', presetKey: 'stockLot', requiredSegments: 'StockCode,LotNo', segmentPattern: 'StockCode///LotNo' },
+  { value: 'package-no', presetKey: 'packageNo', requiredSegments: 'PackageNo', segmentPattern: 'PackageNo' },
+] as const;
 
 const emptyFormState: BarcodeDefinitionFormState = {
   moduleKey: 'goods-receipt',
-  displayName: 'Mal Kabul Barkodu',
+  displayName: '',
   definitionType: 'pattern',
   segmentPattern: 'StockCode',
   requiredSegments: 'StockCode',
   isActive: true,
   allowMirrorLookup: true,
-  hintText: 'Örnek: STK-0001',
+  hintText: '',
 };
 
-function getModuleLabel(moduleKey: string): string {
+function getModuleLabel(moduleKey: string, moduleOptions: ModuleOption[]): string {
   return moduleOptions.find((item) => item.value === moduleKey)?.label ?? moduleKey;
 }
 
-function getModuleCategory(moduleKey: string): string {
-  return moduleOptions.find((item) => item.value === moduleKey)?.category ?? 'Diğer';
+function getModuleCategory(moduleKey: string, t: (key: string) => string, moduleOptions: ModuleOption[]): string {
+  return moduleOptions.find((item) => item.value === moduleKey)?.category ?? t('barcodeManagement.categories.other');
 }
 
 function formatCandidate(candidate: BarcodeMatchCandidate): string {
@@ -162,6 +137,34 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
   const definitions = definitionsQuery.data?.data ?? [];
 
+  const moduleOptions = useMemo<ModuleOption[]>(
+    () =>
+      MODULE_DEFS.map((item) => ({
+        value: item.value,
+        label: t(`barcodeManagement.modules.${item.moduleKey}`),
+        category: t(`barcodeManagement.categories.${item.categoryKey}`),
+      })),
+    [t],
+  );
+
+  const patternPresets = useMemo<PatternPreset[]>(
+    () =>
+      PRESET_DEFS.map((item) => ({
+        value: item.value,
+        requiredSegments: item.requiredSegments,
+        segmentPattern: item.segmentPattern,
+        label: t(`barcodeManagement.presets.${item.presetKey}.label`),
+        hintText: t(`barcodeManagement.presets.${item.presetKey}.hint`),
+      })),
+    [t],
+  );
+
+  const getDisplayNameForModule = useCallback(
+    (moduleKey: string): string =>
+      t('barcodeManagement.displayNameSuffix', { module: getModuleLabel(moduleKey, moduleOptions) }),
+    [moduleOptions, t],
+  );
+
   useEffect(() => {
     setPageTitle(t('barcodeManagement.title', { defaultValue: 'Missing translation' }));
     return () => setPageTitle(null);
@@ -180,7 +183,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
   const selectedPreset = useMemo(
     () => patternPresets.find((item) => item.segmentPattern === formState.segmentPattern && item.requiredSegments === formState.requiredSegments)?.value ?? '',
-    [formState.requiredSegments, formState.segmentPattern],
+    [formState.requiredSegments, formState.segmentPattern, patternPresets],
   );
 
   const saveMutation = useMutation({
@@ -245,12 +248,12 @@ export function BarcodeDefinitionsPage(): ReactElement {
   };
 
   const openCreateDialog = (): void => {
-    const moduleLabel = getModuleLabel(selectedModuleKey);
     setEditingDefinition(null);
     setFormState({
       ...emptyFormState,
       moduleKey: selectedModuleKey,
-      displayName: `${moduleLabel} Barkodu`,
+      displayName: getDisplayNameForModule(selectedModuleKey),
+      hintText: patternPresets[0]?.hintText ?? '',
     });
     setDialogOpen(true);
   };
@@ -286,17 +289,16 @@ export function BarcodeDefinitionsPage(): ReactElement {
   };
 
   const handleModuleChange = (value: string): void => {
-    const moduleLabel = getModuleLabel(value);
     setFormState((current) => ({
       ...current,
       moduleKey: value,
-      displayName: editingDefinition ? current.displayName : `${moduleLabel} Barkodu`,
+      displayName: editingDefinition ? current.displayName : getDisplayNameForModule(value),
     }));
   };
 
   const handleSaveDefinition = (): void => {
     if (!permission.canCreate && !permission.canUpdate) {
-      toast.error('Kaydetme yetkiniz yok');
+      toast.error(t('barcodeManagement.noSavePermission'));
       return;
     }
 
@@ -328,33 +330,33 @@ export function BarcodeDefinitionsPage(): ReactElement {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">Barcode Setup</Badge>
+              <Badge variant="secondary">{t('barcodeManagement.badgeSetup')}</Badge>
             </div>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
                 {t('barcodeManagement.title', { defaultValue: 'Missing translation' })}
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                Her işlem için hangi barkod yapısının kullanılacağını, hangi alanların zorunlu olduğunu ve sistemin yedek arama yapıp yapmayacağını tanımla.
+                {t('barcodeManagement.heroSubtitle')}
               </p>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Toplam Tanım</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.totalDefinitions')}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.length}</div>
               </CardContent>
             </Card>
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Aktif Tanım</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.activeDefinitions')}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.isActive).length}</div>
               </CardContent>
             </Card>
             <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
               <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Mirror Lookup</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.mirrorLookupCard')}</div>
                 <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.allowMirrorLookup).length}</div>
               </CardContent>
             </Card>
@@ -371,15 +373,15 @@ export function BarcodeDefinitionsPage(): ReactElement {
                   <Settings2 className="size-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">İşlem Bazlı Barkod Tanımları</CardTitle>
+                  <CardTitle className="text-2xl">{t('barcodeManagement.listTitle')}</CardTitle>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Teknik alanlar yerine işlem odaklı bak. Her kart bir WMS işlemindeki barkod davranışını temsil eder.
+                    {t('barcodeManagement.listDescription')}
                   </p>
                 </div>
               </div>
               <Button onClick={openCreateDialog} disabled={!permission.canCreate}>
                 <Plus className="mr-2 size-4" />
-                Yeni Tanım
+                {t('barcodeManagement.addButton')}
               </Button>
             </div>
           </CardHeader>
@@ -407,9 +409,9 @@ export function BarcodeDefinitionsPage(): ReactElement {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-slate-900 dark:text-white">{definition.displayName}</p>
-                            <Badge variant="outline">{getModuleCategory(definition.moduleKey)}</Badge>
+                            <Badge variant="outline">{getModuleCategory(definition.moduleKey, t, moduleOptions)}</Badge>
                           </div>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{getModuleLabel(definition.moduleKey)}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{getModuleLabel(definition.moduleKey, moduleOptions)}</p>
                         </div>
                         <Badge variant={definition.isActive ? 'default' : 'outline'}>
                           {definition.isActive ? t('common.active', { defaultValue: 'Missing translation' }) : t('common.passive', { defaultValue: 'Missing translation' })}
@@ -419,20 +421,28 @@ export function BarcodeDefinitionsPage(): ReactElement {
                       <div className="mt-4 space-y-3 text-sm">
                         <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                           <Barcode className="size-4" />
-                          <span className="font-medium">Yapı:</span>
+                          <span className="font-medium">{t('barcodeManagement.structureLabel')}:</span>
                           <span className="font-mono text-xs">{definition.segmentPattern || '-'}</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                           <Package2 className="size-4" />
-                          <span>Zorunlu alanlar: {definition.requiredSegments || 'Yok'}</span>
+                          <span>
+                            {t('barcodeManagement.requiredFieldsLabel', {
+                              value: definition.requiredSegments || t('barcodeManagement.requiredFieldsNone'),
+                            })}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                           <Truck className="size-4" />
-                          <span>{definition.allowMirrorLookup ? 'WMS mirror lookup açık' : 'WMS mirror lookup kapalı'}</span>
+                          <span>
+                            {definition.allowMirrorLookup
+                              ? t('barcodeManagement.erpFallbackOn')
+                              : t('barcodeManagement.erpFallbackOff')}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                           <CheckCircle2 className="size-4" />
-                          <span>{definition.hintText || 'Kullanıcı ipucu tanımlanmadı'}</span>
+                          <span>{definition.hintText || t('barcodeManagement.noHintDefined')}</span>
                         </div>
                         <div className="flex gap-2 pt-2">
                           <Button
@@ -446,7 +456,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
                             }}
                           >
                             <Pencil className="mr-2 size-3.5" />
-                            {definition.id ? 'Düzenle' : 'Override Oluştur'}
+                            {definition.id ? t('common.edit') : t('barcodeManagement.createOverride')}
                           </Button>
                           {definition.id ? (
                             <Button
@@ -460,7 +470,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
                               }}
                             >
                               <Trash2 className="mr-2 size-3.5" />
-                              Sil
+                              {t('barcodeManagement.delete')}
                             </Button>
                           ) : null}
                         </div>
@@ -481,28 +491,30 @@ export function BarcodeDefinitionsPage(): ReactElement {
                   <Settings2 className="size-5" />
                 </div>
                 <div>
-                  <CardTitle>Seçili Tanım Özeti</CardTitle>
+                  <CardTitle>{t('barcodeManagement.summaryTitle')}</CardTitle>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Şu anda hangi işlem için nasıl barkod beklendiğini hızlıca gör.
+                    {t('barcodeManagement.summaryDescription')}
                   </p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
-                <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition ? getModuleLabel(selectedDefinition.moduleKey) : '-'}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.operationLabel')}</div>
+                <div className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {selectedDefinition ? getModuleLabel(selectedDefinition.moduleKey, moduleOptions) : '-'}
+                </div>
               </div>
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Barkod Yapısı</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.barcodeStructure')}</div>
                 <div className="mt-1 font-mono text-xs text-slate-900 dark:text-white">{selectedDefinition?.segmentPattern || '-'}</div>
               </div>
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Zorunlu Alanlar</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.requiredSegments')}</div>
                 <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition?.requiredSegments || '-'}</div>
               </div>
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Kullanıcı İpucu</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.userHint')}</div>
                 <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedDefinition?.hintText || '-'}</div>
               </div>
             </CardContent>
@@ -515,19 +527,19 @@ export function BarcodeDefinitionsPage(): ReactElement {
                   <ScanSearch className="size-5" />
                 </div>
                 <div>
-                  <CardTitle>Barkod Testi</CardTitle>
+                  <CardTitle>{t('barcodeManagement.testSectionTitle')}</CardTitle>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Tanımın çalışmasını hızlıca doğrulamak için barkodu burada çözümle.
+                    {t('barcodeManagement.testSectionDescription')}
                   </p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>İşlem</Label>
+                <Label>{t('barcodeManagement.operationLabel')}</Label>
                 <Select value={selectedModuleKey} onValueChange={setSelectedModuleKey}>
                   <SelectTrigger>
-                    <SelectValue placeholder="İşlem seç" />
+                    <SelectValue placeholder={t('barcodeManagement.selectOperation')} />
                   </SelectTrigger>
                   <SelectContent>
                     {moduleOptions.map((item) => (
@@ -540,16 +552,16 @@ export function BarcodeDefinitionsPage(): ReactElement {
               </div>
 
               <div className="space-y-2">
-                <Label>Barkod</Label>
+                <Label>{t('barcodeManagement.barcodeInput')}</Label>
                 <Input
                   value={barcodeInput}
                   onChange={(event) => setBarcodeInput(event.target.value)}
-                  placeholder={selectedDefinition?.hintText || 'Test barkodunu gir'}
+                  placeholder={selectedDefinition?.hintText || t('barcodeManagement.testBarcodePlaceholder')}
                 />
               </div>
 
               <Button onClick={handleResolve} disabled={!selectedModuleKey || !barcodeInput.trim() || resolveMutation.isPending} className="w-full">
-                {resolveMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : 'Barkodu Test Et'}
+                {resolveMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('barcodeManagement.resolveButton')}
               </Button>
 
               {resolveMessage ? (
@@ -561,17 +573,25 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
                   {resolveResult ? (
                     <div className="mt-4 grid gap-2 text-sm text-slate-600 dark:text-slate-300">
-                      {renderDetailRow('Stock', `${resolveResult.stockCode || '-'}${resolveResult.stockName ? ` - ${resolveResult.stockName}` : ''}`)}
-                      {renderDetailRow('YapKod', `${resolveResult.yapKod || '-'}${resolveResult.yapAcik ? ` - ${resolveResult.yapAcik}` : ''}`)}
-                      {renderDetailRow('Serial', resolveResult.serialNumber)}
-                      {renderDetailRow('Quantity', resolveResult.quantity)}
-                      {renderDetailRow('Pattern', resolveResult.segmentPattern)}
+                      {renderDetailRow(
+                        t('barcodeManagement.resolveDetail.stock'),
+                        `${resolveResult.stockCode || '-'}${resolveResult.stockName ? ` - ${resolveResult.stockName}` : ''}`,
+                      )}
+                      {renderDetailRow(
+                        t('barcodeManagement.resolveDetail.yapKod'),
+                        `${resolveResult.yapKod || '-'}${resolveResult.yapAcik ? ` - ${resolveResult.yapAcik}` : ''}`,
+                      )}
+                      {renderDetailRow(t('barcodeManagement.resolveDetail.serial'), resolveResult.serialNumber)}
+                      {renderDetailRow(t('barcodeManagement.resolveDetail.quantity'), resolveResult.quantity)}
+                      {renderDetailRow(t('barcodeManagement.resolveDetail.pattern'), resolveResult.segmentPattern)}
                     </div>
                   ) : null}
 
                   {resolveCandidates.length > 0 ? (
                     <div className="mt-4 space-y-2">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Aday Kayıtlar</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                        {t('barcodeManagement.candidatesTitle')}
+                      </p>
                       <div className="flex flex-col gap-2">
                         {resolveCandidates.map((candidate, index) => (
                           <div
@@ -596,20 +616,20 @@ export function BarcodeDefinitionsPage(): ReactElement {
           <DialogHeader>
             <DialogTitle>
               {editingDefinition
-                ? (editingDefinition.id ? 'Barkod Tanımını Düzenle' : 'Tanım Override Oluştur')
-                : 'Yeni Barkod Tanımı'}
+                ? editingDefinition.id
+                  ? t('barcodeManagement.dialogEditTitle')
+                  : t('barcodeManagement.dialogOverrideTitle')
+                : t('barcodeManagement.dialogCreateTitle')}
             </DialogTitle>
-            <DialogDescription>
-              Kullanıcıya teknik parse ekranı göstermeden, işlem bazlı barkod beklentisini burada sade şekilde tanımlıyorsun.
-            </DialogDescription>
+            <DialogDescription>{t('barcodeManagement.dialogSimpleDescription')}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>İşlem</Label>
+              <Label>{t('barcodeManagement.operationLabel')}</Label>
               <Select value={formState.moduleKey} onValueChange={handleModuleChange} disabled={Boolean(editingDefinition)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="İşlem seç" />
+                  <SelectValue placeholder={t('barcodeManagement.selectOperation')} />
                 </SelectTrigger>
                 <SelectContent>
                   {moduleOptions.map((item) => (
@@ -622,7 +642,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
 
             <div className="space-y-2">
-              <Label>Görünen Ad</Label>
+              <Label>{t('barcodeManagement.displayName')}</Label>
               <Input
                 value={formState.displayName}
                 onChange={(event) => setFormState((current) => ({ ...current, displayName: event.target.value }))}
@@ -631,10 +651,10 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label>Hazır Barkod Yapısı</Label>
+              <Label>{t('barcodeManagement.presetLabel')}</Label>
               <Select value={selectedPreset || undefined} onValueChange={handlePatternPresetChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Hazır yapı seç" />
+                  <SelectValue placeholder={t('barcodeManagement.selectPresetPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {patternPresets.map((preset) => (
@@ -647,7 +667,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label>Barkod Sırası</Label>
+              <Label>{t('barcodeManagement.barcodeOrderLabel')}</Label>
               <Input
                 value={formState.segmentPattern}
                 onChange={(event) => setFormState((current) => ({ ...current, segmentPattern: event.target.value }))}
@@ -657,7 +677,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label>Zorunlu Alanlar</Label>
+              <Label>{t('barcodeManagement.requiredSegments')}</Label>
               <Input
                 value={formState.requiredSegments}
                 onChange={(event) => setFormState((current) => ({ ...current, requiredSegments: event.target.value }))}
@@ -667,11 +687,11 @@ export function BarcodeDefinitionsPage(): ReactElement {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label>Kullanıcıya Gösterilecek İpucu</Label>
+              <Label>{t('barcodeManagement.hintLabel')}</Label>
               <Textarea
                 value={formState.hintText}
                 onChange={(event) => setFormState((current) => ({ ...current, hintText: event.target.value }))}
-                placeholder="Örnek: STK-0001///RED-L///SN000245"
+                placeholder={patternPresets[0]?.hintText ?? ''}
                 className="min-h-[88px]"
                 disabled={!permission.canCreate && !permission.canUpdate}
               />
@@ -679,8 +699,8 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
             <div className="flex items-center justify-between rounded-xl border border-slate-200/80 px-4 py-3 dark:border-white/10">
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Aktif</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Pasif tanım runtime’da kullanılmaz.</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('common.active')}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.activeHelp')}</p>
               </div>
               <Switch
                 checked={formState.isActive}
@@ -691,8 +711,8 @@ export function BarcodeDefinitionsPage(): ReactElement {
 
             <div className="flex items-center justify-between rounded-xl border border-slate-200/80 px-4 py-3 dark:border-white/10">
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">WMS Mirror Lookup</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Pattern tek başına çözemezse WMS içinden yedek arama yapar.</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('barcodeManagement.erpFallbackLabel')}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.erpFallbackHelp')}</p>
               </div>
               <Switch
                 checked={formState.allowMirrorLookup}

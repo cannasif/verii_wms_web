@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
@@ -193,7 +194,9 @@ export function ProductionTransferListPage(): ReactElement {
   return (
     <div className="crm-page space-y-6">
       {!permission.canMutate ? <PermissionNotice /> : null}
-      <PagedDataGrid<ProductionTransferListItem, ProductionTransferColumnKey>
+      <Card>
+        <CardContent className="pt-6">
+          <PagedDataGrid<ProductionTransferListItem, ProductionTransferColumnKey>
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
         rows={data?.data ?? []}
@@ -317,6 +320,8 @@ export function ProductionTransferListPage(): ReactElement {
           leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
         }}
       />
+        </CardContent>
+      </Card>
 
       <Dialog open={Boolean(itemToDelete)} onOpenChange={(open) => !open && setItemToDelete(null)}>
         <DialogContent>

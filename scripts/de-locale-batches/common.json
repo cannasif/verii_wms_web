@@ -1,0 +1,562 @@
+[
+  {
+    "key": "common.previous",
+    "en": "Previous",
+    "current": "Zurück"
+  },
+  {
+    "key": "common.delete",
+    "en": "Delete",
+    "current": "Löschen"
+  },
+  {
+    "key": "common.filters",
+    "en": "Filters",
+    "current": "Filters"
+  },
+  {
+    "key": "common.reset",
+    "en": "Reset",
+    "current": "Zurücksetzen"
+  },
+  {
+    "key": "common.back",
+    "en": "Back",
+    "current": "Zurück"
+  },
+  {
+    "key": "common.optional",
+    "en": "Optional",
+    "current": "Optional"
+  },
+  {
+    "key": "common.complete",
+    "en": "Completed",
+    "current": "Abgeschlossen"
+  },
+  {
+    "key": "common.over",
+    "en": "Over",
+    "current": "Überschuss"
+  },
+  {
+    "key": "common.add",
+    "en": "Add",
+    "current": "Hinzufügen"
+  },
+  {
+    "key": "common.view",
+    "en": "View",
+    "current": "Görüntüle"
+  },
+  {
+    "key": "common.documentNo",
+    "en": "Document No",
+    "current": "Belge No"
+  },
+  {
+    "key": "common.documentDate",
+    "en": "Document Date",
+    "current": "Belge Tarihi"
+  },
+  {
+    "key": "common.projectCode",
+    "en": "Project Code",
+    "current": "Proje"
+  },
+  {
+    "key": "common.priority",
+    "en": "Priority",
+    "current": "Priority"
+  },
+  {
+    "key": "common.description",
+    "en": "Description",
+    "current": "Aciklama"
+  },
+  {
+    "key": "common.unit",
+    "en": "Unit",
+    "current": "Birim"
+  },
+  {
+    "key": "common.clear",
+    "en": "Clear",
+    "current": "Clear"
+  },
+  {
+    "key": "common.status",
+    "en": "Status",
+    "current": "Durum"
+  },
+  {
+    "key": "common.paginationInfo",
+    "en": "{{current}} - {{total}} of {{totalCount}}",
+    "current": "{{current}} - {{total}} of {{totalCount}}"
+  },
+  {
+    "key": "common.exportExcel",
+    "en": "Excel",
+    "current": "Excel"
+  },
+  {
+    "key": "common.exportPdf",
+    "en": "PDF",
+    "current": "PDF"
+  },
+  {
+    "key": "common.details",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "common.pagePreparing",
+    "en": "Preparing page...",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.waiting",
+    "en": "Waiting",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.approved",
+    "en": "Approved",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.rejected",
+    "en": "Rejected",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.arrived",
+    "en": "Arrived",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.placed",
+    "en": "Placed",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.completed",
+    "en": "Completed",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.cancelled",
+    "en": "Cancelled",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.draft",
+    "en": "Draft",
+    "current": null
+  },
+  {
+    "key": "common.statusLabels.processing",
+    "en": "Processing",
+    "current": null
+  },
+  {
+    "key": "common.breadcrumb",
+    "en": "Breadcrumb",
+    "current": "Brotkrumennavigation"
+  },
+  {
+    "key": "common.select",
+    "en": "Select...",
+    "current": "Auswahlen..."
+  },
+  {
+    "key": "common.systemAdmin",
+    "en": "System Admin",
+    "current": "System Admin"
+  },
+  {
+    "key": "common.validation.selectAtLeastOneItem",
+    "en": "You must select at least one item before continuing.",
+    "current": "You must select at least one item before continuing."
+  },
+  {
+    "key": "common.numericPlaceholder",
+    "en": "0",
+    "current": "0"
+  },
+  {
+    "key": "common.errors.deleteFailed",
+    "en": "Delete operation failed.",
+    "current": "Löschen fehlgeschlagen."
+  },
+  {
+    "key": "common.errors.packageHeadersLoadFailed",
+    "en": "Packaging list could not be loaded.",
+    "current": "Packaging list could not be loaded."
+  },
+  {
+    "key": "common.errors.packageHeaderDetailLoadFailed",
+    "en": "Packaging detail could not be loaded.",
+    "current": "Packaging detail could not be loaded."
+  },
+  {
+    "key": "common.errors.packageHeaderCreateFailed",
+    "en": "Packaging could not be created.",
+    "current": "Packaging could not be created."
+  },
+  {
+    "key": "common.errors.packageHeaderUpdateFailed",
+    "en": "Packaging could not be updated.",
+    "current": "Packaging could not be updated."
+  },
+  {
+    "key": "common.errors.packageHeaderDeleteFailed",
+    "en": "Packaging could not be deleted.",
+    "current": "Packaging could not be deleted."
+  },
+  {
+    "key": "common.errors.packagesLoadFailed",
+    "en": "Package list could not be loaded.",
+    "current": "Package list could not be loaded."
+  },
+  {
+    "key": "common.errors.packageDetailLoadFailed",
+    "en": "Package detail could not be loaded.",
+    "current": "Package detail could not be loaded."
+  },
+  {
+    "key": "common.errors.packagesByHeaderLoadFailed",
+    "en": "Packages could not be loaded.",
+    "current": "Packages could not be loaded."
+  },
+  {
+    "key": "common.errors.packageCreateFailed",
+    "en": "Package could not be created.",
+    "current": "Package could not be created."
+  },
+  {
+    "key": "common.errors.packageUpdateFailed",
+    "en": "Package could not be updated.",
+    "current": "Package could not be updated."
+  },
+  {
+    "key": "common.errors.packageDeleteFailed",
+    "en": "Package could not be deleted.",
+    "current": "Package could not be deleted."
+  },
+  {
+    "key": "common.errors.packageLinesLoadFailed",
+    "en": "Package lines list could not be loaded.",
+    "current": "Package lines list could not be loaded."
+  },
+  {
+    "key": "common.errors.packageLineDetailLoadFailed",
+    "en": "Package line detail could not be loaded.",
+    "current": "Package line detail could not be loaded."
+  },
+  {
+    "key": "common.errors.packageLinesByHeaderLoadFailed",
+    "en": "Package lines could not be loaded.",
+    "current": "Package lines could not be loaded."
+  },
+  {
+    "key": "common.errors.packageLinesByPackageLoadFailed",
+    "en": "Package lines could not be loaded.",
+    "current": "Package lines could not be loaded."
+  },
+  {
+    "key": "common.errors.packageLineCreateFailed",
+    "en": "Package line could not be created.",
+    "current": "Package line could not be created."
+  },
+  {
+    "key": "common.errors.packageLineUpdateFailed",
+    "en": "Package line could not be updated.",
+    "current": "Package line could not be updated."
+  },
+  {
+    "key": "common.errors.packageLineDeleteFailed",
+    "en": "Package line could not be deleted.",
+    "current": "Package line could not be deleted."
+  },
+  {
+    "key": "common.errors.availableHeadersLoadFailed",
+    "en": "Available headers could not be loaded.",
+    "current": "Available headers could not be loaded."
+  },
+  {
+    "key": "common.errors.packageMatchFailed",
+    "en": "Matching operation failed.",
+    "current": "Matching operation failed."
+  },
+  {
+    "key": "common.errors.goodsReceiptOrdersLoadFailed",
+    "en": "Orders could not be loaded.",
+    "current": "Orders could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptOrderItemsLoadFailed",
+    "en": "Order lines could not be loaded.",
+    "current": "Order lines could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptCreateFailed",
+    "en": "Goods receipt could not be created.",
+    "current": "Goods receipt could not be created."
+  },
+  {
+    "key": "common.errors.goodsReceiptHeadersLoadFailed",
+    "en": "Goods receipt list could not be loaded.",
+    "current": "Goods receipt list could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptHeaderDetailLoadFailed",
+    "en": "Goods receipt detail could not be loaded.",
+    "current": "Goods receipt detail could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptLinesLoadFailed",
+    "en": "Goods receipt lines could not be loaded.",
+    "current": "Goods receipt lines could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptImportLinesLoadFailed",
+    "en": "Goods receipt content lines could not be loaded.",
+    "current": "Goods receipt content lines could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptAssignedHeadersLoadFailed",
+    "en": "Assigned goods receipt list could not be loaded.",
+    "current": "Assigned goods receipt list could not be loaded."
+  },
+  {
+    "key": "common.errors.goodsReceiptApprovalLoadFailed",
+    "en": "Goods receipt orders awaiting approval could not be loaded.",
+    "current": "Goods receipt orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseInboundHeadersLoadFailed",
+    "en": "Warehouse inbound list could not be loaded.",
+    "current": "Warehouse inbound list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseOutboundHeadersLoadFailed",
+    "en": "Warehouse outbound list could not be loaded.",
+    "current": "Warehouse outbound list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseAssignedInboundHeadersLoadFailed",
+    "en": "Assigned warehouse inbound list could not be loaded.",
+    "current": "Assigned warehouse inbound list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseAssignedOutboundHeadersLoadFailed",
+    "en": "Assigned warehouse outbound list could not be loaded.",
+    "current": "Assigned warehouse outbound list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseInboundLinesLoadFailed",
+    "en": "Warehouse inbound lines could not be loaded.",
+    "current": "Warehouse inbound lines could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseOutboundLinesLoadFailed",
+    "en": "Warehouse outbound lines could not be loaded.",
+    "current": "Warehouse outbound lines could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseInboundSerialsLoadFailed",
+    "en": "Warehouse inbound serial list could not be loaded.",
+    "current": "Warehouse inbound serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseOutboundSerialsLoadFailed",
+    "en": "Warehouse outbound serial list could not be loaded.",
+    "current": "Warehouse outbound serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseInboundApprovalLoadFailed",
+    "en": "Warehouse inbound orders awaiting approval could not be loaded.",
+    "current": "Warehouse inbound orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.warehouseOutboundApprovalLoadFailed",
+    "en": "Warehouse outbound orders awaiting approval could not be loaded.",
+    "current": "Warehouse outbound orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.transferAssignedHeadersLoadFailed",
+    "en": "Assigned transfer list could not be loaded.",
+    "current": "Assigned transfer list could not be loaded."
+  },
+  {
+    "key": "common.errors.transferHeadersLoadFailed",
+    "en": "Transfer list could not be loaded.",
+    "current": "Transfer list could not be loaded."
+  },
+  {
+    "key": "common.errors.transferLinesLoadFailed",
+    "en": "Transfer lines could not be loaded.",
+    "current": "Transfer lines could not be loaded."
+  },
+  {
+    "key": "common.errors.transferSerialsLoadFailed",
+    "en": "Transfer serial list could not be loaded.",
+    "current": "Transfer serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.transferApprovalLoadFailed",
+    "en": "Orders awaiting approval could not be loaded.",
+    "current": "Orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.shipmentHeadersLoadFailed",
+    "en": "Shipment list could not be loaded.",
+    "current": "Shipment list could not be loaded."
+  },
+  {
+    "key": "common.errors.shipmentAssignedHeadersLoadFailed",
+    "en": "Assigned shipment list could not be loaded.",
+    "current": "Assigned shipment list could not be loaded."
+  },
+  {
+    "key": "common.errors.shipmentLinesLoadFailed",
+    "en": "Shipment lines could not be loaded.",
+    "current": "Shipment lines could not be loaded."
+  },
+  {
+    "key": "common.errors.shipmentSerialsLoadFailed",
+    "en": "Shipment serial list could not be loaded.",
+    "current": "Shipment serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.shipmentApprovalLoadFailed",
+    "en": "Shipment orders awaiting approval could not be loaded.",
+    "current": "Shipment orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.productionApprovalLoadFailed",
+    "en": "Production plans awaiting approval could not be loaded.",
+    "current": "Production plans awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.productionTransferApprovalLoadFailed",
+    "en": "Production transfer orders awaiting approval could not be loaded.",
+    "current": "Production transfer orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingAssignedIssueHeadersLoadFailed",
+    "en": "Assigned subcontracting issue list could not be loaded.",
+    "current": "Assigned subcontracting issue list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingAssignedReceiptHeadersLoadFailed",
+    "en": "Assigned subcontracting receipt list could not be loaded.",
+    "current": "Assigned subcontracting receipt list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingReceiptHeadersLoadFailed",
+    "en": "Subcontracting receipt list could not be loaded.",
+    "current": "Subcontracting receipt list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingIssueHeadersLoadFailed",
+    "en": "Subcontracting issue list could not be loaded.",
+    "current": "Subcontracting issue list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingReceiptLinesLoadFailed",
+    "en": "Subcontracting receipt lines could not be loaded.",
+    "current": "Subcontracting receipt lines could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingIssueLinesLoadFailed",
+    "en": "Subcontracting issue lines could not be loaded.",
+    "current": "Subcontracting issue lines could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingReceiptSerialsLoadFailed",
+    "en": "Subcontracting receipt serial list could not be loaded.",
+    "current": "Subcontracting receipt serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingIssueSerialsLoadFailed",
+    "en": "Subcontracting issue serial list could not be loaded.",
+    "current": "Subcontracting issue serial list could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingIssueApprovalLoadFailed",
+    "en": "Subcontracting issue orders awaiting approval could not be loaded.",
+    "current": "Subcontracting issue orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.subcontractingReceiptApprovalLoadFailed",
+    "en": "Subcontracting receipt orders awaiting approval could not be loaded.",
+    "current": "Subcontracting receipt orders awaiting approval could not be loaded."
+  },
+  {
+    "key": "common.errors.userDeleteFailed",
+    "en": "User could not be deleted.",
+    "current": "Benutzer konnte nicht gelöscht werden."
+  },
+  {
+    "key": "common.errors.loadFailed",
+    "en": "Load failed",
+    "current": "Load failed"
+  },
+  {
+    "key": "common.refresh",
+    "en": "Refresh",
+    "current": "Refresh"
+  },
+  {
+    "key": "common.noPermission",
+    "en": "Bu işlem için yetkiniz yok.",
+    "current": "Bu işlem için yetkiniz yok."
+  },
+  {
+    "key": "common.note",
+    "en": "Not",
+    "current": "Not"
+  },
+  {
+    "key": "common.saveSuccess",
+    "en": "Kayıt başarıyla kaydedildi",
+    "current": "Kayıt başarıyla kaydedildi"
+  },
+  {
+    "key": "common.deleteSuccess",
+    "en": "Kayıt silindi",
+    "current": "Kayıt silindi"
+  },
+  {
+    "key": "common.active",
+    "en": "Aktif",
+    "current": "Aktif"
+  },
+  {
+    "key": "common.passive",
+    "en": "Pasif",
+    "current": "Pasif"
+  },
+  {
+    "key": "common.create",
+    "en": "Oluştur",
+    "current": "Oluştur"
+  },
+  {
+    "key": "common.activate",
+    "en": "Activate",
+    "current": "Aktivieren"
+  },
+  {
+    "key": "common.deactivate",
+    "en": "Deactivate",
+    "current": "Deaktivieren"
+  },
+  {
+    "key": "common.updatedDate",
+    "en": "Updated Date",
+    "current": "Aktualisierungsdatum"
+  }
+]

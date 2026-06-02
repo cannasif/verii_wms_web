@@ -107,14 +107,14 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">WarehouseBalance</Badge>
-              <Badge variant="secondary">Serial Detail</Badge>
+              <Badge variant="outline">{t('warehouseBalance.serial.badgeModule')}</Badge>
+              <Badge variant="secondary">{t('warehouseBalance.serial.badgeDetail')}</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Missing translation' })}
+              {t('sidebar.erpWarehouseSerialBalance')}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Stok, seri ve raf bazli detay bakiyeyi izleyin; hangi serinin hangi rafta oldugunu hizli filtreleyin.
+              {t('warehouseBalance.serial.subtitle')}
             </p>
           </div>
           <Button variant="outline" onClick={() => void query.refetch()}>

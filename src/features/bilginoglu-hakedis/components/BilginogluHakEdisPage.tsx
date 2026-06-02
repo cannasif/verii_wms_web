@@ -401,7 +401,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                         {statusBadge(step.status, statusLabel(step.status))}
                       </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {formatQty(step.quantity)} adet / {step.sourceType ?? '-'} #{step.sourceHeaderId ?? '-'}
+                        {formatQty(step.quantity)} {t('common:common.unit', { defaultValue: 'Stk.' })} / {step.sourceType ?? '-'} #{step.sourceHeaderId ?? '-'}
                       </div>
                       {step.note ? <div className="mt-2 text-xs">{step.note}</div> : null}
                     </div>

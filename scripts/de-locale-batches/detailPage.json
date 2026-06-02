@@ -1,0 +1,17 @@
+[
+  {
+    "key": "detailPage.loadingTitle",
+    "en": "Loading",
+    "current": "Loading"
+  },
+  {
+    "key": "detailPage.errorTitle",
+    "en": "Something went wrong",
+    "current": "Something went wrong"
+  },
+  {
+    "key": "detailPage.emptyTitle",
+    "en": "No data",
+    "current": "No data"
+  }
+]

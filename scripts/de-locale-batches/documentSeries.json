@@ -1,0 +1,227 @@
+[
+  {
+    "key": "documentSeries.badge",
+    "en": "Document Series",
+    "current": null
+  },
+  {
+    "key": "documentSeries.searchPlaceholder",
+    "en": "Search by code, name, operation type, or series prefix",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.definitionCreated",
+    "en": "Document series definition created.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.definitionUpdated",
+    "en": "Document series definition updated.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.definitionDeleted",
+    "en": "Document series definition deleted.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.definitionRequiredFields",
+    "en": "Code, name, and series prefix are required.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.definitionRequired",
+    "en": "You must select a document series definition.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.resolvePending",
+    "en": "Waiting for the system to resolve the best default document series.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.resolveFallback",
+    "en": "No suitable default series was found. You can select the document series manually.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.selectorHelp",
+    "en": "For operations other than goods receipt, the document number is suggested from this series rule.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.ruleCreated",
+    "en": "Document series rule created.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.ruleUpdated",
+    "en": "Document series rule updated.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.messages.ruleDeleted",
+    "en": "Document series rule deleted.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.fields.selection",
+    "en": "Document Rule / Series",
+    "current": null
+  },
+  {
+    "key": "documentSeries.matchTypes.userPreference",
+    "en": "User preference",
+    "current": null
+  },
+  {
+    "key": "documentSeries.matchTypes.rule",
+    "en": "Document rule",
+    "current": null
+  },
+  {
+    "key": "documentSeries.matchTypes.defaultDefinition",
+    "en": "Global default",
+    "current": null
+  },
+  {
+    "key": "documentSeries.matchTypes.unknown",
+    "en": "Resolution",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.code",
+    "en": "Code",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.name",
+    "en": "Name",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.operationType",
+    "en": "Operation Type",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.documentFlow",
+    "en": "Document Flow",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.warehouse",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.seriesPrefix",
+    "en": "Series Prefix",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.currentNumber",
+    "en": "Current Number",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.eDispatch",
+    "en": "e-Dispatch",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.isDefault",
+    "en": "Default",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.isActive",
+    "en": "Active",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.companyCode",
+    "en": "Company Code",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.definition",
+    "en": "Document Series Definition",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.customer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.user",
+    "en": "User",
+    "current": null
+  },
+  {
+    "key": "documentSeries.columns.priority",
+    "en": "Priority",
+    "current": null
+  },
+  {
+    "key": "documentSeries.placeholders.warehouse",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "documentSeries.placeholders.customer",
+    "en": "Select customer",
+    "current": null
+  },
+  {
+    "key": "documentSeries.placeholders.user",
+    "en": "Select user",
+    "current": null
+  },
+  {
+    "key": "documentSeries.placeholders.definition",
+    "en": "Select document series definition",
+    "current": null
+  },
+  {
+    "key": "documentSeries.definitions.pageTitle",
+    "en": "Document Series Definitions",
+    "current": null
+  },
+  {
+    "key": "documentSeries.definitions.empty",
+    "en": "No document series definition found.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.definitions.createTitle",
+    "en": "Create Document Series Definition",
+    "current": null
+  },
+  {
+    "key": "documentSeries.definitions.editTitle",
+    "en": "Update Document Series Definition",
+    "current": null
+  },
+  {
+    "key": "documentSeries.rules.pageTitle",
+    "en": "Document Series Rules",
+    "current": null
+  },
+  {
+    "key": "documentSeries.rules.empty",
+    "en": "No document series rule found.",
+    "current": null
+  },
+  {
+    "key": "documentSeries.rules.createTitle",
+    "en": "Create Document Series Rule",
+    "current": null
+  },
+  {
+    "key": "documentSeries.rules.editTitle",
+    "en": "Update Document Series Rule",
+    "current": null
+  }
+]

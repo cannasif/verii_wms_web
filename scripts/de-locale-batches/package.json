@@ -1,0 +1,1082 @@
+[
+  {
+    "key": "package.list.title",
+    "en": "Packaging List",
+    "current": "Verpackungsliste"
+  },
+  {
+    "key": "package.list.createNew",
+    "en": "New Packaging",
+    "current": "Neue Verpackung"
+  },
+  {
+    "key": "package.list.filterWarehouse",
+    "en": "Warehouse Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.list.detailTitle",
+    "en": "Package Detail",
+    "current": "Verpackungsdetails"
+  },
+  {
+    "key": "package.list.detailDescription",
+    "en": "Package detailed information",
+    "current": "Detaillierte Verpackungsinformationen"
+  },
+  {
+    "key": "package.list.packingNo",
+    "en": "Packing No",
+    "current": "Verpackungsnummer"
+  },
+  {
+    "key": "package.list.packingDate",
+    "en": "Packing Date",
+    "current": "Verpackungsdatum"
+  },
+  {
+    "key": "package.list.warehouseCode",
+    "en": "Warehouse Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.list.sourceType",
+    "en": "Source Type",
+    "current": "Quelltyp"
+  },
+  {
+    "key": "package.list.matchedSource",
+    "en": "Matched Source",
+    "current": "Zugeordnete Quelle"
+  },
+  {
+    "key": "package.list.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "package.list.totalPackageCount",
+    "en": "Total Packages",
+    "current": "Gesamtpakete"
+  },
+  {
+    "key": "package.list.totalQuantity",
+    "en": "Total Quantity",
+    "current": "Gesamtmenge"
+  },
+  {
+    "key": "package.list.totalGrossWeight",
+    "en": "Total Gross Weight",
+    "current": "Gesamtbruttogewicht"
+  },
+  {
+    "key": "package.list.trackingNo",
+    "en": "Tracking No",
+    "current": "Sendungsnummer"
+  },
+  {
+    "key": "package.list.deleteConfirm",
+    "en": "Delete Packaging",
+    "current": "Verpackung löschen"
+  },
+  {
+    "key": "package.list.deleteConfirmMessage",
+    "en": "Are you sure you want to delete this packaging?",
+    "current": "Sind Sie sicher, dass Sie diese Verpackung löschen möchten?"
+  },
+  {
+    "key": "package.list.deleteSuccess",
+    "en": "Packaging deleted successfully",
+    "current": "Verpackung erfolgreich gelöscht"
+  },
+  {
+    "key": "package.list.deleteError",
+    "en": "An error occurred while deleting packaging",
+    "current": "Fehler beim Löschen der Verpackung"
+  },
+  {
+    "key": "package.list.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "package.wizard.step1.title",
+    "en": "1. Package Header",
+    "current": "1. Verpackungskopf"
+  },
+  {
+    "key": "package.wizard.step1.description",
+    "en": "Enter package header information",
+    "current": "Verpackungskopf-Informationen eingeben"
+  },
+  {
+    "key": "package.wizard.step2.title",
+    "en": "2. Add Package",
+    "current": "2. Paket hinzufügen"
+  },
+  {
+    "key": "package.wizard.step2.description",
+    "en": "Add packages for packaging",
+    "current": "Pakete für Verpackung hinzufügen"
+  },
+  {
+    "key": "package.wizard.step2.addPackage",
+    "en": "Add New Package",
+    "current": "Neues Paket hinzufügen"
+  },
+  {
+    "key": "package.wizard.step2.addPackageDescription",
+    "en": "Add a new package",
+    "current": "Neues Paket hinzufügen"
+  },
+  {
+    "key": "package.wizard.step2.noPackages",
+    "en": "No packages added yet",
+    "current": "Noch keine Pakete hinzugefügt"
+  },
+  {
+    "key": "package.wizard.step3.title",
+    "en": "3. Package Lines",
+    "current": "3. Paketzeilen"
+  },
+  {
+    "key": "package.wizard.step3.description",
+    "en": "Add lines to packages (Optional)",
+    "current": "Zeilen zu Paketen hinzufügen (Optional)"
+  },
+  {
+    "key": "package.wizard.step3.addLine",
+    "en": "Add New Line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.wizard.step3.addLineDescription",
+    "en": "Add a new line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.wizard.step3.noPackages",
+    "en": "You must add packages first",
+    "current": "Sie müssen zuerst Pakete hinzufügen"
+  },
+  {
+    "key": "package.wizard.step3.noPackagesMessage",
+    "en": "You must add packages first",
+    "current": "Sie müssen zuerst Pakete hinzufügen"
+  },
+  {
+    "key": "package.wizard.step3.noLines",
+    "en": "No lines added yet",
+    "current": "Noch keine Zeilen hinzugefügt"
+  },
+  {
+    "key": "package.wizard.step3.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "package.wizard.step4.headerInfo",
+    "en": "Header Information",
+    "current": "Kopf-Informationen"
+  },
+  {
+    "key": "package.wizard.step4.packages",
+    "en": "Packages",
+    "current": "Pakete"
+  },
+  {
+    "key": "package.wizard.step4.lines",
+    "en": "Lines",
+    "current": "Zeilen"
+  },
+  {
+    "key": "package.wizard.stepProgress",
+    "en": "Step {{current}}/{{total}}",
+    "current": "Schritt {{current}}/{{total}}"
+  },
+  {
+    "key": "package.wizard.previousStep",
+    "en": "Previous Step",
+    "current": "Vorheriger Schritt"
+  },
+  {
+    "key": "package.wizard.headerCreated",
+    "en": "Package header created",
+    "current": "Verpackungskopf erstellt"
+  },
+  {
+    "key": "package.wizard.packageAdded",
+    "en": "Package added",
+    "current": "Paket hinzugefügt"
+  },
+  {
+    "key": "package.wizard.packageUpdated",
+    "en": "Package updated",
+    "current": "Paket aktualisiert"
+  },
+  {
+    "key": "package.wizard.packageDeleted",
+    "en": "Package deleted",
+    "current": "Paket gelöscht"
+  },
+  {
+    "key": "package.wizard.packageError",
+    "en": "An error occurred while adding package",
+    "current": "Fehler beim Hinzufügen des Pakets"
+  },
+  {
+    "key": "package.wizard.packageDeleteError",
+    "en": "An error occurred while deleting package",
+    "current": "Fehler beim Löschen des Pakets"
+  },
+  {
+    "key": "package.wizard.atLeastOnePackage",
+    "en": "You must add at least 1 package",
+    "current": "Sie müssen mindestens 1 Paket hinzufügen"
+  },
+  {
+    "key": "package.wizard.lineAdded",
+    "en": "Line added",
+    "current": "Zeile hinzugefügt"
+  },
+  {
+    "key": "package.wizard.lineDeleted",
+    "en": "Line deleted",
+    "current": "Zeile gelöscht"
+  },
+  {
+    "key": "package.wizard.lineError",
+    "en": "An error occurred while adding line",
+    "current": "Fehler beim Hinzufügen der Zeile"
+  },
+  {
+    "key": "package.wizard.lineDeleteError",
+    "en": "An error occurred while deleting line",
+    "current": "Fehler beim Löschen der Zeile"
+  },
+  {
+    "key": "package.wizard.saved",
+    "en": "Package saved",
+    "current": "Verpackung gespeichert"
+  },
+  {
+    "key": "package.wizard.completed",
+    "en": "Package completed successfully",
+    "current": "Verpackung erfolgreich abgeschlossen"
+  },
+  {
+    "key": "package.wizard.headerRequired",
+    "en": "You must create package header first",
+    "current": "Sie müssen zuerst einen Verpackungskopf erstellen"
+  },
+  {
+    "key": "package.wizard.unknownStep",
+    "en": "Unknown step",
+    "current": "Unbekannter Schritt"
+  },
+  {
+    "key": "package.wizard.cancelMessage",
+    "en": "Are you sure you want to cancel?",
+    "current": "Sind Sie sicher, dass Sie abbrechen möchten?"
+  },
+  {
+    "key": "package.wizard.cancelMessageWithData",
+    "en": "All data will be deleted. Are you sure you want to cancel?",
+    "current": "Alle Daten werden gelöscht. Sind Sie sicher, dass Sie abbrechen möchten?"
+  },
+  {
+    "key": "package.create.success",
+    "en": "Packaging created successfully",
+    "current": "Verpackung erfolgreich erstellt"
+  },
+  {
+    "key": "package.edit.success",
+    "en": "Packaging updated successfully",
+    "current": "Verpackung erfolgreich aktualisiert"
+  },
+  {
+    "key": "package.edit.match",
+    "en": "Match",
+    "current": "Abgleichen"
+  },
+  {
+    "key": "package.edit.unmatch",
+    "en": "Unmatch",
+    "current": "Verbindung trennen"
+  },
+  {
+    "key": "package.edit.matchSuccess",
+    "en": "Matching completed successfully",
+    "current": "Abgleich erfolgreich durchgeführt"
+  },
+  {
+    "key": "package.edit.unmatchSuccess",
+    "en": "Unmatching completed successfully",
+    "current": "Verbindung erfolgreich getrennt"
+  },
+  {
+    "key": "package.detail.title",
+    "en": "Packaging Detail",
+    "current": "Verpackungsdetails"
+  },
+  {
+    "key": "package.detail.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "package.detail.packingDate",
+    "en": "Packing Date",
+    "current": "Verpackungsdatum"
+  },
+  {
+    "key": "package.detail.warehouseCode",
+    "en": "Warehouse Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.detail.totalPackageCount",
+    "en": "Total Packages",
+    "current": "Gesamtpakete"
+  },
+  {
+    "key": "package.detail.totalQuantity",
+    "en": "Total Quantity",
+    "current": "Gesamtmenge"
+  },
+  {
+    "key": "package.detail.totalGrossWeight",
+    "en": "Total Gross Weight",
+    "current": "Gesamtbruttogewicht"
+  },
+  {
+    "key": "package.detail.trackingNo",
+    "en": "Tracking No",
+    "current": "Sendungsnummer"
+  },
+  {
+    "key": "package.detail.packages",
+    "en": "Packages",
+    "current": "Pakete"
+  },
+  {
+    "key": "package.detail.lines",
+    "en": "Lines",
+    "current": "Zeilen"
+  },
+  {
+    "key": "package.detail.addPackage",
+    "en": "Add New Package",
+    "current": "Neues Paket hinzufügen"
+  },
+  {
+    "key": "package.detail.addLine",
+    "en": "Add New Line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.detail.packageNo",
+    "en": "Package No",
+    "current": "Paketnummer"
+  },
+  {
+    "key": "package.detail.packageType",
+    "en": "Package Type",
+    "current": "Pakettyp"
+  },
+  {
+    "key": "package.detail.netWeight",
+    "en": "Net Weight",
+    "current": "Nettogewicht"
+  },
+  {
+    "key": "package.detail.grossWeight",
+    "en": "Gross Weight",
+    "current": "Bruttogewicht"
+  },
+  {
+    "key": "package.detail.volume",
+    "en": "Volume",
+    "current": "Volumen"
+  },
+  {
+    "key": "package.detail.isMixed",
+    "en": "Mixed",
+    "current": "Gemischt"
+  },
+  {
+    "key": "package.detail.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.detail.yapKod",
+    "en": "Yap Code",
+    "current": "Yap-Kode"
+  },
+  {
+    "key": "package.detail.barcode",
+    "en": "Barcode",
+    "current": "Barcode"
+  },
+  {
+    "key": "package.detail.deleteConfirm",
+    "en": "Delete Packaging",
+    "current": "Verpackung löschen"
+  },
+  {
+    "key": "package.detail.deleteConfirmMessage",
+    "en": "Are you sure you want to delete this packaging?",
+    "current": "Sind Sie sicher, dass Sie diese Verpackung löschen möchten?"
+  },
+  {
+    "key": "package.detail.deleteSuccess",
+    "en": "Packaging deleted successfully",
+    "current": "Verpackung erfolgreich gelöscht"
+  },
+  {
+    "key": "package.detail.deleteError",
+    "en": "An error occurred while deleting packaging",
+    "current": "Fehler beim Löschen der Verpackung"
+  },
+  {
+    "key": "package.detail.addPackageDescription",
+    "en": "Add a new package",
+    "current": "Neues Paket hinzufügen"
+  },
+  {
+    "key": "package.detail.addLineDescription",
+    "en": "Add a new line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.detail.packageFormComingSoon",
+    "en": "Package form will be added soon",
+    "current": "Paketformular wird bald hinzugefügt"
+  },
+  {
+    "key": "package.detail.lineFormComingSoon",
+    "en": "Line form will be added soon",
+    "current": "Zeilenformular wird bald hinzugefügt"
+  },
+  {
+    "key": "package.detail.packageAddSuccess",
+    "en": "Package added successfully",
+    "current": "Paket erfolgreich hinzugefügt"
+  },
+  {
+    "key": "package.detail.packageAddError",
+    "en": "An error occurred while adding package",
+    "current": "Fehler beim Hinzufügen des Pakets"
+  },
+  {
+    "key": "package.detail.lineAddSuccess",
+    "en": "Line added successfully",
+    "current": "Zeile erfolgreich hinzugefügt"
+  },
+  {
+    "key": "package.detail.lineAddError",
+    "en": "An error occurred while adding line",
+    "current": "Fehler beim Hinzufügen der Zeile"
+  },
+  {
+    "key": "package.detail.match",
+    "en": "Match",
+    "current": "Abgleichen"
+  },
+  {
+    "key": "package.detail.unmatch",
+    "en": "Unmatch",
+    "current": "Verbindung trennen"
+  },
+  {
+    "key": "package.detail.matchSuccess",
+    "en": "Matching completed successfully",
+    "current": "Abgleich erfolgreich durchgeführt"
+  },
+  {
+    "key": "package.detail.unmatchSuccess",
+    "en": "Unmatching completed successfully",
+    "current": "Verbindung erfolgreich getrennt"
+  },
+  {
+    "key": "package.detail.basicInfo",
+    "en": "Basic Information",
+    "current": "Grundinformationen"
+  },
+  {
+    "key": "package.detail.totalVolume",
+    "en": "Total Volume",
+    "current": "Gesamtvolumen"
+  },
+  {
+    "key": "package.detail.shippingInfo",
+    "en": "Shipping Information",
+    "current": "Versandinformationen"
+  },
+  {
+    "key": "package.detail.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "package.detail.yapAcik",
+    "en": "Structure Description",
+    "current": "Strukturbeschreibung"
+  },
+  {
+    "key": "package.detail.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "package.detail.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "package.detail.customerName",
+    "en": "Customer Name",
+    "current": "Kundenname"
+  },
+  {
+    "key": "package.detail.viewDetails",
+    "en": "Details",
+    "current": "Details"
+  },
+  {
+    "key": "package.detail.add",
+    "en": "Add",
+    "current": "Hinzufügen"
+  },
+  {
+    "key": "package.detail.totalNetWeight",
+    "en": "Total Net Weight",
+    "current": "Gesamtnettogewicht"
+  },
+  {
+    "key": "package.packageDetail.title",
+    "en": "Package Detail",
+    "current": "Paketdetails"
+  },
+  {
+    "key": "package.packageDetail.backToHeader",
+    "en": "Back to Packaging",
+    "current": "Zurück zur Verpackung"
+  },
+  {
+    "key": "package.packageDetail.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "package.packageDetail.packageType",
+    "en": "Package Type",
+    "current": "Pakettyp"
+  },
+  {
+    "key": "package.packageDetail.barcode",
+    "en": "Barcode",
+    "current": "Barcode"
+  },
+  {
+    "key": "package.packageDetail.width",
+    "en": "Width",
+    "current": "Breite"
+  },
+  {
+    "key": "package.packageDetail.height",
+    "en": "Height",
+    "current": "Höhe"
+  },
+  {
+    "key": "package.packageDetail.volume",
+    "en": "Volume",
+    "current": "Volumen"
+  },
+  {
+    "key": "package.packageDetail.netWeight",
+    "en": "Net Weight",
+    "current": "Nettogewicht"
+  },
+  {
+    "key": "package.packageDetail.grossWeight",
+    "en": "Gross Weight",
+    "current": "Bruttogewicht"
+  },
+  {
+    "key": "package.packageDetail.isMixed",
+    "en": "Mixed",
+    "current": "Gemischt"
+  },
+  {
+    "key": "package.packageDetail.addLine",
+    "en": "Add New Line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.packageDetail.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.packageDetail.yapKod",
+    "en": "Yap Code",
+    "current": "Yap-Kode"
+  },
+  {
+    "key": "package.packageDetail.deleteConfirm",
+    "en": "Delete Package",
+    "current": "Paket löschen"
+  },
+  {
+    "key": "package.packageDetail.deleteConfirmMessage",
+    "en": "Are you sure you want to delete this package?",
+    "current": "Sind Sie sicher, dass Sie dieses Paket löschen möchten?"
+  },
+  {
+    "key": "package.packageDetail.deleteSuccess",
+    "en": "Package deleted successfully",
+    "current": "Paket erfolgreich gelöscht"
+  },
+  {
+    "key": "package.packageDetail.deleteError",
+    "en": "An error occurred while deleting package",
+    "current": "Fehler beim Löschen des Pakets"
+  },
+  {
+    "key": "package.packageDetail.addLineDescription",
+    "en": "Add a new line",
+    "current": "Neue Zeile hinzufügen"
+  },
+  {
+    "key": "package.packageDetail.lineFormComingSoon",
+    "en": "Line form will be added soon",
+    "current": "Zeilenformular wird bald hinzugefügt"
+  },
+  {
+    "key": "package.packageDetail.lineAddSuccess",
+    "en": "Line added successfully",
+    "current": "Zeile erfolgreich hinzugefügt"
+  },
+  {
+    "key": "package.packageDetail.lineAddError",
+    "en": "An error occurred while adding line",
+    "current": "Fehler beim Hinzufügen der Zeile"
+  },
+  {
+    "key": "package.packageDetail.lineDeleteSuccess",
+    "en": "Line deleted successfully",
+    "current": "Zeile erfolgreich gelöscht"
+  },
+  {
+    "key": "package.packageDetail.lineDeleteError",
+    "en": "An error occurred while deleting line",
+    "current": "Fehler beim Löschen der Zeile"
+  },
+  {
+    "key": "package.packageDetail.cameraError",
+    "en": "Camera could not be opened",
+    "current": "Kamera konnte nicht geöffnet werden"
+  },
+  {
+    "key": "package.packageDetail.invalidQuantity",
+    "en": "Invalid quantity",
+    "current": "Ungültige Menge"
+  },
+  {
+    "key": "package.packageDetail.dimensions",
+    "en": "Dimensions",
+    "current": "Abmessungen"
+  },
+  {
+    "key": "package.packageDetail.stockName",
+    "en": "Stock Name",
+    "current": "Lagerbestandsname"
+  },
+  {
+    "key": "package.packageDetail.yapAcik",
+    "en": "Structure Description",
+    "current": "Strukturbeschreibung"
+  },
+  {
+    "key": "package.packageDetail.add",
+    "en": "Add",
+    "current": "Hinzufügen"
+  },
+  {
+    "key": "package.form.packingNo",
+    "en": "Packing No",
+    "current": "Verpackungs-Nr."
+  },
+  {
+    "key": "package.form.packingDate",
+    "en": "Packing Date",
+    "current": "Verpackungsdatum"
+  },
+  {
+    "key": "package.form.warehouseCode",
+    "en": "Warehouse Code",
+    "current": "Lagerkode"
+  },
+  {
+    "key": "package.form.status",
+    "en": "Status",
+    "current": "Status"
+  },
+  {
+    "key": "package.form.trackingNo",
+    "en": "Tracking No",
+    "current": "Sendungsverfolgung"
+  },
+  {
+    "key": "package.form.carrierServiceType",
+    "en": "Carrier Service Type",
+    "current": "Spediteurservice"
+  },
+  {
+    "key": "package.form.packageNo",
+    "en": "Package No",
+    "current": "Paket-Nr."
+  },
+  {
+    "key": "package.form.packageType",
+    "en": "Package Type",
+    "current": "Pakettyp"
+  },
+  {
+    "key": "package.form.dimensions",
+    "en": "Dimensions",
+    "current": "Abmessungen"
+  },
+  {
+    "key": "package.form.width",
+    "en": "Width",
+    "current": "Breite"
+  },
+  {
+    "key": "package.form.height",
+    "en": "Height",
+    "current": "Höhe"
+  },
+  {
+    "key": "package.form.weights",
+    "en": "Weight Information",
+    "current": "Gewichtsinformationen"
+  },
+  {
+    "key": "package.form.netWeight",
+    "en": "Net Weight",
+    "current": "Nettogewicht"
+  },
+  {
+    "key": "package.form.tareWeight",
+    "en": "Tare Weight",
+    "current": "Taragewicht"
+  },
+  {
+    "key": "package.form.grossWeight",
+    "en": "Gross Weight",
+    "current": "Bruttogewicht"
+  },
+  {
+    "key": "package.form.volume",
+    "en": "Volume",
+    "current": "Volumen"
+  },
+  {
+    "key": "package.form.package",
+    "en": "Package",
+    "current": "Paket"
+  },
+  {
+    "key": "package.form.yapKod",
+    "en": "Structure Code",
+    "current": "Strukturcode"
+  },
+  {
+    "key": "package.form.yapAcik",
+    "en": "Structure Description",
+    "current": "Strukturbeschreibung"
+  },
+  {
+    "key": "package.form.sourceType",
+    "en": "Source Type",
+    "current": "Quelltyp"
+  },
+  {
+    "key": "package.form.sourceHeaderId",
+    "en": "Header to Match",
+    "current": "Zuzuordnender Kopf"
+  },
+  {
+    "key": "package.form.noAvailableHeaders",
+    "en": "No headers to match found",
+    "current": "Keine Köpfe zum Zuordnen gefunden"
+  },
+  {
+    "key": "package.form.carrierId",
+    "en": "Carrier",
+    "current": "Spediteur"
+  },
+  {
+    "key": "package.form.customerAddress",
+    "en": "Customer Address",
+    "current": "Kundenadresse"
+  },
+  {
+    "key": "package.form.barcode",
+    "en": "Barcode",
+    "current": "Barcode"
+  },
+  {
+    "key": "package.form.stockCode",
+    "en": "Stock Code",
+    "current": "Lagerbestandscode"
+  },
+  {
+    "key": "package.form.sourceRouteId",
+    "en": "Source Route ID",
+    "current": "Quellrouten-ID"
+  },
+  {
+    "key": "package.status.packing",
+    "en": "Packing",
+    "current": "Verpackung"
+  },
+  {
+    "key": "package.status.packed",
+    "en": "Packed",
+    "current": "Verpackt"
+  },
+  {
+    "key": "package.status.shipped",
+    "en": "Shipped",
+    "current": "Versandt"
+  },
+  {
+    "key": "package.sourceType.wt",
+    "en": "Warehouse Transfer",
+    "current": "Lagerübertragung"
+  },
+  {
+    "key": "package.sourceType.pt",
+    "en": "Production Transfer",
+    "current": "Produktionsübertragung"
+  },
+  {
+    "key": "package.sourceType.sit",
+    "en": "Subcontracting Issue",
+    "current": "Fremdarbeitsausgabe"
+  },
+  {
+    "key": "package.sourceType.srt",
+    "en": "Subcontracting Receipt",
+    "current": "Fremdarbeitseingang"
+  },
+  {
+    "key": "package.sourceType.wi",
+    "en": "Warehouse Inbound",
+    "current": "Lagerzugang"
+  },
+  {
+    "key": "package.sourceType.wo",
+    "en": "Warehouse Outbound",
+    "current": "Lagerabgang"
+  },
+  {
+    "key": "package.sourceType.WT",
+    "en": "Warehouse Transfer",
+    "current": "Lagerübertragung"
+  },
+  {
+    "key": "package.sourceType.PT",
+    "en": "Production Transfer",
+    "current": "Produktionsübertragung"
+  },
+  {
+    "key": "package.sourceType.SIT",
+    "en": "Subcontracting Issue Transfer",
+    "current": "Fremdarbeitsausgabe"
+  },
+  {
+    "key": "package.sourceType.SRT",
+    "en": "Subcontracting Receipt Transfer",
+    "current": "Fremdarbeitseingang"
+  },
+  {
+    "key": "package.sourceType.WI",
+    "en": "Warehouse Inbound",
+    "current": "Lagerzugang"
+  },
+  {
+    "key": "package.sourceType.WO",
+    "en": "Warehouse Outbound",
+    "current": "Lagerabgang"
+  },
+  {
+    "key": "package.packageStatus.draft",
+    "en": "Draft",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.open",
+    "en": "Open",
+    "current": "Offen"
+  },
+  {
+    "key": "package.packageStatus.packing",
+    "en": "Packing",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.packed",
+    "en": "Packed",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.closed",
+    "en": "Closed",
+    "current": "Geschlossen"
+  },
+  {
+    "key": "package.packageStatus.released",
+    "en": "Released",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.staged",
+    "en": "Staged",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.transferred",
+    "en": "Transferred",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.shipped",
+    "en": "Shipped",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.cancelled",
+    "en": "Cancelled",
+    "current": null
+  },
+  {
+    "key": "package.packageStatus.completed",
+    "en": "Completed",
+    "current": null
+  },
+  {
+    "key": "package.packageType.box",
+    "en": "Box",
+    "current": "Kiste"
+  },
+  {
+    "key": "package.packageType.pallet",
+    "en": "Pallet",
+    "current": "Palette"
+  },
+  {
+    "key": "package.packageType.bag",
+    "en": "Bag",
+    "current": "Tasche"
+  },
+  {
+    "key": "package.packageType.custom",
+    "en": "Custom",
+    "current": "Benutzerdefiniert"
+  },
+  {
+    "key": "package.cargoCompany.YurtiçiKargo",
+    "en": "Yurtiçi Kargo",
+    "current": "Yurtiçi Kargo"
+  },
+  {
+    "key": "package.cargoCompany.ArasKargo",
+    "en": "Aras Kargo",
+    "current": "Aras Kargo"
+  },
+  {
+    "key": "package.cargoCompany.MNGKargo",
+    "en": "MNG Kargo",
+    "current": "MNG Kargo"
+  },
+  {
+    "key": "package.cargoCompany.PTTKargo",
+    "en": "PTT Kargo",
+    "current": "PTT Kargo"
+  },
+  {
+    "key": "package.cargoCompany.SüratKargo",
+    "en": "Sürat Kargo",
+    "current": "Sürat Kargo"
+  },
+  {
+    "key": "package.cargoCompany.UPS",
+    "en": "UPS",
+    "current": "UPS"
+  },
+  {
+    "key": "package.cargoCompany.DHL",
+    "en": "DHL",
+    "current": "DHL"
+  },
+  {
+    "key": "package.cargoCompany.FedEx",
+    "en": "FedEx",
+    "current": "FedEx"
+  },
+  {
+    "key": "package.cargoCompany.TNT",
+    "en": "TNT",
+    "current": "TNT"
+  },
+  {
+    "key": "package.cargoCompany.HorozLojistik",
+    "en": "Horoz Logistics",
+    "current": "Horoz Logistik"
+  },
+  {
+    "key": "package.cargoCompany.CEVA",
+    "en": "CEVA",
+    "current": "CEVA"
+  },
+  {
+    "key": "package.cargoCompany.KargoTurk",
+    "en": "Kargo Türk",
+    "current": "Kargo Türk"
+  },
+  {
+    "key": "package.cargoCompany.HepsiJET",
+    "en": "HepsiJET",
+    "current": "HepsiJET"
+  },
+  {
+    "key": "package.cargoCompany.TrendyolExpress",
+    "en": "Trendyol Express",
+    "current": "Trendyol Express"
+  },
+  {
+    "key": "package.cargoCompany.AmazonLogistics",
+    "en": "Amazon Logistics",
+    "current": "Amazon Logistics"
+  },
+  {
+    "key": "package.cargoCompany.Scotty",
+    "en": "Scotty",
+    "current": "Scotty"
+  },
+  {
+    "key": "package.cargoCompany.KolayGelsin",
+    "en": "Kolay Gelsin",
+    "current": "Kolay Gelsin"
+  },
+  {
+    "key": "package.cargoCompany.BirGundeKargo",
+    "en": "Bir Günde Kargo",
+    "current": "Bir Günde Kargo"
+  }
+]

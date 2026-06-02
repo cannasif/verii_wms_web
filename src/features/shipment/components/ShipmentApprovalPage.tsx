@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Check, Eye, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Eye, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -29,22 +29,43 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'completionDate', type: 'date', labelKey: 'shipment.approval.completionDate' },
 ];
 
+function mapSortBy(value: ColumnKey): string {
+  switch (value) {
+    case 'id': return 'Id';
+    case 'documentNo': return 'DocumentNo';
+    case 'documentDate': return 'DocumentDate';
+    case 'customerCode': return 'CustomerCode';
+    case 'customerName': return 'CustomerName';
+    case 'sourceWarehouse': return 'SourceWarehouse';
+    case 'targetWarehouse': return 'TargetWarehouse';
+    case 'completionDate': return 'CompletionDate';
+    default: return 'Id';
+  }
+}
+
 export function ShipmentApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveShipment();
-  const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'shipment-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
+
+  const pagedGrid = usePagedDataGrid<ColumnKey>({
+    pageKey: 'shipment-approval-list',
+    defaultSortBy: 'id',
+    defaultSortDirection: 'desc',
+    mapSortBy,
+  });
+
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'id', label: t('shipment.approval.id'), sortable: false },
-    { key: 'documentNo', label: t('shipment.approval.documentNo'), sortable: false },
-    { key: 'documentDate', label: t('shipment.approval.documentDate'), sortable: false },
-    { key: 'customerCode', label: t('shipment.approval.customerCode'), sortable: false },
-    { key: 'customerName', label: t('shipment.approval.customerName'), sortable: false },
-    { key: 'sourceWarehouse', label: t('shipment.approval.sourceWarehouse'), sortable: false },
-    { key: 'targetWarehouse', label: t('shipment.approval.targetWarehouse'), sortable: false },
-    { key: 'completionDate', label: t('shipment.approval.completionDate'), sortable: false },
+    { key: 'id', label: t('shipment.approval.id') },
+    { key: 'documentNo', label: t('shipment.approval.documentNo') },
+    { key: 'documentDate', label: t('shipment.approval.documentDate') },
+    { key: 'customerCode', label: t('shipment.approval.customerCode') },
+    { key: 'customerName', label: t('shipment.approval.customerName') },
+    { key: 'sourceWarehouse', label: t('shipment.approval.sourceWarehouse') },
+    { key: 'targetWarehouse', label: t('shipment.approval.targetWarehouse') },
+    { key: 'completionDate', label: t('shipment.approval.completionDate') },
     { key: 'actions', label: t('shipment.approval.actions'), sortable: false },
   ], [t]);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey: 'shipment-approval-list', columns: columns.map(({ key, label }) => ({ key, label })), idColumnKey: 'id' });
@@ -64,6 +85,14 @@ export function ShipmentApprovalPage(): ReactElement {
     try { await approveMutation.mutateAsync({ id, approved }); toast.success(approved ? t('shipment.approval.approveSuccess') : t('shipment.approval.rejectSuccess')); }
     catch (err) { toast.error(err instanceof Error ? err.message : approved ? t('shipment.approval.approveError') : t('shipment.approval.rejectError')); }
   };
+
+  const renderSortIcon = (columnKey: ColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
+
   return (
     <div className="crm-page space-y-6">
       <Card><CardHeader><PageActionBar title={t('shipment.approval.title')} description={t('shipment.approval.searchPlaceholder')} /></CardHeader><CardContent>
@@ -73,6 +102,12 @@ export function ShipmentApprovalPage(): ReactElement {
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, key) => ({ id: row.id, documentNo: <span className="font-medium">{row.documentNo || '-'}</span>, documentDate: formatDate(row.documentDate), customerCode: row.customerCode || '-', customerName: row.customerName || '-', sourceWarehouse: row.sourceWarehouse || '-', targetWarehouse: row.targetWarehouse || '-', completionDate: formatDateTime(row.completionDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
           isLoading={isLoading}
           isError={Boolean(error)}
           errorText={t('shipment.approval.error')}

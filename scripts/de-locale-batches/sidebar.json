@@ -1,0 +1,727 @@
+[
+  {
+    "key": "sidebar.dashboard",
+    "en": "Dashboard",
+    "current": "Dashboard"
+  },
+  {
+    "key": "sidebar.goodsReceiptProcess",
+    "en": "Goods Receipt Direct Entry",
+    "current": "Goods Receipt Direct Entry"
+  },
+  {
+    "key": "sidebar.goodsReceiptList",
+    "en": "Goods Receipt List",
+    "current": "Wareneingangsliste"
+  },
+  {
+    "key": "sidebar.goodsReceiptApproval",
+    "en": "Goods Receipt Orders Awaiting Approval",
+    "current": "Goods Receipt Orders Awaiting Approval"
+  },
+  {
+    "key": "sidebar.inventory",
+    "en": "Inventory",
+    "current": "Inventar"
+  },
+  {
+    "key": "sidebar.shipmentCreate",
+    "en": "Create Shipment Order",
+    "current": "Versandauftrag"
+  },
+  {
+    "key": "sidebar.shipmentList",
+    "en": "Shipment Order List",
+    "current": "Versandauftragsliste"
+  },
+  {
+    "key": "sidebar.transfer",
+    "en": "Transfer",
+    "current": "Transfer"
+  },
+  {
+    "key": "sidebar.transferProcess",
+    "en": "Transfer Direct Entry",
+    "current": "Transfer Direct Entry"
+  },
+  {
+    "key": "sidebar.transferList",
+    "en": "Transfer Order List",
+    "current": "Transferauftragsliste"
+  },
+  {
+    "key": "sidebar.bilginogluHakEdis",
+    "en": "Bilginoglu Entitlement",
+    "current": null
+  },
+  {
+    "key": "sidebar.parametersGr",
+    "en": "Goods Receipt Parameters",
+    "current": "Wareneingangsparameter"
+  },
+  {
+    "key": "sidebar.parametersWt",
+    "en": "Warehouse Transfer Parameters",
+    "current": "Lagerübertragungsparameter"
+  },
+  {
+    "key": "sidebar.parametersWo",
+    "en": "Warehouse Outbound Parameters",
+    "current": "Lagerausgangsparameter"
+  },
+  {
+    "key": "sidebar.parametersWi",
+    "en": "Warehouse Inbound Parameters",
+    "current": "Lagereingangsparameter"
+  },
+  {
+    "key": "sidebar.parametersSh",
+    "en": "Shipment Parameters",
+    "current": "Versandparameter"
+  },
+  {
+    "key": "sidebar.parametersSrt",
+    "en": "Subcontracting Receipt Transfer Parameters",
+    "current": "Subunternehmer-Eingangsparameter"
+  },
+  {
+    "key": "sidebar.parametersSit",
+    "en": "Subcontracting Issue Transfer Parameters",
+    "current": "Subunternehmer-Ausgangsparameter"
+  },
+  {
+    "key": "sidebar.parametersPt",
+    "en": "Production Transfer Parameters",
+    "current": "Produktionsübertragungsparameter"
+  },
+  {
+    "key": "sidebar.parametersPr",
+    "en": "Production Parameters",
+    "current": "Produktionsparameter"
+  },
+  {
+    "key": "sidebar.parametersIc",
+    "en": "Inventory Count Parameters",
+    "current": "Inventurparameter"
+  },
+  {
+    "key": "sidebar.parametersP",
+    "en": "Package Parameters",
+    "current": "Paketparameter"
+  },
+  {
+    "key": "sidebar.package",
+    "en": "Packaging",
+    "current": "Verpackung"
+  },
+  {
+    "key": "sidebar.packageList",
+    "en": "Packaging List",
+    "current": "Verpackungsliste"
+  },
+  {
+    "key": "sidebar.packageCreate",
+    "en": "Create Packaging Order",
+    "current": "Neue Verpackung"
+  },
+  {
+    "key": "sidebar.accessControl",
+    "en": "Access Control",
+    "current": "Zugriffskontrolle"
+  },
+  {
+    "key": "sidebar.userManagement",
+    "en": "User Management",
+    "current": "Benutzerverwaltung"
+  },
+  {
+    "key": "sidebar.permissionDefinitions",
+    "en": "Permission Definitions",
+    "current": "Berechtigungsdefinitionen"
+  },
+  {
+    "key": "sidebar.permissionGroups",
+    "en": "Permission Groups",
+    "current": "Berechtigungsgruppen"
+  },
+  {
+    "key": "sidebar.hangfireMonitoring",
+    "en": "Hangfire Monitoring",
+    "current": "Hangfire Uberwachung"
+  },
+  {
+    "key": "sidebar.traceExplorer",
+    "en": "Trace Explorer",
+    "current": null
+  },
+  {
+    "key": "sidebar.wmsScopePolicies",
+    "en": "WMS Scope Policies",
+    "current": null
+  },
+  {
+    "key": "sidebar.wmsScopeAssignments",
+    "en": "WMS Scope Assignments",
+    "current": null
+  },
+  {
+    "key": "sidebar.erp",
+    "en": "ERP",
+    "current": "ERP"
+  },
+  {
+    "key": "sidebar.erpCustomers",
+    "en": "Customers",
+    "current": "Cariler"
+  },
+  {
+    "key": "sidebar.erpStocks",
+    "en": "Stocks",
+    "current": "Stoklar"
+  },
+  {
+    "key": "sidebar.erpWarehouses",
+    "en": "Warehouses",
+    "current": "Depolar"
+  },
+  {
+    "key": "sidebar.erpYapKodlar",
+    "en": "YapKodlar",
+    "current": "YapKodlar"
+  },
+  {
+    "key": "sidebar.erpBarcodeDefinitions",
+    "en": "Barcode Definitions",
+    "current": "Barkod Tanımları"
+  },
+  {
+    "key": "sidebar.subcontracting",
+    "en": "Subcontracting",
+    "current": "Fremdarbeit"
+  },
+  {
+    "key": "sidebar.subcontractingIssueCreate",
+    "en": "Create Subcontracting Issue Order",
+    "current": "Fremdarbeitsausgangsauftrag"
+  },
+  {
+    "key": "sidebar.subcontractingIssueProcess",
+    "en": "Subcontracting Issue Direct Entry",
+    "current": "Subcontracting Issue Direct Entry"
+  },
+  {
+    "key": "sidebar.subcontractingIssueList",
+    "en": "Subcontracting Issue List",
+    "current": "Fremdarbeitsausgangsliste"
+  },
+  {
+    "key": "sidebar.subcontractingReceiptCreate",
+    "en": "Create Subcontracting Receipt Order",
+    "current": "Fremdarbeitseingangsauftrag"
+  },
+  {
+    "key": "sidebar.subcontractingReceiptProcess",
+    "en": "Subcontracting Receipt Direct Entry",
+    "current": "Subcontracting Receipt Direct Entry"
+  },
+  {
+    "key": "sidebar.subcontractingReceiptList",
+    "en": "Subcontracting Receipt List",
+    "current": "Fremdarbeitseingangsliste"
+  },
+  {
+    "key": "sidebar.warehouse",
+    "en": "Warehouse Operations",
+    "current": "Lagerverwaltung"
+  },
+  {
+    "key": "sidebar.warehouseInboundCreate",
+    "en": "Create Warehouse Inbound Order",
+    "current": "Lagereingangsauftrag"
+  },
+  {
+    "key": "sidebar.warehouseInboundProcess",
+    "en": "Warehouse Inbound Direct Entry",
+    "current": "Warehouse Inbound Direct Entry"
+  },
+  {
+    "key": "sidebar.warehouseInboundList",
+    "en": "Warehouse Inbound List",
+    "current": "Lagereingangsliste"
+  },
+  {
+    "key": "sidebar.warehouseOutboundCreate",
+    "en": "Create Warehouse Outbound Order",
+    "current": "Lagerausgangsauftrag"
+  },
+  {
+    "key": "sidebar.warehouseOutboundList",
+    "en": "Warehouse Outbound List",
+    "current": "Lagerausgangsliste"
+  },
+  {
+    "key": "sidebar.warehouseOutboundProcess",
+    "en": "Warehouse Outbound Direct Entry",
+    "current": "Warehouse Outbound Direct Entry"
+  },
+  {
+    "key": "sidebar.production",
+    "en": "Production",
+    "current": "Production"
+  },
+  {
+    "key": "sidebar.productionCreate",
+    "en": "Create Production Order",
+    "current": "Create Production Order"
+  },
+  {
+    "key": "sidebar.productionList",
+    "en": "Production Plans",
+    "current": "Production Plans"
+  },
+  {
+    "key": "sidebar.productionPlanningCreate",
+    "en": "Planning / Create Production Plan",
+    "current": "Planning / Create Production Plan"
+  },
+  {
+    "key": "sidebar.productionPlanningAssigned",
+    "en": "Planning / Assigned Production Orders",
+    "current": "Planning / Assigned Production Orders"
+  },
+  {
+    "key": "sidebar.productionPlanningList",
+    "en": "Planning / Production Plans",
+    "current": "Planning / Production Plans"
+  },
+  {
+    "key": "sidebar.productionTransfer",
+    "en": "Production Transfer",
+    "current": "Production Transfer"
+  },
+  {
+    "key": "sidebar.productionTransferCreate",
+    "en": "Create Production Transfer Order",
+    "current": "Create Production Transfer Order"
+  },
+  {
+    "key": "sidebar.productionTransferList",
+    "en": "Production Transfers",
+    "current": "Production Transfers"
+  },
+  {
+    "key": "sidebar.productionTransferCreateGrouped",
+    "en": "Transfer / Create Production Transfer",
+    "current": "Transfer / Create Production Transfer"
+  },
+  {
+    "key": "sidebar.productionTransferListGrouped",
+    "en": "Transfer / Production Transfers",
+    "current": "Transfer / Production Transfers"
+  },
+  {
+    "key": "sidebar.productionPlanningGroup",
+    "en": "Planning",
+    "current": "Planning"
+  },
+  {
+    "key": "sidebar.productionTransferGroup",
+    "en": "Transfer",
+    "current": "Transfer"
+  },
+  {
+    "key": "sidebar.productionAssigned",
+    "en": "Assigned Production Orders",
+    "current": "Assigned Production Orders"
+  },
+  {
+    "key": "sidebar.productionApproval",
+    "en": "Production Plans Awaiting Approval",
+    "current": "Production Plans Awaiting Approval"
+  },
+  {
+    "key": "sidebar.productionTransferApproval",
+    "en": "Production Transfer Orders Awaiting Approval",
+    "current": "Production Transfer Orders Awaiting Approval"
+  },
+  {
+    "key": "sidebar.shipmentProcess",
+    "en": "Shipment Direct Entry",
+    "current": "Shipment Direct Entry"
+  },
+  {
+    "key": "sidebar.operationsGroup",
+    "en": "Operations",
+    "current": "Operations"
+  },
+  {
+    "key": "sidebar.inboundOperationsGroup",
+    "en": "Inbound Operations",
+    "current": "Inbound Operations"
+  },
+  {
+    "key": "sidebar.transferOperationsGroup",
+    "en": "Transfer Operations",
+    "current": "Transfer Operations"
+  },
+  {
+    "key": "sidebar.outboundOperationsGroup",
+    "en": "Outbound Operations",
+    "current": "Outbound Operations"
+  },
+  {
+    "key": "sidebar.productionOperationsGroup",
+    "en": "Production",
+    "current": "Production"
+  },
+  {
+    "key": "sidebar.inventoryGroup",
+    "en": "Warehouse and Visibility",
+    "current": "Warehouse and Visibility"
+  },
+  {
+    "key": "sidebar.analyticsGroup",
+    "en": "Reporting",
+    "current": "Reporting"
+  },
+  {
+    "key": "sidebar.masterDataGroup",
+    "en": "Master Data and Definitions",
+    "current": "Master Data and Definitions"
+  },
+  {
+    "key": "sidebar.systemGroup",
+    "en": "System and Access",
+    "current": "System and Access"
+  },
+  {
+    "key": "sidebar.filterLabel",
+    "en": "Filter",
+    "current": "Filter"
+  },
+  {
+    "key": "sidebar.inventoryCount",
+    "en": "Count",
+    "current": "Count"
+  },
+  {
+    "key": "sidebar.inventoryCountCreate",
+    "en": "Create Count Order",
+    "current": "Create Count Order"
+  },
+  {
+    "key": "sidebar.inventoryCountAssigned",
+    "en": "Assigned Count Orders",
+    "current": "Assigned Count Orders"
+  },
+  {
+    "key": "sidebar.inventoryCountProcess",
+    "en": "Count Direct Entry",
+    "current": "Count Direct Entry"
+  },
+  {
+    "key": "sidebar.inventoryCountList",
+    "en": "Count Orders",
+    "current": "Count Orders"
+  },
+  {
+    "key": "sidebar.erpDocumentSeries",
+    "en": "Document Series Management",
+    "current": null
+  },
+  {
+    "key": "sidebar.erpDocumentSeriesDefinitions",
+    "en": "Document Series Definitions",
+    "current": null
+  },
+  {
+    "key": "sidebar.erpDocumentSeriesRules",
+    "en": "Document Series Rules",
+    "current": null
+  },
+  {
+    "key": "sidebar.erpBarcodeDesigner",
+    "en": "Barcode Designer",
+    "current": "Barcode Designer"
+  },
+  {
+    "key": "sidebar.erpBarcodeDesignerCreate",
+    "en": "Create Barcode Design",
+    "current": "Create Barcode Design"
+  },
+  {
+    "key": "sidebar.erpBarcodeDesignerEdit",
+    "en": "Edit Barcode Design",
+    "current": "Edit Barcode Design"
+  },
+  {
+    "key": "sidebar.erpBarcodePrint",
+    "en": "Print Label",
+    "current": "Print Label"
+  },
+  {
+    "key": "sidebar.printerManagement",
+    "en": "Printer Management",
+    "current": "Printer Management"
+  },
+  {
+    "key": "sidebar.serviceAllocation",
+    "en": "Service Allocation",
+    "current": "Service Allocation"
+  },
+  {
+    "key": "sidebar.kkd",
+    "en": "PPE",
+    "current": "PPE"
+  },
+  {
+    "key": "sidebar.kkdOverview",
+    "en": "PPE Operations Hub",
+    "current": "PPE Operations Hub"
+  },
+  {
+    "key": "sidebar.kkdInitialOrder",
+    "en": "PPE Initial Order",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControl",
+    "en": "Quality Control",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlSettings",
+    "en": "Quality Parameters",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlRules",
+    "en": "Quality Rule Definitions",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlRulesList",
+    "en": "Quality Rule List",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlInspections",
+    "en": "Quality Inspection Records",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlInspectionsList",
+    "en": "Quality Inspection List",
+    "current": null
+  },
+  {
+    "key": "sidebar.qualityControlQuarantine",
+    "en": "Quarantine Queue",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabul",
+    "en": "Steel Plate Acceptance",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulVehicleCheckIn",
+    "en": "Vehicle Entry Step",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulVehicleCheckInList",
+    "en": "Vehicle Entry Records",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulOcrMatch",
+    "en": "OCR Customer Stock Match",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulOcrMatchList",
+    "en": "OCR Match Records",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulImport",
+    "en": "Excel Import",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulInspection",
+    "en": "Yard Acceptance Control",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulList",
+    "en": "Expected Plate List",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulPlacement",
+    "en": "Yard / Bin Placement",
+    "current": null
+  },
+  {
+    "key": "sidebar.sacMalKabulReceipt",
+    "en": "Create Receipt",
+    "current": null
+  },
+  {
+    "key": "sidebar.kkdOperationsGroup",
+    "en": "Operations",
+    "current": "Operations"
+  },
+  {
+    "key": "sidebar.kkdMonitoringGroup",
+    "en": "Check and Monitoring",
+    "current": "Check and Monitoring"
+  },
+  {
+    "key": "sidebar.kkdReportsGroup",
+    "en": "Reports",
+    "current": "Reports"
+  },
+  {
+    "key": "sidebar.kkdOrganizationGroup",
+    "en": "Organization Definitions",
+    "current": "Organization Definitions"
+  },
+  {
+    "key": "sidebar.kkdRulesGroup",
+    "en": "Entitlement and Exception Rules",
+    "current": "Entitlement and Exception Rules"
+  },
+  {
+    "key": "sidebar.kkdDistribution",
+    "en": "PPE Distribution",
+    "current": "PPE Distribution"
+  },
+  {
+    "key": "sidebar.kkdDistributionList",
+    "en": "PPE Distribution Documents",
+    "current": "PPE Distribution Documents"
+  },
+  {
+    "key": "sidebar.kkdRemainingEntitlements",
+    "en": "PPE Remaining Entitlements",
+    "current": "PPE Remaining Entitlements"
+  },
+  {
+    "key": "sidebar.kkdEntitlementCheck",
+    "en": "PPE Eligibility Check",
+    "current": "PPE Eligibility Check"
+  },
+  {
+    "key": "sidebar.kkdValidationLogs",
+    "en": "PPE Validation and Warning Logs",
+    "current": "PPE Validation and Warning Logs"
+  },
+  {
+    "key": "sidebar.kkdDepartmentReport",
+    "en": "PPE Department Report",
+    "current": "PPE Department Report"
+  },
+  {
+    "key": "sidebar.kkdRoleReport",
+    "en": "PPE Role Report",
+    "current": "PPE Role Report"
+  },
+  {
+    "key": "sidebar.kkdGroupReport",
+    "en": "PPE Group Report",
+    "current": "PPE Group Report"
+  },
+  {
+    "key": "sidebar.kkdEmployees",
+    "en": "PPE Employee Cards",
+    "current": "PPE Employee Cards"
+  },
+  {
+    "key": "sidebar.kkdDepartments",
+    "en": "PPE Department Definitions",
+    "current": "PPE Department Definitions"
+  },
+  {
+    "key": "sidebar.kkdRoles",
+    "en": "PPE Role Definitions",
+    "current": "PPE Role Definitions"
+  },
+  {
+    "key": "sidebar.kkdEntitlements",
+    "en": "PPE Role Entitlement Matrix",
+    "current": "PPE Role Entitlement Matrix"
+  },
+  {
+    "key": "sidebar.kkdAdditionalEntitlements",
+    "en": "PPE Manual Overrides",
+    "current": "PPE Manual Overrides"
+  },
+  {
+    "key": "sidebar.serviceAllocationAllocationQueue",
+    "en": "Allocation Queue",
+    "current": "Allocation Queue"
+  },
+  {
+    "key": "sidebar.serviceAllocationCreate",
+    "en": "Create Service Case",
+    "current": "Create Service Case"
+  },
+  {
+    "key": "sidebar.serviceAllocationCases",
+    "en": "Service Cases",
+    "current": "Service Cases"
+  },
+  {
+    "key": "sidebar.serviceAllocationDocumentLinks",
+    "en": "Document Links",
+    "current": "Document Links"
+  },
+  {
+    "key": "sidebar.serviceAllocationReports",
+    "en": "Service Reports",
+    "current": "Service Reports"
+  },
+  {
+    "key": "sidebar.erpBarcodeDesignerList",
+    "en": "Template List",
+    "current": "Template List"
+  },
+  {
+    "key": "sidebar.erpPrinterManagement",
+    "en": "Printers and Print Jobs",
+    "current": "Printers and Print Jobs"
+  },
+  {
+    "key": "sidebar.accessControlManagementGroup",
+    "en": "Access and User Management",
+    "current": "Access and User Management"
+  },
+  {
+    "key": "sidebar.accessControlSystemGroup",
+    "en": "System Tools",
+    "current": "System Tools"
+  },
+  {
+    "key": "sidebar.serviceOperationsGroup",
+    "en": "Service Operations",
+    "current": "Service Operations"
+  },
+  {
+    "key": "sidebar.erpShelves",
+    "en": "Shelf / Cell Definitions",
+    "current": "Shelf / Cell Definitions"
+  },
+  {
+    "key": "sidebar.erpWarehouseStockBalance",
+    "en": "Warehouse Stock Balance",
+    "current": "Warehouse Stock Balance"
+  },
+  {
+    "key": "sidebar.erpWarehouseSerialBalance",
+    "en": "Warehouse Serial Balance",
+    "current": "Warehouse Serial Balance"
+  }
+]

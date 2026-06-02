@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Check, Eye, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Eye, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -29,22 +29,36 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'completionDate', type: 'date', labelKey: 'transfer.approval.completionDate' },
 ];
 
+function mapSortBy(value: ColumnKey): string {
+  switch (value) {
+    case 'id': return 'Id';
+    case 'documentNo': return 'DocumentNo';
+    case 'documentDate': return 'DocumentDate';
+    case 'customerCode': return 'CustomerCode';
+    case 'customerName': return 'CustomerName';
+    case 'sourceWarehouse': return 'SourceWarehouse';
+    case 'targetWarehouse': return 'TargetWarehouse';
+    case 'completionDate': return 'CompletionDate';
+    default: return 'Id';
+  }
+}
+
 export function TransferApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.transfer');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const approveMutation = useApproveTransfer();
-  const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'transfer-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
+  const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'transfer-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy });
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'id', label: t('transfer.approval.id'), sortable: false },
-    { key: 'documentNo', label: t('transfer.approval.documentNo'), sortable: false },
-    { key: 'documentDate', label: t('transfer.approval.documentDate'), sortable: false },
-    { key: 'customerCode', label: t('transfer.approval.customerCode'), sortable: false },
-    { key: 'customerName', label: t('transfer.approval.customerName'), sortable: false },
-    { key: 'sourceWarehouse', label: t('transfer.approval.sourceWarehouse'), sortable: false },
-    { key: 'targetWarehouse', label: t('transfer.approval.targetWarehouse'), sortable: false },
-    { key: 'completionDate', label: t('transfer.approval.completionDate'), sortable: false },
+    { key: 'id', label: t('transfer.approval.id') },
+    { key: 'documentNo', label: t('transfer.approval.documentNo') },
+    { key: 'documentDate', label: t('transfer.approval.documentDate') },
+    { key: 'customerCode', label: t('transfer.approval.customerCode') },
+    { key: 'customerName', label: t('transfer.approval.customerName') },
+    { key: 'sourceWarehouse', label: t('transfer.approval.sourceWarehouse') },
+    { key: 'targetWarehouse', label: t('transfer.approval.targetWarehouse') },
+    { key: 'completionDate', label: t('transfer.approval.completionDate') },
     { key: 'actions', label: t('transfer.approval.actions'), sortable: false },
   ], [t]);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey: 'transfer-approval-list', columns: columns.map(({ key, label }) => ({ key, label })), idColumnKey: 'id' });
@@ -71,6 +85,13 @@ export function TransferApprovalPage(): ReactElement {
     }
   };
 
+  const renderSortIcon = (columnKey: ColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
+
   return (
     <div className="crm-page space-y-6">
       <Card><CardHeader><PageActionBar title={t('transfer.approval.title')} description={t('transfer.approval.searchPlaceholder')} /></CardHeader><CardContent>
@@ -80,6 +101,12 @@ export function TransferApprovalPage(): ReactElement {
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, key) => ({ id: row.id, documentNo: <span className="font-medium">{row.documentNo || '-'}</span>, documentDate: formatDate(row.documentDate), customerCode: row.customerCode || '-', customerName: row.customerName || '-', sourceWarehouse: row.sourceWarehouseName || row.sourceWarehouse || '-', targetWarehouse: row.targetWarehouseName || row.targetWarehouse || '-', completionDate: formatDateTime(row.completionDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
           isLoading={isLoading}
           isError={Boolean(error)}
           errorText={t('transfer.approval.error')}

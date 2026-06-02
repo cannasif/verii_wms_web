@@ -1,0 +1,932 @@
+[
+  {
+    "key": "qualityControl.badge",
+    "en": "Quality 1",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.settingsSaved",
+    "en": "Quality parameters saved.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.settingsQuarantineWarehouseRequired",
+    "en": "Select a default quarantine warehouse when quarantine warehouse usage is enabled.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleCreated",
+    "en": "Quality rule created.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleUpdated",
+    "en": "Quality rule updated.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleDeleted",
+    "en": "Quality rule deleted.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleStockRequired",
+    "en": "Stock selection is required for a stock-scoped rule.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleGroupRequired",
+    "en": "Group code is required for a group-scoped rule.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleInspectionModeRequired",
+    "en": "Inspection mode is required.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.ruleFailActionRequired",
+    "en": "Fail action is required.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionCreated",
+    "en": "Quality inspection record created.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionUpdated",
+    "en": "Quality inspection record updated.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionDeleted",
+    "en": "Quality inspection record deleted.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineReleased",
+    "en": "Quarantine record released.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineReleasedWithReference",
+    "en": "Quarantine record released. Created document: {{reference}}",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineRejected",
+    "en": "Quarantine record rejected.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineRejectedWithReference",
+    "en": "Quarantine record rejected. Created document: {{reference}}",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineReturned",
+    "en": "Quarantine record moved to return flow.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.quarantineReturnedWithReference",
+    "en": "Quarantine record moved to return flow. Created document: {{reference}}",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionDocumentTypeRequired",
+    "en": "Document type is required.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionWarehouseRequired",
+    "en": "Warehouse selection is required.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionLinesRequired",
+    "en": "Add at least one inspection line.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionLineStockRequired",
+    "en": "Stock selection is required on the inspection line.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.messages.inspectionLineQuantityRequired",
+    "en": "Inspection line quantity must be greater than zero.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.pageTitle",
+    "en": "Quality Rule Definitions",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.title",
+    "en": "Quality Rule Form",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.description",
+    "en": "Define how a stock or stock group will be evaluated during goods receipt and quality control.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.guidanceTitle",
+    "en": "How to Use",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.guidance1",
+    "en": "First decide whether the rule applies to a specific stock or to a stock group.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.guidance2",
+    "en": "This screen does not make the final decision itself; it defines how incoming material enters the quality flow.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.scopeTypes.stock",
+    "en": "Stock Based",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.scopeTypes.stockGroup",
+    "en": "Stock Group Based",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.inspectionModes.noCheck",
+    "en": "No Check",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.inspectionModes.quickCheck",
+    "en": "Quick Check",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.inspectionModes.inspectionRequired",
+    "en": "Detailed Inspection Required",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.failActions.quarantine",
+    "en": "Move to Quarantine",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.failActions.reject",
+    "en": "Reject",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.failActions.managerApproval",
+    "en": "Wait for Manager Approval",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.scopeType",
+    "en": "Rule Scope",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stock",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stockPlaceholder",
+    "en": "Select stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stockGroupCode",
+    "en": "Stock Group Code",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stockGroupCodePlaceholder",
+    "en": "Example: STEEL-RAW",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stockGroupName",
+    "en": "Stock Group Name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.stockGroupNamePlaceholder",
+    "en": "A label that operations can understand",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.inspectionMode",
+    "en": "Inspection Mode",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.onFailAction",
+    "en": "Fail Action",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.autoQuarantine",
+    "en": "Auto Quarantine",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.requireLot",
+    "en": "Lot Required",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.requireSerial",
+    "en": "Serial Required",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.requireExpiry",
+    "en": "Expiry Required",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.minRemainingShelfLifeDays",
+    "en": "Minimum Remaining Shelf Life (Days)",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.nearExpiryWarningDays",
+    "en": "Near Expiry Warning Days",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.isActive",
+    "en": "Active",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.description",
+    "en": "Description",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.fields.descriptionPlaceholder",
+    "en": "Short note explaining why this rule exists",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.stockLookup.title",
+    "en": "Select Stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.stockLookup.description",
+    "en": "Select the stock card to which this quality rule will apply.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.stockLookup.searchPlaceholder",
+    "en": "Search by stock code or name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.pageTitle",
+    "en": "Quality Rule List",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.empty",
+    "en": "No quality rule records found.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.searchPlaceholder",
+    "en": "Search by stock, group, or rule type",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.scopeType",
+    "en": "Scope",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.stock",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.stockGroup",
+    "en": "Stock Group",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.inspectionMode",
+    "en": "Inspection Mode",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.onFailAction",
+    "en": "Fail Action",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.autoQuarantine",
+    "en": "Auto Quarantine",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.requireLot",
+    "en": "Lot",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.requireSerial",
+    "en": "Serial",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.requireExpiry",
+    "en": "Expiry",
+    "current": null
+  },
+  {
+    "key": "qualityControl.rules.list.columns.isActive",
+    "en": "Active",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.pageTitle",
+    "en": "Quality Parameters",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.title",
+    "en": "Quality Parameters",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.description",
+    "en": "Manage the default quality behavior used when no specific stock or group rule is defined.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.guidanceTitle",
+    "en": "Why This Screen Matters",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.guidance1",
+    "en": "This is where you define how goods receipt enters the quality flow for the company or branch.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.guidance2",
+    "en": "If no stock-specific or group-specific rule exists, the system falls back to these settings before accepting, quarantining, or opening an inspection.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultInspectionMode",
+    "en": "Default Inspection Mode",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultOnFailAction",
+    "en": "Default Fail Action",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultQuarantineWarehouse",
+    "en": "Default Quarantine Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultQuarantineWarehousePlaceholder",
+    "en": "Select quarantine warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultApprovedWarehouse",
+    "en": "Default Release Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultApprovedWarehousePlaceholder",
+    "en": "Select release warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultRejectWarehouse",
+    "en": "Default Reject / Scrap Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultRejectWarehousePlaceholder",
+    "en": "Select reject warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultReturnOutboundType",
+    "en": "Default Return Outbound Type",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultReturnOutboundTypePlaceholder",
+    "en": "Example: QRETURN",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.autoCreateInspectionOnReceipt",
+    "en": "Auto Create Inspection on Goods Receipt",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.useQuarantineWarehouse",
+    "en": "Use Quarantine Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.allowDirectReceiptWhenNoRule",
+    "en": "Allow Direct Receipt When No Rule Exists",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.blockReceiptWhenLotMissing",
+    "en": "Block Receipt When Lot Is Missing",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.blockReceiptWhenSerialMissing",
+    "en": "Block Receipt When Serial Is Missing",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.blockReceiptWhenExpiryMissing",
+    "en": "Block Receipt When Expiry Is Missing",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.requireManagerApprovalForRelease",
+    "en": "Require Manager Approval for Release",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.enableTraceabilityEvents",
+    "en": "Record Traceability Events",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.fields.enableNearExpiryWarning",
+    "en": "Enable Near Expiry Warning",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.warehouseLookup.title",
+    "en": "Select Quarantine Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.warehouseLookup.description",
+    "en": "Select the default warehouse that will be used for quarantine flow.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.settings.warehouseLookup.searchPlaceholder",
+    "en": "Search by warehouse code or name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.pageTitle",
+    "en": "Quality Inspection Records",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.title",
+    "en": "Quality Inspection Form",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.description",
+    "en": "Create inspection lines for incoming material, manage the status, and keep a clear decision history.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.guidanceTitle",
+    "en": "Workflow",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.guidance1",
+    "en": "Start with the document and warehouse information, then add the stock lines to be reviewed.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.guidance2",
+    "en": "This screen stores the decision record. Quarantine, hold/release, and traceability will build on top of it in later phases.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.documentType",
+    "en": "Document Type",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.documentTypePlaceholder",
+    "en": "Example: PurchaseReceipt",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.documentNumber",
+    "en": "Document Number",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.documentNumberPlaceholder",
+    "en": "Operation or ERP document number",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.documentId",
+    "en": "Document ID",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.warehouse",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.warehousePlaceholder",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.supplier",
+    "en": "Supplier / Customer",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.supplierPlaceholder",
+    "en": "Optionally select supplier",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.inspectionDate",
+    "en": "Inspection Date",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.status",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.note",
+    "en": "Note",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.fields.notePlaceholder",
+    "en": "Short operation note supporting the decision",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.warehouseLookup.title",
+    "en": "Select Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.warehouseLookup.description",
+    "en": "Select the warehouse to which this inspection record belongs.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.warehouseLookup.searchPlaceholder",
+    "en": "Search by warehouse code or name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.supplierLookup.title",
+    "en": "Select Supplier",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.supplierLookup.description",
+    "en": "Select the supplier/customer if the inbound material should be linked to one.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.supplierLookup.searchPlaceholder",
+    "en": "Search by customer code or name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.stockLookup.title",
+    "en": "Stock to Inspect",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.stockLookup.description",
+    "en": "Select the stock line that will receive the quality decision.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.stockLookup.searchPlaceholder",
+    "en": "Search by stock code or name",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.pending",
+    "en": "Pending",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.approved",
+    "en": "Approved",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.rejected",
+    "en": "Rejected",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.quarantined",
+    "en": "Quarantined",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.released",
+    "en": "Released",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.statuses.returned",
+    "en": "Returned",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.accept",
+    "en": "Accept to Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.pendingInspection",
+    "en": "Keep Pending",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.quarantine",
+    "en": "Move to Quarantine",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.reject",
+    "en": "Reject",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.return",
+    "en": "Send to Return",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.decisions.hold",
+    "en": "Accept with Hold",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.title",
+    "en": "Inspection Lines",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.stock",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.stockPlaceholder",
+    "en": "Select stock",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.lotNo",
+    "en": "Lot No",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.serialNo",
+    "en": "Serial No",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.expiryDate",
+    "en": "Expiry Date",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.quantity",
+    "en": "Quantity",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.decision",
+    "en": "Decision",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.reasonCode",
+    "en": "Reason Code",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.reasonNote",
+    "en": "Reason / Note",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.add",
+    "en": "Add Line",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.empty",
+    "en": "No inspection lines added yet.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.lineSummary",
+    "en": "Stock #{{stockId}} | Quantity: {{quantity}} | Decision: {{decision}}",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.lines.lineMeta",
+    "en": "Lot: {{lot}} | Serial: {{serial}} | Expiry: {{expiry}}",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.pageTitle",
+    "en": "Quality Inspection List",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.empty",
+    "en": "No quality inspection records found.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.searchPlaceholder",
+    "en": "Search by document, warehouse, supplier, or status",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.documentType",
+    "en": "Document Type",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.documentNumber",
+    "en": "Document Number",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.warehouse",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.supplier",
+    "en": "Supplier",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.inspectionDate",
+    "en": "Inspection Date",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.status",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.lineCount",
+    "en": "Lines",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.pageTitle",
+    "en": "Quarantine Queue",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.title",
+    "en": "Quarantine Queue",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.description",
+    "en": "Review quality records that were moved to quarantine and manage release, reject, or return decisions.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.empty",
+    "en": "No active quarantine record found.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.searchPlaceholder",
+    "en": "Search by document, warehouse, or supplier",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.review",
+    "en": "Review",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.documentType",
+    "en": "Document Type",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.documentNumber",
+    "en": "Document Number",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.warehouse",
+    "en": "Quarantine Warehouse",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.supplier",
+    "en": "Supplier",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.inspectionDate",
+    "en": "Quarantine Entry",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.lineCount",
+    "en": "Lines",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.totalQuantity",
+    "en": "Total Quantity",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.columns.serialTrackedLineCount",
+    "en": "Serial Lines",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.title",
+    "en": "Quarantine Decision",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.description",
+    "en": "Give the release, reject, or return decision for this record.",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.linesTitle",
+    "en": "Quarantined Lines",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.note",
+    "en": "Operation Note",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.notePlaceholder",
+    "en": "Short note explaining the decision",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.actions.release",
+    "en": "Release",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.actions.reject",
+    "en": "Reject",
+    "current": null
+  },
+  {
+    "key": "qualityControl.quarantine.actions.return",
+    "en": "Return",
+    "current": null
+  }
+]

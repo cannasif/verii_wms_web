@@ -1,0 +1,102 @@
+[
+  {
+    "key": "advancedFilter.true",
+    "en": "True",
+    "current": "Wahr"
+  },
+  {
+    "key": "advancedFilter.false",
+    "en": "False",
+    "current": "Falsch"
+  },
+  {
+    "key": "advancedFilter.title",
+    "en": "Advanced Filter",
+    "current": "Erweiterter Filter"
+  },
+  {
+    "key": "advancedFilter.add",
+    "en": "Add Filter",
+    "current": "Filter hinzufugen"
+  },
+  {
+    "key": "advancedFilter.clear",
+    "en": "Clear",
+    "current": "Zurucksetzen"
+  },
+  {
+    "key": "advancedFilter.activeInfo",
+    "en": "Filter applied",
+    "current": "Filter angewendet"
+  },
+  {
+    "key": "advancedFilter.logic",
+    "en": "Condition",
+    "current": "Bedingung"
+  },
+  {
+    "key": "advancedFilter.logicAnd",
+    "en": "AND",
+    "current": "UND"
+  },
+  {
+    "key": "advancedFilter.logicOr",
+    "en": "OR",
+    "current": "ODER"
+  },
+  {
+    "key": "advancedFilter.column",
+    "en": "Field",
+    "current": "Feld"
+  },
+  {
+    "key": "advancedFilter.operator",
+    "en": "Operator",
+    "current": "Operator"
+  },
+  {
+    "key": "advancedFilter.operatorContains",
+    "en": "Contains",
+    "current": "Contains"
+  },
+  {
+    "key": "advancedFilter.operatorStartsWith",
+    "en": "Starts with",
+    "current": "Starts with"
+  },
+  {
+    "key": "advancedFilter.operatorEndsWith",
+    "en": "Ends with",
+    "current": "Ends with"
+  },
+  {
+    "key": "advancedFilter.operatorEquals",
+    "en": "Equals",
+    "current": "Equals"
+  },
+  {
+    "key": "advancedFilter.operator>",
+    "en": "Greater than",
+    "current": "Greater than"
+  },
+  {
+    "key": "advancedFilter.operator>=",
+    "en": "Greater than or equal",
+    "current": "Greater than or equal"
+  },
+  {
+    "key": "advancedFilter.operator<",
+    "en": "Less than",
+    "current": "Less than"
+  },
+  {
+    "key": "advancedFilter.operator<=",
+    "en": "Less than or equal",
+    "current": "Less than or equal"
+  },
+  {
+    "key": "advancedFilter.value",
+    "en": "Value",
+    "current": "Wert"
+  }
+]

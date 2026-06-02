@@ -1,0 +1,147 @@
+[
+  {
+    "key": "barcodeManagement.title",
+    "en": "Barcode Definitions",
+    "current": "Barkod Tanımları"
+  },
+  {
+    "key": "barcodeManagement.description",
+    "en": "Manage how each module parses barcodes, which segments are required, and whether WMS mirror lookup stays enabled.",
+    "current": "Her modül için barkodun nasıl parse edileceğini, hangi alanların zorunlu olduğunu ve mirror lookup davranışını yönetin."
+  },
+  {
+    "key": "barcodeManagement.addButton",
+    "en": "New Definition",
+    "current": "Yeni Tanım"
+  },
+  {
+    "key": "barcodeManagement.createTitle",
+    "en": "New Barcode Definition",
+    "current": "Yeni Barkod Tanımı"
+  },
+  {
+    "key": "barcodeManagement.editTitle",
+    "en": "Edit Barcode Definition",
+    "current": "Barkod Tanımını Düzenle"
+  },
+  {
+    "key": "barcodeManagement.overrideTitle",
+    "en": "Create Override From Config",
+    "current": "Konfigürasyon Üzerine Override Oluştur"
+  },
+  {
+    "key": "barcodeManagement.dialogDescription",
+    "en": "This record is used as the DB-first barcode definition for the current branch. If the same module key exists, it overrides configuration.",
+    "current": "Bu kayıt mevcut şube için DB first barkod tanımı olarak kullanılır. Aynı module key varsa konfigürasyonun önüne geçer."
+  },
+  {
+    "key": "barcodeManagement.moduleKey",
+    "en": "Module Key",
+    "current": "Module Key"
+  },
+  {
+    "key": "barcodeManagement.displayName",
+    "en": "Display Name",
+    "current": "Görünen Ad"
+  },
+  {
+    "key": "barcodeManagement.formatLabel",
+    "en": "Segment Pattern",
+    "current": "Segment Pattern"
+  },
+  {
+    "key": "barcodeManagement.hintLabel",
+    "en": "User Hint",
+    "current": "Kullanıcı İpuçları"
+  },
+  {
+    "key": "barcodeManagement.activeHelp",
+    "en": "Inactive definitions are not used by runtime resolve.",
+    "current": "Pasif tanım runtime resolve tarafında kullanılmaz."
+  },
+  {
+    "key": "barcodeManagement.erpFallbackLabel",
+    "en": "WMS Mirror Lookup",
+    "current": "WMS Mirror Lookup"
+  },
+  {
+    "key": "barcodeManagement.erpFallbackHelp",
+    "en": "When pattern parsing is not enough, resolve continues on WMS mirror stock and variant fields.",
+    "current": "Pattern tek başına çözemezse WMS mirror stok ve yapı kodu alanlarında arama yapar."
+  },
+  {
+    "key": "barcodeManagement.createOverride",
+    "en": "Create Override",
+    "current": "Override Oluştur"
+  },
+  {
+    "key": "barcodeManagement.sourceDatabase",
+    "en": "Database override",
+    "current": "Veritabanı override"
+  },
+  {
+    "key": "barcodeManagement.sourceConfig",
+    "en": "Configuration fallback",
+    "current": "Konfigürasyon fallback"
+  },
+  {
+    "key": "barcodeManagement.testTitle",
+    "en": "Resolve Test",
+    "current": "Resolve Testi"
+  },
+  {
+    "key": "barcodeManagement.testDescription",
+    "en": "Test the barcode through the backend resolve service for the selected module.",
+    "current": "Seçilen modül için barkodu backend resolve servisi üzerinden test edin."
+  },
+  {
+    "key": "barcodeManagement.selectedModule",
+    "en": "Selected Module",
+    "current": "Seçili Modül"
+  },
+  {
+    "key": "barcodeManagement.barcodeInput",
+    "en": "Barcode",
+    "current": "Barkod"
+  },
+  {
+    "key": "barcodeManagement.barcodePlaceholder",
+    "en": "Enter a barcode to test",
+    "current": "Test barkodu girin"
+  },
+  {
+    "key": "barcodeManagement.resolveButton",
+    "en": "Test Barcode",
+    "current": "Barkodu Test Et"
+  },
+  {
+    "key": "barcodeManagement.erpFallbackOn",
+    "en": "WMS mirror fallback enabled",
+    "current": "WMS mirror lookup açık"
+  },
+  {
+    "key": "barcodeManagement.erpFallbackOff",
+    "en": "WMS mirror fallback disabled",
+    "current": "WMS mirror lookup kapalı"
+  },
+  {
+    "key": "barcodeManagement.candidatesTitle",
+    "en": "Candidate Records",
+    "current": "Aday Kayıtlar"
+  },
+  {
+    "key": "barcodeManagement.definitionType",
+    "en": "Definition Type",
+    "current": "Tanım Tipi"
+  },
+  {
+    "key": "barcodeManagement.requiredSegments",
+    "en": "Required Segments",
+    "current": "Zorunlu Alanlar"
+  },
+  {
+    "key": "barcodeManagement.noRequiredSegments",
+    "en": "No extra required segments",
+    "current": "Ek zorunlu alan yok"
+  }
+]

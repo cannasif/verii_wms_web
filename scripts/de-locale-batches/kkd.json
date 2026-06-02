@@ -1,0 +1,2097 @@
+[
+  {
+    "key": "kkd.columns.departmentCode",
+    "en": "Department code",
+    "current": "Department code"
+  },
+  {
+    "key": "kkd.columns.departmentName",
+    "en": "Department name",
+    "current": "Department name"
+  },
+  {
+    "key": "kkd.columns.department",
+    "en": "Department",
+    "current": "Department"
+  },
+  {
+    "key": "kkd.columns.roleCode",
+    "en": "Role code",
+    "current": "Role code"
+  },
+  {
+    "key": "kkd.columns.roleName",
+    "en": "Role name",
+    "current": "Role name"
+  },
+  {
+    "key": "kkd.columns.role",
+    "en": "Role",
+    "current": "Role"
+  },
+  {
+    "key": "kkd.columns.employeeCode",
+    "en": "Employee code",
+    "current": "Employee code"
+  },
+  {
+    "key": "kkd.columns.firstName",
+    "en": "First name",
+    "current": "First name"
+  },
+  {
+    "key": "kkd.columns.lastName",
+    "en": "Last name",
+    "current": "Last name"
+  },
+  {
+    "key": "kkd.columns.customerCode",
+    "en": "Customer code",
+    "current": "Customer code"
+  },
+  {
+    "key": "kkd.columns.groupCode",
+    "en": "Group code",
+    "current": "Group code"
+  },
+  {
+    "key": "kkd.columns.groupName",
+    "en": "Group name",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.stockCode",
+    "en": "Stock code",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.initialIssue",
+    "en": "Initial issue",
+    "current": "Initial issue"
+  },
+  {
+    "key": "kkd.columns.initialFrequencyDays",
+    "en": "Initial wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.initialBulkIssue",
+    "en": "Initial bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.initialQuantityPerFrequency",
+    "en": "Initial max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.afterThreeMonths",
+    "en": "After 3 months",
+    "current": "After 3 months"
+  },
+  {
+    "key": "kkd.columns.threeMonthFrequencyDays",
+    "en": "3rd month wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.threeMonthBulkIssue",
+    "en": "3rd month bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.threeMonthQuantityPerFrequency",
+    "en": "3rd month max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.routine",
+    "en": "Routine",
+    "current": "Routine"
+  },
+  {
+    "key": "kkd.columns.period",
+    "en": "Period",
+    "current": "Period"
+  },
+  {
+    "key": "kkd.columns.periodInterval",
+    "en": "Period interval",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.routineFrequencyDays",
+    "en": "Routine wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.routineBulkIssue",
+    "en": "Routine bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.routineQuantityPerFrequency",
+    "en": "Routine max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.employmentStartDate",
+    "en": "Employment start date",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.qrCode",
+    "en": "QR code",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.mandatory",
+    "en": "Mandatory",
+    "current": null
+  },
+  {
+    "key": "kkd.columns.employee",
+    "en": "Employee",
+    "current": "Employee"
+  },
+  {
+    "key": "kkd.columns.extraEntitlement",
+    "en": "Extra entitlement",
+    "current": "Extra entitlement"
+  },
+  {
+    "key": "kkd.columns.consumed",
+    "en": "Consumed",
+    "current": "Consumed"
+  },
+  {
+    "key": "kkd.columns.startDate",
+    "en": "Start date",
+    "current": "Start date"
+  },
+  {
+    "key": "kkd.columns.endDate",
+    "en": "End date",
+    "current": "End date"
+  },
+  {
+    "key": "kkd.columns.approver",
+    "en": "Approver",
+    "current": "Approver"
+  },
+  {
+    "key": "kkd.pages.departmentDefinitionsTitle",
+    "en": "PPE Department Definitions",
+    "current": "PPE Department Definitions"
+  },
+  {
+    "key": "kkd.pages.departmentDefinitionsDescription",
+    "en": "Manage department records.",
+    "current": "Manage department records."
+  },
+  {
+    "key": "kkd.pages.departmentDefinitionsBreadcrumb",
+    "en": "Department Definitions",
+    "current": "Department Definitions"
+  },
+  {
+    "key": "kkd.pages.roleDefinitionsTitle",
+    "en": "PPE Role Definitions",
+    "current": "PPE Role Definitions"
+  },
+  {
+    "key": "kkd.pages.roleDefinitionsDescription",
+    "en": "Manage role records.",
+    "current": "Manage role records."
+  },
+  {
+    "key": "kkd.pages.roleDefinitionsBreadcrumb",
+    "en": "Role Definitions",
+    "current": "Role Definitions"
+  },
+  {
+    "key": "kkd.pages.employeeCardsTitle",
+    "en": "PPE Employee Cards",
+    "current": "PPE Employee Cards"
+  },
+  {
+    "key": "kkd.pages.employeeCardsDescription",
+    "en": "Manage employee cards.",
+    "current": "Manage employee cards."
+  },
+  {
+    "key": "kkd.pages.employeeCardsBreadcrumb",
+    "en": "Employee Cards",
+    "current": "Employee Cards"
+  },
+  {
+    "key": "kkd.pages.entitlementMatrixTitle",
+    "en": "PPE Role Entitlement Matrix",
+    "current": "PPE Role Entitlement Matrix"
+  },
+  {
+    "key": "kkd.pages.entitlementMatrixDescription",
+    "en": "Define initial, 3-month and routine entitlements by role and group.",
+    "current": "Define initial, 3-month and routine entitlements by role and group."
+  },
+  {
+    "key": "kkd.pages.entitlementMatrixBreadcrumb",
+    "en": "Role Entitlement Matrix",
+    "current": "Role Entitlement Matrix"
+  },
+  {
+    "key": "kkd.pages.manualOverridesTitle",
+    "en": "PPE Manual Overrides",
+    "current": "PPE Manual Overrides"
+  },
+  {
+    "key": "kkd.pages.manualOverridesDescription",
+    "en": "Manage manual extra entitlements for exceptional employee needs.",
+    "current": "Manage manual extra entitlements for exceptional employee needs."
+  },
+  {
+    "key": "kkd.pages.manualOverridesBreadcrumb",
+    "en": "Manual Overrides",
+    "current": "Manual Overrides"
+  },
+  {
+    "key": "kkd.dialogs.selectDepartment",
+    "en": "Select department",
+    "current": "Select department"
+  },
+  {
+    "key": "kkd.dialogs.selectEmployee",
+    "en": "Select employee",
+    "current": "Select employee"
+  },
+  {
+    "key": "kkd.dialogs.selectApprover",
+    "en": "Select approver",
+    "current": "Select approver"
+  },
+  {
+    "key": "kkd.placeholders.selectDepartment",
+    "en": "Select department",
+    "current": "Select department"
+  },
+  {
+    "key": "kkd.placeholders.enterRoleCode",
+    "en": "Enter role code",
+    "current": "Enter role code"
+  },
+  {
+    "key": "kkd.placeholders.enterRoleName",
+    "en": "Enter role name",
+    "current": "Enter role name"
+  },
+  {
+    "key": "kkd.placeholders.selectEmployee",
+    "en": "Select employee",
+    "current": "Select employee"
+  },
+  {
+    "key": "kkd.placeholders.selectStockGroup",
+    "en": "Select stock group",
+    "current": "Select stock group"
+  },
+  {
+    "key": "kkd.placeholders.searchGroup",
+    "en": "Search group",
+    "current": "Search group"
+  },
+  {
+    "key": "kkd.placeholders.selectUser",
+    "en": "Select user",
+    "current": "Select user"
+  },
+  {
+    "key": "kkd.messages.groupNotFound",
+    "en": "Group not found",
+    "current": "Group not found"
+  },
+  {
+    "key": "kkd.operational.common.undefinedName",
+    "en": "Unknown",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.pageTitle",
+    "en": "PPE initial entry order",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.breadcrumb",
+    "en": "PPE initial entry order",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.cardEmployee",
+    "en": "Employee selection",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.cardStock",
+    "en": "Initial rights and stock selection",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.cardOrder",
+    "en": "Order summary",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.qrLabel",
+    "en": "QR code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.qrPlaceholder",
+    "en": "Scan employee QR code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.resolveQr",
+    "en": "Resolve QR",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.selectMe",
+    "en": "Select me",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.altEmployee",
+    "en": "Alternative employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.selectEmployeeDialog",
+    "en": "Select employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.selectEmployeePlaceholder",
+    "en": "Select employee from list",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.employmentStart",
+    "en": "Employment start",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.entitlementGroup",
+    "en": "Entitlement group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.groupPlaceholder",
+    "en": "Select a group from initial rights",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.initialEntitlement",
+    "en": "Initial right",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.remainingInCart",
+    "en": "Remaining in cart",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.stockLabel",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.selectStock",
+    "en": "Select stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.groupStockPlaceholder",
+    "en": "Select stock for group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.selectGroupFirst",
+    "en": "Select a group first",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.stockSearchPlaceholder",
+    "en": "Search by code or name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.add",
+    "en": "Add",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.noLines",
+    "en": "No lines yet.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.lineCount",
+    "en": "Lines",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.totalQty",
+    "en": "Total quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.save",
+    "en": "Save",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.clearCart",
+    "en": "Clear cart",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.remove",
+    "en": "Remove",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.documentNo",
+    "en": "Document no.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.lineCountN",
+    "en": "Items",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.headerPrefix",
+    "en": "Header",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.toastEmployeeFound",
+    "en": "Employee found",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.toastOrderCreated",
+    "en": "PPE initial order created",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.toastLineAdded",
+    "en": "Line added",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.errNoEmployee",
+    "en": "No PPE employee record for this user",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.initialOrder.errNeedLines",
+    "en": "Employee and at least one line are required",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.pageTitle",
+    "en": "PPE remaining entitlements",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.breadcrumb",
+    "en": "PPE remaining entitlements",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.qrLabel",
+    "en": "QR code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.qrPlaceholder",
+    "en": "Scan employee QR",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.dateLabel",
+    "en": "Date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.cardInput",
+    "en": "Employee and date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.resolve",
+    "en": "Resolve",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.altEmployee",
+    "en": "Alternative employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.empPlaceholder",
+    "en": "Select employee from list",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.fetch",
+    "en": "Load remaining entitlements",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.listTitle",
+    "en": "Remaining entitlements",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.toastFound",
+    "en": "Employee found.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.toastList",
+    "en": "Remaining entitlements loaded.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.errQr",
+    "en": "Could not resolve QR.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.errList",
+    "en": "Could not load remaining entitlements.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.errNeedEmployee",
+    "en": "Select an employee first.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.mainShort",
+    "en": "Main",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.addShort",
+    "en": "Extra",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.totalShort",
+    "en": "Total",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.lastUse",
+    "en": "Last usage",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.nextOk",
+    "en": "Next eligible date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.remaining.listEmpty",
+    "en": "Select an employee and query to see remaining entitlements here.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.pageTitle",
+    "en": "PPE eligibility check",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.breadcrumb",
+    "en": "PPE eligibility check",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.cardInputs",
+    "en": "Check inputs",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.cardResult",
+    "en": "Entitlement result",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.employeeLabel",
+    "en": "Employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.groupLabel",
+    "en": "Group code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.checkButton",
+    "en": "Check entitlement",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.txnDate",
+    "en": "Transaction date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.infoBox",
+    "en": "This screen shows remaining entitlements before QR/barcode flow. It uses the same entitlement API as distribution; results match operations.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.resultAllowed",
+    "en": "Eligible",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.resultBlocked",
+    "en": "Not eligible",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.mainEntitlement",
+    "en": "Main",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.extraEntitlement",
+    "en": "Extra",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.total",
+    "en": "Total",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.suggestedSource",
+    "en": "Suggested source",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.nextDate",
+    "en": "Next eligible date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.emptyState",
+    "en": "Run a check with employee, group, and quantity to see results here.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.placeholderGroup",
+    "en": "Select group code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.searchGroup",
+    "en": "Search group code or name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.groupEmpty",
+    "en": "No group found",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.errSelectEmployee",
+    "en": "Select an employee first.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.errSelectGroup",
+    "en": "Select a group code first.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.toastOk",
+    "en": "Entitlement check passed.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.toastDone",
+    "en": "Entitlement check completed.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.entitlementCheck.toastFail",
+    "en": "Entitlement check failed.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.pageTitle",
+    "en": "PPE distribution",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.breadcrumb",
+    "en": "PPE distribution",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.resolveQr",
+    "en": "Resolve",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.toastFound",
+    "en": "Employee found",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.toastComplete",
+    "en": "PPE distribution completed",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.toastLineCart",
+    "en": "Line added to cart",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.errNeedAll",
+    "en": "Employee, warehouse, and lines are required.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.titleEmployeeWarehouse",
+    "en": "Employee and warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.qrLabel",
+    "en": "QR code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.qrPh",
+    "en": "Scan employee QR",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.warehouse",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.whDialogTitle",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.whPh",
+    "en": "Select warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.altEmployee",
+    "en": "Alternative employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.empDialogTitle",
+    "en": "Select employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.empPh",
+    "en": "Select employee from list instead of QR",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrdersTitle",
+    "en": "Open PPE orders for customer",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entitlementsTitle",
+    "en": "Available entitlements",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.noEmployeePick",
+    "en": "Group entitlements for the job appear after an employee is selected.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entitlementsLoading",
+    "en": "Loading entitlements...",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.noEntitlementGroup",
+    "en": "No active group entitlement for this person.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.noOpenOrdersContext",
+    "en": "Open orders matching the employee’s customer are listed after you pick an employee.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrdersLoading",
+    "en": "Loading open orders...",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.noOpenOrderForCustomer",
+    "en": "No pending open PPE order for this customer.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.scanTitle",
+    "en": "Product scan",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.barcode",
+    "en": "Barcode",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.barcodePh",
+    "en": "Scan product barcode",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.qty",
+    "en": "Quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.resolveBarcode",
+    "en": "Resolve barcode",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrderY",
+    "en": "On open order",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrderN",
+    "en": "Not on open order",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.orderDocs",
+    "en": "Order documents",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchOk",
+    "en": "The scanned stock is on an open PPE order for the customer and quantity is within limit.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchQty",
+    "en": "Quantity exceeds the open order pending amount. You can take at most {{max}}.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchWarehouse",
+    "en": "This stock exists on an open order, but the selected warehouse does not match the order warehouse.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchNo",
+    "en": "This stock is not on open PPE orders for the customer.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entOk",
+    "en": "Entitlement ok",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entNo",
+    "en": "Insufficient entitlement",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrderOverride",
+    "en": "Open order allowed",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.activePhase",
+    "en": "Active phase",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.groupMatch",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.groupMatchY",
+    "en": "Match",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.groupMatchN",
+    "en": "Mismatch",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.usedQty",
+    "en": "Entitlement quantity for this line",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.excess",
+    "en": "Excess issue quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.phaseUsable",
+    "en": "Available",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.defined",
+    "en": "Defined",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.remain",
+    "en": "Remaining",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.frequencyLine",
+    "en": "Frequency: {{days}} d / {{qty}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.currentRights",
+    "en": "Entitlements in this group: initial {{a}}, 3M {{b}}, routine {{c}}, total {{total}}.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.addLine",
+    "en": "Add to lines",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonPickEmployee",
+    "en": "Select an employee before adding a line.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonPickWarehouse",
+    "en": "Select a warehouse before adding a line.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonResolveBarcode",
+    "en": "Resolve the barcode and stock before adding a line.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonWarehouseMismatch",
+    "en": "The open-order warehouse for this stock does not match the selected warehouse.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonMissingOpenOrder",
+    "en": "This stock does not exist on an open PPE order for the selected warehouse.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonExceedsOpenOrder",
+    "en": "Quantity exceeds the open order amount for the selected warehouse. Max: {{max}}.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonWaitEntitlement",
+    "en": "Waiting for entitlement result. Try again after barcode resolution completes.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.reasonLineNotAllowed",
+    "en": "This stock cannot be added under the current entitlement and open-order rules.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.cartTitle",
+    "en": "Distribution cart",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.lineN",
+    "en": "Lines",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.totalQ",
+    "en": "Total quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.removeLine",
+    "en": "Remove line",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.emptyCart",
+    "en": "No lines yet.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.saveSubmit",
+    "en": "Save and complete",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.clearCart",
+    "en": "Clear cart",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.docNo",
+    "en": "Document no.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.headerIdBadge",
+    "en": "Header #{{id}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.warehouseIdBadge",
+    "en": "Wh #{{id}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.lineSummary",
+    "en": "Group: {{g}} | Qty: {{q}} | Phase: {{p}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.lineOpen",
+    "en": "Open order: {{d}} | Pending: {{p}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.lineExcess",
+    "en": "Entitled: {{e}} | Excess: {{x}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.firstEntry",
+    "en": "Initial",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.month3",
+    "en": "3M",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.routine",
+    "en": "Routine",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.totalRem",
+    "en": "Total",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.extraH",
+    "en": "Extra",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.excessIssue",
+    "en": "Excess",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.readStock",
+    "en": "Scanned stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.readGroup",
+    "en": "Scanned group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entGroup",
+    "en": "Entitlement group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.orderMeta",
+    "en": "Date: {{d}} | Customer: {{c}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.badgeFis",
+    "en": "Doc",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.pending",
+    "en": "Pending",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.whCode",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.stockSavedNote",
+    "en": "This stock code is written to the line as entered: {{code}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.stockBalance",
+    "en": "Balance",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.stockPrefix",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.groupPrefix",
+    "en": "Group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.scannedStock",
+    "en": "Scanned stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.scannedGroup",
+    "en": "Scanned group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entGroupLine",
+    "en": "Entitlement group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.stateLabel",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchY",
+    "en": "Match",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.matchN",
+    "en": "Mismatch",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entQtyLine",
+    "en": "Entitlement quantity for this line",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.entExcessLine",
+    "en": "Excess issue quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.openOrderIssueSummary",
+    "en": "This line can be issued because the customer has an open PPE order even though no entitlement is available.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.usable",
+    "en": "Available",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.definedQty",
+    "en": "Defined",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.remainQty",
+    "en": "Remaining",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.groupEntSummary",
+    "en": "Entitlements in this group: initial {{a}}, 3M {{b}}, routine {{c}}, total {{total}}.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.lineOpenOrderOnly",
+    "en": "Issued only because of the customer's open PPE order.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptTitle",
+    "en": "Has the initial entry order been opened?",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptDesc",
+    "en": "This employee still has initial-entry entitlement. If the initial-entry order has not been opened yet, continue in the initial order screen first.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptYes",
+    "en": "Yes, continue here",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.dist.initialPromptNo",
+    "en": "No, open initial order",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colRoleCode",
+    "en": "Role code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colRoleName",
+    "en": "Role name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colDeptCode",
+    "en": "Department code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colDeptName",
+    "en": "Department name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colGroupCode",
+    "en": "Group code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colGroupName",
+    "en": "Group name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colEmployees",
+    "en": "Employees",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colDocs",
+    "en": "Documents",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colQty",
+    "en": "Total quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.colLast",
+    "en": "Last activity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryRole",
+    "en": "Role usage",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryDept",
+    "en": "Department usage",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryGroup",
+    "en": "Group usage",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryK",
+    "en": "Role summary",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryD",
+    "en": "Department summary",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.summaryG",
+    "en": "Group summary",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.lastMove",
+    "en": "Last move",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.roleSearchPh",
+    "en": "Search role code or name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.deptSearchPh",
+    "en": "Search department code or name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.groupSearchPh",
+    "en": "Search group code or name",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.errRole",
+    "en": "Could not load role report.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.emptyRole",
+    "en": "No role data.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.errDept",
+    "en": "Could not load department report.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.emptyDept",
+    "en": "No department data.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.errGroup",
+    "en": "Could not load group report.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.emptyGroup",
+    "en": "No group data.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.labelRole",
+    "en": "Role",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.deptLabel",
+    "en": "Department",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.groupLabel",
+    "en": "Group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.labelQty",
+    "en": "Total quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.labelDocEmp",
+    "en": "Documents / employees",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.pickRowRole",
+    "en": "Select a role on the left to see the summary.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.pickRowDept",
+    "en": "Select a department on the left to see the summary.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.reports.pickRowGroup",
+    "en": "Select a group on the left to see the summary.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.pageTitle",
+    "en": "PPE validation and warning log",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.breadcrumb",
+    "en": "PPE validation and warning log",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.gridTitle",
+    "en": "Validation log",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.detailTitle",
+    "en": "Log detail",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.time",
+    "en": "Time",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.employee",
+    "en": "Employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.account",
+    "en": "Account",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.stock",
+    "en": "Stock",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.group",
+    "en": "Group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.qty",
+    "en": "Quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.code",
+    "en": "Code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.desc",
+    "en": "Description",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.errLoad",
+    "en": "Could not load validation log.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.empty",
+    "en": "No validation log entries.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.searchPh",
+    "en": "Search employee, stock, group, or error code",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.message",
+    "en": "Message",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.metaQr",
+    "en": "QR",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.metaBarcode",
+    "en": "Barcode",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.metaWh",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.metaDevice",
+    "en": "Device",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.stockQty",
+    "en": "Stock / quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.employeeCust",
+    "en": "Employee / account",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.validationLog.pickLog",
+    "en": "Select a log entry on the left to see details.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.roleReport.pageTitle",
+    "en": "PPE role report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.roleReport.breadcrumb",
+    "en": "PPE role report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.departmentReport.pageTitle",
+    "en": "PPE department report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.departmentReport.breadcrumb",
+    "en": "PPE department report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.groupReport.pageTitle",
+    "en": "PPE group report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.groupReport.breadcrumb",
+    "en": "PPE group report",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.intro",
+    "en": "This screen defines entitlements by group code; stock code is not the main decision field here. The employee first uses the initial entitlement, then the 3-month entitlement, and afterwards the recurring entitlement.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.departmentTitle",
+    "en": "Select department",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.departmentPh",
+    "en": "Select department",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.departmentPhNeedDept",
+    "en": "Select department first",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.roleTitle",
+    "en": "Select role",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.rolePh",
+    "en": "Select role",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.groupStockPh",
+    "en": "Select stock group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.groupSearch",
+    "en": "Search group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.groupEmpty",
+    "en": "Group not found",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.periodPlaceholder",
+    "en": "Year / Month / Day",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblDepartment",
+    "en": "Department *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRole",
+    "en": "Role *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblGroupCode",
+    "en": "Group code *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblInitialIssue",
+    "en": "Initial issue quantity *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.touchGuideTitle",
+    "en": "Very simple explanation for tablet and phone users",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.touchGuideLine1",
+    "en": "Total entitlement means how many items this person can receive in that phase overall.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.touchGuideLine2",
+    "en": "Wait days before next issue means how many days the person must wait after taking one item before taking again.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.touchGuideLine3",
+    "en": "Max quantity per issue means how many items can be given in one visit at most.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblInitialFreqDays",
+    "en": "Initial wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblInitialBulk",
+    "en": "Initial bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblInitialFreqQty",
+    "en": "Initial max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblThreeMonthQty",
+    "en": "After 3 months quantity *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblThreeMonthFreqDays",
+    "en": "3M wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblThreeMonthBulk",
+    "en": "3M bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblThreeMonthFreqQty",
+    "en": "3M max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutineQty",
+    "en": "Routine period quantity *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutinePeriodType",
+    "en": "Routine period type *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutineInterval",
+    "en": "Routine period interval *",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutineFreqDays",
+    "en": "Routine wait days before next issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutineBulk",
+    "en": "Routine bulk issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblRoutineFreqQty",
+    "en": "Routine max quantity per issue",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintInitialFreqDays",
+    "en": "Example: if you enter 30, someone who receives today must wait 30 days before taking from the same entitlement again.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintInitialFreqQty",
+    "en": "Example: if you enter 1, the user can receive at most 1 item in one visit.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintThreeMonthFreqDays",
+    "en": "Enter how many days must pass between issues for the 3-month entitlement.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintThreeMonthFreqQty",
+    "en": "Enter the highest quantity that can be issued in one visit for the 3-month entitlement.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintRoutineFreqDays",
+    "en": "Enter how many days must pass before the recurring entitlement can be issued again.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.hintRoutineFreqQty",
+    "en": "Enter the highest quantity that can be issued in one visit for the recurring entitlement.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblActive",
+    "en": "Active",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.matrix.lblMandatory",
+    "en": "Mandatory",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.deleteConfirm",
+    "en": "Delete record {{name}}?",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.pageTitle",
+    "en": "PPE Operations Center",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.moduleBadge",
+    "en": "PPE Module",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.subtitle",
+    "en": "Manage PPE operations from one place.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.startDistribution",
+    "en": "Start Distribution",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.checkEntitlement",
+    "en": "Check Entitlement",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.actionsTitle",
+    "en": "Actions",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.flowTitle",
+    "en": "Flow",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.definitionsTitle",
+    "en": "Definitions",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.openScreen",
+    "en": "Open Screen",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryEmployee",
+    "en": "Employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryDepartment",
+    "en": "Department",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryRole",
+    "en": "Role",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryMatrix",
+    "en": "Role Matrix",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryOverride",
+    "en": "Override",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.summaryStockGroup",
+    "en": "Stock Group",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickDistributionTitle",
+    "en": "PPE Distribution",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickDistributionDesc",
+    "en": "Pick employee, scan product, complete document.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickCheckTitle",
+    "en": "Entitlement Check",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickCheckDesc",
+    "en": "Quickly verify if employee has entitlement.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickListTitle",
+    "en": "Distribution List",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickListDesc",
+    "en": "List and review created documents.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickDefinitionsTitle",
+    "en": "Definitions",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.quickDefinitionsDesc",
+    "en": "Manage department, role, and employee cards.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step1",
+    "en": "Department and role are defined.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step2",
+    "en": "Employee card is created.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step3",
+    "en": "Role matrix is defined.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step4",
+    "en": "Manual override is granted if needed.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step5",
+    "en": "Distribution is completed.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.step6",
+    "en": "Document and remaining entitlement are monitored.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govOrganizationTitle",
+    "en": "Organization",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govOrganizationDesc",
+    "en": "Department, role, and employee cards.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govMatrixTitle",
+    "en": "Role Matrix",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govMatrixDesc",
+    "en": "Entitlement rules for department and role.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govOverrideTitle",
+    "en": "Manual Overrides",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.overview.govOverrideDesc",
+    "en": "Additional entitlement for exceptional employee needs.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.pageTitle",
+    "en": "PPE Distribution List",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.breadcrumb",
+    "en": "PPE Distribution List",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.gridTitle",
+    "en": "PPE Documents",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.detailTitle",
+    "en": "Document Summary",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.errLoad",
+    "en": "PPE distribution list could not be loaded.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.empty",
+    "en": "No PPE documents found.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.searchPh",
+    "en": "Search by document no, customer, employee or status",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colDocNo",
+    "en": "Document No",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colDocDate",
+    "en": "Document Date",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colCustomer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colEmployee",
+    "en": "Employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colWarehouse",
+    "en": "Warehouse",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colStatus",
+    "en": "Status",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colSource",
+    "en": "Source",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colLineCount",
+    "en": "Line",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colTotalQty",
+    "en": "Total Quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.colErpStatus",
+    "en": "ERP Status",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.headerBadge",
+    "en": "Header #{{id}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.erpPrefix",
+    "en": "ERP",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.customerEmployee",
+    "en": "Customer / Employee",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.documentCompletion",
+    "en": "Document / Completion",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.linesTitle",
+    "en": "Lines",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.linesLoading",
+    "en": "Document lines are loading...",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.qtyPrefix",
+    "en": "Quantity",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.lineMeta",
+    "en": "Barcode: {{b}} | Serial: {{s}} | Shelf: {{r}}",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.pickDocument",
+    "en": "Lines are shown here when a document is selected.",
+    "current": null
+  },
+  {
+    "key": "kkd.operational.distributionList.pickLeft",
+    "en": "Select a PPE document from the left to see details here.",
+    "current": null
+  }
+]

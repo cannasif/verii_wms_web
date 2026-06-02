@@ -1,0 +1,2326 @@
+[
+  {
+    "key": "common.previous",
+    "en": "Previous",
+    "de": "Zurück",
+    "tr": "Önceki",
+    "reason": "tr"
+  },
+  {
+    "key": "common.delete",
+    "en": "Delete",
+    "de": "Löschen",
+    "tr": "Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "common.reset",
+    "en": "Reset",
+    "de": "Zurücksetzen",
+    "tr": "Sıfırla",
+    "reason": "tr"
+  },
+  {
+    "key": "common.back",
+    "en": "Back",
+    "de": "Zurück",
+    "tr": "Geri",
+    "reason": "tr"
+  },
+  {
+    "key": "common.optional",
+    "en": "Optional",
+    "de": "Optional",
+    "tr": "Opsiyonel",
+    "reason": "en"
+  },
+  {
+    "key": "common.over",
+    "en": "Over",
+    "de": "Überschuss",
+    "tr": "Fazla",
+    "reason": "tr"
+  },
+  {
+    "key": "common.add",
+    "en": "Add",
+    "de": "Hinzufügen",
+    "tr": "Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "common.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "common.exportExcel",
+    "en": "Excel",
+    "de": "Excel",
+    "tr": "Excel",
+    "reason": "en"
+  },
+  {
+    "key": "common.exportPdf",
+    "en": "PDF",
+    "de": "PDF",
+    "tr": "PDF",
+    "reason": "en"
+  },
+  {
+    "key": "common.details",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detaylar",
+    "reason": "en"
+  },
+  {
+    "key": "common.breadcrumb",
+    "en": "Breadcrumb",
+    "de": "Breadcrumb",
+    "tr": "Gezinti yolu",
+    "reason": "en"
+  },
+  {
+    "key": "common.validation.selectAtLeastOneItem",
+    "en": "You must select at least one item before continuing.",
+    "de": "Sie müssen mindestens einen Artikel auswählen, bevor Sie fortfahren.",
+    "tr": "Devam etmeden önce en az bir kalem seçmelisiniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.numericPlaceholder",
+    "en": "0",
+    "de": "0",
+    "tr": "0",
+    "reason": "en"
+  },
+  {
+    "key": "common.errors.deleteFailed",
+    "en": "Delete operation failed.",
+    "de": "Löschvorgang fehlgeschlagen.",
+    "tr": "Silme işlemi başarısız oldu.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.errors.packageHeaderDeleteFailed",
+    "en": "Packaging could not be deleted.",
+    "de": "Verpackung konnte nicht gelöscht werden.",
+    "tr": "Paketleme silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.errors.packageDeleteFailed",
+    "en": "Package could not be deleted.",
+    "de": "Paket konnte nicht gelöscht werden.",
+    "tr": "Paket silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.errors.packageLineDeleteFailed",
+    "en": "Package line could not be deleted.",
+    "de": "Paket line konnte nicht gelöscht werden.",
+    "tr": "Paket satırı silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.errors.userDeleteFailed",
+    "en": "User could not be deleted.",
+    "de": "User konnte nicht gelöscht werden.",
+    "tr": "Kullanıcı silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "common.noPermission",
+    "en": "Bu işlem için yetkiniz yok.",
+    "de": "Bu işlem için yetkiniz yok.",
+    "tr": "Bu işlem için yetkiniz yok.",
+    "reason": "en"
+  },
+  {
+    "key": "common.saveSuccess",
+    "en": "Kayıt başarıyla kaydedildi",
+    "de": "Kayıt başarıyla kaydedildi",
+    "tr": "Kayıt başarıyla kaydedildi",
+    "reason": "en"
+  },
+  {
+    "key": "common.deleteSuccess",
+    "en": "Kayıt silindi",
+    "de": "Kayıt silindi",
+    "tr": "Kayıt silindi",
+    "reason": "en"
+  },
+  {
+    "key": "common.passive",
+    "en": "Pasif",
+    "de": "Pasif",
+    "tr": "Pasif",
+    "reason": "en"
+  },
+  {
+    "key": "common.create",
+    "en": "Oluştur",
+    "de": "Oluştur",
+    "tr": "Oluştur",
+    "reason": "en"
+  },
+  {
+    "key": "auth.login.subtitle",
+    "en": "VERII WMS",
+    "de": "VERII WMS",
+    "tr": "VERII WMS",
+    "reason": "en"
+  },
+  {
+    "key": "auth.login.passwordPlaceholder",
+    "en": "••••••••",
+    "de": "••••••••",
+    "tr": "••••••••",
+    "reason": "en"
+  },
+  {
+    "key": "auth.forgotPassword.submitButton",
+    "en": "Send Reset Link",
+    "de": "Link zum Zurücksetzen schicken",
+    "tr": "Sıfırlama Bağlantısı Gönder",
+    "reason": "tr"
+  },
+  {
+    "key": "auth.forgotPassword.backToLogin",
+    "en": "Back to login",
+    "de": "Zurück zur Anmeldung",
+    "tr": "Giriş ekranına dön",
+    "reason": "tr"
+  },
+  {
+    "key": "auth.resetPassword.title",
+    "en": "Reset Password",
+    "de": "Passwort zurücksetzen",
+    "tr": "Şifre Sıfırla",
+    "reason": "tr"
+  },
+  {
+    "key": "auth.resetPassword.invalidToken",
+    "en": "Invalid or missing reset link.",
+    "de": "Ungültiger oder fehlender Reset-Link.",
+    "tr": "Geçersiz veya eksik sıfırlama bağlantısı.",
+    "reason": "tr"
+  },
+  {
+    "key": "auth.validation.emailInvalid",
+    "en": "Please enter a valid email address.",
+    "de": "Bitte geben Sie eine gültige E-Mail-Adresse an.",
+    "tr": "Geçerli bir e-posta adresi giriniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "auth.validation.passwordsMismatch",
+    "en": "Passwords do not match.",
+    "de": "Passwörter stimmen nicht überein.",
+    "tr": "Şifreler eşleşmiyor.",
+    "reason": "tr"
+  },
+  {
+    "key": "navbar.VERII WMS",
+    "en": "VERII WMS",
+    "de": "VERII WMS",
+    "tr": "VERII WMS",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.dashboard",
+    "en": "Dashboard",
+    "de": "Dashboard",
+    "tr": "Dashboard",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.transfer",
+    "en": "Transfer",
+    "de": "Transfer",
+    "tr": "Transfer",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.transferList",
+    "en": "Transfer Order List",
+    "de": "Übertragungsauftrag",
+    "tr": "Transfer Emri Listesi",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.parametersSrt",
+    "en": "Subcontracting Receipt Transfer Parameters",
+    "de": "Parameter für die Übergabe von Belegen an Unterauftragnehmer",
+    "tr": "Taşeron Alış Transfer Parametreleri",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.parametersSit",
+    "en": "Subcontracting Issue Transfer Parameters",
+    "de": "Übergabeparameter für Probleme bei der Unterauftragsvergabe",
+    "tr": "Taşeron Çıkış Transfer Parametreleri",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.hangfireMonitoring",
+    "en": "Hangfire Monitoring",
+    "de": "Hangfire-Überwachung",
+    "tr": "Hangfire İzleme",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.erp",
+    "en": "ERP",
+    "de": "ERP",
+    "tr": "ERP",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.erpYapKodlar",
+    "en": "YapKodlar",
+    "de": "YapKodlar",
+    "tr": "YapKodlar",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.subcontractingIssueCreate",
+    "en": "Create Subcontracting Issue Order",
+    "de": "Ausgabeauftrag für Unterauftragsvergabe erstellen",
+    "tr": "Fason Çıkış Emrini Oluşturma",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.subcontractingReceiptCreate",
+    "en": "Create Subcontracting Receipt Order",
+    "de": "Belegauftrag für Unterauftragsvergabe erstellen",
+    "tr": "Fason Giriş Emrini Oluşturma",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.subcontractingReceiptList",
+    "en": "Subcontracting Receipt List",
+    "de": "Liste der Belege für Unteraufträge",
+    "tr": "Fason Giriş Listesi",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.productionTransferCreateGrouped",
+    "en": "Transfer / Create Production Transfer",
+    "de": "Übertragung /Produktionsübertragung erstellen",
+    "tr": "Transfer / Üretim Transferi Oluştur",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.productionTransferGroup",
+    "en": "Transfer",
+    "de": "Transfer",
+    "tr": "Transfer",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.filterLabel",
+    "en": "Filter",
+    "de": "Filter",
+    "tr": "Filtre",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.qualityControlInspections",
+    "en": "Quality Inspection Records",
+    "de": "Qualitätsprüfungsprotokolle",
+    "tr": "Kalite İnceleme Kayıtları",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.qualityControlInspectionsList",
+    "en": "Quality Inspection List",
+    "de": "Qualitätsprüfung",
+    "tr": "Kalite İnceleme Listesi",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.sacMalKabulOcrMatch",
+    "en": "OCR Customer Stock Match",
+    "de": "OCR-Kundenbestandsübereinstimmung",
+    "tr": "OCR Müşteri Stok Eşleme",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.sacMalKabulOcrMatchList",
+    "en": "OCR Match Records",
+    "de": "OCR-Übereinstimmungsdatensätze",
+    "tr": "OCR Eşleme Kayıtları",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.sacMalKabulInspection",
+    "en": "Yard Acceptance Control",
+    "de": "Yard Acceptance Control",
+    "tr": "Saha Kabul Kontrol",
+    "reason": "en"
+  },
+  {
+    "key": "sidebar.kkdMonitoringGroup",
+    "en": "Check and Monitoring",
+    "de": "Kontrolle und Überwachung",
+    "tr": "Sorgu ve İzleme",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.kkdEntitlementCheck",
+    "en": "PPE Eligibility Check",
+    "de": "Formale Zulässigkeitsprüfungen",
+    "tr": "KKD Hak Uygunluk Sorgusu",
+    "reason": "tr"
+  },
+  {
+    "key": "sidebar.kkdAdditionalEntitlements",
+    "en": "PPE Manual Overrides",
+    "de": "Manuelle Überbrückungen",
+    "tr": "KKD Manuel İstisnalar",
+    "reason": "tr"
+  },
+  {
+    "key": "erpReference.columns.name",
+    "en": "Name",
+    "de": "Name",
+    "tr": "Ad",
+    "reason": "en"
+  },
+  {
+    "key": "erpReference.columns.linkedStock",
+    "en": "Linked Stock",
+    "de": "Verknüpfte Aktien",
+    "tr": "Bağlı Stok",
+    "reason": "tr"
+  },
+  {
+    "key": "erpReference.stock.title",
+    "en": "Stock Mirror",
+    "de": "Stock Mirror",
+    "tr": "Stok Mirror",
+    "reason": "en"
+  },
+  {
+    "key": "barcodeManagement.dialogDescription",
+    "en": "This record is used as the DB-first barcode definition for the current branch. If the same module key exists, it overrides configuration.",
+    "de": "Dieser Datensatz wird als DB-First-Barcode-Definition für die aktuelle Filiale verwendet. Wenn der gleiche Modulschlüssel vorhanden ist, überschreibt er die Konfiguration.",
+    "tr": "Bu kayıt mevcut şube için DB first barkod tanımı olarak kullanılır. Aynı module key varsa konfigürasyonun önüne geçer.",
+    "reason": "tr"
+  },
+  {
+    "key": "barcodeManagement.moduleKey",
+    "en": "Module Key",
+    "de": "Modulschlüssel",
+    "tr": "Module Key",
+    "reason": "tr"
+  },
+  {
+    "key": "barcodeManagement.erpFallbackHelp",
+    "en": "When pattern parsing is not enough, resolve continues on WMS mirror stock and variant fields.",
+    "de": "Wenn die Musteranalyse nicht ausreicht, wird die Auflösung in den WMS-Spiegelbestands- und Variantenfeldern fortgesetzt.",
+    "tr": "Pattern tek başına çözemezse WMS mirror stok ve yapı kodu alanlarında arama yapar.",
+    "reason": "tr"
+  },
+  {
+    "key": "barcodeManagement.sourceDatabase",
+    "en": "Database override",
+    "de": "Datenbanküberschreibung",
+    "tr": "Veritabanı override",
+    "reason": "tr"
+  },
+  {
+    "key": "barcodeManagement.testDescription",
+    "en": "Test the barcode through the backend resolve service for the selected module.",
+    "de": "Testen Sie den Barcode über den Backend-Auflösungsdienst für das ausgewählte Modul.",
+    "tr": "Seçilen modül için barkodu backend resolve servisi üzerinden test edin.",
+    "reason": "tr"
+  },
+  {
+    "key": "dashboard.title",
+    "en": "Dashboard",
+    "de": "Dashboard",
+    "tr": "Dashboard",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.step2.noOrders",
+    "en": "No orders found for this customer",
+    "de": "Keine Bestellungen für diesen Kunden gefunden",
+    "tr": "Bu cariye ait sipariş bulunamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.orderDetails.description",
+    "en": "You can select order items to add to the goods receipt list",
+    "de": "Sie können Bestellpositionen auswählen, die der Wareneingangsliste hinzugefügt werden sollen",
+    "tr": "Sipariş kalemlerini seçerek mal kabul listesine ekleyebilirsiniz",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.report.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.report.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.report.erp",
+    "en": "ERP",
+    "de": "ERP",
+    "tr": "ERP",
+    "reason": "en"
+  },
+  {
+    "key": "goodsReceipt.report.returnCode",
+    "en": "Return Code",
+    "de": "Rückgabe-Wert",
+    "tr": "İade Kodu",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.report.audit",
+    "en": "Audit",
+    "de": "Prüfung",
+    "tr": "Denetim",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.collection.collected",
+    "en": "Product collected",
+    "de": "Einnahmen aus Produktgebühren:",
+    "tr": "Ürün toplandı",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.collection.invalidHeaderId",
+    "en": "Invalid goods receipt order",
+    "de": "Ungültiger Wareneingangsauftrag",
+    "tr": "Geçersiz mal kabul emri",
+    "reason": "tr"
+  },
+  {
+    "key": "goodsReceipt.collection.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.description",
+    "en": "Create the first record for an arriving vehicle. If the same plate returns on the same day, the current record is updated.",
+    "de": "Erstellen Sie den ersten Datensatz für ein ankommendes Fahrzeug. Wenn dieselbe Platte am selben Tag zurückkehrt, wird der aktuelle Datensatz aktualisiert.",
+    "tr": "Sahaya gelen araç için ilk kaydı oluşturun. Aynı plaka aynı gün tekrar gelirse mevcut kayıt güncellenir.",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.fields.platePh",
+    "en": "34ABC123",
+    "de": "34ABC123",
+    "tr": "34ABC123",
+    "reason": "en"
+  },
+  {
+    "key": "vehicleCheckIn.actions.openList",
+    "en": "Open Record List",
+    "de": "Datensatzliste öffnen",
+    "tr": "Kayıt Listesini Aç",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.images.description",
+    "en": "Add one or more images related to this vehicle entry.",
+    "de": "Fügen Sie ein oder mehrere Bilder hinzu, die sich auf diesen Fahrzeugeintrag beziehen.",
+    "tr": "Bu girişle ilişkili bir veya daha fazla görsel ekleyin.",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.images.add",
+    "en": "Add New Image",
+    "de": "Neues Bild hinzufügen",
+    "tr": "Yeni Görsel Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.images.delete",
+    "en": "Delete Image",
+    "de": "Löschen Image",
+    "tr": "Görseli Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.images.empty",
+    "en": "No images have been uploaded for this record yet.",
+    "de": "Für diesen Datensatz wurden noch keine Bilder hochgeladen.",
+    "tr": "Bu kayıt için henüz görsel yüklenmedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.list.description",
+    "en": "Track same-day updates and different-day new entries for vehicle arrivals.",
+    "de": "Verfolgen Sie Aktualisierungen am selben Tag und Neueinträge an anderen Tagen für Fahrzeugankünfte.",
+    "tr": "Aynı gün güncellenen ya da farklı günlerde açılan araç giriş kayıtlarını izleyin.",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.list.actions.open",
+    "en": "Open Record",
+    "de": "Datensatz öffnen",
+    "tr": "Kaydı Aç",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.messages.plateRequired",
+    "en": "Plate is required for vehicle check-in.",
+    "de": "Für den Check-in des Fahrzeugs ist ein Schild erforderlich.",
+    "tr": "Araç kontrol kaydı için plaka zorunludur.",
+    "reason": "tr"
+  },
+  {
+    "key": "vehicleCheckIn.messages.imageDeleted",
+    "en": "Vehicle image deleted.",
+    "de": "Fertig! Fahrzeug Bild gelöscht.",
+    "tr": "Araç görseli silindi.",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.pageTitle",
+    "en": "OCR Customer Stock Match",
+    "de": "OCR-Kundenbestandsübereinstimmung",
+    "tr": "OCR Müşteri Stok Eşleme",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.guidance.line1",
+    "en": "The same customer stock code can only be defined once for the same customer.",
+    "de": "Der gleiche Kundenbestandscode kann nur einmal für den gleichen Kunden definiert werden.",
+    "tr": "Aynı müşteri için aynı müşteri stok kodu yalnızca bir kez tanımlanabilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.guidance.line2",
+    "en": "This screen does not perform OCR; it only manages the mapping between customer stock codes and our stock cards.",
+    "de": "Dieser Bildschirm führt keine OCR durch; er verwaltet nur die Zuordnung zwischen Kunden-Lagercodes und unseren Lagerkarten.",
+    "tr": "Bu ekran OCR yapmaz; sadece müşteri stok kodu ile bizim stok kartımız arasındaki eşlemeyi yönetir.",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.customerBarcodePlaceholder",
+    "en": "Customer barcode if available",
+    "de": "Kunden-Barcode, falls verfügbar",
+    "tr": "Varsa müşteri barkodu",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.fields.isActive",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Aktiflik",
+    "reason": "en"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.created",
+    "en": "OCR customer stock match record created",
+    "de": "OCR-Kundenbestandsübereinstimmungsdatensatz erstellt",
+    "tr": "OCR müşteri stok eşleme kaydı oluşturuldu",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.messages.updated",
+    "en": "OCR customer stock match record updated",
+    "de": "OCR-Kundenbestandsübereinstimmungsdatensatz aktualisiert",
+    "tr": "OCR müşteri stok eşleme kaydı güncellendi",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.pageTitle",
+    "en": "OCR Match Records",
+    "de": "OCR-Übereinstimmungsdatensätze",
+    "tr": "OCR Eşleme Kayıtları",
+    "reason": "tr"
+  },
+  {
+    "key": "ocrGoodsReceiptMatch.list.columns.isActive",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Aktiflik",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.messages.ruleDeleted",
+    "en": "Quality rule deleted.",
+    "de": "Qualitätsregel gelöscht.",
+    "tr": "Kalite kuralı silindi.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.ruleStockRequired",
+    "en": "Stock selection is required for a stock-scoped rule.",
+    "de": "Für eine Bestandsberechnungsregel ist eine Bestandsauswahl erforderlich.",
+    "tr": "Stok bazlı kural için stok seçimi zorunludur.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.ruleGroupRequired",
+    "en": "Group code is required for a group-scoped rule.",
+    "de": "Gruppencode ist für eine Regel mit Gruppenbereich erforderlich.",
+    "tr": "Grup bazlı kural için grup kodu zorunludur.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.inspectionCreated",
+    "en": "Quality inspection record created.",
+    "de": "Qualitätsprüfungsprotokoll erstellt.",
+    "tr": "Kalite inceleme kaydı oluşturuldu.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.inspectionUpdated",
+    "en": "Quality inspection record updated.",
+    "de": "Qualitätsprüfungsprotokoll aktualisiert.",
+    "tr": "Kalite inceleme kaydı güncellendi.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.inspectionDeleted",
+    "en": "Quality inspection record deleted.",
+    "de": "Qualitätsprüfungsprotokoll gelöscht.",
+    "tr": "Kalite inceleme kaydı silindi.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.quarantineReturned",
+    "en": "Quarantine record moved to return flow.",
+    "de": "Quarantäne-Datensatz zum Rücklauf verschoben.",
+    "tr": "Karantinadaki kayıt iade sürecine alındı.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.quarantineReturnedWithReference",
+    "en": "Quarantine record moved to return flow. Created document: {{reference}}",
+    "de": "Quarantäne-Datensatz zum Rücklauf verschoben. Dokument erstellt: {{reference}}",
+    "tr": "Karantinadaki kayıt iade sürecine alındı. Oluşan belge: {{reference}}",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.inspectionLinesRequired",
+    "en": "Add at least one inspection line.",
+    "de": "Fügen Sie mindestens eine Inspektionslinie hinzu.",
+    "tr": "En az bir inceleme satırı eklemelisiniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.messages.inspectionLineQuantityRequired",
+    "en": "Inspection line quantity must be greater than zero.",
+    "de": "Die Menge der Inspektionslinie muss größer als Null sein.",
+    "tr": "İnceleme satırı miktarı sıfırdan büyük olmalıdır.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.guidance1",
+    "en": "First decide whether the rule applies to a specific stock or to a stock group.",
+    "de": "Entscheiden Sie zunächst, ob die Regel für einen bestimmten Bestand oder für eine Bestandsgruppe gilt.",
+    "tr": "Önce bu kuralın stok bazlı mı yoksa stok grubu bazlı mı çalışacağını seçin.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.guidance2",
+    "en": "This screen does not make the final decision itself; it defines how incoming material enters the quality flow.",
+    "de": "Dieser Bildschirm trifft nicht die endgültige Entscheidung selbst; er definiert, wie das eingehende Material in den Qualitätsfluss eintritt.",
+    "tr": "Bu ekran doğrudan karar vermez; gelen malın kalite kuyruğuna nasıl düşeceğini tanımlar.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.inspectionModes.noCheck",
+    "en": "No Check",
+    "de": "Keine Prüfung",
+    "tr": "Kontrol Yok",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.inspectionModes.quickCheck",
+    "en": "Quick Check",
+    "de": "Quick Check",
+    "tr": "Hızlı Kontrol",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.rules.failActions.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.rules.fields.stockGroupNamePlaceholder",
+    "en": "A label that operations can understand",
+    "de": "Ein Etikett, das Operationen verstehen können",
+    "tr": "Operasyonun anlayacağı açıklama",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.fields.onFailAction",
+    "en": "Fail Action",
+    "de": "Aktion für 'fehlgeschlagen'",
+    "tr": "Başarısızlık Aksiyonu",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.list.columns.onFailAction",
+    "en": "Fail Action",
+    "de": "Aktion für 'fehlgeschlagen'",
+    "tr": "Başarısızlık Aksiyonu",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.rules.list.columns.requireLot",
+    "en": "Lot",
+    "de": "Lot",
+    "tr": "Lot",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.settings.guidance1",
+    "en": "This is where you define how goods receipt enters the quality flow for the company or branch.",
+    "de": "Hier legen Sie fest, wie der Wareneingang in den Qualitätsfluss für das Unternehmen oder die Niederlassung eintritt.",
+    "tr": "Firma bazında mal kabulün kalite kontrol akışına nasıl gireceğini buradan belirlersiniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.settings.guidance2",
+    "en": "If no stock-specific or group-specific rule exists, the system falls back to these settings before accepting, quarantining, or opening an inspection.",
+    "de": "Wenn keine bestands- oder gruppenspezifische Regel existiert, greift das System vor der Annahme, Quarantäne oder Eröffnung einer Inspektion auf diese Einstellungen zurück.",
+    "tr": "Özel stok veya grup kuralı yoksa sistem önce bu ayarlara bakar, sonra işlemi kabul eder, karantinaya atar ya da inceleme açar.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.settings.fields.defaultReturnOutboundType",
+    "en": "Default Return Outbound Type",
+    "de": "Standardausgangstyp der Rücksendung",
+    "tr": "Varsayılan İade Çıkış Tipi",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.settings.fields.autoCreateInspectionOnReceipt",
+    "en": "Auto Create Inspection on Goods Receipt",
+    "de": "Automatische Prüfung des Wareneingangs erstellen",
+    "tr": "Mal Kabulde Otomatik İnceleme Kaydı Aç",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.settings.fields.enableTraceabilityEvents",
+    "en": "Record Traceability Events",
+    "de": "Rückverfolgbarkeitsereignisse aufzeichnen",
+    "tr": "İzlenebilirlik Olaylarını Kaydet",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.pageTitle",
+    "en": "Quality Inspection Records",
+    "de": "Qualitätsprüfungsprotokolle",
+    "tr": "Kalite İnceleme Kayıtları",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.title",
+    "en": "Quality Inspection Form",
+    "de": "Qualitätsprüfung",
+    "tr": "Kalite İnceleme Formu",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.description",
+    "en": "Create inspection lines for incoming material, manage the status, and keep a clear decision history.",
+    "de": "Erstellen Sie Inspektionszeilen für eingehendes Material, verwalten Sie den Status und führen Sie eine klare Entscheidungshistorie.",
+    "tr": "Gelen ürün için kalite kararı verilecek satırları oluşturun, durumu yönetin ve karar geçmişini izleyin.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.guidanceTitle",
+    "en": "Workflow",
+    "de": "Workflow",
+    "tr": "İş Akışı",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.inspections.guidance1",
+    "en": "Start with the document and warehouse information, then add the stock lines to be reviewed.",
+    "de": "Beginnen Sie mit den Beleg- und Lagerinformationen und fügen Sie dann die zu überprüfenden Lagerpositionen hinzu.",
+    "tr": "Önce belge ve depo bilgisini girin; sonra kontrol edilecek stok satırlarını ekleyin.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.guidance2",
+    "en": "This screen stores the decision record. Quarantine, hold/release, and traceability will build on top of it in later phases.",
+    "de": "Dieser Bildschirm speichert den Entscheidungsdatensatz. Quarantäne, Halten/Freigeben und Rückverfolgbarkeit werden in späteren Phasen darauf aufbauen.",
+    "tr": "Bu ekran karar kaydını tutar. Sonraki fazlarda karantina, hold/release ve traceability buradan beslenecek.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.fields.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.inspections.fields.notePlaceholder",
+    "en": "Short operation note supporting the decision",
+    "de": "Kurzer Betriebshinweis zur Unterstützung der Entscheidung",
+    "tr": "Kontrol sonucunu destekleyen kısa operasyon notu",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.statuses.returned",
+    "en": "Returned",
+    "de": "Zurückgegeben",
+    "tr": "İadeye Ayrıldı",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.decisions.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.inspections.decisions.return",
+    "en": "Send to Return",
+    "de": "Zur Rücksendung senden",
+    "tr": "İadeye Yönlendir",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.lines.add",
+    "en": "Add Line",
+    "de": "Linie hinzufügen",
+    "tr": "Satırı Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.lines.empty",
+    "en": "No inspection lines added yet.",
+    "de": "Es wurden noch keine Inspektionslinien hinzugefügt.",
+    "tr": "Henüz inceleme satırı eklenmedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.list.pageTitle",
+    "en": "Quality Inspection List",
+    "de": "Qualitätsprüfung",
+    "tr": "Kalite İnceleme Listesi",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.list.empty",
+    "en": "No quality inspection records found.",
+    "de": "Keine Qualitätsprüfungsaufzeichnungen gefunden.",
+    "tr": "Gösterilecek kalite inceleme kaydı bulunamadı.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.inspections.list.columns.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.quarantine.description",
+    "en": "Review quality records that were moved to quarantine and manage release, reject, or return decisions.",
+    "de": "Überprüfen Sie Qualitätsdatensätze, die in die Quarantäne verschoben wurden, und verwalten Sie Freigabe-, Ablehnungs- oder Rückgabeentscheidungen.",
+    "tr": "Karantinaya düşen mal kabul kalite kayıtlarını gözden geçirin ve serbest bırakma, red veya iade kararını yönetin.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.quarantine.review",
+    "en": "Review",
+    "de": "Prüfung",
+    "tr": "İncele",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.description",
+    "en": "Give the release, reject, or return decision for this record.",
+    "de": "Geben Sie die Freigabe-, Ablehnungs- oder Rückgabeentscheidung für diesen Datensatz an.",
+    "tr": "Serbest bırakma, red veya iade kararını kayıt bazında verin.",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.quarantine.dialog.notePlaceholder",
+    "en": "Short note explaining the decision",
+    "de": "Kurzer Hinweis zur Begründung der Entscheidung",
+    "tr": "Verilen kararı açıklayan kısa not",
+    "reason": "tr"
+  },
+  {
+    "key": "qualityControl.quarantine.actions.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "qualityControl.quarantine.actions.return",
+    "en": "Return",
+    "de": "Zurück",
+    "tr": "İadeye Gönder",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.definitionDeleted",
+    "en": "Document series definition deleted.",
+    "de": "Dokumentenserien-Definition gelöscht.",
+    "tr": "Belge seri tanımı silindi.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.definitionRequired",
+    "en": "You must select a document series definition.",
+    "de": "Sie müssen eine Dokumentreihendefinition auswählen.",
+    "tr": "Belge seri tanımı seçmelisiniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.resolvePending",
+    "en": "Waiting for the system to resolve the best default document series.",
+    "de": "Warten, bis das System die beste Standarddokumentreihe auflöst.",
+    "tr": "Sistemin uygun varsayılan seri kuralını çözmesi bekleniyor.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.resolveFallback",
+    "en": "No suitable default series was found. You can select the document series manually.",
+    "de": "Es wurde keine geeignete Standardreihe gefunden. Sie können die Dokumentenserie manuell auswählen.",
+    "tr": "Uygun varsayılan seri bulunamadı. Belge serisini elle seçebilirsiniz.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.selectorHelp",
+    "en": "For operations other than goods receipt, the document number is suggested from this series rule.",
+    "de": "Für andere Vorgänge als Wareneingang wird die Belegnummer aus dieser Serienregel vorgeschlagen.",
+    "tr": "Mal kabul dışındaki işlemlerde belge numarası bu seri kuralına göre önerilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.messages.ruleDeleted",
+    "en": "Document series rule deleted.",
+    "de": "Dokumentenserienregel gelöscht.",
+    "tr": "Belge seri kuralı silindi.",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.matchTypes.unknown",
+    "en": "Resolution",
+    "de": "Auflösung",
+    "tr": "Çözümleme",
+    "reason": "tr"
+  },
+  {
+    "key": "documentSeries.columns.name",
+    "en": "Name",
+    "de": "Name",
+    "tr": "Ad",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.create.mode.order",
+    "en": "Sipariş bazlı",
+    "de": "Sipariş bazlı",
+    "tr": "Sipariş bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.create.mode.stock",
+    "en": "Stok bazlı",
+    "de": "Stok bazlı",
+    "tr": "Stok bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.list.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "de": "Angaben über das Warenlager",
+    "tr": "Depo Bilgileri",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.step1.notesPlaceholder",
+    "en": "Enter your notes",
+    "de": "Hier können Sie Ihre Notizen eintragen:",
+    "tr": "Notlarınızı giriniz",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "de": "Benutzer, die den Vorgang ausführen sollen",
+    "tr": "İşlem Yapacak Kullanıcılar",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "de": "Wählen Sie Benutzer aus, um den Vorgang durchzuführen",
+    "tr": "İşlem yapacak kullanıcıları seçiniz",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.collection.collected",
+    "en": "Product collected",
+    "de": "Einnahmen aus Produktgebühren:",
+    "tr": "Ürün toplandı",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.collection.invalidHeaderId",
+    "en": "Invalid shipment order",
+    "de": "Ungültiger Versandauftrag",
+    "tr": "Geçersiz sevkiyat emri",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.collection.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "shipment.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "shipment.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.create.mode.free",
+    "en": "Free Transfer",
+    "de": "Ablösefrei",
+    "tr": "Serbest Transfer",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.create.mode.stock",
+    "en": "Stok bazlı",
+    "de": "Stok bazlı",
+    "tr": "Stok bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.process.error",
+    "en": "An error occurred while creating transfer process",
+    "de": "Beim Erstellen des Übertragungsprozesses ist ein Fehler aufgetreten",
+    "tr": "Transfer işlemi oluşturulurken bir hata oluştu",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.list.title",
+    "en": "Transfer Order List",
+    "de": "Übertragungsauftrag",
+    "tr": "Transfer Emri Listesi",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.list.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.list.detailDescription",
+    "en": "Detailed information of the transfer order",
+    "de": "Detaillierte Informationen zum Überweisungsauftrag",
+    "tr": "Transfer emrinin detaylı bilgileri",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "de": "Angaben über das Warenlager",
+    "tr": "Depo Bilgileri",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "de": "Benutzer, die den Vorgang ausführen sollen",
+    "tr": "İşlem Yapacak Kullanıcılar",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "de": "Wählen Sie Benutzer aus, um den Vorgang durchzuführen",
+    "tr": "İşlem yapacak kullanıcıları seçiniz",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.step2.noOrders",
+    "en": "No orders found for this customer",
+    "de": "Keine Bestellungen für diesen Kunden gefunden",
+    "tr": "Bu cariye ait sipariş bulunamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.collected",
+    "en": "Product collected",
+    "de": "Einnahmen aus Produktgebühren:",
+    "tr": "Ürün toplandı",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.invalidHeaderId",
+    "en": "Invalid transfer order",
+    "de": "Ungültiger Umlagerungsauftrag",
+    "tr": "Geçersiz transfer emri",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.deleteSuccess",
+    "en": "Barcode deleted successfully",
+    "de": "Barcode erfolgreich gelöscht",
+    "tr": "Barkod başarıyla silindi",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.deleteError",
+    "en": "Barcode could not be deleted",
+    "de": "Barcode konnte nicht gelöscht werden",
+    "tr": "Barkod silinemedi",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmTitle",
+    "en": "Delete Product",
+    "de": "Löschen Product",
+    "tr": "Ürünü Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmWithPackage",
+    "en": "The selected product will be removed from both the package and the process. Are you sure you want to proceed?",
+    "de": "Das ausgewählte Produkt wird sowohl aus der Verpackung als auch aus dem Prozess entfernt. Möchten Sie wirklich fortfahren?",
+    "tr": "Seçili ürün paketten de işlemden de kaldırılacaktır. Bu işlemi yapmak istediğinizden emin misiniz?",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.collection.deleteConfirmWithoutPackage",
+    "en": "The product will be removed from the collection. Are you sure you want to proceed?",
+    "de": "Das Produkt wird aus der Kollektion entfernt. Möchten Sie wirklich fortfahren?",
+    "tr": "Ürün toplamadan kaldırılacaktır. Bu işlemi yapmak istediğinizden emin misiniz?",
+    "reason": "tr"
+  },
+  {
+    "key": "transfer.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "transfer.edit.success",
+    "en": "Transfer updated successfully",
+    "de": "Übertragung erfolgreich aktualisiert",
+    "tr": "Transfer başarıyla güncellendi",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.confirmRemoveMessage",
+    "en": "Are you sure you want to remove this product from the rack?",
+    "de": "Sind Sie sicher, dass Sie dieses Produkt entfernen möchten?",
+    "tr": "Bu ürünü raftan çıkartmak istediğinize emin misiniz?",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.confirmMoveMessage",
+    "en": "Are you sure you want to move this product to the selected area?",
+    "de": "Möchten Sie dieses Produkt wirklich in den ausgewählten Bereich verschieben?",
+    "tr": "Bu ürünü seçtiğiniz bölgeye taşımak istediğinize emin misiniz?",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.realSubtitle",
+    "en": "Visualize steel acceptance placements by warehouse in 2D or 3D. Side-by-side placements can expand to the side and back, while stacked placements respect stack order.",
+    "de": "Visualisieren Sie Stahlabnahmeplatzierungen nach Lager in 2D oder 3D. Side-by-Side-Platzierungen können zur Seite und zurück erweitert werden, während gestapelte Platzierungen die Stapelreihenfolge berücksichtigen.",
+    "tr": "Sac Mal Kabul yerleşimlerini depo bazında 2D veya 3D olarak görüntüleyin. Yan yana yerleşimlerde sağa ve arkaya, üst üste yerleşimlerde istif sırasına göre konumlanma gösterilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode2dHint",
+    "en": "Simplified 2D view for lower-end devices or quick checks.",
+    "de": "Vereinfachte 2D-Ansicht für Low-End-Geräte oder Quick-Checks.",
+    "tr": "Düşük donanım veya hızlı kontrol için sade 2D görünüm.",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.mode3dHint",
+    "en": "3D view for visualizing side, back and stacked placement depth.",
+    "de": "3D-Ansicht zur Visualisierung der Seiten-, Rücken- und gestapelten Platzierungstiefe.",
+    "tr": "Yanına, arkasına ve üstüne yerleşimi görsel olarak izlemek için 3D görünüm.",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.noPlacementData",
+    "en": "No placement data found for the selected filters.",
+    "de": "Keine Platzierungsdaten für die ausgewählten Filter gefunden.",
+    "tr": "Seçilen kriterlerde yerleştirme verisi bulunmuyor.",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.depot",
+    "en": "Depot",
+    "de": "Depot",
+    "tr": "Depo",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.outsideWarehouse.addProduct",
+    "en": "Add Product",
+    "de": "Produkt hinzufügen",
+    "tr": "Urun Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.addToRegion",
+    "en": "Add to Region",
+    "de": "Zu Region hinzufügen",
+    "tr": "Bolgeye Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraEye",
+    "en": "Eye Level (Operator)",
+    "de": "Augenhöhe (Bediener)",
+    "tr": "Göz Hizası (Operatör)",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.cameraReset",
+    "en": "Reset Camera",
+    "de": "Kamera zurücksetzen",
+    "tr": "Kamerayı Sıfırla",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.outsideWarehouse.legendHover",
+    "en": "Hovered",
+    "de": "Darüber fahrend",
+    "tr": "Üzerinde",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.warehouse3d.desktopOnly",
+    "en": "3D warehouse modeling feature is only available on desktop devices.",
+    "de": "Die 3D-Warehouse-Modellierungsfunktion ist nur auf Desktop-Geräten verfügbar.",
+    "tr": "3 boyutlu depo modelleme özelliği yalnızca masaüstü cihazlarda kullanılabilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "inventory.warehouse3d.leftClickDrag",
+    "en": "🖱️ Left Click + Drag",
+    "de": "🖱️ Left Click + Drag",
+    "tr": "🖱️ Sol Tık + Sürükle",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.warehouse3d.rightClickDrag",
+    "en": "🖱️ Right Click + Drag",
+    "de": "🖱️ Right Click + Drag",
+    "tr": "🖱️ Sağ Tık + Sürükle",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.warehouse3d.scroll",
+    "en": "🖱️ Scroll",
+    "de": "🖱️ Scroll",
+    "tr": "🖱️ Scroll",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.warehouse3d.clickShelf",
+    "en": "🖱️ Click Shelf",
+    "de": "🖱️ Click Shelf",
+    "tr": "🖱️ Raf Tıkla",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.warehouse3d.lazyLoadHint",
+    "en": "3D warehouse view is heavy. To keep first render fast, model and stock layers load only when you request it.",
+    "de": "3D warehouse view is heavy. To keep first render fast, model and stock layers load only when you request it.",
+    "tr": "3D depo gorunumu agir bir ekran. Ilk acilisi hizli tutmak icin model ve stok katmani sadece istediginizde yuklenir.",
+    "reason": "en"
+  },
+  {
+    "key": "inventory.warehouse3d.load3dView",
+    "en": "Load 3D View",
+    "de": "Load 3D View",
+    "tr": "3D Gorunumu Yukle",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.sit.assignedList.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.sit.collection.title",
+    "en": "SIT Collection",
+    "de": "SIT Collection",
+    "tr": "SIT Toplama",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.sit.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.sit.collection.collected",
+    "en": "Product collected",
+    "de": "Einnahmen aus Produktgebühren:",
+    "tr": "Ürün toplandı",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.sit.collection.invalidHeaderId",
+    "en": "Invalid SIT order",
+    "de": "Invalid SIT order",
+    "tr": "Geçersiz SIT emri",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.sit.collection.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.srt.assignedList.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.srt.collection.title",
+    "en": "SRT Collection",
+    "de": "SRT Collection",
+    "tr": "SRT Toplama",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.srt.collection.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.srt.collection.collected",
+    "en": "Product collected",
+    "de": "Einnahmen aus Produktgebühren:",
+    "tr": "Ürün toplandı",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.srt.collection.invalidHeaderId",
+    "en": "Invalid SRT order",
+    "de": "Invalid SRT order",
+    "tr": "Geçersiz SRT emri",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.srt.collection.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.issue.create.title",
+    "en": "New Subcontracting Issue Order",
+    "de": "New Subcontracting Issue Order",
+    "tr": "Yeni Fason Çıkış Emri",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.edit.title",
+    "en": "Edit Subcontracting Issue",
+    "de": "Edit Subcontracting Issue",
+    "tr": "Fason Çıkış Düzenle",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.edit.subtitle",
+    "en": "Update subcontracting issue header information without changing line or collection flow",
+    "de": "Update subcontracting issue header information without changing line or collection flow",
+    "tr": "Fason çıkış başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.edit.success",
+    "en": "Subcontracting issue order updated successfully",
+    "de": "Subcontracting issue order updated successfully",
+    "tr": "Fason çıkış emri başarıyla güncellendi",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.edit.error",
+    "en": "An error occurred while updating subcontracting issue order",
+    "de": "An error occurred while updating subcontracting issue order",
+    "tr": "Fason çıkış emri güncellenirken bir hata oluştu",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.list.title",
+    "en": "Subcontracting Issue Order List",
+    "de": "Subcontracting Issue Order List",
+    "tr": "Fason Çıkış Emri Listesi",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.process.title",
+    "en": "Emirsiz Fason Çıkış İşlemi",
+    "de": "Emirsiz Fason Çıkış İşlemi",
+    "tr": "Emirsiz Fason Çıkış İşlemi",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.process.success",
+    "en": "Fason çıkış işlemi oluşturuldu",
+    "de": "Fason çıkış işlemi oluşturuldu",
+    "tr": "Fason çıkış işlemi oluşturuldu",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.process.error",
+    "en": "Fason çıkış işlemi oluşturulamadı",
+    "de": "Fason çıkış işlemi oluşturulamadı",
+    "tr": "Fason çıkış işlemi oluşturulamadı",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.issue.process.subtitle",
+    "en": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun.",
+    "de": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun.",
+    "tr": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun.",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.create.mode.order",
+    "en": "Sipariş bazlı",
+    "de": "Sipariş bazlı",
+    "tr": "Sipariş bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.create.mode.stock",
+    "en": "Stok bazlı",
+    "de": "Stok bazlı",
+    "tr": "Stok bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.create.title",
+    "en": "New Subcontracting Receipt Order",
+    "de": "New Subcontracting Receipt Order",
+    "tr": "Yeni Fason Giriş Emri",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.edit.title",
+    "en": "Edit Subcontracting Receipt",
+    "de": "Edit Subcontracting Receipt",
+    "tr": "Fason Giriş Düzenle",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.edit.subtitle",
+    "en": "Update subcontracting receipt header information without changing line or collection flow",
+    "de": "Update subcontracting receipt header information without changing line or collection flow",
+    "tr": "Fason giriş başlık bilgilerini satır/toplama akışını bozmadan güncelleyin",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.edit.success",
+    "en": "Subcontracting receipt order updated successfully",
+    "de": "Subcontracting receipt order updated successfully",
+    "tr": "Fason giriş emri başarıyla güncellendi",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.edit.error",
+    "en": "An error occurred while updating subcontracting receipt order",
+    "de": "An error occurred while updating subcontracting receipt order",
+    "tr": "Fason giriş emri güncellenirken bir hata oluştu",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.receipt.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.list.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "subcontracting.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "de": "Angaben über das Warenlager",
+    "tr": "Depo Bilgileri",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "de": "Benutzer, die den Vorgang ausführen sollen",
+    "tr": "İşlem Yapacak Kullanıcılar",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "de": "Wählen Sie Benutzer aus, um den Vorgang durchzuführen",
+    "tr": "İşlem yapacak kullanıcıları seçiniz",
+    "reason": "tr"
+  },
+  {
+    "key": "subcontracting.step1.notesPlaceholder",
+    "en": "Enter your notes",
+    "de": "Hier können Sie Ihre Notizen eintragen:",
+    "tr": "Notlarınızı giriniz",
+    "reason": "tr"
+  },
+  {
+    "key": "parameters.list.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "parameters.delete.title",
+    "en": "Delete Parameter",
+    "de": "Löschen Parameter",
+    "tr": "Parametre Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "parameters.srt.title",
+    "en": "Subcontracting Receipt Transfer Parameters",
+    "de": "Parameter für die Übergabe von Belegen an Unterauftragnehmer",
+    "tr": "Taşeron Alış Transfer Parametreleri",
+    "reason": "tr"
+  },
+  {
+    "key": "parameters.sit.title",
+    "en": "Subcontracting Issue Transfer Parameters",
+    "de": "Übergabeparameter für Probleme bei der Unterauftragsvergabe",
+    "tr": "Taşeron Çıkış Transfer Parametreleri",
+    "reason": "tr"
+  },
+  {
+    "key": "package.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "package.list.deleteConfirm",
+    "en": "Delete Packaging",
+    "de": "Löschen Verpackung",
+    "tr": "Paketlemeyi Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "package.wizard.step3.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "package.detail.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "package.detail.deleteConfirm",
+    "en": "Delete Packaging",
+    "de": "Löschen Verpackung",
+    "tr": "Paketlemeyi Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "package.detail.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "package.detail.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "package.detail.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "package.detail.add",
+    "en": "Add",
+    "de": "Hinzufügen",
+    "tr": "Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "package.packageDetail.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "package.packageDetail.deleteConfirm",
+    "en": "Delete Package",
+    "de": "Löschen Paket",
+    "tr": "Paketi Sil",
+    "reason": "tr"
+  },
+  {
+    "key": "package.packageDetail.cameraError",
+    "en": "Camera could not be opened",
+    "de": "Kamera konnte nicht geöffnet werden",
+    "tr": "Kamera açılamadı",
+    "reason": "tr"
+  },
+  {
+    "key": "package.packageDetail.invalidQuantity",
+    "en": "Invalid quantity",
+    "de": "Ungültige Menge.",
+    "tr": "Geçersiz miktar",
+    "reason": "tr"
+  },
+  {
+    "key": "package.packageDetail.add",
+    "en": "Add",
+    "de": "Hinzufügen",
+    "tr": "Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "package.form.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.outbound.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.outbound.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.outbound.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.outbound.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.outbound.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.create.mode.order",
+    "en": "Sipariş bazlı",
+    "de": "Sipariş bazlı",
+    "tr": "Sipariş bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.create.mode.stock",
+    "en": "Stok bazlı",
+    "de": "Stok bazlı",
+    "tr": "Stok bazlı",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.inbound.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.inbound.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.inbound.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.inbound.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.inbound.list.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.list.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "warehouse.list.warehouseInfo",
+    "en": "Warehouse Information",
+    "de": "Angaben über das Warenlager",
+    "tr": "Depo Bilgileri",
+    "reason": "tr"
+  },
+  {
+    "key": "warehouse.step1.operationUsers",
+    "en": "Users to Perform Operation",
+    "de": "Benutzer, die den Vorgang ausführen sollen",
+    "tr": "İşlem Yapacak Kullanıcılar",
+    "reason": "tr"
+  },
+  {
+    "key": "warehouse.step1.selectOperationUsers",
+    "en": "Select users to perform the operation",
+    "de": "Wählen Sie Benutzer aus, um den Vorgang durchzuführen",
+    "tr": "İşlem yapacak kullanıcıları seçiniz",
+    "reason": "tr"
+  },
+  {
+    "key": "warehouse.step1.notesPlaceholder",
+    "en": "Enter your notes",
+    "de": "Hier können Sie Ihre Notizen eintragen:",
+    "tr": "Notlarınızı giriniz",
+    "reason": "tr"
+  },
+  {
+    "key": "production.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "production.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "production.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "production.detail.columns.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "production.detail.transferColumns.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "production.detail.badges.transfer",
+    "en": "Transfer",
+    "de": "Transfer",
+    "tr": "Transfer",
+    "reason": "en"
+  },
+  {
+    "key": "production.create.review.sourceErp",
+    "en": "ERP",
+    "de": "ERP",
+    "tr": "ERP",
+    "reason": "en"
+  },
+  {
+    "key": "production.create.dependencies.subtitle",
+    "en": "Define when an order may start in serial, parallel, or hybrid flow. Add transfer completion rules if needed.",
+    "de": "Definieren Sie when an order may start in serial, parallel, or hybrid flow. Hinzufügen transfer completion rules if needed.",
+    "tr": "Seri, paralel veya hibrit akışta bir emrin ne zaman açılabileceğini burada tanımlayın. Gerekirse transfer tamamlanma koşulu ekleyin.",
+    "reason": "tr"
+  },
+  {
+    "key": "production.create.enums.trackingMode.Lot",
+    "en": "Lot",
+    "de": "Lot",
+    "tr": "Lot",
+    "reason": "en"
+  },
+  {
+    "key": "production.create.enums.serialMode.Optional",
+    "en": "Optional",
+    "de": "Optional",
+    "tr": "İsteğe bağlı",
+    "reason": "en"
+  },
+  {
+    "key": "production.list.deleteDescription",
+    "en": "We will soft delete \"{{documentNo}}\". Only draft plans with no shopfloor activity can be deleted.",
+    "de": "„{{documentNo}}“ wird per Soft Löschen deaktiviert.",
+    "tr": "\"{{documentNo}}\" planını soft delete olarak pasife alacağız. İşlem görmemiş taslak planlar silinebilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "production.list.deleteError",
+    "en": "Production plan could not be deleted.",
+    "de": "Produktionsplan konnte nicht gelöscht werden.",
+    "tr": "Üretim planı silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "productionTransfer.approval.id",
+    "en": "ID",
+    "de": "ID",
+    "tr": "ID",
+    "reason": "en"
+  },
+  {
+    "key": "productionTransfer.approval.viewDetails",
+    "en": "Details",
+    "de": "Details",
+    "tr": "Detay",
+    "reason": "en"
+  },
+  {
+    "key": "productionTransfer.approval.reject",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "productionTransfer.list.deleteDescription",
+    "en": "We will soft delete \"{{documentNo}}\". Only open transfers with no field processing can be deleted.",
+    "de": "„{{documentNo}}“ wird per Soft Löschen deaktiviert.",
+    "tr": "\"{{documentNo}}\" transfer emrini soft delete olarak pasife alacağız. Yalnızca açık ve sahada işlenmemiş transferler silinebilir.",
+    "reason": "tr"
+  },
+  {
+    "key": "productionTransfer.list.deleteError",
+    "en": "Production transfer could not be deleted.",
+    "de": "Produktion transfer konnte nicht gelöscht werden.",
+    "tr": "Üretim transfer emri silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "exportExcel",
+    "en": "Excel",
+    "de": "Excel",
+    "tr": "Excel",
+    "reason": "en"
+  },
+  {
+    "key": "exportPdf",
+    "en": "PDF",
+    "de": "PDF",
+    "tr": "PDF",
+    "reason": "en"
+  },
+  {
+    "key": "inventoryCount.fields.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "noPermission",
+    "en": "You do not have permission for this action.",
+    "de": "Sie haben keine Berechtigung für diese Aktion.",
+    "tr": "Bu işlem için yetkiniz yok.",
+    "reason": "tr"
+  },
+  {
+    "key": "barcodeDesigner.list.name",
+    "en": "Name",
+    "de": "Name",
+    "tr": "Ad",
+    "reason": "en"
+  },
+  {
+    "key": "barcodeDesigner.list.deleteError",
+    "en": "Template could not be deleted.",
+    "de": "Template konnte nicht gelöscht werden.",
+    "tr": "Şablon silinemedi.",
+    "reason": "tr"
+  },
+  {
+    "key": "serviceAllocation.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "kkd.pages.manualOverridesTitle",
+    "en": "PPE Manual Overrides",
+    "de": "Manuelle Überbrückungen",
+    "tr": "KKD Manuel İstisnalar",
+    "reason": "tr"
+  },
+  {
+    "key": "kkd.pages.manualOverridesBreadcrumb",
+    "en": "Manual Overrides",
+    "de": "Manuelle Überschreibungen",
+    "tr": "Manuel İstisnalar",
+    "reason": "tr"
+  },
+  {
+    "key": "kkd.operational.initialOrder.add",
+    "en": "Add",
+    "de": "Hinzufügen",
+    "tr": "Ekle",
+    "reason": "tr"
+  },
+  {
+    "key": "kkd.operational.dist.groupMatch",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "kkd.operational.dist.stateLabel",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "kkd.operational.overview.quickCheckTitle",
+    "en": "Entitlement Check",
+    "de": "Anspruchsprüfung",
+    "tr": "Hak Sorgulama",
+    "reason": "tr"
+  },
+  {
+    "key": "kkd.operational.overview.govOverrideTitle",
+    "en": "Manual Overrides",
+    "de": "Manuelle Überschreibungen",
+    "tr": "Manuel Istisnalar",
+    "reason": "tr"
+  },
+  {
+    "key": "kkd.operational.distributionList.colStatus",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "kkd.operational.distributionList.erpPrefix",
+    "en": "ERP",
+    "de": "ERP",
+    "tr": "ERP",
+    "reason": "en"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.status",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.inspection.rejectTitle",
+    "en": "Reject",
+    "de": "Reject",
+    "tr": "Reddet",
+    "reason": "en"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.list.colStat",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  },
+  {
+    "key": "steelGoodReceiptAcceptance.import.tableStat",
+    "en": "Status",
+    "de": "Status",
+    "tr": "Durum",
+    "reason": "en"
+  }
+]

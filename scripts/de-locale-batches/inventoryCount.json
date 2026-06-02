@@ -1,0 +1,597 @@
+[
+  {
+    "key": "inventoryCount.create.title",
+    "en": "Create Count Order",
+    "current": "Sayim Emrini Olusturma"
+  },
+  {
+    "key": "inventoryCount.create.description",
+    "en": "Pick what will be counted, save the order, then enter quantities from the direct-entry screen.",
+    "current": "Ne sayacagini sec, emri kaydet, sonra direkt giris ekraninda miktarlari okut ya da yaz."
+  },
+  {
+    "key": "inventoryCount.create.editTitle",
+    "en": "Edit Count Order",
+    "current": "Edit Count Order"
+  },
+  {
+    "key": "inventoryCount.create.editDescription",
+    "en": "Update document and scope details for a draft count order before lines are prepared.",
+    "current": "Update document and scope details for a draft count order before lines are prepared."
+  },
+  {
+    "key": "inventoryCount.create.saveAndPrepare",
+    "en": "Save and Prepare Lines",
+    "current": "Kaydet ve Satirlari Hazirla"
+  },
+  {
+    "key": "inventoryCount.create.success",
+    "en": "Count order saved. Lines are ready, moving to direct entry now.",
+    "current": "Sayim emri kaydedildi. Satirlar hazirlandi, simdi direkt girise geciyorsunuz."
+  },
+  {
+    "key": "inventoryCount.create.updateSuccess",
+    "en": "Count order updated.",
+    "current": "Count order updated."
+  },
+  {
+    "key": "inventoryCount.create.error",
+    "en": "Count order could not be saved.",
+    "current": "Sayim emri kaydedilemedi."
+  },
+  {
+    "key": "inventoryCount.create.permissionInfo",
+    "en": "You can view this page but you do not have permission to create a new count order.",
+    "current": "Bu ekrani gorebiliyorsunuz ama yeni sayim emri acma yetkiniz yok."
+  },
+  {
+    "key": "inventoryCount.create.whatToCountTitle",
+    "en": "What will we count?",
+    "current": "Ne sayacagiz?"
+  },
+  {
+    "key": "inventoryCount.create.whatToCountDescription",
+    "en": "The operator should first understand only the count type.",
+    "current": "Depocunun en basta sadece sayimin turunu anlamasi yeterli."
+  },
+  {
+    "key": "inventoryCount.create.headerInfoTitle",
+    "en": "Order information",
+    "current": "Emir bilgileri"
+  },
+  {
+    "key": "inventoryCount.create.headerInfoDescription",
+    "en": "Name the document, then choose the scope to be counted.",
+    "current": "Belgeyi isimlendir, sonra hangi kapsamda sayacagini sec."
+  },
+  {
+    "key": "inventoryCount.create.scopeTitle",
+    "en": "Choose the scope",
+    "current": "Kapsami sec"
+  },
+  {
+    "key": "inventoryCount.create.scopeDescription",
+    "en": "These fields gain meaning based on the count type. The system ignores the fields you leave empty.",
+    "current": "Bu alanlar sayim turune gore otomatik anlam kazanir. Bos birakmaniz gereken alanlari sistem yok sayar."
+  },
+  {
+    "key": "inventoryCount.create.combinedScopeTitle",
+    "en": "Combined scope rows",
+    "current": "Birlesik kapsam satirlari"
+  },
+  {
+    "key": "inventoryCount.create.combinedScopeDescription",
+    "en": "If you want to combine warehouse, stock and rack in one order, add scope rows.",
+    "current": "If you want to combine warehouse, stock and rack in one order, add scope rows."
+  },
+  {
+    "key": "inventoryCount.create.addScope",
+    "en": "Add scope",
+    "current": "Kapsam ekle"
+  },
+  {
+    "key": "inventoryCount.create.scopeRow",
+    "en": "Scope row {{index}}",
+    "current": "Kapsam satiri {{index}}"
+  },
+  {
+    "key": "inventoryCount.create.readyTitle",
+    "en": "Order readiness",
+    "current": "Emir hazirligi"
+  },
+  {
+    "key": "inventoryCount.create.readyDescription",
+    "en": "See what the system will prepare before saving.",
+    "current": "Sistemin ne hazirlayacagini kaydetmeden once burada gorursun."
+  },
+  {
+    "key": "inventoryCount.create.summaryTitle",
+    "en": "Your summary",
+    "current": "Kayit ozetiniz"
+  },
+  {
+    "key": "inventoryCount.create.modeHintTitle",
+    "en": "What does count mode change?",
+    "current": "Sayim modu neyi degistirir?"
+  },
+  {
+    "key": "inventoryCount.create.nextStepTitle",
+    "en": "What happens after saving?",
+    "current": "Kaydettikten sonra ne olacak?"
+  },
+  {
+    "key": "inventoryCount.create.nextStepOne",
+    "en": "The count order is created.",
+    "current": "Sayim emri acilir."
+  },
+  {
+    "key": "inventoryCount.create.nextStepTwo",
+    "en": "Lines are prepared automatically.",
+    "current": "Satirlar otomatik hazirlanir."
+  },
+  {
+    "key": "inventoryCount.create.nextStepThree",
+    "en": "You move to the direct-entry screen and save quantities.",
+    "current": "Direkt giris ekranina gecip miktarlari kaydedersin."
+  },
+  {
+    "key": "inventoryCount.create.firstCountHint",
+    "en": "Leave this on for the first opening count.",
+    "current": "Genel acilis sayimiysa bunu acik birak."
+  },
+  {
+    "key": "inventoryCount.create.options.countType.general",
+    "en": "General full count",
+    "current": "General full count"
+  },
+  {
+    "key": "inventoryCount.create.options.countType.warehouse",
+    "en": "Warehouse count",
+    "current": "Warehouse count"
+  },
+  {
+    "key": "inventoryCount.create.options.countType.stock",
+    "en": "Stock count",
+    "current": "Stock count"
+  },
+  {
+    "key": "inventoryCount.create.options.countType.rack",
+    "en": "Rack count",
+    "current": "Rack count"
+  },
+  {
+    "key": "inventoryCount.create.options.countType.cell",
+    "en": "Cell count",
+    "current": "Cell count"
+  },
+  {
+    "key": "inventoryCount.create.options.countType.combined",
+    "en": "Combined count",
+    "current": "Combined count"
+  },
+  {
+    "key": "inventoryCount.create.options.countMode.blind",
+    "en": "Blind count",
+    "current": "Blind count"
+  },
+  {
+    "key": "inventoryCount.create.options.countMode.open",
+    "en": "Open count",
+    "current": "Open count"
+  },
+  {
+    "key": "inventoryCount.create.options.freezeMode.none",
+    "en": "Do not stop movement",
+    "current": "Do not stop movement"
+  },
+  {
+    "key": "inventoryCount.create.options.freezeMode.soft",
+    "en": "Warn only",
+    "current": "Warn only"
+  },
+  {
+    "key": "inventoryCount.create.options.freezeMode.hard",
+    "en": "Lock movement",
+    "current": "Lock movement"
+  },
+  {
+    "key": "inventoryCount.create.options.scopeType.warehouse",
+    "en": "Warehouse",
+    "current": "Warehouse"
+  },
+  {
+    "key": "inventoryCount.create.options.scopeType.stock",
+    "en": "Stock",
+    "current": "Stock"
+  },
+  {
+    "key": "inventoryCount.create.options.scopeType.rack",
+    "en": "Rack",
+    "current": "Rack"
+  },
+  {
+    "key": "inventoryCount.create.options.scopeType.cell",
+    "en": "Cell",
+    "current": "Cell"
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.general",
+    "en": "Counts all active stock in one order. This is the easiest path for an opening count.",
+    "current": "Counts all active stock in one order. This is the easiest path for an opening count."
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.warehouse",
+    "en": "Counts stocks in a single warehouse. Use it for warehouse-based counting.",
+    "current": "Counts stocks in a single warehouse. Use it for warehouse-based counting."
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.stock",
+    "en": "Counts a specific stock code. Suitable for problematic or critical items.",
+    "current": "Counts a specific stock code. Suitable for problematic or critical items."
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.rack",
+    "en": "Counts a specific rack area. Useful for rack cleanup and verification.",
+    "current": "Counts a specific rack area. Useful for rack cleanup and verification."
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.cell",
+    "en": "Counts a single cell. This is the fastest local control method.",
+    "current": "Counts a single cell. This is the fastest local control method."
+  },
+  {
+    "key": "inventoryCount.create.countTypeDescriptions.combined",
+    "en": "Combines multiple warehouses, stocks, or racks in one count order.",
+    "current": "Combines multiple warehouses, stocks, or racks in one count order."
+  },
+  {
+    "key": "inventoryCount.create.validation.documentNoRequired",
+    "en": "Document number is required.",
+    "current": "Document number is required."
+  },
+  {
+    "key": "inventoryCount.create.validation.warehouseRequired",
+    "en": "A warehouse must be selected for warehouse count.",
+    "current": "A warehouse must be selected for warehouse count."
+  },
+  {
+    "key": "inventoryCount.create.validation.stockRequired",
+    "en": "A stock must be selected for stock count.",
+    "current": "A stock must be selected for stock count."
+  },
+  {
+    "key": "inventoryCount.create.validation.rackRequired",
+    "en": "A rack code must be entered for rack count.",
+    "current": "A rack code must be entered for rack count."
+  },
+  {
+    "key": "inventoryCount.create.validation.cellRequired",
+    "en": "A cell code must be entered for cell count.",
+    "current": "A cell code must be entered for cell count."
+  },
+  {
+    "key": "inventoryCount.create.validation.scopeRequired",
+    "en": "At least one scope row must be added for combined count.",
+    "current": "At least one scope row must be added for combined count."
+  },
+  {
+    "key": "inventoryCount.create.validation.validScopeRequired",
+    "en": "At least one valid scope row must be filled for combined count.",
+    "current": "At least one valid scope row must be filled for combined count."
+  },
+  {
+    "key": "inventoryCount.create.summary.combined",
+    "en": "{{count}} scope rows ready",
+    "current": "{{count}} scope rows ready"
+  },
+  {
+    "key": "inventoryCount.create.summary.general",
+    "en": "All active stock will be included in the count list",
+    "current": "All active stock will be included in the count list"
+  },
+  {
+    "key": "inventoryCount.create.summary.scoped",
+    "en": "Lines will be prepared automatically for the selected scope",
+    "current": "Lines will be prepared automatically for the selected scope"
+  },
+  {
+    "key": "inventoryCount.list.title",
+    "en": "Count Orders",
+    "current": "Sayim Emirleri"
+  },
+  {
+    "key": "inventoryCount.list.error",
+    "en": "Count orders could not be loaded.",
+    "current": "Sayim emirleri yuklenemedi."
+  },
+  {
+    "key": "inventoryCount.list.noData",
+    "en": "There are no count orders yet.",
+    "current": "Henuz sayim emri bulunmuyor."
+  },
+  {
+    "key": "inventoryCount.list.searchPlaceholder",
+    "en": "Search by document no, warehouse or stock",
+    "current": "Belge no, depo ya da stok ara"
+  },
+  {
+    "key": "inventoryCount.assigned.title",
+    "en": "Assigned Count Orders",
+    "current": "Assigned Count Orders"
+  },
+  {
+    "key": "inventoryCount.assigned.error",
+    "en": "Assigned count orders could not be loaded.",
+    "current": "Assigned count orders could not be loaded."
+  },
+  {
+    "key": "inventoryCount.assigned.noData",
+    "en": "There are no active count orders assigned to you.",
+    "current": "There are no active count orders assigned to you."
+  },
+  {
+    "key": "inventoryCount.assigned.searchPlaceholder",
+    "en": "Search by document no or count type",
+    "current": "Search by document no or count type"
+  },
+  {
+    "key": "inventoryCount.process.title",
+    "en": "Count Direct Entry",
+    "current": "Sayim Direkt Giris Yap"
+  },
+  {
+    "key": "inventoryCount.process.description",
+    "en": "Pick the order, pick the line, enter the quantity and save.",
+    "current": "Emri sec, sayacagin kalemi sec, miktari gir ve kaydet."
+  },
+  {
+    "key": "inventoryCount.process.loadErrorTitle",
+    "en": "Count screen could not be loaded",
+    "current": "Sayim ekranı yuklenemedi"
+  },
+  {
+    "key": "inventoryCount.process.permissionInfo",
+    "en": "You can view these counts but you do not have permission to enter counted quantities.",
+    "current": "Bu sayimlari gorebiliyorsunuz ama sayim girisi yapma yetkiniz yok."
+  },
+  {
+    "key": "inventoryCount.process.pickHeaderTitle",
+    "en": "Choose the count order",
+    "current": "Sayim emrini sec"
+  },
+  {
+    "key": "inventoryCount.process.pickHeaderDescription",
+    "en": "Choose an assigned or active count order and continue with the lines below.",
+    "current": "Sana atanmis ya da aktif olan bir sayim emrini sec ve asagidaki satirlara gec."
+  },
+  {
+    "key": "inventoryCount.process.entryTitle",
+    "en": "Count entry",
+    "current": "Sayim girisi"
+  },
+  {
+    "key": "inventoryCount.process.entryDescription",
+    "en": "The rule for the operator is simple: choose the line, enter what was counted, save it.",
+    "current": "Depocu icin kural basit: kalemi sec, saydigin miktari yaz, kaydet."
+  },
+  {
+    "key": "inventoryCount.process.emptyLineMessage",
+    "en": "Pick a count line first to enter a quantity.",
+    "current": "Sayim girisi icin once bir satir secin."
+  },
+  {
+    "key": "inventoryCount.process.lineListTitle",
+    "en": "Count lines",
+    "current": "Sayim satirlari"
+  },
+  {
+    "key": "inventoryCount.process.lineListDescription",
+    "en": "Red rows mean there is a difference. The system may ask for a recount automatically.",
+    "current": "Kirmizi satirlar fark var demektir. Sistem otomatik tekrar sayim isteyebilir."
+  },
+  {
+    "key": "inventoryCount.process.noLines",
+    "en": "There are no lines in this count order yet.",
+    "current": "Bu sayim emrinde henuz satir bulunmuyor."
+  },
+  {
+    "key": "inventoryCount.process.saveEntry",
+    "en": "Save Count Entry",
+    "current": "Sayim Girisini Kaydet"
+  },
+  {
+    "key": "inventoryCount.process.success",
+    "en": "Count entry saved.",
+    "current": "Sayim girisi kaydedildi."
+  },
+  {
+    "key": "inventoryCount.process.error",
+    "en": "Count entry could not be saved.",
+    "current": "Sayim girisi kaydedilemedi."
+  },
+  {
+    "key": "inventoryCount.process.errors.lineRequired",
+    "en": "Please choose a count line first.",
+    "current": "Once sayim satiri secilmelidir."
+  },
+  {
+    "key": "inventoryCount.process.errors.quantityRequired",
+    "en": "Enter a valid counted quantity.",
+    "current": "Gecerli bir sayim miktari girin."
+  },
+  {
+    "key": "inventoryCount.actions.edit",
+    "en": "Edit",
+    "current": "Edit"
+  },
+  {
+    "key": "inventoryCount.actions.process",
+    "en": "Direct Entry",
+    "current": "Direkt Giris"
+  },
+  {
+    "key": "inventoryCount.fields.countType",
+    "en": "Count type",
+    "current": "Sayim tipi"
+  },
+  {
+    "key": "inventoryCount.fields.countMode",
+    "en": "Count mode",
+    "current": "Sayim modu"
+  },
+  {
+    "key": "inventoryCount.fields.scopeMode",
+    "en": "Scope",
+    "current": "Kapsam"
+  },
+  {
+    "key": "inventoryCount.fields.freezeMode",
+    "en": "Movement rule",
+    "current": "Hareket kurali"
+  },
+  {
+    "key": "inventoryCount.fields.plannedStartDate",
+    "en": "Planned start",
+    "current": "Planlanan baslangic"
+  },
+  {
+    "key": "inventoryCount.fields.plannedEndDate",
+    "en": "Planned end",
+    "current": "Planlanan bitis"
+  },
+  {
+    "key": "inventoryCount.fields.isFirstCount",
+    "en": "Open as first count",
+    "current": "Ilk sayim olarak ac"
+  },
+  {
+    "key": "inventoryCount.fields.warehouse",
+    "en": "Warehouse",
+    "current": "Depo"
+  },
+  {
+    "key": "inventoryCount.fields.stock",
+    "en": "Stock",
+    "current": "Stok"
+  },
+  {
+    "key": "inventoryCount.fields.yapKod",
+    "en": "YapKod",
+    "current": "YapKod"
+  },
+  {
+    "key": "inventoryCount.fields.rack",
+    "en": "Rack",
+    "current": "Raf"
+  },
+  {
+    "key": "inventoryCount.fields.cell",
+    "en": "Cell",
+    "current": "Hucre"
+  },
+  {
+    "key": "inventoryCount.fields.scopeType",
+    "en": "Scope type",
+    "current": "Kapsam tipi"
+  },
+  {
+    "key": "inventoryCount.fields.lineCount",
+    "en": "Lines",
+    "current": "Toplam satir"
+  },
+  {
+    "key": "inventoryCount.fields.differenceLineCount",
+    "en": "Difference",
+    "current": "Fark"
+  },
+  {
+    "key": "inventoryCount.fields.header",
+    "en": "Count order",
+    "current": "Sayim emri"
+  },
+  {
+    "key": "inventoryCount.fields.line",
+    "en": "Count line",
+    "current": "Sayim satiri"
+  },
+  {
+    "key": "inventoryCount.fields.status",
+    "en": "Status",
+    "current": "Durum"
+  },
+  {
+    "key": "inventoryCount.fields.expectedQuantity",
+    "en": "Expected",
+    "current": "Beklenen"
+  },
+  {
+    "key": "inventoryCount.fields.lastCountedQuantity",
+    "en": "Last counted",
+    "current": "Son sayilan"
+  },
+  {
+    "key": "inventoryCount.fields.unit",
+    "en": "Unit",
+    "current": "Birim"
+  },
+  {
+    "key": "inventoryCount.fields.enteredQuantity",
+    "en": "Counted quantity",
+    "current": "Sayilan miktar"
+  },
+  {
+    "key": "inventoryCount.fields.countedQuantity",
+    "en": "Counted",
+    "current": "Sayilan"
+  },
+  {
+    "key": "inventoryCount.fields.difference",
+    "en": "Difference",
+    "current": "Fark"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectWarehouse",
+    "en": "Select warehouse",
+    "current": "Depo sec"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectStock",
+    "en": "Select stock",
+    "current": "Stok sec"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectYapKod",
+    "en": "Select YapKod",
+    "current": "YapKod sec"
+  },
+  {
+    "key": "inventoryCount.placeholders.enterRack",
+    "en": "Enter rack code",
+    "current": "Raf kodu gir"
+  },
+  {
+    "key": "inventoryCount.placeholders.enterCell",
+    "en": "Enter cell code",
+    "current": "Hucre kodu gir"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectHeader",
+    "en": "Select count order",
+    "current": "Sayim emri sec"
+  },
+  {
+    "key": "inventoryCount.placeholders.selectLine",
+    "en": "Select count line",
+    "current": "Sayim satiri sec"
+  },
+  {
+    "key": "inventoryCount.placeholders.enterQuantity",
+    "en": "Example: 12",
+    "current": "Ornek: 12"
+  },
+  {
+    "key": "inventoryCount.placeholders.enterNote",
+    "en": "Leave a short note if needed",
+    "current": "Gerekirse kisa not dus"
+  }
+]

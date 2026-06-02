@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Check, Eye, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Eye, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,19 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'completionDate', type: 'date', labelKey: 'warehouse.outbound.approval.completionDate' },
 ];
 
+function mapSortBy(value: ColumnKey): string {
+  switch (value) {
+    case 'id': return 'Id';
+    case 'documentNo': return 'DocumentNo';
+    case 'documentDate': return 'DocumentDate';
+    case 'customerCode': return 'CustomerCode';
+    case 'customerName': return 'CustomerName';
+    case 'sourceWarehouse': return 'SourceWarehouse';
+    case 'completionDate': return 'CompletionDate';
+    default: return 'Id';
+  }
+}
+
 export function WarehouseOutboundApprovalPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
@@ -35,15 +48,22 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const approveMutation = useApproveWoHeader();
-  const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey: 'warehouse-outbound-approval-list', defaultSortBy: 'id', defaultSortDirection: 'desc', mapSortBy: () => 'Id' });
+  
+  const pagedGrid = usePagedDataGrid<ColumnKey>({
+    pageKey: 'warehouse-outbound-approval-list',
+    defaultSortBy: 'id',
+    defaultSortDirection: 'desc',
+    mapSortBy,
+  });
+
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'id', label: t('warehouse.outbound.approval.id'), sortable: false },
-    { key: 'documentNo', label: t('warehouse.outbound.approval.documentNo'), sortable: false },
-    { key: 'documentDate', label: t('warehouse.outbound.approval.documentDate'), sortable: false },
-    { key: 'customerCode', label: t('warehouse.outbound.approval.customerCode'), sortable: false },
-    { key: 'customerName', label: t('warehouse.outbound.approval.customerName'), sortable: false },
-    { key: 'sourceWarehouse', label: t('warehouse.outbound.approval.sourceWarehouse'), sortable: false },
-    { key: 'completionDate', label: t('warehouse.outbound.approval.completionDate'), sortable: false },
+    { key: 'id', label: t('warehouse.outbound.approval.id') },
+    { key: 'documentNo', label: t('warehouse.outbound.approval.documentNo') },
+    { key: 'documentDate', label: t('warehouse.outbound.approval.documentDate') },
+    { key: 'customerCode', label: t('warehouse.outbound.approval.customerCode') },
+    { key: 'customerName', label: t('warehouse.outbound.approval.customerName') },
+    { key: 'sourceWarehouse', label: t('warehouse.outbound.approval.sourceWarehouse') },
+    { key: 'completionDate', label: t('warehouse.outbound.approval.completionDate') },
     { key: 'actions', label: t('warehouse.outbound.approval.actions'), sortable: false },
   ], [t]);
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey: 'warehouse-outbound-approval-list', columns: columns.map(({ key, label }) => ({ key, label })), idColumnKey: 'id' });
@@ -71,6 +91,13 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
     }
   };
 
+  const renderSortIcon = (columnKey: ColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
+
   return (
     <div className="crm-page space-y-6">
       <Card><CardHeader><CardTitle>{t('warehouse.outbound.approval.title')}</CardTitle></CardHeader><CardContent>
@@ -80,6 +107,12 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, key) => ({ id: row.id, documentNo: <span className="font-medium">{row.documentNo || '-'}</span>, documentDate: formatDate(row.documentDate), customerCode: row.customerCode || '-', customerName: row.customerName || '-', sourceWarehouse: row.sourceWarehouse || '-', completionDate: formatDateTime(row.completionDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
           isLoading={isLoading}
           isError={Boolean(error)}
           errorText={t('warehouse.outbound.approval.error')}

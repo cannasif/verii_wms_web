@@ -33,7 +33,7 @@ export function ProfilePage(): ReactElement {
   const normalizedDisplayName = displayName.trim().toLowerCase();
   const isSystemLikeDisplayName =
     normalizedDisplayName.startsWith('system') || normalizedDisplayName.startsWith('sistem');
-  const emptyAvatarLetter = isSystemLikeDisplayName ? 'S' : displayName.charAt(0).toUpperCase();
+  const displayInitial = isSystemLikeDisplayName ? 'S' : displayName.charAt(0).toUpperCase();
   const imageUrl = getFullProfileImageUrl(userDetail?.profilePictureUrl);
   const emailLine = user?.email ?? '—';
   const branchCodeTrimmed = branch?.code?.trim();
@@ -136,68 +136,47 @@ export function ProfilePage(): ReactElement {
                   onClick={handleAvatarPickClick}
                   aria-label={t('profile.changePhoto')}
                   className={cn(
-                    'group relative size-[8rem] shrink-0 overflow-hidden rounded-[1.4rem] md:size-[9rem] md:rounded-[1.45rem]',
-                    'ring-2 ring-fuchsia-500/55 shadow-[0_0_0_1px_rgba(217,70,239,0.35),0_0_22px_rgba(192,38,211,0.22),inset_0_2px_32px_rgba(0,0,0,0.5)]',
-                    'transition-[transform,box-shadow] duration-200 hover:shadow-[0_0_0_1px_rgba(232,121,249,0.55),0_0_28px_rgba(217,70,239,0.32),inset_0_2px_32px_rgba(0,0,0,0.45)]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:ring-fuchsia-400/45 dark:focus-visible:ring-offset-zinc-950',
-                    'disabled:pointer-events-none disabled:opacity-70 dark:shadow-[0_0_0_1px_rgba(217,70,239,0.35),0_0_26px_rgba(168,85,247,0.2),inset_0_2px_36px_rgba(0,0,0,0.65)]'
+                    'group block rounded-[26px] bg-white/95 p-2 shadow-md ring-1 ring-inset ring-slate-200/70 md:p-2.5',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+                    'dark:bg-zinc-900/50 dark:shadow-[0_12px_36px_rgba(9,9,11,0.42),0_0_36px_-8px_rgba(56,189,248,0.22)] dark:ring-white/[0.07] dark:focus-visible:ring-offset-zinc-950',
+                    'disabled:pointer-events-none disabled:opacity-70',
                   )}
                 >
-                  {uploadPictureMutation.isPending ? (
-                    <span className="flex size-full items-center justify-center bg-zinc-950/80">
-                      <Loader2 className="size-9 animate-spin text-fuchsia-300" aria-hidden />
-                    </span>
-                  ) : imageUrl ? (
-                    <>
-                      <img src={imageUrl} alt="" className="size-full object-cover" />
-                      <span
-                        className="pointer-events-none absolute inset-0 rounded-[inherit] bg-black/0 shadow-[inset_0_0_36px_rgba(0,0,0,0.42)] ring-1 ring-inset ring-fuchsia-400/25 transition-colors duration-200 group-hover:bg-black/48 group-focus-visible:bg-black/48 dark:shadow-[inset_0_0_42px_rgba(0,0,0,0.55)] dark:ring-fuchsia-400/30"
-                        aria-hidden
-                      />
-                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <div className="relative size-[7.5rem] overflow-hidden rounded-[17px] ring-1 ring-slate-200/80 md:size-[8.5rem] dark:ring-black/20">
+                    {uploadPictureMutation.isPending ? (
+                      <div className="flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
+                        <Loader2 className="size-9 animate-spin text-white" aria-hidden />
+                      </div>
+                    ) : imageUrl ? (
+                      <>
+                        <img src={imageUrl} alt="" className="size-full object-cover" />
+                        <span
+                          className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
+                          aria-hidden
+                        />
+                        <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                          <Camera className="size-8 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.55)] md:size-9" strokeWidth={1.75} aria-hidden />
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
+                          <span className="text-5xl font-bold tracking-tight text-white drop-shadow-md transition-[opacity,filter] duration-200 group-hover:opacity-40 group-hover:brightness-[0.88] group-focus-visible:opacity-40 group-focus-visible:brightness-[0.88] md:text-6xl">
+                            {displayInitial}
+                          </span>
+                        </div>
+                        <span
+                          className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
+                          aria-hidden
+                        />
                         <Camera
-                          className="size-8 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.55)] md:size-9"
+                          className="pointer-events-none absolute inset-0 m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.65)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
                           strokeWidth={1.75}
                           aria-hidden
                         />
-                      </span>
-                    </>
-                  ) : isSystemLikeDisplayName ? (
-                    <span className="relative flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
-                      <span
-                        className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_2px_28px_rgba(0,0,0,0.18)] ring-1 ring-inset ring-white/30"
-                        aria-hidden
-                      />
-                      <span className="relative z-[1] text-5xl font-bold tracking-tight text-white drop-shadow-md transition-[opacity,filter] duration-200 group-hover:opacity-40 group-hover:brightness-[0.68] group-focus-visible:opacity-40 group-focus-visible:brightness-[0.68] md:text-6xl">
-                        {emptyAvatarLetter}
-                      </span>
-                      <span
-                        className="pointer-events-none absolute inset-0 z-[2] rounded-[inherit] bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
-                        aria-hidden
-                      />
-                      <Camera
-                        className="pointer-events-none absolute inset-0 z-[3] m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.65)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
-                        strokeWidth={1.75}
-                        aria-hidden
-                      />
-                    </span>
-                  ) : (
-                    <span className="relative flex size-full items-center justify-center bg-[radial-gradient(circle_at_50%_42%,rgb(82,38,40)_0%,rgb(32,14,22)_40%,rgb(56,20,58)_100%)] dark:bg-[radial-gradient(circle_at_50%_42%,rgb(72,32,34)_0%,rgb(26,10,20)_38%,rgb(48,16,52)_100%)]">
-                      <span
-                        className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_36px_rgba(0,0,0,0.72)] ring-1 ring-inset ring-fuchsia-500/35 transition-[box-shadow,ring-color] duration-200 group-hover:shadow-[inset_0_0_56px_rgba(0,0,0,0.92)] group-hover:ring-fuchsia-400/45 group-focus-visible:shadow-[inset_0_0_56px_rgba(0,0,0,0.92)] group-focus-visible:ring-fuchsia-400/45"
-                        aria-hidden
-                      />
-                      <span
-                        className="pointer-events-none absolute inset-0 z-[1] rounded-[inherit] bg-black/0 transition-colors duration-200 group-hover:bg-black/52 group-focus-visible:bg-black/52"
-                        aria-hidden
-                      />
-                      <Camera
-                        className="pointer-events-none absolute inset-0 z-[2] m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.6)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
-                        strokeWidth={1.75}
-                        aria-hidden
-                      />
-                    </span>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </button>
               </div>
 

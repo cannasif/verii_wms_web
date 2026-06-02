@@ -1,0 +1,17 @@
+[
+  {
+    "key": "voiceSearch.start",
+    "en": "Voice search",
+    "current": "Sprachsuche"
+  },
+  {
+    "key": "voiceSearch.completed",
+    "en": "Voice search completed",
+    "current": "Sprachsuche abgeschlossen"
+  },
+  {
+    "key": "voiceSearch.errorWithReason",
+    "en": "Voice search error: {{reason}}",
+    "current": "Sprachsuchfehler: {{reason}}"
+  }
+]

@@ -176,6 +176,7 @@
     "deactivate": "Disattiva",
     "clearForm": "Pulisci modulo",
     "date": "Data",
+    "updatedDate": "Data di aggiornamento",
     "warning": "Avviso",
     "barcodeFormat": "Formato barcode attivo: {{format}}",
     "selectStockFirst": "Seleziona prima uno stock",

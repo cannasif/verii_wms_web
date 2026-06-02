@@ -1,0 +1,242 @@
+[
+  {
+    "key": "vehicleCheckIn.badge",
+    "en": "Vehicle Entry 1",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.pageTitle",
+    "en": "Vehicle Entry Step",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.title",
+    "en": "Vehicle Entry Form",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.description",
+    "en": "Create the first record for an arriving vehicle. If the same plate returns on the same day, the current record is updated.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.guidance.title",
+    "en": "Business Rule",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.guidance.sameDayRule",
+    "en": "If the same plate arrives again on the same day, no new record is created; the existing record is updated.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.guidance.nextDayRule",
+    "en": "If the same plate arrives on a different day, the system records it as a new entry.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.plate",
+    "en": "Plate",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.platePh",
+    "en": "34ABC123",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.entryDate",
+    "en": "Vehicle Entry Date",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.firstName",
+    "en": "First Name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.firstNamePh",
+    "en": "Driver or related person first name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.lastName",
+    "en": "Last Name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.lastNamePh",
+    "en": "Driver or related person last name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.customer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.fields.customerPh",
+    "en": "Select customer",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.customerLookup.title",
+    "en": "Select Customer",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.customerLookup.description",
+    "en": "Select the customer to be associated with this vehicle arrival.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.actions.findToday",
+    "en": "Find Today's Record",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.actions.save",
+    "en": "Save / Update",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.actions.openList",
+    "en": "Open Record List",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.title",
+    "en": "Vehicle Images",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.description",
+    "en": "Add one or more images related to this vehicle entry.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.saveHint",
+    "en": "Create the vehicle record or fetch today's existing record before uploading images.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.add",
+    "en": "Add New Image",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.upload",
+    "en": "Upload Images",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.delete",
+    "en": "Delete Image",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.empty",
+    "en": "No images have been uploaded for this record yet.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.images.image",
+    "en": "Vehicle Image",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.pageTitle",
+    "en": "Vehicle Entry Records",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.title",
+    "en": "Vehicle Entry Records",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.description",
+    "en": "Track same-day updates and different-day new entries for vehicle arrivals.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.searchPh",
+    "en": "Search plate, name, or customer",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.empty",
+    "en": "No vehicle check-in records to display.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.actions.open",
+    "en": "Open Record",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.plate",
+    "en": "Plate",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.entryDate",
+    "en": "Entry Date",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.firstName",
+    "en": "First Name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.lastName",
+    "en": "Last Name",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.customer",
+    "en": "Customer",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.images",
+    "en": "Images",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.list.columns.actions",
+    "en": "Action",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.plateRequired",
+    "en": "Plate is required for vehicle check-in.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.todayFound",
+    "en": "Today's vehicle record has been loaded.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.saved",
+    "en": "Vehicle check-in record saved.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.saveFirst",
+    "en": "Create the vehicle check-in record first.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.imagesUploaded",
+    "en": "Vehicle images uploaded.",
+    "current": null
+  },
+  {
+    "key": "vehicleCheckIn.messages.imageDeleted",
+    "en": "Vehicle image deleted.",
+    "current": null
+  }
+]

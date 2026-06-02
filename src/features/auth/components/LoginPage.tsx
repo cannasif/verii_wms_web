@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useTranslation, Trans } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
-import { loginRequestSchema, type LoginRequest } from '../types/auth';
+import { type LoginRequest } from '../types/auth';
 import { useLogin } from '../hooks/useLogin';
 import { useBranches } from '../hooks/useBranches';
 import { useAuthStore } from '@/stores/auth-store';
-import { isTokenValid } from '@/utils/jwt';
+import { getUserFromToken, isTokenValid } from '@/utils/jwt';
 import type React from 'react';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -37,15 +38,27 @@ import {
 import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
 
 export function LoginPage(): React.JSX.Element {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: branches } = useBranches();
   const { mutate: loginMutate, isPending } = useLogin(branches);
-  const { token, isAuthenticated, logout } = useAuthStore();
+  const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);
   const [isBgAnimationPaused, setIsBgAnimationPaused] = useState(true);
+
+  const loginRequestSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(t('auth.validation.emailInvalid')),
+        password: z.string().min(1, t('auth.validation.passwordRequired')),
+        branchId: z.string().min(1, t('auth.validation.branchRequired')),
+      }),
+    [i18n.language],
+  );
 
   const form = useForm<LoginRequest>({
     resolver: zodResolver(loginRequestSchema),
@@ -57,18 +70,32 @@ export function LoginPage(): React.JSX.Element {
   });
 
   useEffect(() => {
-    if (searchParams.get('sessionExpired') === 'true') {
-      if (!token || !isTokenValid(token)) {
-        logout();
-        toast.warning(t('auth.login.sessionExpired'));
-      }
-      setSearchParams({}, { replace: true });
+    if (searchParams.get('sessionExpired') !== 'true') {
+      return;
     }
 
-    if (token && isTokenValid(token) && isAuthenticated()) {
-      navigate('/', { replace: true });
+    if (!token || !isTokenValid(token)) {
+      logout();
+      toast.warning(t('auth.login.sessionExpired'));
     }
-  }, [searchParams, setSearchParams, t, token, isAuthenticated, navigate, logout]);
+
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams, i18n.language, token, logout, t]);
+
+  useEffect(() => {
+    const storedToken =
+      token || localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+
+    if (!storedToken || !isTokenValid(storedToken)) {
+      return;
+    }
+
+    if (!user && !getUserFromToken(storedToken)) {
+      return;
+    }
+
+    navigate('/', { replace: true });
+  }, [token, user, navigate]);
 
   const onSubmit = (data: LoginRequest): void => {
     form.clearErrors('root');
@@ -321,7 +348,7 @@ export function LoginPage(): React.JSX.Element {
 
         <button
           type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          onClick={() => toast.info(t('auth.login.comingSoon'))}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
         >
           <Send size={20} />
@@ -329,7 +356,7 @@ export function LoginPage(): React.JSX.Element {
 
         <button
           type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          onClick={() => toast.info(t('auth.login.comingSoon'))}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
         >
           <Instagram size={20} />
@@ -337,7 +364,7 @@ export function LoginPage(): React.JSX.Element {
 
         <button
           type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon', 'Çok yakında!'))}
+          onClick={() => toast.info(t('auth.login.comingSoon'))}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
         >
           <Hash size={20} />

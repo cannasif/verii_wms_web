@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUIStore } from '@/stores/ui-store';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import type { ShelfUpsertRequest } from '../types/shelf-management.types';
+import type { ShelfDefinitionDto, ShelfUpsertRequest } from '../types/shelf-management.types';
 import { shelfManagementApi } from '../api/shelf-management.api';
 
 const EMPTY_FORM: ShelfUpsertRequest = {
@@ -39,6 +39,24 @@ function sanitizeBarcodeCandidate(code: string): string {
   return normalizedCode.replace(/[^A-Z0-9_-]/g, '');
 }
 
+function getLocationTypeLabel(
+  value: ShelfUpsertRequest['locationType'],
+  t: (key: string) => string,
+): string {
+  switch (value) {
+    case 'Zone':
+      return t('shelfManagement.locationZone');
+    case 'Rack':
+      return t('shelfManagement.locationRack');
+    case 'Shelf':
+      return t('shelfManagement.locationShelf');
+    case 'Cell':
+      return t('shelfManagement.locationCell');
+    default:
+      return value;
+  }
+}
+
 export function ShelfManagementPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
@@ -49,7 +67,7 @@ export function ShelfManagementPage(): ReactElement {
   const [warehousePickerOpen, setWarehousePickerOpen] = useState(false);
 
   useEffect(() => {
-    setPageTitle(t('sidebar.erpShelves', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('sidebar.erpShelves'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -64,8 +82,14 @@ export function ShelfManagementPage(): ReactElement {
   });
 
   const allShelves = useMemo(() => shelvesQuery.data?.data?.data ?? [], [shelvesQuery.data?.data?.data]);
-  const filteredParents = useMemo(() => allShelves.filter((item) => item.id !== selectedId && item.warehouseId === form.warehouseId), [allShelves, form.warehouseId, selectedId]);
-  const barcodePreview = useMemo(() => form.barcodeEntryMode === 'Auto' ? sanitizeBarcodeCandidate(form.code) : (form.barcode ?? ''), [form.barcode, form.barcodeEntryMode, form.code]);
+  const filteredParents = useMemo(
+    () => allShelves.filter((item) => item.id !== selectedId && item.warehouseId === form.warehouseId),
+    [allShelves, form.warehouseId, selectedId],
+  );
+  const barcodePreview = useMemo(
+    () => (form.barcodeEntryMode === 'Auto' ? sanitizeBarcodeCandidate(form.code) : (form.barcode ?? '')),
+    [form.barcode, form.barcodeEntryMode, form.code],
+  );
 
   const formReadOnly = selectedId ? !permission.canUpdate : !permission.canCreate;
 
@@ -77,20 +101,22 @@ export function ShelfManagementPage(): ReactElement {
       return await shelfManagementApi.create(form);
     },
     onSuccess: (response) => {
-      toast.success(response.message || (selectedId ? 'Raf kaydi guncellendi' : 'Raf kaydi olusturuldu'));
+      toast.success(
+        response.message || (selectedId ? t('shelfManagement.toastUpdated') : t('shelfManagement.toastCreated')),
+      );
       void shelvesQuery.refetch();
       setSelectedId(null);
       setForm(EMPTY_FORM);
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Raf kaydi kaydedilemedi');
+      toast.error(error instanceof Error ? error.message : t('shelfManagement.toastSaveFailed'));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => await shelfManagementApi.remove(id),
     onSuccess: (response) => {
-      toast.success(response.message || 'Raf kaydi silindi');
+      toast.success(response.message || t('shelfManagement.toastDeleted'));
       void shelvesQuery.refetch();
       if (selectedId) {
         setSelectedId(null);
@@ -98,16 +124,18 @@ export function ShelfManagementPage(): ReactElement {
       }
     },
     onError: (error: unknown) => {
-      toast.error(error instanceof Error ? error.message : 'Raf kaydi silinemedi');
+      toast.error(error instanceof Error ? error.message : t('shelfManagement.toastDeleteFailed'));
     },
   });
+
+  const renderLocationType = (item: ShelfDefinitionDto): string => getLocationTypeLabel(item.locationType, t);
 
   return (
     <div className="crm-page space-y-6">
       <Breadcrumb
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
-          { label: t('sidebar.erpShelves', { defaultValue: 'Missing translation' }), isActive: true },
+          { label: t('sidebar.erp') },
+          { label: t('sidebar.erpShelves'), isActive: true },
         ]}
       />
 
@@ -115,14 +143,14 @@ export function ShelfManagementPage(): ReactElement {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">Shelf</Badge>
-              <Badge variant="secondary">Warehouse Master</Badge>
+              <Badge variant="outline">{t('shelfManagement.badgeShelf')}</Badge>
+              <Badge variant="secondary">{t('shelfManagement.badgeMaster')}</Badge>
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpShelves', { defaultValue: 'Missing translation' })}
+              {t('sidebar.erpShelves')}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Depo bazli zone, rack, shelf ve cell kayitlarini yonetin. Barcode girisi manuel veya otomatik olabilir.
+              {t('shelfManagement.subtitle')}
             </p>
           </div>
           <Button variant="outline" onClick={() => void shelvesQuery.refetch()}>
@@ -135,13 +163,13 @@ export function ShelfManagementPage(): ReactElement {
       <div className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
         <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
-            <CardTitle>{selectedId ? 'Raf Kaydini Duzenle' : 'Yeni Raf Kaydi'}</CardTitle>
+            <CardTitle>{selectedId ? t('shelfManagement.formEdit') : t('shelfManagement.formNew')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <fieldset disabled={formReadOnly} className={formReadOnly ? 'pointer-events-none opacity-75' : undefined}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Depo</Label>
+                  <Label>{t('shelfManagement.warehouse')}</Label>
                   <PagedLookupDialog
                     open={warehousePickerOpen}
                     onOpenChange={setWarehousePickerOpen}
@@ -150,9 +178,9 @@ export function ShelfManagementPage(): ReactElement {
                         ? `${warehousesQuery.data.find((item) => item.id === form.warehouseId)?.depoKodu} · ${warehousesQuery.data.find((item) => item.id === form.warehouseId)?.depoIsmi}`
                         : ''
                     }
-                    placeholder="Depo secin"
-                    title="Depo Sec"
-                    description="Depo kayitlari server-side arama ve 20li sayfalama ile listelenir."
+                    placeholder={t('shelfManagement.warehousePh')}
+                    title={t('shelfManagement.warehouseTitle')}
+                    description={t('shelfManagement.warehouseDesc')}
                     queryKey={['shelf-management', 'warehouse-picker']}
                     fetchPage={({ pageNumber, pageSize, search, signal }) =>
                       lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
@@ -166,92 +194,133 @@ export function ShelfManagementPage(): ReactElement {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Ust Raf</Label>
-                  <Select value={form.parentShelfId ? String(form.parentShelfId) : '__none__'} onValueChange={(value) => setForm((current) => ({ ...current, parentShelfId: value === '__none__' ? null : Number(value) }))}>
-                    <SelectTrigger><SelectValue placeholder="Opsiyonel ust raf" /></SelectTrigger>
+                  <Label>{t('shelfManagement.parentShelf')}</Label>
+                  <Select
+                    value={form.parentShelfId ? String(form.parentShelfId) : '__none__'}
+                    onValueChange={(value) =>
+                      setForm((current) => ({ ...current, parentShelfId: value === '__none__' ? null : Number(value) }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('shelfManagement.parentShelfPh')} />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__none__">Yok</SelectItem>
+                      <SelectItem value="__none__">{t('shelfManagement.none')}</SelectItem>
                       {filteredParents.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>{item.code} · {item.name}</SelectItem>
+                        <SelectItem key={item.id} value={String(item.id)}>
+                          {item.code} · {item.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 mt-4">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Code</Label>
+                  <Label>{t('shelfManagement.code')}</Label>
                   <Input value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value }))} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Ad</Label>
+                  <Label>{t('shelfManagement.name')}</Label>
                   <Input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3 mt-4">
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="space-y-2">
-                  <Label>Tip</Label>
-                  <Select value={form.locationType} onValueChange={(value) => setForm((current) => ({ ...current, locationType: value as ShelfUpsertRequest['locationType'] }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Label>{t('shelfManagement.type')}</Label>
+                  <Select
+                    value={form.locationType}
+                    onValueChange={(value) =>
+                      setForm((current) => ({ ...current, locationType: value as ShelfUpsertRequest['locationType'] }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Zone">Zone</SelectItem>
-                      <SelectItem value="Rack">Rack</SelectItem>
-                      <SelectItem value="Shelf">Shelf</SelectItem>
-                      <SelectItem value="Cell">Cell</SelectItem>
+                      <SelectItem value="Zone">{t('shelfManagement.locationZone')}</SelectItem>
+                      <SelectItem value="Rack">{t('shelfManagement.locationRack')}</SelectItem>
+                      <SelectItem value="Shelf">{t('shelfManagement.locationShelf')}</SelectItem>
+                      <SelectItem value="Cell">{t('shelfManagement.locationCell')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Seviye No</Label>
-                  <Input type="number" value={form.levelNo ?? ''} onChange={(event) => setForm((current) => ({ ...current, levelNo: event.target.value ? Number(event.target.value) : null }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Kapasite</Label>
-                  <Input type="number" value={form.capacity ?? ''} onChange={(event) => setForm((current) => ({ ...current, capacity: event.target.value ? Number(event.target.value) : null }))} />
-                </div>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 mt-4">
-                <div className="space-y-2">
-                  <Label>Barkod Giris Tipi</Label>
-                  <Select value={form.barcodeEntryMode} onValueChange={(value) => setForm((current) => ({ ...current, barcodeEntryMode: value as ShelfUpsertRequest['barcodeEntryMode'] }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Auto">Auto</SelectItem>
-                      <SelectItem value="Manual">Manual</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Barkod</Label>
+                  <Label>{t('shelfManagement.levelNo')}</Label>
                   <Input
-                    value={form.barcodeEntryMode === 'Auto' ? barcodePreview : (form.barcode ?? '')}
-                    onChange={(event) => setForm((current) => ({ ...current, barcode: event.target.value }))}
-                    disabled={form.barcodeEntryMode === 'Auto'}
-                    placeholder={form.barcodeEntryMode === 'Auto' ? 'Code uzerinden otomatik olusur' : 'Elle barkod girin'}
+                    type="number"
+                    value={form.levelNo ?? ''}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, levelNo: event.target.value ? Number(event.target.value) : null }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('shelfManagement.capacity')}</Label>
+                  <Input
+                    type="number"
+                    value={form.capacity ?? ''}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, capacity: event.target.value ? Number(event.target.value) : null }))
+                    }
                   />
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 text-sm dark:border-white/10 dark:bg-slate-900/30 mt-4">
-                <div className="font-medium text-slate-900 dark:text-white">Barcode Preview</div>
-                <div className="mt-1 font-mono text-sky-700 dark:text-sky-300">{barcodePreview || '-'}</div>
-                <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  Auto modda barcode code uzerinden uretilir. Manual modda global unique barkod beklenir.
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>{t('shelfManagement.barcodeEntryMode')}</Label>
+                  <Select
+                    value={form.barcodeEntryMode}
+                    onValueChange={(value) =>
+                      setForm((current) => ({ ...current, barcodeEntryMode: value as ShelfUpsertRequest['barcodeEntryMode'] }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Auto">{t('shelfManagement.barcodeModeAuto')}</SelectItem>
+                      <SelectItem value="Manual">{t('shelfManagement.barcodeModeManual')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('shelfManagement.barcode')}</Label>
+                  <Input
+                    value={form.barcodeEntryMode === 'Auto' ? barcodePreview : (form.barcode ?? '')}
+                    onChange={(event) => setForm((current) => ({ ...current, barcode: event.target.value }))}
+                    disabled={form.barcodeEntryMode === 'Auto'}
+                    placeholder={
+                      form.barcodeEntryMode === 'Auto'
+                        ? t('shelfManagement.barcodeAutoPh')
+                        : t('shelfManagement.barcodeManualPh')
+                    }
+                  />
                 </div>
               </div>
 
-              <div className="space-y-2 mt-4">
-                <Label>{t('common.description')}</Label>
-                <Textarea value={form.description ?? ''} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} rows={4} />
+              <div className="mt-4 rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
+                <div className="font-medium text-slate-900 dark:text-white">{t('shelfManagement.barcodePreviewTitle')}</div>
+                <div className="mt-1 font-mono text-sky-700 dark:text-sky-300">{barcodePreview || '-'}</div>
+                <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('shelfManagement.barcodePreviewHelp')}</div>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-slate-200/80 px-3 py-2 mt-4 dark:border-white/10">
+              <div className="mt-4 space-y-2">
+                <Label>{t('common.description')}</Label>
+                <Textarea
+                  value={form.description ?? ''}
+                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                  rows={4}
+                />
+              </div>
+
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
                 <div>
-                  <div className="text-sm font-medium text-slate-900 dark:text-white">Aktif Kayit</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Pasif raf secim listelerinde cikmaz.</div>
+                  <div className="text-sm font-medium text-slate-900 dark:text-white">{t('shelfManagement.activeRecord')}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('shelfManagement.activeRecordHelp')}</div>
                 </div>
                 <Switch checked={form.isActive} onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))} />
               </div>
@@ -260,7 +329,7 @@ export function ShelfManagementPage(): ReactElement {
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => saveMutation.mutate()} disabled={formReadOnly || saveMutation.isPending}>
                 <Save className="mr-2 size-4" />
-                {selectedId ? 'Guncelle' : 'Kaydet'}
+                {selectedId ? t('shelfManagement.update') : t('shelfManagement.save')}
               </Button>
               <Button
                 variant="outline"
@@ -270,7 +339,7 @@ export function ShelfManagementPage(): ReactElement {
                 }}
               >
                 <Plus className="mr-2 size-4" />
-                Yeni Kayit
+                {t('shelfManagement.newRecord')}
               </Button>
             </div>
           </CardContent>
@@ -279,36 +348,49 @@ export function ShelfManagementPage(): ReactElement {
         <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
-              <CardTitle>Raf Listesi</CardTitle>
-              <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Code, ad veya barkod ara" className="max-w-xs" />
+              <CardTitle>{t('shelfManagement.listTitle')}</CardTitle>
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t('shelfManagement.searchPh')}
+                className="max-w-xs"
+              />
             </div>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Depo</TableHead>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Ad</TableHead>
-                  <TableHead>Tip</TableHead>
-                  <TableHead>Barkod</TableHead>
-                  <TableHead>Durum</TableHead>
-                  <TableHead className="text-right">Aksiyon</TableHead>
+                  <TableHead>{t('shelfManagement.colWarehouse')}</TableHead>
+                  <TableHead>{t('shelfManagement.colCode')}</TableHead>
+                  <TableHead>{t('shelfManagement.colName')}</TableHead>
+                  <TableHead>{t('shelfManagement.colType')}</TableHead>
+                  <TableHead>{t('shelfManagement.colBarcode')}</TableHead>
+                  <TableHead>{t('shelfManagement.colStatus')}</TableHead>
+                  <TableHead className="text-right">{t('shelfManagement.colAction')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {allShelves.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.warehouseCode} · {item.warehouseName}</TableCell>
+                    <TableCell>
+                      {item.warehouseCode} · {item.warehouseName}
+                    </TableCell>
                     <TableCell className="font-mono">{item.code}</TableCell>
                     <TableCell>
                       <div className="font-medium">{item.name}</div>
-                      {item.parentShelfCode ? <div className="text-xs text-slate-500">Ust: {item.parentShelfCode}</div> : null}
+                      {item.parentShelfCode ? (
+                        <div className="text-xs text-slate-500">
+                          {t('shelfManagement.parentPrefix')}: {item.parentShelfCode}
+                        </div>
+                      ) : null}
                     </TableCell>
-                    <TableCell>{item.locationType}</TableCell>
+                    <TableCell>{renderLocationType(item)}</TableCell>
                     <TableCell className="font-mono">{item.barcode || '-'}</TableCell>
                     <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>{item.isActive ? 'Aktif' : 'Pasif'}</Badge>
+                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
+                        {item.isActive ? t('shelfManagement.active') : t('shelfManagement.inactive')}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -333,7 +415,7 @@ export function ShelfManagementPage(): ReactElement {
                             });
                           }}
                         >
-                          Duzenle
+                          {t('shelfManagement.edit')}
                         </Button>
                         <Button
                           variant="outline"
