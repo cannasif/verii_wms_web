@@ -27,6 +27,7 @@ import type {
   BarcodeSchemaEntity,
   BarcodeDesignerElement,
   BarcodeDesignerTemplateDocument,
+  BarcodeComplianceReport,
   BarcodePrintSourceModule,
   BarcodeSourceHeaderOption,
   BarcodeSourceLineOption,
@@ -414,15 +415,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
   const [schemaSearch, setSchemaSearch] = useState('');
   const [expandedBindingGroups, setExpandedBindingGroups] = useState<Record<string, boolean>>({});
   const [expandedBindingNodes, setExpandedBindingNodes] = useState<Record<string, boolean>>({});
-  const [lastComplianceReport, setLastComplianceReport] = useState<null | {
-    versionNo?: number | null;
-    summary: string;
-    canPublish: boolean;
-    labelType: string;
-    barcodeCount: number;
-    hasGs1HumanReadableText: boolean;
-    issues: { level: string; elementId: string; code: string; message: string }[];
-  }>(null);
+  const [lastComplianceReport, setLastComplianceReport] = useState<BarcodeComplianceReport | null>(null);
 
   const templateQuery = useQuery({
     queryKey: ['barcode-designer-template', activeTemplateId],
@@ -871,7 +864,11 @@ export function BarcodeDesignerFormPage(): ReactElement {
   });
 
   const complianceReportMutation = useMutation({
-    mutationFn: async (versionId: number) => await barcodeDesignerApi.getComplianceReport(activeTemplateId!, versionId),
+    mutationFn: async (versionId: number) => await barcodeDesignerApi.getComplianceReport(
+      activeTemplateId!,
+      versionId,
+      selectedPrinterProfileId ? Number(selectedPrinterProfileId) : null,
+    ),
     onSuccess: (response) => {
       if (response.data) {
         setLastComplianceReport(response.data);
@@ -1669,9 +1666,23 @@ export function BarcodeDesignerFormPage(): ReactElement {
     y += 6;
     pdf.text(`Summary: ${lastComplianceReport.summary}`, 14, y);
     y += 8;
+    pdf.text(`Quality: ${lastComplianceReport.qualityScore ?? 0}/100 (${lastComplianceReport.qualityGrade || 'NotEvaluated'})`, 14, y);
+    y += 6;
+    pdf.text(`Issues: ${lastComplianceReport.errorCount ?? 0} error / ${lastComplianceReport.warningCount ?? 0} warning`, 14, y);
+    y += 6;
     pdf.text(`Barcode Count: ${lastComplianceReport.barcodeCount}`, 14, y);
     y += 6;
     pdf.text(`GS1 HRI: ${lastComplianceReport.hasGs1HumanReadableText ? 'Yes' : 'No'}`, 14, y);
+    y += 6;
+    if (lastComplianceReport.printerProfileCode) {
+      pdf.text(`Printer Profile: ${lastComplianceReport.printerProfileCode} / ${lastComplianceReport.printerProfileDpi ?? '-'} DPI`, 14, y);
+      y += 6;
+    }
+    if (lastComplianceReport.missingBindings?.length) {
+      const missingLines = pdf.splitTextToSize(`Missing Bindings: ${lastComplianceReport.missingBindings.join(', ')}`, 180);
+      pdf.text(missingLines, 14, y);
+      y += missingLines.length * 5;
+    }
     y += 8;
 
     for (const issue of lastComplianceReport.issues) {
@@ -2800,10 +2811,29 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{lastComplianceReport.summary}</div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm">
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                    Kalite: {lastComplianceReport.qualityScore ?? 0}/100 ({lastComplianceReport.qualityGrade || 'NotEvaluated'})
+                  </div>
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                    Hata/Uyari: {lastComplianceReport.errorCount ?? 0}/{lastComplianceReport.warningCount ?? 0}
+                  </div>
+                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                    Printer: {lastComplianceReport.printerProfileCode || 'Genel'}
+                  </div>
                   <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Label: {lastComplianceReport.labelType || templateRequest.labelType}</div>
                   <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Barkod: {lastComplianceReport.barcodeCount}</div>
                   <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">GS1 HRI: {lastComplianceReport.hasGs1HumanReadableText ? 'Var' : 'Yok'}</div>
                 </div>
+                {lastComplianceReport.printerProfileCode ? (
+                  <div className="mt-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
+                    Printer profile uyumu: {lastComplianceReport.printProfileCompatible ? 'Uyumlu' : 'Uyumsuz'} · {lastComplianceReport.printerProfileDpi ?? '-'} DPI · {lastComplianceReport.printerProfileWidth ?? '-'}x{lastComplianceReport.printerProfileHeight ?? '-'} mm · {lastComplianceReport.printerProfileOutputType ?? '-'}
+                  </div>
+                ) : null}
+                {lastComplianceReport.missingBindings?.length ? (
+                  <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                    Eksik sample binding: {lastComplianceReport.missingBindings.join(', ')}
+                  </div>
+                ) : null}
                 <div className="mt-3 space-y-2">
                   {lastComplianceReport.issues.map((issue) => (
                     <div

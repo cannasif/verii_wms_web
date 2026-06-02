@@ -72,8 +72,11 @@ export const barcodeDesignerApi = {
     return await api.post<ApiResponse<BarcodeTemplateVersion>>(`/api/BarcodeDesigner/templates/${templateId}/publish`, { versionId }, options);
   },
 
-  async getComplianceReport(templateId: number, versionId: number, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeComplianceReport>> {
-    return await api.get<ApiResponse<BarcodeComplianceReport>>(`/api/BarcodeDesigner/templates/${templateId}/versions/${versionId}/compliance-report`, options);
+  async getComplianceReport(templateId: number, versionId: number, printerProfileId?: number | null, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeComplianceReport>> {
+    return await api.get<ApiResponse<BarcodeComplianceReport>>(`/api/BarcodeDesigner/templates/${templateId}/versions/${versionId}/compliance-report`, {
+      signal: options?.signal,
+      params: printerProfileId ? { printerProfileId } : undefined,
+    });
   },
 
   async preview(payload: BarcodeDesignerPreviewRequest, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeDesignerPreviewResult>> {

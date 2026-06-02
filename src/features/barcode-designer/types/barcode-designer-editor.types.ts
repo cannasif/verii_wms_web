@@ -117,8 +117,20 @@ export interface BarcodeComplianceReport {
   canPublish: boolean;
   labelType: string;
   barcodeCount: number;
+  errorCount: number;
+  warningCount: number;
+  qualityScore: number;
+  qualityGrade: string;
   hasGs1Barcode: boolean;
   hasGs1HumanReadableText: boolean;
+  printProfileCompatible: boolean;
+  printerProfileCode?: string | null;
+  printerProfileOutputType?: string | null;
+  printerProfileDpi?: number | null;
+  printerProfileWidth?: number | null;
+  printerProfileHeight?: number | null;
+  requiredBindings: string[];
+  missingBindings: string[];
   summary: string;
   issues: BarcodeComplianceIssue[];
 }

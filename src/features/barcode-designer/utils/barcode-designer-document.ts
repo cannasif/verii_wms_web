@@ -148,8 +148,8 @@ export const BARCODE_TEMPLATE_PRESETS: BarcodeTemplatePresetDefinition[] = [
         { id: 'gtin', type: 'text', x: 20, y: 290, width: 320, height: 18, fontSize: 13, text: 'GTIN: {{gtin}}' },
       ],
       bindings: {
-        'gs1.value': '000123456789012345',
-        'gs1.hri': '(00)0123456789012345',
+        'gs1.value': '00012345678901234560',
+        'gs1.hri': '(00)012345678901234560',
         shipTo: '8699990000000',
         count: '48',
         gtin: '08699900012345',
@@ -179,8 +179,8 @@ export const BARCODE_TEMPLATE_PRESETS: BarcodeTemplatePresetDefinition[] = [
       bindings: {
         customerName: 'Lojistik Musteri',
         stockName: 'Karisik Sevkiyat Birimi',
-        'gs1.value': '000123456789012345',
-        'gs1.hri': '(00)0123456789012345',
+        'gs1.value': '00012345678901234560',
+        'gs1.hri': '(00)012345678901234560',
         shipmentNo: 'SHIP-2026-0001',
         warehouseCode: 'ANA',
         locationCode: 'A-01-02',
