@@ -4,11 +4,19 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 const allowedHosts = ["https://wms.v3rii.com"];
+
+function normalizeChunkId(id: string): string {
+  return id.split(path.sep).join('/');
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    chunkSizeWarningLimit: 800,
+    // Heavy barcode/3D engines are intentionally lazy-loaded feature chunks.
+    // Keep the limit tight enough to catch accidental route bloat without
+    // warning on isolated, user-triggered engines such as bwip-js.
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       onwarn(warning, warn) {
         if (
@@ -23,35 +31,45 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
-          if (id.includes('/node_modules/@react-three/') || id.includes('/node_modules/three/')) {
-            return 'vendor-3d';
+          const chunkId = normalizeChunkId(id);
+
+          if (chunkId.includes('/node_modules/@react-three/fiber/')) {
+            return 'vendor-3d-fiber';
           }
 
-          if (id.includes('/node_modules/jspdf') || id.includes('/node_modules/jspdf-autotable') || id.includes('/node_modules/xlsx/')) {
+          if (chunkId.includes('/node_modules/@react-three/drei/') || chunkId.includes('/node_modules/three-stdlib/')) {
+            return 'vendor-3d-drei';
+          }
+
+          if (chunkId.includes('/node_modules/three/')) {
+            return 'vendor-3d-three';
+          }
+
+          if (chunkId.includes('/node_modules/jspdf') || chunkId.includes('/node_modules/jspdf-autotable') || chunkId.includes('/node_modules/xlsx/')) {
             return 'vendor-export';
           }
 
-          if (id.includes('/node_modules/bwip-js/')) {
+          if (chunkId.includes('/node_modules/bwip-js/')) {
             return 'vendor-barcode-render';
           }
 
-          if (id.includes('/node_modules/konva/') || id.includes('/node_modules/react-konva/')) {
+          if (chunkId.includes('/node_modules/konva/') || chunkId.includes('/node_modules/react-konva/')) {
             return 'vendor-barcode-canvas';
           }
 
-          if (id.includes('/node_modules/@microsoft/signalr/')) {
+          if (chunkId.includes('/node_modules/@microsoft/signalr/')) {
             return 'vendor-signalr';
           }
 
           if (
-            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseScene') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/Shelf3D') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/AisleFloor3D') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseFloor') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseBin') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/WarehouseShelf') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/AisleFloor') ||
-            id.includes('/src/features/inventory/3d-warehouse/components/Bin3D')
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/WarehouseScene') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/Shelf3D') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/AisleFloor3D') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/WarehouseFloor') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/WarehouseBin') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/WarehouseShelf') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/AisleFloor') ||
+            chunkId.includes('/src/features/inventory/3d-warehouse/components/Bin3D')
           ) {
             return 'warehouse-3d-scene';
           }
