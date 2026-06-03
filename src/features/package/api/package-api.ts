@@ -28,6 +28,20 @@ import type {
   PackageLabelPrintResultDto,
   PackageMoveResultDto,
   MovePackagesToSourceHeaderDto,
+  PackagingMaterialDto,
+  CreatePackagingMaterialDto,
+  UpdatePackagingMaterialDto,
+  PackagingSpecificationDto,
+  CreatePackagingSpecificationDto,
+  UpdatePackagingSpecificationDto,
+  PackagingMaterialsPagedResponse,
+  PackagingSpecificationsPagedResponse,
+  PackagingMaterialsResponse,
+  PackagingSuggestionRequestDto,
+  PackagingSuggestionResponse,
+  PackagingSuggestionDto,
+  PackageQualitySummaryDto,
+  PackageQualitySummaryResponse,
 } from '../types/package';
 
 export const packageApi = {
@@ -244,5 +258,91 @@ export const packageApi = {
 
   movePackagesToSourceHeader: async (payload: MovePackagesToSourceHeaderDto): Promise<ApiResponse<PackageMoveResultDto>> => {
     return await api.post<ApiResponse<PackageMoveResultDto>>('/api/PackageOperations/move-to-source-header', payload);
+  },
+
+  getPackagingMaterialsPaged: async (params: PagedParams = {}): Promise<PagedResponse<PackagingMaterialDto>> => {
+    const response = await api.post<PackagingMaterialsPagedResponse>('/api/PackagingMaterial/paged', buildPagedRequest(params, { pageNumber: 1 }));
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingMaterialsLoadFailed'));
+  },
+
+  getPackagingMaterials: async (): Promise<PackagingMaterialDto[]> => {
+    const response = await api.get<PackagingMaterialsResponse>('/api/PackagingMaterial');
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingMaterialsLoadFailed'));
+  },
+
+  createPackagingMaterial: async (data: CreatePackagingMaterialDto): Promise<PackagingMaterialDto> => {
+    const response = await api.post<ApiResponse<PackagingMaterialDto>>('/api/PackagingMaterial', data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingMaterialCreateFailed'));
+  },
+
+  updatePackagingMaterial: async (id: number, data: UpdatePackagingMaterialDto): Promise<PackagingMaterialDto> => {
+    const response = await api.put<ApiResponse<PackagingMaterialDto>>(`/api/PackagingMaterial/${id}`, data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingMaterialUpdateFailed'));
+  },
+
+  deletePackagingMaterial: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/PackagingMaterial/${id}`);
+    if (!response.success) {
+      throw new Error(response.message || getLocalizedText('common.errors.packagingMaterialDeleteFailed'));
+    }
+  },
+
+  getPackagingSpecificationsPaged: async (params: PagedParams = {}): Promise<PagedResponse<PackagingSpecificationDto>> => {
+    const response = await api.post<PackagingSpecificationsPagedResponse>('/api/PackagingSpecification/paged', buildPagedRequest(params, { pageNumber: 1 }));
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingSpecificationsLoadFailed'));
+  },
+
+  createPackagingSpecification: async (data: CreatePackagingSpecificationDto): Promise<PackagingSpecificationDto> => {
+    const response = await api.post<ApiResponse<PackagingSpecificationDto>>('/api/PackagingSpecification', data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingSpecificationCreateFailed'));
+  },
+
+  updatePackagingSpecification: async (id: number, data: UpdatePackagingSpecificationDto): Promise<PackagingSpecificationDto> => {
+    const response = await api.put<ApiResponse<PackagingSpecificationDto>>(`/api/PackagingSpecification/${id}`, data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingSpecificationUpdateFailed'));
+  },
+
+  deletePackagingSpecification: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/PackagingSpecification/${id}`);
+    if (!response.success) {
+      throw new Error(response.message || getLocalizedText('common.errors.packagingSpecificationDeleteFailed'));
+    }
+  },
+
+  suggestPackaging: async (payload: PackagingSuggestionRequestDto): Promise<PackagingSuggestionDto> => {
+    const response = await api.post<PackagingSuggestionResponse>('/api/PackagingSpecification/suggest', payload);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packagingSuggestionFailed'));
+  },
+
+  getPackageQualitySummary: async (packageId: number): Promise<PackageQualitySummaryDto> => {
+    const response = await api.get<PackageQualitySummaryResponse>(`/api/PackageOperations/quality/${packageId}`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.packageQualityLoadFailed'));
   },
 };

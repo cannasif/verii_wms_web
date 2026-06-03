@@ -227,6 +227,130 @@ export interface PackageMoveResultDto {
   movedPackageIds: number[];
 }
 
+export interface PackagingMaterialDto {
+  id: number;
+  materialCode: string;
+  materialName: string;
+  materialType: 'Box' | 'Pallet' | 'Bag' | 'Custom' | string;
+  standardLength?: number | null;
+  standardWidth?: number | null;
+  standardHeight?: number | null;
+  standardVolume?: number | null;
+  standardNetWeight?: number | null;
+  standardTareWeight?: number | null;
+  standardGrossWeight?: number | null;
+  maxLength?: number | null;
+  maxWidth?: number | null;
+  maxHeight?: number | null;
+  maxVolume?: number | null;
+  maxNetWeight?: number | null;
+  maxGrossWeight?: number | null;
+  maxProductQuantity?: number | null;
+  isActive: boolean;
+  description?: string | null;
+}
+
+export type CreatePackagingMaterialDto = Omit<PackagingMaterialDto, 'id' | 'isActive'> & {
+  isActive?: boolean;
+};
+
+export type UpdatePackagingMaterialDto = Partial<CreatePackagingMaterialDto>;
+
+export interface PackagingSpecificationDto {
+  id: number;
+  stockId: number;
+  stockCode?: string | null;
+  stockName?: string | null;
+  customerId?: number | null;
+  customerCode?: string | null;
+  customerName?: string | null;
+  boxPackagingMaterialId: number;
+  boxMaterialCode?: string | null;
+  boxMaterialName?: string | null;
+  palletPackagingMaterialId?: number | null;
+  palletMaterialCode?: string | null;
+  palletMaterialName?: string | null;
+  unitsPerPackage: number;
+  packagesPerPallet?: number | null;
+  allowMixedStock: boolean;
+  allowMixedYapKod: boolean;
+  allowMixedSerial: boolean;
+  isActive: boolean;
+  priority: number;
+  notes?: string | null;
+}
+
+export interface CreatePackagingSpecificationDto {
+  stockId: number;
+  customerId?: number | null;
+  customerCode?: string | null;
+  boxPackagingMaterialId: number;
+  palletPackagingMaterialId?: number | null;
+  unitsPerPackage: number;
+  packagesPerPallet?: number | null;
+  allowMixedStock?: boolean;
+  allowMixedYapKod?: boolean;
+  allowMixedSerial?: boolean;
+  isActive?: boolean;
+  priority?: number;
+  notes?: string | null;
+}
+
+export type UpdatePackagingSpecificationDto = Partial<CreatePackagingSpecificationDto>;
+
+export interface PackagingSuggestionRequestDto {
+  packingHeaderId?: number | null;
+  stockId: number;
+  customerId?: number | null;
+  quantity: number;
+}
+
+export interface PackagingSuggestionDto {
+  packagingSpecificationId?: number | null;
+  stockId: number;
+  customerId?: number | null;
+  boxPackagingMaterialId: number;
+  boxMaterialCode?: string | null;
+  boxMaterialName?: string | null;
+  palletPackagingMaterialId?: number | null;
+  palletMaterialCode?: string | null;
+  palletMaterialName?: string | null;
+  unitsPerPackage: number;
+  packagesPerPallet?: number | null;
+  allowMixedStock: boolean;
+  allowMixedYapKod: boolean;
+  allowMixedSerial: boolean;
+  suggestedPackageCount: number;
+  suggestedPalletCount: number;
+  suggestedTotalQuantity: number;
+}
+
+export type PackagingMaterialsPagedResponse = ApiResponse<PagedResponse<PackagingMaterialDto>>;
+export type PackagingSpecificationsPagedResponse = ApiResponse<PagedResponse<PackagingSpecificationDto>>;
+export type PackagingMaterialsResponse = ApiResponse<PackagingMaterialDto[]>;
+export type PackagingSuggestionResponse = ApiResponse<PackagingSuggestionDto>;
+
+export interface PackageQualityWarningDto {
+  severity: 'Info' | 'Warning' | 'Danger' | string;
+  code: string;
+  title: string;
+  detail: string;
+}
+
+export interface PackageQualitySummaryDto {
+  packageId: number;
+  packageNo: string;
+  packagingMaterialId?: number | null;
+  packagingMaterialCode?: string | null;
+  totalQuantity: number;
+  grossWeight?: number | null;
+  volume?: number | null;
+  hasBlockingIssue: boolean;
+  warnings: PackageQualityWarningDto[];
+}
+
+export type PackageQualitySummaryResponse = ApiResponse<PackageQualitySummaryDto>;
+
 export interface PLineDto {
   id: number;
   packingHeaderId: number;

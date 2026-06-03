@@ -204,6 +204,14 @@ const PackagePackageDetailPage = lazyNamed(
   () => import('@/features/package/components/PackagePackageDetailPage'),
   'PackagePackageDetailPage',
 );
+const PackagingSettingsPage = lazyNamed(
+  () => import('@/features/package/components/PackagingSettingsPage'),
+  'PackagingSettingsPage',
+);
+const PackagePackingStationPage = lazyNamed(
+  () => import('@/features/package/components/PackagePackingStationPage'),
+  'PackagePackingStationPage',
+);
 
 const AllocationQueuePage = lazyNamed(() => import('@/features/service-allocation'), 'AllocationQueuePage');
 const DocumentLinksPage = lazyNamed(() => import('@/features/service-allocation'), 'DocumentLinksPage');
@@ -426,6 +434,8 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'edit/:id', element: withRoute(PackageEditPage, { routeName: 'package-edit', namespaces: ['package', 'common'] }) },
       { path: 'detail/:id', element: withRoute(PackageDetailPage, { routeName: 'package-detail', namespaces: ['package', 'common'] }) },
       { path: 'package-detail/:id', element: withRoute(PackagePackageDetailPage, { routeName: 'package-package-detail', namespaces: ['package', 'common'] }) },
+      { path: 'settings', element: withRoute(PackagingSettingsPage, { routeName: 'package-settings', namespaces: ['package', 'common'] }) },
+      { path: 'station', element: withRoute(PackagePackingStationPage, { routeName: 'package-station', namespaces: ['package', 'common'] }) },
     ],
   },
 ];
