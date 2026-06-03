@@ -199,6 +199,10 @@ export function pxToCm(value: number): number {
   return Number((value / PIXELS_PER_MM / 10).toFixed(2));
 }
 
+export function pxToMm(value: number): number {
+  return Number((value / PIXELS_PER_MM).toFixed(1));
+}
+
 export function cmToPx(value: number): number {
   return Math.round(value * 10 * PIXELS_PER_MM);
 }

@@ -34,7 +34,7 @@ import type {
   BarcodeSourcePackageOption,
   BarcodeTemplateUpsertRequest,
 } from '../types/barcode-designer-editor.types';
-import { BARCODE_BINDING_FIELDS, BARCODE_TEMPLATE_PRESETS, DEFAULT_TEMPLATE_DOCUMENT, cmToMm, cmToPx, getRecommendedBindingTarget, getSuggestedBarcodeSymbology, getSuggestedElementLayout, mmToCm, parseTemplateDocument, pxToCm, snapToGridPx, stringifyTemplateDocument } from '../utils/barcode-designer-document';
+import { BARCODE_BINDING_FIELDS, BARCODE_TEMPLATE_PRESETS, DEFAULT_TEMPLATE_DOCUMENT, cmToPx, getRecommendedBindingTarget, getSuggestedBarcodeSymbology, getSuggestedElementLayout, mmToCm, mmToPx, parseTemplateDocument, pxToMm, snapToGridPx, stringifyTemplateDocument } from '../utils/barcode-designer-document';
 import { loadBarcodeDesignerDefaults, saveBarcodeDesignerDefaults } from '../utils/barcode-designer-defaults';
 import { validateBarcodeTemplate } from '../utils/barcode-designer-validation';
 
@@ -1953,12 +1953,12 @@ export function BarcodeDesignerFormPage(): ReactElement {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Width (cm)</Label>
-                <Input type="number" step="0.1" value={mmToCm(templateRequest.width)} onChange={(event) => setTemplateRequest((current) => ({ ...current, width: cmToMm(Number(event.target.value)) }))} />
+                <Label>Width (mm)</Label>
+                <Input type="number" step="1" value={templateRequest.width} onChange={(event) => setTemplateRequest((current) => ({ ...current, width: Number(event.target.value) }))} />
               </div>
               <div className="space-y-2">
-                <Label>Height (cm)</Label>
-                <Input type="number" step="0.1" value={mmToCm(templateRequest.height)} onChange={(event) => setTemplateRequest((current) => ({ ...current, height: cmToMm(Number(event.target.value)) }))} />
+                <Label>Height (mm)</Label>
+                <Input type="number" step="1" value={templateRequest.height} onChange={(event) => setTemplateRequest((current) => ({ ...current, height: Number(event.target.value) }))} />
               </div>
             </div>
 
@@ -1984,10 +1984,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="mt-2 text-slate-600 dark:text-slate-300">{describeElement(selectedElement)}</div>
               {selectedElement ? (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge variant="outline">X: {pxToCm(selectedElement.x)} cm</Badge>
-                  <Badge variant="outline">Y: {pxToCm(selectedElement.y)} cm</Badge>
-                  {'width' in selectedElement ? <Badge variant="outline">W: {pxToCm(selectedElement.width)} cm</Badge> : null}
-                  {'height' in selectedElement ? <Badge variant="outline">H: {pxToCm(selectedElement.height)} cm</Badge> : null}
+                  <Badge variant="outline">X: {pxToMm(selectedElement.x)} mm</Badge>
+                  <Badge variant="outline">Y: {pxToMm(selectedElement.y)} mm</Badge>
+                  {'width' in selectedElement ? <Badge variant="outline">W: {pxToMm(selectedElement.width)} mm</Badge> : null}
+                  {'height' in selectedElement ? <Badge variant="outline">H: {pxToMm(selectedElement.height)} mm</Badge> : null}
                 </div>
               ) : null}
             </div>
@@ -2015,7 +2015,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     <div>
                       <div className="font-medium text-slate-900 dark:text-white">{describeElement(element)}</div>
                       <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {pxToCm(element.x)} cm / {pxToCm(element.y)} cm
+                        {pxToMm(element.x)} mm / {pxToMm(element.y)} mm
                       </div>
                     </div>
                     <Badge variant="outline">{element.type}</Badge>
@@ -2262,28 +2262,28 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0.1, 0)} disabled={!canManageTemplate}>Saga</Button>
                     </div>
                     <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                      Butonlar elemani 0.1 cm adimlarla tasir. Daha net konum icin alttaki X/Y alanlarini kullan.
+                      Butonlar elemani 1 mm adimlarla tasir. Daha net konum icin alttaki X/Y alanlarini kullan.
                     </div>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>X (cm)</Label>
+                      <Label>X (mm)</Label>
                       <Input
                         type="number"
-                        step="0.1"
-                        value={pxToCm(selectedElement.x)}
-                        onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, x: cmToPx(toNumber(event.target.value, pxToCm(element.x))) }))}
+                        step="1"
+                        value={pxToMm(selectedElement.x)}
+                        onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, x: mmToPx(toNumber(event.target.value, pxToMm(element.x))) }))}
                         disabled={!canManageTemplate}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Y (cm)</Label>
+                      <Label>Y (mm)</Label>
                       <Input
                         type="number"
-                        step="0.1"
-                        value={pxToCm(selectedElement.y)}
-                        onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, y: cmToPx(toNumber(event.target.value, pxToCm(element.y))) }))}
+                        step="1"
+                        value={pxToMm(selectedElement.y)}
+                        onChange={(event) => handleUpdateSelectedElement((element) => ({ ...element, y: mmToPx(toNumber(event.target.value, pxToMm(element.y))) }))}
                         disabled={!canManageTemplate}
                       />
                     </div>
@@ -2292,25 +2292,25 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   {(selectedElement.type === 'text' || selectedElement.type === 'barcode' || selectedElement.type === 'rect' || selectedElement.type === 'image') ? (
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label>Width (cm)</Label>
+                        <Label>Width (mm)</Label>
                         <Input
                           type="number"
-                          step="0.1"
-                          value={pxToCm(selectedElement.width)}
+                          step="1"
+                          value={pxToMm(selectedElement.width)}
                           onChange={(event) => handleUpdateSelectedElement((element) => (
-                            'width' in element ? { ...element, width: cmToPx(toNumber(event.target.value, pxToCm(element.width))) } : element
+                            'width' in element ? { ...element, width: mmToPx(toNumber(event.target.value, pxToMm(element.width))) } : element
                           ))}
                           disabled={!canManageTemplate}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Height (cm)</Label>
+                        <Label>Height (mm)</Label>
                         <Input
                           type="number"
-                          step="0.1"
-                          value={pxToCm(selectedElement.height)}
+                          step="1"
+                          value={pxToMm(selectedElement.height)}
                           onChange={(event) => handleUpdateSelectedElement((element) => (
-                            'height' in element ? { ...element, height: cmToPx(toNumber(event.target.value, pxToCm(element.height))) } : element
+                            'height' in element ? { ...element, height: mmToPx(toNumber(event.target.value, pxToMm(element.height))) } : element
                           ))}
                           disabled={!canManageTemplate}
                         />
@@ -2591,7 +2591,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
                 <div>
                   <div className="font-medium text-slate-900 dark:text-white">
-                    Canvas: {mmToCm(documentState.canvas.width)} cm × {mmToCm(documentState.canvas.height)} cm
+                    Canvas: {documentState.canvas.width} mm × {documentState.canvas.height} mm
                   </div>
                   <div className="mt-1 text-slate-500 dark:text-slate-400">
                     Sagdan alan ekle, canvas uzerinden surukle veya eleman listesinden secip X/Y ver. Boyut degistirdikce goruntu aninda guncellenir.
