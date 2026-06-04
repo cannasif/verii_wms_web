@@ -9,6 +9,7 @@ export const bilginogluHakEdisQueryKeys = {
   orders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'orders', params] as const,
   orderPlans: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-plans', orderHeaderId] as const,
   orderActivities: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-activities', orderHeaderId] as const,
+  transferPreview: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'transfer-preview', orderHeaderId] as const,
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
@@ -33,6 +34,14 @@ export function useBilginogluHakEdisOrderActivitiesQuery(orderHeaderId: number |
   return useQuery({
     queryKey: bilginogluHakEdisQueryKeys.orderActivities(orderHeaderId),
     queryFn: () => bilginogluHakEdisApi.getOrderActivities(orderHeaderId ?? 0),
+    enabled: Number.isFinite(orderHeaderId) && orderHeaderId != null && orderHeaderId > 0,
+  });
+}
+
+export function useBilginogluHakEdisTransferPreviewQuery(orderHeaderId: number | null) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.transferPreview(orderHeaderId),
+    queryFn: () => bilginogluHakEdisApi.getTransferPreview(orderHeaderId ?? 0),
     enabled: Number.isFinite(orderHeaderId) && orderHeaderId != null && orderHeaderId > 0,
   });
 }
@@ -83,6 +92,19 @@ export function useBilginogluHakEdisBatchActionMutation() {
       await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.all });
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('messages.batchFailed')),
+  });
+}
+
+export function useBilginogluHakEdisCreateSuggestedTransfersMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation('bilginoglu-hakedis');
+  return useMutation({
+    mutationFn: (orderHeaderId: number) => bilginogluHakEdisApi.createSuggestedTransfers(orderHeaderId),
+    onSuccess: async (result) => {
+      toast.success(t('messages.transfersCreated', { count: result.createdBatches.length }));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.all });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('messages.transfersFailed')),
   });
 }
 

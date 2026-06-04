@@ -11,6 +11,7 @@
     "evaluate": "Evaluate",
     "refresh": "Refresh",
     "savePolicy": "Save Policy",
+    "createSuggestedTransfers": "Create Suggested Transfers",
     "createDat": "Create DAT",
     "atHakEdis": "At Entitlement",
     "createReturnDat": "Return DAT",
@@ -62,6 +63,19 @@
     "steps": "Batch steps",
     "chooseBatch": "Select a batch to see its steps."
   },
+  "transferPreview": {
+    "title": "Suggested DAT / shipment readiness",
+    "description": "DAT lines that can be opened from order quantity, processed quantity, remaining balance, and warehouse availability.",
+    "orderQty": "Order Quantity",
+    "processedQty": "Processed",
+    "remainingQty": "Remaining Balance",
+    "transferableQty": "Transferable",
+    "shippableQty": "Shippable",
+    "missingQty": "Missing",
+    "warehouse": "Warehouse",
+    "decision": "Decision",
+    "sameWarehouse": "Same warehouse"
+  },
   "activity": {
     "title": "Completed operations",
     "description": "Document, ERP, and collection trace for related DAT, entitlement, return, and shipment stages.",
@@ -105,7 +119,10 @@
     "ReturnFromHakEdis": "Return from Entitlement",
     "Pending": "Pending",
     "Ready": "Ready",
-    "InProgress": "In Progress"
+    "InProgress": "In Progress",
+    "BatchPlanned": "Available",
+    "WaitingFullOrder": "Waiting Full Order",
+    "ManualOnly": "Manual"
   },
   "loading": "Loading...",
   "empty": "No records found.",
@@ -114,6 +131,8 @@
     "evaluationFailed": "Entitlement evaluation could not be executed.",
     "batchCompleted": "Entitlement batch action completed.",
     "batchFailed": "Entitlement batch action could not be completed.",
+    "transfersCreated": "Suggested transfers created. Batch: {{count}}",
+    "transfersFailed": "Suggested transfers could not be created.",
     "policyUpdated": "Entitlement order policy updated.",
     "policyFailed": "Entitlement order policy could not be updated."
   }

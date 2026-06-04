@@ -11,6 +11,7 @@
     "evaluate": "Degerlendir",
     "refresh": "Yenile",
     "savePolicy": "Politikayi Kaydet",
+    "createSuggestedTransfers": "Otomatik Transferleri Olustur",
     "createDat": "DAT Ac",
     "atHakEdis": "Hakediste",
     "createReturnDat": "Donus DAT",
@@ -62,6 +63,19 @@
     "steps": "Batch adimlari",
     "chooseBatch": "Adimlari gormek icin bir batch secin."
   },
+  "transferPreview": {
+    "title": "Onerilen DAT / sevk hazirligi",
+    "description": "Siparis miktari, islem goren miktar, kalan bakiye ve depo bakiyesine gore acilabilecek DAT kalemleri.",
+    "orderQty": "Siparis Miktari",
+    "processedQty": "Islem Goren",
+    "remainingQty": "Kalan Bakiye",
+    "transferableQty": "Transfer Edilebilir",
+    "shippableQty": "Sevk Edilebilir",
+    "missingQty": "Eksik",
+    "warehouse": "Depo",
+    "decision": "Karar",
+    "sameWarehouse": "Ayni depo"
+  },
   "activity": {
     "title": "Tamamlanan islemler",
     "description": "Siparise bagli DAT, hakedis, donus ve sevk adimlarinin belge, ERP ve toplama izleri.",
@@ -105,7 +119,10 @@
     "ReturnFromHakEdis": "Hakedisten Donus",
     "Pending": "Bekliyor",
     "Ready": "Hazir",
-    "InProgress": "Islemde"
+    "InProgress": "Islemde",
+    "BatchPlanned": "Acilabilir",
+    "WaitingFullOrder": "Tam siparis bekliyor",
+    "ManualOnly": "Manuel"
   },
   "loading": "Yukleniyor...",
   "empty": "Kayit bulunamadi.",
@@ -114,6 +131,8 @@
     "evaluationFailed": "Hakedis degerlendirmesi calistirilamadi.",
     "batchCompleted": "Hakedis batch aksiyonu tamamlandi.",
     "batchFailed": "Hakedis batch aksiyonu calistirilamadi.",
+    "transfersCreated": "Onerilen transferler olusturuldu. Batch: {{count}}",
+    "transfersFailed": "Onerilen transferler olusturulamadi.",
     "policyUpdated": "Hakedis siparis politikasi guncellendi.",
     "policyFailed": "Hakedis siparis politikasi guncellenemedi."
   }

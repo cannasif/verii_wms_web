@@ -174,3 +174,49 @@ export interface BilginogluHakEdisEvaluationResult {
   run: BilginogluHakEdisEvaluationRun;
   lines: BilginogluHakEdisEvaluationLine[];
 }
+
+export interface BilginogluHakEdisTransferPreviewLine {
+  planId: number;
+  siparisNo: string;
+  orderId: number;
+  stockCode?: string | null;
+  stockName?: string | null;
+  yapKod?: string | null;
+  sourceWarehouseCode?: number | null;
+  hakEdisWarehouseCode?: number | null;
+  orderQty: number;
+  processedQty: number;
+  remainingOrderQty: number;
+  warehouseAvailableQty: number;
+  transferableQty: number;
+  shippableQty: number;
+  missingQty: number;
+  sameWarehouse: boolean;
+  willCreateTransfer: boolean;
+  decision: string;
+  decisionReason?: string | null;
+}
+
+export interface BilginogluHakEdisTransferPreview {
+  orderHeaderId: number;
+  siparisNo: string;
+  customerCode?: string | null;
+  customerName?: string | null;
+  transferAllFlag: string;
+  allocationPolicy: string;
+  shipmentPolicy: string;
+  totalOrderQty: number;
+  totalProcessedQty: number;
+  totalRemainingOrderQty: number;
+  totalWarehouseAvailableQty: number;
+  totalTransferableQty: number;
+  totalShippableQty: number;
+  totalMissingQty: number;
+  canCreateTransfers: boolean;
+  lines: BilginogluHakEdisTransferPreviewLine[];
+}
+
+export interface BilginogluHakEdisCreateTransfersResult {
+  preview: BilginogluHakEdisTransferPreview;
+  createdBatches: BilginogluHakEdisBatch[];
+}

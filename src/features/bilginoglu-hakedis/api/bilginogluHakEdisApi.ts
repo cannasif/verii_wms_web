@@ -9,6 +9,8 @@ import type {
   BilginogluHakEdisOrderActivity,
   BilginogluHakEdisOrderHeader,
   BilginogluHakEdisPlan,
+  BilginogluHakEdisCreateTransfersResult,
+  BilginogluHakEdisTransferPreview,
   PagedParams,
   PagedResponse,
   UpdateBilginogluHakEdisOrderPolicy,
@@ -76,9 +78,19 @@ export const bilginogluHakEdisApi = {
   evaluate: async (siparisNo?: string): Promise<BilginogluHakEdisEvaluationResult> => {
     const response = await api.post<ApiResponse<BilginogluHakEdisEvaluationResult>>('/api/BilginogluHakEdis/evaluate', {
       siparisNo: siparisNo?.trim() || null,
-      createPlannedBatches: true,
+      createPlannedBatches: false,
     });
     return extractData(response as ApiResponse<BilginogluHakEdisEvaluationResult>);
+  },
+
+  getTransferPreview: async (orderHeaderId: number): Promise<BilginogluHakEdisTransferPreview> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisTransferPreview>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/transfer-preview`);
+    return extractData(response as ApiResponse<BilginogluHakEdisTransferPreview>);
+  },
+
+  createSuggestedTransfers: async (orderHeaderId: number): Promise<BilginogluHakEdisCreateTransfersResult> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisCreateTransfersResult>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/create-suggested-transfers`, {});
+    return extractData(response as ApiResponse<BilginogluHakEdisCreateTransfersResult>);
   },
 
   runBatchAction: async (batchId: number, action: string): Promise<BilginogluHakEdisBatch> => {

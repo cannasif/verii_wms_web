@@ -11,6 +11,7 @@
     "evaluate": "Auswerten",
     "refresh": "Aktualisieren",
     "savePolicy": "Richtlinie speichern",
+    "createSuggestedTransfers": "Vorgeschlagene Transfers erstellen",
     "createDat": "DAT erstellen",
     "atHakEdis": "In Abschlagszahlung",
     "createReturnDat": "Rückführungs-DAT",
@@ -62,6 +63,19 @@
     "steps": "Batch-Schritte",
     "chooseBatch": "Wählen Sie einen Batch, um die Schritte anzuzeigen."
   },
+  "transferPreview": {
+    "title": "Vorgeschlagene DAT-/Versandbereitschaft",
+    "description": "DAT-Zeilen, die anhand Auftragsmenge, verarbeiteter Menge, Restmenge und Lagerbestand erstellt werden können.",
+    "orderQty": "Auftragsmenge",
+    "processedQty": "Verarbeitet",
+    "remainingQty": "Restmenge",
+    "transferableQty": "Transferierbar",
+    "shippableQty": "Versandfähig",
+    "missingQty": "Fehlend",
+    "warehouse": "Lager",
+    "decision": "Entscheidung",
+    "sameWarehouse": "Gleiches Lager"
+  },
   "activity": {
     "title": "Abgeschlossene Vorgänge",
     "description": "Dokument-, ERP- und Erfassungshistorie zu DAT-, Abschlagszahlungs-, Rückführungs- und Versandstufen des Auftrags.",
@@ -105,7 +119,10 @@
     "ReturnFromHakEdis": "Rückführung von Abschlagszahlung",
     "Pending": "Ausstehend",
     "Ready": "Bereit",
-    "InProgress": "In Bearbeitung"
+    "InProgress": "In Bearbeitung",
+    "BatchPlanned": "Verfügbar",
+    "WaitingFullOrder": "Wartet auf Gesamtauftrag",
+    "ManualOnly": "Manuell"
   },
   "loading": "Wird geladen...",
   "empty": "Keine Datensätze gefunden.",
@@ -114,6 +131,8 @@
     "evaluationFailed": "Abschlagszahlungs-Auswertung konnte nicht ausgeführt werden.",
     "batchCompleted": "Abschlagszahlungs-Batch-Aktion abgeschlossen.",
     "batchFailed": "Abschlagszahlungs-Batch-Aktion konnte nicht ausgeführt werden.",
+    "transfersCreated": "Vorgeschlagene Transfers erstellt. Batch: {{count}}",
+    "transfersFailed": "Vorgeschlagene Transfers konnten nicht erstellt werden.",
     "policyUpdated": "Abschlagszahlungs-Auftragsrichtlinie aktualisiert.",
     "policyFailed": "Abschlagszahlungs-Auftragsrichtlinie konnte nicht aktualisiert werden."
   }

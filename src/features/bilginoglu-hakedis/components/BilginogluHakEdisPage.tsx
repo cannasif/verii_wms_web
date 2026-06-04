@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Boxes, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck } from 'lucide-react';
+import { Boxes, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck, Wand2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -17,8 +17,10 @@ import {
   useBilginogluHakEdisOrderActivitiesQuery,
   useBilginogluHakEdisOrderPlansQuery,
   useBilginogluHakEdisOrdersQuery,
+  useBilginogluHakEdisTransferPreviewQuery,
   useBilginogluHakEdisStepsQuery,
   useBilginogluHakEdisBatchActionMutation,
+  useBilginogluHakEdisCreateSuggestedTransfersMutation,
   useBilginogluHakEdisOrderPolicyMutation,
   useEvaluateBilginogluHakEdisMutation,
 } from '../hooks/useBilginogluHakEdisQueries';
@@ -72,10 +74,12 @@ export function BilginogluHakEdisPage(): ReactElement {
   const ordersQuery = useBilginogluHakEdisOrdersQuery(params);
   const plansQuery = useBilginogluHakEdisOrderPlansQuery(selectedOrder?.id ?? null);
   const activitiesQuery = useBilginogluHakEdisOrderActivitiesQuery(selectedOrder?.id ?? null);
+  const transferPreviewQuery = useBilginogluHakEdisTransferPreviewQuery(selectedOrder?.id ?? null);
   const batchesQuery = useBilginogluHakEdisBatchesQuery(selectedPlan?.id ?? null);
   const stepsQuery = useBilginogluHakEdisStepsQuery(selectedBatch?.id ?? null);
   const evaluateMutation = useEvaluateBilginogluHakEdisMutation();
   const batchActionMutation = useBilginogluHakEdisBatchActionMutation();
+  const createSuggestedTransfersMutation = useBilginogluHakEdisCreateSuggestedTransfersMutation();
   const policyMutation = useBilginogluHakEdisOrderPolicyMutation();
   const statusLabel = (status: string): string => t(`status.${status}`, { defaultValue: status });
 
@@ -111,6 +115,7 @@ export function BilginogluHakEdisPage(): ReactElement {
     };
   }, [plans]);
   const activities = activitiesQuery.data ?? [];
+  const transferPreview = transferPreviewQuery.data;
   const activitySummary = useMemo(() => {
     const datHeaders = new Set<number>();
     const shipmentHeaders = new Set<number>();
@@ -252,6 +257,74 @@ export function BilginogluHakEdisPage(): ReactElement {
                 <NeedCard label={t('need.canCreate')} value={formatQty(selectedOrderNeed.canCreate || selectedOrder.canCreateNewBatchQty)} tone="emerald" />
                 <NeedCard label={t('need.allocated')} value={formatQty(selectedOrder.totalAllocatedQty)} tone="blue" />
                 <NeedCard label={t('need.missing')} value={formatQty(selectedOrderNeed.missing || selectedOrder.totalMissingQty)} tone="amber" />
+              </div>
+              <div className="rounded-2xl border border-cyan-100 bg-cyan-50/50 p-3">
+                <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold">{t('transferPreview.title')}</h3>
+                    <p className="text-xs text-muted-foreground">{t('transferPreview.description')}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="rounded-xl"
+                    disabled={!permission.canUpdate || !transferPreview?.canCreateTransfers || createSuggestedTransfersMutation.isPending}
+                    onClick={() => selectedOrder && createSuggestedTransfersMutation.mutate(selectedOrder.id)}
+                  >
+                    {createSuggestedTransfersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
+                    {t('actions.createSuggestedTransfers')}
+                  </Button>
+                </div>
+                {transferPreviewQuery.isLoading ? (
+                  <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {t('loading')}</div>
+                ) : transferPreview ? (
+                  <div className="space-y-3">
+                    <div className="grid gap-3 md:grid-cols-5">
+                      <NeedCard label={t('transferPreview.orderQty')} value={formatQty(transferPreview.totalOrderQty)} tone="slate" />
+                      <NeedCard label={t('transferPreview.processedQty')} value={formatQty(transferPreview.totalProcessedQty)} tone="blue" />
+                      <NeedCard label={t('transferPreview.transferableQty')} value={formatQty(transferPreview.totalTransferableQty)} tone="emerald" />
+                      <NeedCard label={t('transferPreview.shippableQty')} value={formatQty(transferPreview.totalShippableQty)} tone="cyan" />
+                      <NeedCard label={t('transferPreview.missingQty')} value={formatQty(transferPreview.totalMissingQty)} tone="amber" />
+                    </div>
+                    <div className="max-h-56 overflow-auto rounded-2xl border bg-white">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('detail.stock')}</TableHead>
+                            <TableHead>{t('transferPreview.warehouse')}</TableHead>
+                            <TableHead className="text-right">{t('transferPreview.orderQty')}</TableHead>
+                            <TableHead className="text-right">{t('transferPreview.processedQty')}</TableHead>
+                            <TableHead className="text-right">{t('transferPreview.remainingQty')}</TableHead>
+                            <TableHead className="text-right">{t('transferPreview.transferableQty')}</TableHead>
+                            <TableHead>{t('transferPreview.decision')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {transferPreview.lines.map((line) => (
+                            <TableRow key={line.planId}>
+                              <TableCell>
+                                <div className="font-medium">{line.stockCode ?? '-'}</div>
+                                <div className="text-xs text-muted-foreground">{line.stockName ?? line.yapKod ?? '-'}</div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-xs">{line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}</div>
+                                {line.sameWarehouse ? <Badge variant="secondary" className="mt-1 rounded-xl">{t('transferPreview.sameWarehouse')}</Badge> : null}
+                              </TableCell>
+                              <TableCell className="text-right">{formatQty(line.orderQty)}</TableCell>
+                              <TableCell className="text-right">{formatQty(line.processedQty)}</TableCell>
+                              <TableCell className="text-right">{formatQty(line.remainingOrderQty)}</TableCell>
+                              <TableCell className="text-right font-semibold">{formatQty(line.transferableQty)}</TableCell>
+                              <TableCell>
+                                {statusBadge(line.decision, statusLabel(line.decision))}
+                                <div className="mt-1 text-xs text-muted-foreground">{line.decisionReason ?? '-'}</div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                ) : null}
               </div>
               <div className="flex flex-wrap items-end gap-3 rounded-2xl border p-3">
                 <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
