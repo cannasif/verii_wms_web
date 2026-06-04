@@ -244,13 +244,13 @@ export function BilginogluHakEdisPage(): ReactElement {
       </Card>
 
       <Dialog open={selectedOrder != null} onOpenChange={(open) => { if (!open) { setSelectedOrder(null); setSelectedPlan(null); setSelectedBatch(null); } }}>
-        <DialogContent className="max-w-5xl rounded-3xl">
-          <DialogHeader>
+        <DialogContent className="max-h-[88vh] max-w-7xl overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 text-slate-950 shadow-2xl">
+          <DialogHeader className="rounded-t-3xl border-b border-slate-200 bg-white/95 px-1 pb-4">
             <DialogTitle>{t('detail.title', { order: selectedOrder?.siparisNo })}</DialogTitle>
             <DialogDescription>{t('detail.description')}</DialogDescription>
           </DialogHeader>
           {selectedOrder ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="grid gap-3 md:grid-cols-5">
                 <NeedCard label={t('need.required')} value={formatQty(selectedOrderNeed.required || selectedOrder.totalRequiredQty)} tone="slate" />
                 <NeedCard label={t('need.available')} value={formatQty(selectedOrderNeed.available || selectedOrder.totalWarehouseAvailableQty)} tone="cyan" />
@@ -258,16 +258,15 @@ export function BilginogluHakEdisPage(): ReactElement {
                 <NeedCard label={t('need.allocated')} value={formatQty(selectedOrder.totalAllocatedQty)} tone="blue" />
                 <NeedCard label={t('need.missing')} value={formatQty(selectedOrderNeed.missing || selectedOrder.totalMissingQty)} tone="amber" />
               </div>
-              <div className="rounded-2xl border border-cyan-100 bg-cyan-50/50 p-3">
-                <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/70">
+                <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold">{t('transferPreview.title')}</h3>
-                    <p className="text-xs text-muted-foreground">{t('transferPreview.description')}</p>
+                    <h3 className="text-lg font-black tracking-tight text-slate-950">{t('transferPreview.title')}</h3>
+                    <p className="mt-1 max-w-3xl text-sm leading-5 text-slate-500">{t('transferPreview.description')}</p>
                   </div>
                   <Button
                     type="button"
-                    size="sm"
-                    className="rounded-xl"
+                    className="h-11 rounded-2xl bg-slate-950 px-4 text-white shadow-sm hover:bg-slate-800"
                     disabled={!permission.canUpdate || !transferPreview?.canCreateTransfers || createSuggestedTransfersMutation.isPending}
                     onClick={() => selectedOrder && createSuggestedTransfersMutation.mutate(selectedOrder.id)}
                   >
@@ -278,7 +277,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 {transferPreviewQuery.isLoading ? (
                   <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {t('loading')}</div>
                 ) : transferPreview ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="grid gap-3 md:grid-cols-5">
                       <NeedCard label={t('transferPreview.orderQty')} value={formatQty(transferPreview.totalOrderQty)} tone="slate" />
                       <NeedCard label={t('transferPreview.processedQty')} value={formatQty(transferPreview.totalProcessedQty)} tone="blue" />
@@ -286,37 +285,37 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <NeedCard label={t('transferPreview.shippableQty')} value={formatQty(transferPreview.totalShippableQty)} tone="cyan" />
                       <NeedCard label={t('transferPreview.missingQty')} value={formatQty(transferPreview.totalMissingQty)} tone="amber" />
                     </div>
-                    <div className="max-h-56 overflow-auto rounded-2xl border bg-white">
+                    <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
                       <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t('detail.stock')}</TableHead>
-                            <TableHead>{t('transferPreview.warehouse')}</TableHead>
-                            <TableHead className="text-right">{t('transferPreview.orderQty')}</TableHead>
-                            <TableHead className="text-right">{t('transferPreview.processedQty')}</TableHead>
-                            <TableHead className="text-right">{t('transferPreview.remainingQty')}</TableHead>
-                            <TableHead className="text-right">{t('transferPreview.transferableQty')}</TableHead>
-                            <TableHead>{t('transferPreview.decision')}</TableHead>
+                        <TableHeader className="sticky top-0 z-10 bg-slate-950">
+                          <TableRow className="border-slate-800 hover:bg-slate-950">
+                            <TableHead className="min-w-64 text-white">{t('detail.stock')}</TableHead>
+                            <TableHead className="min-w-28 text-white">{t('transferPreview.warehouse')}</TableHead>
+                            <TableHead className="text-right text-white">{t('transferPreview.orderQty')}</TableHead>
+                            <TableHead className="text-right text-white">{t('transferPreview.processedQty')}</TableHead>
+                            <TableHead className="text-right text-white">{t('transferPreview.remainingQty')}</TableHead>
+                            <TableHead className="text-right text-white">{t('transferPreview.transferableQty')}</TableHead>
+                            <TableHead className="min-w-56 text-white">{t('transferPreview.decision')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {transferPreview.lines.map((line) => (
-                            <TableRow key={line.planId}>
-                              <TableCell>
-                                <div className="font-medium">{line.stockCode ?? '-'}</div>
-                                <div className="text-xs text-muted-foreground">{line.stockName ?? line.yapKod ?? '-'}</div>
+                            <TableRow key={line.planId} className="border-slate-100 bg-white hover:bg-slate-50">
+                              <TableCell className="align-top">
+                                <div className="font-black text-slate-950">{line.stockCode ?? '-'}</div>
+                                <div className="mt-1 text-sm font-semibold text-slate-600">{line.stockName ?? line.yapKod ?? '-'}</div>
                               </TableCell>
-                              <TableCell>
-                                <div className="text-xs">{line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}</div>
+                              <TableCell className="align-top">
+                                <div className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-bold text-slate-700">{line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}</div>
                                 {line.sameWarehouse ? <Badge variant="secondary" className="mt-1 rounded-xl">{t('transferPreview.sameWarehouse')}</Badge> : null}
                               </TableCell>
-                              <TableCell className="text-right">{formatQty(line.orderQty)}</TableCell>
-                              <TableCell className="text-right">{formatQty(line.processedQty)}</TableCell>
-                              <TableCell className="text-right">{formatQty(line.remainingOrderQty)}</TableCell>
-                              <TableCell className="text-right font-semibold">{formatQty(line.transferableQty)}</TableCell>
-                              <TableCell>
+                              <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(line.orderQty)}</TableCell>
+                              <TableCell className="text-right align-top font-bold text-blue-700">{formatQty(line.processedQty)}</TableCell>
+                              <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(line.remainingOrderQty)}</TableCell>
+                              <TableCell className="text-right align-top text-lg font-black text-emerald-700">{formatQty(line.transferableQty)}</TableCell>
+                              <TableCell className="align-top">
                                 {statusBadge(line.decision, statusLabel(line.decision))}
-                                <div className="mt-1 text-xs text-muted-foreground">{line.decisionReason ?? '-'}</div>
+                                <div className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-medium leading-5 text-slate-600">{line.decisionReason ?? '-'}</div>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -326,7 +325,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   </div>
                 ) : null}
               </div>
-              <div className="flex flex-wrap items-end gap-3 rounded-2xl border p-3">
+              <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
                   <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
                   <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common:common.yes', { defaultValue: 'Evet' }) : t('common:common.no', { defaultValue: 'Hayır' })}</div>
@@ -363,7 +362,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               </div>
             </div>
           ) : null}
-          <div className="rounded-2xl border p-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <h3 className="mb-2 text-sm font-semibold">{t('detail.lines')}</h3>
             <div className="flex flex-wrap gap-2">
               {plans.map((plan) => (
@@ -374,7 +373,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               {!plansQuery.isLoading && plans.length === 0 ? <span className="text-sm text-muted-foreground">{t('detail.noLines')}</span> : null}
             </div>
           </div>
-          <div className="rounded-2xl border p-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h3 className="text-sm font-semibold">{t('activity.title')}</h3>
@@ -397,7 +396,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 {t('activity.empty')}
               </div>
             ) : (
-              <div className="max-h-72 overflow-auto rounded-2xl border">
+              <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white">
                 <Table>
                   <TableHeader>
                     <TableRow>
