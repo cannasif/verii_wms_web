@@ -10,6 +10,7 @@ const INITIAL_RETRY_DELAYS_MS = [0, 2000, 5000, 10000] as const;
 const RECONNECT_DELAYS_MS = [0, 2000, 10000, 30000] as const;
 const SERVER_TIMEOUT_MS = 30000;
 const KEEP_ALIVE_INTERVAL_MS = 15000;
+const SIGNALR_ACCESS_TOKEN_PATTERN = /([?&]access_token=)[^&\s)]+/gi;
 
 let signalRModulePromise: Promise<SignalRModule> | null = null;
 
@@ -22,6 +23,18 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, ms);
   });
+}
+
+function sanitizeSignalRError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message.replace(SIGNALR_ACCESS_TOKEN_PATTERN, '$1[redacted]');
+  }
+
+  if (typeof error === 'string') {
+    return error.replace(SIGNALR_ACCESS_TOKEN_PATTERN, '$1[redacted]');
+  }
+
+  return 'SignalR connection failed';
 }
 
 class NotificationService {
@@ -187,7 +200,7 @@ class NotificationService {
         });
         return;
       } catch (error) {
-        console.error('[NotificationService] SignalR connection error:', error);
+        console.warn('[NotificationService] Realtime notification connection failed:', sanitizeSignalRError(error));
       }
     }
 
@@ -204,6 +217,8 @@ class NotificationService {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => this.getToken() ?? '',
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
@@ -234,7 +249,7 @@ class NotificationService {
 
     connection.onclose((error) => {
       if (error) {
-        console.error('[NotificationService] SignalR connection closed with error:', error);
+        console.warn('[NotificationService] Realtime notification connection closed:', sanitizeSignalRError(error));
       }
 
       useNotificationStore.getState().setConnectionState('disconnected');
