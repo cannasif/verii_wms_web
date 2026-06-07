@@ -46,7 +46,7 @@ function toFormValues(header: TransferHeader): TransferFormData {
 }
 
 export function TransferEditPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
@@ -120,7 +120,7 @@ export function TransferEditPage(): ReactElement {
       {!permission.canUpdate ? <PermissionNotice /> : null}
       <div className="flex items-center gap-3">
         <Badge variant="secondary">{t('common.edit')}</Badge>
-        {headerQuery.data?.isCompleted ? <Badge variant="outline">{t('transfer.list.completed', { defaultValue: 'Completed' })}</Badge> : null}
+        {headerQuery.data?.isCompleted ? <Badge variant="outline">{t('transfer.list.completed')}</Badge> : null}
       </div>
 
       <FormPageShell title={t('transfer.edit.title')} description={t('transfer.edit.subtitle')}>

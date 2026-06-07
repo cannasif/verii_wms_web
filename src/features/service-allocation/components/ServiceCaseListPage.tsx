@@ -62,7 +62,7 @@ function formatDate(value?: string): string {
 }
 
 export function ServiceCaseListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["service-allocation", "common"]);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
@@ -78,19 +78,19 @@ export function ServiceCaseListPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('serviceAllocation.caseList.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('serviceAllocation.caseList.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'caseNo', label: t('serviceAllocation.caseNo', { defaultValue: 'Missing translation' }) },
-      { key: 'customerCode', label: t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' }) },
-      { key: 'incomingStockCode', label: t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' }) },
-      { key: 'incomingSerialNo', label: t('serviceAllocation.serialNo', { defaultValue: 'Missing translation' }) },
-      { key: 'status', label: t('serviceAllocation.status', { defaultValue: 'Missing translation' }) },
-      { key: 'receivedAt', label: t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' }) },
-      { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
+      { key: 'caseNo', label: t('serviceAllocation.caseNo') },
+      { key: 'customerCode', label: t('serviceAllocation.customerCode') },
+      { key: 'incomingStockCode', label: t('serviceAllocation.stockCode') },
+      { key: 'incomingSerialNo', label: t('serviceAllocation.serialNo') },
+      { key: 'status', label: t('serviceAllocation.status') },
+      { key: 'receivedAt', label: t('serviceAllocation.receivedAt') },
+      { key: 'actions', label: t('common.actions'), sortable: false },
     ],
     [t],
   );
@@ -102,14 +102,14 @@ export function ServiceCaseListPage(): ReactElement {
     mutationFn: (id: number) => serviceAllocationApi.deleteServiceCase(id),
     onSuccess: async (response) => {
       if (!response.success) {
-        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+        throw new Error(response.message || t('common.deleteError'));
       }
-      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(t('common.deleteSuccess'));
       setItemToDelete(null);
       await refetch();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      toast.error(error.message || t('common.deleteError'));
     },
   });
 
@@ -125,14 +125,13 @@ export function ServiceCaseListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   return (
     <div className="crm-page space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t('serviceAllocation.caseList.title', { defaultValue: 'Missing translation' })}</CardTitle>
+          <CardTitle>{t('serviceAllocation.caseList.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <PagedDataGrid<ServiceCaseRow, ColumnKey>
@@ -168,12 +167,12 @@ export function ServiceCaseListPage(): ReactElement {
             renderSortIcon={renderSortIcon}
             isLoading={isLoading}
             isError={Boolean(error)}
-            errorText={t('serviceAllocation.caseList.error', { defaultValue: 'Missing translation' })}
-            emptyText={t('serviceAllocation.caseList.empty', { defaultValue: 'Missing translation' })}
+            errorText={t('serviceAllocation.caseList.error')}
+            emptyText={t('serviceAllocation.caseList.empty')}
             rowClassName="cursor-pointer"
             onRowClick={(row) => navigate(`/service-allocation/cases/${row.id}`)}
             showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
-            actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
+            actionsHeaderLabel={t('common.actions')}
             renderActionsCell={(row) => (
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" onClick={(event) => {
@@ -225,12 +224,12 @@ export function ServiceCaseListPage(): ReactElement {
               value: pagedGrid.searchInput,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.caseList.search', { defaultValue: 'Missing translation' }),
+              placeholder: t('serviceAllocation.caseList.search'),
             }}
             leftSlot={permission.canCreate ? (
               <Button onClick={() => navigate('/service-allocation/cases/new')}>
                 <Plus className="mr-2 size-4" />
-                {t('serviceAllocation.createCase', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.createCase')}
               </Button>
             ) : undefined}
             refresh={{
@@ -238,7 +237,7 @@ export function ServiceCaseListPage(): ReactElement {
                 void refetch();
               },
               isLoading: isFetching,
-              label: t('common.refresh', { defaultValue: 'Missing translation' }),
+              label: t('common.refresh'),
             }}
           />
         </CardContent>

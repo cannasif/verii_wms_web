@@ -68,7 +68,7 @@ function mapSortBy(value: ShipmentColumnKey): string {
 }
 
 export function ShipmentListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
@@ -116,7 +116,7 @@ export function ShipmentListPage(): ReactElement {
       if (!response.success) {
         throw new Error(response.message || t('common.errors.deleteFailed'));
       }
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -193,7 +193,6 @@ export function ShipmentListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   return (

@@ -1,5 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Boxes, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck, Wand2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -35,7 +36,9 @@ function formatDate(value?: string | null): string {
 }
 
 function statusBadge(status: string, label: string): ReactElement {
-  const tone = status === 'ReadyForShipment'
+  const tone = status === 'Completed'
+    ? 'bg-emerald-100 text-emerald-700'
+    : status === 'ReadyForShipment'
     ? 'bg-emerald-100 text-emerald-700'
     : status === 'InHakEdisFlow'
       ? 'bg-blue-100 text-blue-700'
@@ -48,9 +51,24 @@ function statusBadge(status: string, label: string): ReactElement {
   return <Badge className={`rounded-xl border-0 ${tone}`}>{label}</Badge>;
 }
 
+function isCompletedHakEdisOrder(order: BilginogluHakEdisOrderHeader): boolean {
+  if (order.isCompleted) return true;
+
+  const completedStatuses = new Set(['Closed', 'Completed', 'Finished', 'Shipped']);
+  if (completedStatuses.has(order.status)) return true;
+
+  const orderQty = Math.max(order.totalOrderQty ?? 0, order.totalRequiredQty ?? 0);
+  if (orderQty <= 0) return false;
+
+  return order.totalShippedQty >= orderQty - 0.0001 && order.totalRemainingQty <= 0.0001;
+}
+
 export function BilginogluHakEdisPage(): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const { setPageTitle } = useUIStore();
+  const location = useLocation();
+  const view = location.pathname.includes('/completed') ? 'completed' : 'open';
+  const pageTitle = view === 'completed' ? t('views.completed.title') : t('views.open.title');
   const permission = useCrudPermission('wms.service-allocation');
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<BilginogluHakEdisOrderHeader | null>(null);
@@ -60,8 +78,8 @@ export function BilginogluHakEdisPage(): ReactElement {
   const [shipmentPolicy, setShipmentPolicy] = useState('ManualShipment');
 
   useEffect(() => {
-    setPageTitle(t('title'));
-  }, [setPageTitle, t]);
+    setPageTitle(pageTitle);
+  }, [pageTitle, setPageTitle]);
 
   useEffect(() => {
     if (selectedOrder) {
@@ -70,7 +88,14 @@ export function BilginogluHakEdisPage(): ReactElement {
     }
   }, [selectedOrder]);
 
-  const params = useMemo(() => ({ pageNumber: 1, pageSize: 50, search, sortBy: 'LastEvaluationDate', sortDirection: 'desc' }), [search]);
+  const params = useMemo(() => ({
+    pageNumber: 1,
+    pageSize: 50,
+    search,
+    sortBy: view === 'completed' ? 'CompletedDate' : 'LastEvaluationDate',
+    sortDirection: 'desc',
+    filters: [{ column: 'IsCompleted', operator: 'eq', value: view === 'completed' ? 'true' : 'false' }],
+  }), [search, view]);
   const ordersQuery = useBilginogluHakEdisOrdersQuery(params);
   const plansQuery = useBilginogluHakEdisOrderPlansQuery(selectedOrder?.id ?? null);
   const activitiesQuery = useBilginogluHakEdisOrderActivitiesQuery(selectedOrder?.id ?? null);
@@ -81,12 +106,18 @@ export function BilginogluHakEdisPage(): ReactElement {
   const batchActionMutation = useBilginogluHakEdisBatchActionMutation();
   const createSuggestedTransfersMutation = useBilginogluHakEdisCreateSuggestedTransfersMutation();
   const policyMutation = useBilginogluHakEdisOrderPolicyMutation();
-  const statusLabel = (status: string): string => t(`status.${status}`, { defaultValue: status });
+  const statusLabel = (status: string): string => {
+    const translated = t(`status.${status}`);
+    return translated === `status.${status}` ? status : translated;
+  };
 
   const orders = ordersQuery.data?.data ?? [];
+  const openOrders = useMemo(() => orders.filter((order) => !isCompletedHakEdisOrder(order)), [orders]);
+  const completedOrders = useMemo(() => orders.filter(isCompletedHakEdisOrder), [orders]);
+  const visibleOrders = view === 'completed' ? completedOrders : openOrders;
   const plans = plansQuery.data ?? [];
   const totals = useMemo(() => {
-    return orders.reduce(
+    return visibleOrders.reduce(
       (acc, order) => {
         acc.remaining += order.totalRemainingQty;
         acc.available += order.totalWarehouseAvailableQty;
@@ -98,7 +129,7 @@ export function BilginogluHakEdisPage(): ReactElement {
       },
       { remaining: 0, available: 0, allocated: 0, ready: 0, missing: 0, waiting: 0 },
     );
-  }, [orders]);
+  }, [visibleOrders]);
   const selectedOrderNeed = useMemo(() => {
     const required = plans.reduce((sum, plan) => sum + Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty), 0);
     const available = plans.reduce((sum, plan) => sum + Math.max(0, plan.warehouseAvailableQty), 0);
@@ -136,7 +167,7 @@ export function BilginogluHakEdisPage(): ReactElement {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('breadcrumb.serviceOperations') }, { label: pageTitle }]} />
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-6 text-white shadow-xl">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -145,9 +176,9 @@ export function BilginogluHakEdisPage(): ReactElement {
               <GitBranch className="size-4" />
               {t('hero.eyebrow')}
             </div>
-            <h1 className="text-3xl font-black tracking-tight md:text-4xl">{t('title')}</h1>
+            <h1 className="text-3xl font-black tracking-tight md:text-4xl">{pageTitle}</h1>
             <p className="text-sm leading-6 text-slate-200 md:text-base">
-              {t('hero.description')}
+              {view === 'completed' ? t('views.completed.description') : t('views.open.description')}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -168,6 +199,27 @@ export function BilginogluHakEdisPage(): ReactElement {
         </div>
       </section>
 
+      <div className="flex flex-wrap gap-2 rounded-3xl border border-slate-200 bg-white p-2 shadow-sm">
+        <Button
+          asChild
+          variant={view === 'open' ? 'default' : 'ghost'}
+          className="rounded-2xl"
+        >
+          <Link to="/service-allocation/bilginoglu-hakedis/open">
+            {t('views.open.nav')}
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant={view === 'completed' ? 'default' : 'ghost'}
+          className="rounded-2xl"
+        >
+          <Link to="/service-allocation/bilginoglu-hakedis/completed">
+            {t('views.completed.nav')}
+          </Link>
+        </Button>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-4">
         <MetricCard icon={<Boxes className="size-5" />} label={t('metrics.remaining')} value={formatQty(totals.remaining)} />
         <MetricCard icon={<GitBranch className="size-5" />} label={t('metrics.available')} value={formatQty(totals.available)} />
@@ -177,7 +229,7 @@ export function BilginogluHakEdisPage(): ReactElement {
 
       <Card className="rounded-3xl border-slate-200 shadow-sm">
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
-          <CardTitle>{t('table.title')}</CardTitle>
+          <CardTitle>{view === 'completed' ? t('views.completed.tableTitle') : t('views.open.tableTitle')}</CardTitle>
           <div className="relative w-full md:w-96">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
             <Input value={search} onChange={(event) => setSearch(event.target.value)} className="rounded-2xl pl-9" placeholder={t('table.search')} />
@@ -209,14 +261,14 @@ export function BilginogluHakEdisPage(): ReactElement {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => (
+                  {visibleOrders.map((order) => (
                     <TableRow key={order.id} className="cursor-pointer" onClick={() => { setSelectedOrder(order); setSelectedPlan(null); setSelectedBatch(null); }}>
                       <TableCell className="font-semibold">{order.siparisNo}</TableCell>
                       <TableCell>
                         <div className="font-medium">{order.customerCode ?? '-'}</div>
                         <div className="text-xs text-muted-foreground">{order.customerName ?? '-'}</div>
                       </TableCell>
-                      <TableCell>{order.transferAllFlag === 'E' ? t('common:common.yes', { defaultValue: 'Evet' }) : t('common:common.no', { defaultValue: 'Hayır' })}</TableCell>
+                    <TableCell>{order.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</TableCell>
                       <TableCell>{order.orderDetail ?? '-'}</TableCell>
                       <TableCell>{order.allocationPolicy}</TableCell>
                       <TableCell>{order.shipmentPolicy}</TableCell>
@@ -231,9 +283,11 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <TableCell>{formatDate(order.lastEvaluationDate)}</TableCell>
                     </TableRow>
                   ))}
-                  {orders.length === 0 ? (
+                  {visibleOrders.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={12} className="py-10 text-center text-muted-foreground">{t('empty')}</TableCell>
+                      <TableCell colSpan={12} className="py-10 text-center text-muted-foreground">
+                        {view === 'completed' ? t('views.completed.empty') : t('views.open.empty')}
+                      </TableCell>
                     </TableRow>
                   ) : null}
                 </TableBody>
@@ -328,7 +382,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
                   <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
-                  <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common:common.yes', { defaultValue: 'Evet' }) : t('common:common.no', { defaultValue: 'Hayır' })}</div>
+                  <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</div>
                 </div>
                 <div className="min-w-48 rounded-2xl bg-slate-50 p-3">
                   <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
@@ -421,12 +475,12 @@ export function BilginogluHakEdisPage(): ReactElement {
             <div className="rounded-2xl border">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('detail.batch')}</TableHead>
-                    <TableHead className="text-right">{t('detail.quantity')}</TableHead>
-                    <TableHead>{t('detail.stage')}</TableHead>
-                    <TableHead>WT/SH</TableHead>
-                  </TableRow>
+          <TableRow>
+            <TableHead>{t('detail.batch')}</TableHead>
+            <TableHead className="text-right">{t('detail.quantity')}</TableHead>
+            <TableHead>{t('detail.stage')}</TableHead>
+            <TableHead>{t('detail.warehouseSourceTypes')}</TableHead>
+          </TableRow>
                 </TableHeader>
                 <TableBody>
                   {(batchesQuery.data ?? []).map((batch) => (
@@ -435,7 +489,11 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <TableCell className="text-right">{formatQty(batch.quantity)}</TableCell>
                       <TableCell>{statusBadge(batch.currentStage, statusLabel(batch.currentStage))}</TableCell>
                       <TableCell className="text-xs">
-                        DAT1 #{batch.transferToHakEdisHeaderId ?? '-'} / DAT2 #{batch.returnFromHakEdisHeaderId ?? '-'} / SH #{batch.shipmentHeaderId ?? '-'}
+                        {t('detail.batchLinkSummary', {
+                          datToHakEdisHeaderId: batch.transferToHakEdisHeaderId ?? '-',
+                          returnFromHakEdisHeaderId: batch.returnFromHakEdisHeaderId ?? '-',
+                          shipmentHeaderId: batch.shipmentHeaderId ?? '-',
+                        })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -473,7 +531,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                         {statusBadge(step.status, statusLabel(step.status))}
                       </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {formatQty(step.quantity)} {t('common:common.unit', { defaultValue: 'Stk.' })} / {step.sourceType ?? '-'} #{step.sourceHeaderId ?? '-'}
+                        {formatQty(step.quantity)} {t('common.unit')} / {step.sourceType ?? '-'} #{step.sourceHeaderId ?? '-'}
                       </div>
                       {step.note ? <div className="mt-2 text-xs">{step.note}</div> : null}
                     </div>
@@ -502,7 +560,7 @@ function BatchActionButton({ batch, action, label, pending, allowed, run }: { ba
 }
 
 function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrderActivity; statusLabel: (status: string) => string }): ReactElement {
-  const { t } = useTranslation('bilginoglu-hakedis');
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const documentText = activity.documentNo
     ? `${activity.sourceType ?? '-'} #${activity.sourceHeaderId ?? '-'} / ${activity.documentNo}`
     : `${activity.sourceType ?? '-'} #${activity.sourceHeaderId ?? '-'}`;

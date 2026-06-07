@@ -56,28 +56,28 @@ export function ServiceCaseHeaderSection({
   selectedCurrentWarehouseLabel,
   setSelectedCurrentWarehouseLabel,
 }: ServiceCaseHeaderSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['service-allocation', 'common']);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           {isEdit
-            ? t('serviceAllocation.form.editTitle', { defaultValue: 'Missing translation' })
-            : t('serviceAllocation.form.createTitle', { defaultValue: 'Missing translation' })}
+            ? t('serviceAllocation.form.editTitle')
+            : t('serviceAllocation.form.createTitle')}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
         <FormField control={form.control} name="caseNo" rules={{ required: true }} render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.caseNo', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.caseNo')}</FormLabel>
             <FormControl><Input {...field} /></FormControl>
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="customerCode" rules={{ required: true }} render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.customerCode')}</FormLabel>
             <FormControl>
               <PagedLookupDialog<CustomerLookup>
                 open={customerLookupOpen}
@@ -105,24 +105,27 @@ export function ServiceCaseHeaderSection({
         )} />
         <FormField control={form.control} name="status" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.status', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.status')}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               </FormControl>
-              <SelectContent>
-                {serviceCaseStatusOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {t(option.labelKey, { defaultValue: option.value })}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+                  <SelectContent>
+                    {serviceCaseStatusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                    {(() => {
+                      const translated = t(option.labelKey);
+                      return translated === option.labelKey ? option.value : translated;
+                    })()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
             </Select>
           </FormItem>
         )} />
         <FormField control={form.control} name="incomingStockCode" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.stockCode')}</FormLabel>
             <FormControl>
               <PagedLookupDialog<StockLookup>
                 open={incomingStockLookupOpen}
@@ -149,19 +152,19 @@ export function ServiceCaseHeaderSection({
         )} />
         <FormField control={form.control} name="incomingSerialNo" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.serialNo', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.serialNo')}</FormLabel>
             <FormControl><Input {...field} /></FormControl>
           </FormItem>
         )} />
         <FormField control={form.control} name="receivedAt" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.receivedAt')}</FormLabel>
             <FormControl><Input {...field} type="date" /></FormControl>
           </FormItem>
         )} />
         <FormField control={form.control} name="intakeWarehouseId" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.intakeWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.intakeWarehouseId')}</FormLabel>
             <FormControl>
               <PagedLookupDialog<WarehouseLookup>
                 open={intakeWarehouseLookupOpen}
@@ -187,7 +190,7 @@ export function ServiceCaseHeaderSection({
         )} />
         <FormField control={form.control} name="currentWarehouseId" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.currentWarehouseId', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.currentWarehouseId')}</FormLabel>
             <FormControl>
               <PagedLookupDialog<WarehouseLookup>
                 open={currentWarehouseLookupOpen}
@@ -214,7 +217,7 @@ export function ServiceCaseHeaderSection({
         <div className="md:col-span-2">
           <FormField control={form.control} name="diagnosisNote" render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('serviceAllocation.diagnosisNote', { defaultValue: 'Missing translation' })}</FormLabel>
+              <FormLabel>{t('serviceAllocation.diagnosisNote')}</FormLabel>
               <FormControl><Textarea {...field} rows={4} /></FormControl>
             </FormItem>
           )} />

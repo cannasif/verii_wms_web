@@ -44,7 +44,7 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function TransferApprovalPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.transfer');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
@@ -70,7 +70,11 @@ export function TransferApprovalPage(): ReactElement {
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, documentNo: item.documentNo || '-', documentDate: formatDate(item.documentDate), customerCode: item.customerCode || '-', customerName: item.customerName || '-', sourceWarehouse: item.sourceWarehouseName || item.sourceWarehouse || '-', targetWarehouse: item.targetWarehouseName || item.targetWarehouse || '-', completionDate: formatDateTime(item.completionDate) })), [data?.data]);
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', {
+    current: range.from,
+    total: range.to,
+    totalCount: range.total,
+  });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
     if (!permission.canApprove) {

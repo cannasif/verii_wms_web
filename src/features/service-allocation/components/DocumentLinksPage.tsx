@@ -57,7 +57,7 @@ function formatDate(value?: string): string {
 }
 
 export function DocumentLinksPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["service-allocation", "common"]);
   const { setPageTitle } = useUIStore();
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
@@ -70,19 +70,19 @@ export function DocumentLinksPage(): ReactElement {
   });
 
   useEffect(() => {
-    setPageTitle(t('serviceAllocation.documentLinks.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('serviceAllocation.documentLinks.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'documentModule', label: t('serviceAllocation.documentModule', { defaultValue: 'Missing translation' }) },
-      { key: 'documentHeaderId', label: t('serviceAllocation.documentHeaderId', { defaultValue: 'Missing translation' }) },
-      { key: 'linkPurpose', label: t('serviceAllocation.linkPurpose', { defaultValue: 'Missing translation' }) },
-      { key: 'sequenceNo', label: t('serviceAllocation.sequence', { defaultValue: 'Missing translation' }) },
-      { key: 'serviceCaseId', label: t('serviceAllocation.serviceCaseId', { defaultValue: 'Missing translation' }) },
-      { key: 'orderAllocationLineId', label: t('serviceAllocation.orderAllocationLineId', { defaultValue: 'Missing translation' }) },
-      { key: 'linkedAt', label: t('serviceAllocation.linkedAt', { defaultValue: 'Missing translation' }) },
+      { key: 'documentModule', label: t('serviceAllocation.documentModule') },
+      { key: 'documentHeaderId', label: t('serviceAllocation.documentHeaderId') },
+      { key: 'linkPurpose', label: t('serviceAllocation.linkPurpose') },
+      { key: 'sequenceNo', label: t('serviceAllocation.sequence') },
+      { key: 'serviceCaseId', label: t('serviceAllocation.serviceCaseId') },
+      { key: 'orderAllocationLineId', label: t('serviceAllocation.orderAllocationLineId') },
+      { key: 'linkedAt', label: t('serviceAllocation.linkedAt') },
     ],
     [t],
   );
@@ -102,14 +102,13 @@ export function DocumentLinksPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   return (
     <div className="crm-page space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t('serviceAllocation.documentLinks.title', { defaultValue: 'Missing translation' })}</CardTitle>
+          <CardTitle>{t('serviceAllocation.documentLinks.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <PagedDataGrid<BusinessDocumentLinkRow, ColumnKey>
@@ -143,8 +142,8 @@ export function DocumentLinksPage(): ReactElement {
             renderSortIcon={renderSortIcon}
             isLoading={isLoading}
             isError={Boolean(error)}
-            errorText={t('serviceAllocation.documentLinks.error', { defaultValue: 'Missing translation' })}
-            emptyText={t('serviceAllocation.documentLinks.empty', { defaultValue: 'Missing translation' })}
+            errorText={t('serviceAllocation.documentLinks.error')}
+            emptyText={t('serviceAllocation.documentLinks.empty')}
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -170,14 +169,14 @@ export function DocumentLinksPage(): ReactElement {
               value: pagedGrid.searchInput,
               onValueChange: pagedGrid.searchConfig.onValueChange,
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.documentLinks.search', { defaultValue: 'Missing translation' }),
+              placeholder: t('serviceAllocation.documentLinks.search'),
             }}
             refresh={{
               onRefresh: () => {
                 void refetch();
               },
               isLoading: isFetching,
-              label: t('common.refresh', { defaultValue: 'Missing translation' }),
+              label: t('common.refresh'),
             }}
           />
         </CardContent>

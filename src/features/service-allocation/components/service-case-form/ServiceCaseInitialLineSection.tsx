@@ -31,17 +31,17 @@ export function ServiceCaseInitialLineSection({
   selectedInitialLineStockLabel,
   setSelectedInitialLineStockLabel,
 }: ServiceCaseInitialLineSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['service-allocation', 'common']);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('serviceAllocation.form.initialLine', { defaultValue: 'Missing translation' })}</CardTitle>
+        <CardTitle>{t('serviceAllocation.form.initialLine')}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
         <FormField control={form.control} name="initialLineType" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.lineType')}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -49,7 +49,10 @@ export function ServiceCaseInitialLineSection({
               <SelectContent>
                 {serviceCaseLineTypeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {t(option.labelKey, { defaultValue: option.value })}
+                    {(() => {
+                      const translated = t(option.labelKey);
+                      return translated === option.labelKey ? option.value : translated;
+                    })()}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -58,7 +61,7 @@ export function ServiceCaseInitialLineSection({
         )} />
         <FormField control={form.control} name="initialProcessType" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.processType')}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -66,7 +69,10 @@ export function ServiceCaseInitialLineSection({
               <SelectContent>
                 {serviceProcessTypeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {t(option.labelKey, { defaultValue: option.value })}
+                    {(() => {
+                      const translated = t(option.labelKey);
+                      return translated === option.labelKey ? option.value : translated;
+                    })()}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -75,7 +81,7 @@ export function ServiceCaseInitialLineSection({
         )} />
         <FormField control={form.control} name="initialLineStockCode" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.stockCode')}</FormLabel>
             <FormControl>
               <PagedLookupDialog<StockLookup>
                 open={initialLineStockLookupOpen}
@@ -103,26 +109,26 @@ export function ServiceCaseInitialLineSection({
         )} />
         <FormField control={form.control} name="initialLineQuantity" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.quantity')}</FormLabel>
             <FormControl><Input {...field} type="number" step="0.01" /></FormControl>
           </FormItem>
         )} />
         <FormField control={form.control} name="initialLineUnit" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.unit', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.unit')}</FormLabel>
             <FormControl><Input {...field} /></FormControl>
           </FormItem>
         )} />
         <FormField control={form.control} name="initialLineErpOrderNo" render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</FormLabel>
+            <FormLabel>{t('serviceAllocation.erpOrderNo')}</FormLabel>
             <FormControl><Input {...field} /></FormControl>
           </FormItem>
         )} />
         <div className="md:col-span-2">
           <FormField control={form.control} name="initialLineDescription" render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('serviceAllocation.description', { defaultValue: 'Missing translation' })}</FormLabel>
+              <FormLabel>{t('serviceAllocation.description')}</FormLabel>
               <FormControl><Textarea {...field} rows={3} /></FormControl>
             </FormItem>
           )} />

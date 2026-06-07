@@ -24,7 +24,7 @@ function formatDate(value?: string): string {
 }
 
 export function ServiceCaseTimelinePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["service-allocation", "common"]);
   const navigate = useNavigate();
   const { id } = useParams();
   const parsedId = Number(id);
@@ -36,7 +36,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
     mutationFn: async () => {
       const stockId = timeline?.serviceCase.incomingStockId;
       if (!stockId) {
-        throw new Error(t('serviceAllocation.recompute.missingStock', { defaultValue: 'Missing translation' }));
+        throw new Error(t('serviceAllocation.recompute.missingStock'));
       }
 
       return serviceAllocationApi.recomputeAllocation(stockId, 0);
@@ -44,19 +44,18 @@ export function ServiceCaseTimelinePage(): ReactElement {
     onSuccess: (result) => {
       toast.success(
         t('serviceAllocation.recompute.success', {
-          defaultValue: 'Missing translation',
           count: result.processedLineCount,
         }),
       );
       void query.refetch();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('serviceAllocation.recompute.error', { defaultValue: 'Missing translation' }));
+      toast.error(error.message || t('serviceAllocation.recompute.error'));
     },
   });
 
   useEffect(() => {
-    setPageTitle(t('serviceAllocation.timeline.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('serviceAllocation.timeline.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -64,12 +63,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => navigate('/service-allocation/cases')}>
-          {t('common.back', { defaultValue: 'Missing translation' })}
+          {t('common.back')}
         </Button>
         <div className="flex items-center gap-2">
           {permission.canUpdate ? (
             <Button variant="outline" onClick={() => navigate(`/service-allocation/cases/${parsedId}/edit`)}>
-              {t('common.edit', { defaultValue: 'Missing translation' })}
+              {t('common.edit')}
             </Button>
           ) : null}
           <Button
@@ -77,8 +76,8 @@ export function ServiceCaseTimelinePage(): ReactElement {
             disabled={!permission.canUpdate || !timeline?.serviceCase.incomingStockId || recomputeMutation.isPending}
           >
             {recomputeMutation.isPending
-              ? t('common.loading', { defaultValue: 'Missing translation' })
-              : t('serviceAllocation.recompute.action', { defaultValue: 'Missing translation' })}
+              ? t('common.loading')
+              : t('serviceAllocation.recompute.action')}
           </Button>
         </div>
       </div>
@@ -92,30 +91,30 @@ export function ServiceCaseTimelinePage(): ReactElement {
               <CardTitle>{timeline.serviceCase.caseNo}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-3">
-              <div><span className="font-medium">{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}:</span> {timeline.serviceCase.customerCode}</div>
-              <div><span className="font-medium">{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}:</span> {timeline.serviceCase.incomingStockCode || '-'}</div>
-              <div><span className="font-medium">{t('serviceAllocation.serialNo', { defaultValue: 'Missing translation' })}:</span> {timeline.serviceCase.incomingSerialNo || '-'}</div>
-              <div><span className="font-medium">{t('serviceAllocation.status', { defaultValue: 'Missing translation' })}:</span> {renderServiceCaseStatus(timeline.serviceCase.status)}</div>
-              <div><span className="font-medium">{t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' })}:</span> {formatDate(timeline.serviceCase.receivedAt)}</div>
-              <div><span className="font-medium">{t('serviceAllocation.closedAt', { defaultValue: 'Missing translation' })}:</span> {formatDate(timeline.serviceCase.closedAt)}</div>
-              <div><span className="font-medium">{t('serviceAllocation.timeline.linkCount', { defaultValue: 'Missing translation' })}:</span> {timeline.timeline.length}</div>
-              <div><span className="font-medium">{t('serviceAllocation.timeline.lastMovement', { defaultValue: 'Missing translation' })}:</span> {formatDate(timeline.timeline[0]?.linkedAt)}</div>
+              <div><span className="font-medium">{t('serviceAllocation.customerCode')}:</span> {timeline.serviceCase.customerCode}</div>
+              <div><span className="font-medium">{t('serviceAllocation.stockCode')}:</span> {timeline.serviceCase.incomingStockCode || '-'}</div>
+              <div><span className="font-medium">{t('serviceAllocation.serialNo')}:</span> {timeline.serviceCase.incomingSerialNo || '-'}</div>
+              <div><span className="font-medium">{t('serviceAllocation.status')}:</span> {renderServiceCaseStatus(timeline.serviceCase.status)}</div>
+              <div><span className="font-medium">{t('serviceAllocation.receivedAt')}:</span> {formatDate(timeline.serviceCase.receivedAt)}</div>
+              <div><span className="font-medium">{t('serviceAllocation.closedAt')}:</span> {formatDate(timeline.serviceCase.closedAt)}</div>
+              <div><span className="font-medium">{t('serviceAllocation.timeline.linkCount')}:</span> {timeline.timeline.length}</div>
+              <div><span className="font-medium">{t('serviceAllocation.timeline.lastMovement')}:</span> {formatDate(timeline.timeline[0]?.linkedAt)}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('serviceAllocation.lines', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle>{t('serviceAllocation.lines')}</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</TableHead>
+                    <TableHead>{t('serviceAllocation.lineType')}</TableHead>
+                    <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
+                    <TableHead>{t('serviceAllocation.quantity')}</TableHead>
+                    <TableHead>{t('serviceAllocation.erpOrderNo')}</TableHead>
+                    <TableHead>{t('serviceAllocation.erpOrderId')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -135,19 +134,19 @@ export function ServiceCaseTimelinePage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('serviceAllocation.timeline.events', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle>{t('serviceAllocation.timeline.events')}</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('serviceAllocation.sequence', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.documentModule', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.documentHeaderId', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.linkPurpose', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.fromWarehouse', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.toWarehouse', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.linkedAt', { defaultValue: 'Missing translation' })}</TableHead>
+                    <TableHead>{t('serviceAllocation.sequence')}</TableHead>
+                    <TableHead>{t('serviceAllocation.documentModule')}</TableHead>
+                    <TableHead>{t('serviceAllocation.documentHeaderId')}</TableHead>
+                    <TableHead>{t('serviceAllocation.linkPurpose')}</TableHead>
+                    <TableHead>{t('serviceAllocation.fromWarehouse')}</TableHead>
+                    <TableHead>{t('serviceAllocation.toWarehouse')}</TableHead>
+                    <TableHead>{t('serviceAllocation.linkedAt')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

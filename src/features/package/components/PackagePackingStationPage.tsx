@@ -39,8 +39,8 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   if (!material) {
     warnings.push({
       severity: 'info',
-      title: translate('package.station.quality.noMaterialTitle', { defaultValue: 'Ambalaj malzemesi seçilmedi' }),
-      detail: translate('package.station.quality.noMaterialDetail', { defaultValue: 'Kapasite ve dimension kontrolleri için pakete material bağlayın.' }),
+      title: translate('package.station.quality.noMaterialTitle'),
+      detail: translate('package.station.quality.noMaterialDetail'),
     });
     return warnings;
   }
@@ -48,7 +48,7 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   if (material.maxGrossWeight != null && pkg.grossWeight != null && pkg.grossWeight > material.maxGrossWeight) {
     warnings.push({
       severity: 'danger',
-      title: translate('package.station.quality.overWeightTitle', { defaultValue: 'Ağırlık limiti aşıldı' }),
+      title: translate('package.station.quality.overWeightTitle'),
       detail: `${pkg.grossWeight} > ${material.maxGrossWeight}`,
     });
   }
@@ -56,7 +56,7 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   if (material.maxVolume != null && pkg.volume != null && pkg.volume > material.maxVolume) {
     warnings.push({
       severity: 'danger',
-      title: translate('package.station.quality.overVolumeTitle', { defaultValue: 'Hacim limiti aşıldı' }),
+      title: translate('package.station.quality.overVolumeTitle'),
       detail: `${pkg.volume} > ${material.maxVolume}`,
     });
   }
@@ -64,7 +64,7 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   if (material.maxProductQuantity != null && totalQuantity > material.maxProductQuantity) {
     warnings.push({
       severity: 'warning',
-      title: translate('package.station.quality.overQtyTitle', { defaultValue: 'Ürün adedi limiti aşıldı' }),
+      title: translate('package.station.quality.overQtyTitle'),
       detail: `${totalQuantity} > ${material.maxProductQuantity}`,
     });
   }
@@ -72,32 +72,32 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   if (!pkg.isMixed && uniqueStocks.size > 1) {
     warnings.push({
       severity: 'warning',
-      title: translate('package.station.quality.mixedStockTitle', { defaultValue: 'Mixed stock kontrolü' }),
-      detail: translate('package.station.quality.mixedStockDetail', { defaultValue: 'Bu paket mixed değil ama birden fazla stok içeriyor.' }),
+      title: translate('package.station.quality.mixedStockTitle'),
+      detail: translate('package.station.quality.mixedStockDetail'),
     });
   }
 
   if (!pkg.isMixed && uniqueYapKod.size > 1) {
     warnings.push({
       severity: 'warning',
-      title: translate('package.station.quality.mixedYapTitle', { defaultValue: 'Mixed yap kod kontrolü' }),
-      detail: translate('package.station.quality.mixedYapDetail', { defaultValue: 'Bu paket mixed değil ama birden fazla yap kod içeriyor.' }),
+      title: translate('package.station.quality.mixedYapTitle'),
+      detail: translate('package.station.quality.mixedYapDetail'),
     });
   }
 
   if (missingSerial) {
     warnings.push({
       severity: 'warning',
-      title: translate('package.station.quality.missingSerialTitle', { defaultValue: 'Seri kontrolü' }),
-      detail: translate('package.station.quality.missingSerialDetail', { defaultValue: 'Serili ürün gibi görünen okutmalarda seri alanı eksik olabilir.' }),
+      title: translate('package.station.quality.missingSerialTitle'),
+      detail: translate('package.station.quality.missingSerialDetail'),
     });
   }
 
   if (warnings.length === 0) {
     warnings.push({
       severity: 'info',
-      title: translate('package.station.quality.cleanTitle', { defaultValue: 'Kalite kontrol temiz' }),
-      detail: translate('package.station.quality.cleanDetail', { defaultValue: 'Seçili paket için kapasite/mixed/seri uyarısı bulunmadı.' }),
+      title: translate('package.station.quality.cleanTitle'),
+      detail: translate('package.station.quality.cleanDetail'),
     });
   }
 
@@ -105,7 +105,7 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
 }
 
 export function PackagePackingStationPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const queryClient = useQueryClient();
   const permission = useCrudPermission('wms.package');
   const canOperate = permission.canCreate || permission.canUpdate;
@@ -174,12 +174,11 @@ export function PackagePackingStationPage(): ReactElement {
       quantity: sameStockQuantity,
       message: selectedMaterial
         ? t('package.station.cartonization.materialMessage', {
-          defaultValue: '{{material}} seçili; max qty {{qty}}, max kg {{kg}}.',
           material: selectedMaterial.materialCode,
           qty: selectedMaterial.maxProductQuantity ?? '-',
           kg: selectedMaterial.maxGrossWeight ?? '-',
         })
-        : t('package.station.cartonization.noMaterialMessage', { defaultValue: 'Bu paket için material seçilmediği için otomatik kapasite açıklaması sınırlı.' }),
+        : t('package.station.cartonization.noMaterialMessage'),
     };
   }, [selectedLines, selectedMaterial, t]);
 
@@ -194,11 +193,11 @@ export function PackagePackingStationPage(): ReactElement {
 
   const addLineMutation = useMutation({
     mutationFn: async () => {
-      if (!activeHeaderId || !selectedPackage) throw new Error(t('package.station.selectPackage', { defaultValue: 'Önce paket seçin' }));
+      if (!activeHeaderId || !selectedPackage) throw new Error(t('package.station.selectPackage'));
       const result = await packageApi.getStokBarcode(barcode);
       const stock = result.data?.[0];
       if (!result.success || !stock?.stokKodu) {
-        throw new Error(result.message || t('package.station.stockNotFound', { defaultValue: 'Barkod stok bilgisi çözülemedi' }));
+        throw new Error(result.message || t('package.station.stockNotFound'));
       }
 
       return packageApi.createPLine({
@@ -211,7 +210,7 @@ export function PackagePackingStationPage(): ReactElement {
       });
     },
     onSuccess: async () => {
-      toast.success(t('package.station.lineAdded', { defaultValue: 'Ürün pakete eklendi' }));
+      toast.success(t('package.station.lineAdded'));
       setBarcode('');
       setQuantity(1);
       await refreshStation();
@@ -221,11 +220,11 @@ export function PackagePackingStationPage(): ReactElement {
 
   const closePackageMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedPackage) throw new Error(t('package.station.selectPackage', { defaultValue: 'Önce paket seçin' }));
+      if (!selectedPackage) throw new Error(t('package.station.selectPackage'));
       return packageApi.updatePPackage(selectedPackage.id, { status: 'Closed' });
     },
     onSuccess: async () => {
-      toast.success(t('package.station.packageClosed', { defaultValue: 'Paket kapatıldı' }));
+      toast.success(t('package.station.packageClosed'));
       await refreshStation();
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.error')),
@@ -234,7 +233,7 @@ export function PackagePackingStationPage(): ReactElement {
   const loadHeader = (): void => {
     const parsed = Number(packingHeaderIdText);
     if (!Number.isFinite(parsed) || parsed <= 0) {
-      toast.error(t('package.station.invalidHeader', { defaultValue: 'Geçerli bir Packing Header ID girin' }));
+      toast.error(t('package.station.invalidHeader'));
       return;
     }
     setActiveHeaderId(parsed);
@@ -248,19 +247,24 @@ export function PackagePackingStationPage(): ReactElement {
         <CardHeader className="bg-gradient-to-r from-emerald-950 via-slate-900 to-cyan-900 text-white">
           <CardTitle className="flex items-center gap-2">
             <PackageOpen className="size-7" />
-            {t('package.station.title', { defaultValue: 'Packing Station' })}
+            {t('package.station.title')}
           </CardTitle>
           <CardDescription className="text-emerald-50">
-            {t('package.station.description', { defaultValue: 'Barkod okut, paket seç, ürün ekle, kalite uyarılarını gör ve paketi kapat.' })}
+            {t('package.station.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 p-6">
           <div className="grid gap-3 rounded-xl border bg-slate-50 p-4 md:grid-cols-[1fr_auto]">
-            <div className="space-y-1">
-              <Label>{t('package.station.headerId', { defaultValue: 'Packing Header ID' })}</Label>
-              <Input value={packingHeaderIdText} onChange={(event) => setPackingHeaderIdText(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') loadHeader(); }} placeholder="Örn. 12" />
+              <div className="space-y-1">
+              <Label>{t('package.station.headerId')}</Label>
+              <Input
+                value={packingHeaderIdText}
+                onChange={(event) => setPackingHeaderIdText(event.target.value)}
+                onKeyDown={(event) => { if (event.key === 'Enter') loadHeader(); }}
+                placeholder={t('package.station.headerIdPlaceholder')}
+              />
             </div>
-            <Button className="self-end" onClick={loadHeader}>{t('common.search', { defaultValue: 'Ara' })}</Button>
+            <Button className="self-end" onClick={loadHeader}>{t('common.search')}</Button>
           </div>
 
           {activeHeaderId ? (
@@ -272,9 +276,9 @@ export function PackagePackingStationPage(): ReactElement {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-1">
-                    <Label>{t('package.station.package', { defaultValue: 'Paket' })}</Label>
+                    <Label>{t('package.station.package')}</Label>
                     <Select value={selectedPackage ? String(selectedPackage.id) : ''} onValueChange={(value) => setSelectedPackageId(Number(value))}>
-                      <SelectTrigger><SelectValue placeholder={t('package.station.selectPackage', { defaultValue: 'Paket seçin' })} /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('package.station.selectPackage')} /></SelectTrigger>
                       <SelectContent>
                         {packages.map((pkg) => <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.packageNo} - {pkg.packageType}</SelectItem>)}
                       </SelectContent>
@@ -282,32 +286,32 @@ export function PackagePackingStationPage(): ReactElement {
                   </div>
 
                   <div className="grid gap-2 rounded-lg border p-3 text-sm">
-                    <div className="flex justify-between"><span>Status</span><Badge>{selectedPackage?.status ?? '-'}</Badge></div>
-                    <div className="flex justify-between"><span>Material</span><span>{selectedMaterial?.materialCode ?? '-'}</span></div>
-                    <div className="flex justify-between"><span>Lines</span><span>{selectedLines.length}</span></div>
-                    <div className="flex justify-between"><span>Qty</span><span>{selectedLines.reduce((sum, line) => sum + line.quantity, 0)}</span></div>
+                    <div className="flex justify-between"><span>{t('package.station.status')}</span><Badge>{selectedPackage?.status ?? '-'}</Badge></div>
+                    <div className="flex justify-between"><span>{t('package.station.material')}</span><span>{selectedMaterial?.materialCode ?? '-'}</span></div>
+                    <div className="flex justify-between"><span>{t('package.station.lines')}</span><span>{selectedLines.length}</span></div>
+                    <div className="flex justify-between"><span>{t('package.station.qty')}</span><span>{selectedLines.reduce((sum, line) => sum + line.quantity, 0)}</span></div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{t('package.station.scanBarcode', { defaultValue: 'Barkod' })}</Label>
+                    <Label>{t('package.station.scanBarcode')}</Label>
                     <div className="flex gap-2">
                       <Input value={barcode} disabled={!canOperate} onChange={(event) => setBarcode(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && barcode.trim()) addLineMutation.mutate(); }} />
                       <Input className="w-24" type="number" value={quantity} disabled={!canOperate} onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))} />
                     </div>
                     <Button className="w-full" disabled={!canOperate || !barcode.trim() || addLineMutation.isPending} onClick={() => addLineMutation.mutate()}>
                       <Barcode className="mr-2 size-4" />
-                      {t('package.station.addToPackage', { defaultValue: 'Pakete Ekle' })}
+                      {t('package.station.addToPackage')}
                     </Button>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button variant="outline" disabled={!canOperate || !selectedPackage} onClick={() => closePackageMutation.mutate()}>
                       <CheckCircle2 className="mr-2 size-4" />
-                      {t('package.station.closePackage', { defaultValue: 'Paketi Kapat' })}
+                      {t('package.station.closePackage')}
                     </Button>
                     <Button variant="outline" disabled={!selectedPackage}>
                       <Printer className="mr-2 size-4" />
-                      {t('package.station.printPrepared', { defaultValue: 'Etiket Hazır' })}
+                      {t('package.station.printPrepared')}
                     </Button>
                   </div>
                 </CardContent>
@@ -316,8 +320,8 @@ export function PackagePackingStationPage(): ReactElement {
               <div className="grid gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><ShieldCheck className="size-5" />{t('package.station.qualityTitle', { defaultValue: 'Paket Kalite Kontrol' })}</CardTitle>
-                    <CardDescription>{t('package.station.qualityDescription', { defaultValue: 'Kapasite, mixed policy, seri ve paket material kontrolleri.' })}</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><ShieldCheck className="size-5" />{t('package.station.qualityTitle')}</CardTitle>
+                    <CardDescription>{t('package.station.qualityDescription')}</CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     {warnings.map((warning, index) => (
@@ -331,8 +335,8 @@ export function PackagePackingStationPage(): ReactElement {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t('package.station.cartonizationTitle', { defaultValue: 'Cartonization Açıklaması' })}</CardTitle>
-                    <CardDescription>{t('package.station.cartonizationDescription', { defaultValue: 'Sistem neden bu koli/palet ve kapasiteyle ilerliyor?' })}</CardDescription>
+                    <CardTitle>{t('package.station.cartonizationTitle')}</CardTitle>
+                    <CardDescription>{t('package.station.cartonizationDescription')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {suggestion ? (
@@ -342,17 +346,24 @@ export function PackagePackingStationPage(): ReactElement {
                       </div>
                     ) : (
                       <div className="rounded-lg border p-4 text-sm text-muted-foreground">
-                        {t('package.station.noCartonization', { defaultValue: 'Seçili pakette ürün yok. Ürün eklenince cartonization açıklaması burada görünecek.' })}
+                        {t('package.station.noCartonization')}
                       </div>
                     )}
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardHeader><CardTitle>{t('package.station.lines', { defaultValue: 'Paket Kalemleri' })}</CardTitle></CardHeader>
+                  <CardHeader><CardTitle>{t('package.station.lines')}</CardTitle></CardHeader>
                   <CardContent>
                     <Table>
-                      <TableHeader><TableRow><TableHead>Stok</TableHead><TableHead>Barkod</TableHead><TableHead>Seri</TableHead><TableHead className="text-right">Qty</TableHead></TableRow></TableHeader>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('package.station.stockCode')}</TableHead>
+                          <TableHead>{t('package.station.barcode')}</TableHead>
+                          <TableHead>{t('package.station.serialNo')}</TableHead>
+                          <TableHead className="text-right">{t('package.station.qty')}</TableHead>
+                        </TableRow>
+                      </TableHeader>
                       <TableBody>
                         {selectedLines.map((line) => (
                           <TableRow key={line.id}>
