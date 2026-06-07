@@ -25,7 +25,7 @@ export function Step2OrderSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2OrderSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const { watch } = useFormContext<GoodsReceiptFormData>();
   const customerCode = watch('customerId');
   const [activeSiparisNo, setActiveSiparisNo] = useState<string | null>(null);

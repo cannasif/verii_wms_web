@@ -28,7 +28,7 @@ export function WarehouseItemArea({
   onToggleItem,
   onRemoveItem,
 }: WarehouseItemAreaProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: inboundOrderItemsData, isLoading: inboundOrderItemsLoading } = useWarehouseInboundOrderItems(

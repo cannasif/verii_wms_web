@@ -10,7 +10,7 @@ import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 import type { NavItem } from './nav-items';
 
 const UserProfileModal = lazy(() =>
-  import('@/features/user-detail/components/UserProfileModal').then((module) => ({
+  import('@/features/user-detail').then((module) => ({
     default: module.UserProfileModal,
   })),
 );

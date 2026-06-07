@@ -22,7 +22,7 @@ export function Step2TransferOrderSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2TransferOrderSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const { watch } = useFormContext<TransferFormData>();
   const customerId = watch('customerId');
   const [activeSiparisNo, setActiveSiparisNo] = useState<string | null>(null);

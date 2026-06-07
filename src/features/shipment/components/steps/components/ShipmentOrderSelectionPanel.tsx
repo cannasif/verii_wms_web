@@ -20,7 +20,7 @@ export function ShipmentOrderSelectionPanel({
   onSelectOrder,
   isLoading,
 }: ShipmentOrderSelectionPanelProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredOrders = useMemo(() => {

@@ -8,7 +8,7 @@ import type { PagedDataGridColumn } from '@/components/shared';
 type ColumnKey = 'departmentCode' | 'departmentName' | 'updatedDate' | 'isActive';
 
 export function KkdEmployeeDepartmentPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
     { key: 'departmentName', label: t('kkd.columns.departmentName') },

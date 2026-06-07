@@ -12,7 +12,7 @@ import {
   type SelectedTransferStockItem,
   type TransferFormData,
 } from '../types/transfer';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import { transferApi } from '../api/transfer-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import { Step1TransferBasicInfo } from './steps/Step1TransferBasicInfo';
 import { Step2TransferStockSelection } from './steps/Step2TransferStockSelection';
 
 export function TransferProcessPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();

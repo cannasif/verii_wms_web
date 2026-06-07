@@ -24,6 +24,8 @@ export interface BilginogluHakEdisOrderHeader {
   totalShipmentCreatedQty: number;
   totalShippedQty: number;
   totalWaitingQty: number;
+  isCompleted: boolean;
+  completedDate?: string | null;
   allocationPolicy: string;
   shipmentPolicy: string;
   status: string;

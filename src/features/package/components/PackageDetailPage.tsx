@@ -74,7 +74,7 @@ const getStatusBadgeColor = (status: string): string => {
 };
 
 export function PackageDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const { reportScreenReady } = useRouteScreenReady();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -606,7 +606,7 @@ export function PackageDetailPage(): ReactElement {
                                   disabled={!permission.canCreate && !permission.canUpdate}
                                 >
                                   <Printer className="size-4" />
-                                  <span className="ml-2">Etiket</span>
+                                  <span className="ml-2">{t('package.detail.printLabel')}</span>
                                 </Button>
                               </div>
                             </TableCell>

@@ -15,7 +15,7 @@ import { kkdApi } from '../api/kkd.api';
 import type { KkdEmployeeDto, KkdRemainingEntitlementDto, KkdResolvedEmployeeDto } from '../types/kkd.types';
 
 export function KkdRemainingEntitlementsPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const dateLocale = getLocaleForFormatting(i18n.language);
   const { setPageTitle } = useUIStore();
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);

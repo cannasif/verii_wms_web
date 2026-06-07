@@ -42,7 +42,7 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function WarehouseOutboundApprovalPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.outbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
@@ -76,7 +76,7 @@ export function WarehouseOutboundApprovalPage(): ReactElement {
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, documentNo: item.documentNo || '-', documentDate: formatDate(item.documentDate), customerCode: item.customerCode || '-', customerName: item.customerName || '-', sourceWarehouse: item.sourceWarehouse || '-', completionDate: formatDateTime(item.completionDate) })), [data?.data]);
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {
     if (!permission.canApprove) {

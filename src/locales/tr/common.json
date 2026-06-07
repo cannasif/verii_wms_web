@@ -287,6 +287,8 @@
     "transferAssigned": "Atanmış Transfer Emirleri",
     "transferApproval": "Onay Bekleyen Emirler",
     "bilginogluHakEdis": "Bilginoğlu Hakediş",
+    "bilginogluHakEdisOpen": "Açık Hakedişler",
+    "bilginogluHakEdisCompleted": "Tamamlanmış Hakedişler",
     "subcontractingIssueAssigned": "Atanmış Fason Çıkış Emirleri",
     "subcontractingReceiptAssigned": "Atanmış Fason Giriş Emirleri",
     "subcontractingIssueApproval": "Onay Bekleyen Fason Çıkış Emirleri",

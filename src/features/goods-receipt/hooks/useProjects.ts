@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { GOODS_RECEIPT_QUERY_KEYS } from '../utils/query-keys';
 
 export const useProjects = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
 
   const query = useQuery({
     queryKey: [GOODS_RECEIPT_QUERY_KEYS.PROJECTS],

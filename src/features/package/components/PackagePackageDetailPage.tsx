@@ -68,7 +68,7 @@ const getStatusBadgeColor = (status: string): string => {
 };
 
 export function PackagePackageDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const { reportScreenReady } = useRouteScreenReady();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();

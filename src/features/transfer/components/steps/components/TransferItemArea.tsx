@@ -24,7 +24,7 @@ export function TransferItemArea({
   onToggleItem,
   onRemoveItem,
 }: TransferItemAreaProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: orderItemsData, isLoading } = useTransferOrderItems(siparisNo ?? undefined);

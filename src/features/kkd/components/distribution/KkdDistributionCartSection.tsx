@@ -24,7 +24,7 @@ export function KkdDistributionCartSection({
   isSubmitting,
   onClearCart,
 }: KkdDistributionCartSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
 
   return (
     <Card>

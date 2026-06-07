@@ -34,7 +34,7 @@ export function WarehouseDetailDialog({
   isOpen,
   onClose,
 }: WarehouseDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { data: inboundHeadersData } = useWarehouseInboundHeaders();
   const { data: outboundHeadersData } = useWarehouseOutboundHeaders();
   const { data: linesData, isLoading: isLoadingLines } = useWarehouseLines(headerId, documentType);

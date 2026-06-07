@@ -63,7 +63,7 @@ function mapSortBy(value: WarehouseInboundColumnKey): string {
 }
 
 export function WarehouseInboundListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.inbound');
@@ -106,7 +106,7 @@ export function WarehouseInboundListPage(): ReactElement {
       if (!response.success) {
         throw new Error(response.message || t('common.errors.deleteFailed'));
       }
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -182,7 +182,6 @@ export function WarehouseInboundListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   return (

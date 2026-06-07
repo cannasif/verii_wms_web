@@ -11,7 +11,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 
 export function KkdOverviewPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
 
   useEffect(() => {

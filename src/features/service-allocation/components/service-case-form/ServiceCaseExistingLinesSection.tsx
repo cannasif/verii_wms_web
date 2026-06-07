@@ -10,23 +10,23 @@ interface ServiceCaseExistingLinesSectionProps {
 }
 
 export function ServiceCaseExistingLinesSection({ lines }: ServiceCaseExistingLinesSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['service-allocation', 'common']);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('serviceAllocation.lines', { defaultValue: 'Missing translation' })}</CardTitle>
+        <CardTitle>{t('serviceAllocation.lines')}</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('serviceAllocation.lineType', { defaultValue: 'Missing translation' })}</TableHead>
-              <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
-              <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</TableHead>
-              <TableHead>{t('serviceAllocation.processType', { defaultValue: 'Missing translation' })}</TableHead>
-              <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</TableHead>
-              <TableHead>{t('serviceAllocation.erpOrderId', { defaultValue: 'Missing translation' })}</TableHead>
+              <TableHead>{t('serviceAllocation.lineType')}</TableHead>
+              <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
+              <TableHead>{t('serviceAllocation.quantity')}</TableHead>
+              <TableHead>{t('serviceAllocation.processType')}</TableHead>
+              <TableHead>{t('serviceAllocation.erpOrderNo')}</TableHead>
+              <TableHead>{t('serviceAllocation.erpOrderId')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

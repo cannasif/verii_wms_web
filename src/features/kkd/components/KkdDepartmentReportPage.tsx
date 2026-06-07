@@ -33,7 +33,7 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function KkdDepartmentReportPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const [selectedRow, setSelectedRow] = useState<KkdDepartmentUsageReportDto | null>(null);
   const pagedGrid = usePagedDataGrid<ColumnKey>({

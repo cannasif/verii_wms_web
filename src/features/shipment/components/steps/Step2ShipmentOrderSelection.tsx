@@ -22,7 +22,7 @@ export function Step2ShipmentOrderSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2ShipmentOrderSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const { watch } = useFormContext<ShipmentFormData>();
   const customerId = watch('customerId');
   const [activeSiparisNo, setActiveSiparisNo] = useState<string | null>(null);

@@ -53,7 +53,7 @@ export function PackageDetailDialog({
   isOpen,
   onClose,
 }: PackageDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const { data: header, isLoading: isLoadingHeader } = usePHeader(headerId);
   const { data: packages, isLoading: isLoadingPackages } = usePPackagesByHeader(headerId);
   const { data: lines, isLoading: isLoadingLines } = usePLinesByHeader(headerId);

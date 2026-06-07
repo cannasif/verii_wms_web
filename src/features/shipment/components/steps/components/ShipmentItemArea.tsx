@@ -23,7 +23,7 @@ export function ShipmentItemArea({
   onToggleItem,
   onRemoveItem,
 }: ShipmentItemAreaProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: orderItemsData, isLoading } = useShipmentOrderItems(siparisNo || undefined);

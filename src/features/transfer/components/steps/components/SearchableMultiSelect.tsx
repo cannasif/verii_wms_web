@@ -50,7 +50,7 @@ export function SearchableMultiSelect<T>({
   maxHeight = '220px',
   itemLimit = 100,
 }: SearchableMultiSelectProps<T>): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const resolvedPlaceholder = placeholder ?? t('common.select');

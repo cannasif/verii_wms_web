@@ -16,7 +16,7 @@ export function KkdInitialOrderPromptDialog({
   onOpenChange,
   onAnswer,
 }: KkdInitialOrderPromptDialogProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

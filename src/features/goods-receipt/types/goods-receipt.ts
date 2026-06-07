@@ -13,9 +13,11 @@ import type {
   BaseWorkflowRouteDetail,
 } from '@/types/detail-models';
 import type { TFunction } from 'i18next';
-import type { CustomerLookup, ProjectLookup, StockLookup, WarehouseLookup } from '@/features/shared/api/lookup-types';
+import type { Customer, Project } from '@/features/shared/types/operation-reference.types';
 
 const normalizeDocumentNo = (value: string) => value.replace(/\D/g, '');
+
+export type { Customer, Product, Project, Warehouse } from '@/features/shared/types/operation-reference.types';
 
 export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   receiptDate: z.string().min(1, t('goodsReceipt.validation.receiptDateRequired')),
@@ -48,14 +50,6 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
 });
 
 export type GoodsReceiptFormData = z.infer<ReturnType<typeof createGoodsReceiptFormSchema>>;
-
-export type Customer = CustomerLookup;
-
-export type Project = ProjectLookup;
-
-export type Warehouse = WarehouseLookup;
-
-export type Product = StockLookup;
 
 export type CustomersResponse = ApiResponse<Customer[]>;
 export type ProjectsResponse = ApiResponse<Project[]>;

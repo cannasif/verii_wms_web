@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { packageApi } from '../../api/package-api';
 import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type PHeaderDto, type AvailableHeaderDto } from '../../types/package';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { Customer, Warehouse } from '@/features/shared';
 
 interface Step1HeaderFormProps {
   initialData?: PHeaderDto;
@@ -28,7 +28,7 @@ export function Step1HeaderForm({
   onCancel,
   isLoading = false,
 }: Step1HeaderFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
   const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
   const [sourceHeaderLookupOpen, setSourceHeaderLookupOpen] = useState(false);

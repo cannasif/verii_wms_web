@@ -27,7 +27,7 @@ export function ReceivingArea({
   onToggleItem,
   onRemoveItem,
 }: ReceivingAreaProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: orderItems, isLoading } = useQuery({

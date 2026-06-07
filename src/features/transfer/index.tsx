@@ -1,4 +1,5 @@
 export { TransferCreatePage } from './components/TransferCreatePage';
+export { TransferEditPage } from './components/TransferEditPage';
 export { TransferProcessPage } from './components/TransferProcessPage';
 export { TransferListPage } from './components/TransferListPage';
 export { AssignedTransferListPage } from './components/AssignedTransferListPage';

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { getLocaleForFormatting } from '@/lib/i18n';
@@ -16,7 +16,7 @@ import { kkdApi } from '../api/kkd.api';
 import type { KkdEmployeeDto, KkdEntitlementCheckResultDto, KkdStockGroupOption } from '../types/kkd.types';
 
 export function KkdEntitlementCheckPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);

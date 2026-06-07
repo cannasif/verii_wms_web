@@ -114,7 +114,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   renderCell,
   renderForm,
 }: KkdCrudPageProps<TItem, TForm, TColumnKey>): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
   const pagedGrid = usePagedDataGrid<TColumnKey>({
@@ -191,7 +191,6 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
   const filterColumns = useMemo<readonly FilterColumnConfig[]>(
     () =>

@@ -20,7 +20,7 @@ export function WarehouseOrderSelectionPanel({
   onSelectOrder,
   isLoading,
 }: WarehouseOrderSelectionPanelProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredOrders = useMemo(() => {

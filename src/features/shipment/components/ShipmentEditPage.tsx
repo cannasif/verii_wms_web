@@ -44,7 +44,7 @@ function toFormValues(header: ShipmentHeader): ShipmentFormData {
 }
 
 export function ShipmentEditPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();

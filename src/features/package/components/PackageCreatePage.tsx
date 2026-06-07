@@ -28,7 +28,7 @@ import type { PHeaderFormData } from '../types/package';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.package');

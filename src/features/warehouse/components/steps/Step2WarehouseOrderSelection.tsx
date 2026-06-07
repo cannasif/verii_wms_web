@@ -27,7 +27,7 @@ export function Step2WarehouseOrderSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2WarehouseOrderSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { watch } = useFormContext<WarehouseFormData>();
   const customerId = watch('customerId');
   const [activeSiparisNo, setActiveSiparisNo] = useState<string | null>(null);

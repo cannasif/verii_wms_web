@@ -11,8 +11,9 @@ import { lazyNamed, withRoute } from './route-utils';
 
 const WelcomePage = lazyNamed(() => import('@/features/welcome'), 'WelcomePage');
 const DashboardPage = lazyNamed(() => import('@/features/dashboard'), 'DashboardPage');
+const ReportsPage = lazyNamed(() => import('@/features/report'), 'ReportsPage');
 const ParameterFormPage = lazyNamed(() => import('@/features/parameters'), 'ParameterFormPage');
-const ProfilePage = lazyNamed(() => import('@/features/user-detail/components/ProfilePage'), 'ProfilePage');
+const ProfilePage = lazyNamed(() => import('@/features/user-detail'), 'ProfilePage');
 
 export function createAppRouter() {
   return createBrowserRouter([
@@ -27,6 +28,7 @@ export function createAppRouter() {
       children: [
         { index: true, element: withRoute(WelcomePage, { routeName: 'welcome' }) },
         { path: 'dashboard', element: withRoute(DashboardPage, { routeName: 'dashboard' }) },
+        { path: 'reports', element: withRoute(ReportsPage, { routeName: 'reports' }) },
         ...operationsChildRoutes,
         {
           path: 'parameters',

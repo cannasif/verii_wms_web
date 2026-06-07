@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 export function CollectedBarcodesPage(): ReactElement {
   const { headerId } = useParams<{ headerId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
 
   const headerIdNum = headerId ? parseInt(headerId, 10) : 0;
   const { data: collectedData, isLoading } = useCollectedBarcodes(headerIdNum);

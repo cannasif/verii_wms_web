@@ -49,7 +49,7 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function GoodsReceiptReportPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
@@ -79,7 +79,7 @@ export function GoodsReceiptReportPage(): ReactElement {
       if (!response.success) {
         throw new Error(response.message || t('common.errors.deleteFailed'));
       }
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -98,7 +98,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, orderId: item.orderId || '-', customerCode: item.customerCode || '-', projectCode: item.projectCode || '-', documentType: item.documentType || '-', plannedDate: formatDate(item.plannedDate), status: item.isCompleted ? t('goodsReceipt.report.completed') : item.isPendingApproval ? t('goodsReceipt.report.pendingApproval') : t('goodsReceipt.report.inProgress'), createdDate: formatDateTime(item.createdDate) })), [data?.data, t]);
   const range = getPagedRange(data, 1);
-  const paginationInfoText = t('goodsReceipt.report.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('goodsReceipt.report.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
   return (
     <div className="crm-page space-y-6">
       {!permission.canMutate ? <PermissionNotice /> : null}

@@ -71,7 +71,7 @@ export function useBilginogluHakEdisStepsQuery(batchId: number | null) {
 
 export function useEvaluateBilginogluHakEdisMutation() {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('bilginoglu-hakedis');
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   return useMutation({
     mutationFn: (siparisNo?: string) => bilginogluHakEdisApi.evaluate(siparisNo),
     onSuccess: async (result) => {
@@ -84,7 +84,7 @@ export function useEvaluateBilginogluHakEdisMutation() {
 
 export function useBilginogluHakEdisBatchActionMutation() {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('bilginoglu-hakedis');
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   return useMutation({
     mutationFn: ({ batchId, action }: { batchId: number; action: string }) => bilginogluHakEdisApi.runBatchAction(batchId, action),
     onSuccess: async () => {
@@ -97,7 +97,7 @@ export function useBilginogluHakEdisBatchActionMutation() {
 
 export function useBilginogluHakEdisCreateSuggestedTransfersMutation() {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('bilginoglu-hakedis');
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   return useMutation({
     mutationFn: (orderHeaderId: number) => bilginogluHakEdisApi.createSuggestedTransfers(orderHeaderId),
     onSuccess: async (result) => {
@@ -110,7 +110,7 @@ export function useBilginogluHakEdisCreateSuggestedTransfersMutation() {
 
 export function useBilginogluHakEdisOrderPolicyMutation() {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('bilginoglu-hakedis');
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   return useMutation({
     mutationFn: ({ orderHeaderId, input }: { orderHeaderId: number; input: UpdateBilginogluHakEdisOrderPolicy }) =>
       bilginogluHakEdisApi.updateOrderPolicy(orderHeaderId, input),

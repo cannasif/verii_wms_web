@@ -28,7 +28,7 @@ export function ReceivingItemRow({
     onToggleItem,
     onRemoveItem,
 }: ReceivingItemRowProps): ReactElement {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['goods-receipt', 'common']);
     const [value, setValue] = useState(selectedItem?.receiptQuantity?.toString() || '');
     const [isExpanded, setIsExpanded] = useState(false);
     const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);

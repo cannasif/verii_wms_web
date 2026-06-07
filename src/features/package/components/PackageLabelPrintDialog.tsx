@@ -339,7 +339,7 @@ export function PackageLabelPrintDialog({
                 {t('print.selectAll')}
               </Button>
               <Button type="button" variant="outline" size="sm" onClick={clearSelection} disabled={selectedIds.size === 0}>
-                Temizle
+                {t('print.clear')}
               </Button>
             </div>
             <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-2xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/3">
@@ -396,7 +396,7 @@ export function PackageLabelPrintDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Printer Profile</Label>
+              <Label>{t('print.printerProfile')}</Label>
               <Select value={selectedPrinterProfileId} onValueChange={setSelectedPrinterProfileId}>
                 <SelectTrigger>
                   <SelectValue placeholder={t('print.profilePlaceholder')} />
@@ -437,7 +437,9 @@ export function PackageLabelPrintDialog({
                 <Printer className="size-4" />
                 {t('print.summary')}
               </div>
-              <div className="mt-2">Template: {selectedTemplate?.displayName ?? '-'}</div>
+              <div className="mt-2">
+                {t('print.templateLabel')}: {selectedTemplate?.displayName ?? '-'}
+              </div>
               <div>{t('print.selectedPackageSummary', { count: selectedIds.size })}</div>
               <div>{t('print.copySummary', { count: copies })}</div>
             </div>

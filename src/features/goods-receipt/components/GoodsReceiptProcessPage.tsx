@@ -24,7 +24,7 @@ import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2StockSelection } from './steps/Step2StockSelection';
 
 export function GoodsReceiptProcessPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');

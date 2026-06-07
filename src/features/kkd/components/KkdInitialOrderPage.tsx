@@ -15,7 +15,7 @@ import { KkdInitialOrderCartSection } from './initial-order/KkdInitialOrderCartS
 import { type LocalOrderLine, mapEmployee } from './initial-order/shared';
 
 export function KkdInitialOrderPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const authUserId = useAuthStore((state) => state.user?.id ?? null);

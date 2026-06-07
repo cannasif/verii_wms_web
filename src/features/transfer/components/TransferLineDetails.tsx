@@ -10,7 +10,7 @@ interface TransferLineDetailsProps {
 }
 
 export function TransferLineDetails({ line }: TransferLineDetailsProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const { data: lineSerialsData, isLoading } = useTransferLineSerials(line.id);
 
   return (

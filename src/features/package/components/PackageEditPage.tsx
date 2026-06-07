@@ -9,7 +9,7 @@ import { packageApi } from '../api/package-api';
 import { usePHeader } from '../hooks/usePHeader';
 import { useUpdatePHeader } from '../hooks/useUpdatePHeader';
 import { useMatchPlines } from '../hooks/useMatchPlines';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type AvailableHeaderDto } from '../types/package';
 import { FormPageShell } from '@/components/shared';
 import { Button } from '@/components/ui/button';
@@ -19,11 +19,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { toast } from 'sonner';
-import type { Customer, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { Customer, Warehouse } from '@/features/shared';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageEditPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
   const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
   const [sourceHeaderLookupOpen, setSourceHeaderLookupOpen] = useState(false);

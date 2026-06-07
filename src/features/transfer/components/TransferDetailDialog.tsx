@@ -33,7 +33,7 @@ export function TransferDetailDialog({
   isOpen,
   onClose,
 }: TransferDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const packagePermission = useCrudPermission('wms.package');
   const { data: headersData } = useTransferHeaders();
   const { data: assignedData, isLoading: isLoadingLines } = useAssignedTransferOrderLines(headerId);

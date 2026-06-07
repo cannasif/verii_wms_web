@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { userApi } from '@/features/user-management/api/user-api';
 import type { UserDto } from '@/features/user-management/types/user-types';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
@@ -29,7 +29,7 @@ function KkdEntitlementOverrideForm({
   formState: CreateKkdEntitlementOverrideDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEntitlementOverrideDto>>;
 }): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);
   const [approverDialogOpen, setApproverDialogOpen] = useState(false);
   const stockGroupsQuery = useQuery({
@@ -43,7 +43,7 @@ function KkdEntitlementOverrideForm({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm leading-6 text-slate-700">
-        Bu ekran ana kural için değil, istisnai çalışan ihtiyaçları için manuel ek hak vermek amacıyla kullanılır.
+        {t('kkd.messages.manualOverrideNotice')}
       </div>
 
       <div className="space-y-2">
@@ -130,7 +130,7 @@ function KkdEntitlementOverrideForm({
 }
 
 export function KkdEntitlementOverridePage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'employeeCode', label: t('kkd.columns.employeeCode') },
     { key: 'groupCode', label: t('kkd.columns.groupCode') },

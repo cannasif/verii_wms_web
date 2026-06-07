@@ -47,7 +47,7 @@ function toFormValues(header: WarehouseHeader): WarehouseFormData {
 }
 
 export function WarehouseOutboundEditPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();

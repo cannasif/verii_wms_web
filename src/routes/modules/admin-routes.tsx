@@ -2,39 +2,36 @@ import type { RouteObject } from 'react-router-dom';
 import { lazyNamed, withRoute } from '../route-utils';
 
 const PermissionDefinitionsPage = lazyNamed(
-  () => import('@/features/access-control/components/PermissionDefinitionsPage'),
+  () => import('@/features/access-control'),
   'PermissionDefinitionsPage',
 );
 const PermissionGroupsPage = lazyNamed(
-  () => import('@/features/access-control/components/PermissionGroupsPage'),
+  () => import('@/features/access-control'),
   'PermissionGroupsPage',
 );
 const UserGroupAssignmentsPage = lazyNamed(
-  () => import('@/features/access-control/components/UserGroupAssignmentsPage'),
+  () => import('@/features/access-control'),
   'UserGroupAssignmentsPage',
 );
 const WmsScopePoliciesPage = lazyNamed(
-  () => import('@/features/access-control/components/WmsScopePoliciesPage'),
+  () => import('@/features/access-control'),
   'WmsScopePoliciesPage',
 );
 const WmsScopeAssignmentsPage = lazyNamed(
-  () => import('@/features/access-control/components/WmsScopeAssignmentsPage'),
+  () => import('@/features/access-control'),
   'WmsScopeAssignmentsPage',
 );
 const UserManagementPage = lazyNamed(
-  () => import('@/features/user-management/components/UserManagementPage'),
+  () => import('@/features/user-management'),
   'UserManagementPage',
 );
-const MailSettingsPage = lazyNamed(
-  () => import('@/features/mail-settings/pages/MailSettingsPage'),
-  'MailSettingsPage',
-);
+const MailSettingsPage = lazyNamed(() => import('@/features/mail-settings'), 'MailSettingsPage');
 const HangfireMonitoringPage = lazyNamed(
-  () => import('@/features/hangfire-monitoring/components/HangfireMonitoringPage'),
+  () => import('@/features/hangfire-monitoring'),
   'HangfireMonitoringPage',
 );
 const TraceExplorerPage = lazyNamed(
-  () => import('@/features/trace-explorer/components/TraceExplorerPage'),
+  () => import('@/features/trace-explorer'),
   'TraceExplorerPage',
 );
 

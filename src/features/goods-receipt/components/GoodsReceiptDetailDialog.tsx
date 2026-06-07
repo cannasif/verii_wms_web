@@ -208,7 +208,7 @@ export function GoodsReceiptDetailDialog({
   isOpen,
   onClose,
 }: GoodsReceiptDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const { data, isLoading, error } = useGrHeaderDetail(grHeaderId);
   const { data: grLines } = useGrLines(grHeaderId);
   const { data: grImportLines } = useGrImportLinesWithRoutes(grHeaderId);

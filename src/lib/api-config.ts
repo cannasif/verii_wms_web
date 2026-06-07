@@ -5,16 +5,19 @@ const RUNTIME_CONFIG_TTL_MS = 60 * 60 * 1000;
 interface RuntimeConfig {
   apiUrl?: string;
   baseUrl?: string;
+  realtimeNotificationsEnabled?: boolean;
 }
 
 interface ResolvedRuntimeConfig {
   apiUrl: string;
   baseUrl: string;
+  realtimeNotificationsEnabled: boolean;
 }
 
 interface PersistedRuntimeConfig {
   apiUrl: string;
   baseUrl: string;
+  realtimeNotificationsEnabled: boolean;
   fetchedAt: number;
 }
 
@@ -80,6 +83,7 @@ function getWindowOriginFallback(): string | null {
 
 let cachedApiUrl = normalizeBaseUrl(DEFAULT_API_BASE_URL);
 let cachedAppBasePath = normalizeAppBasePath(import.meta.env.BASE_URL || '/');
+let cachedRealtimeNotificationsEnabled = false;
 let configPromise: Promise<ResolvedRuntimeConfig> | null = null;
 let backgroundRefreshPromise: Promise<void> | null = null;
 const runtimeBasePath = import.meta.env.BASE_URL || '/';
@@ -98,6 +102,7 @@ function resolveEnvRuntimeConfig(): ResolvedRuntimeConfig {
       ? normalizeBaseUrl(envUrl)
       : (import.meta.env.DEV && devFallback ? devFallback : normalizeBaseUrl(DEFAULT_API_BASE_URL)),
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
+    realtimeNotificationsEnabled: false,
   };
 }
 
@@ -117,6 +122,7 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
     return {
       apiUrl: isValidApiUrl(config?.apiUrl) ? normalizeBaseUrl(config.apiUrl!) : fallbackConfig.apiUrl,
       baseUrl: normalizeAppBasePath(config?.baseUrl ?? fallbackConfig.baseUrl),
+      realtimeNotificationsEnabled: config?.realtimeNotificationsEnabled === true,
     };
   } catch (error) {
     if (import.meta.env.DEV) {
@@ -142,6 +148,7 @@ function readPersistedRuntimeConfig(): PersistedRuntimeConfig | null {
     if (
       !isValidApiUrl(parsed.apiUrl) ||
       typeof parsed.baseUrl !== 'string' ||
+      typeof parsed.realtimeNotificationsEnabled !== 'boolean' ||
       typeof parsed.fetchedAt !== 'number'
     ) {
       return null;
@@ -150,6 +157,7 @@ function readPersistedRuntimeConfig(): PersistedRuntimeConfig | null {
     return {
       apiUrl: normalizeBaseUrl(parsed.apiUrl as string),
       baseUrl: normalizeAppBasePath(parsed.baseUrl),
+      realtimeNotificationsEnabled: parsed.realtimeNotificationsEnabled,
       fetchedAt: parsed.fetchedAt,
     };
   } catch {
@@ -165,6 +173,7 @@ function persistRuntimeConfig(config: ResolvedRuntimeConfig): void {
   const payload: PersistedRuntimeConfig = {
     apiUrl: config.apiUrl,
     baseUrl: config.baseUrl,
+    realtimeNotificationsEnabled: config.realtimeNotificationsEnabled,
     fetchedAt: Date.now(),
   };
 
@@ -178,6 +187,7 @@ function persistRuntimeConfig(config: ResolvedRuntimeConfig): void {
 function hydrateMemoryCache(config: ResolvedRuntimeConfig): ResolvedRuntimeConfig {
   cachedApiUrl = config.apiUrl;
   cachedAppBasePath = config.baseUrl;
+  cachedRealtimeNotificationsEnabled = config.realtimeNotificationsEnabled;
   return config;
 }
 
@@ -213,6 +223,7 @@ export function loadConfig(): Promise<string> {
         const resolved = hydrateMemoryCache({
           apiUrl: persisted.apiUrl,
           baseUrl: persisted.baseUrl,
+          realtimeNotificationsEnabled: persisted.realtimeNotificationsEnabled,
         });
 
         if (!isPersistedConfigFresh(persisted)) {
@@ -237,6 +248,7 @@ export function loadConfig(): Promise<string> {
       const resolved = hydrateMemoryCache({
         apiUrl: persisted.apiUrl,
         baseUrl: persisted.baseUrl,
+        realtimeNotificationsEnabled: persisted.realtimeNotificationsEnabled,
       });
 
       if (!isPersistedConfigFresh(persisted)) {
@@ -266,6 +278,14 @@ export function getApiBaseUrl(): string {
 
 export function getAppBasePath(): string {
   return cachedAppBasePath || normalizeAppBasePath(import.meta.env.BASE_URL || '/');
+}
+
+export async function isRealtimeNotificationsEnabled(): Promise<boolean> {
+  if (!configPromise) {
+    await loadConfig();
+  }
+
+  return cachedRealtimeNotificationsEnabled;
 }
 
 export function resolveAppPath(path: string): string {

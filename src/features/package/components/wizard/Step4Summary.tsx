@@ -56,7 +56,7 @@ export function Step4Summary({
   onCancel,
   isLoading = false,
 }: Step4SummaryProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
 
   const { data: packagesData, isLoading: isLoadingPackages } = usePPackagesByHeader(headerData.id);
   const { data: linesData, isLoading: isLoadingLines } = usePLinesByHeader(headerData.id);

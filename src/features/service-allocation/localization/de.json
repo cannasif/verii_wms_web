@@ -1,0 +1,155 @@
+{
+  "serviceAllocation": {
+    "caseNo": "Case No",
+    "customerCode": "Customer",
+    "customerId": "Customer Id",
+    "stockCode": "Stock Code",
+    "stockId": "Stock Id",
+    "serialNo": "Serial No",
+    "status": "Status",
+    "receivedAt": "Received At",
+    "closedAt": "Closed At",
+    "lines": "Service Lines",
+    "lineType": "Line Type",
+    "processType": "Process Type",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "erpOrderNo": "ERP Order No",
+    "erpOrderId": "ERP Order Id",
+    "description": "Description",
+    "intakeWarehouseId": "Intake Warehouse Id",
+    "currentWarehouseId": "Current Warehouse Id",
+    "diagnosisNote": "Diagnosis Note",
+    "allocatedQuantity": "Allocated",
+    "priority": "Priority",
+    "documentModule": "Module",
+    "documentHeaderId": "Document Id",
+    "linkPurpose": "Link Purpose",
+    "sequence": "Seq",
+    "serviceCaseId": "Service Case",
+    "orderAllocationLineId": "Allocation Line",
+    "linkedAt": "Linked At",
+    "fromWarehouse": "From Wh",
+    "toWarehouse": "To Wh",
+    "createCase": "Create Service Case",
+    "caseList": {
+      "title": "Service Cases",
+      "error": "Service cases could not be loaded.",
+      "empty": "No service cases found.",
+      "search": "Search service cases..."
+    },
+    "allocationQueue": {
+      "title": "Allocation Queue",
+      "error": "Allocation queue could not be loaded.",
+      "empty": "No allocation rows found.",
+      "search": "Search allocation queue..."
+    },
+    "documentLinks": {
+      "title": "Document Links",
+      "error": "Document links could not be loaded.",
+      "empty": "No document links found.",
+      "search": "Search document links..."
+    },
+    "timeline": {
+      "title": "Service Case Timeline",
+      "events": "Warehouse Timeline",
+      "linkCount": "Linked Documents",
+      "lastMovement": "Last Movement"
+    },
+    "recompute": {
+      "missingStock": "Incoming stock is not defined for this case.",
+      "success": "Allocation recomputed. {{count}} line(s) processed.",
+      "error": "Allocation recompute failed.",
+      "action": "Recompute Allocation"
+    },
+    "form": {
+      "createTitle": "Create Service Case",
+      "editTitle": "Edit Service Case",
+      "createSuccess": "Service case created.",
+      "updateSuccess": "Service case updated.",
+      "saveError": "Service case could not be saved.",
+      "initialLine": "Initial / Additional Service Line",
+      "selectCustomer": "Select customer",
+      "selectStock": "Select stock",
+      "selectWarehouse": "Select warehouse",
+      "noCustomers": "No customers found.",
+      "noStocks": "No stocks found.",
+      "noWarehouses": "No warehouses found.",
+      "customerLookupDescription": "Pick the customer record directly instead of typing an id; the system fills the customer code and identifier together.",
+      "incomingStockLookupDescription": "Select the ERP stock record for the incoming item; stock code and stock identifier are filled together.",
+      "initialLineStockLookupDescription": "Select the stock card used on the service line; the system carries stock code, identifier and unit together.",
+      "warehouseLookupDescription": "Select the warehouse directly instead of entering an id; the system binds the correct warehouse record in the background."
+    },
+    "reports": {
+      "title": "Service Reports",
+      "totalCases": "Total Service Cases",
+      "openCases": "Open cases",
+      "waitingParts": "Waiting For Parts",
+      "reviewWaitingCases": "Review waiting cases",
+      "partialAllocations": "Partial Allocations",
+      "openPartialAllocations": "Open allocation queue",
+      "documentLinks": "Document Links",
+      "openDocumentLinks": "Open document links",
+      "criticalQueue": "Critical Queue",
+      "openQueue": "Open Queue",
+      "waitingCasesTable": "Cases Waiting For Parts",
+      "noWaitingCases": "No cases waiting for parts.",
+      "partialAllocationTable": "Partial Allocation Rows",
+      "noPartialAllocations": "No partial allocations found.",
+      "caseDistribution": "Case Status Distribution",
+      "linkDistribution": "Link Purpose Distribution",
+      "noDistribution": "No distribution data.",
+      "recentMovements": "Recent Warehouse Movements",
+      "shipmentLinks": "shipment links",
+      "openLinks": "Open Links",
+      "noRecentMovements": "No recent warehouse movements found.",
+      "allocationRows": "Allocation Rows",
+      "activeRepairCases": "Active Repair Cases",
+      "shipmentLinksCount": "Shipment Link Count"
+    },
+    "enum": {
+      "serviceCaseStatus": {
+        "0": "Draft",
+        "1": "Waiting For Intake",
+        "2": "Received",
+        "3": "In Diagnosis",
+        "4": "Waiting For Parts",
+        "5": "In Repair",
+        "6": "Ready For Return",
+        "7": "Returned To Main Warehouse",
+        "8": "Closed",
+        "9": "Cancelled"
+      },
+      "serviceCaseLineType": {
+        "0": "Incoming Product",
+        "1": "Spare Part",
+        "2": "Labor",
+        "3": "Replacement Product"
+      },
+      "serviceProcessType": {
+        "0": "Normal Sales Order",
+        "1": "Service Repair",
+        "2": "Spare Part Supply",
+        "3": "Repair Return"
+      },
+      "allocationStatus": {
+        "0": "Waiting",
+        "1": "Blocked",
+        "2": "Allocated",
+        "3": "Partially Allocated",
+        "4": "Shipped",
+        "5": "Cancelled"
+      },
+      "documentLinkPurpose": {
+        "0": "Intake",
+        "1": "Internal Transfer",
+        "2": "Spare Part Supply",
+        "3": "Repair Operation",
+        "4": "Return To Main Warehouse",
+        "5": "Shipment",
+        "6": "Allocation Source",
+        "7": "Allocation Result"
+      }
+    }
+  }
+}

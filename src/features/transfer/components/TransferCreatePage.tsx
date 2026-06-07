@@ -22,12 +22,12 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1TransferBasicInfo } from './steps/Step1TransferBasicInfo';
 import { Step2TransferOrderSelection } from './steps/Step2TransferOrderSelection';
 import { Step2TransferStockSelection } from './steps/Step2TransferStockSelection';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import type { SelectedTransferStockItem } from '../types/transfer';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function TransferCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
@@ -163,12 +163,12 @@ export function TransferCreatePage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('transfer.create.mode.order', { defaultValue: 'Missing translation' }) : t('transfer.create.mode.stock', { defaultValue: 'Missing translation' })}
+          {createMode === 'order' ? t('transfer.create.mode.order') : t('transfer.create.mode.stock')}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('transfer.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('transfer.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('transfer.create.mode.order')}</TabsTrigger>
+            <TabsTrigger value="stock">{t('transfer.create.mode.stock')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

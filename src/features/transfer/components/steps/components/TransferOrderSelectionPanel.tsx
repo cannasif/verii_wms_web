@@ -21,7 +21,7 @@ export function TransferOrderSelectionPanel({
   onSelectOrder,
   isLoading,
 }: TransferOrderSelectionPanelProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredOrders = useMemo(() => {

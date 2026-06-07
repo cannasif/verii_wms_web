@@ -1,0 +1,235 @@
+{
+  "warehouse": {
+    "create": {
+      "mode": {
+        "order": "Order",
+        "stock": "Stock"
+      },
+      "steps": {
+        "basicInfo": "Basic Info",
+        "orderSelection": "Order Selection",
+        "stockSelection": "Stock Selection"
+      },
+      "unknownStep": "Unknown Step"
+    },
+    "details": {
+      "batchNo": "Batch No",
+      "batchNoPlaceholder": "Batch No Placeholder",
+      "configCode": "Config Code",
+      "configCodePlaceholder": "Config Code Placeholder",
+      "lotNo": "Lot No",
+      "lotNoPlaceholder": "Lot No Placeholder",
+      "serialNo": "Serial No",
+      "serialNo2": "Serial No2",
+      "serialNo2Placeholder": "Serial No2 Placeholder",
+      "serialNoPlaceholder": "Serial No Placeholder",
+      "sourceCellCode": "Source Cell Code",
+      "sourceCellCodePlaceholder": "Source Cell Code Placeholder",
+      "targetCellCode": "Target Cell Code",
+      "targetCellCodePlaceholder": "Target Cell Code Placeholder"
+    },
+    "inbound": {
+      "approval": {
+        "actions": "Actions",
+        "approve": "Approve",
+        "approveError": "Approve Error",
+        "approveSuccess": "Approve Success",
+        "completionDate": "Completion Date",
+        "customerCode": "Customer Code",
+        "customerName": "Customer Name",
+        "documentDate": "Document Date",
+        "documentNo": "Document No",
+        "error": "Error",
+        "id": "Id",
+        "noData": "No Data",
+        "reject": "Reject",
+        "rejectError": "Reject Error",
+        "rejectSuccess": "Reject Success",
+        "searchPlaceholder": "Search Placeholder",
+        "targetWarehouse": "Target Warehouse",
+        "title": "Title",
+        "viewDetails": "View Details"
+      },
+      "assignedList": {
+        "error": "Error",
+        "noData": "No Data",
+        "searchPlaceholder": "Search Placeholder",
+        "title": "Title"
+      },
+      "create": {
+        "error": "Error",
+        "success": "Success",
+        "title": "Title"
+      },
+      "edit": {
+        "error": "Error",
+        "subtitle": "Subtitle",
+        "success": "Success",
+        "title": "Title"
+      },
+      "list": {
+        "actions": "Actions",
+        "completed": "Completed",
+        "createdDate": "Created Date",
+        "customerCode": "Customer Code",
+        "customerName": "Customer Name",
+        "documentDate": "Document Date",
+        "documentNo": "Document No",
+        "documentType": "Document Type",
+        "error": "Error",
+        "inProgress": "In Progress",
+        "noData": "No Data",
+        "pendingApproval": "Pending Approval",
+        "searchPlaceholder": "Search Placeholder",
+        "status": "Status",
+        "targetWarehouse": "Target Warehouse",
+        "title": "Title",
+        "viewDetails": "View Details"
+      },
+      "process": {
+        "error": "Error",
+        "success": "Success",
+        "title": "Title"
+      }
+    },
+    "list": {
+      "completed": "Completed",
+      "createdDate": "Created Date",
+      "customerCode": "Customer Code",
+      "customerInfo": "Customer Info",
+      "customerName": "Customer Name",
+      "detailDescription": "Detail Description",
+      "detailTitle": "Detail Title",
+      "documentDate": "Document Date",
+      "documentInfo": "Document Info",
+      "documentNo": "Document No",
+      "documentType": "Document Type",
+      "inProgress": "In Progress",
+      "lines": "Lines",
+      "noData": "No Data",
+      "pendingApproval": "Pending Approval",
+      "serialNo": "Serial No",
+      "sourceWarehouse": "Source Warehouse",
+      "status": "Status",
+      "stockCode": "Stock Code",
+      "stockName": "Stock Name",
+      "targetWarehouse": "Target Warehouse",
+      "warehouseInfo": "Warehouse Info"
+    },
+    "outbound": {
+      "approval": {
+        "actions": "Actions",
+        "approve": "Approve",
+        "approveError": "Approve Error",
+        "approveSuccess": "Approve Success",
+        "completionDate": "Completion Date",
+        "customerCode": "Customer Code",
+        "customerName": "Customer Name",
+        "documentDate": "Document Date",
+        "documentNo": "Document No",
+        "error": "Error",
+        "id": "Id",
+        "noData": "No Data",
+        "reject": "Reject",
+        "rejectError": "Reject Error",
+        "rejectSuccess": "Reject Success",
+        "searchPlaceholder": "Search Placeholder",
+        "sourceWarehouse": "Source Warehouse",
+        "title": "Title",
+        "viewDetails": "View Details"
+      },
+      "assignedList": {
+        "error": "Error",
+        "noData": "No Data",
+        "searchPlaceholder": "Search Placeholder",
+        "title": "Title"
+      },
+      "create": {
+        "error": "Error",
+        "success": "Success",
+        "title": "Title"
+      },
+      "edit": {
+        "error": "Error",
+        "subtitle": "Subtitle",
+        "success": "Success",
+        "title": "Title"
+      },
+      "list": {
+        "actions": "Actions",
+        "completed": "Completed",
+        "createdDate": "Created Date",
+        "customerCode": "Customer Code",
+        "customerName": "Customer Name",
+        "documentDate": "Document Date",
+        "documentNo": "Document No",
+        "documentType": "Document Type",
+        "error": "Error",
+        "inProgress": "In Progress",
+        "noData": "No Data",
+        "pendingApproval": "Pending Approval",
+        "searchPlaceholder": "Search Placeholder",
+        "sourceWarehouse": "Source Warehouse",
+        "status": "Status",
+        "title": "Title",
+        "viewDetails": "View Details"
+      },
+      "process": {
+        "error": "Error",
+        "success": "Success",
+        "title": "Title"
+      }
+    },
+    "step1": {
+      "customer": "Customer",
+      "documentNo": "Document No",
+      "documentNoPlaceholder": "Document No Placeholder",
+      "entryWarehouse": "Entry Warehouse",
+      "noProject": "No Project",
+      "notes": "Notes",
+      "notesPlaceholder": "Notes Placeholder",
+      "operationType": "Operation Type",
+      "operationUsers": "Operation Users",
+      "projectCode": "Project Code",
+      "selectCustomer": "Select Customer",
+      "selectEntryWarehouse": "Select Entry Warehouse",
+      "selectOperationType": "Select Operation Type",
+      "selectOperationUsers": "Select Operation Users",
+      "selectProjectCode": "Select Project Code",
+      "selectSourceWarehouse": "Select Source Warehouse",
+      "sourceWarehouse": "Source Warehouse",
+      "transferDate": "Transfer Date"
+    },
+    "step2": {
+      "completed": "Completed",
+      "customerPrompt": "Customer Prompt",
+      "enterQuantityToSelect": "Enter Quantity To Select",
+      "itemsCount": "Items Count",
+      "noItemsFound": "No Items Found",
+      "noOrderSelected": "No Order Selected",
+      "noSelectedItems": "No Selected Items",
+      "orderContent": "Order Content",
+      "ordered": "Ordered",
+      "orders": "Orders",
+      "pending": "Pending",
+      "remaining": "Remaining",
+      "searchItems": "Search Items",
+      "searchStocks": "Search Stocks",
+      "selectCustomerFirst": "Select Customer First",
+      "selectOrderPrompt": "Select Order Prompt",
+      "selectedItems": "Selected Items",
+      "selectedItemsCount": "Selected Items Count",
+      "started": "Started",
+      "stocks": "Stocks",
+      "unit": "Unit"
+    },
+    "validation": {
+      "customerRequired": "Customer Required",
+      "documentNoRequired": "Document No Required",
+      "operationTypeRequired": "Operation Type Required",
+      "sourceWarehouseRequired": "Source Warehouse Required",
+      "targetWarehouseRequired": "Target Warehouse Required",
+      "transferDateRequired": "Transfer Date Required"
+    }
+  }
+}

@@ -55,7 +55,7 @@ export function Step2PackageForm({
   onNext,
   onSaveAndExit,
 }: Step2PackageFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const [packageDialogOpen, setPackageDialogOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<PPackageDto | null>(null);
 

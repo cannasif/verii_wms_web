@@ -27,7 +27,7 @@ import { type LocalDistributionLine } from './distribution/shared';
 const dist = 'kkd.operational.dist' as const;
 
 export function KkdDistributionPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const navigate = useNavigate();

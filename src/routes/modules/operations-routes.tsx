@@ -2,64 +2,64 @@ import type { RouteObject } from 'react-router-dom';
 import { lazyNamed, withRoute } from '../route-utils';
 
 const GoodsReceiptCreatePage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptCreatePage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptCreatePage',
 );
 const GoodsReceiptEditPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptEditPage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptEditPage',
 );
 const GoodsReceiptProcessPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptProcessPage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptProcessPage',
 );
 const GoodsReceiptListPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptListPage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptListPage',
 );
 const AssignedGrListPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/AssignedGrListPage'),
+  () => import('@/features/goods-receipt'),
   'AssignedGrListPage',
 );
 const GoodsReceiptCollectionPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptCollectionPage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptCollectionPage',
 );
 const GoodsReceiptApprovalPage = lazyNamed(
-  () => import('@/features/goods-receipt/components/GoodsReceiptApprovalPage'),
+  () => import('@/features/goods-receipt'),
   'GoodsReceiptApprovalPage',
 );
 
 const TransferCreatePage = lazyNamed(
-  () => import('@/features/transfer/components/TransferCreatePage'),
+  () => import('@/features/transfer'),
   'TransferCreatePage',
 );
 const TransferEditPage = lazyNamed(
-  () => import('@/features/transfer/components/TransferEditPage'),
+  () => import('@/features/transfer'),
   'TransferEditPage',
 );
 const TransferProcessPage = lazyNamed(
-  () => import('@/features/transfer/components/TransferProcessPage'),
+  () => import('@/features/transfer'),
   'TransferProcessPage',
 );
 const TransferListPage = lazyNamed(
-  () => import('@/features/transfer/components/TransferListPage'),
+  () => import('@/features/transfer'),
   'TransferListPage',
 );
 const AssignedTransferListPage = lazyNamed(
-  () => import('@/features/transfer/components/AssignedTransferListPage'),
+  () => import('@/features/transfer'),
   'AssignedTransferListPage',
 );
 const TransferCollectionPage = lazyNamed(
-  () => import('@/features/transfer/components/TransferCollectionPage'),
+  () => import('@/features/transfer'),
   'TransferCollectionPage',
 );
 const CollectedBarcodesPage = lazyNamed(
-  () => import('@/features/transfer/components/CollectedBarcodesPage'),
+  () => import('@/features/transfer'),
   'CollectedBarcodesPage',
 );
 const TransferApprovalPage = lazyNamed(
-  () => import('@/features/transfer/components/TransferApprovalPage'),
+  () => import('@/features/transfer'),
   'TransferApprovalPage',
 );
 const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'), 'TransferChainListPage');
@@ -81,80 +81,80 @@ const SubcontractingIssueApprovalPage = lazyNamed(() => import('@/features/subco
 const SubcontractingReceiptApprovalPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingReceiptApprovalPage');
 
 const WarehouseInboundCreatePage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseInboundCreatePage'),
+  () => import('@/features/warehouse'),
   'WarehouseInboundCreatePage',
 );
 const WarehouseInboundEditPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseInboundEditPage'),
+  () => import('@/features/warehouse'),
   'WarehouseInboundEditPage',
 );
 const WarehouseInboundProcessPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseInboundProcessPage'),
+  () => import('@/features/warehouse'),
   'WarehouseInboundProcessPage',
 );
 const WarehouseOutboundCreatePage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseOutboundCreatePage'),
+  () => import('@/features/warehouse'),
   'WarehouseOutboundCreatePage',
 );
 const WarehouseOutboundEditPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseOutboundEditPage'),
+  () => import('@/features/warehouse'),
   'WarehouseOutboundEditPage',
 );
 const WarehouseOutboundProcessPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseOutboundProcessPage'),
+  () => import('@/features/warehouse'),
   'WarehouseOutboundProcessPage',
 );
 const WarehouseInboundListPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseInboundListPage'),
+  () => import('@/features/warehouse'),
   'WarehouseInboundListPage',
 );
 const WarehouseOutboundListPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseOutboundListPage'),
+  () => import('@/features/warehouse'),
   'WarehouseOutboundListPage',
 );
 const AssignedWarehouseInboundListPage = lazyNamed(
-  () => import('@/features/warehouse/components/AssignedWarehouseInboundListPage'),
+  () => import('@/features/warehouse'),
   'AssignedWarehouseInboundListPage',
 );
 const AssignedWarehouseOutboundListPage = lazyNamed(
-  () => import('@/features/warehouse/components/AssignedWarehouseOutboundListPage'),
+  () => import('@/features/warehouse'),
   'AssignedWarehouseOutboundListPage',
 );
 const WarehouseInboundApprovalPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseInboundApprovalPage'),
+  () => import('@/features/warehouse'),
   'WarehouseInboundApprovalPage',
 );
 const WarehouseOutboundApprovalPage = lazyNamed(
-  () => import('@/features/warehouse/components/WarehouseOutboundApprovalPage'),
+  () => import('@/features/warehouse'),
   'WarehouseOutboundApprovalPage',
 );
 
 const ShipmentCreatePage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentCreatePage'),
+  () => import('@/features/shipment'),
   'ShipmentCreatePage',
 );
 const ShipmentEditPage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentEditPage'),
+  () => import('@/features/shipment'),
   'ShipmentEditPage',
 );
 const ShipmentProcessPage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentProcessPage'),
+  () => import('@/features/shipment'),
   'ShipmentProcessPage',
 );
 const ShipmentListPage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentListPage'),
+  () => import('@/features/shipment'),
   'ShipmentListPage',
 );
 const AssignedShipmentListPage = lazyNamed(
-  () => import('@/features/shipment/components/AssignedShipmentListPage'),
+  () => import('@/features/shipment'),
   'AssignedShipmentListPage',
 );
 const ShipmentCollectionPage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentCollectionPage'),
+  () => import('@/features/shipment'),
   'ShipmentCollectionPage',
 );
 const ShipmentApprovalPage = lazyNamed(
-  () => import('@/features/shipment/components/ShipmentApprovalPage'),
+  () => import('@/features/shipment'),
   'ShipmentApprovalPage',
 );
 
@@ -175,41 +175,35 @@ const InventoryCountCreatePage = lazyNamed(() => import('@/features/inventory-co
 const InventoryCountListPage = lazyNamed(() => import('@/features/inventory-count'), 'InventoryCountListPage');
 const InventoryCountProcessPage = lazyNamed(() => import('@/features/inventory-count'), 'InventoryCountProcessPage');
 
-const Warehouse3dPage = lazyNamed(
-  () => import('@/features/inventory/3d-warehouse/components/Warehouse3dPage'),
-  'Warehouse3dPage',
-);
-const OutsideWarehousePage = lazyNamed(
-  () => import('@/features/inventory/3d-warehouse/components/OutsideWarehousePage'),
-  'OutsideWarehousePage',
-);
+const Warehouse3dPage = lazyNamed(() => import('@/features/warehouse-3d'), 'Warehouse3dPage');
+const OutsideWarehousePage = lazyNamed(() => import('@/features/warehouse-3d'), 'OutsideWarehousePage');
 
 const PackageListPage = lazyNamed(
-  () => import('@/features/package/components/PackageListPage'),
+  () => import('@/features/package'),
   'PackageListPage',
 );
 const PackageCreatePage = lazyNamed(
-  () => import('@/features/package/components/PackageCreatePage'),
+  () => import('@/features/package'),
   'PackageCreatePage',
 );
 const PackageEditPage = lazyNamed(
-  () => import('@/features/package/components/PackageEditPage'),
+  () => import('@/features/package'),
   'PackageEditPage',
 );
 const PackageDetailPage = lazyNamed(
-  () => import('@/features/package/components/PackageDetailPage'),
+  () => import('@/features/package'),
   'PackageDetailPage',
 );
 const PackagePackageDetailPage = lazyNamed(
-  () => import('@/features/package/components/PackagePackageDetailPage'),
+  () => import('@/features/package'),
   'PackagePackageDetailPage',
 );
 const PackagingSettingsPage = lazyNamed(
-  () => import('@/features/package/components/PackagingSettingsPage'),
+  () => import('@/features/package'),
   'PackagingSettingsPage',
 );
 const PackagePackingStationPage = lazyNamed(
-  () => import('@/features/package/components/PackagePackingStationPage'),
+  () => import('@/features/package'),
   'PackagePackingStationPage',
 );
 
@@ -269,16 +263,16 @@ export const operationsChildRoutes: RouteObject[] = [
   {
     path: 'kkd',
     children: [
-      { index: true, element: withRoute(KkdOverviewPage, { routeName: 'kkd-overview' }) },
-      { path: 'initial-order', element: withRoute(KkdInitialOrderPage, { routeName: 'kkd-initial-order' }) },
-      { path: 'distribution', element: withRoute(KkdDistributionPage, { routeName: 'kkd-distribution' }) },
-      { path: 'distribution-list', element: withRoute(KkdDistributionListPage, { routeName: 'kkd-distribution-list' }) },
-      { path: 'remaining-entitlements', element: withRoute(KkdRemainingEntitlementsPage, { routeName: 'kkd-remaining-entitlements' }) },
-      { path: 'entitlement-check', element: withRoute(KkdEntitlementCheckPage, { routeName: 'kkd-entitlement-check' }) },
-      { path: 'validation-logs', element: withRoute(KkdValidationLogPage, { routeName: 'kkd-validation-logs' }) },
-      { path: 'reports/departments', element: withRoute(KkdDepartmentReportPage, { routeName: 'kkd-department-report' }) },
-      { path: 'reports/roles', element: withRoute(KkdRoleReportPage, { routeName: 'kkd-role-report' }) },
-      { path: 'reports/groups', element: withRoute(KkdGroupReportPage, { routeName: 'kkd-group-report' }) },
+      { index: true, element: withRoute(KkdOverviewPage, { routeName: 'kkd-overview', namespaces: ['kkd', 'common'] }) },
+      { path: 'initial-order', element: withRoute(KkdInitialOrderPage, { routeName: 'kkd-initial-order', namespaces: ['kkd', 'common'] }) },
+      { path: 'distribution', element: withRoute(KkdDistributionPage, { routeName: 'kkd-distribution', namespaces: ['kkd', 'common'] }) },
+      { path: 'distribution-list', element: withRoute(KkdDistributionListPage, { routeName: 'kkd-distribution-list', namespaces: ['kkd', 'common'] }) },
+      { path: 'remaining-entitlements', element: withRoute(KkdRemainingEntitlementsPage, { routeName: 'kkd-remaining-entitlements', namespaces: ['kkd', 'common'] }) },
+      { path: 'entitlement-check', element: withRoute(KkdEntitlementCheckPage, { routeName: 'kkd-entitlement-check', namespaces: ['kkd', 'common'] }) },
+      { path: 'validation-logs', element: withRoute(KkdValidationLogPage, { routeName: 'kkd-validation-logs', namespaces: ['kkd', 'common'] }) },
+      { path: 'reports/departments', element: withRoute(KkdDepartmentReportPage, { routeName: 'kkd-department-report', namespaces: ['kkd', 'common'] }) },
+      { path: 'reports/roles', element: withRoute(KkdRoleReportPage, { routeName: 'kkd-role-report', namespaces: ['kkd', 'common'] }) },
+      { path: 'reports/groups', element: withRoute(KkdGroupReportPage, { routeName: 'kkd-group-report', namespaces: ['kkd', 'common'] }) },
     ],
   },
   {
@@ -343,23 +337,23 @@ export const operationsChildRoutes: RouteObject[] = [
       {
         path: 'inbound',
         children: [
-          { path: 'create', element: withRoute(WarehouseInboundCreatePage, { routeName: 'warehouse-inbound-create' }) },
-          { path: 'edit/:id', element: withRoute(WarehouseInboundEditPage, { routeName: 'warehouse-inbound-edit' }) },
-          { path: 'process', element: withRoute(WarehouseInboundProcessPage, { routeName: 'warehouse-inbound-process' }) },
-          { path: 'list', element: withRoute(WarehouseInboundListPage, { routeName: 'warehouse-inbound-list' }) },
-          { path: 'assigned', element: withRoute(AssignedWarehouseInboundListPage, { routeName: 'warehouse-inbound-assigned' }) },
-          { path: 'approval', element: withRoute(WarehouseInboundApprovalPage, { routeName: 'warehouse-inbound-approval' }) },
+          { path: 'create', element: withRoute(WarehouseInboundCreatePage, { routeName: 'warehouse-inbound-create', namespaces: ['warehouse', 'common'] }) },
+          { path: 'edit/:id', element: withRoute(WarehouseInboundEditPage, { routeName: 'warehouse-inbound-edit', namespaces: ['warehouse', 'common'] }) },
+          { path: 'process', element: withRoute(WarehouseInboundProcessPage, { routeName: 'warehouse-inbound-process', namespaces: ['warehouse', 'common'] }) },
+          { path: 'list', element: withRoute(WarehouseInboundListPage, { routeName: 'warehouse-inbound-list', namespaces: ['warehouse', 'common'] }) },
+          { path: 'assigned', element: withRoute(AssignedWarehouseInboundListPage, { routeName: 'warehouse-inbound-assigned', namespaces: ['warehouse', 'common'] }) },
+          { path: 'approval', element: withRoute(WarehouseInboundApprovalPage, { routeName: 'warehouse-inbound-approval', namespaces: ['warehouse', 'common'] }) },
         ],
       },
       {
         path: 'outbound',
         children: [
-          { path: 'create', element: withRoute(WarehouseOutboundCreatePage, { routeName: 'warehouse-outbound-create' }) },
-          { path: 'edit/:id', element: withRoute(WarehouseOutboundEditPage, { routeName: 'warehouse-outbound-edit' }) },
-          { path: 'process', element: withRoute(WarehouseOutboundProcessPage, { routeName: 'warehouse-outbound-process' }) },
-          { path: 'list', element: withRoute(WarehouseOutboundListPage, { routeName: 'warehouse-outbound-list' }) },
-          { path: 'assigned', element: withRoute(AssignedWarehouseOutboundListPage, { routeName: 'warehouse-outbound-assigned' }) },
-          { path: 'approval', element: withRoute(WarehouseOutboundApprovalPage, { routeName: 'warehouse-outbound-approval' }) },
+          { path: 'create', element: withRoute(WarehouseOutboundCreatePage, { routeName: 'warehouse-outbound-create', namespaces: ['warehouse', 'common'] }) },
+          { path: 'edit/:id', element: withRoute(WarehouseOutboundEditPage, { routeName: 'warehouse-outbound-edit', namespaces: ['warehouse', 'common'] }) },
+          { path: 'process', element: withRoute(WarehouseOutboundProcessPage, { routeName: 'warehouse-outbound-process', namespaces: ['warehouse', 'common'] }) },
+          { path: 'list', element: withRoute(WarehouseOutboundListPage, { routeName: 'warehouse-outbound-list', namespaces: ['warehouse', 'common'] }) },
+          { path: 'assigned', element: withRoute(AssignedWarehouseOutboundListPage, { routeName: 'warehouse-outbound-assigned', namespaces: ['warehouse', 'common'] }) },
+          { path: 'approval', element: withRoute(WarehouseOutboundApprovalPage, { routeName: 'warehouse-outbound-approval', namespaces: ['warehouse', 'common'] }) },
         ],
       },
     ],
@@ -379,13 +373,16 @@ export const operationsChildRoutes: RouteObject[] = [
   {
     path: 'service-allocation',
     children: [
-      { path: 'allocation-queue', element: withRoute(AllocationQueuePage, { routeName: 'service-allocation-queue' }) },
-      { path: 'cases', element: withRoute(ServiceCaseListPage, { routeName: 'service-allocation-cases' }) },
-      { path: 'cases/new', element: withRoute(ServiceCaseFormPage, { routeName: 'service-allocation-case-create' }) },
-      { path: 'cases/:id', element: withRoute(ServiceCaseTimelinePage, { routeName: 'service-allocation-case-timeline' }) },
-      { path: 'cases/:id/edit', element: withRoute(ServiceCaseFormPage, { routeName: 'service-allocation-case-edit' }) },
-      { path: 'document-links', element: withRoute(DocumentLinksPage, { routeName: 'service-allocation-document-links' }) },
-      { path: 'reports', element: withRoute(ServiceReportsPage, { routeName: 'service-allocation-reports' }) },
+      { path: 'allocation-queue', element: withRoute(AllocationQueuePage, { routeName: 'service-allocation-queue', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'cases', element: withRoute(ServiceCaseListPage, { routeName: 'service-allocation-cases', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'cases/new', element: withRoute(ServiceCaseFormPage, { routeName: 'service-allocation-case-create', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'cases/:id', element: withRoute(ServiceCaseTimelinePage, { routeName: 'service-allocation-case-timeline', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'cases/:id/edit', element: withRoute(ServiceCaseFormPage, { routeName: 'service-allocation-case-edit', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'document-links', element: withRoute(DocumentLinksPage, { routeName: 'service-allocation-document-links', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'reports', element: withRoute(ServiceReportsPage, { routeName: 'service-allocation-reports', namespaces: ['service-allocation', 'common'] }) },
+      { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/open', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/completed', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-completed', namespaces: ['bilginoglu-hakedis', 'common'] }) },
     ],
   },
   {

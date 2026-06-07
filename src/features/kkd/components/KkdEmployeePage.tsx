@@ -22,7 +22,7 @@ function EmployeeForm({
   formState: CreateKkdEmployeeDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEmployeeDto>>;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['kkd', 'common']);
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
@@ -38,13 +38,13 @@ function EmployeeForm({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2 md:col-span-2">
-        {labelWithHelp('Sistem Kullanıcısı *', 'help.kkd.employee.user')}
+        {labelWithHelp(t('kkd.employeeForm.systemUser'), 'help.kkd.employee.user')}
         <PagedLookupDialog<UserDto>
           open={userDialogOpen}
           onOpenChange={setUserDialogOpen}
-          title="Kullanıcı Seç"
+          title={t('kkd.employeeForm.selectUser')}
           value={formState.userId ? `${formState.firstName} ${formState.lastName}`.trim() : null}
-          placeholder="Kullanıcı seçiniz"
+          placeholder={t('kkd.employeeForm.userPlaceholder')}
           queryKey={['kkd', 'employee-form', 'users']}
           fetchPage={({ pageNumber, pageSize, search }) =>
             userApi.getList({
@@ -66,13 +66,13 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Cari *', 'help.kkd.employee.customer')}
+        {labelWithHelp(t('kkd.employeeForm.customer'), 'help.kkd.employee.customer')}
         <PagedLookupDialog<CustomerLookup>
           open={customerDialogOpen}
           onOpenChange={setCustomerDialogOpen}
-          title="Cari Seç"
+          title={t('kkd.employeeForm.selectCustomer')}
           value={formState.customerCode ? `${formState.customerCode}` : null}
-          placeholder="Cari seçiniz"
+          placeholder={t('kkd.employeeForm.customerPlaceholder')}
           queryKey={['kkd', 'employee-form', 'customers']}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
@@ -89,7 +89,7 @@ function EmployeeForm({
 
       <div className="space-y-2">
         <div className="flex items-center">
-          <Label htmlFor="employeeCode">Personel Kodu *</Label>
+        <Label htmlFor="employeeCode">{t('kkd.employeeForm.employeeCode')}</Label>
           <FieldHelpTooltip text={t('help.kkd.employee.employeeCode')} />
         </div>
         <Input
@@ -100,7 +100,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="firstName">Ad</Label>
+        <Label htmlFor="firstName">{t('kkd.employeeForm.firstName')}</Label>
         <Input
           id="firstName"
           value={formState.firstName}
@@ -109,7 +109,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="lastName">Soyad</Label>
+        <Label htmlFor="lastName">{t('kkd.employeeForm.lastName')}</Label>
         <Input
           id="lastName"
           value={formState.lastName}
@@ -118,13 +118,13 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Bölüm', 'help.kkd.employee.department')}
+        {labelWithHelp(t('kkd.employeeForm.department'), 'help.kkd.employee.department')}
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
-          title="Bölüm Seç"
+          title={t('kkd.employeeForm.selectDepartment')}
           value={formState.departmentCode ? `${formState.departmentCode} - ${formState.departmentName ?? ''}` : null}
-          placeholder="Bölüm seçiniz"
+          placeholder={t('kkd.employeeForm.departmentPlaceholder')}
           queryKey={['kkd', 'employee-form', 'departments']}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
             kkdApi.getDepartments({ pageNumber, pageSize, search }, { signal })
@@ -144,7 +144,7 @@ function EmployeeForm({
       </div>
 
       <div className="space-y-2">
-        {labelWithHelp('Görev', 'help.kkd.employee.role')}
+        {labelWithHelp(t('kkd.employeeForm.role'), 'help.kkd.employee.role')}
         <PagedLookupDialog<KkdEmployeeRoleDto>
           open={roleDialogOpen}
           onOpenChange={(open) => {
@@ -154,9 +154,9 @@ function EmployeeForm({
             }
             setRoleDialogOpen(open);
           }}
-          title="Görev Seç"
+          title={formState.departmentId ? t('kkd.employeeForm.selectRole') : t('kkd.employeeForm.selectRoleDisabled')}
           value={formState.roleCode ? `${formState.roleCode} - ${formState.roleName ?? ''}` : null}
-          placeholder={formState.departmentId ? 'Görev seçiniz' : 'Önce bölüm seçiniz'}
+          placeholder={formState.departmentId ? t('kkd.employeeForm.selectRolePlaceholder') : t('kkd.employeeForm.selectRoleDisabled')}
           disabled={!formState.departmentId}
           queryKey={['kkd', 'employee-form', 'roles', formState.departmentId ?? 0]}
           fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -182,7 +182,7 @@ function EmployeeForm({
 
       <div className="space-y-2 md:col-span-2">
         <div className="flex items-center">
-          <Label htmlFor="employmentStartDate">İşe Giriş Tarihi *</Label>
+          <Label htmlFor="employmentStartDate">{t('kkd.employeeForm.employmentStartDate')}</Label>
           <FieldHelpTooltip text={t('help.kkd.employee.employmentStartDate')} />
         </div>
         <Input
@@ -195,14 +195,14 @@ function EmployeeForm({
 
       <div className="space-y-2 md:col-span-2">
         <div className="flex items-center">
-          <Label htmlFor="qrCode">QR Kod *</Label>
+          <Label htmlFor="qrCode">{t('kkd.employeeForm.qrCode')}</Label>
           <FieldHelpTooltip text={t('help.kkd.employee.qrCode')} />
         </div>
         <Input
           id="qrCode"
           value={formState.qrCode}
           onChange={(event) => setFormState((prev) => ({ ...prev, qrCode: event.target.value }))}
-          placeholder="Çalışana ait QR referansı"
+          placeholder={t('kkd.employeeForm.qrPlaceholder')}
         />
       </div>
     </div>
@@ -210,7 +210,7 @@ function EmployeeForm({
 }
 
 export function KkdEmployeePage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'employeeCode', label: t('kkd.columns.employeeCode') },
     { key: 'firstName', label: t('kkd.columns.firstName') },
@@ -224,21 +224,21 @@ export function KkdEmployeePage(): ReactElement {
   ], [t]);
 
   const fields: readonly KkdCrudField<CreateKkdEmployeeDto>[] = [
-    { key: 'userId', label: 'Sistem Kullanıcısı', type: 'number', required: true },
-    { key: 'customerId', label: 'Cari', type: 'number', required: true },
-    { key: 'customerCode', label: 'Cari Kodu', type: 'text', required: true },
-    { key: 'employeeCode', label: 'Personel Kodu', type: 'text', required: true },
-    { key: 'firstName', label: 'Ad', type: 'text' },
-    { key: 'lastName', label: 'Soyad', type: 'text' },
-    { key: 'departmentId', label: 'Bölüm', type: 'number' },
-    { key: 'departmentCode', label: 'Bölüm Kodu', type: 'text' },
-    { key: 'departmentName', label: 'Bölüm Adı', type: 'text' },
-    { key: 'roleId', label: 'Görev', type: 'number' },
-    { key: 'roleCode', label: 'Görev Kodu', type: 'text' },
-    { key: 'roleName', label: 'Görev Adı', type: 'text' },
-    { key: 'employmentStartDate', label: 'İşe Giriş Tarihi', type: 'text', required: true },
-    { key: 'qrCode', label: 'QR Kod', type: 'text', required: true },
-    { key: 'isActive', label: 'Aktif', type: 'boolean' },
+    { key: 'userId', label: t('kkd.employeeForm.systemUserId'), type: 'number', required: true },
+    { key: 'customerId', label: t('kkd.employeeForm.customerId'), type: 'number', required: true },
+    { key: 'customerCode', label: t('kkd.employeeForm.customerCode'), type: 'text', required: true },
+    { key: 'employeeCode', label: t('kkd.employeeForm.employeeCode'), type: 'text', required: true },
+    { key: 'firstName', label: t('kkd.columns.firstName'), type: 'text' },
+    { key: 'lastName', label: t('kkd.columns.lastName'), type: 'text' },
+    { key: 'departmentId', label: t('kkd.employeeForm.department'), type: 'number' },
+    { key: 'departmentCode', label: t('kkd.columns.departmentCode'), type: 'text' },
+    { key: 'departmentName', label: t('kkd.columns.departmentName'), type: 'text' },
+    { key: 'roleId', label: t('kkd.employeeForm.role'), type: 'number' },
+    { key: 'roleCode', label: t('kkd.columns.roleCode'), type: 'text' },
+    { key: 'roleName', label: t('kkd.columns.roleName'), type: 'text' },
+    { key: 'employmentStartDate', label: t('kkd.employeeForm.employmentStartDate'), type: 'text', required: true },
+    { key: 'qrCode', label: t('kkd.employeeForm.qrCode'), type: 'text', required: true },
+    { key: 'isActive', label: t('common.active'), type: 'boolean' },
   ];
 
   return (

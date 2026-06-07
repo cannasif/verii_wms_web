@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
@@ -59,7 +59,7 @@ function KkdEntitlementMatrixForm({
   formState: CreateKkdEntitlementMatrixRowDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEntitlementMatrixRowDto>>;
 }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['kkd', 'common']);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const stockGroupsQuery = useQuery({
@@ -315,7 +315,7 @@ function KkdEntitlementMatrixForm({
 }
 
 export function KkdEntitlementMatrixPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const matrixHelp = (key: string): string => t(`help.kkd.matrix.${key}`);
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'departmentName', label: t('kkd.columns.department'), headerHelpText: matrixHelp('department') },

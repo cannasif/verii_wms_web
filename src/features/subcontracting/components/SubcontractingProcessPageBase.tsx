@@ -12,7 +12,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import {
   createSubcontractingFormSchema,
   type SelectedSubcontractingStockItem,

@@ -59,7 +59,7 @@ export function KkdDistributionScanSection({
   addLineDisabledReason,
   onAddLine,
 }: KkdDistributionScanSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
 
   return (
     <Card>

@@ -31,7 +31,7 @@ export function WarehouseBulkItemRow({
   onToggleItem,
   onRemoveItem,
 }: WarehouseBulkItemRowProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
   const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);

@@ -87,7 +87,7 @@ function formatDateTime(dateString: string | null): string {
 }
 
 export function AssignedTransferListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.transfer');
@@ -127,7 +127,7 @@ export function AssignedTransferListPage(): ReactElement {
     mutationFn: (id: number) => transferApi.deleteTransferHeader(id),
     onSuccess: async (response) => {
       if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -166,7 +166,6 @@ export function AssignedTransferListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   const visibleColumnKeys = useMemo(

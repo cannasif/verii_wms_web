@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export const useOrdersByCustomer = (customerCode: string | null) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
 
   const query = useQuery({
     queryKey: ['orders', customerCode],

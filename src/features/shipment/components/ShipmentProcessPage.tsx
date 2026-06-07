@@ -14,7 +14,7 @@ import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import {
   createShipmentFormSchema,
   type ShipmentFormData,
@@ -24,7 +24,7 @@ import { shipmentApi } from '../api/shipment-api';
 import { Step1ShipmentBasicInfo } from './steps/Step1ShipmentBasicInfo';
 
 export function ShipmentProcessPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();

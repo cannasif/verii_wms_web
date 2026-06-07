@@ -52,7 +52,7 @@ export function Step3LineForm({
   onNext,
   onSaveAndExit,
 }: Step3LineFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [selectedPackageId, setSelectedPackageId] = useState<number | undefined>(undefined);
   const [barcodeInput, setBarcodeInput] = useState('');

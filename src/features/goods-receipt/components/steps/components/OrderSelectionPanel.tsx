@@ -21,7 +21,7 @@ export function OrderSelectionPanel({
     onSelectOrder,
     isLoading,
 }: OrderSelectionPanelProps): ReactElement {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['goods-receipt', 'common']);
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredOrders = useMemo(() => {

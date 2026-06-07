@@ -17,7 +17,7 @@ function RoleForm({
   formState: CreateKkdEmployeeRoleDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEmployeeRoleDto>>;
 }): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
 
   return (
@@ -64,7 +64,7 @@ function RoleForm({
 }
 
 export function KkdEmployeeRolePage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
     { key: 'departmentName', label: t('kkd.columns.department') },

@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { SearchableMultiSelect } from './components/SearchableMultiSelect';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { Customer, Project, Warehouse } from '@/features/shared';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { TransferFormData } from '../../types/transfer';
 
@@ -22,7 +22,7 @@ interface Step1TransferBasicInfoProps {
 }
 
 export function Step1TransferBasicInfo({ isFreeTransfer = false, hideDocumentSeries = false }: Step1TransferBasicInfoProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const form = useFormContext<TransferFormData>();
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
   const [sourceWarehouseLookupOpen, setSourceWarehouseLookupOpen] = useState(false);

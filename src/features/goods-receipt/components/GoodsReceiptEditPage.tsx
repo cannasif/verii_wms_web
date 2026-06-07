@@ -45,7 +45,7 @@ function toFormValues(header: GrHeader): GoodsReceiptFormData {
 }
 
 export function GoodsReceiptEditPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();

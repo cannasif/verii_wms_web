@@ -22,7 +22,7 @@ export function KkdDistributionOpenOrdersSection({
   resolvedStock,
   dateLocale,
 }: KkdDistributionOpenOrdersSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
 
   return (
     <Card>

@@ -17,7 +17,7 @@ import { ServiceCaseInitialLineSection } from './service-case-form/ServiceCaseIn
 import { type ServiceCaseFormValues, toDateInput } from './service-case-form/shared';
 
 export function ServiceCaseFormPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['service-allocation', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams();
@@ -68,8 +68,8 @@ export function ServiceCaseFormPage(): ReactElement {
   useEffect(() => {
     setPageTitle(
       isEdit
-        ? t('serviceAllocation.form.editTitle', { defaultValue: 'Missing translation' })
-        : t('serviceAllocation.form.createTitle', { defaultValue: 'Missing translation' }),
+        ? t('serviceAllocation.form.editTitle')
+        : t('serviceAllocation.form.createTitle'),
     );
     return () => setPageTitle(null);
   }, [isEdit, setPageTitle, t]);
@@ -195,13 +195,13 @@ export function ServiceCaseFormPage(): ReactElement {
       queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
       toast.success(
         isEdit
-          ? t('serviceAllocation.form.updateSuccess', { defaultValue: 'Missing translation' })
-          : t('serviceAllocation.form.createSuccess', { defaultValue: 'Missing translation' }),
+          ? t('serviceAllocation.form.updateSuccess')
+          : t('serviceAllocation.form.createSuccess'),
       );
       navigate(`/service-allocation/cases/${serviceCase.id}`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('serviceAllocation.form.saveError', { defaultValue: 'Missing translation' }));
+      toast.error(error.message || t('serviceAllocation.form.saveError'));
     },
   });
 
@@ -215,7 +215,7 @@ export function ServiceCaseFormPage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => navigate(isEdit ? `/service-allocation/cases/${parsedId}` : '/service-allocation/cases')}>
-          {t('common.back', { defaultValue: 'Missing translation' })}
+          {t('common.back')}
         </Button>
       </div>
 
@@ -258,8 +258,8 @@ export function ServiceCaseFormPage(): ReactElement {
             <div className="flex justify-end">
               <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
                 {saveMutation.isPending
-                  ? t('common.loading', { defaultValue: 'Missing translation' })
-                  : t('common.save', { defaultValue: 'Missing translation' })}
+                  ? t('common.loading')
+                  : t('common.save')}
               </Button>
             </div>
           </fieldset>

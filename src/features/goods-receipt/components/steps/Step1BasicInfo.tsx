@@ -18,7 +18,7 @@ import { useProjects } from '../../hooks/useProjects';
 import { SearchableSelect } from './components/SearchableSelect';
 
 export function Step1BasicInfo(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const form = useFormContext<GoodsReceiptFormData>();
   const { control, watch } = form;
   const { data: projects, isLoading: projectsLoading, isError: projectsError } = useProjects();

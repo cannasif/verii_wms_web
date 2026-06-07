@@ -64,7 +64,7 @@ function formatDateTime(value: string | null): string {
 }
 
 export function AssignedWarehouseInboundListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.inbound');
   const pageKey = 'warehouse-inbound-assigned-list';
@@ -103,14 +103,14 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
     mutationFn: (id: number) => warehouseApi.deleteInboundHeader(id),
     onSuccess: async (response) => {
       if (!response.success) {
-        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+        throw new Error(response.message || t('common.deleteError'));
       }
-      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      toast.error(error.message || t('common.deleteError'));
     },
   });
 
@@ -141,7 +141,7 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
   ), [data?.data, t]);
 
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
   const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedWarehouseInboundColumnKey[], [orderedVisibleColumns]);
   const renderSortIcon = (columnKey: AssignedWarehouseInboundColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 

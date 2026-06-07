@@ -26,7 +26,7 @@ export function Step2WarehouseStockSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2WarehouseStockSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { watch } = useFormContext<WarehouseFormData>();
   const customerCode = watch('customerId');
   const sourceWarehouseCode = watch('sourceWarehouse');

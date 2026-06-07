@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { cn } from '@/lib/utils';
 import type { SelectedTransferStockItem } from '../../../types/transfer';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import type { YapKodLookup } from '@/features/shared/api/lookup-types';
 
 interface TransferStockItemRowProps {
@@ -27,7 +27,7 @@ export function TransferStockItemRow({
   onToggleItem,
   onRemoveItem,
 }: TransferStockItemRowProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const [isExpanded, setIsExpanded] = useState(false);
   const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
   const itemId = selectedItem?.id || `stock-${product.stokKodu}`;

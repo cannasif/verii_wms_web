@@ -26,7 +26,7 @@ export function ShipmentItemRow({
   onToggleItem,
   onRemoveItem,
 }: ShipmentItemRowProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const [value, setValue] = useState(selectedItem?.transferQuantity?.toString() || '');
   const [isExpanded, setIsExpanded] = useState(false);
   const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
@@ -183,7 +183,7 @@ export function ShipmentItemRow({
                     placeholder={
                       selectedItem?.stockId
                         ? t('shipment.details.configCodePlaceholder')
-                        : t('common.selectStockFirst', { defaultValue: 'Missing translation' })
+                        : t('common.selectStockFirst')
                     }
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}
@@ -216,7 +216,7 @@ export function ShipmentItemRow({
               <p className="text-xs text-muted-foreground">
                 {selectedItem?.stockId
                   ? (selectedItem?.configCode || t('shipment.details.configCodePlaceholder'))
-                  : t('common.selectStockFirst', { defaultValue: 'Missing translation' })}
+                  : t('common.selectStockFirst')}
               </p>
             </div>
           </div>

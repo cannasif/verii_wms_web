@@ -46,7 +46,7 @@ export function KkdDistributionEmployeeSection({
   submittedHeader,
   localizeStatusLabel,
 }: KkdDistributionEmployeeSectionProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['kkd', 'common']);
 
   return (
     <Card>

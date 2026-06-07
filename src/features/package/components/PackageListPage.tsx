@@ -101,7 +101,7 @@ function mapSortBy(value: PackageColumnKey): string {
 }
 
 export function PackageListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.package');
@@ -221,7 +221,6 @@ export function PackageListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   return (

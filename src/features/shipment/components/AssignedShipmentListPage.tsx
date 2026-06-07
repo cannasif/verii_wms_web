@@ -89,7 +89,7 @@ function formatDateTime(dateString: string | null): string {
 }
 
 export function AssignedShipmentListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
@@ -133,7 +133,7 @@ export function AssignedShipmentListPage(): ReactElement {
     mutationFn: (id: number) => shipmentApi.deleteShipmentHeader(id),
     onSuccess: async (response) => {
       if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -179,7 +179,6 @@ export function AssignedShipmentListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   const visibleColumnKeys = useMemo(

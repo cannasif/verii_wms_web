@@ -23,7 +23,7 @@ import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
 import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 
 export function WarehouseOutboundProcessPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();

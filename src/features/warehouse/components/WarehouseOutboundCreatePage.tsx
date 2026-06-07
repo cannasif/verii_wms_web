@@ -26,7 +26,7 @@ import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../types/wa
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function WarehouseOutboundCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
@@ -155,12 +155,12 @@ export function WarehouseOutboundCreatePage(): ReactElement {
     <div className="space-y-6 crm-page">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('warehouse.create.mode.order', { defaultValue: 'Missing translation' }) : t('warehouse.create.mode.stock', { defaultValue: 'Missing translation' })}
+          {createMode === 'order' ? t('warehouse.create.mode.order') : t('warehouse.create.mode.stock')}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('warehouse.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('warehouse.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('warehouse.create.mode.order')}</TabsTrigger>
+            <TabsTrigger value="stock">{t('warehouse.create.mode.stock')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

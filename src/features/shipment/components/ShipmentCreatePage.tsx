@@ -22,12 +22,12 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1ShipmentBasicInfo } from './steps/Step1ShipmentBasicInfo';
 import { Step2ShipmentOrderSelection } from './steps/Step2ShipmentOrderSelection';
 import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import type { SelectedShipmentStockItem } from '../types/shipment';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function ShipmentCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
@@ -159,17 +159,17 @@ export function ShipmentCreatePage(): ReactElement {
   const steps = [
     { label: t('shipment.create.steps.basicInfo') },
     {
-      label: createMode === 'order' ? t('shipment.create.steps.orderSelection') : t('shipment.process.steps.stockSelection', { defaultValue: 'Missing translation' }),
+      label: createMode === 'order' ? t('shipment.create.steps.orderSelection') : t('shipment.process.steps.stockSelection'),
     },
   ];
 
   const stockLabels = {
-    stocks: t('shipment.process.stocks', { defaultValue: 'Missing translation' }),
-    selectedItems: t('shipment.process.selectedItems', { defaultValue: 'Missing translation' }),
-    selectedItemsCount: t('shipment.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
-    searchStocks: t('shipment.process.searchStocks', { defaultValue: 'Missing translation' }),
-    searchItems: t('shipment.process.searchItems', { defaultValue: 'Missing translation' }),
-    noSelectedItems: t('shipment.process.noSelectedItems', { defaultValue: 'Missing translation' }),
+    stocks: t('shipment.process.stocks'),
+    selectedItems: t('shipment.process.selectedItems'),
+    selectedItemsCount: t('shipment.process.selectedItemsCount'),
+    searchStocks: t('shipment.process.searchStocks'),
+    searchItems: t('shipment.process.searchItems'),
+    noSelectedItems: t('shipment.process.noSelectedItems'),
     unit: t('shipment.step2.unit'),
     serialNo: t('shipment.details.serialNo'),
     serialNoPlaceholder: t('shipment.details.serialNoPlaceholder'),
@@ -205,12 +205,12 @@ export function ShipmentCreatePage(): ReactElement {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('shipment.create.mode.order', { defaultValue: 'Missing translation' }) : t('shipment.create.mode.stock', { defaultValue: 'Missing translation' })}
+          {createMode === 'order' ? t('shipment.create.mode.order') : t('shipment.create.mode.stock')}
         </Badge>
         <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
           <TabsList>
-            <TabsTrigger value="order">{t('shipment.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('shipment.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
+            <TabsTrigger value="order">{t('shipment.create.mode.order')}</TabsTrigger>
+            <TabsTrigger value="stock">{t('shipment.create.mode.stock')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -270,4 +270,3 @@ export function ShipmentCreatePage(): ReactElement {
     </div>
   );
 }
-

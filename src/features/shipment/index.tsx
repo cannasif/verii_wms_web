@@ -1,4 +1,5 @@
 export { ShipmentCreatePage } from './components/ShipmentCreatePage';
+export { ShipmentEditPage } from './components/ShipmentEditPage';
 export { ShipmentProcessPage } from './components/ShipmentProcessPage';
 export { ShipmentListPage } from './components/ShipmentListPage';
 export { AssignedShipmentListPage } from './components/AssignedShipmentListPage';

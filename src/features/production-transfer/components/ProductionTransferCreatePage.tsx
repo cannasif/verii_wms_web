@@ -27,7 +27,7 @@ import {
   type ProductionTransferDraft,
 } from '../types/production-transfer';
 import { ProductionTransferSuggestPanel } from './ProductionTransferSuggestPanel';
-import type { Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { Warehouse } from '@/features/shared';
 
 const transferPurposes = ['MaterialSupply', 'SemiFinishedMove', 'FinishedGoodsPutaway', 'ScrapMove', 'ReturnToStock'] as const;
 const lineRoles = ['ConsumptionSupply', 'SemiFinishedMove', 'OutputMove'] as const;

@@ -31,7 +31,7 @@ export function OrderDetailsDialog({
   onToggleItem,
   onUpdateQuantity,
 }: OrderDetailsDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const { data: orderItems, isLoading } = useQuery({
     queryKey: ['orderItems', customerCode, orderId],
     queryFn: ({ signal }) => goodsReceiptApi.getOrderItems(customerCode!, orderId!, { signal }),

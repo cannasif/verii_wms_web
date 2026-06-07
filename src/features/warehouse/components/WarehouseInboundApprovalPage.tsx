@@ -43,7 +43,7 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function WarehouseInboundApprovalPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['warehouse', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.inbound');
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
@@ -111,7 +111,6 @@ export function WarehouseInboundApprovalPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   const handleApproval = async (id: number, approved: boolean): Promise<void> => {

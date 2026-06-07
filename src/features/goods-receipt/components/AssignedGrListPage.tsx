@@ -81,7 +81,7 @@ function formatDateTime(dateString: string | null): string {
 }
 
 export function AssignedGrListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
@@ -120,7 +120,7 @@ export function AssignedGrListPage(): ReactElement {
     mutationFn: (id: number) => goodsReceiptApi.deleteGoodsReceiptHeader(id),
     onSuccess: async (response) => {
       if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
@@ -162,7 +162,6 @@ export function AssignedGrListPage(): ReactElement {
     current: range.from,
     total: range.to,
     totalCount: range.total,
-    defaultValue: `${range.from}-${range.to} / ${range.total}`,
   });
 
   const visibleColumnKeys = useMemo(

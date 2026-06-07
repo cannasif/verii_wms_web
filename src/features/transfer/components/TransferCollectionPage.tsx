@@ -38,7 +38,7 @@ import type { StokBarcodeDto } from '../types/transfer';
 export function TransferCollectionPage(): ReactElement {
   const { headerId } = useParams<{ headerId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.transfer');
   const [barcodeInput, setBarcodeInput] = useState('');
@@ -105,7 +105,7 @@ export function TransferCollectionPage(): ReactElement {
 
   const handleBarcodeSearch = useCallback(() => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
+      toast.error(t('common.noPermission'));
       return;
     }
 
@@ -127,7 +127,7 @@ export function TransferCollectionPage(): ReactElement {
 
   const handleCollect = () => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
+      toast.error(t('common.noPermission'));
       return;
     }
 
@@ -201,7 +201,7 @@ export function TransferCollectionPage(): ReactElement {
 
   const handleComplete = () => {
     if (!permission.canUpdate) {
-      toast.error(t('common.noPermission', { defaultValue: 'Missing translation' }));
+      toast.error(t('common.noPermission'));
       return;
     }
 
@@ -446,15 +446,15 @@ export function TransferCollectionPage(): ReactElement {
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
                   <div className="flex-1 space-y-2">
-                    <Label>{t('warehouse.details.sourceCellCode', { defaultValue: 'Missing translation' })}</Label>
+                    <Label>{t('warehouse.details.sourceCellCode')}</Label>
                     <ShelfLookupCombobox
                       warehouseCode={selectedStock.depoKodu}
                       value={sourceCellCode}
                       onValueChange={setSourceCellCode}
                       disabled={!permission.canUpdate}
-                      placeholder={t('warehouse.details.sourceCellCodePlaceholder', { defaultValue: 'Missing translation' })}
-                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
-                      emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Missing translation' })}
+                      placeholder={t('warehouse.details.sourceCellCodePlaceholder')}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch')}
+                      emptyText={t('productionTransfer.create.sourceCellEmpty')}
                     />
                   </div>
                   <div className="flex-1">

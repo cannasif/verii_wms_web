@@ -34,7 +34,7 @@ export function Step2StockSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2StockSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const { watch } = useFormContext<GoodsReceiptFormData>();
   const customerCode = watch('customerId');
   const [searchQuery, setSearchQuery] = useState('');

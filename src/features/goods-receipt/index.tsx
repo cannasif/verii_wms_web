@@ -1,5 +1,6 @@
 export { GoodsReceiptPage } from './components/GoodsReceiptPage';
 export { GoodsReceiptCreatePage } from './components/GoodsReceiptCreatePage';
+export { GoodsReceiptEditPage } from './components/GoodsReceiptEditPage';
 export { GoodsReceiptProcessPage } from './components/GoodsReceiptProcessPage';
 export { GoodsReceiptListPage } from './components/GoodsReceiptListPage';
 export { GoodsReceiptReportPage } from './components/GoodsReceiptReportPage';

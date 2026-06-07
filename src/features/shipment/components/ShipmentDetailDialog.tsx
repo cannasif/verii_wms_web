@@ -34,7 +34,7 @@ export function ShipmentDetailDialog({
   isOpen,
   onClose,
 }: ShipmentDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const packagePermission = useCrudPermission('wms.package');
   const { data: headersData } = useShipmentHeaders();
   const { data: linesData, isLoading: isLoadingLines } = useShipmentLines(headerId);

@@ -285,6 +285,8 @@
     "transferAssigned": "Zugewiesene Transferaufträge",
     "transferApproval": "Genehmigung ausstehende Aufträge",
     "bilginogluHakEdis": "Bilginoglu Abschlagszahlung",
+    "bilginogluHakEdisOpen": "Offene Abschlagszahlungen",
+    "bilginogluHakEdisCompleted": "Abgeschlossene Abschlagszahlungen",
     "subcontractingIssueAssigned": "Zugewiesene SIT-Aufträge",
     "subcontractingReceiptAssigned": "Zugewiesene SRT-Aufträge",
     "subcontractingIssueApproval": "Auf Genehmigung wartende Aufträge - SIT",

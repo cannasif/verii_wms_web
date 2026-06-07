@@ -26,7 +26,7 @@ import type { SelectedStockItem, Product } from '../types/goods-receipt';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function GoodsReceiptCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');

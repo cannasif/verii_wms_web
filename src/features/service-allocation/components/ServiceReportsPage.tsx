@@ -19,14 +19,14 @@ function formatDate(value?: string): string {
 }
 
 export function ServiceReportsPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["service-allocation", "common"]);
   const { setPageTitle } = useUIStore();
   const serviceCasesQuery = useServiceCasesQuery({ pageNumber: 1, pageSize: 100, sortBy: 'ReceivedAt', sortDirection: 'desc' });
   const allocationQuery = useAllocationQueueQuery({ pageNumber: 1, pageSize: 100, sortBy: 'PriorityNo', sortDirection: 'asc' });
   const linksQuery = useDocumentLinksQuery({ pageNumber: 1, pageSize: 100, sortBy: 'LinkedAt', sortDirection: 'desc' });
 
   useEffect(() => {
-    setPageTitle(t('serviceAllocation.reports.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('serviceAllocation.reports.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -74,7 +74,7 @@ export function ServiceReportsPage(): ReactElement {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-slate-600">
-                {t('serviceAllocation.reports.totalCases', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.totalCases')}
               </CardTitle>
               <Wrench className="size-4 text-slate-500" />
             </div>
@@ -83,7 +83,7 @@ export function ServiceReportsPage(): ReactElement {
             <div className="text-3xl font-semibold text-slate-900">{cases.length}</div>
             <Button asChild variant="link" className="mt-3 h-auto px-0 text-slate-700">
               <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.openCases', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openCases')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -94,7 +94,7 @@ export function ServiceReportsPage(): ReactElement {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-amber-800">
-                {t('serviceAllocation.reports.waitingParts', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.waitingParts')}
               </CardTitle>
               <Boxes className="size-4 text-amber-600" />
             </div>
@@ -103,7 +103,7 @@ export function ServiceReportsPage(): ReactElement {
             <div className="text-3xl font-semibold text-amber-900">{waitingCases.length}</div>
             <Button asChild variant="link" className="mt-3 h-auto px-0 text-amber-800">
               <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.reviewWaitingCases', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.reviewWaitingCases')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -114,7 +114,7 @@ export function ServiceReportsPage(): ReactElement {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-blue-800">
-                {t('serviceAllocation.reports.partialAllocations', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.partialAllocations')}
               </CardTitle>
               <ClipboardList className="size-4 text-blue-600" />
             </div>
@@ -123,7 +123,7 @@ export function ServiceReportsPage(): ReactElement {
             <div className="text-3xl font-semibold text-blue-900">{partialAllocations.length}</div>
             <Button asChild variant="link" className="mt-3 h-auto px-0 text-blue-800">
               <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openPartialAllocations', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openPartialAllocations')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -134,7 +134,7 @@ export function ServiceReportsPage(): ReactElement {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-emerald-800">
-                {t('serviceAllocation.reports.documentLinks', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.documentLinks')}
               </CardTitle>
               <Link2 className="size-4 text-emerald-600" />
             </div>
@@ -143,7 +143,7 @@ export function ServiceReportsPage(): ReactElement {
             <div className="text-3xl font-semibold text-emerald-900">{links.length}</div>
             <Button asChild variant="link" className="mt-3 h-auto px-0 text-emerald-800">
               <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openDocumentLinks', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openDocumentLinks')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -154,10 +154,10 @@ export function ServiceReportsPage(): ReactElement {
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('serviceAllocation.reports.criticalQueue', { defaultValue: 'Missing translation' })}</CardTitle>
+            <CardTitle>{t('serviceAllocation.reports.criticalQueue')}</CardTitle>
             <Button asChild variant="outline" size="sm">
               <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openQueue', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openQueue')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -166,24 +166,24 @@ export function ServiceReportsPage(): ReactElement {
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-medium text-slate-700">
-                  {t('serviceAllocation.reports.waitingCasesTable', { defaultValue: 'Missing translation' })}
+                  {t('serviceAllocation.reports.waitingCasesTable')}
                 </h3>
                 <Badge variant="secondary">{criticalWaitingCases.length}</Badge>
               </div>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('serviceAllocation.caseNo', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.customerCode', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.receivedAt', { defaultValue: 'Missing translation' })}</TableHead>
+                    <TableHead>{t('serviceAllocation.caseNo')}</TableHead>
+                    <TableHead>{t('serviceAllocation.customerCode')}</TableHead>
+                    <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
+                    <TableHead>{t('serviceAllocation.receivedAt')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {criticalWaitingCases.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-slate-500">
-                        {t('serviceAllocation.reports.noWaitingCases', { defaultValue: 'Missing translation' })}
+                        {t('serviceAllocation.reports.noWaitingCases')}
                       </TableCell>
                     </TableRow>
                   ) : criticalWaitingCases.map((item) => (
@@ -201,24 +201,24 @@ export function ServiceReportsPage(): ReactElement {
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-medium text-slate-700">
-                  {t('serviceAllocation.reports.partialAllocationTable', { defaultValue: 'Missing translation' })}
+                  {t('serviceAllocation.reports.partialAllocationTable')}
                 </h3>
                 <Badge variant="secondary">{criticalAllocations.length}</Badge>
               </div>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('serviceAllocation.stockCode', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.erpOrderNo', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.quantity', { defaultValue: 'Missing translation' })}</TableHead>
-                    <TableHead>{t('serviceAllocation.allocatedQuantity', { defaultValue: 'Missing translation' })}</TableHead>
+                    <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
+                    <TableHead>{t('serviceAllocation.erpOrderNo')}</TableHead>
+                    <TableHead>{t('serviceAllocation.quantity')}</TableHead>
+                    <TableHead>{t('serviceAllocation.allocatedQuantity')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {criticalAllocations.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-slate-500">
-                        {t('serviceAllocation.reports.noPartialAllocations', { defaultValue: 'Missing translation' })}
+                        {t('serviceAllocation.reports.noPartialAllocations')}
                       </TableCell>
                     </TableRow>
                   ) : criticalAllocations.map((item) => (
@@ -238,11 +238,11 @@ export function ServiceReportsPage(): ReactElement {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>{t('serviceAllocation.reports.caseDistribution', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle>{t('serviceAllocation.reports.caseDistribution')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {caseStatusDistribution.length === 0 ? (
-                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution', { defaultValue: 'Missing translation' })}</p>
+                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution')}</p>
               ) : caseStatusDistribution.map((item) => (
                 <div key={item.status} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3">
                   <span>{renderServiceCaseStatus(item.status)}</span>
@@ -254,11 +254,11 @@ export function ServiceReportsPage(): ReactElement {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('serviceAllocation.reports.linkDistribution', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle>{t('serviceAllocation.reports.linkDistribution')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {linkPurposeDistribution.length === 0 ? (
-                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution', { defaultValue: 'Missing translation' })}</p>
+                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution')}</p>
               ) : linkPurposeDistribution.map((item) => (
                 <div key={item.purpose} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3">
                   <span>{renderDocumentLinkPurpose(item.purpose)}</span>
@@ -272,12 +272,12 @@ export function ServiceReportsPage(): ReactElement {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>{t('serviceAllocation.reports.recentMovements', { defaultValue: 'Missing translation' })}</CardTitle>
+          <CardTitle>{t('serviceAllocation.reports.recentMovements')}</CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{shipmentLinks.length} {t('serviceAllocation.reports.shipmentLinks', { defaultValue: 'Missing translation' })}</Badge>
+            <Badge variant="secondary">{shipmentLinks.length} {t('serviceAllocation.reports.shipmentLinks')}</Badge>
             <Button asChild variant="outline" size="sm">
               <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openLinks', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openLinks')}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -287,18 +287,18 @@ export function ServiceReportsPage(): ReactElement {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('serviceAllocation.documentModule', { defaultValue: 'Missing translation' })}</TableHead>
-                <TableHead>{t('serviceAllocation.documentHeaderId', { defaultValue: 'Missing translation' })}</TableHead>
-                <TableHead>{t('serviceAllocation.linkPurpose', { defaultValue: 'Missing translation' })}</TableHead>
-                <TableHead>{t('serviceAllocation.serviceCaseId', { defaultValue: 'Missing translation' })}</TableHead>
-                <TableHead>{t('serviceAllocation.linkedAt', { defaultValue: 'Missing translation' })}</TableHead>
+                <TableHead>{t('serviceAllocation.documentModule')}</TableHead>
+                <TableHead>{t('serviceAllocation.documentHeaderId')}</TableHead>
+                <TableHead>{t('serviceAllocation.linkPurpose')}</TableHead>
+                <TableHead>{t('serviceAllocation.serviceCaseId')}</TableHead>
+                <TableHead>{t('serviceAllocation.linkedAt')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recentMovements.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-slate-500">
-                    {t('serviceAllocation.reports.noRecentMovements', { defaultValue: 'Missing translation' })}
+                    {t('serviceAllocation.reports.noRecentMovements')}
                   </TableCell>
                 </TableRow>
               ) : recentMovements.map((item) => (
@@ -318,39 +318,39 @@ export function ServiceReportsPage(): ReactElement {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.allocationRows', { defaultValue: 'Missing translation' })}</CardTitle>
+            <CardTitle>{t('serviceAllocation.reports.allocationRows')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">{allocations.length}</div>
             <Button asChild variant="link" className="mt-2 h-auto px-0">
               <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openQueue', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openQueue')}
               </Link>
             </Button>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.activeRepairCases', { defaultValue: 'Missing translation' })}</CardTitle>
+            <CardTitle>{t('serviceAllocation.reports.activeRepairCases')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">{activeRepairCases.length}</div>
             <Button asChild variant="link" className="mt-2 h-auto px-0">
               <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.openCases', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openCases')}
               </Link>
             </Button>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.shipmentLinksCount', { defaultValue: 'Missing translation' })}</CardTitle>
+            <CardTitle>{t('serviceAllocation.reports.shipmentLinksCount')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">{shipmentLinks.length}</div>
             <Button asChild variant="link" className="mt-2 h-auto px-0">
               <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openLinks', { defaultValue: 'Missing translation' })}
+                {t('serviceAllocation.reports.openLinks')}
               </Link>
             </Button>
           </CardContent>

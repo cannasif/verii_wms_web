@@ -3,4 +3,5 @@ export { PackageCreatePage } from './components/PackageCreatePage';
 export { PackageEditPage } from './components/PackageEditPage';
 export { PackageDetailPage } from './components/PackageDetailPage';
 export { PackagePackageDetailPage } from './components/PackagePackageDetailPage';
-
+export { PackagePackingStationPage } from './components/PackagePackingStationPage';
+export { PackagingSettingsPage } from './components/PackagingSettingsPage';

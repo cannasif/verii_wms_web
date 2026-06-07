@@ -1,7 +1,24 @@
 {
   "title": "Bilginoglu Abschlagszahlung",
   "breadcrumb": {
-    "operations": "Operationen"
+    "operations": "Operationen",
+    "serviceOperations": "Service Operationen"
+  },
+  "views": {
+    "open": {
+      "nav": "Offene Abschlagszahlungen",
+      "title": "Offene Bilginoglu Abschlagszahlungen",
+      "tableTitle": "Offene Abschlagszahlungsaufträge",
+      "description": "Aufträge, die in den temporären Planungspool aufgenommen wurden. DAT-, Rückführungs- und Versandstufen werden hier gesteuert, sobald Lagerbestand verfügbar ist.",
+      "empty": "Keine offenen Abschlagszahlungsaufträge gefunden."
+    },
+    "completed": {
+      "nav": "Abgeschlossene Abschlagszahlungen",
+      "title": "Abgeschlossene Bilginoglu Abschlagszahlungen",
+      "tableTitle": "Geschlossene Abschlagszahlungsaufträge",
+      "description": "Aufträge wechseln hierher, wenn die komplette Auftragsmenge den DAT-Ablauf und den Versand abgeschlossen hat.",
+      "empty": "Keine abgeschlossenen Abschlagszahlungsaufträge gefunden."
+    }
   },
   "hero": {
     "eyebrow": "Abschlagszahlungs-Planungspool",
@@ -61,7 +78,9 @@
     "stage": "Stufe",
     "noBatches": "Noch keine Batches vorhanden.",
     "steps": "Batch-Schritte",
-    "chooseBatch": "Wählen Sie einen Batch, um die Schritte anzuzeigen."
+    "chooseBatch": "Wählen Sie einen Batch, um die Schritte anzuzeigen.",
+    "warehouseSourceTypes": "WT/SH",
+    "batchLinkSummary": "DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
     "title": "Vorgeschlagene DAT-/Versandbereitschaft",

@@ -45,7 +45,7 @@ export function HeaderSummaryCard({
   totalSteps,
   onEdit,
 }: HeaderSummaryCardProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
 
   if (!headerData) {
     return <></>;

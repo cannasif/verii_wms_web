@@ -6,7 +6,7 @@ import { lookupApi } from '@/features/shared/api/lookup-api';
 import { PACKAGE_QUERY_KEYS } from '../utils/query-keys';
 
 export function useYapKodlar() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['package', 'common']);
 
   const query = useQuery({
     queryKey: [PACKAGE_QUERY_KEYS.YAP_KODS],

@@ -1,5 +1,6 @@
 import type * as SignalR from '@microsoft/signalr';
 import { ensureApiReady, getApiBaseUrl } from '@/lib/axios';
+import { isRealtimeNotificationsEnabled } from '@/lib/api-config';
 import { notificationApi } from '../api/notification-api';
 import type { NotificationDto, SignalRNotificationPayload } from '../types/notification';
 import { useNotificationStore } from '../stores/notification-store';
@@ -78,6 +79,14 @@ class NotificationService {
 
     if (this.connectPromise) {
       return this.connectPromise;
+    }
+
+    if (!(await isRealtimeNotificationsEnabled())) {
+      useNotificationStore.getState().setConnectionState('disconnected');
+      await this.fetchNotifications(true).catch((error) => {
+        console.warn('[NotificationService] Notifications loaded without realtime connection failed:', error);
+      });
+      return;
     }
 
     this.manualDisconnect = false;

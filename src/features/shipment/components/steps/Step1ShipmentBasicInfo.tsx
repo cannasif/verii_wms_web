@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
-import { SearchableSelect } from '@/features/goods-receipt/components/steps/components/SearchableSelect';
+import { SearchableSelect } from '@/features/shared';
 import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { Customer, Project, Warehouse } from '@/features/goods-receipt/types/goods-receipt';
+import type { Customer, Project, Warehouse } from '@/features/shared';
 import type { UserDto } from '@/features/auth/types/auth';
 import type { ShipmentFormData } from '../../types/shipment';
 
@@ -25,7 +25,7 @@ export function Step1ShipmentBasicInfo({
   hideDocumentSeries = false,
   showOperationUsers = true,
 }: Step1ShipmentBasicInfoProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['shipment', 'common']);
   const form = useFormContext<ShipmentFormData>();
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
   const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);

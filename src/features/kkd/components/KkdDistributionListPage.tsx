@@ -58,7 +58,7 @@ function formatDate(value: string | null | undefined, locale: string): string {
 }
 
 export function KkdDistributionListPage(): ReactElement {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const [selectedHeader, setSelectedHeader] = useState<KkdDistributionHeaderDto | null>(null);

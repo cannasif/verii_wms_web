@@ -1,7 +1,24 @@
 {
   "title": "Bilginoglu Hakedis",
   "breadcrumb": {
-    "operations": "Operasyonlar"
+    "operations": "Operasyonlar",
+    "serviceOperations": "Servis Operasyonlari"
+  },
+  "views": {
+    "open": {
+      "nav": "Acik Hakedisler",
+      "title": "Acik Bilginoglu Hakedisleri",
+      "tableTitle": "Acik Hakedis Siparisleri",
+      "description": "Siparis acildi ve temp planlama havuzuna dustu. Depo bakiyesi geldikce DAT, hakedis donusu ve sevk adimlari buradan yonetilir.",
+      "empty": "Acik hakedis siparisi bulunamadi."
+    },
+    "completed": {
+      "nav": "Tamamlanmis Hakedisler",
+      "title": "Tamamlanmis Bilginoglu Hakedisleri",
+      "tableTitle": "Kapanan Hakedis Siparisleri",
+      "description": "Siparis miktarinin tamami hakedis DAT akisindan gecip sevk edildiginde siparis bu kapali havuza duser.",
+      "empty": "Tamamlanmis hakedis siparisi bulunamadi."
+    }
   },
   "hero": {
     "eyebrow": "Hakedis planlama havuzu",
@@ -61,7 +78,9 @@
     "stage": "Asama",
     "noBatches": "Henuz batch yok.",
     "steps": "Batch adimlari",
-    "chooseBatch": "Adimlari gormek icin bir batch secin."
+    "chooseBatch": "Adimlari gormek icin bir batch secin.",
+    "warehouseSourceTypes": "WT/SH",
+    "batchLinkSummary": "DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
     "title": "Onerilen DAT / sevk hazirligi",

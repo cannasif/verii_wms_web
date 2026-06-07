@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { Product } from '@/features/goods-receipt/types/goods-receipt';
+import type { Product } from '@/features/shared';
 import type { SelectedTransferStockItem } from '../../types/transfer';
 import { TransferStockItemRow } from './components/TransferStockItemRow';
 
@@ -25,7 +25,7 @@ export function Step2TransferStockSelection({
   onUpdateItem,
   onRemoveItem,
 }: Step2TransferStockSelectionProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['transfer', 'common']);
   const [searchStocks, setSearchStocks] = useState('');
   const [searchSelected, setSearchSelected] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
