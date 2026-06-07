@@ -70,6 +70,28 @@ export const barcodePrintSourceBrowserApi = {
           })), params.search ?? ''),
         });
       }
+      case 'goods-receipt-pre-label': {
+        const headers = await goodsReceiptApi.getPreReceiptLabelBatchesPaged({
+          pageNumber: Math.max(1, (params.pageNumber ?? 0) + 1),
+          pageSize: params.pageSize ?? 20,
+          search: params.search,
+          sortBy: params.sortBy,
+          sortDirection: params.sortDirection,
+          filters: params.filters,
+          filterLogic: params.filterLogic,
+        });
+        return mapPagedHeaders(sourceModule, {
+          ...normalizeToZeroBasedPage(headers, 1),
+          data: filterHeaders(headers.data.map((header) => ({
+            id: header.id,
+            sourceModule,
+            title: header.batchNo,
+            subtitle: [header.siparisNo, header.customerNameSnapshot].filter(Boolean).join(' - '),
+            status: header.status,
+            documentDate: header.createdDate,
+          })), params.search ?? ''),
+        });
+      }
       case 'transfer': {
         const headers = await transferApi.getHeadersPaged(params);
         return mapPagedHeaders(sourceModule, {
@@ -215,6 +237,19 @@ export const barcodePrintSourceBrowserApi = {
           subtitle: [line.description, line.erpOrderNo].filter(Boolean).join(' - '),
           quantity: line.quantity,
           stockCode: line.stockCode,
+        }));
+      }
+      case 'goods-receipt-pre-label': {
+        const labels = await goodsReceiptApi.getPreReceiptLabelsByBatchId(headerId);
+        return labels.map((label) => ({
+          id: label.id,
+          headerId,
+          sourceModule,
+          title: label.barcodeValue,
+          subtitle: [label.stockCodeSnapshot, label.serialNo].filter(Boolean).join(' - '),
+          quantity: label.labelQuantity,
+          stockCode: label.stockCodeSnapshot,
+          serialNo: label.serialNo ?? undefined,
         }));
       }
       case 'transfer': {

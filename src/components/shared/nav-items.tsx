@@ -144,6 +144,7 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.goodsReceiptCreate', titleFallback: 'Mal Kabul Oluştur', href: '/goods-receipt/create' },
               { title: 'sidebar.goodsReceiptProcess', titleFallback: 'Mal Kabul İşlem', href: '/goods-receipt/process' },
               { title: 'sidebar.goodsReceiptList', titleFallback: 'Mal Kabul Listesi', href: '/goods-receipt/list' },
+              { title: 'sidebar.goodsReceiptPreLabels', titleFallback: 'Mal Kabul Ön Barkod Etiketleri', href: '/goods-receipt/pre-labels' },
             ],
           },
           {

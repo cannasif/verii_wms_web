@@ -8,3 +8,4 @@ export { GoodsReceiptDetailDialog } from './components/GoodsReceiptDetailDialog'
 export { AssignedGrListPage } from './components/AssignedGrListPage';
 export { GoodsReceiptCollectionPage } from './components/GoodsReceiptCollectionPage';
 export { GoodsReceiptApprovalPage } from './components/GoodsReceiptApprovalPage';
+export { GoodsReceiptPreReceiptLabelsPage } from './components/GoodsReceiptPreReceiptLabelsPage';

@@ -17,6 +17,9 @@ import type {
   AddBarcodeRequest,
   AddBarcodeResponse,
   CollectedBarcodesResponse,
+  CreateGrPreReceiptLabelBatchRequest,
+  GrPreReceiptLabel,
+  GrPreReceiptLabelBatch,
 } from '../types/goods-receipt';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import {
@@ -185,5 +188,41 @@ export const goodsReceiptApi = {
 
   deleteGoodsReceiptHeader: async (id: number): Promise<ApiResponse<boolean>> => {
     return await api.delete<ApiResponse<boolean>>(`/api/GrHeader/${id}`);
+  },
+
+  getPreReceiptLabelBatchesPaged: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<GrPreReceiptLabelBatch>> => {
+    const response = await api.post<ApiResponse<PagedResponse<GrPreReceiptLabelBatch>>>(
+      '/api/GrPreReceiptLabel/paged',
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
+      options,
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptHeadersLoadFailed'));
+  },
+
+  getPreReceiptLabelsByBatchId: async (batchId: number, options?: ApiRequestOptions): Promise<GrPreReceiptLabel[]> => {
+    const response = await api.get<ApiResponse<GrPreReceiptLabel[]>>(`/api/GrPreReceiptLabel/batches/${batchId}/labels`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
+  },
+
+  createPreReceiptLabelBatch: async (request: CreateGrPreReceiptLabelBatchRequest): Promise<GrPreReceiptLabelBatch> => {
+    const response = await api.post<ApiResponse<GrPreReceiptLabelBatch>>('/api/GrPreReceiptLabel/batches', request);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
+  },
+
+  markPreReceiptLabelsPrinted: async (labelIds: number[]): Promise<ApiResponse<boolean>> => {
+    return await api.post<ApiResponse<boolean>>('/api/GrPreReceiptLabel/labels/mark-printed', { labelIds });
+  },
+
+  voidPreReceiptLabel: async (labelId: number, reason: string): Promise<ApiResponse<boolean>> => {
+    return await api.post<ApiResponse<boolean>>(`/api/GrPreReceiptLabel/labels/${labelId}/void`, { reason });
   },
 };

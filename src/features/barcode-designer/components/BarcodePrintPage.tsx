@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -40,6 +40,7 @@ interface OperationOption {
 
 const operationOptions: OperationOption[] = [
   { value: 'goods-receipt', label: 'Mal Kabul', description: 'Tüm mal kabuller' },
+  { value: 'goods-receipt-pre-label', label: 'Mal Kabul Ön Etiket', description: 'Siparişe istinaden basılmış ön barkod etiketleri' },
   { value: 'transfer', label: 'Transfer', description: 'Depolar arası transferler' },
   { value: 'warehouse-inbound', label: 'Ambar Giriş', description: 'Ambar giriş belgeleri' },
   { value: 'warehouse-outbound', label: 'Ambar Çıkış', description: 'Ambar çıkış belgeleri' },
@@ -71,19 +72,29 @@ export function BarcodePrintPage(): ReactElement {
   const { t } = useTranslation('common');
   const { reportScreenReady } = useRouteScreenReady();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.print-management');
   const initialTemplateId = id ? Number(id) : null;
+  const initialSourceModule = operationOptions.some((item) => item.value === searchParams.get('sourceModule'))
+    ? searchParams.get('sourceModule') as BarcodePrintSourceModule
+    : 'goods-receipt';
+  const initialSourceHeaderId = Number(searchParams.get('sourceHeaderId') ?? 0);
 
-  const [sourceModule, setSourceModule] = useState<BarcodePrintSourceModule>('goods-receipt');
+  const [sourceModule, setSourceModule] = useState<BarcodePrintSourceModule>(initialSourceModule);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(initialTemplateId);
-  const [selectedHeaderMap, setSelectedHeaderMap] = useState<Record<number, BarcodeSourceHeaderOption>>({});
+  const [selectedHeaderMap, setSelectedHeaderMap] = useState<Record<number, BarcodeSourceHeaderOption>>(
+    Number.isFinite(initialSourceHeaderId) && initialSourceHeaderId > 0
+      ? { [initialSourceHeaderId]: { id: initialSourceHeaderId, sourceModule: initialSourceModule, title: `#${initialSourceHeaderId}` } }
+      : {},
+  );
   const [selectedLineMap, setSelectedLineMap] = useState<Record<number, BarcodeSourceLineOption>>({});
   const [selectedServerPrinterId, setSelectedServerPrinterId] = useState('');
   const [selectedServerPrinterProfileId, setSelectedServerPrinterProfileId] = useState('');
   const [copies, setCopies] = useState(1);
   const [printSettingsExpanded, setPrintSettingsExpanded] = useState(false);
   const screenReadyReportedRef = useRef(false);
+  const sourceModuleHydratedRef = useRef(false);
 
   const pagedGrid = usePagedDataGrid<HeaderSortKey>({
     pageKey: `barcode-print-${sourceModule}`,
@@ -100,6 +111,11 @@ export function BarcodePrintPage(): ReactElement {
   }, [setPageTitle, t]);
 
   useEffect(() => {
+    if (!sourceModuleHydratedRef.current) {
+      sourceModuleHydratedRef.current = true;
+      return;
+    }
+
     setSelectedHeaderMap({});
     setSelectedLineMap({});
     pagedGrid.setPageNumber(0);

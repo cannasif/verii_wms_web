@@ -238,6 +238,7 @@ export interface BarcodePrintSourceItem {
 
 export type BarcodePrintSourceModule =
   | 'goods-receipt'
+  | 'goods-receipt-pre-label'
   | 'transfer'
   | 'warehouse-inbound'
   | 'warehouse-outbound'

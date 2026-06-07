@@ -29,6 +29,10 @@ const GoodsReceiptApprovalPage = lazyNamed(
   () => import('@/features/goods-receipt'),
   'GoodsReceiptApprovalPage',
 );
+const GoodsReceiptPreReceiptLabelsPage = lazyNamed(
+  () => import('@/features/goods-receipt'),
+  'GoodsReceiptPreReceiptLabelsPage',
+);
 
 const TransferCreatePage = lazyNamed(
   () => import('@/features/transfer'),
@@ -284,6 +288,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'list', element: withRoute(GoodsReceiptListPage, { routeName: 'goods-receipt-list', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'assigned', element: withRoute(AssignedGrListPage, { routeName: 'goods-receipt-assigned', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'approval', element: withRoute(GoodsReceiptApprovalPage, { routeName: 'goods-receipt-approval', namespaces: ['goods-receipt', 'common'] }) },
+      { path: 'pre-labels', element: withRoute(GoodsReceiptPreReceiptLabelsPage, { routeName: 'goods-receipt-pre-labels', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'collection/:headerId', element: withRoute(GoodsReceiptCollectionPage, { routeName: 'goods-receipt-collection', namespaces: ['goods-receipt', 'common'] }) },
     ],
   },

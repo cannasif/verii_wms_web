@@ -66,6 +66,8 @@ export interface OrderItem extends BaseWorkflowOrderItem {
   unitPrice?: number;
   totalPrice?: number;
   yapKodId?: number;
+  yapKod?: string | null;
+  yapAcik?: string | null;
 }
 
 export interface SelectedOrderItem extends OrderItem {
@@ -350,3 +352,95 @@ export interface CollectedBarcodeItem {
 }
 
 export type CollectedBarcodesResponse = ApiResponse<CollectedBarcodeItem[]>;
+
+export interface GrPreReceiptLabelBatch {
+  id: number;
+  branchCode: string;
+  createdDate: string | null;
+  updatedDate: string | null;
+  deletedDate: string | null;
+  isDeleted: boolean;
+  batchNo: string;
+  siparisNo: string;
+  customerId: number | null;
+  customerCodeSnapshot: string | null;
+  customerNameSnapshot: string | null;
+  grHeaderId: number | null;
+  status: string;
+  source: string;
+  totalLabelCount: number;
+  printedLabelCount: number;
+  consumedLabelCount: number;
+  voidLabelCount: number;
+  lastPrintedAt: string | null;
+  completedDate: string | null;
+  description: string | null;
+}
+
+export interface GrPreReceiptLabel {
+  id: number;
+  branchCode: string;
+  createdDate: string | null;
+  updatedDate: string | null;
+  deletedDate: string | null;
+  isDeleted: boolean;
+  batchId: number;
+  grHeaderId: number | null;
+  grLineId: number | null;
+  grLineSerialId: number | null;
+  consumedGrImportLineId: number | null;
+  consumedGrRouteId: number | null;
+  siparisNo: string;
+  erpOrderNo: string | null;
+  erpOrderId: number | null;
+  stockId: number | null;
+  stockCodeSnapshot: string;
+  stockNameSnapshot: string | null;
+  yapKodId: number | null;
+  yapKodSnapshot: string | null;
+  yapAcikSnapshot: string | null;
+  expectedQuantity: number;
+  labelQuantity: number;
+  serialNo: string | null;
+  serialNo2: string | null;
+  serialNo3: string | null;
+  serialNo4: string | null;
+  barcodeValue: string;
+  status: string;
+  printCount: number;
+  lastPrintedAt: string | null;
+  consumedAt: string | null;
+  voidReason: string | null;
+  description: string | null;
+}
+
+export interface CreateGrPreReceiptLabelBatchRequest {
+  siparisNo: string;
+  customerId?: number | null;
+  customerCodeSnapshot?: string | null;
+  customerNameSnapshot?: string | null;
+  grHeaderId?: number | null;
+  description?: string | null;
+  lines: CreateGrPreReceiptLabelLineRequest[];
+}
+
+export interface CreateGrPreReceiptLabelLineRequest {
+  grLineId?: number | null;
+  grLineSerialId?: number | null;
+  erpOrderNo?: string | null;
+  erpOrderId?: number | null;
+  stockId?: number | null;
+  stockCode: string;
+  stockName?: string | null;
+  yapKodId?: number | null;
+  yapKod?: string | null;
+  yapAcik?: string | null;
+  expectedQuantity: number;
+  labelQuantity?: number | null;
+  labelCount?: number | null;
+  serialNo?: string | null;
+  serialNo2?: string | null;
+  serialNo3?: string | null;
+  serialNo4?: string | null;
+  description?: string | null;
+}
