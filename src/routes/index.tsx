@@ -28,7 +28,7 @@ export function createAppRouter() {
       children: [
         { index: true, element: withRoute(WelcomePage, { routeName: 'welcome' }) },
         { path: 'dashboard', element: withRoute(DashboardPage, { routeName: 'dashboard' }) },
-        { path: 'reports', element: withRoute(ReportsPage, { routeName: 'reports' }) },
+        { path: 'reports', element: withRoute(ReportsPage, { routeName: 'reports', namespaces: ['report', 'common'] }) },
         ...operationsChildRoutes,
         {
           path: 'parameters',

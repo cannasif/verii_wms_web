@@ -1,0 +1,77 @@
+{
+  "hero": {
+    "eyebrow": "Operasyon görünürlüğü",
+    "title": "Rapor ve izlenebilirlik merkezi",
+    "description": "Stok bakiyesi, seri izlenebilirliği, paketleme, sevkiyat onayları, transfer zincirleri ve destek trace kayıtlarına tek noktadan ulaşın."
+  },
+  "sections": {
+    "operationalVisibility": "Operasyonel görünürlük",
+    "operationalVisibilityDescription": "Depo, paketleme, kalite, sevkiyat ve destek ekranlarına hızlı erişim.",
+    "workflowAudit": "İş akışı kontrol listesi",
+    "workflowAuditDescription": "Ana operasyon modüllerinin liste, durum ve takip ekranlarına hızlı geçiş."
+  },
+  "badges": {
+    "inventory": "Stok",
+    "traceability": "İzlenebilirlik",
+    "packaging": "Paketleme",
+    "configuration": "Tanım",
+    "erpApproval": "ERP Onay",
+    "chain": "Zincir",
+    "support": "Destek",
+    "quality": "Kalite",
+    "workflow": "Akış"
+  },
+  "cards": {
+    "stockBalance": {
+      "title": "Stok bakiye raporu",
+      "description": "Depo, stok ve yapkod bazında güncel operasyonel bakiyeyi kontrol edin."
+    },
+    "serialBalance": {
+      "title": "Seri bakiye raporu",
+      "description": "Serili ürünlerin hangi depoda ve hangi stok bağlamında durduğunu izleyin."
+    },
+    "packageStation": {
+      "title": "Paketleme istasyonu",
+      "description": "Paket seç, ürün ekle, kapat, etiket bas ve paketleme operasyonunu takip et."
+    },
+    "packageSettings": {
+      "title": "Paketleme tanımları",
+      "description": "Koli/palet malzemeleri, kapasite ve paketleme kurallarını yönetin."
+    },
+    "shipmentApproval": {
+      "title": "Sevkiyat ERP onay kuyruğu",
+      "description": "Tamamlanan ama ERP sevk irsaliyesi için onay bekleyen kayıtları yönetin."
+    },
+    "transferChains": {
+      "title": "Transfer zincirleri",
+      "description": "Sıralı WT/PT/SH operasyonlarını ve blokeli aşamaları takip edin."
+    },
+    "traceExplorer": {
+      "title": "Trace explorer",
+      "description": "Tek trace id ile audit, job, notification ve integration zincirini inceleyin."
+    },
+    "qualityQueue": {
+      "title": "Karantina kuyruğu",
+      "description": "Kalite kontrol sonrası release, reject ve return bekleyen kayıtları izleyin."
+    }
+  },
+  "workflows": {
+    "goodsReceipt": {
+      "title": "Mal kabul listesi",
+      "description": "Create/edit/delete/complete/ERP gönderim kontrolü için mal kabul kayıtları."
+    },
+    "transfer": {
+      "title": "Transfer emri listesi",
+      "description": "Depolar arası transfer emirleri ve operasyon durumlarını takip edin."
+    },
+    "shipment": {
+      "title": "Sevk emri listesi",
+      "description": "Sevkiyat emirleri, toplama durumu ve ERP gönderim sürecini izleyin."
+    },
+    "package": {
+      "title": "Paket listesi",
+      "description": "Paket header, koli/palet, line ve etiket basım durumlarını görün."
+    }
+  },
+  "open": "Ekranı aç"
+}
