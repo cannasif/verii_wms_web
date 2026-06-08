@@ -19,7 +19,8 @@
     "chain": "Zincir",
     "support": "Destek",
     "quality": "Kalite",
-    "workflow": "Akış"
+    "workflow": "Akış",
+    "loading": "Yukleme"
   },
   "cards": {
     "stockBalance": {
@@ -53,6 +54,10 @@
     "qualityQueue": {
       "title": "Karantina kuyruğu",
       "description": "Kalite kontrol sonrası release, reject ve return bekleyen kayıtları izleyin."
+    },
+    "shipmentLoading": {
+      "title": "Sevkiyat yukleme operasyonu",
+      "description": "Staging, arac yukleme, rampa ve paket durumlarini tek ekrandan takip edin."
     }
   },
   "workflows": {

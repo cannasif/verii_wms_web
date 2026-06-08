@@ -161,6 +161,10 @@ const ShipmentApprovalPage = lazyNamed(
   () => import('@/features/shipment'),
   'ShipmentApprovalPage',
 );
+const ShipmentLoadingPage = lazyNamed(
+  () => import('@/features/shipment-loading'),
+  'ShipmentLoadingPage',
+);
 
 const AssignedProductionListPage = lazyNamed(() => import('@/features/production'), 'AssignedProductionListPage');
 const ProductionCreatePage = lazyNamed(() => import('@/features/production'), 'ProductionCreatePage');
@@ -372,6 +376,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'list', element: withRoute(ShipmentListPage, { routeName: 'shipment-list', namespaces: ['shipment', 'common'] }) },
       { path: 'assigned', element: withRoute(AssignedShipmentListPage, { routeName: 'shipment-assigned', namespaces: ['shipment', 'common'] }) },
       { path: 'collection/:headerId', element: withRoute(ShipmentCollectionPage, { routeName: 'shipment-collection', namespaces: ['shipment', 'transfer-chain', 'common'] }) },
+      { path: 'loading', element: withRoute(ShipmentLoadingPage, { routeName: 'shipment-loading', namespaces: ['shipment-loading', 'common'] }) },
       { path: 'approval', element: withRoute(ShipmentApprovalPage, { routeName: 'shipment-approval', namespaces: ['shipment', 'common'] }) },
     ],
   },

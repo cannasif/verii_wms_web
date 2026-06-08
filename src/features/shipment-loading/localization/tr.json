@@ -1,0 +1,56 @@
+{
+  "title": "Sevkiyat yükleme",
+  "eyebrow": "Staging / Loading / Vehicle",
+  "description": "Sevkiyat emrine bağlı araç, rampa, mühür ve paket yükleme adımlarını ASN/EDI katmanından bağımsız şekilde takip edin.",
+  "session": {
+    "title": "Yükleme oturumu",
+    "description": "Sevkiyat emri için araç ve yükleme bağlamını açın veya güncelleyin."
+  },
+  "list": {
+    "title": "Açık yükleme oturumları",
+    "description": "Son oluşturulan sevkiyat yükleme oturumları."
+  },
+  "packages": {
+    "title": "Paket staging ve yükleme",
+    "description": "Seçili oturum için paketleri staging alanına alın, araca yükleyin veya geri indirin."
+  },
+  "fields": {
+    "shipmentHeaderId": "Sevkiyat header id",
+    "vehicleCheckInHeaderId": "Araç giriş id",
+    "plateNo": "Plaka",
+    "driverName": "Sürücü",
+    "dockCode": "Rampa",
+    "sealNo": "Mühür no",
+    "note": "Not",
+    "packageId": "Paket id",
+    "loadingStartedDate": "Yükleme başlangıcı",
+    "closedDate": "Kapanış"
+  },
+  "actions": {
+    "saveSession": "Oturumu kaydet",
+    "stage": "Stage",
+    "load": "Yükle",
+    "unload": "Geri indir",
+    "close": "Kapat"
+  },
+  "metrics": {
+    "staged": "Stage",
+    "loaded": "Yüklü",
+    "unloaded": "İndirilen"
+  },
+  "empty": {
+    "selectSession": "Paket işlemi için önce bir yükleme oturumu seçin veya oluşturun.",
+    "noPlate": "Plaka yok",
+    "noDriver": "Sürücü yok"
+  },
+  "validation": {
+    "shipmentRequired": "Sevkiyat header id zorunludur.",
+    "packageRequired": "Paket id zorunludur."
+  },
+  "toast": {
+    "sessionSaved": "Yükleme oturumu kaydedildi.",
+    "sessionError": "Yükleme oturumu kaydedilemedi.",
+    "actionSuccess": "Paket yükleme işlemi tamamlandı.",
+    "actionError": "Paket yükleme işlemi tamamlanamadı."
+  }
+}

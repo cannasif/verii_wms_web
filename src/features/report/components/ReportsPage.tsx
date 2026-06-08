@@ -63,6 +63,13 @@ const operationalCards: ReportCard[] = [
     badgeKey: 'badges.erpApproval',
   },
   {
+    titleKey: 'cards.shipmentLoading.title',
+    descriptionKey: 'cards.shipmentLoading.description',
+    href: '/shipment/loading',
+    icon: Truck,
+    badgeKey: 'badges.loading',
+  },
+  {
     titleKey: 'cards.transferChains.title',
     descriptionKey: 'cards.transferChains.description',
     href: '/transfer/chains',

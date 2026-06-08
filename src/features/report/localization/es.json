@@ -19,23 +19,64 @@
     "chain": "Chain",
     "support": "Support",
     "quality": "Quality",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "loading": "Loading"
   },
   "cards": {
-    "stockBalance": { "title": "Stock balance report", "description": "Review current operational balance by warehouse, stock, and variant." },
-    "serialBalance": { "title": "Serial balance report", "description": "Track where serialized items are located and which stock context they belong to." },
-    "packageStation": { "title": "Packing station", "description": "Select packages, add items, close, print labels, and monitor packing operations." },
-    "packageSettings": { "title": "Packaging setup", "description": "Manage carton/pallet materials, capacity limits, and packaging rules." },
-    "shipmentApproval": { "title": "Shipment ERP approval queue", "description": "Manage completed shipments waiting for ERP dispatch document approval." },
-    "transferChains": { "title": "Transfer chains", "description": "Track ordered WT/PT/SH operations and blocked chain steps." },
-    "traceExplorer": { "title": "Trace explorer", "description": "Inspect audit, job, notification, and integration chains through one trace id." },
-    "qualityQueue": { "title": "Quarantine queue", "description": "Monitor records waiting for release, reject, and return after quality control." }
+    "stockBalance": {
+      "title": "Stock balance report",
+      "description": "Review current operational balance by warehouse, stock, and variant."
+    },
+    "serialBalance": {
+      "title": "Serial balance report",
+      "description": "Track where serialized items are located and which stock context they belong to."
+    },
+    "packageStation": {
+      "title": "Packing station",
+      "description": "Select packages, add items, close, print labels, and monitor packing operations."
+    },
+    "packageSettings": {
+      "title": "Packaging setup",
+      "description": "Manage carton/pallet materials, capacity limits, and packaging rules."
+    },
+    "shipmentApproval": {
+      "title": "Shipment ERP approval queue",
+      "description": "Manage completed shipments waiting for ERP dispatch document approval."
+    },
+    "transferChains": {
+      "title": "Transfer chains",
+      "description": "Track ordered WT/PT/SH operations and blocked chain steps."
+    },
+    "traceExplorer": {
+      "title": "Trace explorer",
+      "description": "Inspect audit, job, notification, and integration chains through one trace id."
+    },
+    "qualityQueue": {
+      "title": "Quarantine queue",
+      "description": "Monitor records waiting for release, reject, and return after quality control."
+    },
+    "shipmentLoading": {
+      "title": "Shipment loading operation",
+      "description": "Track staging, vehicle loading, dock, and package statuses from one screen."
+    }
   },
   "workflows": {
-    "goodsReceipt": { "title": "Goods receipt list", "description": "Goods receipt records for create/edit/delete/complete/ERP-send control." },
-    "transfer": { "title": "Transfer order list", "description": "Track warehouse transfer orders and operational states." },
-    "shipment": { "title": "Shipment order list", "description": "Monitor shipment orders, picking status, and ERP-send flow." },
-    "package": { "title": "Package list", "description": "View package headers, cartons/pallets, lines, and label print states." }
+    "goodsReceipt": {
+      "title": "Goods receipt list",
+      "description": "Goods receipt records for create/edit/delete/complete/ERP-send control."
+    },
+    "transfer": {
+      "title": "Transfer order list",
+      "description": "Track warehouse transfer orders and operational states."
+    },
+    "shipment": {
+      "title": "Shipment order list",
+      "description": "Monitor shipment orders, picking status, and ERP-send flow."
+    },
+    "package": {
+      "title": "Package list",
+      "description": "View package headers, cartons/pallets, lines, and label print states."
+    }
   },
   "open": "Open screen"
 }

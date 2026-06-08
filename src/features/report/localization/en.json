@@ -19,7 +19,8 @@
     "chain": "Chain",
     "support": "Support",
     "quality": "Quality",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "loading": "Loading"
   },
   "cards": {
     "stockBalance": {
@@ -53,6 +54,10 @@
     "qualityQueue": {
       "title": "Quarantine queue",
       "description": "Monitor records waiting for release, reject, and return after quality control."
+    },
+    "shipmentLoading": {
+      "title": "Shipment loading operation",
+      "description": "Track staging, vehicle loading, dock, and package statuses from one screen."
     }
   },
   "workflows": {

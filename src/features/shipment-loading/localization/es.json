@@ -1,0 +1,14 @@
+{
+  "title": "Shipment loading",
+  "eyebrow": "Staging / Loading / Vehicle",
+  "description": "Track vehicle, dock, seal, staging, and package loading steps for a shipment order without mixing ASN/EDI concerns.",
+  "session": { "title": "Loading session", "description": "Open or update the vehicle and loading context for a shipment order." },
+  "list": { "title": "Open loading sessions", "description": "Recently created shipment loading sessions." },
+  "packages": { "title": "Package staging and loading", "description": "Stage packages, load them onto the vehicle, or unload them for the selected session." },
+  "fields": { "shipmentHeaderId": "Shipment header id", "vehicleCheckInHeaderId": "Vehicle check-in id", "plateNo": "Plate no", "driverName": "Driver", "dockCode": "Dock", "sealNo": "Seal no", "note": "Note", "packageId": "Package id", "loadingStartedDate": "Loading started", "closedDate": "Closed" },
+  "actions": { "saveSession": "Save session", "stage": "Stage", "load": "Load", "unload": "Unload", "close": "Close" },
+  "metrics": { "staged": "Staged", "loaded": "Loaded", "unloaded": "Unloaded" },
+  "empty": { "selectSession": "Select or create a loading session before package actions.", "noPlate": "No plate", "noDriver": "No driver" },
+  "validation": { "shipmentRequired": "Shipment header id is required.", "packageRequired": "Package id is required." },
+  "toast": { "sessionSaved": "Loading session saved.", "sessionError": "Loading session could not be saved.", "actionSuccess": "Package loading action completed.", "actionError": "Package loading action failed." }
+}
