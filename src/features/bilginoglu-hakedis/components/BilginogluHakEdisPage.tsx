@@ -187,12 +187,12 @@ export function BilginogluHakEdisPage(): ReactElement {
               {view === 'completed' ? t('views.completed.description') : t('views.open.description')}
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
             {view === 'open' ? (
               <>
                 <Button
                   type="button"
-                  className="rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200"
+                  className="w-full rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200 sm:w-auto"
                   onClick={() => bulkTransferOrdersMutation.mutate()}
                   disabled={!permission.canUpdate || bulkTransferOrdersMutation.isPending}
                 >
@@ -201,7 +201,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 </Button>
                 <Button
                   type="button"
-                  className="rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200"
+                  className="w-full rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200 sm:w-auto"
                   onClick={() => bulkShipmentOrdersMutation.mutate()}
                   disabled={!permission.canUpdate || bulkShipmentOrdersMutation.isPending}
                 >
@@ -212,14 +212,14 @@ export function BilginogluHakEdisPage(): ReactElement {
             ) : null}
             <Button
               type="button"
-              className="rounded-2xl bg-cyan-300 text-slate-950 hover:bg-cyan-200"
+              className="w-full rounded-2xl bg-cyan-300 text-slate-950 hover:bg-cyan-200 sm:w-auto"
               onClick={() => evaluateMutation.mutate(undefined)}
               disabled={!permission.canUpdate || evaluateMutation.isPending}
             >
               {evaluateMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Play className="mr-2 size-4" />}
               {t('actions.evaluate')}
             </Button>
-            <Button type="button" variant="secondary" className="rounded-2xl" onClick={() => void ordersQuery.refetch()}>
+            <Button type="button" variant="secondary" className="w-full rounded-2xl sm:w-auto" onClick={() => void ordersQuery.refetch()}>
               <RefreshCw className="mr-2 size-4" />
               {t('actions.refresh')}
             </Button>
@@ -271,7 +271,7 @@ export function BilginogluHakEdisPage(): ReactElement {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="min-w-[1080px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t('table.order')}</TableHead>
@@ -326,14 +326,14 @@ export function BilginogluHakEdisPage(): ReactElement {
       </Card>
 
       <Dialog open={selectedOrder != null} onOpenChange={(open) => { if (!open) { setSelectedOrder(null); setSelectedPlan(null); setSelectedBatch(null); } }}>
-        <DialogContent className="max-h-[88vh] max-w-7xl overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 text-slate-950 shadow-2xl">
+        <DialogContent className="max-h-[92dvh] w-[calc(100vw-1rem)] max-w-7xl overflow-y-auto overflow-x-hidden rounded-3xl border-slate-200 bg-slate-50 p-3 text-slate-950 shadow-2xl sm:w-[calc(100vw-2rem)] sm:p-6">
           <DialogHeader className="rounded-t-3xl border-b border-slate-200 bg-white/95 px-1 pb-4">
             <DialogTitle>{t('detail.title', { order: selectedOrder?.siparisNo })}</DialogTitle>
             <DialogDescription>{t('detail.description')}</DialogDescription>
           </DialogHeader>
           {selectedOrder ? (
             <div className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-5">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 <NeedCard label={t('need.required')} value={formatQty(selectedOrderNeed.required || selectedOrder.totalRequiredQty)} tone="slate" />
                 <NeedCard label={t('need.available')} value={formatQty(selectedOrderNeed.available || selectedOrder.totalWarehouseAvailableQty)} tone="cyan" />
                 <NeedCard label={t('need.canCreate')} value={formatQty(selectedOrderNeed.canCreate || selectedOrder.canCreateNewBatchQty)} tone="emerald" />
@@ -348,7 +348,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   </div>
                   <Button
                     type="button"
-                    className="h-11 rounded-2xl bg-slate-950 px-4 text-white shadow-sm hover:bg-slate-800"
+                    className="h-auto min-h-11 w-full rounded-2xl bg-slate-950 px-4 text-white shadow-sm hover:bg-slate-800 sm:w-auto"
                     disabled={!permission.canUpdate || !transferPreview?.canCreateTransfers || createSuggestedTransfersMutation.isPending}
                     onClick={() => selectedOrder && createSuggestedTransfersMutation.mutate(selectedOrder.id)}
                   >
@@ -360,7 +360,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {t('loading')}</div>
                 ) : transferPreview ? (
                   <div className="space-y-4">
-                    <div className="grid gap-3 md:grid-cols-5">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                       <NeedCard label={t('transferPreview.orderQty')} value={formatQty(transferPreview.totalOrderQty)} tone="slate" />
                       <NeedCard label={t('transferPreview.processedQty')} value={formatQty(transferPreview.totalProcessedQty)} tone="blue" />
                       <NeedCard label={t('transferPreview.transferableQty')} value={formatQty(transferPreview.totalTransferableQty)} tone="emerald" />
@@ -368,7 +368,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <NeedCard label={t('transferPreview.missingQty')} value={formatQty(transferPreview.totalMissingQty)} tone="amber" />
                     </div>
                     <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <Table>
+                      <Table className="min-w-[860px]">
                         <TableHeader className="sticky top-0 z-10 bg-slate-950">
                           <TableRow className="border-slate-800 hover:bg-slate-950">
                             <TableHead className="min-w-64 text-white">{t('detail.stock')}</TableHead>
@@ -407,16 +407,16 @@ export function BilginogluHakEdisPage(): ReactElement {
                   </div>
                 ) : null}
               </div>
-              <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="min-w-40 rounded-2xl bg-slate-50 p-3">
+              <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row lg:flex-wrap lg:items-end">
+                <div className="w-full rounded-2xl bg-slate-50 p-3 sm:w-auto sm:min-w-40">
                   <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
                   <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</div>
                 </div>
-                <div className="min-w-48 rounded-2xl bg-slate-50 p-3">
+                <div className="w-full rounded-2xl bg-slate-50 p-3 sm:w-auto sm:min-w-48">
                   <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
                   <div className="text-sm font-bold">{selectedOrder.orderDetail ?? '-'}</div>
                 </div>
-                <div className="min-w-48 space-y-1">
+                <div className="w-full space-y-1 sm:min-w-48 lg:w-auto">
                   <div className="text-xs font-semibold text-muted-foreground">{t('policy.allocation')}</div>
                   <Select value={allocationPolicy} onValueChange={setAllocationPolicy} disabled={!permission.canUpdate}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -427,7 +427,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="min-w-48 space-y-1">
+                <div className="w-full space-y-1 sm:min-w-48 lg:w-auto">
                   <div className="text-xs font-semibold text-muted-foreground">{t('policy.shipment')}</div>
                   <Select value={shipmentPolicy} onValueChange={setShipmentPolicy} disabled={!permission.canUpdate}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -438,7 +438,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" size="sm" disabled={!permission.canUpdate || policyMutation.isPending} onClick={() => policyMutation.mutate({ orderHeaderId: selectedOrder.id, input: { allocationPolicy, shipmentPolicy } })}>
+                <Button type="button" size="sm" className="w-full sm:w-auto" disabled={!permission.canUpdate || policyMutation.isPending} onClick={() => policyMutation.mutate({ orderHeaderId: selectedOrder.id, input: { allocationPolicy, shipmentPolicy } })}>
                   {t('actions.savePolicy')}
                 </Button>
               </div>
@@ -448,7 +448,7 @@ export function BilginogluHakEdisPage(): ReactElement {
             <h3 className="mb-2 text-sm font-semibold">{t('detail.lines')}</h3>
             <div className="flex flex-wrap gap-2">
               {plans.map((plan) => (
-                <Button key={plan.id} type="button" size="sm" variant={selectedPlan?.id === plan.id ? 'default' : 'outline'} onClick={() => { setSelectedPlan(plan); setSelectedBatch(null); }}>
+                <Button key={plan.id} type="button" size="sm" className="h-auto max-w-full whitespace-normal text-left leading-5" variant={selectedPlan?.id === plan.id ? 'default' : 'outline'} onClick={() => { setSelectedPlan(plan); setSelectedBatch(null); }}>
                   {plan.stockCode ?? t('detail.stock')} / {t('need.required')}: {formatQty(Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty))} / {t('need.available')}: {formatQty(plan.warehouseAvailableQty)}
                 </Button>
               ))}
@@ -479,7 +479,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               </div>
             ) : (
               <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white">
-                <Table>
+                <Table className="min-w-[900px]">
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t('activity.step')}</TableHead>
@@ -500,8 +500,8 @@ export function BilginogluHakEdisPage(): ReactElement {
             )}
           </div>
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-            <div className="rounded-2xl border">
-              <Table>
+            <div className="overflow-x-auto rounded-2xl border">
+              <Table className="min-w-[680px]">
                 <TableHeader>
           <TableRow>
             <TableHead>{t('detail.batch')}</TableHead>
@@ -537,7 +537,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <h3 className="font-semibold">{t('detail.steps')}</h3>
                 {selectedBatch ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid w-full gap-2 sm:grid-cols-2 xl:flex xl:w-auto xl:flex-wrap">
                     <BatchActionButton batch={selectedBatch} action="create-transfer-to-hakedis" label={t('actions.createDat')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="mark-at-hakedis" label={t('actions.atHakEdis')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="approve-intermediate" label={t('actions.approveIntermediate')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
@@ -585,7 +585,7 @@ function BatchActionButton({ batch, action, label, pending, allowed, run }: { ba
     || (action === 'create-shipment' && (batch.currentStage !== 'ReadyForShipment' || Boolean(batch.shipmentHeaderId)));
 
   return (
-    <Button type="button" size="sm" variant="outline" className="rounded-xl" disabled={disabled} onClick={() => run(action)}>
+    <Button type="button" size="sm" variant="outline" className="h-auto min-h-9 whitespace-normal rounded-xl px-3 py-2 text-left leading-4" disabled={disabled} onClick={() => run(action)}>
       {label}
     </Button>
   );
