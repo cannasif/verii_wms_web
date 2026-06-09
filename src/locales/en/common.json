@@ -436,7 +436,9 @@
     "serviceOperationsGroup": "Service Operations",
     "erpShelves": "Shelf / Cell Definitions",
     "erpWarehouseStockBalance": "Warehouse Stock Balance",
-    "erpWarehouseSerialBalance": "Warehouse Serial Balance"
+    "erpWarehouseSerialBalance": "Warehouse Serial Balance",
+    "bilginogluHakEdisLocationSettings": "Entitlement Location Settings",
+    "bilginogluHakEdisOperationSettings": "Operation Settings"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -603,11 +605,26 @@
       "other": "Other"
     },
     "presets": {
-      "stockOnly": { "label": "Stock code only", "hint": "Example: STK-0001" },
-      "stockYapkod": { "label": "Stock + variant code", "hint": "Example: STK-0001///RED-L" },
-      "stockYapkodSerial": { "label": "Stock + variant + serial", "hint": "Example: STK-0001///RED-L///SN000245" },
-      "stockLot": { "label": "Stock + lot", "hint": "Example: STK-0001///LOT2026-04" },
-      "packageNo": { "label": "Package number", "hint": "Example: PK-2026-00045" }
+      "stockOnly": {
+        "label": "Stock code only",
+        "hint": "Example: STK-0001"
+      },
+      "stockYapkod": {
+        "label": "Stock + variant code",
+        "hint": "Example: STK-0001///RED-L"
+      },
+      "stockYapkodSerial": {
+        "label": "Stock + variant + serial",
+        "hint": "Example: STK-0001///RED-L///SN000245"
+      },
+      "stockLot": {
+        "label": "Stock + lot",
+        "hint": "Example: STK-0001///LOT2026-04"
+      },
+      "packageNo": {
+        "label": "Package number",
+        "hint": "Example: PK-2026-00045"
+      }
     },
     "resolveDetail": {
       "stock": "Stock",

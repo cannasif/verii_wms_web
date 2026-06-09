@@ -280,6 +280,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             children: [
               { title: 'sidebar.bilginogluHakEdisOpen', titleFallback: 'Açık Hakedişler', href: '/service-allocation/bilginoglu-hakedis/open' },
               { title: 'sidebar.bilginogluHakEdisCompleted', titleFallback: 'Tamamlanmış Hakedişler', href: '/service-allocation/bilginoglu-hakedis/completed' },
+              { title: 'sidebar.bilginogluHakEdisLocationSettings', titleFallback: 'Hakediş Lokasyon Tanımları', href: '/service-allocation/bilginoglu-hakedis/location-settings' },
+              { title: 'sidebar.bilginogluHakEdisOperationSettings', titleFallback: 'Operasyon Tanımları', href: '/service-allocation/bilginoglu-hakedis/operation-settings' },
             ],
           },
           {

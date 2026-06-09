@@ -436,7 +436,9 @@
     "serviceOperationsGroup": "Servis Operasyonları",
     "erpShelves": "Raf / Hucre Tanimlari",
     "erpWarehouseStockBalance": "Depo Stok Bakiyesi",
-    "erpWarehouseSerialBalance": "Depo Seri Bakiyesi"
+    "erpWarehouseSerialBalance": "Depo Seri Bakiyesi",
+    "bilginogluHakEdisLocationSettings": "Hakediş Lokasyon Tanımları",
+    "bilginogluHakEdisOperationSettings": "Operasyon Tanımları"
   },
   "erpReference": {
     "badge": "ERP Mirror",
@@ -603,11 +605,26 @@
       "other": "Diğer"
     },
     "presets": {
-      "stockOnly": { "label": "Sadece stok kodu", "hint": "Örnek: STK-0001" },
-      "stockYapkod": { "label": "Stok + yapkod", "hint": "Örnek: STK-0001///RED-L" },
-      "stockYapkodSerial": { "label": "Stok + yapkod + seri", "hint": "Örnek: STK-0001///RED-L///SN000245" },
-      "stockLot": { "label": "Stok + lot", "hint": "Örnek: STK-0001///LOT2026-04" },
-      "packageNo": { "label": "Paket numarası", "hint": "Örnek: PK-2026-00045" }
+      "stockOnly": {
+        "label": "Sadece stok kodu",
+        "hint": "Örnek: STK-0001"
+      },
+      "stockYapkod": {
+        "label": "Stok + yapkod",
+        "hint": "Örnek: STK-0001///RED-L"
+      },
+      "stockYapkodSerial": {
+        "label": "Stok + yapkod + seri",
+        "hint": "Örnek: STK-0001///RED-L///SN000245"
+      },
+      "stockLot": {
+        "label": "Stok + lot",
+        "hint": "Örnek: STK-0001///LOT2026-04"
+      },
+      "packageNo": {
+        "label": "Paket numarası",
+        "hint": "Örnek: PK-2026-00045"
+      }
     },
     "resolveDetail": {
       "stock": "Stok",

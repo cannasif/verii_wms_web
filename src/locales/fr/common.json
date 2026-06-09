@@ -397,7 +397,9 @@
     "kkdAdditionalEntitlements": "PPE Manual Overrides",
     "erpShelves": "Shelf / Cell Definitions",
     "erpWarehouseStockBalance": "Warehouse Stock Balance",
-    "erpWarehouseSerialBalance": "Warehouse Serial Balance"
+    "erpWarehouseSerialBalance": "Warehouse Serial Balance",
+    "bilginogluHakEdisLocationSettings": "Entitlement Location Settings",
+    "bilginogluHakEdisOperationSettings": "Operation Settings"
   },
   "welcome": {
     "title": "Bienvenue",

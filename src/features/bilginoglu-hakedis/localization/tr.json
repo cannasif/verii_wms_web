@@ -28,6 +28,8 @@
     "evaluate": "Degerlendir",
     "refresh": "Yenile",
     "savePolicy": "Politikayi Kaydet",
+    "createHakEdisTransferOrders": "Hakediş Transfer Emirleri Aç",
+    "createShipmentOrders": "Çıkış/Yükleme Emri Aç",
     "createSuggestedTransfers": "Otomatik Transferleri Olustur",
     "createDat": "DAT Ac",
     "atHakEdis": "Hakediste",
@@ -152,7 +154,109 @@
     "batchFailed": "Hakedis batch aksiyonu calistirilamadi.",
     "transfersCreated": "Onerilen transferler olusturuldu. Batch: {{count}}",
     "transfersFailed": "Onerilen transferler olusturulamadi.",
+    "bulkTransfersCreated": "Hakediş transfer operasyonu tamamlandı. Transfer: {{transfers}}, ilerleyen batch: {{advanced}}, bekleyen: {{skipped}}",
+    "bulkTransfersFailed": "Hakediş transfer emirleri oluşturulamadı.",
+    "bulkShipmentsCreated": "Çıkış/yükleme operasyonu tamamlandı. Sevk: {{shipments}}, ilerleyen batch: {{advanced}}, bekleyen: {{skipped}}",
+    "bulkShipmentsFailed": "Çıkış/yükleme emirleri oluşturulamadı.",
     "policyUpdated": "Hakedis siparis politikasi guncellendi.",
     "policyFailed": "Hakedis siparis politikasi guncellenemedi."
+  },
+  "locationSettings": {
+    "title": "Hakediş Lokasyon Tanımları",
+    "hero": {
+      "eyebrow": "Tamamlanan hakediş lokasyonu",
+      "description": "Hakedişi tamamlanan ve dönüş DAT/sevk için bekleyen ürünlerin fiziksel depo ve raf/göz tanımını yönetin. Dönüş DAT akışları bu lokasyonu kaynak olarak kullanacak şekilde genişletilebilir."
+    },
+    "actions": {
+      "new": "Yeni Tanım",
+      "save": "Kaydet"
+    },
+    "form": {
+      "createTitle": "Yeni lokasyon tanımı",
+      "editTitle": "Lokasyon tanımını düzenle",
+      "branchCode": "Şube kodu",
+      "completedWarehouse": "Hakedişi tamamlanan ürün deposu",
+      "completedWarehouseDescription": "Hakedişten dönecek ürünlerin fiziksel olarak beklediği depoyu seçin.",
+      "selectWarehouse": "Depo seç",
+      "completedShelf": "Hakedişi tamamlanan ürün rafı/gözü",
+      "completedShelfDescription": "Dönüş DAT için kaynak raf/göz olarak kullanılacak lokasyon.",
+      "selectShelf": "Raf/göz seç",
+      "noShelves": "Bu depo için aktif raf/göz bulunamadı.",
+      "isDefault": "Varsayılan",
+      "isActive": "Aktif",
+      "description": "Açıklama"
+    },
+    "table": {
+      "title": "Tanımlı hakediş lokasyonları",
+      "branch": "Şube",
+      "warehouse": "Depo",
+      "shelf": "Raf/Göz",
+      "status": "Durum",
+      "description": "Açıklama",
+      "actions": "İşlemler",
+      "empty": "Henüz hakediş lokasyon tanımı yok."
+    },
+    "badges": {
+      "default": "Varsayılan",
+      "active": "Aktif",
+      "passive": "Pasif"
+    },
+    "messages": {
+      "saved": "Hakediş lokasyon tanımı kaydedildi.",
+      "saveFailed": "Hakediş lokasyon tanımı kaydedilemedi.",
+      "deleted": "Hakediş lokasyon tanımı silindi.",
+      "deleteFailed": "Hakediş lokasyon tanımı silinemedi."
+    }
+  },
+  "operationSettings": {
+    "title": "Operasyon Tanımları",
+    "hero": {
+      "eyebrow": "Hakediş operasyon şablonları",
+      "description": "Bilginoğlu hakediş akışında DAT, SEVK ve AMBAR ÇIKIŞ operasyonlarının kod, açıklama ve depo zinciri tanımlarını yönetin."
+    },
+    "actions": {
+      "new": "Yeni Operasyon",
+      "save": "Kaydet"
+    },
+    "form": {
+      "createTitle": "Yeni operasyon tanımı",
+      "editTitle": "Operasyon tanımını düzenle",
+      "branchCode": "Şube kodu",
+      "operationType": "Operasyon tipi",
+      "operationCode": "Operasyon kodu",
+      "operationDescription": "Operasyon açıklaması",
+      "warehouseChainTitle": "DAT/SEVK depo zinciri",
+      "mainWarehouse": "Ana depo",
+      "intermediateWarehouse": "Ara depo",
+      "finalWarehouse": "DAT final depo",
+      "warehouseSelectDescription": "Operasyon zincirinde kullanılacak depoyu seçin.",
+      "selectWarehouse": "Depo seç",
+      "isActive": "Aktif"
+    },
+    "operationTypes": {
+      "DAT": "DAT",
+      "SEVK": "SEVK",
+      "AMBAR_CIKIS": "AMBAR ÇIKIŞ"
+    },
+    "table": {
+      "title": "Tanımlı operasyonlar",
+      "branch": "Şube",
+      "operation": "Operasyon",
+      "type": "Tip",
+      "warehouseChain": "Depo zinciri",
+      "status": "Durum",
+      "actions": "İşlemler",
+      "empty": "Henüz operasyon tanımı yok."
+    },
+    "badges": {
+      "active": "Aktif",
+      "passive": "Pasif"
+    },
+    "messages": {
+      "saved": "Operasyon tanımı kaydedildi.",
+      "saveFailed": "Operasyon tanımı kaydedilemedi.",
+      "deleted": "Operasyon tanımı silindi.",
+      "deleteFailed": "Operasyon tanımı silinemedi."
+    }
   }
 }

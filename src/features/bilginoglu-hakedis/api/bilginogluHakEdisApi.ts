@@ -6,13 +6,18 @@ import type {
   BilginogluHakEdisBatch,
   BilginogluHakEdisBatchStep,
   BilginogluHakEdisEvaluationResult,
+  BilginogluHakEdisBulkOperationResult,
   BilginogluHakEdisOrderActivity,
   BilginogluHakEdisOrderHeader,
   BilginogluHakEdisPlan,
+  BilginogluHakEdisCompletedLocationSetting,
+  BilginogluHakEdisOperationSetting,
   BilginogluHakEdisCreateTransfersResult,
   BilginogluHakEdisTransferPreview,
   PagedParams,
   PagedResponse,
+  UpsertBilginogluHakEdisCompletedLocationSetting,
+  UpsertBilginogluHakEdisOperationSetting,
   UpdateBilginogluHakEdisOrderPolicy,
 } from '../types/bilginoglu-hakedis.types';
 
@@ -50,6 +55,56 @@ export const bilginogluHakEdisApi = {
   updateOrderPolicy: async (orderHeaderId: number, input: UpdateBilginogluHakEdisOrderPolicy): Promise<BilginogluHakEdisOrderHeader> => {
     const response = await api.put<ApiResponse<BilginogluHakEdisOrderHeader>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/policies`, input);
     return extractData(response as ApiResponse<BilginogluHakEdisOrderHeader>);
+  },
+
+  getCompletedLocationSettings: async (): Promise<BilginogluHakEdisCompletedLocationSetting[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisCompletedLocationSetting[]>>('/api/BilginogluHakEdis/completed-location-settings');
+    return extractData(response as ApiResponse<BilginogluHakEdisCompletedLocationSetting[]>);
+  },
+
+  createCompletedLocationSetting: async (
+    input: UpsertBilginogluHakEdisCompletedLocationSetting,
+  ): Promise<BilginogluHakEdisCompletedLocationSetting> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisCompletedLocationSetting>>('/api/BilginogluHakEdis/completed-location-settings', input);
+    return extractData(response as ApiResponse<BilginogluHakEdisCompletedLocationSetting>);
+  },
+
+  updateCompletedLocationSetting: async (
+    id: number,
+    input: UpsertBilginogluHakEdisCompletedLocationSetting,
+  ): Promise<BilginogluHakEdisCompletedLocationSetting> => {
+    const response = await api.put<ApiResponse<BilginogluHakEdisCompletedLocationSetting>>(`/api/BilginogluHakEdis/completed-location-settings/${id}`, input);
+    return extractData(response as ApiResponse<BilginogluHakEdisCompletedLocationSetting>);
+  },
+
+  deleteCompletedLocationSetting: async (id: number): Promise<boolean> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/BilginogluHakEdis/completed-location-settings/${id}`);
+    return extractData(response as ApiResponse<boolean>);
+  },
+
+  getOperationSettings: async (): Promise<BilginogluHakEdisOperationSetting[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisOperationSetting[]>>('/api/BilginogluHakEdis/operation-settings');
+    return extractData(response as ApiResponse<BilginogluHakEdisOperationSetting[]>);
+  },
+
+  createOperationSetting: async (
+    input: UpsertBilginogluHakEdisOperationSetting,
+  ): Promise<BilginogluHakEdisOperationSetting> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisOperationSetting>>('/api/BilginogluHakEdis/operation-settings', input);
+    return extractData(response as ApiResponse<BilginogluHakEdisOperationSetting>);
+  },
+
+  updateOperationSetting: async (
+    id: number,
+    input: UpsertBilginogluHakEdisOperationSetting,
+  ): Promise<BilginogluHakEdisOperationSetting> => {
+    const response = await api.put<ApiResponse<BilginogluHakEdisOperationSetting>>(`/api/BilginogluHakEdis/operation-settings/${id}`, input);
+    return extractData(response as ApiResponse<BilginogluHakEdisOperationSetting>);
+  },
+
+  deleteOperationSetting: async (id: number): Promise<boolean> => {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/BilginogluHakEdis/operation-settings/${id}`);
+    return extractData(response as ApiResponse<boolean>);
   },
 
   getPlans: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisPlan>> => {
@@ -91,6 +146,16 @@ export const bilginogluHakEdisApi = {
   createSuggestedTransfers: async (orderHeaderId: number): Promise<BilginogluHakEdisCreateTransfersResult> => {
     const response = await api.post<ApiResponse<BilginogluHakEdisCreateTransfersResult>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/create-suggested-transfers`, {});
     return extractData(response as ApiResponse<BilginogluHakEdisCreateTransfersResult>);
+  },
+
+  createHakEdisTransferOrders: async (): Promise<BilginogluHakEdisBulkOperationResult> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisBulkOperationResult>>('/api/BilginogluHakEdis/orders/create-hakedis-transfer-orders', {});
+    return extractData(response as ApiResponse<BilginogluHakEdisBulkOperationResult>);
+  },
+
+  createShipmentOrders: async (): Promise<BilginogluHakEdisBulkOperationResult> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisBulkOperationResult>>('/api/BilginogluHakEdis/orders/create-shipment-orders', {});
+    return extractData(response as ApiResponse<BilginogluHakEdisBulkOperationResult>);
   },
 
   runBatchAction: async (batchId: number, action: string): Promise<BilginogluHakEdisBatch> => {

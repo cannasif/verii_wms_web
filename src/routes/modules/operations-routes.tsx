@@ -68,6 +68,8 @@ const TransferApprovalPage = lazyNamed(
 );
 const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'), 'TransferChainListPage');
 const BilginogluHakEdisPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPage');
+const BilginogluHakEdisLocationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisLocationSettingsPage');
+const BilginogluHakEdisOperationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisOperationSettingsPage');
 
 const SubcontractingIssueCreatePage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueCreatePage');
 const SubcontractingIssueEditPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueEditPage');
@@ -393,6 +395,8 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/open', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/completed', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-completed', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/location-settings', element: withRoute(BilginogluHakEdisLocationSettingsPage, { routeName: 'service-bilginoglu-hakedis-location-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/operation-settings', element: withRoute(BilginogluHakEdisOperationSettingsPage, { routeName: 'service-bilginoglu-hakedis-operation-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
     ],
   },
   {

@@ -21,6 +21,8 @@ import {
   useBilginogluHakEdisTransferPreviewQuery,
   useBilginogluHakEdisStepsQuery,
   useBilginogluHakEdisBatchActionMutation,
+  useBilginogluHakEdisBulkShipmentOrdersMutation,
+  useBilginogluHakEdisBulkTransferOrdersMutation,
   useBilginogluHakEdisCreateSuggestedTransfersMutation,
   useBilginogluHakEdisOrderPolicyMutation,
   useEvaluateBilginogluHakEdisMutation,
@@ -105,6 +107,8 @@ export function BilginogluHakEdisPage(): ReactElement {
   const evaluateMutation = useEvaluateBilginogluHakEdisMutation();
   const batchActionMutation = useBilginogluHakEdisBatchActionMutation();
   const createSuggestedTransfersMutation = useBilginogluHakEdisCreateSuggestedTransfersMutation();
+  const bulkTransferOrdersMutation = useBilginogluHakEdisBulkTransferOrdersMutation();
+  const bulkShipmentOrdersMutation = useBilginogluHakEdisBulkShipmentOrdersMutation();
   const policyMutation = useBilginogluHakEdisOrderPolicyMutation();
   const statusLabel = (status: string): string => {
     const translated = t(`status.${status}`);
@@ -182,6 +186,28 @@ export function BilginogluHakEdisPage(): ReactElement {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
+            {view === 'open' ? (
+              <>
+                <Button
+                  type="button"
+                  className="rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200"
+                  onClick={() => bulkTransferOrdersMutation.mutate()}
+                  disabled={!permission.canUpdate || bulkTransferOrdersMutation.isPending}
+                >
+                  {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
+                  {t('actions.createHakEdisTransferOrders')}
+                </Button>
+                <Button
+                  type="button"
+                  className="rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200"
+                  onClick={() => bulkShipmentOrdersMutation.mutate()}
+                  disabled={!permission.canUpdate || bulkShipmentOrdersMutation.isPending}
+                >
+                  {bulkShipmentOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Truck className="mr-2 size-4" />}
+                  {t('actions.createShipmentOrders')}
+                </Button>
+              </>
+            ) : null}
             <Button
               type="button"
               className="rounded-2xl bg-cyan-300 text-slate-950 hover:bg-cyan-200"

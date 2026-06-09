@@ -37,6 +37,64 @@ export interface UpdateBilginogluHakEdisOrderPolicy {
   shipmentPolicy: string;
 }
 
+export interface BilginogluHakEdisCompletedLocationSetting {
+  id: number;
+  branchCode: string;
+  warehouseId: number;
+  warehouseCode?: number | null;
+  warehouseName?: string | null;
+  shelfId: number;
+  shelfCode?: string | null;
+  shelfName?: string | null;
+  isDefault: boolean;
+  isActive: boolean;
+  description?: string | null;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+}
+
+export interface UpsertBilginogluHakEdisCompletedLocationSetting {
+  branchCode: string;
+  warehouseId: number;
+  shelfId: number;
+  isDefault: boolean;
+  isActive: boolean;
+  description?: string | null;
+}
+
+export type BilginogluHakEdisOperationType = 'DAT' | 'SEVK' | 'AMBAR_CIKIS';
+
+export interface BilginogluHakEdisOperationSetting {
+  id: number;
+  branchCode: string;
+  operationCode: string;
+  operationDescription: string;
+  operationType: BilginogluHakEdisOperationType;
+  mainWarehouseId?: number | null;
+  mainWarehouseCode?: number | null;
+  mainWarehouseName?: string | null;
+  intermediateWarehouseId?: number | null;
+  intermediateWarehouseCode?: number | null;
+  intermediateWarehouseName?: string | null;
+  finalWarehouseId?: number | null;
+  finalWarehouseCode?: number | null;
+  finalWarehouseName?: string | null;
+  isActive: boolean;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+}
+
+export interface UpsertBilginogluHakEdisOperationSetting {
+  branchCode: string;
+  operationCode: string;
+  operationDescription: string;
+  operationType: BilginogluHakEdisOperationType;
+  mainWarehouseId?: number | null;
+  intermediateWarehouseId?: number | null;
+  finalWarehouseId?: number | null;
+  isActive: boolean;
+}
+
 export interface BilginogluHakEdisPlan {
   id: number;
   orderHeaderId?: number | null;
@@ -221,4 +279,23 @@ export interface BilginogluHakEdisTransferPreview {
 export interface BilginogluHakEdisCreateTransfersResult {
   preview: BilginogluHakEdisTransferPreview;
   createdBatches: BilginogluHakEdisBatch[];
+}
+
+export interface BilginogluHakEdisBulkOperationLine {
+  orderHeaderId: number;
+  siparisNo: string;
+  batchId?: number | null;
+  batchNo?: string | null;
+  action: string;
+  result: string;
+  message: string;
+}
+
+export interface BilginogluHakEdisBulkOperationResult {
+  processedOrderCount: number;
+  createdTransferCount: number;
+  createdShipmentCount: number;
+  advancedBatchCount: number;
+  skippedCount: number;
+  lines: BilginogluHakEdisBulkOperationLine[];
 }

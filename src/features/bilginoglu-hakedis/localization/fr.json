@@ -28,6 +28,8 @@
     "evaluate": "Evaluate",
     "refresh": "Refresh",
     "savePolicy": "Save Policy",
+    "createHakEdisTransferOrders": "Create Entitlement Transfer Orders",
+    "createShipmentOrders": "Create Loading / Shipment Orders",
     "createSuggestedTransfers": "Create Suggested Transfers",
     "createDat": "Create DAT",
     "atHakEdis": "At Entitlement",
@@ -152,7 +154,109 @@
     "batchFailed": "Entitlement batch action could not be completed.",
     "transfersCreated": "Suggested transfers created. Batch: {{count}}",
     "transfersFailed": "Suggested transfers could not be created.",
+    "bulkTransfersCreated": "Entitlement transfer operation completed. Transfers: {{transfers}}, advanced batches: {{advanced}}, waiting: {{skipped}}",
+    "bulkTransfersFailed": "Entitlement transfer orders could not be created.",
+    "bulkShipmentsCreated": "Loading/shipment operation completed. Shipments: {{shipments}}, advanced batches: {{advanced}}, waiting: {{skipped}}",
+    "bulkShipmentsFailed": "Loading/shipment orders could not be created.",
     "policyUpdated": "Entitlement order policy updated.",
     "policyFailed": "Entitlement order policy could not be updated."
+  },
+  "locationSettings": {
+    "title": "Entitlement Location Settings",
+    "hero": {
+      "eyebrow": "Completed entitlement location",
+      "description": "Manage the warehouse and shelf/cell where completed entitlement products wait before return DAT or shipment. Return DAT flows can use this location as the physical source."
+    },
+    "actions": {
+      "new": "New Setting",
+      "save": "Save"
+    },
+    "form": {
+      "createTitle": "New location setting",
+      "editTitle": "Edit location setting",
+      "branchCode": "Branch code",
+      "completedWarehouse": "Completed entitlement warehouse",
+      "completedWarehouseDescription": "Select the warehouse where products wait after entitlement completion.",
+      "selectWarehouse": "Select warehouse",
+      "completedShelf": "Completed entitlement shelf/cell",
+      "completedShelfDescription": "Location that will be used as the source shelf/cell for return DAT.",
+      "selectShelf": "Select shelf/cell",
+      "noShelves": "No active shelf/cell was found for this warehouse.",
+      "isDefault": "Default",
+      "isActive": "Active",
+      "description": "Description"
+    },
+    "table": {
+      "title": "Defined entitlement locations",
+      "branch": "Branch",
+      "warehouse": "Warehouse",
+      "shelf": "Shelf/Cell",
+      "status": "Status",
+      "description": "Description",
+      "actions": "Actions",
+      "empty": "No entitlement location setting has been defined yet."
+    },
+    "badges": {
+      "default": "Default",
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "messages": {
+      "saved": "Entitlement location setting was saved.",
+      "saveFailed": "Entitlement location setting could not be saved.",
+      "deleted": "Entitlement location setting was deleted.",
+      "deleteFailed": "Entitlement location setting could not be deleted."
+    }
+  },
+  "operationSettings": {
+    "title": "Operation Settings",
+    "hero": {
+      "eyebrow": "Entitlement operation templates",
+      "description": "Manage operation code, description, type, and warehouse chain settings for DAT, shipment, and warehouse outbound flows in Bilginoglu entitlement."
+    },
+    "actions": {
+      "new": "New Operation",
+      "save": "Save"
+    },
+    "form": {
+      "createTitle": "New operation setting",
+      "editTitle": "Edit operation setting",
+      "branchCode": "Branch code",
+      "operationType": "Operation type",
+      "operationCode": "Operation code",
+      "operationDescription": "Operation description",
+      "warehouseChainTitle": "DAT/Shipment warehouse chain",
+      "mainWarehouse": "Main warehouse",
+      "intermediateWarehouse": "Intermediate warehouse",
+      "finalWarehouse": "DAT final warehouse",
+      "warehouseSelectDescription": "Select the warehouse used by this operation chain.",
+      "selectWarehouse": "Select warehouse",
+      "isActive": "Active"
+    },
+    "operationTypes": {
+      "DAT": "DAT",
+      "SEVK": "Shipment",
+      "AMBAR_CIKIS": "Warehouse Outbound"
+    },
+    "table": {
+      "title": "Defined operations",
+      "branch": "Branch",
+      "operation": "Operation",
+      "type": "Type",
+      "warehouseChain": "Warehouse chain",
+      "status": "Status",
+      "actions": "Actions",
+      "empty": "No operation setting has been defined yet."
+    },
+    "badges": {
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "messages": {
+      "saved": "Operation setting was saved.",
+      "saveFailed": "Operation setting could not be saved.",
+      "deleted": "Operation setting was deleted.",
+      "deleteFailed": "Operation setting could not be deleted."
+    }
   }
 }

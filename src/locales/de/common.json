@@ -434,7 +434,9 @@
     "serviceOperationsGroup": "Service Operationen",
     "erpShelves": "Regal- /Zelldefinitionen",
     "erpWarehouseStockBalance": "Lagerbestandsbilanz",
-    "erpWarehouseSerialBalance": "Lagerseriensaldo"
+    "erpWarehouseSerialBalance": "Lagerseriensaldo",
+    "bilginogluHakEdisLocationSettings": "Hakediş Location Settings",
+    "bilginogluHakEdisOperationSettings": "Operation Settings"
   },
   "erpReference": {
     "badge": "ERP-Spiegel",
@@ -601,11 +603,26 @@
       "other": "Sonstige"
     },
     "presets": {
-      "stockOnly": { "label": "Nur Bestandscode", "hint": "Beispiel: STK-0001" },
-      "stockYapkod": { "label": "Bestand + Strukturcode", "hint": "Beispiel: STK-0001///RED-L" },
-      "stockYapkodSerial": { "label": "Bestand + Strukturcode + Serie", "hint": "Beispiel: STK-0001///RED-L///SN000245" },
-      "stockLot": { "label": "Bestand + Charge", "hint": "Beispiel: STK-0001///LOT2026-04" },
-      "packageNo": { "label": "Paketnummer", "hint": "Beispiel: PK-2026-00045" }
+      "stockOnly": {
+        "label": "Nur Bestandscode",
+        "hint": "Beispiel: STK-0001"
+      },
+      "stockYapkod": {
+        "label": "Bestand + Strukturcode",
+        "hint": "Beispiel: STK-0001///RED-L"
+      },
+      "stockYapkodSerial": {
+        "label": "Bestand + Strukturcode + Serie",
+        "hint": "Beispiel: STK-0001///RED-L///SN000245"
+      },
+      "stockLot": {
+        "label": "Bestand + Charge",
+        "hint": "Beispiel: STK-0001///LOT2026-04"
+      },
+      "packageNo": {
+        "label": "Paketnummer",
+        "hint": "Beispiel: PK-2026-00045"
+      }
     },
     "resolveDetail": {
       "stock": "Bestand",

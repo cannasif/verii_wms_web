@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { bilginogluHakEdisApi } from '../api/bilginogluHakEdisApi';
-import type { PagedParams, UpdateBilginogluHakEdisOrderPolicy } from '../types/bilginoglu-hakedis.types';
+import type { PagedParams, UpsertBilginogluHakEdisCompletedLocationSetting, UpsertBilginogluHakEdisOperationSetting, UpdateBilginogluHakEdisOrderPolicy } from '../types/bilginoglu-hakedis.types';
 
 export const bilginogluHakEdisQueryKeys = {
   all: ['bilginoglu-hakedis'] as const,
@@ -13,6 +13,8 @@ export const bilginogluHakEdisQueryKeys = {
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
+  completedLocationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'completed-location-settings'] as const,
+  operationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'operation-settings'] as const,
 };
 
 export function useBilginogluHakEdisOrdersQuery(params: PagedParams) {
@@ -108,6 +110,40 @@ export function useBilginogluHakEdisCreateSuggestedTransfersMutation() {
   });
 }
 
+export function useBilginogluHakEdisBulkTransferOrdersMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: () => bilginogluHakEdisApi.createHakEdisTransferOrders(),
+    onSuccess: async (result) => {
+      toast.success(t('messages.bulkTransfersCreated', {
+        transfers: result.createdTransferCount,
+        advanced: result.advancedBatchCount,
+        skipped: result.skippedCount,
+      }));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.all });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('messages.bulkTransfersFailed')),
+  });
+}
+
+export function useBilginogluHakEdisBulkShipmentOrdersMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: () => bilginogluHakEdisApi.createShipmentOrders(),
+    onSuccess: async (result) => {
+      toast.success(t('messages.bulkShipmentsCreated', {
+        shipments: result.createdShipmentCount,
+        advanced: result.advancedBatchCount,
+        skipped: result.skippedCount,
+      }));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.all });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('messages.bulkShipmentsFailed')),
+  });
+}
+
 export function useBilginogluHakEdisOrderPolicyMutation() {
   const queryClient = useQueryClient();
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
@@ -119,5 +155,73 @@ export function useBilginogluHakEdisOrderPolicyMutation() {
       await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.all });
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('messages.policyFailed')),
+  });
+}
+
+export function useBilginogluHakEdisCompletedLocationSettingsQuery() {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.completedLocationSettings(),
+    queryFn: () => bilginogluHakEdisApi.getCompletedLocationSettings(),
+  });
+}
+
+export function useBilginogluHakEdisCompletedLocationSettingMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: ({ id, input }: { id?: number; input: UpsertBilginogluHakEdisCompletedLocationSetting }) =>
+      id ? bilginogluHakEdisApi.updateCompletedLocationSetting(id, input) : bilginogluHakEdisApi.createCompletedLocationSetting(input),
+    onSuccess: async () => {
+      toast.success(t('locationSettings.messages.saved'));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.completedLocationSettings() });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('locationSettings.messages.saveFailed')),
+  });
+}
+
+export function useBilginogluHakEdisCompletedLocationSettingDeleteMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: (id: number) => bilginogluHakEdisApi.deleteCompletedLocationSetting(id),
+    onSuccess: async () => {
+      toast.success(t('locationSettings.messages.deleted'));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.completedLocationSettings() });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('locationSettings.messages.deleteFailed')),
+  });
+}
+
+export function useBilginogluHakEdisOperationSettingsQuery() {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.operationSettings(),
+    queryFn: () => bilginogluHakEdisApi.getOperationSettings(),
+  });
+}
+
+export function useBilginogluHakEdisOperationSettingMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: ({ id, input }: { id?: number; input: UpsertBilginogluHakEdisOperationSetting }) =>
+      id ? bilginogluHakEdisApi.updateOperationSetting(id, input) : bilginogluHakEdisApi.createOperationSetting(input),
+    onSuccess: async () => {
+      toast.success(t('operationSettings.messages.saved'));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.operationSettings() });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('operationSettings.messages.saveFailed')),
+  });
+}
+
+export function useBilginogluHakEdisOperationSettingDeleteMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  return useMutation({
+    mutationFn: (id: number) => bilginogluHakEdisApi.deleteOperationSetting(id),
+    onSuccess: async () => {
+      toast.success(t('operationSettings.messages.deleted'));
+      await queryClient.invalidateQueries({ queryKey: bilginogluHakEdisQueryKeys.operationSettings() });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('operationSettings.messages.deleteFailed')),
   });
 }
