@@ -211,7 +211,18 @@ export function TransferListPage(): ReactElement {
                 case 'id':
                   return <span className="font-medium">{row.id}</span>;
                 case 'documentNo':
-                  return row.documentNo || '-';
+                  return (
+                    <div className="space-y-1">
+                      <div className="font-medium">{row.documentNo || '-'}</div>
+                      {row.businessContext === 'BilginogluHakEdis' ? (
+                        <Badge className="rounded-xl border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-50">
+                          {t(`transfer.businessContext.${row.businessContextStep || 'BilginogluHakEdis'}`, {
+                            defaultValue: t('transfer.businessContext.BilginogluHakEdis'),
+                          })}
+                        </Badge>
+                      ) : null}
+                    </div>
+                  );
                 case 'documentDate':
                   return formatDate(row.documentDate);
                 case 'customerCode':

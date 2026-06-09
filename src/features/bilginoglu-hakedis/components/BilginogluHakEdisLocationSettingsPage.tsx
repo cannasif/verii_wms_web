@@ -32,6 +32,11 @@ interface FormState {
   warehouseLabel: string;
   shelfCode: string;
   shelfId?: number;
+  calibrationReturnWarehouseId?: number;
+  calibrationReturnWarehouseCode?: number;
+  calibrationReturnWarehouseLabel: string;
+  calibrationReturnShelfCode: string;
+  calibrationReturnShelfId?: number;
   isDefault: boolean;
   isActive: boolean;
   description: string;
@@ -41,6 +46,8 @@ const emptyForm: FormState = {
   branchCode: '0',
   warehouseLabel: '',
   shelfCode: '',
+  calibrationReturnWarehouseLabel: '',
+  calibrationReturnShelfCode: '',
   isDefault: true,
   isActive: true,
   description: '',
@@ -51,6 +58,7 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
   const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
+  const [calibrationWarehouseLookupOpen, setCalibrationWarehouseLookupOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const settingsQuery = useBilginogluHakEdisCompletedLocationSettingsQuery();
   const saveMutation = useBilginogluHakEdisCompletedLocationSettingMutation();
@@ -60,6 +68,11 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     queryFn: ({ signal }) => shelfManagementApi.getLookup(form.warehouseId!, false, { signal }),
     enabled: Boolean(form.warehouseId),
   });
+  const calibrationShelvesQuery = useQuery({
+    queryKey: ['bilginoglu-hakedis', 'completed-location', 'calibration-shelves', form.calibrationReturnWarehouseId],
+    queryFn: ({ signal }) => shelfManagementApi.getLookup(form.calibrationReturnWarehouseId!, false, { signal }),
+    enabled: Boolean(form.calibrationReturnWarehouseId),
+  });
 
   useEffect(() => {
     setPageTitle(t('locationSettings.title'));
@@ -67,6 +80,7 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
 
   const settings = settingsQuery.data ?? [];
   const shelfOptions = useMemo(() => shelvesQuery.data?.data ?? [], [shelvesQuery.data?.data]);
+  const calibrationShelfOptions = useMemo(() => calibrationShelvesQuery.data?.data ?? [], [calibrationShelvesQuery.data?.data]);
 
   const canSave = permission.canCreate || permission.canUpdate;
   const resolvedShelfId = form.shelfId;
@@ -82,6 +96,11 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
       warehouseLabel: `${item.warehouseCode ?? '-'} · ${item.warehouseName ?? '-'}`,
       shelfCode: item.shelfCode ?? '',
       shelfId: item.shelfId,
+      calibrationReturnWarehouseId: item.calibrationReturnWarehouseId ?? undefined,
+      calibrationReturnWarehouseCode: item.calibrationReturnWarehouseCode ?? undefined,
+      calibrationReturnWarehouseLabel: item.calibrationReturnWarehouseId ? `${item.calibrationReturnWarehouseCode ?? '-'} · ${item.calibrationReturnWarehouseName ?? '-'}` : '',
+      calibrationReturnShelfCode: item.calibrationReturnShelfCode ?? '',
+      calibrationReturnShelfId: item.calibrationReturnShelfId ?? undefined,
       isDefault: item.isDefault,
       isActive: item.isActive,
       description: item.description ?? '',
@@ -96,6 +115,8 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
         branchCode: form.branchCode.trim() || '0',
         warehouseId: form.warehouseId,
         shelfId: resolvedShelfId,
+        calibrationReturnWarehouseId: form.calibrationReturnWarehouseId ?? null,
+        calibrationReturnShelfId: form.calibrationReturnShelfId ?? null,
         isDefault: form.isDefault,
         isActive: form.isActive,
         description: form.description.trim() || null,
@@ -189,6 +210,85 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
               <p className="text-xs text-muted-foreground">{t('locationSettings.form.completedShelfDescription')}</p>
             </div>
 
+            <div className="rounded-3xl border border-amber-100 bg-amber-50/60 p-4">
+              <div className="mb-3">
+                <div className="text-sm font-semibold text-amber-950">{t('locationSettings.form.calibrationReturnTitle')}</div>
+                <p className="text-xs text-amber-900/75">{t('locationSettings.form.calibrationReturnDescription')}</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label>{t('locationSettings.form.calibrationReturnWarehouse')}</Label>
+                  <PagedLookupDialog<WarehouseLookup>
+                    open={calibrationWarehouseLookupOpen}
+                    onOpenChange={setCalibrationWarehouseLookupOpen}
+                    title={t('locationSettings.form.calibrationReturnWarehouse')}
+                    description={t('locationSettings.form.calibrationReturnWarehouseDescription')}
+                    value={form.calibrationReturnWarehouseLabel}
+                    placeholder={t('locationSettings.form.selectWarehouse')}
+                    searchPlaceholder={t('table.search')}
+                    queryKey={['bilginoglu-hakedis', 'completed-location', 'calibration-warehouse']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                    getKey={(item) => String(item.id)}
+                    getLabel={(item) => `${item.depoKodu} · ${item.depoIsmi}`}
+                    onSelect={(item) => {
+                      setForm((prev) => ({
+                        ...prev,
+                        calibrationReturnWarehouseId: item.id,
+                        calibrationReturnWarehouseCode: item.depoKodu,
+                        calibrationReturnWarehouseLabel: `${item.depoKodu} · ${item.depoIsmi}`,
+                        calibrationReturnShelfCode: '',
+                        calibrationReturnShelfId: undefined,
+                      }));
+                      setCalibrationWarehouseLookupOpen(false);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{t('locationSettings.form.calibrationReturnShelf')}</Label>
+                  <Select
+                    value={form.calibrationReturnShelfId ? String(form.calibrationReturnShelfId) : ''}
+                    onValueChange={(value) => {
+                      const shelf = calibrationShelfOptions.find((item) => String(item.id) === value);
+                      setForm((prev) => ({ ...prev, calibrationReturnShelfId: shelf?.id, calibrationReturnShelfCode: shelf?.code ?? '' }));
+                    }}
+                    disabled={!form.calibrationReturnWarehouseId || calibrationShelvesQuery.isLoading}
+                  >
+                    <SelectTrigger className="rounded-2xl bg-white">
+                      <SelectValue placeholder={calibrationShelvesQuery.isLoading ? t('loading') : t('locationSettings.form.selectShelf')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {calibrationShelfOptions.map((item) => (
+                        <SelectItem key={item.id} value={String(item.id)}>
+                          {item.code} · {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-amber-900/75">{t('locationSettings.form.calibrationReturnShelfDescription')}</p>
+                </div>
+
+                {(form.calibrationReturnWarehouseId || form.calibrationReturnShelfId) ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-auto rounded-2xl px-0 text-xs font-semibold text-amber-900 hover:bg-transparent hover:text-amber-950"
+                    onClick={() => setForm((prev) => ({
+                      ...prev,
+                      calibrationReturnWarehouseId: undefined,
+                      calibrationReturnWarehouseCode: undefined,
+                      calibrationReturnWarehouseLabel: '',
+                      calibrationReturnShelfCode: '',
+                      calibrationReturnShelfId: undefined,
+                    }))}
+                  >
+                    {t('locationSettings.form.clearCalibrationReturnLocation')}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
             <div className="grid gap-3 md:grid-cols-2">
               <label className="flex items-center gap-2 rounded-2xl border border-slate-200 p-3 text-sm font-medium">
                 <input
@@ -240,6 +340,7 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
                       <TableHead>{t('locationSettings.table.branch')}</TableHead>
                       <TableHead>{t('locationSettings.table.warehouse')}</TableHead>
                       <TableHead>{t('locationSettings.table.shelf')}</TableHead>
+                      <TableHead>{t('locationSettings.table.calibrationReturnLocation')}</TableHead>
                       <TableHead>{t('locationSettings.table.status')}</TableHead>
                       <TableHead>{t('locationSettings.table.description')}</TableHead>
                       <TableHead className="text-right">{t('locationSettings.table.actions')}</TableHead>
@@ -256,6 +357,13 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
                         <TableCell>
                           <div className="font-medium">{item.shelfCode ?? '-'}</div>
                           <div className="text-xs text-muted-foreground">{item.shelfName ?? '-'}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">{item.calibrationReturnWarehouseCode ?? '-'}</div>
+                          <div className="text-xs text-muted-foreground">{item.calibrationReturnWarehouseName ?? '-'}</div>
+                          <div className="mt-1 text-xs text-muted-foreground">
+                            {item.calibrationReturnShelfCode ?? '-'} · {item.calibrationReturnShelfName ?? '-'}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-2">

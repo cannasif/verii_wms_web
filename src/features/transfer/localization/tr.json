@@ -199,6 +199,12 @@
       "sourceWarehouseRequired": "Source Warehouse Required",
       "targetWarehouseRequired": "Target Warehouse Required",
       "transferDateRequired": "Transfer Date Required"
+    },
+    "businessContext": {
+      "label": "İş Bağlamı",
+      "BilginogluHakEdis": "Bilginoğlu Hakediş DAT",
+      "TransferToHakEdis": "Hakedişe Çıkış DAT",
+      "ReturnFromHakEdis": "Hakediş Dönüş DAT"
     }
   }
 }

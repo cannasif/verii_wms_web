@@ -124,6 +124,9 @@ export type TransferOrderItemsResponse = ApiResponse<TransferOrderItem[]>;
 export interface TransferHeader extends BaseDocumentHeaderDto {
   priorityLevel: number;
   type: number;
+  businessContext?: string | null;
+  businessContextId?: number | null;
+  businessContextStep?: string | null;
 }
 
 export interface TransferLine extends BaseDocumentLineDto {

@@ -35,7 +35,8 @@
     "atHakEdis": "In Abschlagszahlung",
     "createReturnDat": "Rückführungs-DAT",
     "markReady": "Versandbereit",
-    "createShipment": "Versand erstellen"
+    "createShipment": "Versand erstellen",
+    "approveIntermediate": "Zwischenlager freigeben"
   },
   "metrics": {
     "remaining": "Auftragsrest",
@@ -143,7 +144,9 @@
     "InProgress": "In Bearbeitung",
     "BatchPlanned": "Verfügbar",
     "WaitingFullOrder": "Wartet auf Gesamtauftrag",
-    "ManualOnly": "Manuell"
+    "ManualOnly": "Manuell",
+    "AwaitingIntermediateApproval": "Wartet auf Zwischenlagerfreigabe",
+    "IntermediateApproval": "Zwischenlagerfreigabe"
   },
   "loading": "Wird geladen...",
   "empty": "Keine Datensätze gefunden.",
@@ -184,7 +187,14 @@
       "noShelves": "No active shelf/cell was found for this warehouse.",
       "isDefault": "Default",
       "isActive": "Active",
-      "description": "Description"
+      "description": "Description",
+      "calibrationReturnTitle": "Kalibrierungs-Rückgabeort",
+      "calibrationReturnDescription": "Bei Kalibrierungsrückgaben wird die vorherige Zelle ignoriert; Bestand wird an dieses Lager/Fach gelenkt.",
+      "calibrationReturnWarehouse": "Kalibrierungs-Rückgabelager",
+      "calibrationReturnWarehouseDescription": "Wählen Sie das Lager für Artikel, die aus der Kalibrierung zurückkehren.",
+      "calibrationReturnShelf": "Kalibrierungs-Rückgabefach",
+      "calibrationReturnShelfDescription": "Zielfach für den Einlagerungsauftrag nach Kalibrierungsrückgabe.",
+      "clearCalibrationReturnLocation": "Kalibrierungs-Rückgabeort löschen"
     },
     "table": {
       "title": "Defined entitlement locations",
@@ -194,7 +204,8 @@
       "status": "Status",
       "description": "Description",
       "actions": "Actions",
-      "empty": "No entitlement location setting has been defined yet."
+      "empty": "No entitlement location setting has been defined yet.",
+      "calibrationReturnLocation": "Kalibrierungs-Rückgabeort"
     },
     "badges": {
       "default": "Default",

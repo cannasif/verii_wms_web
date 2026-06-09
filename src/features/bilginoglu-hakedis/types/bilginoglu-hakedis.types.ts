@@ -46,6 +46,12 @@ export interface BilginogluHakEdisCompletedLocationSetting {
   shelfId: number;
   shelfCode?: string | null;
   shelfName?: string | null;
+  calibrationReturnWarehouseId?: number | null;
+  calibrationReturnWarehouseCode?: number | null;
+  calibrationReturnWarehouseName?: string | null;
+  calibrationReturnShelfId?: number | null;
+  calibrationReturnShelfCode?: string | null;
+  calibrationReturnShelfName?: string | null;
   isDefault: boolean;
   isActive: boolean;
   description?: string | null;
@@ -57,6 +63,8 @@ export interface UpsertBilginogluHakEdisCompletedLocationSetting {
   branchCode: string;
   warehouseId: number;
   shelfId: number;
+  calibrationReturnWarehouseId?: number | null;
+  calibrationReturnShelfId?: number | null;
   isDefault: boolean;
   isActive: boolean;
   description?: string | null;

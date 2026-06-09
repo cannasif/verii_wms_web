@@ -44,6 +44,8 @@ function statusBadge(status: string, label: string): ReactElement {
     ? 'bg-emerald-100 text-emerald-700'
     : status === 'InHakEdisFlow'
       ? 'bg-blue-100 text-blue-700'
+      : status === 'AwaitingIntermediateApproval'
+        ? 'bg-amber-100 text-amber-800'
       : status === 'Blocked'
         ? 'bg-rose-100 text-rose-700'
         : status === 'WaitingStock'
@@ -538,6 +540,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   <div className="flex flex-wrap gap-2">
                     <BatchActionButton batch={selectedBatch} action="create-transfer-to-hakedis" label={t('actions.createDat')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="mark-at-hakedis" label={t('actions.atHakEdis')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
+                    <BatchActionButton batch={selectedBatch} action="approve-intermediate" label={t('actions.approveIntermediate')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="create-return-transfer" label={t('actions.createReturnDat')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="mark-ready-for-shipment" label={t('actions.markReady')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
                     <BatchActionButton batch={selectedBatch} action="create-shipment" label={t('actions.createShipment')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
@@ -575,7 +578,10 @@ export function BilginogluHakEdisPage(): ReactElement {
 function BatchActionButton({ batch, action, label, pending, allowed, run }: { batch: BilginogluHakEdisBatch; action: string; label: string; pending: boolean; allowed: boolean; run: (action: string) => void }): ReactElement {
   const disabled = !allowed || pending
     || (action === 'create-transfer-to-hakedis' && Boolean(batch.transferToHakEdisHeaderId))
-    || (action === 'create-return-transfer' && (!batch.transferToHakEdisHeaderId || Boolean(batch.returnFromHakEdisHeaderId)))
+    || (action === 'mark-at-hakedis' && (batch.currentStage !== 'TransferToHakEdis' || !batch.transferToHakEdisHeaderId))
+    || (action === 'approve-intermediate' && batch.currentStage !== 'AwaitingIntermediateApproval')
+    || (action === 'create-return-transfer' && (batch.currentStage !== 'AtHakEdis' || !batch.transferToHakEdisHeaderId || Boolean(batch.returnFromHakEdisHeaderId)))
+    || (action === 'mark-ready-for-shipment' && (batch.currentStage !== 'ReturnFromHakEdis' || !batch.returnFromHakEdisHeaderId))
     || (action === 'create-shipment' && (batch.currentStage !== 'ReadyForShipment' || Boolean(batch.shipmentHeaderId)));
 
   return (

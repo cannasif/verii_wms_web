@@ -35,7 +35,8 @@
     "atHakEdis": "At Entitlement",
     "createReturnDat": "Return DAT",
     "markReady": "Ready to Ship",
-    "createShipment": "Create Shipment"
+    "createShipment": "Create Shipment",
+    "approveIntermediate": "Approve Intermediate"
   },
   "metrics": {
     "remaining": "Order Remaining",
@@ -143,7 +144,9 @@
     "InProgress": "In Progress",
     "BatchPlanned": "Available",
     "WaitingFullOrder": "Waiting Full Order",
-    "ManualOnly": "Manual"
+    "ManualOnly": "Manual",
+    "AwaitingIntermediateApproval": "Awaiting Intermediate Approval",
+    "IntermediateApproval": "Intermediate Approval"
   },
   "loading": "Loading...",
   "empty": "No records found.",
@@ -184,7 +187,14 @@
       "noShelves": "No active shelf/cell was found for this warehouse.",
       "isDefault": "Default",
       "isActive": "Active",
-      "description": "Description"
+      "description": "Description",
+      "calibrationReturnTitle": "Calibration return location",
+      "calibrationReturnDescription": "For calibration returns, the previous cell is ignored and stock is directed to this warehouse/shelf.",
+      "calibrationReturnWarehouse": "Calibration return warehouse",
+      "calibrationReturnWarehouseDescription": "Select the warehouse where items returning from calibration will be placed.",
+      "calibrationReturnShelf": "Calibration return shelf/cell",
+      "calibrationReturnShelfDescription": "Target shelf/cell for the calibration return put-away order.",
+      "clearCalibrationReturnLocation": "Clear calibration return location"
     },
     "table": {
       "title": "Defined entitlement locations",
@@ -194,7 +204,8 @@
       "status": "Status",
       "description": "Description",
       "actions": "Actions",
-      "empty": "No entitlement location setting has been defined yet."
+      "empty": "No entitlement location setting has been defined yet.",
+      "calibrationReturnLocation": "Calibration Return Location"
     },
     "badges": {
       "default": "Default",

@@ -143,6 +143,16 @@ export function TransferDetailDialog({
                         {header.documentType || '-'}
                       </Badge>
                     </div>
+                    {header.businessContext === 'BilginogluHakEdis' ? (
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-xs text-muted-foreground">{t('transfer.businessContext.label')}</span>
+                        <Badge className="rounded-xl border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-50">
+                          {t(`transfer.businessContext.${header.businessContextStep || 'BilginogluHakEdis'}`, {
+                            defaultValue: t('transfer.businessContext.BilginogluHakEdis'),
+                          })}
+                        </Badge>
+                      </div>
+                    ) : null}
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">{t('transfer.list.createdDate')}</span>
                       <span className="text-xs">{formatDateTime(header.createdDate)}</span>

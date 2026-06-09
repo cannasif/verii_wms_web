@@ -35,7 +35,8 @@
     "atHakEdis": "Hakediste",
     "createReturnDat": "Donus DAT",
     "markReady": "Sevke Hazir",
-    "createShipment": "Sevk Ac"
+    "createShipment": "Sevk Ac",
+    "approveIntermediate": "Ara Depo Onayi"
   },
   "metrics": {
     "remaining": "Siparis Kalan",
@@ -143,7 +144,9 @@
     "InProgress": "Islemde",
     "BatchPlanned": "Acilabilir",
     "WaitingFullOrder": "Tam siparis bekliyor",
-    "ManualOnly": "Manuel"
+    "ManualOnly": "Manuel",
+    "AwaitingIntermediateApproval": "Ara Depo Onayi Bekliyor",
+    "IntermediateApproval": "Ara Depo Onayi"
   },
   "loading": "Yukleniyor...",
   "empty": "Kayit bulunamadi.",
@@ -184,7 +187,14 @@
       "noShelves": "Bu depo için aktif raf/göz bulunamadı.",
       "isDefault": "Varsayılan",
       "isActive": "Aktif",
-      "description": "Açıklama"
+      "description": "Açıklama",
+      "calibrationReturnTitle": "Kalibrasyon dönüş lokasyonu",
+      "calibrationReturnDescription": "Kalibrasyondan dönen ürünlerde eski hücre dikkate alınmaz; ürün bu depo/raf tanımına yönlendirilir.",
+      "calibrationReturnWarehouse": "Kalibrasyon dönüş deposu",
+      "calibrationReturnWarehouseDescription": "Kalibrasyon sonrası geri gelen ürünlerin yerleştirileceği depoyu seçin.",
+      "calibrationReturnShelf": "Kalibrasyon dönüş rafı/gözü",
+      "calibrationReturnShelfDescription": "Kalibrasyon dönüş yerleştirme emrinde hedef raf/göz olarak kullanılacak lokasyon.",
+      "clearCalibrationReturnLocation": "Kalibrasyon dönüş lokasyonunu temizle"
     },
     "table": {
       "title": "Tanımlı hakediş lokasyonları",
@@ -194,7 +204,8 @@
       "status": "Durum",
       "description": "Açıklama",
       "actions": "İşlemler",
-      "empty": "Henüz hakediş lokasyon tanımı yok."
+      "empty": "Henüz hakediş lokasyon tanımı yok.",
+      "calibrationReturnLocation": "Kalibrasyon Dönüş Lokasyonu"
     },
     "badges": {
       "default": "Varsayılan",
