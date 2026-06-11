@@ -121,6 +121,7 @@
       "willSkip": "Bu sipariş bu turda atlanacak.",
       "stock": "Stok / Kalem",
       "warehouse": "Depo Akışı",
+      "details": "Kalem detaylarını aç/kapat",
       "willCreateLine": "{{stock}} için {{qty}} miktar hakediş transferi açılacak.",
       "willSkipLine": "Bu kalem bu turda atlanacak."
     },

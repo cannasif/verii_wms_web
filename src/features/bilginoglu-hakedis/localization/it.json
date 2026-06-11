@@ -121,6 +121,7 @@
       "willSkip": "This order will be skipped in this run.",
       "stock": "Stock / Line",
       "warehouse": "Warehouse Flow",
+      "details": "Expand or collapse line details",
       "willCreateLine": "An entitlement transfer will be opened for {{qty}} quantity of {{stock}}.",
       "willSkipLine": "This line will be skipped in this run."
     },

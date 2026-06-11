@@ -1,5 +1,5 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Boxes, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck, Wand2 } from 'lucide-react';
+import { Fragment, type ReactElement, useEffect, useMemo, useState } from 'react';
+import { Boxes, ChevronDown, ChevronRight, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck, Wand2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,6 @@ import {
   useBilginogluHakEdisOrderPlansQuery,
   useBilginogluHakEdisOrdersQuery,
   useBilginogluHakEdisTransferPreviewQuery,
-  useBilginogluHakEdisBulkTransferPreviewQuery,
   useBilginogluHakEdisStepsQuery,
   useBilginogluHakEdisBatchActionMutation,
   useBilginogluHakEdisBulkShipmentOrdersMutation,
@@ -82,6 +81,7 @@ export function BilginogluHakEdisPage(): ReactElement {
   const [allocationPolicy, setAllocationPolicy] = useState('StockBalanceAuto');
   const [shipmentPolicy, setShipmentPolicy] = useState('ManualShipment');
   const [bulkTransferPreviewOpen, setBulkTransferPreviewOpen] = useState(false);
+  const [expandedBulkTransferOrderIds, setExpandedBulkTransferOrderIds] = useState<number[]>([]);
 
   useEffect(() => {
     setPageTitle(pageTitle);
@@ -114,7 +114,6 @@ export function BilginogluHakEdisPage(): ReactElement {
   const bulkTransferOrdersMutation = useBilginogluHakEdisBulkTransferOrdersMutation();
   const bulkShipmentOrdersMutation = useBilginogluHakEdisBulkShipmentOrdersMutation();
   const policyMutation = useBilginogluHakEdisOrderPolicyMutation();
-  const bulkTransferPreviewQuery = useBilginogluHakEdisBulkTransferPreviewQuery(bulkTransferPreviewOpen);
   const statusLabel = (status: string): string => {
     const translated = t(`status.${status}`);
     return translated === `status.${status}` ? status : translated;
@@ -139,36 +138,48 @@ export function BilginogluHakEdisPage(): ReactElement {
       { remaining: 0, available: 0, allocated: 0, ready: 0, missing: 0, waiting: 0 },
     );
   }, [visibleOrders]);
-  const bulkTransferPreviews = bulkTransferPreviewQuery.data ?? [];
-  const bulkTransferPreviewLines = useMemo(() => {
-    return bulkTransferPreviews.flatMap((preview) =>
-      preview.lines.map((line) => ({
-        preview,
-        line,
-        decision: line.willCreateTransfer
-          ? 'eligible'
-          : line.warehouseAvailableQty <= 0.0001
-            ? 'noBalance'
-            : 'notEligible',
-      })),
-    );
-  }, [bulkTransferPreviews]);
+  const bulkTransferPreviewOrders = useMemo(() => {
+    return openOrders.map((order) => {
+      const transferableQty = Math.max(0, order.canCreateNewBatchQty ?? 0);
+      const availableQty = Math.max(0, order.totalWarehouseAvailableQty ?? 0);
+      const remainingQty = Math.max(0, order.totalRemainingQty ?? 0);
+      const decision = transferableQty > 0.0001
+        ? 'eligible'
+        : availableQty <= 0.0001
+          ? 'noBalance'
+          : 'notEligible';
+
+      return {
+        order,
+        availableQty,
+        remainingQty,
+        transferableQty,
+        missingQty: Math.max(0, remainingQty - transferableQty),
+        decision,
+      };
+    });
+  }, [openOrders]);
   const bulkTransferPreviewTotals = useMemo(() => {
-    return bulkTransferPreviews.reduce(
+    return bulkTransferPreviewOrders.reduce(
       (acc, preview) => {
         acc.orderCount += 1;
-        if (preview.canCreateTransfers) acc.eligibleCount += 1;
-        acc.lineCount += preview.lines.length;
-        acc.eligibleLineCount += preview.lines.filter((line) => line.willCreateTransfer).length;
-        acc.remaining += preview.totalRemainingOrderQty;
-        acc.available += preview.totalWarehouseAvailableQty;
-        acc.transferable += preview.totalTransferableQty;
-        acc.missing += preview.totalMissingQty;
+        if (preview.transferableQty > 0.0001) acc.eligibleCount += 1;
+        acc.remaining += preview.remainingQty;
+        acc.available += preview.availableQty;
+        acc.transferable += preview.transferableQty;
+        acc.missing += preview.missingQty;
         return acc;
       },
-      { orderCount: 0, eligibleCount: 0, lineCount: 0, eligibleLineCount: 0, remaining: 0, available: 0, transferable: 0, missing: 0 },
+      { orderCount: 0, eligibleCount: 0, remaining: 0, available: 0, transferable: 0, missing: 0 },
     );
-  }, [bulkTransferPreviews]);
+  }, [bulkTransferPreviewOrders]);
+  const toggleBulkTransferOrder = (orderHeaderId: number): void => {
+    setExpandedBulkTransferOrderIds((current) =>
+      current.includes(orderHeaderId)
+        ? current.filter((id) => id !== orderHeaderId)
+        : [...current, orderHeaderId],
+    );
+  };
   const selectedOrderNeed = useMemo(() => {
     const required = plans.reduce((sum, plan) => sum + Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty), 0);
     const available = plans.reduce((sum, plan) => sum + Math.max(0, plan.warehouseAvailableQty), 0);
@@ -267,11 +278,10 @@ export function BilginogluHakEdisPage(): ReactElement {
             <DialogDescription>{t('bulkTransferPreview.description')}</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <NeedCard label={t('bulkTransferPreview.metrics.orders')} value={formatQty(bulkTransferPreviewTotals.orderCount)} tone="slate" />
             <NeedCard label={t('bulkTransferPreview.metrics.eligible')} value={formatQty(bulkTransferPreviewTotals.eligibleCount)} tone="emerald" />
-            <NeedCard label={t('bulkTransferPreview.metrics.lines')} value={formatQty(bulkTransferPreviewTotals.lineCount)} tone="slate" />
-            <NeedCard label={t('bulkTransferPreview.metrics.eligibleLines')} value={formatQty(bulkTransferPreviewTotals.eligibleLineCount)} tone="emerald" />
+            <NeedCard label={t('bulkTransferPreview.metrics.remaining')} value={formatQty(bulkTransferPreviewTotals.remaining)} tone="blue" />
             <NeedCard label={t('bulkTransferPreview.metrics.available')} value={formatQty(bulkTransferPreviewTotals.available)} tone="cyan" />
             <NeedCard label={t('bulkTransferPreview.metrics.transferable')} value={formatQty(bulkTransferPreviewTotals.transferable)} tone="emerald" />
           </div>
@@ -281,13 +291,12 @@ export function BilginogluHakEdisPage(): ReactElement {
           </div>
 
           <div className="max-h-[52dvh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#170b29] dark:shadow-black/30">
-            <Table className="min-w-[980px]">
+            <Table className="min-w-[1120px]">
               <TableHeader className="sticky top-0 z-10 bg-slate-950 dark:bg-[#210f36]">
                 <TableRow className="border-slate-800 hover:bg-slate-950 dark:border-white/10 dark:hover:bg-[#210f36]">
-                  <TableHead className="min-w-44 text-white">{t('table.order')}</TableHead>
-                  <TableHead className="min-w-64 text-white">{t('table.customer')}</TableHead>
-                  <TableHead className="min-w-72 text-white">{t('bulkTransferPreview.table.stock')}</TableHead>
-                  <TableHead className="min-w-32 text-white">{t('bulkTransferPreview.table.warehouse')}</TableHead>
+                  <TableHead className="w-12 text-white" />
+                  <TableHead className="min-w-48 text-white">{t('table.order')}</TableHead>
+                  <TableHead className="min-w-72 text-white">{t('table.customer')}</TableHead>
                   <TableHead className="text-right text-white">{t('table.remaining')}</TableHead>
                   <TableHead className="text-right text-white">{t('table.stock')}</TableHead>
                   <TableHead className="text-right text-white">{t('table.canCreate')}</TableHead>
@@ -296,64 +305,63 @@ export function BilginogluHakEdisPage(): ReactElement {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bulkTransferPreviewQuery.isLoading ? (
+                {bulkTransferPreviewOrders.map(({ order, availableQty, remainingQty, transferableQty, missingQty, decision }) => {
+                  const expanded = expandedBulkTransferOrderIds.includes(order.id);
+
+                  return (
+                    <Fragment key={order.id}>
+                      <TableRow key={order.id} className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
+                        <TableCell className="align-top">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className="size-8 rounded-xl text-slate-700 dark:text-slate-100"
+                            onClick={() => toggleBulkTransferOrder(order.id)}
+                            aria-label={t('bulkTransferPreview.table.details')}
+                          >
+                            {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="align-top font-black text-slate-950 dark:text-white">{order.siparisNo}</TableCell>
+                        <TableCell className="align-top">
+                          <div className="font-bold text-slate-800 dark:text-slate-100">{order.customerCode ?? '-'}</div>
+                          <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{order.customerName ?? '-'}</div>
+                        </TableCell>
+                        <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(remainingQty)}</TableCell>
+                        <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(availableQty)}</TableCell>
+                        <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(transferableQty)}</TableCell>
+                        <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(missingQty)}</TableCell>
+                        <TableCell className="align-top">
+                          <Badge className={`rounded-xl border-0 ${
+                            decision === 'eligible'
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
+                              : decision === 'noBalance'
+                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
+                                : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
+                          }`}>
+                            {t(`bulkTransferPreview.decisions.${decision}`)}
+                          </Badge>
+                          <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
+                            {decision === 'eligible'
+                              ? t('bulkTransferPreview.table.willCreate', { qty: formatQty(transferableQty) })
+                              : t('bulkTransferPreview.table.willSkip')}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                      {expanded ? (
+                        <TableRow key={`${order.id}-details`} className="border-slate-100 bg-slate-50 hover:bg-slate-50 dark:border-white/10 dark:bg-[#0f071b] dark:hover:bg-[#0f071b]">
+                          <TableCell colSpan={8} className="p-3">
+                            <BulkTransferOrderLines orderHeaderId={order.id} />
+                          </TableCell>
+                        </TableRow>
+                      ) : null}
+                    </Fragment>
+                  );
+                })}
+                {bulkTransferPreviewOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="py-10 text-center text-muted-foreground">
-                      <Loader2 className="mr-2 inline size-4 animate-spin" />
-                      {t('loading')}
-                    </TableCell>
-                  </TableRow>
-                ) : null}
-                {bulkTransferPreviewQuery.isError ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="py-10 text-center text-rose-500">
-                      {bulkTransferPreviewQuery.error instanceof Error ? bulkTransferPreviewQuery.error.message : t('bulkTransferPreview.error')}
-                    </TableCell>
-                  </TableRow>
-                ) : null}
-                {!bulkTransferPreviewQuery.isLoading && !bulkTransferPreviewQuery.isError && bulkTransferPreviewLines.map(({ preview, line, decision }) => (
-                  <TableRow key={`${preview.orderHeaderId}-${line.planId}`} className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
-                    <TableCell className="align-top font-black text-slate-950 dark:text-white">{preview.siparisNo}</TableCell>
-                    <TableCell className="align-top">
-                      <div className="font-bold text-slate-800 dark:text-slate-100">{preview.customerCode ?? '-'}</div>
-                      <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{preview.customerName ?? '-'}</div>
-                    </TableCell>
-                    <TableCell className="align-top">
-                      <div className="font-black text-slate-950 dark:text-white">{line.stockCode ?? '-'}</div>
-                      <div className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">{line.stockName ?? '-'}</div>
-                      {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">YapKod: {line.yapKod}</div> : null}
-                    </TableCell>
-                    <TableCell className="align-top">
-                      <Badge variant="secondary" className="rounded-xl">
-                        {line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}
-                      </Badge>
-                      {line.sameWarehouse ? <div className="mt-1 text-xs text-muted-foreground">{t('transferPreview.sameWarehouse')}</div> : null}
-                    </TableCell>
-                    <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.remainingOrderQty)}</TableCell>
-                    <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(line.warehouseAvailableQty)}</TableCell>
-                    <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(line.transferableQty)}</TableCell>
-                    <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(line.missingQty)}</TableCell>
-                    <TableCell className="align-top">
-                      <Badge className={`rounded-xl border-0 ${
-                        line.willCreateTransfer
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
-                          : decision === 'noBalance'
-                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
-                            : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
-                      }`}>
-                        {t(`bulkTransferPreview.decisions.${decision}`)}
-                      </Badge>
-                      <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
-                        {line.willCreateTransfer
-                          ? t('bulkTransferPreview.table.willCreateLine', { qty: formatQty(line.transferableQty), stock: line.stockCode ?? '-' })
-                          : line.decisionReason ?? t('bulkTransferPreview.table.willSkipLine')}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {!bulkTransferPreviewQuery.isLoading && !bulkTransferPreviewQuery.isError && bulkTransferPreviewLines.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
                       {t('bulkTransferPreview.empty')}
                     </TableCell>
                   </TableRow>
@@ -369,7 +377,7 @@ export function BilginogluHakEdisPage(): ReactElement {
             <Button
               type="button"
               className="rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
-              disabled={!permission.canUpdate || bulkTransferPreviewQuery.isLoading || bulkTransferPreviewTotals.eligibleCount === 0 || bulkTransferOrdersMutation.isPending}
+              disabled={!permission.canUpdate || bulkTransferPreviewTotals.eligibleCount === 0 || bulkTransferOrdersMutation.isPending}
               onClick={() => bulkTransferOrdersMutation.mutate(undefined, { onSuccess: () => setBulkTransferPreviewOpen(false) })}
             >
               {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
@@ -793,6 +801,104 @@ function NeedCard({ label, value, tone }: { label: string; value: string; tone: 
     cyan: 'bg-cyan-50 text-cyan-800 dark:bg-cyan-400/10 dark:text-cyan-100',
     emerald: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-100',
     blue: 'bg-blue-50 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
+function BulkTransferOrderLines({ orderHeaderId }: { orderHeaderId: number }): ReactElement {
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  const previewQuery = useBilginogluHakEdisTransferPreviewQuery(orderHeaderId);
+  const lines = previewQuery.data?.lines ?? [];
+
+  if (previewQuery.isLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-[#140923]">
+        <Loader2 className="size-4 animate-spin" />
+        {t('loading')}
+      </div>
+    );
+  }
+
+  if (previewQuery.isError) {
+    return (
+      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-100">
+        {previewQuery.error instanceof Error ? previewQuery.error.message : t('bulkTransferPreview.error')}
+      </div>
+    );
+  }
+
+  if (lines.length === 0) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center text-sm text-muted-foreground dark:border-white/10 dark:bg-[#140923]">
+        {t('bulkTransferPreview.empty')}
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#140923]">
+      <Table className="min-w-[980px]">
+        <TableHeader className="bg-slate-100 dark:bg-white/5">
+          <TableRow className="border-slate-200 dark:border-white/10">
+            <TableHead className="min-w-72">{t('bulkTransferPreview.table.stock')}</TableHead>
+            <TableHead className="min-w-36">{t('bulkTransferPreview.table.warehouse')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.orderQty')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.processedQty')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.remainingQty')}</TableHead>
+            <TableHead className="text-right">{t('table.stock')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.transferableQty')}</TableHead>
+            <TableHead className="text-right">{t('metrics.missing')}</TableHead>
+            <TableHead className="min-w-56">{t('bulkTransferPreview.table.decision')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {lines.map((line) => {
+            const decision = line.willCreateTransfer
+              ? 'eligible'
+              : line.warehouseAvailableQty <= 0.0001
+                ? 'noBalance'
+                : 'notEligible';
+
+            return (
+              <TableRow key={line.planId} className="border-slate-100 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">
+                <TableCell className="align-top">
+                  <div className="font-black text-slate-950 dark:text-white">{line.stockCode ?? '-'}</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">{line.stockName ?? '-'}</div>
+                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">YapKod: {line.yapKod}</div> : null}
+                </TableCell>
+                <TableCell className="align-top">
+                  <Badge variant="secondary" className="rounded-xl">
+                    {line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}
+                  </Badge>
+                  {line.sameWarehouse ? <div className="mt-1 text-xs text-muted-foreground">{t('transferPreview.sameWarehouse')}</div> : null}
+                </TableCell>
+                <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.orderQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-blue-700 dark:text-blue-200">{formatQty(line.processedQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.remainingOrderQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(line.warehouseAvailableQty)}</TableCell>
+                <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(line.transferableQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(line.missingQty)}</TableCell>
+                <TableCell className="align-top">
+                  <Badge className={`rounded-xl border-0 ${
+                    line.willCreateTransfer
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
+                      : decision === 'noBalance'
+                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
+                        : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
+                  }`}>
+                    {t(`bulkTransferPreview.decisions.${decision}`)}
+                  </Badge>
+                  <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
+                    {line.willCreateTransfer
+                      ? t('bulkTransferPreview.table.willCreateLine', { qty: formatQty(line.transferableQty), stock: line.stockCode ?? '-' })
+                      : line.decisionReason ?? t('bulkTransferPreview.table.willSkipLine')}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
     amber: 'bg-amber-50 text-amber-800 dark:bg-amber-400/10 dark:text-amber-100',
   }[tone];
 
