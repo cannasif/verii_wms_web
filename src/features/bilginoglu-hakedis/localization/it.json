@@ -90,8 +90,8 @@
     "title": "Suggested DAT / shipment readiness",
     "description": "DAT lines that can be opened from order quantity, processed quantity, remaining balance, and warehouse availability.",
     "orderQty": "Order Quantity",
-    "processedQty": "Processed",
-    "remainingQty": "Remaining Balance",
+    "processedQty": "Allocated / Shipped",
+    "remainingQty": "Remaining Need",
     "transferableQty": "Transferable",
     "shippableQty": "Shippable",
     "missingQty": "Missing",
@@ -129,6 +129,38 @@
       "eligible": "Can Create",
       "noBalance": "No warehouse balance",
       "notEligible": "No eligible balance"
+    }
+  },
+  "bulkShipmentPreview": {
+    "title": "Loading/shipment order preview",
+    "description": "Review which orders can receive loading/shipment orders based on ready-to-ship quantities before running the operation.",
+    "warning": "When you run this operation, loading/shipment orders are created only for ready orders; orders that are not ready or waiting for full shipment are skipped.",
+    "run": "Run for {{count}} orders",
+    "empty": "No ready-to-ship order was found to preview.",
+    "error": "Loading/shipment preview could not be loaded.",
+    "metrics": {
+      "orders": "Orders",
+      "eligible": "Eligible",
+      "remaining": "Remaining to Ship",
+      "ready": "Ready to Ship",
+      "shippable": "Can Create"
+    },
+    "table": {
+      "remaining": "Remaining to Ship",
+      "ready": "Ready to Ship",
+      "shippable": "Can Create",
+      "decision": "Decision",
+      "details": "Expand or collapse line details",
+      "willCreate": "A loading/shipment order will be opened for {{qty}} quantity.",
+      "willSkip": "This order will be skipped in this run.",
+      "fullShipmentWaiting": "This order waits for full shipment; shipment cannot be opened until the full remaining quantity is ready.",
+      "willCreateLine": "A loading/shipment order will be opened for {{qty}} quantity of {{stock}}.",
+      "willSkipLine": "This line is not ready to ship."
+    },
+    "decisions": {
+      "eligible": "Can Create",
+      "fullShipmentWaiting": "Waiting Full Shipment",
+      "notReady": "Not Ready"
     }
   },
   "activity": {

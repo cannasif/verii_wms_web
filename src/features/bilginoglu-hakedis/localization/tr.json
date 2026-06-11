@@ -90,8 +90,8 @@
     "title": "Onerilen DAT / sevk hazirligi",
     "description": "Siparis miktari, islem goren miktar, kalan bakiye ve depo bakiyesine gore acilabilecek DAT kalemleri.",
     "orderQty": "Siparis Miktari",
-    "processedQty": "Islem Goren",
-    "remainingQty": "Kalan Bakiye",
+    "processedQty": "Ayrilan / Sevk Edilen",
+    "remainingQty": "Kalan Ihtiyac",
     "transferableQty": "Transfer Edilebilir",
     "shippableQty": "Sevk Edilebilir",
     "missingQty": "Eksik",
@@ -129,6 +129,38 @@
       "eligible": "Oluşturulabilir",
       "noBalance": "Depo bakiyesi yok",
       "notEligible": "Uygun bakiye yok"
+    }
+  },
+  "bulkShipmentPreview": {
+    "title": "Çıkış/yükleme emirleri önizlemesi",
+    "description": "Hakediş dönüşü veya direkt sevke hazır miktarlara göre hangi siparişlere çıkış/yükleme emri açılabileceğini çalıştırmadan önce kontrol edin.",
+    "warning": "Çalıştır dediğinizde sadece sevke hazır görünen siparişler için çıkış/yükleme emri açılır; hazır olmayan veya tam sevk bekleyen siparişler atlanır.",
+    "run": "{{count}} sipariş için çalıştır",
+    "empty": "Önizlenecek sevke hazır sipariş bulunamadı.",
+    "error": "Çıkış/yükleme önizlemesi alınamadı.",
+    "metrics": {
+      "orders": "Sipariş",
+      "eligible": "Uygun",
+      "remaining": "Sevk Kalan",
+      "ready": "Sevke Hazır",
+      "shippable": "Açılabilir"
+    },
+    "table": {
+      "remaining": "Sevk Kalan",
+      "ready": "Sevke Hazır",
+      "shippable": "Açılabilir",
+      "decision": "Karar",
+      "details": "Kalem detaylarını aç/kapat",
+      "willCreate": "{{qty}} miktar için çıkış/yükleme emri açılacak.",
+      "willSkip": "Bu sipariş bu turda atlanacak.",
+      "fullShipmentWaiting": "Sipariş tam sevk bekliyor; tüm kalan miktar hazır olmadan sevk açılmaz.",
+      "willCreateLine": "{{stock}} için {{qty}} miktar çıkış/yükleme emri açılacak.",
+      "willSkipLine": "Bu kalem sevke hazır değil."
+    },
+    "decisions": {
+      "eligible": "Oluşturulabilir",
+      "fullShipmentWaiting": "Tam sevk bekliyor",
+      "notReady": "Sevke hazır değil"
     }
   },
   "activity": {

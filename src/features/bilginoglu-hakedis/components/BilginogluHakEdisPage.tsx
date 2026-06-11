@@ -82,6 +82,8 @@ export function BilginogluHakEdisPage(): ReactElement {
   const [shipmentPolicy, setShipmentPolicy] = useState('ManualShipment');
   const [bulkTransferPreviewOpen, setBulkTransferPreviewOpen] = useState(false);
   const [expandedBulkTransferOrderIds, setExpandedBulkTransferOrderIds] = useState<number[]>([]);
+  const [bulkShipmentPreviewOpen, setBulkShipmentPreviewOpen] = useState(false);
+  const [expandedBulkShipmentOrderIds, setExpandedBulkShipmentOrderIds] = useState<number[]>([]);
 
   useEffect(() => {
     setPageTitle(pageTitle);
@@ -180,6 +182,49 @@ export function BilginogluHakEdisPage(): ReactElement {
         : [...current, orderHeaderId],
     );
   };
+  const bulkShipmentPreviewOrders = useMemo(() => {
+    return openOrders.map((order) => {
+      const readyQty = Math.max(0, order.totalReadyForShipmentQty ?? 0);
+      const remainingToShipQty = Math.max(0, (order.totalRemainingQty ?? 0) - (order.totalShipmentCreatedQty ?? 0));
+      const requiresFullShipment = order.transferAllFlag === 'E' || order.shipmentPolicy === 'AutoFullShipment';
+      const shippableQty = requiresFullShipment && readyQty + 0.0001 < remainingToShipQty ? 0 : readyQty;
+      const decision = shippableQty > 0.0001
+        ? 'eligible'
+        : readyQty > 0.0001 && requiresFullShipment
+          ? 'fullShipmentWaiting'
+          : 'notReady';
+
+      return {
+        order,
+        readyQty,
+        remainingToShipQty,
+        shippableQty,
+        missingQty: Math.max(0, remainingToShipQty - readyQty),
+        decision,
+      };
+    });
+  }, [openOrders]);
+  const bulkShipmentPreviewTotals = useMemo(() => {
+    return bulkShipmentPreviewOrders.reduce(
+      (acc, preview) => {
+        acc.orderCount += 1;
+        if (preview.shippableQty > 0.0001) acc.eligibleCount += 1;
+        acc.remaining += preview.remainingToShipQty;
+        acc.ready += preview.readyQty;
+        acc.shippable += preview.shippableQty;
+        acc.missing += preview.missingQty;
+        return acc;
+      },
+      { orderCount: 0, eligibleCount: 0, remaining: 0, ready: 0, shippable: 0, missing: 0 },
+    );
+  }, [bulkShipmentPreviewOrders]);
+  const toggleBulkShipmentOrder = (orderHeaderId: number): void => {
+    setExpandedBulkShipmentOrderIds((current) =>
+      current.includes(orderHeaderId)
+        ? current.filter((id) => id !== orderHeaderId)
+        : [...current, orderHeaderId],
+    );
+  };
   const selectedOrderNeed = useMemo(() => {
     const required = plans.reduce((sum, plan) => sum + Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty), 0);
     const available = plans.reduce((sum, plan) => sum + Math.max(0, plan.warehouseAvailableQty), 0);
@@ -246,7 +291,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 <Button
                   type="button"
                   className="w-full rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200 sm:w-auto"
-                  onClick={() => bulkShipmentOrdersMutation.mutate()}
+                  onClick={() => setBulkShipmentPreviewOpen(true)}
                   disabled={!permission.canUpdate || bulkShipmentOrdersMutation.isPending}
                 >
                   {bulkShipmentOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Truck className="mr-2 size-4" />}
@@ -382,6 +427,124 @@ export function BilginogluHakEdisPage(): ReactElement {
             >
               {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
               {t('bulkTransferPreview.run', { count: bulkTransferPreviewTotals.eligibleCount })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={bulkShipmentPreviewOpen} onOpenChange={setBulkShipmentPreviewOpen}>
+        <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl dark:border-white/10 dark:bg-[#10071d] dark:text-white sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
+          <DialogHeader className="space-y-2">
+            <DialogTitle>{t('bulkShipmentPreview.title')}</DialogTitle>
+            <DialogDescription>{t('bulkShipmentPreview.description')}</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <NeedCard label={t('bulkShipmentPreview.metrics.orders')} value={formatQty(bulkShipmentPreviewTotals.orderCount)} tone="slate" />
+            <NeedCard label={t('bulkShipmentPreview.metrics.eligible')} value={formatQty(bulkShipmentPreviewTotals.eligibleCount)} tone="emerald" />
+            <NeedCard label={t('bulkShipmentPreview.metrics.remaining')} value={formatQty(bulkShipmentPreviewTotals.remaining)} tone="blue" />
+            <NeedCard label={t('bulkShipmentPreview.metrics.ready')} value={formatQty(bulkShipmentPreviewTotals.ready)} tone="cyan" />
+            <NeedCard label={t('bulkShipmentPreview.metrics.shippable')} value={formatQty(bulkShipmentPreviewTotals.shippable)} tone="emerald" />
+          </div>
+
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium leading-6 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
+            {t('bulkShipmentPreview.warning')}
+          </div>
+
+          <div className="max-h-[52dvh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#170b29] dark:shadow-black/30">
+            <Table className="min-w-[1120px]">
+              <TableHeader className="sticky top-0 z-10 bg-slate-950 dark:bg-[#210f36]">
+                <TableRow className="border-slate-800 hover:bg-slate-950 dark:border-white/10 dark:hover:bg-[#210f36]">
+                  <TableHead className="w-12 text-white" />
+                  <TableHead className="min-w-48 text-white">{t('table.order')}</TableHead>
+                  <TableHead className="min-w-72 text-white">{t('table.customer')}</TableHead>
+                  <TableHead className="text-right text-white">{t('bulkShipmentPreview.table.remaining')}</TableHead>
+                  <TableHead className="text-right text-white">{t('bulkShipmentPreview.table.ready')}</TableHead>
+                  <TableHead className="text-right text-white">{t('bulkShipmentPreview.table.shippable')}</TableHead>
+                  <TableHead className="text-right text-white">{t('metrics.missing')}</TableHead>
+                  <TableHead className="min-w-52 text-white">{t('bulkShipmentPreview.table.decision')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bulkShipmentPreviewOrders.map(({ order, readyQty, remainingToShipQty, shippableQty, missingQty, decision }) => {
+                  const expanded = expandedBulkShipmentOrderIds.includes(order.id);
+
+                  return (
+                    <Fragment key={order.id}>
+                      <TableRow className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
+                        <TableCell className="align-top">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className="size-8 rounded-xl text-slate-700 dark:text-slate-100"
+                            onClick={() => toggleBulkShipmentOrder(order.id)}
+                            aria-label={t('bulkShipmentPreview.table.details')}
+                          >
+                            {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="align-top font-black text-slate-950 dark:text-white">{order.siparisNo}</TableCell>
+                        <TableCell className="align-top">
+                          <div className="font-bold text-slate-800 dark:text-slate-100">{order.customerCode ?? '-'}</div>
+                          <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{order.customerName ?? '-'}</div>
+                        </TableCell>
+                        <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(remainingToShipQty)}</TableCell>
+                        <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(readyQty)}</TableCell>
+                        <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(shippableQty)}</TableCell>
+                        <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(missingQty)}</TableCell>
+                        <TableCell className="align-top">
+                          <Badge className={`rounded-xl border-0 ${
+                            decision === 'eligible'
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
+                              : decision === 'fullShipmentWaiting'
+                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
+                                : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
+                          }`}>
+                            {t(`bulkShipmentPreview.decisions.${decision}`)}
+                          </Badge>
+                          <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
+                            {decision === 'eligible'
+                              ? t('bulkShipmentPreview.table.willCreate', { qty: formatQty(shippableQty) })
+                              : decision === 'fullShipmentWaiting'
+                                ? t('bulkShipmentPreview.table.fullShipmentWaiting')
+                                : t('bulkShipmentPreview.table.willSkip')}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                      {expanded ? (
+                        <TableRow className="border-slate-100 bg-slate-50 hover:bg-slate-50 dark:border-white/10 dark:bg-[#0f071b] dark:hover:bg-[#0f071b]">
+                          <TableCell colSpan={8} className="p-3">
+                            <BulkShipmentOrderLines orderHeaderId={order.id} />
+                          </TableCell>
+                        </TableRow>
+                      ) : null}
+                    </Fragment>
+                  );
+                })}
+                {bulkShipmentPreviewOrders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                      {t('bulkShipmentPreview.empty')}
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </TableBody>
+            </Table>
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-between">
+            <Button type="button" variant="outline" className="rounded-2xl" onClick={() => setBulkShipmentPreviewOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              type="button"
+              className="rounded-2xl bg-amber-500 text-slate-950 hover:bg-amber-400"
+              disabled={!permission.canUpdate || bulkShipmentPreviewTotals.eligibleCount === 0 || bulkShipmentOrdersMutation.isPending}
+              onClick={() => bulkShipmentOrdersMutation.mutate(undefined, { onSuccess: () => setBulkShipmentPreviewOpen(false) })}
+            >
+              {bulkShipmentOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Truck className="mr-2 size-4" />}
+              {t('bulkShipmentPreview.run', { count: bulkShipmentPreviewTotals.eligibleCount })}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -795,12 +958,6 @@ function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrd
   );
 }
 
-function NeedCard({ label, value, tone }: { label: string; value: string; tone: 'slate' | 'cyan' | 'emerald' | 'blue' | 'amber' }): ReactElement {
-  const toneClass = {
-    slate: 'bg-slate-50 text-slate-800 dark:bg-white/10 dark:text-slate-100',
-    cyan: 'bg-cyan-50 text-cyan-800 dark:bg-cyan-400/10 dark:text-cyan-100',
-    emerald: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-100',
-    blue: 'bg-blue-50 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
 function BulkTransferOrderLines({ orderHeaderId }: { orderHeaderId: number }): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const previewQuery = useBilginogluHakEdisTransferPreviewQuery(orderHeaderId);
@@ -899,6 +1056,97 @@ function BulkTransferOrderLines({ orderHeaderId }: { orderHeaderId: number }): R
   );
 }
 
+function BulkShipmentOrderLines({ orderHeaderId }: { orderHeaderId: number }): ReactElement {
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  const previewQuery = useBilginogluHakEdisTransferPreviewQuery(orderHeaderId);
+  const lines = previewQuery.data?.lines ?? [];
+
+  if (previewQuery.isLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-[#140923]">
+        <Loader2 className="size-4 animate-spin" />
+        {t('loading')}
+      </div>
+    );
+  }
+
+  if (previewQuery.isError) {
+    return (
+      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-100">
+        {previewQuery.error instanceof Error ? previewQuery.error.message : t('bulkShipmentPreview.error')}
+      </div>
+    );
+  }
+
+  if (lines.length === 0) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center text-sm text-muted-foreground dark:border-white/10 dark:bg-[#140923]">
+        {t('bulkShipmentPreview.empty')}
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#140923]">
+      <Table className="min-w-[980px]">
+        <TableHeader className="bg-slate-100 dark:bg-white/5">
+          <TableRow className="border-slate-200 dark:border-white/10">
+            <TableHead className="min-w-72">{t('bulkTransferPreview.table.stock')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.orderQty')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.processedQty')}</TableHead>
+            <TableHead className="text-right">{t('transferPreview.remainingQty')}</TableHead>
+            <TableHead className="text-right">{t('bulkShipmentPreview.table.ready')}</TableHead>
+            <TableHead className="text-right">{t('bulkShipmentPreview.table.shippable')}</TableHead>
+            <TableHead className="text-right">{t('metrics.missing')}</TableHead>
+            <TableHead className="min-w-56">{t('bulkShipmentPreview.table.decision')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {lines.map((line) => {
+            const decision = line.shippableQty > 0.0001 ? 'eligible' : 'notReady';
+
+            return (
+              <TableRow key={line.planId} className="border-slate-100 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">
+                <TableCell className="align-top">
+                  <div className="font-black text-slate-950 dark:text-white">{line.stockCode ?? '-'}</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">{line.stockName ?? '-'}</div>
+                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">YapKod: {line.yapKod}</div> : null}
+                </TableCell>
+                <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.orderQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-blue-700 dark:text-blue-200">{formatQty(line.processedQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.remainingOrderQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(line.shippableQty)}</TableCell>
+                <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(line.shippableQty)}</TableCell>
+                <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(Math.max(0, line.remainingOrderQty - line.shippableQty))}</TableCell>
+                <TableCell className="align-top">
+                  <Badge className={`rounded-xl border-0 ${
+                    decision === 'eligible'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
+                      : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
+                  }`}>
+                    {t(`bulkShipmentPreview.decisions.${decision}`)}
+                  </Badge>
+                  <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
+                    {decision === 'eligible'
+                      ? t('bulkShipmentPreview.table.willCreateLine', { qty: formatQty(line.shippableQty), stock: line.stockCode ?? '-' })
+                      : t('bulkShipmentPreview.table.willSkipLine')}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function NeedCard({ label, value, tone }: { label: string; value: string; tone: 'slate' | 'cyan' | 'emerald' | 'blue' | 'amber' }): ReactElement {
+  const toneClass = {
+    slate: 'bg-slate-50 text-slate-800 dark:bg-white/10 dark:text-slate-100',
+    cyan: 'bg-cyan-50 text-cyan-800 dark:bg-cyan-400/10 dark:text-cyan-100',
+    emerald: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-100',
+    blue: 'bg-blue-50 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
     amber: 'bg-amber-50 text-amber-800 dark:bg-amber-400/10 dark:text-amber-100',
   }[tone];
 
