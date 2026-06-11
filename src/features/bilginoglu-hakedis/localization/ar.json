@@ -99,6 +99,30 @@
     "decision": "Decision",
     "sameWarehouse": "Same warehouse"
   },
+  "bulkTransferPreview": {
+    "title": "Entitlement transfer order preview",
+    "description": "Review which open orders can receive entitlement transfer orders based on warehouse balance and remaining quantity before running the operation.",
+    "warning": "When you run this operation, entitlement transfer flow starts only for eligible orders; skipped orders continue waiting for stock or balance conditions.",
+    "run": "Run for {{count}} orders",
+    "empty": "No open entitlement order was found to preview.",
+    "metrics": {
+      "orders": "Orders",
+      "eligible": "Eligible",
+      "remaining": "Remaining",
+      "available": "Available",
+      "transferable": "Can Create"
+    },
+    "table": {
+      "decision": "Decision",
+      "willCreate": "An entitlement transfer will be opened for {{qty}} quantity.",
+      "willSkip": "This order will be skipped in this run."
+    },
+    "decisions": {
+      "eligible": "Can Create",
+      "noBalance": "No warehouse balance",
+      "notEligible": "No eligible balance"
+    }
+  },
   "activity": {
     "title": "Completed operations",
     "description": "Document, ERP, and collection trace for related DAT, entitlement, return, and shipment stages.",

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -80,6 +80,7 @@ export function BilginogluHakEdisPage(): ReactElement {
   const [selectedBatch, setSelectedBatch] = useState<BilginogluHakEdisBatch | null>(null);
   const [allocationPolicy, setAllocationPolicy] = useState('StockBalanceAuto');
   const [shipmentPolicy, setShipmentPolicy] = useState('ManualShipment');
+  const [bulkTransferPreviewOpen, setBulkTransferPreviewOpen] = useState(false);
 
   useEffect(() => {
     setPageTitle(pageTitle);
@@ -136,6 +137,42 @@ export function BilginogluHakEdisPage(): ReactElement {
       { remaining: 0, available: 0, allocated: 0, ready: 0, missing: 0, waiting: 0 },
     );
   }, [visibleOrders]);
+  const bulkTransferPreviewOrders = useMemo(() => {
+    return openOrders.map((order) => {
+      const canCreateQty = Math.max(0, order.canCreateNewBatchQty ?? 0);
+      const warehouseAvailableQty = Math.max(0, order.totalWarehouseAvailableQty ?? 0);
+      const remainingQty = Math.max(0, order.totalRemainingQty ?? 0);
+      const isEligible = canCreateQty > 0.0001;
+      const decision = isEligible
+        ? 'eligible'
+        : warehouseAvailableQty <= 0.0001
+          ? 'noBalance'
+          : 'notEligible';
+
+      return {
+        ...order,
+        canCreateQty,
+        warehouseAvailableQty,
+        remainingQty,
+        isEligible,
+        decision,
+      };
+    });
+  }, [openOrders]);
+  const bulkTransferPreviewTotals = useMemo(() => {
+    return bulkTransferPreviewOrders.reduce(
+      (acc, order) => {
+        acc.orderCount += 1;
+        if (order.isEligible) acc.eligibleCount += 1;
+        acc.remaining += order.remainingQty;
+        acc.available += order.warehouseAvailableQty;
+        acc.transferable += order.canCreateQty;
+        acc.missing += Math.max(0, order.totalMissingQty ?? 0);
+        return acc;
+      },
+      { orderCount: 0, eligibleCount: 0, remaining: 0, available: 0, transferable: 0, missing: 0 },
+    );
+  }, [bulkTransferPreviewOrders]);
   const selectedOrderNeed = useMemo(() => {
     const required = plans.reduce((sum, plan) => sum + Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty), 0);
     const available = plans.reduce((sum, plan) => sum + Math.max(0, plan.warehouseAvailableQty), 0);
@@ -193,7 +230,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 <Button
                   type="button"
                   className="w-full rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200 sm:w-auto"
-                  onClick={() => bulkTransferOrdersMutation.mutate()}
+                  onClick={() => setBulkTransferPreviewOpen(true)}
                   disabled={!permission.canUpdate || bulkTransferOrdersMutation.isPending}
                 >
                   {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
@@ -226,6 +263,98 @@ export function BilginogluHakEdisPage(): ReactElement {
           </div>
         </div>
       </section>
+
+      <Dialog open={bulkTransferPreviewOpen} onOpenChange={setBulkTransferPreviewOpen}>
+        <DialogContent className="max-h-[92dvh] w-[calc(100vw-1rem)] max-w-6xl overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl sm:w-[calc(100vw-2rem)] sm:p-6">
+          <DialogHeader className="space-y-2">
+            <DialogTitle>{t('bulkTransferPreview.title')}</DialogTitle>
+            <DialogDescription>{t('bulkTransferPreview.description')}</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <NeedCard label={t('bulkTransferPreview.metrics.orders')} value={formatQty(bulkTransferPreviewTotals.orderCount)} tone="slate" />
+            <NeedCard label={t('bulkTransferPreview.metrics.eligible')} value={formatQty(bulkTransferPreviewTotals.eligibleCount)} tone="emerald" />
+            <NeedCard label={t('bulkTransferPreview.metrics.remaining')} value={formatQty(bulkTransferPreviewTotals.remaining)} tone="blue" />
+            <NeedCard label={t('bulkTransferPreview.metrics.available')} value={formatQty(bulkTransferPreviewTotals.available)} tone="cyan" />
+            <NeedCard label={t('bulkTransferPreview.metrics.transferable')} value={formatQty(bulkTransferPreviewTotals.transferable)} tone="emerald" />
+          </div>
+
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium leading-6 text-amber-900">
+            {t('bulkTransferPreview.warning')}
+          </div>
+
+          <div className="max-h-[52dvh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <Table className="min-w-[980px]">
+              <TableHeader className="sticky top-0 z-10 bg-slate-950">
+                <TableRow className="border-slate-800 hover:bg-slate-950">
+                  <TableHead className="min-w-44 text-white">{t('table.order')}</TableHead>
+                  <TableHead className="min-w-64 text-white">{t('table.customer')}</TableHead>
+                  <TableHead className="text-right text-white">{t('table.remaining')}</TableHead>
+                  <TableHead className="text-right text-white">{t('table.stock')}</TableHead>
+                  <TableHead className="text-right text-white">{t('table.canCreate')}</TableHead>
+                  <TableHead className="text-right text-white">{t('table.allocated')}</TableHead>
+                  <TableHead className="text-right text-white">{t('metrics.missing')}</TableHead>
+                  <TableHead className="min-w-52 text-white">{t('bulkTransferPreview.table.decision')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bulkTransferPreviewOrders.map((order) => (
+                  <TableRow key={order.id} className="border-slate-100 bg-white hover:bg-slate-50">
+                    <TableCell className="align-top font-black text-slate-950">{order.siparisNo}</TableCell>
+                    <TableCell className="align-top">
+                      <div className="font-bold text-slate-800">{order.customerCode ?? '-'}</div>
+                      <div className="mt-1 text-sm text-slate-500">{order.customerName ?? '-'}</div>
+                    </TableCell>
+                    <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(order.remainingQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-cyan-700">{formatQty(order.warehouseAvailableQty)}</TableCell>
+                    <TableCell className="text-right align-top text-lg font-black text-emerald-700">{formatQty(order.canCreateQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-blue-700">{formatQty(order.totalAllocatedQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-amber-700">{formatQty(order.totalMissingQty)}</TableCell>
+                    <TableCell className="align-top">
+                      <Badge className={`rounded-xl border-0 ${
+                        order.isEligible
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : order.decision === 'noBalance'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {t(`bulkTransferPreview.decisions.${order.decision}`)}
+                      </Badge>
+                      <div className="mt-2 text-xs font-medium leading-5 text-slate-500">
+                        {order.isEligible
+                          ? t('bulkTransferPreview.table.willCreate', { qty: formatQty(order.canCreateQty) })
+                          : t('bulkTransferPreview.table.willSkip')}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {bulkTransferPreviewOrders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                      {t('bulkTransferPreview.empty')}
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </TableBody>
+            </Table>
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-between">
+            <Button type="button" variant="outline" className="rounded-2xl" onClick={() => setBulkTransferPreviewOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              type="button"
+              className="rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+              disabled={!permission.canUpdate || bulkTransferPreviewTotals.eligibleCount === 0 || bulkTransferOrdersMutation.isPending}
+              onClick={() => bulkTransferOrdersMutation.mutate(undefined, { onSuccess: () => setBulkTransferPreviewOpen(false) })}
+            >
+              {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
+              {t('bulkTransferPreview.run', { count: bulkTransferPreviewTotals.eligibleCount })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex flex-wrap gap-2 rounded-3xl border border-slate-200 bg-white p-2 shadow-sm">
         <Button

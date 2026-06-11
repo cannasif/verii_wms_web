@@ -99,6 +99,30 @@
     "decision": "Karar",
     "sameWarehouse": "Ayni depo"
   },
+  "bulkTransferPreview": {
+    "title": "Hakediş transfer emirleri önizlemesi",
+    "description": "Açık siparişlerin depo bakiyesi ve kalan miktarına göre hangilerine hakediş transfer emri açılabileceğini çalıştırmadan önce kontrol edin.",
+    "warning": "Çalıştır dediğinizde sadece uygun görünen siparişler için hakediş transfer akışı başlatılır; uygun olmayan siparişler stok/bakiye beklemeye devam eder.",
+    "run": "{{count}} sipariş için çalıştır",
+    "empty": "Önizlenecek açık hakediş siparişi bulunamadı.",
+    "metrics": {
+      "orders": "Sipariş",
+      "eligible": "Uygun",
+      "remaining": "Kalan",
+      "available": "Depoda Var",
+      "transferable": "Açılabilir"
+    },
+    "table": {
+      "decision": "Karar",
+      "willCreate": "{{qty}} miktar için hakediş transferi açılacak.",
+      "willSkip": "Bu sipariş bu turda atlanacak."
+    },
+    "decisions": {
+      "eligible": "Oluşturulabilir",
+      "noBalance": "Depo bakiyesi yok",
+      "notEligible": "Uygun bakiye yok"
+    }
+  },
   "activity": {
     "title": "Tamamlanan islemler",
     "description": "Siparise bagli DAT, hakedis, donus ve sevk adimlarinin belge, ERP ve toplama izleri.",
