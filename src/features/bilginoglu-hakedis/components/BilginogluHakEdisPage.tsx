@@ -265,7 +265,7 @@ export function BilginogluHakEdisPage(): ReactElement {
       </section>
 
       <Dialog open={bulkTransferPreviewOpen} onOpenChange={setBulkTransferPreviewOpen}>
-        <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
+        <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl dark:border-white/10 dark:bg-[#10071d] dark:text-white sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
           <DialogHeader className="space-y-2">
             <DialogTitle>{t('bulkTransferPreview.title')}</DialogTitle>
             <DialogDescription>{t('bulkTransferPreview.description')}</DialogDescription>
@@ -279,14 +279,14 @@ export function BilginogluHakEdisPage(): ReactElement {
             <NeedCard label={t('bulkTransferPreview.metrics.transferable')} value={formatQty(bulkTransferPreviewTotals.transferable)} tone="emerald" />
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium leading-6 text-amber-900">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium leading-6 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
             {t('bulkTransferPreview.warning')}
           </div>
 
-          <div className="max-h-[52dvh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="max-h-[52dvh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#170b29] dark:shadow-black/30">
             <Table className="min-w-[980px]">
-              <TableHeader className="sticky top-0 z-10 bg-slate-950">
-                <TableRow className="border-slate-800 hover:bg-slate-950">
+              <TableHeader className="sticky top-0 z-10 bg-slate-950 dark:bg-[#210f36]">
+                <TableRow className="border-slate-800 hover:bg-slate-950 dark:border-white/10 dark:hover:bg-[#210f36]">
                   <TableHead className="min-w-44 text-white">{t('table.order')}</TableHead>
                   <TableHead className="min-w-64 text-white">{t('table.customer')}</TableHead>
                   <TableHead className="text-right text-white">{t('table.remaining')}</TableHead>
@@ -299,28 +299,28 @@ export function BilginogluHakEdisPage(): ReactElement {
               </TableHeader>
               <TableBody>
                 {bulkTransferPreviewOrders.map((order) => (
-                  <TableRow key={order.id} className="border-slate-100 bg-white hover:bg-slate-50">
-                    <TableCell className="align-top font-black text-slate-950">{order.siparisNo}</TableCell>
+                  <TableRow key={order.id} className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
+                    <TableCell className="align-top font-black text-slate-950 dark:text-white">{order.siparisNo}</TableCell>
                     <TableCell className="align-top">
-                      <div className="font-bold text-slate-800">{order.customerCode ?? '-'}</div>
-                      <div className="mt-1 text-sm text-slate-500">{order.customerName ?? '-'}</div>
+                      <div className="font-bold text-slate-800 dark:text-slate-100">{order.customerCode ?? '-'}</div>
+                      <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{order.customerName ?? '-'}</div>
                     </TableCell>
-                    <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(order.remainingQty)}</TableCell>
-                    <TableCell className="text-right align-top font-bold text-cyan-700">{formatQty(order.warehouseAvailableQty)}</TableCell>
-                    <TableCell className="text-right align-top text-lg font-black text-emerald-700">{formatQty(order.canCreateQty)}</TableCell>
-                    <TableCell className="text-right align-top font-bold text-blue-700">{formatQty(order.totalAllocatedQty)}</TableCell>
-                    <TableCell className="text-right align-top font-bold text-amber-700">{formatQty(order.totalMissingQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(order.remainingQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-cyan-700 dark:text-cyan-200">{formatQty(order.warehouseAvailableQty)}</TableCell>
+                    <TableCell className="text-right align-top text-lg font-black text-emerald-700 dark:text-emerald-200">{formatQty(order.canCreateQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-blue-700 dark:text-blue-200">{formatQty(order.totalAllocatedQty)}</TableCell>
+                    <TableCell className="text-right align-top font-bold text-amber-700 dark:text-amber-200">{formatQty(order.totalMissingQty)}</TableCell>
                     <TableCell className="align-top">
                       <Badge className={`rounded-xl border-0 ${
                         order.isEligible
-                          ? 'bg-emerald-100 text-emerald-700'
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-100'
                           : order.decision === 'noBalance'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-slate-100 text-slate-700'
+                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
+                            : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
                       }`}>
                         {t(`bulkTransferPreview.decisions.${order.decision}`)}
                       </Badge>
-                      <div className="mt-2 text-xs font-medium leading-5 text-slate-500">
+                      <div className="mt-2 text-xs font-medium leading-5 text-slate-500 dark:text-slate-300">
                         {order.isEligible
                           ? t('bulkTransferPreview.table.willCreate', { qty: formatQty(order.canCreateQty) })
                           : t('bulkTransferPreview.table.willSkip')}
@@ -766,15 +766,15 @@ function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrd
 
 function NeedCard({ label, value, tone }: { label: string; value: string; tone: 'slate' | 'cyan' | 'emerald' | 'blue' | 'amber' }): ReactElement {
   const toneClass = {
-    slate: 'bg-slate-50 text-slate-800',
-    cyan: 'bg-cyan-50 text-cyan-800',
-    emerald: 'bg-emerald-50 text-emerald-800',
-    blue: 'bg-blue-50 text-blue-800',
-    amber: 'bg-amber-50 text-amber-800',
+    slate: 'bg-slate-50 text-slate-800 dark:bg-white/10 dark:text-slate-100',
+    cyan: 'bg-cyan-50 text-cyan-800 dark:bg-cyan-400/10 dark:text-cyan-100',
+    emerald: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-100',
+    blue: 'bg-blue-50 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
+    amber: 'bg-amber-50 text-amber-800 dark:bg-amber-400/10 dark:text-amber-100',
   }[tone];
 
   return (
-    <div className={`rounded-2xl border border-white/70 p-3 shadow-sm ${toneClass}`}>
+    <div className={`rounded-2xl border border-white/70 p-3 shadow-sm dark:border-white/10 ${toneClass}`}>
       <div className="text-xs font-semibold uppercase tracking-wide opacity-70">{label}</div>
       <div className="mt-1 text-xl font-black">{value}</div>
     </div>
