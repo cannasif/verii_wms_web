@@ -51,6 +51,7 @@
     "search": "Search order, customer or stock...",
     "order": "Order",
     "customer": "Customer",
+    "hakEdisRequired": "Entitlement Required",
     "transferAll": "Transfer All",
     "orderDetail": "Order Detail",
     "allocation": "Allocation",
@@ -83,7 +84,7 @@
     "steps": "Batch steps",
     "chooseBatch": "Select a batch to see its steps.",
     "warehouseSourceTypes": "WT/SH",
-    "batchLinkSummary": "DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
+    "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
     "title": "Suggested DAT / shipment readiness",
@@ -167,8 +168,8 @@
   "locationSettings": {
     "title": "Entitlement Location Settings",
     "hero": {
-      "eyebrow": "Completed entitlement location",
-      "description": "Manage the warehouse and shelf/cell where completed entitlement products wait before return DAT or shipment. Return DAT flows can use this location as the physical source."
+      "eyebrow": "Entitlement return location",
+      "description": "Manage the physical warehouse and shelf/cell where products return after entitlement is completed. The return DAT flow uses this single location as the target."
     },
     "actions": {
       "new": "New Setting",
@@ -177,35 +178,26 @@
     "form": {
       "createTitle": "New location setting",
       "editTitle": "Edit location setting",
-      "branchCode": "Branch code",
-      "completedWarehouse": "Completed entitlement warehouse",
-      "completedWarehouseDescription": "Select the warehouse where products wait after entitlement completion.",
+      "completedWarehouse": "Entitlement return warehouse",
+      "completedWarehouseDescription": "Select the warehouse where completed entitlement products return and wait.",
       "selectWarehouse": "Select warehouse",
-      "completedShelf": "Completed entitlement shelf/cell",
-      "completedShelfDescription": "Location that will be used as the source shelf/cell for return DAT.",
+      "completedShelf": "Entitlement return shelf/cell",
+      "completedShelfDescription": "Shelf/cell where completed entitlement products are placed after return DAT.",
       "selectShelf": "Select shelf/cell",
       "noShelves": "No active shelf/cell was found for this warehouse.",
       "isDefault": "Default",
       "isActive": "Active",
-      "description": "Description",
-      "calibrationReturnTitle": "Calibration return location",
-      "calibrationReturnDescription": "For calibration returns, the previous cell is ignored and stock is directed to this warehouse/shelf.",
-      "calibrationReturnWarehouse": "Calibration return warehouse",
-      "calibrationReturnWarehouseDescription": "Select the warehouse where items returning from calibration will be placed.",
-      "calibrationReturnShelf": "Calibration return shelf/cell",
-      "calibrationReturnShelfDescription": "Target shelf/cell for the calibration return put-away order.",
-      "clearCalibrationReturnLocation": "Clear calibration return location"
+      "description": "Description"
     },
     "table": {
       "title": "Defined entitlement locations",
       "branch": "Branch",
-      "warehouse": "Warehouse",
-      "shelf": "Shelf/Cell",
+      "warehouse": "Return Warehouse",
+      "shelf": "Return Shelf/Cell",
       "status": "Status",
       "description": "Description",
       "actions": "Actions",
-      "empty": "No entitlement location setting has been defined yet.",
-      "calibrationReturnLocation": "Calibration Return Location"
+      "empty": "No entitlement location setting has been defined yet."
     },
     "badges": {
       "default": "Default",
@@ -232,7 +224,6 @@
     "form": {
       "createTitle": "New operation setting",
       "editTitle": "Edit operation setting",
-      "branchCode": "Branch code",
       "operationType": "Operation type",
       "operationCode": "Operation code",
       "operationDescription": "Operation description",

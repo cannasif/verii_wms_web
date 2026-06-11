@@ -51,6 +51,7 @@
     "search": "Siparis, cari veya stok ara...",
     "order": "Siparis",
     "customer": "Cari",
+    "hakEdisRequired": "Hakediş Gerekli",
     "transferAll": "Tumunu Transfer Et",
     "orderDetail": "Siparis Detayi",
     "allocation": "Aktarim",
@@ -83,7 +84,7 @@
     "steps": "Batch adimlari",
     "chooseBatch": "Adimlari gormek icin bir batch secin.",
     "warehouseSourceTypes": "WT/SH",
-    "batchLinkSummary": "DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
+    "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
     "title": "Onerilen DAT / sevk hazirligi",
@@ -167,8 +168,8 @@
   "locationSettings": {
     "title": "Hakediş Lokasyon Tanımları",
     "hero": {
-      "eyebrow": "Tamamlanan hakediş lokasyonu",
-      "description": "Hakedişi tamamlanan ve dönüş DAT/sevk için bekleyen ürünlerin fiziksel depo ve raf/göz tanımını yönetin. Dönüş DAT akışları bu lokasyonu kaynak olarak kullanacak şekilde genişletilebilir."
+      "eyebrow": "Hakediş dönüş lokasyonu",
+      "description": "Ürün hakedişe çıktıktan ve hakedişi tamamlandıktan sonra döneceği fiziksel depo ve raf/göz tanımını yönetin. Dönüş DAT akışı bu tek lokasyonu hedef olarak kullanır."
     },
     "actions": {
       "new": "Yeni Tanım",
@@ -177,35 +178,26 @@
     "form": {
       "createTitle": "Yeni lokasyon tanımı",
       "editTitle": "Lokasyon tanımını düzenle",
-      "branchCode": "Şube kodu",
-      "completedWarehouse": "Hakedişi tamamlanan ürün deposu",
-      "completedWarehouseDescription": "Hakedişten dönecek ürünlerin fiziksel olarak beklediği depoyu seçin.",
+      "completedWarehouse": "Hakediş dönüş deposu",
+      "completedWarehouseDescription": "Hakedişi tamamlanan ürünlerin geri döneceği ve bekleyeceği depoyu seçin.",
       "selectWarehouse": "Depo seç",
-      "completedShelf": "Hakedişi tamamlanan ürün rafı/gözü",
-      "completedShelfDescription": "Dönüş DAT için kaynak raf/göz olarak kullanılacak lokasyon.",
+      "completedShelf": "Hakediş dönüş rafı/gözü",
+      "completedShelfDescription": "Hakedişi tamamlanan ürünlerin dönüş DAT sonrası yerleşeceği raf/göz.",
       "selectShelf": "Raf/göz seç",
       "noShelves": "Bu depo için aktif raf/göz bulunamadı.",
       "isDefault": "Varsayılan",
       "isActive": "Aktif",
-      "description": "Açıklama",
-      "calibrationReturnTitle": "Kalibrasyon dönüş lokasyonu",
-      "calibrationReturnDescription": "Kalibrasyondan dönen ürünlerde eski hücre dikkate alınmaz; ürün bu depo/raf tanımına yönlendirilir.",
-      "calibrationReturnWarehouse": "Kalibrasyon dönüş deposu",
-      "calibrationReturnWarehouseDescription": "Kalibrasyon sonrası geri gelen ürünlerin yerleştirileceği depoyu seçin.",
-      "calibrationReturnShelf": "Kalibrasyon dönüş rafı/gözü",
-      "calibrationReturnShelfDescription": "Kalibrasyon dönüş yerleştirme emrinde hedef raf/göz olarak kullanılacak lokasyon.",
-      "clearCalibrationReturnLocation": "Kalibrasyon dönüş lokasyonunu temizle"
+      "description": "Açıklama"
     },
     "table": {
       "title": "Tanımlı hakediş lokasyonları",
       "branch": "Şube",
-      "warehouse": "Depo",
-      "shelf": "Raf/Göz",
+      "warehouse": "Dönüş Deposu",
+      "shelf": "Dönüş Raf/Göz",
       "status": "Durum",
       "description": "Açıklama",
       "actions": "İşlemler",
-      "empty": "Henüz hakediş lokasyon tanımı yok.",
-      "calibrationReturnLocation": "Kalibrasyon Dönüş Lokasyonu"
+      "empty": "Henüz hakediş lokasyon tanımı yok."
     },
     "badges": {
       "default": "Varsayılan",
@@ -232,7 +224,6 @@
     "form": {
       "createTitle": "Yeni operasyon tanımı",
       "editTitle": "Operasyon tanımını düzenle",
-      "branchCode": "Şube kodu",
       "operationType": "Operasyon tipi",
       "operationCode": "Operasyon kodu",
       "operationDescription": "Operasyon açıklaması",

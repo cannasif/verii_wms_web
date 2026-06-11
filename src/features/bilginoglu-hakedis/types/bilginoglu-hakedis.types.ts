@@ -10,6 +10,7 @@ export interface BilginogluHakEdisOrderHeader {
   customerCode?: string | null;
   customerName?: string | null;
   orderDate?: string | null;
+  hakEdisFlag: string;
   transferAllFlag: string;
   orderDetail?: string | null;
   totalOrderQty: number;
@@ -46,12 +47,6 @@ export interface BilginogluHakEdisCompletedLocationSetting {
   shelfId: number;
   shelfCode?: string | null;
   shelfName?: string | null;
-  calibrationReturnWarehouseId?: number | null;
-  calibrationReturnWarehouseCode?: number | null;
-  calibrationReturnWarehouseName?: string | null;
-  calibrationReturnShelfId?: number | null;
-  calibrationReturnShelfCode?: string | null;
-  calibrationReturnShelfName?: string | null;
   isDefault: boolean;
   isActive: boolean;
   description?: string | null;
@@ -60,11 +55,8 @@ export interface BilginogluHakEdisCompletedLocationSetting {
 }
 
 export interface UpsertBilginogluHakEdisCompletedLocationSetting {
-  branchCode: string;
   warehouseId: number;
   shelfId: number;
-  calibrationReturnWarehouseId?: number | null;
-  calibrationReturnShelfId?: number | null;
   isDefault: boolean;
   isActive: boolean;
   description?: string | null;
@@ -93,7 +85,6 @@ export interface BilginogluHakEdisOperationSetting {
 }
 
 export interface UpsertBilginogluHakEdisOperationSetting {
-  branchCode: string;
   operationCode: string;
   operationDescription: string;
   operationType: BilginogluHakEdisOperationType;
@@ -121,6 +112,7 @@ export interface BilginogluHakEdisPlan {
   yapKod?: string | null;
   sourceWarehouseCode?: number | null;
   hakEdisWarehouseCode?: number | null;
+  hakEdisFlag: string;
   orderDate?: string | null;
   deliveryDate?: string | null;
   orderQty: number;
@@ -153,6 +145,10 @@ export interface BilginogluHakEdisBatch {
   transferToHakEdisHeaderId?: number | null;
   returnFromHakEdisHeaderId?: number | null;
   shipmentHeaderId?: number | null;
+  replenishmentSourceWarehouseId?: number | null;
+  replenishmentIntermediateWarehouseId?: number | null;
+  replenishmentToIntermediateHeaderId?: number | null;
+  replenishmentToOrderWarehouseHeaderId?: number | null;
   transferChainId?: number | null;
   sourceWarehouseId?: number | null;
   hakEdisWarehouseId?: number | null;

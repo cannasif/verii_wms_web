@@ -1,21 +1,21 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Edit3, Loader2, MapPinned, Plus, Search, Trash2 } from 'lucide-react';
+import { Edit3, Loader2, MapPinned, Plus, Trash2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { shelfManagementApi } from '@/features/shelf-management/api/shelf-management.api';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
 import type { BilginogluHakEdisCompletedLocationSetting } from '../types/bilginoglu-hakedis.types';
 import {
@@ -26,28 +26,21 @@ import {
 
 interface FormState {
   id?: number;
-  branchCode: string;
   warehouseId?: number;
   warehouseCode?: number;
   warehouseLabel: string;
   shelfCode: string;
   shelfId?: number;
-  calibrationReturnWarehouseId?: number;
-  calibrationReturnWarehouseCode?: number;
-  calibrationReturnWarehouseLabel: string;
-  calibrationReturnShelfCode: string;
-  calibrationReturnShelfId?: number;
   isDefault: boolean;
   isActive: boolean;
   description: string;
 }
 
+type LocationColumnKey = 'branch' | 'warehouse' | 'shelf' | 'status' | 'description';
+
 const emptyForm: FormState = {
-  branchCode: '0',
   warehouseLabel: '',
   shelfCode: '',
-  calibrationReturnWarehouseLabel: '',
-  calibrationReturnShelfCode: '',
   isDefault: true,
   isActive: true,
   description: '',
@@ -57,9 +50,18 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
+  const pageKey = 'bilginoglu-hakedis-location-settings';
   const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
-  const [calibrationWarehouseLookupOpen, setCalibrationWarehouseLookupOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const pagedGrid = usePagedDataGrid<LocationColumnKey>({
+    pageKey,
+    defaultSortBy: 'warehouse',
+    defaultSortDirection: 'asc',
+    defaultPageSize: 10,
+    defaultPageNumber: 1,
+    pageNumberBase: 1,
+  });
   const settingsQuery = useBilginogluHakEdisCompletedLocationSettingsQuery();
   const saveMutation = useBilginogluHakEdisCompletedLocationSettingMutation();
   const deleteMutation = useBilginogluHakEdisCompletedLocationSettingDeleteMutation();
@@ -68,11 +70,6 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     queryFn: ({ signal }) => shelfManagementApi.getLookup(form.warehouseId!, false, { signal }),
     enabled: Boolean(form.warehouseId),
   });
-  const calibrationShelvesQuery = useQuery({
-    queryKey: ['bilginoglu-hakedis', 'completed-location', 'calibration-shelves', form.calibrationReturnWarehouseId],
-    queryFn: ({ signal }) => shelfManagementApi.getLookup(form.calibrationReturnWarehouseId!, false, { signal }),
-    enabled: Boolean(form.calibrationReturnWarehouseId),
-  });
 
   useEffect(() => {
     setPageTitle(t('locationSettings.title'));
@@ -80,31 +77,73 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
 
   const settings = settingsQuery.data ?? [];
   const shelfOptions = useMemo(() => shelvesQuery.data?.data ?? [], [shelvesQuery.data?.data]);
-  const calibrationShelfOptions = useMemo(() => calibrationShelvesQuery.data?.data ?? [], [calibrationShelvesQuery.data?.data]);
+  const columns = useMemo<PagedDataGridColumn<LocationColumnKey>[]>(() => [
+    { key: 'branch', label: t('locationSettings.table.branch') },
+    { key: 'warehouse', label: t('locationSettings.table.warehouse') },
+    { key: 'shelf', label: t('locationSettings.table.shelf') },
+    { key: 'status', label: t('locationSettings.table.status'), sortable: false },
+    { key: 'description', label: t('locationSettings.table.description') },
+  ], [t]);
+  const filteredSettings = useMemo(() => {
+    const search = pagedGrid.searchTerm.trim().toLocaleLowerCase('tr-TR');
+    if (!search) return settings;
+
+    return settings.filter((item) => [
+      item.branchCode,
+      item.warehouseCode,
+      item.warehouseName,
+      item.shelfCode,
+      item.shelfName,
+      item.description,
+    ].some((value) => String(value ?? '').toLocaleLowerCase('tr-TR').includes(search)));
+  }, [pagedGrid.searchTerm, settings]);
+  const sortedSettings = useMemo(() => {
+    const rows = [...filteredSettings];
+    const direction = pagedGrid.sortDirection === 'asc' ? 1 : -1;
+    const read = (item: BilginogluHakEdisCompletedLocationSetting): string => {
+      switch (pagedGrid.sortBy) {
+        case 'branch':
+          return item.branchCode ?? '';
+        case 'shelf':
+          return `${item.shelfCode ?? ''} ${item.shelfName ?? ''}`;
+        case 'description':
+          return item.description ?? '';
+        case 'warehouse':
+        default:
+          return `${item.warehouseCode ?? ''} ${item.warehouseName ?? ''}`;
+      }
+    };
+
+    return rows.sort((a, b) => read(a).localeCompare(read(b), 'tr') * direction);
+  }, [filteredSettings, pagedGrid.sortBy, pagedGrid.sortDirection]);
+  const totalPages = Math.max(1, Math.ceil(sortedSettings.length / pagedGrid.pageSize));
+  const safePageNumber = Math.min(pagedGrid.pageNumber, totalPages);
+  const pageRows = sortedSettings.slice((safePageNumber - 1) * pagedGrid.pageSize, safePageNumber * pagedGrid.pageSize);
+  const rangeFrom = sortedSettings.length === 0 ? 0 : (safePageNumber - 1) * pagedGrid.pageSize + 1;
+  const rangeTo = Math.min(safePageNumber * pagedGrid.pageSize, sortedSettings.length);
 
   const canSave = permission.canCreate || permission.canUpdate;
   const resolvedShelfId = form.shelfId;
 
   const resetForm = () => setForm(emptyForm);
+  const openCreateDialog = () => {
+    resetForm();
+    setDialogOpen(true);
+  };
 
   const edit = (item: BilginogluHakEdisCompletedLocationSetting) => {
     setForm({
       id: item.id,
-      branchCode: item.branchCode || '0',
       warehouseId: item.warehouseId,
       warehouseCode: item.warehouseCode ?? undefined,
       warehouseLabel: `${item.warehouseCode ?? '-'} · ${item.warehouseName ?? '-'}`,
       shelfCode: item.shelfCode ?? '',
       shelfId: item.shelfId,
-      calibrationReturnWarehouseId: item.calibrationReturnWarehouseId ?? undefined,
-      calibrationReturnWarehouseCode: item.calibrationReturnWarehouseCode ?? undefined,
-      calibrationReturnWarehouseLabel: item.calibrationReturnWarehouseId ? `${item.calibrationReturnWarehouseCode ?? '-'} · ${item.calibrationReturnWarehouseName ?? '-'}` : '',
-      calibrationReturnShelfCode: item.calibrationReturnShelfCode ?? '',
-      calibrationReturnShelfId: item.calibrationReturnShelfId ?? undefined,
       isDefault: item.isDefault,
       isActive: item.isActive,
       description: item.description ?? '',
     });
+    setDialogOpen(true);
   };
 
   const submit = () => {
@@ -112,17 +151,17 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     saveMutation.mutate({
       id: form.id,
       input: {
-        branchCode: form.branchCode.trim() || '0',
         warehouseId: form.warehouseId,
         shelfId: resolvedShelfId,
-        calibrationReturnWarehouseId: form.calibrationReturnWarehouseId ?? null,
-        calibrationReturnShelfId: form.calibrationReturnShelfId ?? null,
         isDefault: form.isDefault,
         isActive: form.isActive,
         description: form.description.trim() || null,
       },
     }, {
-      onSuccess: resetForm,
+      onSuccess: () => {
+        resetForm();
+        setDialogOpen(false);
+      },
     });
   };
 
@@ -140,26 +179,28 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             <h1 className="text-3xl font-black tracking-tight md:text-4xl">{t('locationSettings.title')}</h1>
             <p className="text-sm leading-6 text-stone-200 md:text-base">{t('locationSettings.hero.description')}</p>
           </div>
-          <Button type="button" variant="secondary" className="rounded-2xl" onClick={resetForm}>
+          <Button type="button" variant="secondary" className="rounded-2xl" onClick={openCreateDialog} disabled={!permission.canCreate}>
             <Plus className="mr-2 size-4" />
             {t('locationSettings.actions.new')}
           </Button>
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(360px,440px)_1fr]">
-        <Card className="rounded-3xl border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>{form.id ? t('locationSettings.form.editTitle') : t('locationSettings.form.createTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) resetForm();
+      }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{form.id ? t('locationSettings.form.editTitle') : t('locationSettings.form.createTitle')}</DialogTitle>
+            <DialogDescription>{t('locationSettings.hero.description')}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label>{t('locationSettings.form.branchCode')}</Label>
-              <Input value={form.branchCode} onChange={(event) => setForm((prev) => ({ ...prev, branchCode: event.target.value }))} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('locationSettings.form.completedWarehouse')}</Label>
+              <Label>
+                {t('locationSettings.form.completedWarehouse')}
+                <RequiredMark />
+              </Label>
               <PagedLookupDialog<WarehouseLookup>
                 open={warehouseLookupOpen}
                 onOpenChange={setWarehouseLookupOpen}
@@ -187,7 +228,10 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             </div>
 
             <div className="space-y-2">
-              <Label>{t('locationSettings.form.completedShelf')}</Label>
+              <Label>
+                {t('locationSettings.form.completedShelf')}
+                <RequiredMark />
+              </Label>
               <Select
                 value={form.shelfId ? String(form.shelfId) : ''}
                 onValueChange={(value) => {
@@ -208,85 +252,6 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">{t('locationSettings.form.completedShelfDescription')}</p>
-            </div>
-
-            <div className="rounded-3xl border border-amber-100 bg-amber-50/60 p-4">
-              <div className="mb-3">
-                <div className="text-sm font-semibold text-amber-950">{t('locationSettings.form.calibrationReturnTitle')}</div>
-                <p className="text-xs text-amber-900/75">{t('locationSettings.form.calibrationReturnDescription')}</p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label>{t('locationSettings.form.calibrationReturnWarehouse')}</Label>
-                  <PagedLookupDialog<WarehouseLookup>
-                    open={calibrationWarehouseLookupOpen}
-                    onOpenChange={setCalibrationWarehouseLookupOpen}
-                    title={t('locationSettings.form.calibrationReturnWarehouse')}
-                    description={t('locationSettings.form.calibrationReturnWarehouseDescription')}
-                    value={form.calibrationReturnWarehouseLabel}
-                    placeholder={t('locationSettings.form.selectWarehouse')}
-                    searchPlaceholder={t('table.search')}
-                    queryKey={['bilginoglu-hakedis', 'completed-location', 'calibration-warehouse']}
-                    fetchPage={({ pageNumber, pageSize, search, signal }) => lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
-                    getKey={(item) => String(item.id)}
-                    getLabel={(item) => `${item.depoKodu} · ${item.depoIsmi}`}
-                    onSelect={(item) => {
-                      setForm((prev) => ({
-                        ...prev,
-                        calibrationReturnWarehouseId: item.id,
-                        calibrationReturnWarehouseCode: item.depoKodu,
-                        calibrationReturnWarehouseLabel: `${item.depoKodu} · ${item.depoIsmi}`,
-                        calibrationReturnShelfCode: '',
-                        calibrationReturnShelfId: undefined,
-                      }));
-                      setCalibrationWarehouseLookupOpen(false);
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t('locationSettings.form.calibrationReturnShelf')}</Label>
-                  <Select
-                    value={form.calibrationReturnShelfId ? String(form.calibrationReturnShelfId) : ''}
-                    onValueChange={(value) => {
-                      const shelf = calibrationShelfOptions.find((item) => String(item.id) === value);
-                      setForm((prev) => ({ ...prev, calibrationReturnShelfId: shelf?.id, calibrationReturnShelfCode: shelf?.code ?? '' }));
-                    }}
-                    disabled={!form.calibrationReturnWarehouseId || calibrationShelvesQuery.isLoading}
-                  >
-                    <SelectTrigger className="rounded-2xl bg-white">
-                      <SelectValue placeholder={calibrationShelvesQuery.isLoading ? t('loading') : t('locationSettings.form.selectShelf')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {calibrationShelfOptions.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.code} · {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-amber-900/75">{t('locationSettings.form.calibrationReturnShelfDescription')}</p>
-                </div>
-
-                {(form.calibrationReturnWarehouseId || form.calibrationReturnShelfId) ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="h-auto rounded-2xl px-0 text-xs font-semibold text-amber-900 hover:bg-transparent hover:text-amber-950"
-                    onClick={() => setForm((prev) => ({
-                      ...prev,
-                      calibrationReturnWarehouseId: undefined,
-                      calibrationReturnWarehouseCode: undefined,
-                      calibrationReturnWarehouseLabel: '',
-                      calibrationReturnShelfCode: '',
-                      calibrationReturnShelfId: undefined,
-                    }))}
-                  >
-                    {t('locationSettings.form.clearCalibrationReturnLocation')}
-                  </Button>
-                ) : null}
-              </div>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
@@ -319,86 +284,115 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
               {saveMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               {t('locationSettings.actions.save')}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        <Card className="rounded-3xl border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>{t('locationSettings.table.title')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {settingsQuery.isLoading ? (
-              <div className="flex items-center justify-center gap-2 py-12 text-muted-foreground">
-                <Loader2 className="size-5 animate-spin" />
-                {t('loading')}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('locationSettings.table.branch')}</TableHead>
-                      <TableHead>{t('locationSettings.table.warehouse')}</TableHead>
-                      <TableHead>{t('locationSettings.table.shelf')}</TableHead>
-                      <TableHead>{t('locationSettings.table.calibrationReturnLocation')}</TableHead>
-                      <TableHead>{t('locationSettings.table.status')}</TableHead>
-                      <TableHead>{t('locationSettings.table.description')}</TableHead>
-                      <TableHead className="text-right">{t('locationSettings.table.actions')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {settings.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-semibold">{item.branchCode}</TableCell>
-                        <TableCell>
-                          <div className="font-medium">{item.warehouseCode ?? '-'}</div>
-                          <div className="text-xs text-muted-foreground">{item.warehouseName ?? '-'}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium">{item.shelfCode ?? '-'}</div>
-                          <div className="text-xs text-muted-foreground">{item.shelfName ?? '-'}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium">{item.calibrationReturnWarehouseCode ?? '-'}</div>
-                          <div className="text-xs text-muted-foreground">{item.calibrationReturnWarehouseName ?? '-'}</div>
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            {item.calibrationReturnShelfCode ?? '-'} · {item.calibrationReturnShelfName ?? '-'}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-2">
-                            {item.isDefault ? <Badge className="rounded-xl bg-amber-100 text-amber-800 hover:bg-amber-100">{t('locationSettings.badges.default')}</Badge> : null}
-                            <Badge className={`rounded-xl ${item.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>
-                              {item.isActive ? t('locationSettings.badges.active') : t('locationSettings.badges.passive')}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate">{item.description ?? '-'}</TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => edit(item)} disabled={!permission.canUpdate}>
-                              <Edit3 className="size-4" />
-                            </Button>
-                            <Button type="button" variant="destructive" size="sm" className="rounded-xl" onClick={() => deleteMutation.mutate(item.id)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                              <Trash2 className="size-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {settings.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground">
-                    <Search className="size-6" />
-                    {t('locationSettings.table.empty')}
-                  </div>
-                ) : null}
+      <Card className="rounded-3xl border-slate-200 shadow-sm">
+        <CardHeader>
+          <CardTitle>{t('locationSettings.table.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PagedDataGrid<BilginogluHakEdisCompletedLocationSetting, LocationColumnKey>
+            pageKey={pageKey}
+            columns={columns}
+            rows={pageRows}
+            rowKey={(row) => row.id}
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'branch':
+                  return <span className="font-semibold">{row.branchCode}</span>;
+                case 'warehouse':
+                  return (
+                    <div>
+                      <div className="font-medium">{row.warehouseCode ?? '-'}</div>
+                      <div className="text-xs text-muted-foreground">{row.warehouseName ?? '-'}</div>
+                    </div>
+                  );
+                case 'shelf':
+                  return (
+                    <div>
+                      <div className="font-medium">{row.shelfCode ?? '-'}</div>
+                      <div className="text-xs text-muted-foreground">{row.shelfName ?? '-'}</div>
+                    </div>
+                  );
+                case 'status':
+                  return (
+                    <div className="flex flex-wrap gap-2">
+                      {row.isDefault ? <Badge className="rounded-xl bg-amber-100 text-amber-800 hover:bg-amber-100">{t('locationSettings.badges.default')}</Badge> : null}
+                      <Badge className={`rounded-xl ${row.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>
+                        {row.isActive ? t('locationSettings.badges.active') : t('locationSettings.badges.passive')}
+                      </Badge>
+                    </div>
+                  );
+                case 'description':
+                  return row.description ?? '-';
+                default:
+                  return null;
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={pagedGrid.handleSort}
+            isLoading={settingsQuery.isLoading}
+            isError={settingsQuery.isError}
+            errorText={t('locationSettings.messages.saveFailed')}
+            emptyText={t('locationSettings.table.empty')}
+            pageSize={pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={safePageNumber}
+            totalPages={totalPages}
+            hasPreviousPage={safePageNumber > 1}
+            hasNextPage={safePageNumber < totalPages}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.paginationInfo', { current: rangeFrom, total: rangeTo, totalCount: sortedSettings.length })}
+            showActionsColumn
+            actionsHeaderLabel={t('locationSettings.table.actions')}
+            actionsCellClassName="text-right"
+            renderActionsCell={(row) => (
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => edit(row)} disabled={!permission.canUpdate}>
+                  <Edit3 className="size-4" />
+                </Button>
+                <Button type="button" variant="destructive" size="sm" className="rounded-xl" onClick={() => deleteMutation.mutate(row.id)} disabled={!permission.canDelete || deleteMutation.isPending}>
+                  <Trash2 className="size-4" />
+                </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+            search={{
+              ...pagedGrid.searchConfig,
+              placeholder: t('table.search'),
+            }}
+            refresh={{
+              onRefresh: () => settingsQuery.refetch(),
+              isLoading: settingsQuery.isFetching,
+              label: t('common.refresh'),
+            }}
+            exportFileName="bilginoglu-hakedis-location-settings"
+            exportColumns={columns.map((column) => ({ key: column.key, label: column.label }))}
+            exportRows={sortedSettings.map((row) => ({
+              branch: row.branchCode,
+              warehouse: `${row.warehouseCode ?? '-'} · ${row.warehouseName ?? '-'}`,
+              shelf: `${row.shelfCode ?? '-'} · ${row.shelfName ?? '-'}`,
+              status: row.isActive ? t('locationSettings.badges.active') : t('locationSettings.badges.passive'),
+              description: row.description ?? '-',
+            }))}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
+}
+
+function RequiredMark(): ReactElement {
+  return <span className="ml-1 text-destructive" aria-hidden="true">*</span>;
 }
