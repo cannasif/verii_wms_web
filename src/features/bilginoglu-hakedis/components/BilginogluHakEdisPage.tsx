@@ -265,7 +265,7 @@ export function BilginogluHakEdisPage(): ReactElement {
       </section>
 
       <Dialog open={bulkTransferPreviewOpen} onOpenChange={setBulkTransferPreviewOpen}>
-        <DialogContent className="max-h-[92dvh] w-[calc(100vw-1rem)] max-w-6xl overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl sm:w-[calc(100vw-2rem)] sm:p-6">
+        <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
           <DialogHeader className="space-y-2">
             <DialogTitle>{t('bulkTransferPreview.title')}</DialogTitle>
             <DialogDescription>{t('bulkTransferPreview.description')}</DialogDescription>
