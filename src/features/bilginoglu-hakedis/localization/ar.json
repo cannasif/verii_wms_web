@@ -105,17 +105,24 @@
     "warning": "When you run this operation, entitlement transfer flow starts only for eligible orders; skipped orders continue waiting for stock or balance conditions.",
     "run": "Run for {{count}} orders",
     "empty": "No open entitlement order was found to preview.",
+    "error": "Entitlement transfer preview could not be loaded.",
     "metrics": {
       "orders": "Orders",
       "eligible": "Eligible",
       "remaining": "Remaining",
       "available": "Available",
-      "transferable": "Can Create"
+      "transferable": "Can Create",
+      "lines": "Lines",
+      "eligibleLines": "Eligible Lines"
     },
     "table": {
       "decision": "Decision",
       "willCreate": "An entitlement transfer will be opened for {{qty}} quantity.",
-      "willSkip": "This order will be skipped in this run."
+      "willSkip": "This order will be skipped in this run.",
+      "stock": "Stock / Line",
+      "warehouse": "Warehouse Flow",
+      "willCreateLine": "An entitlement transfer will be opened for {{qty}} quantity of {{stock}}.",
+      "willSkipLine": "This line will be skipped in this run."
     },
     "decisions": {
       "eligible": "Can Create",

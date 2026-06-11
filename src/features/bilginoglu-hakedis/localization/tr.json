@@ -105,17 +105,24 @@
     "warning": "Çalıştır dediğinizde sadece uygun görünen siparişler için hakediş transfer akışı başlatılır; uygun olmayan siparişler stok/bakiye beklemeye devam eder.",
     "run": "{{count}} sipariş için çalıştır",
     "empty": "Önizlenecek açık hakediş siparişi bulunamadı.",
+    "error": "Hakediş transfer önizlemesi alınamadı.",
     "metrics": {
       "orders": "Sipariş",
       "eligible": "Uygun",
       "remaining": "Kalan",
       "available": "Depoda Var",
-      "transferable": "Açılabilir"
+      "transferable": "Açılabilir",
+      "lines": "Kalem",
+      "eligibleLines": "Uygun Kalem"
     },
     "table": {
       "decision": "Karar",
       "willCreate": "{{qty}} miktar için hakediş transferi açılacak.",
-      "willSkip": "Bu sipariş bu turda atlanacak."
+      "willSkip": "Bu sipariş bu turda atlanacak.",
+      "stock": "Stok / Kalem",
+      "warehouse": "Depo Akışı",
+      "willCreateLine": "{{stock}} için {{qty}} miktar hakediş transferi açılacak.",
+      "willSkipLine": "Bu kalem bu turda atlanacak."
     },
     "decisions": {
       "eligible": "Oluşturulabilir",

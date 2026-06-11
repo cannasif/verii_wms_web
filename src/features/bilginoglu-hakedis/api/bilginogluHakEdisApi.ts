@@ -143,6 +143,11 @@ export const bilginogluHakEdisApi = {
     return extractData(response as ApiResponse<BilginogluHakEdisTransferPreview>);
   },
 
+  getBulkTransferPreview: async (): Promise<BilginogluHakEdisTransferPreview[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisTransferPreview[]>>('/api/BilginogluHakEdis/orders/hakedis-transfer-preview');
+    return extractData(response as ApiResponse<BilginogluHakEdisTransferPreview[]>);
+  },
+
   createSuggestedTransfers: async (orderHeaderId: number): Promise<BilginogluHakEdisCreateTransfersResult> => {
     const response = await api.post<ApiResponse<BilginogluHakEdisCreateTransfersResult>>(`/api/BilginogluHakEdis/orders/${orderHeaderId}/create-suggested-transfers`, {});
     return extractData(response as ApiResponse<BilginogluHakEdisCreateTransfersResult>);

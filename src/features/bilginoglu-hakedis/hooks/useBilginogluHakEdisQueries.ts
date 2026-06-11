@@ -10,6 +10,7 @@ export const bilginogluHakEdisQueryKeys = {
   orderPlans: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-plans', orderHeaderId] as const,
   orderActivities: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-activities', orderHeaderId] as const,
   transferPreview: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'transfer-preview', orderHeaderId] as const,
+  bulkTransferPreview: () => [...bilginogluHakEdisQueryKeys.all, 'bulk-transfer-preview'] as const,
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
@@ -45,6 +46,14 @@ export function useBilginogluHakEdisTransferPreviewQuery(orderHeaderId: number |
     queryKey: bilginogluHakEdisQueryKeys.transferPreview(orderHeaderId),
     queryFn: () => bilginogluHakEdisApi.getTransferPreview(orderHeaderId ?? 0),
     enabled: Number.isFinite(orderHeaderId) && orderHeaderId != null && orderHeaderId > 0,
+  });
+}
+
+export function useBilginogluHakEdisBulkTransferPreviewQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.bulkTransferPreview(),
+    queryFn: () => bilginogluHakEdisApi.getBulkTransferPreview(),
+    enabled,
   });
 }
 

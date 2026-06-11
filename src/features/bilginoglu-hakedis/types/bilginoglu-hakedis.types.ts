@@ -248,6 +248,7 @@ export interface BilginogluHakEdisTransferPreviewLine {
   yapKod?: string | null;
   sourceWarehouseCode?: number | null;
   hakEdisWarehouseCode?: number | null;
+  hakEdisFlag: string;
   orderQty: number;
   processedQty: number;
   remainingOrderQty: number;
