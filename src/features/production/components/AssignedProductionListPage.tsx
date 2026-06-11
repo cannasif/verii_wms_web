@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, PlayCircle, Trash2 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -230,14 +230,16 @@ export function AssignedProductionListPage(): ReactElement {
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)} disabled={!permission.canView}>
-              {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
+              <Eye className="size-4" />
+              <span className="ml-2">{t('production.list.openDetail', { defaultValue: 'Missing translation' })}</span>
             </Button>
             <Button type="button" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/production/process/${row.id}`)} disabled={!permission.canUpdate}>
-              {t('common.start', { defaultValue: 'Missing translation' })}
+              <PlayCircle className="size-4" />
+              <span className="ml-2">{t('common.start', { defaultValue: 'Missing translation' })}</span>
             </Button>
             <Button type="button" variant="destructive" size="sm" onClick={() => setItemToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
-              <Trash2 className="mr-1 h-3.5 w-3.5" />
-              {t('common.delete')}
+              <Trash2 className="size-4" />
+              <span className="ml-2">{t('common.delete')}</span>
             </Button>
           </div>
         )}

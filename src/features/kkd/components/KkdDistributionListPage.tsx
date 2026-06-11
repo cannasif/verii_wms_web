@@ -1,8 +1,10 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -153,7 +155,22 @@ export function KkdDistributionListPage(): ReactElement {
               sortBy={pagedGrid.sortBy}
               sortDirection={pagedGrid.sortDirection}
               onSort={pagedGrid.handleSort}
-              onRowClick={(row) => setSelectedHeader({ ...row, lines: [] })}
+              actionsHeaderLabel={t('common.actions')}
+              renderActionsCell={(row) => (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    title={t('common.view')}
+                    aria-label={t('common.view')}
+                    onClick={() => setSelectedHeader({ ...row, lines: [] })}
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span>{t('common.view')}</span>
+                  </Button>
+                </div>
+              )}
               pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
               pageSizeOptions={pagedGrid.pageSizeOptions}
               onPageSizeChange={pagedGrid.handlePageSizeChange}

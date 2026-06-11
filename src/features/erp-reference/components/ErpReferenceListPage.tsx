@@ -310,12 +310,18 @@ export function ErpReferenceListPage({ kind }: { kind: ErpReferenceKind }): Reac
             rows={rows}
             rowKey={(row) => row.id}
             renderCell={config.renderCell}
-            onRowClick={kind === 'stock' ? (row) => setSelectedStockId(row.id) : undefined}
             renderActionsCell={kind === 'stock' ? (row) => (
               <div className="flex justify-end">
-                <Button type="button" variant="ghost" size="sm" onClick={(event) => { event.stopPropagation(); setSelectedStockId(row.id); }}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Detay
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title={t('common.view')}
+                  aria-label={t('common.view')}
+                  onClick={() => setSelectedStockId(row.id)}
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>{t('common.view')}</span>
                 </Button>
               </div>
             ) : undefined}

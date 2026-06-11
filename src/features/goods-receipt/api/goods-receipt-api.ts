@@ -179,7 +179,7 @@ export const goodsReceiptApi = {
   },
 
   getCollectedBarcodes: async (headerId: number, options?: ApiRequestOptions): Promise<CollectedBarcodesResponse> => {
-    return await api.get<CollectedBarcodesResponse>(`/api/GrImportLine/warehouseGoodsReceiptOrderCollectedBarcodes/${headerId}`, options);
+    return await api.get<CollectedBarcodesResponse>(`/api/GrImportLine/goodReceiptOrderCollectedBarcodes/${headerId}`, options);
   },
 
   completeGoodsReceipt: async (headerId: number): Promise<ApiResponse<unknown>> => {
@@ -210,9 +210,25 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
   },
 
+  getPreReceiptLabelsByOrder: async (siparisNo: string, options?: ApiRequestOptions): Promise<GrPreReceiptLabel[]> => {
+    const response = await api.get<ApiResponse<GrPreReceiptLabel[]>>(`/api/GrPreReceiptLabel/orders/${encodeURIComponent(siparisNo)}/labels`, options);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
+  },
+
   createPreReceiptLabelBatch: async (request: CreateGrPreReceiptLabelBatchRequest): Promise<GrPreReceiptLabelBatch> => {
     const response = await api.post<ApiResponse<GrPreReceiptLabelBatch>>('/api/GrPreReceiptLabel/batches', request);
     if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
+  },
+
+  startGoodsReceiptFromPreReceiptBatch: async (batchId: number): Promise<number> => {
+    const response = await api.post<ApiResponse<number>>(`/api/GrPreReceiptLabel/batches/${batchId}/start-goods-receipt`);
+    if (response.success && typeof response.data === 'number') {
       return response.data;
     }
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));

@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -208,7 +208,8 @@ export function VehicleCheckInListPage(): ReactElement {
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/vehicle-check-in?id=${row.id}`)}>
-              {t('vehicleCheckIn.list.actions.open')}
+              <Eye className="size-4" />
+              <span className="ml-2">{t('vehicleCheckIn.list.actions.open')}</span>
             </Button>
           </div>
         )}

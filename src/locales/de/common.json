@@ -436,7 +436,9 @@
     "erpWarehouseStockBalance": "Lagerbestandsbilanz",
     "erpWarehouseSerialBalance": "Lagerseriensaldo",
     "bilginogluHakEdisLocationSettings": "Hakediş Location Settings",
-    "bilginogluHakEdisOperationSettings": "Operation Settings"
+    "bilginogluHakEdisOperationSettings": "Operation Settings",
+    "goodsReceiptPreLabels": "Goods Receipt Pre-Labels",
+    "goodsReceiptPreLabelReceiving": "Receipt From Label"
   },
   "erpReference": {
     "badge": "ERP-Spiegel",

@@ -33,6 +33,10 @@ const GoodsReceiptPreReceiptLabelsPage = lazyNamed(
   () => import('@/features/goods-receipt'),
   'GoodsReceiptPreReceiptLabelsPage',
 );
+const GoodsReceiptPreLabelReceivingPage = lazyNamed(
+  () => import('@/features/goods-receipt'),
+  'GoodsReceiptPreLabelReceivingPage',
+);
 
 const TransferCreatePage = lazyNamed(
   () => import('@/features/transfer'),
@@ -70,6 +74,8 @@ const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'
 const BilginogluHakEdisPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPage');
 const BilginogluHakEdisLocationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisLocationSettingsPage');
 const BilginogluHakEdisOperationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisOperationSettingsPage');
+const BilginogluHakEdisPendingTransfersPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPendingTransfersPage');
+const BilginogluHakEdisPendingShipmentsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPendingShipmentsPage');
 
 const SubcontractingIssueCreatePage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueCreatePage');
 const SubcontractingIssueEditPage = lazyNamed(() => import('@/features/subcontracting'), 'SubcontractingIssueEditPage');
@@ -295,6 +301,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'assigned', element: withRoute(AssignedGrListPage, { routeName: 'goods-receipt-assigned', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'approval', element: withRoute(GoodsReceiptApprovalPage, { routeName: 'goods-receipt-approval', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'pre-labels', element: withRoute(GoodsReceiptPreReceiptLabelsPage, { routeName: 'goods-receipt-pre-labels', namespaces: ['goods-receipt', 'common'] }) },
+      { path: 'pre-label-receiving', element: withRoute(GoodsReceiptPreLabelReceivingPage, { routeName: 'goods-receipt-pre-label-receiving', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'collection/:headerId', element: withRoute(GoodsReceiptCollectionPage, { routeName: 'goods-receipt-collection', namespaces: ['goods-receipt', 'common'] }) },
     ],
   },
@@ -395,6 +402,8 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'bilginoglu-hakedis', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/open', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-open', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/completed', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-completed', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/pending-transfers', element: withRoute(BilginogluHakEdisPendingTransfersPage, { routeName: 'service-bilginoglu-hakedis-pending-transfers', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/pending-shipments', element: withRoute(BilginogluHakEdisPendingShipmentsPage, { routeName: 'service-bilginoglu-hakedis-pending-shipments', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/location-settings', element: withRoute(BilginogluHakEdisLocationSettingsPage, { routeName: 'service-bilginoglu-hakedis-location-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/operation-settings', element: withRoute(BilginogluHakEdisOperationSettingsPage, { routeName: 'service-bilginoglu-hakedis-operation-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
     ],

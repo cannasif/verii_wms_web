@@ -373,7 +373,8 @@ export function WarehouseStockBalancePage(): ReactElement {
                   onClick={() => rebuildWarehouseMutation.mutate(row.warehouseId)}
                   disabled={rebuildWarehouseMutation.isPending}
                 >
-                  {t('warehouseBalance.stock.rebuildWarehouse', { defaultValue: 'Missing translation' })}
+                  <RefreshCcw className="size-4" />
+                  <span className="ml-2">{t('warehouseBalance.stock.rebuildWarehouse', { defaultValue: 'Missing translation' })}</span>
                 </Button>
                 <Button
                   size="sm"
@@ -381,7 +382,8 @@ export function WarehouseStockBalancePage(): ReactElement {
                   onClick={() => rebuildStockMutation.mutate(row.stockId)}
                   disabled={rebuildStockMutation.isPending}
                 >
-                  {t('warehouseBalance.stock.rebuildStock', { defaultValue: 'Missing translation' })}
+                  <RefreshCcw className="size-4" />
+                  <span className="ml-2">{t('warehouseBalance.stock.rebuildStock', { defaultValue: 'Missing translation' })}</span>
                 </Button>
               </div>
             ) : null}

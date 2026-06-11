@@ -14,6 +14,8 @@ export const bilginogluHakEdisQueryKeys = {
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
+  pendingHakEdisTransfers: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-hakedis-transfers', params] as const,
+  pendingShipmentOrders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-shipment-orders', params] as const,
   completedLocationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'completed-location-settings'] as const,
   operationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'operation-settings'] as const,
 };
@@ -77,6 +79,20 @@ export function useBilginogluHakEdisStepsQuery(batchId: number | null) {
     queryKey: bilginogluHakEdisQueryKeys.steps(batchId),
     queryFn: () => bilginogluHakEdisApi.getSteps(batchId ?? 0),
     enabled: Number.isFinite(batchId) && batchId != null && batchId > 0,
+  });
+}
+
+export function useBilginogluHakEdisPendingHakEdisTransfersQuery(params: PagedParams) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.pendingHakEdisTransfers(params),
+    queryFn: () => bilginogluHakEdisApi.getPendingHakEdisTransfers(params),
+  });
+}
+
+export function useBilginogluHakEdisPendingShipmentOrdersQuery(params: PagedParams) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.pendingShipmentOrders(params),
+    queryFn: () => bilginogluHakEdisApi.getPendingShipmentOrders(params),
   });
 }
 

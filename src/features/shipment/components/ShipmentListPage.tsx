@@ -250,8 +250,6 @@ export function ShipmentListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('shipment.list.error')}
             emptyText={t('shipment.list.noData')}
-            rowClassName="cursor-pointer"
-            onRowClick={permission.canView ? (row) => setSelectedHeaderId(row.id) : undefined}
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('shipment.list.actions')}
             renderActionsCell={(row) => (

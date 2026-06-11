@@ -50,6 +50,7 @@
     "title": "Entitlement Order Pool",
     "search": "Search order, customer or stock...",
     "order": "Order",
+    "orderDate": "Order Date",
     "customer": "Customer",
     "hakEdisRequired": "Entitlement Required",
     "transferAll": "Transfer All",
@@ -84,11 +85,15 @@
     "steps": "Batch steps",
     "chooseBatch": "Select a batch to see its steps.",
     "warehouseSourceTypes": "WT/SH",
+    "sourceWarehouse": "Available in warehouse",
+    "hakEdisWarehouse": "Entitlement warehouse",
+    "willUseQty": "{{qty}} will be used from warehouse {{warehouse}}",
+    "noUsableBalance": "No usable balance in warehouse {{warehouse}}",
     "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
-    "title": "Suggested DAT / shipment readiness",
-    "description": "DAT lines that can be opened from order quantity, processed quantity, remaining balance, and warehouse availability.",
+    "title": "DAT / shipment eligibility summary",
+    "description": "Current status based on order quantity, processed quantity, remaining balance, and warehouse availability.",
     "orderQty": "Order Quantity",
     "processedQty": "Allocated / Shipped",
     "remainingQty": "Remaining Need",
@@ -163,6 +168,49 @@
       "notReady": "Not Ready"
     }
   },
+  "pendingOperations": {
+    "eyebrow": "Operation queue",
+    "empty": "No pending operation was found.",
+    "error": "Pending operations could not be loaded.",
+    "searchPlaceholder": "Search order, batch, customer or stock...",
+    "transfer": {
+      "title": "Pending Entitlement Transfers",
+      "description": "Track batches waiting in entitlement outbound, intermediate approval, entitlement return, and replenishment DAT stages by order and stock line."
+    },
+    "shipment": {
+      "title": "Pending Loading / Shipment Orders",
+      "description": "Track batches that returned from entitlement or are directly ready to ship, including those waiting for loading/shipment orders or already opened shipment orders."
+    },
+    "cards": {
+      "rows": "Rows",
+      "quantity": "Total Quantity",
+      "linkedDocuments": "Linked Documents"
+    },
+    "table": {
+      "order": "Order",
+      "customer": "Customer",
+      "stock": "Stock / Line",
+      "warehouseFlow": "Warehouse Flow",
+      "quantity": "Quantity",
+      "stage": "Stage",
+      "pendingAction": "Pending Action",
+      "documents": "Linked Documents",
+      "updatedAt": "Last Update"
+    },
+    "actions": {
+      "WaitReplenishmentToIntermediateCompletion": "Waiting replenishment to intermediate completion",
+      "ApproveReplenishmentIntermediate": "Waiting replenishment intermediate approval",
+      "WaitReplenishmentToOrderWarehouseCompletion": "Waiting replenishment to order warehouse completion",
+      "CreateTransferToHakEdis": "Entitlement DAT can be opened",
+      "WaitTransferToHakEdisCompletion": "Waiting entitlement outbound completion",
+      "ApproveIntermediate": "Waiting intermediate approval",
+      "CreateReturnTransfer": "Return DAT can be opened",
+      "WaitReturnTransferCompletion": "Waiting return DAT completion",
+      "CreateShipment": "Loading/shipment order can be opened",
+      "WaitShipmentCompletion": "Waiting shipment completion",
+      "Review": "Review required"
+    }
+  },
   "activity": {
     "title": "Completed operations",
     "description": "Document, ERP, and collection trace for related DAT, entitlement, return, and shipment stages.",
@@ -170,6 +218,14 @@
     "shipmentCount": "Shipment: {{count}}",
     "completedCount": "Completed: {{count}}",
     "empty": "There is no operation history for this order yet.",
+    "hakEdisSection": "Entitlement / DAT movements",
+    "shipmentSection": "Shipment / loading movements",
+    "emptyHakEdis": "There is no entitlement/DAT movement for this order yet.",
+    "emptyShipment": "There is no shipment/loading movement for this order yet.",
+    "createFromQueues": "Create orders from the pending transfer and shipment/loading screens.",
+    "readOnlyDetail": "Read-only detail - no action starts here",
+    "pendingTransfers": "Go to pending transfers",
+    "pendingShipments": "Go to pending shipments",
     "step": "Stage",
     "document": "Document",
     "erp": "ERP",
@@ -178,7 +234,23 @@
     "series": "Series",
     "type": "Type",
     "collectorCount": "{{count}} user",
-    "erpIntegrated": "Integrated to ERP"
+    "erpIntegrated": "Integrated to ERP",
+    "openDetail": "Open operation detail",
+    "detailTitle": "{{step}} operation trace",
+    "detailDescription": "Shows who completed this step, when it was completed, and the related document/ERP trace.",
+    "batch": "Batch",
+    "quantity": "Quantity",
+    "status": "Status",
+    "whoCompleted": "Who / When",
+    "actionDate": "Action date",
+    "completionDate": "Completion date",
+    "collectorCountLabel": "Collector count",
+    "documentTrace": "Document and ERP trace",
+    "source": "Source document",
+    "erpDate": "ERP integration date",
+    "stockTrace": "Stock and order trace",
+    "stockName": "Stock name",
+    "orderLineId": "Order line ID"
   },
   "policy": {
     "allocation": "Allocation policy",
@@ -204,6 +276,9 @@
     "TransferToHakEdis": "Transfer to Entitlement",
     "AtHakEdis": "At Entitlement",
     "ReturnFromHakEdis": "Return from Entitlement",
+    "ReplenishmentToIntermediate": "Replenishment to Intermediate",
+    "ReplenishmentAwaitingIntermediateApproval": "Replenishment Awaiting Intermediate Approval",
+    "ReplenishmentToOrderWarehouse": "Replenishment to Order Warehouse",
     "Pending": "Pending",
     "Ready": "Ready",
     "InProgress": "In Progress",

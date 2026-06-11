@@ -253,8 +253,6 @@ export function TransferListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('transfer.list.error')}
             emptyText={t('transfer.list.noData')}
-            rowClassName="cursor-pointer"
-            onRowClick={permission.canView ? (row) => setSelectedHeaderId(row.id) : undefined}
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('goodsReceipt.report.actions')}
             renderActionsCell={(row) => (

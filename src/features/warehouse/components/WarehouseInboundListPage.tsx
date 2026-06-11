@@ -237,8 +237,6 @@ export function WarehouseInboundListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('warehouse.inbound.list.error')}
             emptyText={t('warehouse.inbound.list.noData')}
-            rowClassName="cursor-pointer"
-            onRowClick={permission.canView ? handleRowClick : undefined}
             showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
             actionsHeaderLabel={t('warehouse.inbound.list.actions')}
             renderActionsCell={(row) => (

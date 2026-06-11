@@ -157,6 +157,44 @@ export interface BilginogluHakEdisBatch {
   shipmentCreatedDate?: string | null;
 }
 
+export interface BilginogluHakEdisPendingOperation {
+  id: number;
+  branchCode: string;
+  batchId: number;
+  batchNo: string;
+  batchSequence: number;
+  quantity: number;
+  currentStage: string;
+  status: string;
+  pendingAction: string;
+  planId: number;
+  orderHeaderId?: number | null;
+  siparisNo: string;
+  orderId: number;
+  customerId?: number | null;
+  customerCode?: string | null;
+  customerName?: string | null;
+  stockId?: number | null;
+  stockCode?: string | null;
+  stockName?: string | null;
+  yapKodId?: number | null;
+  yapKod?: string | null;
+  sourceWarehouseId?: number | null;
+  sourceWarehouseCode?: number | null;
+  hakEdisWarehouseId?: number | null;
+  hakEdisWarehouseCode?: number | null;
+  transferToHakEdisHeaderId?: number | null;
+  returnFromHakEdisHeaderId?: number | null;
+  shipmentHeaderId?: number | null;
+  replenishmentToIntermediateHeaderId?: number | null;
+  replenishmentToOrderWarehouseHeaderId?: number | null;
+  transferChainId?: number | null;
+  readyForShipmentDate?: string | null;
+  shipmentCreatedDate?: string | null;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+}
+
 export interface BilginogluHakEdisBatchStep {
   id: number;
   batchId: number;

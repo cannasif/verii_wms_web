@@ -399,7 +399,9 @@
     "erpWarehouseStockBalance": "Warehouse Stock Balance",
     "erpWarehouseSerialBalance": "Warehouse Serial Balance",
     "bilginogluHakEdisLocationSettings": "Entitlement Location Settings",
-    "bilginogluHakEdisOperationSettings": "Operation Settings"
+    "bilginogluHakEdisOperationSettings": "Operation Settings",
+    "goodsReceiptPreLabels": "Goods Receipt Pre-Labels",
+    "goodsReceiptPreLabelReceiving": "Receipt From Label"
   },
   "welcome": {
     "title": "مرحباً",

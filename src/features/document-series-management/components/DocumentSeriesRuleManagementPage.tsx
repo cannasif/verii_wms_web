@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -258,8 +258,8 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
         actionsHeaderLabel={t('common.actions')}
         renderActionsCell={(row) => (
           <div className="flex gap-2 justify-end">
-            <Button type="button" size="sm" variant="outline" onClick={() => startEdit(row)}>{t('common.update')}</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>{t('common.delete')}</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => startEdit(row)}><Pencil className="size-4" /><span className="ml-2">{t('common.update')}</span></Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}><Trash2 className="size-4" /><span className="ml-2">{t('common.delete')}</span></Button>
           </div>
         )}
         pageSize={query.data?.pageSize ?? pagedGrid.pageSize}

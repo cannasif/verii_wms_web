@@ -36,9 +36,11 @@ export function useColumnPreferences({
   useEffect(() => {
     const prefs = loadColumnPreferences(pageKey, userId, defaultOrder, idColumnKey);
     const validOrder = prefs.order.filter((key) => defaultOrder.includes(key));
-    const normalizedOrder = validOrder.length > 0 ? validOrder : defaultOrder;
+    const missingOrderKeys = defaultOrder.filter((key) => !validOrder.includes(key));
+    const normalizedOrder = validOrder.length > 0 ? [...validOrder, ...missingOrderKeys] : defaultOrder;
     const validVisible = prefs.visibleKeys.filter((key) => normalizedOrder.includes(key));
-    const normalizedVisible = validVisible.length > 0 ? validVisible : normalizedOrder;
+    const missingVisibleKeys = missingOrderKeys.filter((key) => !validVisible.includes(key));
+    const normalizedVisible = validVisible.length > 0 ? [...validVisible, ...missingVisibleKeys] : normalizedOrder;
 
     setColumnOrder((current) => (arraysEqual(current, normalizedOrder) ? current : normalizedOrder));
     setVisibleColumns((current) => (arraysEqual(current, normalizedVisible) ? current : normalizedVisible));

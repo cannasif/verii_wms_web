@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Pencil, PlayCircle, Send, Trash2 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -256,7 +256,8 @@ export function ProductionListPage(): ReactElement {
                 onClick={() => navigate(`/production/create?editId=${row.id}`)}
                 disabled={!canUpdateProduction || row.status !== 'Draft'}
               >
-                {t('production.list.editPlan', { defaultValue: 'Missing translation' })}
+                <Pencil className="size-4" />
+                <span className="ml-2">{t('production.list.editPlan', { defaultValue: 'Missing translation' })}</span>
               </Button>
               {!canUpdateProduction || row.status !== 'Draft' ? (
                 <FieldHelpTooltip
@@ -269,10 +270,12 @@ export function ProductionListPage(): ReactElement {
               ) : null}
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production/detail/${row.id}`)}>
-              {t('production.list.openDetail', { defaultValue: 'Missing translation' })}
+              <Eye className="size-4" />
+              <span className="ml-2">{t('production.list.openDetail', { defaultValue: 'Missing translation' })}</span>
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/production/process/${row.id}`)} disabled={!canUpdateProduction}>
-              {t('production.list.openProcess', { defaultValue: getProcessLabel(row.status) })}
+              <PlayCircle className="size-4" />
+              <span className="ml-2">{t('production.list.openProcess', { defaultValue: getProcessLabel(row.status) })}</span>
             </Button>
             {row.documentNo && canCreateTransfer ? (
               <Button
@@ -281,7 +284,8 @@ export function ProductionListPage(): ReactElement {
                 size="sm"
                 onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(row.documentNo)}`)}
               >
-                {t('production.list.openTransfer', { defaultValue: 'Missing translation' })}
+                <Send className="size-4" />
+                <span className="ml-2">{t('production.list.openTransfer', { defaultValue: 'Missing translation' })}</span>
               </Button>
             ) : null}
               {canDeleteProduction && row.canDelete ? (
@@ -291,8 +295,9 @@ export function ProductionListPage(): ReactElement {
                 size="sm"
                 onClick={() => setItemToDelete(row)}
               >
-                {t('common.delete')}
-              </Button>
+                  <Trash2 className="size-4" />
+                  <span className="ml-2">{t('common.delete')}</span>
+                </Button>
             ) : null}
           </div>
         )}

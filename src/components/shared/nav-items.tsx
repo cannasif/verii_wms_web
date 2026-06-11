@@ -145,6 +145,7 @@ export const WMS_NAV_ITEMS: NavItem[] = [
               { title: 'sidebar.goodsReceiptProcess', titleFallback: 'Mal Kabul İşlem', href: '/goods-receipt/process' },
               { title: 'sidebar.goodsReceiptList', titleFallback: 'Mal Kabul Listesi', href: '/goods-receipt/list' },
               { title: 'sidebar.goodsReceiptPreLabels', titleFallback: 'Mal Kabul Ön Barkod Etiketleri', href: '/goods-receipt/pre-labels' },
+              { title: 'sidebar.goodsReceiptPreLabelReceiving', titleFallback: 'Etiketten Mal Kabul', href: '/goods-receipt/pre-label-receiving' },
             ],
           },
           {
@@ -280,6 +281,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             children: [
               { title: 'sidebar.bilginogluHakEdisOpen', titleFallback: 'Açık Hakedişler', href: '/service-allocation/bilginoglu-hakedis/open' },
               { title: 'sidebar.bilginogluHakEdisCompleted', titleFallback: 'Tamamlanmış Hakedişler', href: '/service-allocation/bilginoglu-hakedis/completed' },
+              { title: 'sidebar.bilginogluHakEdisPendingTransfers', titleFallback: 'Bekleyen Hakediş Transferleri', href: '/service-allocation/bilginoglu-hakedis/pending-transfers' },
+              { title: 'sidebar.bilginogluHakEdisPendingShipments', titleFallback: 'Bekleyen Çıkış/Yükleme Emirleri', href: '/service-allocation/bilginoglu-hakedis/pending-shipments' },
               { title: 'sidebar.bilginogluHakEdisLocationSettings', titleFallback: 'Hakediş Lokasyon Tanımları', href: '/service-allocation/bilginoglu-hakedis/location-settings' },
               { title: 'sidebar.bilginogluHakEdisOperationSettings', titleFallback: 'Operasyon Tanımları', href: '/service-allocation/bilginoglu-hakedis/operation-settings' },
             ],

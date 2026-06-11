@@ -338,7 +338,6 @@ export function PermissionGroupsPage(): ReactElement {
               </>
             ) : null
           )}
-          iconOnlyActions={false}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}

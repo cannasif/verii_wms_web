@@ -169,8 +169,6 @@ export function ServiceCaseListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('serviceAllocation.caseList.error')}
             emptyText={t('serviceAllocation.caseList.empty')}
-            rowClassName="cursor-pointer"
-            onRowClick={(row) => navigate(`/service-allocation/cases/${row.id}`)}
             showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
             actionsHeaderLabel={t('common.actions')}
             renderActionsCell={(row) => (

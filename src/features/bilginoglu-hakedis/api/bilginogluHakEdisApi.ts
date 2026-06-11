@@ -9,6 +9,7 @@ import type {
   BilginogluHakEdisBulkOperationResult,
   BilginogluHakEdisOrderActivity,
   BilginogluHakEdisOrderHeader,
+  BilginogluHakEdisPendingOperation,
   BilginogluHakEdisPlan,
   BilginogluHakEdisCompletedLocationSetting,
   BilginogluHakEdisOperationSetting,
@@ -37,7 +38,7 @@ export const bilginogluHakEdisApi = {
   getOrders: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisOrderHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisOrderHeader>>>(
       '/api/BilginogluHakEdis/orders/paged',
-      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'LastEvaluationDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'OrderDate', sortDirection: 'asc' }),
     );
     return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisOrderHeader>>));
   },
@@ -128,6 +129,32 @@ export const bilginogluHakEdisApi = {
   getSteps: async (batchId: number): Promise<BilginogluHakEdisBatchStep[]> => {
     const response = await api.get<ApiResponse<BilginogluHakEdisBatchStep[]>>(`/api/BilginogluHakEdis/batches/${batchId}/steps`);
     return extractData(response as ApiResponse<BilginogluHakEdisBatchStep[]>);
+  },
+
+  getPendingHakEdisTransfers: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisPendingOperation>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisPendingOperation>>>(
+      '/api/BilginogluHakEdis/batches/pending-hakedis-transfers/paged',
+      buildPagedRequest(params, {
+        pageNumber: 1,
+        pageSize: 20,
+        sortBy: 'UpdatedDate',
+        sortDirection: 'desc',
+      }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisPendingOperation>>));
+  },
+
+  getPendingShipmentOrders: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisPendingOperation>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisPendingOperation>>>(
+      '/api/BilginogluHakEdis/batches/pending-shipments/paged',
+      buildPagedRequest(params, {
+        pageNumber: 1,
+        pageSize: 20,
+        sortBy: 'UpdatedDate',
+        sortDirection: 'desc',
+      }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisPendingOperation>>));
   },
 
   evaluate: async (siparisNo?: string): Promise<BilginogluHakEdisEvaluationResult> => {

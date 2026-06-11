@@ -1,16 +1,18 @@
-import { Fragment, type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Boxes, ChevronDown, ChevronRight, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Search, Truck, Wand2 } from 'lucide-react';
+import { Fragment, type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Boxes, ChevronDown, ChevronRight, Eye, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Truck, Wand2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import type { BilginogluHakEdisBatch, BilginogluHakEdisOrderActivity, BilginogluHakEdisOrderHeader, BilginogluHakEdisPlan } from '../types/bilginoglu-hakedis.types';
 import {
@@ -20,11 +22,9 @@ import {
   useBilginogluHakEdisOrdersQuery,
   useBilginogluHakEdisTransferPreviewQuery,
   useBilginogluHakEdisStepsQuery,
-  useBilginogluHakEdisBatchActionMutation,
+  useBilginogluHakEdisBulkTransferPreviewQuery,
   useBilginogluHakEdisBulkShipmentOrdersMutation,
   useBilginogluHakEdisBulkTransferOrdersMutation,
-  useBilginogluHakEdisCreateSuggestedTransfersMutation,
-  useBilginogluHakEdisOrderPolicyMutation,
   useEvaluateBilginogluHakEdisMutation,
 } from '../hooks/useBilginogluHakEdisQueries';
 
@@ -55,16 +55,46 @@ function statusBadge(status: string, label: string): ReactElement {
   return <Badge className={`rounded-xl border-0 ${tone}`}>{label}</Badge>;
 }
 
-function isCompletedHakEdisOrder(order: BilginogluHakEdisOrderHeader): boolean {
-  if (order.isCompleted) return true;
+type OrderColumnKey =
+  | 'siparisNo'
+  | 'orderDate'
+  | 'customer'
+  | 'transferAll'
+  | 'orderDetail'
+  | 'remaining'
+  | 'available'
+  | 'allocated'
+  | 'ready'
+  | 'status'
+  | 'evaluatedAt';
 
-  const completedStatuses = new Set(['Closed', 'Completed', 'Finished', 'Shipped']);
-  if (completedStatuses.has(order.status)) return true;
-
-  const orderQty = Math.max(order.totalOrderQty ?? 0, order.totalRequiredQty ?? 0);
-  if (orderQty <= 0) return false;
-
-  return order.totalShippedQty >= orderQty - 0.0001 && order.totalRemainingQty <= 0.0001;
+function mapOrderSortBy(value: OrderColumnKey): string {
+  switch (value) {
+    case 'siparisNo':
+      return 'SiparisNo';
+    case 'orderDate':
+      return 'OrderDate';
+    case 'customer':
+      return 'CustomerCode';
+    case 'transferAll':
+      return 'TransferAllFlag';
+    case 'orderDetail':
+      return 'OrderDetail';
+    case 'remaining':
+      return 'TotalRemainingQty';
+    case 'available':
+      return 'TotalWarehouseAvailableQty';
+    case 'allocated':
+      return 'TotalAllocatedQty';
+    case 'ready':
+      return 'TotalReadyForShipmentQty';
+    case 'status':
+      return 'Status';
+    case 'evaluatedAt':
+      return 'LastEvaluationDate';
+    default:
+      return 'OrderDate';
+  }
 }
 
 export function BilginogluHakEdisPage(): ReactElement {
@@ -72,59 +102,71 @@ export function BilginogluHakEdisPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const location = useLocation();
   const view = location.pathname.includes('/completed') ? 'completed' : 'open';
+  const isCompletedView = view === 'completed';
   const pageTitle = view === 'completed' ? t('views.completed.title') : t('views.open.title');
   const permission = useCrudPermission('wms.service-allocation');
-  const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<BilginogluHakEdisOrderHeader | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<BilginogluHakEdisPlan | null>(null);
   const [selectedBatch, setSelectedBatch] = useState<BilginogluHakEdisBatch | null>(null);
-  const [allocationPolicy, setAllocationPolicy] = useState('StockBalanceAuto');
-  const [shipmentPolicy, setShipmentPolicy] = useState('ManualShipment');
+  const [selectedActivity, setSelectedActivity] = useState<BilginogluHakEdisOrderActivity | null>(null);
   const [bulkTransferPreviewOpen, setBulkTransferPreviewOpen] = useState(false);
   const [expandedBulkTransferOrderIds, setExpandedBulkTransferOrderIds] = useState<number[]>([]);
   const [bulkShipmentPreviewOpen, setBulkShipmentPreviewOpen] = useState(false);
   const [expandedBulkShipmentOrderIds, setExpandedBulkShipmentOrderIds] = useState<number[]>([]);
+  const pageKey = view === 'completed'
+    ? 'bilginoglu-hakedis-completed-orders'
+    : 'bilginoglu-hakedis-open-orders';
+  const pagedGrid = usePagedDataGrid<OrderColumnKey>({
+    pageKey,
+    defaultSortBy: 'orderDate',
+    defaultSortDirection: 'asc',
+    defaultPageSize: 20,
+    mapSortBy: mapOrderSortBy,
+  });
 
   useEffect(() => {
     setPageTitle(pageTitle);
   }, [pageTitle, setPageTitle]);
 
-  useEffect(() => {
-    if (selectedOrder) {
-      setAllocationPolicy(selectedOrder.allocationPolicy);
-      setShipmentPolicy(selectedOrder.shipmentPolicy);
-    }
-  }, [selectedOrder]);
-
   const params = useMemo(() => ({
-    pageNumber: 1,
-    pageSize: 50,
-    search,
-    sortBy: view === 'completed' ? 'CompletedDate' : 'LastEvaluationDate',
-    sortDirection: 'desc',
-    filters: [{ column: 'IsCompleted', operator: 'eq', value: view === 'completed' ? 'true' : 'false' }],
-  }), [search, view]);
+    ...pagedGrid.queryParams,
+    filters: [
+      ...(pagedGrid.queryParams.filters ?? []),
+      { column: 'IsCompleted', operator: 'eq', value: view === 'completed' ? 'true' : 'false' },
+    ],
+  }), [pagedGrid.queryParams, view]);
   const ordersQuery = useBilginogluHakEdisOrdersQuery(params);
   const plansQuery = useBilginogluHakEdisOrderPlansQuery(selectedOrder?.id ?? null);
   const activitiesQuery = useBilginogluHakEdisOrderActivitiesQuery(selectedOrder?.id ?? null);
   const transferPreviewQuery = useBilginogluHakEdisTransferPreviewQuery(selectedOrder?.id ?? null);
+  const bulkTransferPreviewQuery = useBilginogluHakEdisBulkTransferPreviewQuery(bulkTransferPreviewOpen);
   const batchesQuery = useBilginogluHakEdisBatchesQuery(selectedPlan?.id ?? null);
   const stepsQuery = useBilginogluHakEdisStepsQuery(selectedBatch?.id ?? null);
   const evaluateMutation = useEvaluateBilginogluHakEdisMutation();
-  const batchActionMutation = useBilginogluHakEdisBatchActionMutation();
-  const createSuggestedTransfersMutation = useBilginogluHakEdisCreateSuggestedTransfersMutation();
   const bulkTransferOrdersMutation = useBilginogluHakEdisBulkTransferOrdersMutation();
   const bulkShipmentOrdersMutation = useBilginogluHakEdisBulkShipmentOrdersMutation();
-  const policyMutation = useBilginogluHakEdisOrderPolicyMutation();
   const statusLabel = (status: string): string => {
     const translated = t(`status.${status}`);
     return translated === `status.${status}` ? status : translated;
   };
 
   const orders = ordersQuery.data?.data ?? [];
-  const openOrders = useMemo(() => orders.filter((order) => !isCompletedHakEdisOrder(order)), [orders]);
-  const completedOrders = useMemo(() => orders.filter(isCompletedHakEdisOrder), [orders]);
-  const visibleOrders = view === 'completed' ? completedOrders : openOrders;
+  const openOrders = orders;
+  const visibleOrders = orders;
+  const range = getPagedRange(ordersQuery.data, 1);
+  const orderColumns = useMemo<PagedDataGridColumn<OrderColumnKey>[]>(() => [
+    { key: 'siparisNo', label: t('table.order') },
+    { key: 'orderDate', label: t('table.orderDate') },
+    { key: 'customer', label: t('table.customer') },
+    { key: 'transferAll', label: t('table.transferAll') },
+    { key: 'orderDetail', label: t('table.orderDetail') },
+    { key: 'remaining', label: t('table.remaining') },
+    { key: 'available', label: t('table.stock') },
+    { key: 'allocated', label: t('table.allocated') },
+    { key: 'ready', label: t('table.ready') },
+    { key: 'status', label: t('table.status') },
+    { key: 'evaluatedAt', label: t('table.evaluatedAt') },
+  ], [t]);
   const plans = plansQuery.data ?? [];
   const totals = useMemo(() => {
     return visibleOrders.reduce(
@@ -141,10 +183,10 @@ export function BilginogluHakEdisPage(): ReactElement {
     );
   }, [visibleOrders]);
   const bulkTransferPreviewOrders = useMemo(() => {
-    return openOrders.map((order) => {
-      const transferableQty = Math.max(0, order.canCreateNewBatchQty ?? 0);
+    return (bulkTransferPreviewQuery.data ?? []).map((order) => {
+      const transferableQty = Math.max(0, order.totalTransferableQty ?? 0);
       const availableQty = Math.max(0, order.totalWarehouseAvailableQty ?? 0);
-      const remainingQty = Math.max(0, order.totalRemainingQty ?? 0);
+      const remainingQty = Math.max(0, order.totalRemainingOrderQty ?? 0);
       const decision = transferableQty > 0.0001
         ? 'eligible'
         : availableQty <= 0.0001
@@ -160,7 +202,7 @@ export function BilginogluHakEdisPage(): ReactElement {
         decision,
       };
     });
-  }, [openOrders]);
+  }, [bulkTransferPreviewQuery.data]);
   const bulkTransferPreviewTotals = useMemo(() => {
     return bulkTransferPreviewOrders.reduce(
       (acc, preview) => {
@@ -259,62 +301,86 @@ export function BilginogluHakEdisPage(): ReactElement {
       completedCount: completed,
     };
   }, [activities]);
+  const hakEdisActivities = useMemo(
+    () => activities.filter((activity) => activity.sourceType !== 'SH' && !activity.stepType.toLowerCase().includes('shipment')),
+    [activities],
+  );
+  const shipmentActivities = useMemo(
+    () => activities.filter((activity) => activity.sourceType === 'SH' || activity.stepType.toLowerCase().includes('shipment')),
+    [activities],
+  );
 
   return (
     <div className="space-y-6">
       <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('breadcrumb.serviceOperations') }, { label: pageTitle }]} />
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-6 text-white shadow-xl">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-100">
-              <GitBranch className="size-4" />
-              {t('hero.eyebrow')}
+      {isCompletedView ? (
+        <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-sm dark:border-white/10 dark:bg-white/3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200">
+                <PackageCheck className="size-5" />
+              </div>
+              <div>
+                <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white md:text-2xl">{pageTitle}</h1>
+                <p className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">{t('views.completed.description')}</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-black tracking-tight md:text-4xl">{pageTitle}</h1>
-            <p className="text-sm leading-6 text-slate-200 md:text-base">
-              {view === 'completed' ? t('views.completed.description') : t('views.open.description')}
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
-            {view === 'open' ? (
-              <>
-                <Button
-                  type="button"
-                  className="w-full rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200 sm:w-auto"
-                  onClick={() => setBulkTransferPreviewOpen(true)}
-                  disabled={!permission.canUpdate || bulkTransferOrdersMutation.isPending}
-                >
-                  {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
-                  {t('actions.createHakEdisTransferOrders')}
-                </Button>
-                <Button
-                  type="button"
-                  className="w-full rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200 sm:w-auto"
-                  onClick={() => setBulkShipmentPreviewOpen(true)}
-                  disabled={!permission.canUpdate || bulkShipmentOrdersMutation.isPending}
-                >
-                  {bulkShipmentOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Truck className="mr-2 size-4" />}
-                  {t('actions.createShipmentOrders')}
-                </Button>
-              </>
-            ) : null}
-            <Button
-              type="button"
-              className="w-full rounded-2xl bg-cyan-300 text-slate-950 hover:bg-cyan-200 sm:w-auto"
-              onClick={() => evaluateMutation.mutate(undefined)}
-              disabled={!permission.canUpdate || evaluateMutation.isPending}
-            >
-              {evaluateMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Play className="mr-2 size-4" />}
-              {t('actions.evaluate')}
-            </Button>
-            <Button type="button" variant="secondary" className="w-full rounded-2xl sm:w-auto" onClick={() => void ordersQuery.refetch()}>
+            <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void ordersQuery.refetch()}>
               <RefreshCw className="mr-2 size-4" />
               {t('actions.refresh')}
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-6 text-white shadow-xl">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-100">
+                <GitBranch className="size-4" />
+                {t('hero.eyebrow')}
+              </div>
+              <h1 className="text-3xl font-black tracking-tight md:text-4xl">{pageTitle}</h1>
+              <p className="text-sm leading-6 text-slate-200 md:text-base">
+                {t('views.open.description')}
+              </p>
+            </div>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
+              <Button
+                type="button"
+                className="w-full rounded-2xl bg-emerald-300 text-slate-950 hover:bg-emerald-200 sm:w-auto"
+                onClick={() => setBulkTransferPreviewOpen(true)}
+                disabled={!permission.canUpdate || bulkTransferOrdersMutation.isPending}
+              >
+                {bulkTransferOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
+                {t('actions.createHakEdisTransferOrders')}
+              </Button>
+              <Button
+                type="button"
+                className="w-full rounded-2xl bg-amber-300 text-slate-950 hover:bg-amber-200 sm:w-auto"
+                onClick={() => setBulkShipmentPreviewOpen(true)}
+                disabled={!permission.canUpdate || bulkShipmentOrdersMutation.isPending}
+              >
+                {bulkShipmentOrdersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Truck className="mr-2 size-4" />}
+                {t('actions.createShipmentOrders')}
+              </Button>
+              <Button
+                type="button"
+                className="w-full rounded-2xl bg-cyan-300 text-slate-950 hover:bg-cyan-200 sm:w-auto"
+                onClick={() => evaluateMutation.mutate(undefined)}
+                disabled={!permission.canUpdate || evaluateMutation.isPending}
+              >
+                {evaluateMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Play className="mr-2 size-4" />}
+                {t('actions.evaluate')}
+              </Button>
+              <Button type="button" variant="secondary" className="w-full rounded-2xl sm:w-auto" onClick={() => void ordersQuery.refetch()}>
+                <RefreshCw className="mr-2 size-4" />
+                {t('actions.refresh')}
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       <Dialog open={bulkTransferPreviewOpen} onOpenChange={setBulkTransferPreviewOpen}>
         <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl dark:border-white/10 dark:bg-[#10071d] dark:text-white sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
@@ -351,18 +417,19 @@ export function BilginogluHakEdisPage(): ReactElement {
               </TableHeader>
               <TableBody>
                 {bulkTransferPreviewOrders.map(({ order, availableQty, remainingQty, transferableQty, missingQty, decision }) => {
-                  const expanded = expandedBulkTransferOrderIds.includes(order.id);
+                  const orderHeaderId = order.orderHeaderId;
+                  const expanded = expandedBulkTransferOrderIds.includes(orderHeaderId);
 
                   return (
-                    <Fragment key={order.id}>
-                      <TableRow key={order.id} className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
+                    <Fragment key={orderHeaderId}>
+                      <TableRow key={orderHeaderId} className="border-slate-100 bg-white hover:bg-slate-50 dark:border-white/10 dark:bg-[#12081f] dark:hover:bg-[#1b0d2f]">
                         <TableCell className="align-top">
                           <Button
                             type="button"
                             size="icon"
                             variant="ghost"
                             className="size-8 rounded-xl text-slate-700 dark:text-slate-100"
-                            onClick={() => toggleBulkTransferOrder(order.id)}
+                            onClick={() => toggleBulkTransferOrder(orderHeaderId)}
                             aria-label={t('bulkTransferPreview.table.details')}
                           >
                             {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
@@ -395,9 +462,9 @@ export function BilginogluHakEdisPage(): ReactElement {
                         </TableCell>
                       </TableRow>
                       {expanded ? (
-                        <TableRow key={`${order.id}-details`} className="border-slate-100 bg-slate-50 hover:bg-slate-50 dark:border-white/10 dark:bg-[#0f071b] dark:hover:bg-[#0f071b]">
+                        <TableRow key={`${orderHeaderId}-details`} className="border-slate-100 bg-slate-50 hover:bg-slate-50 dark:border-white/10 dark:bg-[#0f071b] dark:hover:bg-[#0f071b]">
                           <TableCell colSpan={8} className="p-3">
-                            <BulkTransferOrderLines orderHeaderId={order.id} />
+                            <BulkTransferOrderLines orderHeaderId={orderHeaderId} />
                           </TableCell>
                         </TableRow>
                       ) : null}
@@ -550,6 +617,7 @@ export function BilginogluHakEdisPage(): ReactElement {
         </DialogContent>
       </Dialog>
 
+      {!isCompletedView ? (
       <div className="flex flex-wrap gap-2 rounded-3xl border border-slate-200 bg-white p-2 shadow-sm">
         <Button
           asChild
@@ -562,7 +630,7 @@ export function BilginogluHakEdisPage(): ReactElement {
         </Button>
         <Button
           asChild
-          variant={view === 'completed' ? 'default' : 'ghost'}
+          variant="ghost"
           className="rounded-2xl"
         >
           <Link to="/service-allocation/bilginoglu-hakedis/completed">
@@ -570,119 +638,204 @@ export function BilginogluHakEdisPage(): ReactElement {
           </Link>
         </Button>
       </div>
+      ) : null}
 
+      {!isCompletedView ? (
       <div className="grid gap-4 md:grid-cols-4">
         <MetricCard icon={<Boxes className="size-5" />} label={t('metrics.remaining')} value={formatQty(totals.remaining)} />
         <MetricCard icon={<GitBranch className="size-5" />} label={t('metrics.available')} value={formatQty(totals.available)} />
         <MetricCard icon={<PackageCheck className="size-5" />} label={t('metrics.ready')} value={formatQty(totals.ready)} />
         <MetricCard icon={<Truck className="size-5" />} label={t('metrics.missing')} value={formatQty(totals.missing)} />
       </div>
+      ) : null}
 
       <Card className="rounded-3xl border-slate-200 shadow-sm">
-        <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
-          <CardTitle>{view === 'completed' ? t('views.completed.tableTitle') : t('views.open.tableTitle')}</CardTitle>
-          <div className="relative w-full md:w-96">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} className="rounded-2xl pl-9" placeholder={t('table.search')} />
-          </div>
-        </CardHeader>
-        <CardContent>
-          {ordersQuery.isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-12 text-muted-foreground">
-              <Loader2 className="size-5 animate-spin" />
-              {t('loading')}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table className="min-w-[1080px]">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('table.order')}</TableHead>
-                    <TableHead>{t('table.customer')}</TableHead>
-                    <TableHead>{t('table.transferAll')}</TableHead>
-                    <TableHead>{t('table.orderDetail')}</TableHead>
-                    <TableHead>{t('table.allocation')}</TableHead>
-                    <TableHead>{t('table.shipmentPolicy')}</TableHead>
-                    <TableHead className="text-right">{t('table.remaining')}</TableHead>
-                    <TableHead className="text-right">{t('table.stock')}</TableHead>
-                    <TableHead className="text-right">{t('table.allocated')}</TableHead>
-                    <TableHead className="text-right">{t('table.ready')}</TableHead>
-                    <TableHead>{t('table.status')}</TableHead>
-                    <TableHead>{t('table.evaluatedAt')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {visibleOrders.map((order) => (
-                    <TableRow key={order.id} className="cursor-pointer" onClick={() => { setSelectedOrder(order); setSelectedPlan(null); setSelectedBatch(null); }}>
-                      <TableCell className="font-semibold">{order.siparisNo}</TableCell>
-                      <TableCell>
-                        <div className="font-medium">{order.customerCode ?? '-'}</div>
-                        <div className="text-xs text-muted-foreground">{order.customerName ?? '-'}</div>
-                      </TableCell>
-                    <TableCell>{order.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</TableCell>
-                      <TableCell>{order.orderDetail ?? '-'}</TableCell>
-                      <TableCell>{order.allocationPolicy}</TableCell>
-                      <TableCell>{order.shipmentPolicy}</TableCell>
-                      <TableCell className="text-right">{formatQty(order.totalRemainingQty)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="font-semibold">{formatQty(order.totalWarehouseAvailableQty)}</div>
-                        <div className="text-xs text-muted-foreground">{t('table.canCreate')}: {formatQty(order.canCreateNewBatchQty)}</div>
-                      </TableCell>
-                      <TableCell className="text-right">{formatQty(order.totalAllocatedQty)}</TableCell>
-                      <TableCell className="text-right">{formatQty(order.totalReadyForShipmentQty)}</TableCell>
-                      <TableCell>{statusBadge(order.status, statusLabel(order.status))}</TableCell>
-                      <TableCell>{formatDate(order.lastEvaluationDate)}</TableCell>
-                    </TableRow>
-                  ))}
-                  {visibleOrders.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={12} className="py-10 text-center text-muted-foreground">
-                        {view === 'completed' ? t('views.completed.empty') : t('views.open.empty')}
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+        <CardContent className="p-5">
+          <PagedDataGrid<BilginogluHakEdisOrderHeader, OrderColumnKey>
+            pageKey={pageKey}
+            columns={orderColumns}
+            rows={visibleOrders}
+            rowKey={(order) => order.id}
+            renderCell={(order, columnKey) => {
+              switch (columnKey) {
+                case 'siparisNo':
+                  return <span className="font-semibold">{order.siparisNo}</span>;
+                case 'orderDate':
+                  return formatDate(order.orderDate);
+                case 'customer':
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <span className="font-semibold">{order.customerCode ?? '-'}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{order.customerName ?? '-'}</span>
+                    </div>
+                  );
+                case 'transferAll':
+                  return order.transferAllFlag === 'E' ? t('common.yes') : t('common.no');
+                case 'orderDetail':
+                  return order.orderDetail ?? '-';
+                case 'remaining':
+                  return <span className="font-semibold">{formatQty(order.totalRemainingQty)}</span>;
+                case 'available':
+                  return (
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="font-semibold">{formatQty(order.totalWarehouseAvailableQty)}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('table.canCreate')}: {formatQty(order.canCreateNewBatchQty)}</span>
+                    </div>
+                  );
+                case 'allocated':
+                  return formatQty(order.totalAllocatedQty);
+                case 'ready':
+                  return formatQty(order.totalReadyForShipmentQty);
+                case 'status':
+                  return statusBadge(order.status, statusLabel(order.status));
+                case 'evaluatedAt':
+                  return formatDate(order.lastEvaluationDate);
+                default:
+                  return '-';
+              }
+            }}
+            showActionsColumn
+            actionsHeaderLabel={t('common.actions')}
+            actionsCellClassName="text-center align-middle"
+            renderActionsCell={(order) => (
+              <div className="flex items-center justify-center">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 shrink-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                  aria-label={t('common.view')}
+                  title={t('common.view')}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSelectedOrder(order);
+                    setSelectedPlan(null);
+                    setSelectedBatch(null);
+                  }}
+                >
+                  <Eye className="size-4" />
+                </Button>
+              </div>
+            )}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={pagedGrid.handleSort}
+            isLoading={ordersQuery.isLoading}
+            isError={ordersQuery.isError}
+            errorText={ordersQuery.error instanceof Error ? ordersQuery.error.message : t('common.error')}
+            emptyText={view === 'completed' ? t('views.completed.empty') : t('views.open.empty')}
+            pageSize={ordersQuery.data?.pageSize ?? pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(ordersQuery.data)}
+            totalPages={ordersQuery.data?.totalPages ?? 0}
+            hasPreviousPage={ordersQuery.data?.hasPreviousPage ?? false}
+            hasNextPage={ordersQuery.data?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('common.paginationInfo', {
+              current: range.from,
+              total: range.to,
+              totalCount: range.total,
+              defaultValue: `${range.from}-${range.to} / ${range.total}`,
+            })}
+            search={{
+              value: pagedGrid.searchConfig.value,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('table.search'),
+            }}
+            refresh={{ onRefresh: () => void ordersQuery.refetch(), label: t('actions.refresh') }}
+            exportFileName={pageKey}
+            minTableWidthClassName="min-w-[1080px]"
+          />
         </CardContent>
       </Card>
 
-      <Dialog open={selectedOrder != null} onOpenChange={(open) => { if (!open) { setSelectedOrder(null); setSelectedPlan(null); setSelectedBatch(null); } }}>
-        <DialogContent className="max-h-[92dvh] w-[calc(100vw-1rem)] max-w-7xl overflow-y-auto overflow-x-hidden rounded-3xl border-slate-200 bg-slate-50 p-3 text-slate-950 shadow-2xl sm:w-[calc(100vw-2rem)] sm:p-6">
-          <DialogHeader className="rounded-t-3xl border-b border-slate-200 bg-white/95 px-1 pb-4">
-            <DialogTitle>{t('detail.title', { order: selectedOrder?.siparisNo })}</DialogTitle>
-            <DialogDescription>{t('detail.description')}</DialogDescription>
+      <Dialog open={selectedOrder != null} onOpenChange={(open) => { if (!open) { setSelectedOrder(null); setSelectedPlan(null); setSelectedBatch(null); setSelectedActivity(null); } }}>
+        <DialogContent className="max-h-[92dvh] w-[96vw] max-w-[96vw] overflow-y-auto overflow-x-hidden rounded-3xl border-slate-200 bg-slate-50 p-4 text-slate-950 shadow-2xl dark:border-white/10 dark:bg-[#10071d] dark:text-white sm:max-w-[96vw] sm:p-6 lg:max-w-[92vw] xl:max-w-7xl">
+          <DialogHeader className="rounded-2xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/5">
+            <DialogTitle className="text-xl font-black tracking-tight dark:text-white">{t('detail.title', { order: selectedOrder?.siparisNo })}</DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-300">{t('detail.description')}</DialogDescription>
           </DialogHeader>
           {selectedOrder ? (
             <div className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <NeedCard label={t('need.required')} value={formatQty(selectedOrderNeed.required || selectedOrder.totalRequiredQty)} tone="slate" />
-                <NeedCard label={t('need.available')} value={formatQty(selectedOrderNeed.available || selectedOrder.totalWarehouseAvailableQty)} tone="cyan" />
                 <NeedCard label={t('need.canCreate')} value={formatQty(selectedOrderNeed.canCreate || selectedOrder.canCreateNewBatchQty)} tone="emerald" />
                 <NeedCard label={t('need.allocated')} value={formatQty(selectedOrder.totalAllocatedQty)} tone="blue" />
                 <NeedCard label={t('need.missing')} value={formatQty(selectedOrderNeed.missing || selectedOrder.totalMissingQty)} tone="amber" />
               </div>
-              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/70">
-                <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h3 className="text-lg font-black tracking-tight text-slate-950">{t('transferPreview.title')}</h3>
-                    <p className="mt-1 max-w-3xl text-sm leading-5 text-slate-500">{t('transferPreview.description')}</p>
-                  </div>
-                  <Button
-                    type="button"
-                    className="h-auto min-h-11 w-full rounded-2xl bg-slate-950 px-4 text-white shadow-sm hover:bg-slate-800 sm:w-auto"
-                    disabled={!permission.canUpdate || !transferPreview?.canCreateTransfers || createSuggestedTransfersMutation.isPending}
-                    onClick={() => selectedOrder && createSuggestedTransfersMutation.mutate(selectedOrder.id)}
-                  >
-                    {createSuggestedTransfersMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Wand2 className="mr-2 size-4" />}
-                    {t('actions.createSuggestedTransfers')}
-                  </Button>
+              <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#170b29] lg:flex-row lg:flex-wrap lg:items-end">
+                <div className="w-full rounded-2xl bg-slate-50 p-3 dark:bg-white/5 sm:w-auto sm:min-w-40">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('table.hakEdisRequired')}</div>
+                  <div className="text-sm font-bold">{selectedOrder.hakEdisFlag === 'E' ? t('common.yes') : t('common.no')}</div>
                 </div>
+                <div className="w-full rounded-2xl bg-slate-50 p-3 dark:bg-white/5 sm:w-auto sm:min-w-40">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
+                  <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</div>
+                </div>
+                <div className="w-full rounded-2xl bg-slate-50 p-3 dark:bg-white/5 sm:w-auto sm:min-w-48">
+                  <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
+                  <div className="text-sm font-bold">{selectedOrder.orderDetail ?? '-'}</div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#170b29]">
+            <h3 className="mb-2 text-sm font-semibold">{t('detail.lines')}</h3>
+            <div className="flex flex-wrap gap-2">
+              {plans.map((plan) => (
+                <PlanLineChip
+                  key={plan.id}
+                  plan={plan}
+                  selected={selectedPlan?.id === plan.id}
+                  onSelect={() => {
+                    setSelectedPlan(plan);
+                    setSelectedBatch(null);
+                  }}
+                />
+              ))}
+              {!plansQuery.isLoading && plans.length === 0 ? <span className="text-sm text-muted-foreground">{t('detail.noLines')}</span> : null}
+            </div>
+          </div>
+          <Accordion type="multiple" defaultValue={['hakEdis']} className="space-y-3">
+            <AccordionItem value="hakEdis" className="rounded-2xl border border-slate-200 bg-white px-4 shadow-sm dark:border-white/10 dark:bg-[#170b29]">
+              <AccordionTrigger className="py-4 hover:no-underline">
+                <div className="flex flex-col items-start gap-1 text-left">
+                  <span className="font-black">{t('activity.hakEdisSection')}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {t('activity.datCount', { count: activitySummary.datCount })} / {t('activity.completedCount', { count: hakEdisActivities.filter((activity) => activity.status === 'Completed' || activity.isCompleted).length })}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
                 {transferPreviewQuery.isLoading ? (
-                  <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {t('loading')}</div>
+                  <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-4 text-sm text-muted-foreground dark:bg-white/5">
+                    <Loader2 className="size-4 animate-spin" />
+                    {t('loading')}
+                  </div>
                 ) : transferPreview ? (
-                  <div className="space-y-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <div className="mb-3 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
+                      <div>
+                        <h3 className="text-sm font-black text-slate-950 dark:text-white">{t('transferPreview.title')}</h3>
+                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-300">{t('transferPreview.description')}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3 text-xs font-semibold leading-5 text-cyan-900 dark:text-cyan-100">
+                        <span>{t('activity.createFromQueues')}</span>
+                        <div className="flex flex-wrap gap-2">
+                          <Button asChild type="button" size="sm" variant="outline" className="h-8 rounded-xl border-cyan-500/30 bg-white/70 text-xs text-cyan-950 hover:bg-white dark:bg-white/10 dark:text-cyan-50 dark:hover:bg-white/15">
+                            <Link to="/service-allocation/bilginoglu-hakedis/pending-transfers">{t('activity.pendingTransfers')}</Link>
+                          </Button>
+                          <Button asChild type="button" size="sm" variant="outline" className="h-8 rounded-xl border-cyan-500/30 bg-white/70 text-xs text-cyan-950 hover:bg-white dark:bg-white/10 dark:text-cyan-50 dark:hover:bg-white/15">
+                            <Link to="/service-allocation/bilginoglu-hakedis/pending-shipments">{t('activity.pendingShipments')}</Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                       <NeedCard label={t('transferPreview.orderQty')} value={formatQty(transferPreview.totalOrderQty)} tone="slate" />
                       <NeedCard label={t('transferPreview.processedQty')} value={formatQty(transferPreview.totalProcessedQty)} tone="blue" />
@@ -690,140 +843,47 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <NeedCard label={t('transferPreview.shippableQty')} value={formatQty(transferPreview.totalShippableQty)} tone="cyan" />
                       <NeedCard label={t('transferPreview.missingQty')} value={formatQty(transferPreview.totalMissingQty)} tone="amber" />
                     </div>
-                    <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <Table className="min-w-[860px]">
-                        <TableHeader className="sticky top-0 z-10 bg-slate-950">
-                          <TableRow className="border-slate-800 hover:bg-slate-950">
-                            <TableHead className="min-w-64 text-white">{t('detail.stock')}</TableHead>
-                            <TableHead className="min-w-28 text-white">{t('transferPreview.warehouse')}</TableHead>
-                            <TableHead className="text-right text-white">{t('transferPreview.orderQty')}</TableHead>
-                            <TableHead className="text-right text-white">{t('transferPreview.processedQty')}</TableHead>
-                            <TableHead className="text-right text-white">{t('transferPreview.remainingQty')}</TableHead>
-                            <TableHead className="text-right text-white">{t('transferPreview.transferableQty')}</TableHead>
-                            <TableHead className="min-w-56 text-white">{t('transferPreview.decision')}</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {transferPreview.lines.map((line) => (
-                            <TableRow key={line.planId} className="border-slate-100 bg-white hover:bg-slate-50">
-                              <TableCell className="align-top">
-                                <div className="font-black text-slate-950">{line.stockCode ?? '-'}</div>
-                                <div className="mt-1 text-sm font-semibold text-slate-600">{line.stockName ?? line.yapKod ?? '-'}</div>
-                              </TableCell>
-                              <TableCell className="align-top">
-                                <div className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-bold text-slate-700">{line.sourceWarehouseCode ?? '-'} → {line.hakEdisWarehouseCode ?? '-'}</div>
-                                {line.sameWarehouse ? <Badge variant="secondary" className="mt-1 rounded-xl">{t('transferPreview.sameWarehouse')}</Badge> : null}
-                              </TableCell>
-                              <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(line.orderQty)}</TableCell>
-                              <TableCell className="text-right align-top font-bold text-blue-700">{formatQty(line.processedQty)}</TableCell>
-                              <TableCell className="text-right align-top font-bold text-slate-800">{formatQty(line.remainingOrderQty)}</TableCell>
-                              <TableCell className="text-right align-top text-lg font-black text-emerald-700">{formatQty(line.transferableQty)}</TableCell>
-                              <TableCell className="align-top">
-                                {statusBadge(line.decision, statusLabel(line.decision))}
-                                <div className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-medium leading-5 text-slate-600">{line.decisionReason ?? '-'}</div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
                   </div>
                 ) : null}
-              </div>
-              <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row lg:flex-wrap lg:items-end">
-                <div className="w-full rounded-2xl bg-slate-50 p-3 sm:w-auto sm:min-w-40">
-                  <div className="text-xs font-semibold text-muted-foreground">{t('table.transferAll')}</div>
-                  <div className="text-sm font-bold">{selectedOrder.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}</div>
+                <ActivityHistoryTable
+                  activities={hakEdisActivities}
+                  isLoading={activitiesQuery.isLoading}
+                  emptyText={t('activity.emptyHakEdis')}
+                  statusLabel={statusLabel}
+                  onSelect={setSelectedActivity}
+                />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="shipment" className="rounded-2xl border border-slate-200 bg-white px-4 shadow-sm dark:border-white/10 dark:bg-[#170b29]">
+              <AccordionTrigger className="py-4 hover:no-underline">
+                <div className="flex flex-col items-start gap-1 text-left">
+                  <span className="font-black">{t('activity.shipmentSection')}</span>
+                  <span className="text-xs font-normal text-muted-foreground">{t('activity.shipmentCount', { count: activitySummary.shipmentCount })}</span>
                 </div>
-                <div className="w-full rounded-2xl bg-slate-50 p-3 sm:w-auto sm:min-w-48">
-                  <div className="text-xs font-semibold text-muted-foreground">{t('table.orderDetail')}</div>
-                  <div className="text-sm font-bold">{selectedOrder.orderDetail ?? '-'}</div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <ActivityHistoryTable
+                  activities={shipmentActivities}
+                  isLoading={activitiesQuery.isLoading}
+                  emptyText={t('activity.emptyShipment')}
+                  statusLabel={statusLabel}
+                  onSelect={setSelectedActivity}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Accordion type="single" collapsible className="space-y-3">
+            <AccordionItem value="batches" className="rounded-2xl border border-slate-200 bg-white px-4 shadow-sm dark:border-white/10 dark:bg-[#170b29]">
+              <AccordionTrigger className="py-4 hover:no-underline">
+                <div className="flex flex-col items-start gap-1 text-left">
+                  <span className="font-black">{t('detail.batch')}</span>
+                  <span className="text-xs font-normal text-muted-foreground">{t('detail.steps')}</span>
                 </div>
-                <div className="w-full space-y-1 sm:min-w-48 lg:w-auto">
-                  <div className="text-xs font-semibold text-muted-foreground">{t('policy.allocation')}</div>
-                  <Select value={allocationPolicy} onValueChange={setAllocationPolicy} disabled={!permission.canUpdate}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="StockBalanceAuto">{t('policy.StockBalanceAuto')}</SelectItem>
-                      <SelectItem value="FullOrderOnly">{t('policy.FullOrderOnly')}</SelectItem>
-                      <SelectItem value="ManualOnly">{t('policy.ManualOnly')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="w-full space-y-1 sm:min-w-48 lg:w-auto">
-                  <div className="text-xs font-semibold text-muted-foreground">{t('policy.shipment')}</div>
-                  <Select value={shipmentPolicy} onValueChange={setShipmentPolicy} disabled={!permission.canUpdate}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ManualShipment">{t('policy.ManualShipment')}</SelectItem>
-                      <SelectItem value="AutoPartialShipment">{t('policy.AutoPartialShipment')}</SelectItem>
-                      <SelectItem value="AutoFullShipment">{t('policy.AutoFullShipment')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type="button" size="sm" className="w-full sm:w-auto" disabled={!permission.canUpdate || policyMutation.isPending} onClick={() => policyMutation.mutate({ orderHeaderId: selectedOrder.id, input: { allocationPolicy, shipmentPolicy } })}>
-                  {t('actions.savePolicy')}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="mb-2 text-sm font-semibold">{t('detail.lines')}</h3>
-            <div className="flex flex-wrap gap-2">
-              {plans.map((plan) => (
-                <Button key={plan.id} type="button" size="sm" className="h-auto max-w-full whitespace-normal text-left leading-5" variant={selectedPlan?.id === plan.id ? 'default' : 'outline'} onClick={() => { setSelectedPlan(plan); setSelectedBatch(null); }}>
-                  {plan.stockCode ?? t('detail.stock')} / {t('need.required')}: {formatQty(Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty))} / {t('need.available')}: {formatQty(plan.warehouseAvailableQty)}
-                </Button>
-              ))}
-              {!plansQuery.isLoading && plans.length === 0 ? <span className="text-sm text-muted-foreground">{t('detail.noLines')}</span> : null}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h3 className="text-sm font-semibold">{t('activity.title')}</h3>
-                <p className="text-xs text-muted-foreground">{t('activity.description')}</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="rounded-xl">{t('activity.datCount', { count: activitySummary.datCount })}</Badge>
-                <Badge variant="secondary" className="rounded-xl">{t('activity.shipmentCount', { count: activitySummary.shipmentCount })}</Badge>
-                <Badge variant="secondary" className="rounded-xl">{t('activity.completedCount', { count: activitySummary.completedCount })}</Badge>
-              </div>
-            </div>
-            {activitiesQuery.isLoading ? (
-              <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
-                <Loader2 className="size-4 animate-spin" />
-                {t('loading')}
-              </div>
-            ) : activities.length === 0 ? (
-              <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-4 text-sm text-muted-foreground">
-                <FileClock className="size-4" />
-                {t('activity.empty')}
-              </div>
-            ) : (
-              <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white">
-                <Table className="min-w-[900px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('activity.step')}</TableHead>
-                      <TableHead>{t('activity.document')}</TableHead>
-                      <TableHead>{t('activity.erp')}</TableHead>
-                      <TableHead>{t('activity.actor')}</TableHead>
-                      <TableHead>{t('activity.collectors')}</TableHead>
-                      <TableHead className="text-right">{t('detail.quantity')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {activities.map((activity) => (
-                      <ActivityRow key={`${activity.batchId}-${activity.sequenceNo}-${activity.sourceHeaderId ?? 0}`} activity={activity} statusLabel={statusLabel} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </div>
-          <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-            <div className="overflow-x-auto rounded-2xl border">
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+            <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#170b29]">
               <Table className="min-w-[680px]">
                 <TableHeader>
           <TableRow>
@@ -831,43 +891,54 @@ export function BilginogluHakEdisPage(): ReactElement {
             <TableHead className="text-right">{t('detail.quantity')}</TableHead>
             <TableHead>{t('detail.stage')}</TableHead>
             <TableHead>{t('detail.warehouseSourceTypes')}</TableHead>
+            <TableHead className="text-center">{t('common.actions')}</TableHead>
           </TableRow>
                 </TableHeader>
                 <TableBody>
                   {(batchesQuery.data ?? []).map((batch) => (
-                    <TableRow key={batch.id} className="cursor-pointer" onClick={() => setSelectedBatch(batch)}>
+                    <TableRow key={batch.id}>
                       <TableCell className="font-semibold">{batch.batchNo}</TableCell>
                       <TableCell className="text-right">{formatQty(batch.quantity)}</TableCell>
                       <TableCell>{statusBadge(batch.currentStage, statusLabel(batch.currentStage))}</TableCell>
                       <TableCell className="text-xs">
                         {t('detail.batchLinkSummary', {
+                          replenishmentToIntermediateHeaderId: batch.replenishmentToIntermediateHeaderId ?? '-',
+                          replenishmentToOrderWarehouseHeaderId: batch.replenishmentToOrderWarehouseHeaderId ?? '-',
                           datToHakEdisHeaderId: batch.transferToHakEdisHeaderId ?? '-',
                           returnFromHakEdisHeaderId: batch.returnFromHakEdisHeaderId ?? '-',
                           shipmentHeaderId: batch.shipmentHeaderId ?? '-',
                         })}
                       </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 shrink-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                          aria-label={t('common.view')}
+                          title={t('common.view')}
+                          onClick={() => setSelectedBatch(batch)}
+                        >
+                          <Eye className="size-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                   {(batchesQuery.data ?? []).length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">{t('detail.noBatches')}</TableCell>
+                      <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">{t('detail.noBatches')}</TableCell>
                     </TableRow>
                   ) : null}
                 </TableBody>
               </Table>
             </div>
-            <div className="rounded-2xl border p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#170b29]">
               <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <h3 className="font-semibold">{t('detail.steps')}</h3>
                 {selectedBatch ? (
-                  <div className="grid w-full gap-2 sm:grid-cols-2 xl:flex xl:w-auto xl:flex-wrap">
-                    <BatchActionButton batch={selectedBatch} action="create-transfer-to-hakedis" label={t('actions.createDat')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                    <BatchActionButton batch={selectedBatch} action="mark-at-hakedis" label={t('actions.atHakEdis')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                    <BatchActionButton batch={selectedBatch} action="approve-intermediate" label={t('actions.approveIntermediate')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                    <BatchActionButton batch={selectedBatch} action="create-return-transfer" label={t('actions.createReturnDat')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                    <BatchActionButton batch={selectedBatch} action="mark-ready-for-shipment" label={t('actions.markReady')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                    <BatchActionButton batch={selectedBatch} action="create-shipment" label={t('actions.createShipment')} pending={batchActionMutation.isPending} allowed={permission.canUpdate} run={(action) => batchActionMutation.mutate({ batchId: selectedBatch.id, action })} />
-                  </div>
+                  <Badge className="w-fit rounded-xl border-0 bg-white/10 text-slate-700 dark:text-slate-200">
+                    {t('activity.readOnlyDetail')}
+                  </Badge>
                 ) : null}
               </div>
               {selectedBatch == null ? (
@@ -877,7 +948,7 @@ export function BilginogluHakEdisPage(): ReactElement {
               ) : (
                 <div className="space-y-3">
                   {(stepsQuery.data ?? []).map((step) => (
-                    <div key={step.id} className="rounded-2xl border bg-slate-50 p-3">
+                    <div key={step.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5">
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-semibold">{step.sequenceNo}. {step.stepType}</span>
                         {statusBadge(step.status, statusLabel(step.status))}
@@ -892,29 +963,74 @@ export function BilginogluHakEdisPage(): ReactElement {
               )}
             </div>
           </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedActivity != null} onOpenChange={(open) => { if (!open) setSelectedActivity(null); }}>
+        <DialogContent className="max-h-[88dvh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-y-auto rounded-3xl border-slate-200 bg-slate-50 p-4 pr-5 text-slate-950 shadow-2xl dark:border-white/10 dark:bg-[#10071d] dark:text-white sm:max-w-[92vw] sm:p-6 sm:pr-7 lg:max-w-5xl">
+          <DialogHeader className="rounded-2xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/5">
+            <DialogTitle className="text-xl font-black tracking-tight dark:text-white">
+              {t('activity.detailTitle', {
+                step: selectedActivity ? statusLabel(selectedActivity.stepType) : '-',
+              })}
+            </DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-300">
+              {t('activity.detailDescription')}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedActivity ? (
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
+                <ActivitySummaryCard label={t('activity.batch')} value={selectedActivity.batchNo ?? '-'} tone="slate" />
+                <ActivitySummaryCard label={t('activity.quantity')} value={formatQty(selectedActivity.quantity)} tone="blue" />
+                <ActivitySummaryCard label={t('activity.status')} value={statusLabel(selectedActivity.status)} tone={selectedActivity.isCompleted ? 'emerald' : 'amber'} />
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ActivityDetailCard title={t('activity.whoCompleted')}>
+                  <DetailLine label={t('activity.actor')} value={selectedActivity.actionByUserName ?? '-'} />
+                  <DetailLine label={t('activity.actionDate')} value={formatDate(selectedActivity.actionDate)} />
+                  <DetailLine label={t('activity.completionDate')} value={formatDate(selectedActivity.completionDate)} />
+                  <DetailLine label={t('activity.collectors')} value={selectedActivity.collectedByUsers ?? '-'} />
+                  <DetailLine label={t('activity.collectorCountLabel')} value={t('activity.collectorCount', { count: selectedActivity.collectedUserCount })} />
+                </ActivityDetailCard>
+
+                <ActivityDetailCard title={t('activity.documentTrace')}>
+                  <DetailLine label={t('activity.document')} value={selectedActivity.documentNo ?? '-'} />
+                  <DetailLine label={t('activity.series')} value={selectedActivity.documentSeries ?? '-'} />
+                  <DetailLine label={t('activity.type')} value={selectedActivity.documentType ?? '-'} />
+                  <DetailLine label={t('activity.source')} value={`${selectedActivity.sourceType ?? '-'} #${selectedActivity.sourceHeaderId ?? '-'}`} />
+                  <DetailLine label={t('activity.erp')} value={selectedActivity.erpReferenceNumber ?? selectedActivity.erpIntegrationStatus ?? '-'} />
+                  <DetailLine label={t('activity.erpDate')} value={formatDate(selectedActivity.erpIntegrationDate)} />
+                </ActivityDetailCard>
+              </div>
+
+              <ActivityDetailCard title={t('activity.stockTrace')}>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <DetailLine label={t('detail.stock')} value={selectedActivity.stockCode ?? '-'} />
+                  <DetailLine label={t('activity.stockName')} value={selectedActivity.stockName ?? '-'} />
+                  <DetailLine label={t('table.order')} value={selectedActivity.siparisNo ?? '-'} />
+                  <DetailLine label={t('activity.orderLineId')} value={String(selectedActivity.orderId ?? '-')} />
+                </div>
+                {selectedActivity.note ? (
+                  <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm leading-6 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                    {selectedActivity.note}
+                  </div>
+                ) : null}
+              </ActivityDetailCard>
+            </div>
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>
   );
 }
 
-function BatchActionButton({ batch, action, label, pending, allowed, run }: { batch: BilginogluHakEdisBatch; action: string; label: string; pending: boolean; allowed: boolean; run: (action: string) => void }): ReactElement {
-  const disabled = !allowed || pending
-    || (action === 'create-transfer-to-hakedis' && Boolean(batch.transferToHakEdisHeaderId))
-    || (action === 'mark-at-hakedis' && (batch.currentStage !== 'TransferToHakEdis' || !batch.transferToHakEdisHeaderId))
-    || (action === 'approve-intermediate' && batch.currentStage !== 'AwaitingIntermediateApproval')
-    || (action === 'create-return-transfer' && (batch.currentStage !== 'AtHakEdis' || !batch.transferToHakEdisHeaderId || Boolean(batch.returnFromHakEdisHeaderId)))
-    || (action === 'mark-ready-for-shipment' && (batch.currentStage !== 'ReturnFromHakEdis' || !batch.returnFromHakEdisHeaderId))
-    || (action === 'create-shipment' && (batch.currentStage !== 'ReadyForShipment' || Boolean(batch.shipmentHeaderId)));
-
-  return (
-    <Button type="button" size="sm" variant="outline" className="h-auto min-h-9 whitespace-normal rounded-xl px-3 py-2 text-left leading-4" disabled={disabled} onClick={() => run(action)}>
-      {label}
-    </Button>
-  );
-}
-
-function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrderActivity; statusLabel: (status: string) => string }): ReactElement {
+function ActivityRow({ activity, statusLabel, onSelect }: { activity: BilginogluHakEdisOrderActivity; statusLabel: (status: string) => string; onSelect: (activity: BilginogluHakEdisOrderActivity) => void }): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const documentText = activity.documentNo
     ? `${activity.sourceType ?? '-'} #${activity.sourceHeaderId ?? '-'} / ${activity.documentNo}`
@@ -954,7 +1070,163 @@ function ActivityRow({ activity, statusLabel }: { activity: BilginogluHakEdisOrd
         <div className="font-semibold">{formatQty(activity.quantity)}</div>
         <div className="text-xs text-muted-foreground">{activity.stockCode ?? '-'}</div>
       </TableCell>
+      <TableCell className="text-center">
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 shrink-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-500/10"
+          aria-label={t('activity.openDetail')}
+          title={t('activity.openDetail')}
+          onClick={() => onSelect(activity)}
+        >
+          <Eye className="size-4" />
+        </Button>
+      </TableCell>
     </TableRow>
+  );
+}
+
+function ActivityHistoryTable({
+  activities,
+  isLoading,
+  emptyText,
+  statusLabel,
+  onSelect,
+}: {
+  activities: BilginogluHakEdisOrderActivity[];
+  isLoading: boolean;
+  emptyText: string;
+  statusLabel: (status: string) => string;
+  onSelect: (activity: BilginogluHakEdisOrderActivity) => void;
+}): ReactElement {
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-4 text-sm text-muted-foreground dark:bg-white/5">
+        <Loader2 className="size-4 animate-spin" />
+        {t('loading')}
+      </div>
+    );
+  }
+
+  if (activities.length === 0) {
+    return (
+      <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-4 text-sm text-muted-foreground dark:bg-white/5">
+        <FileClock className="size-4" />
+        {emptyText}
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#12081f]">
+      <Table className="min-w-[900px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('activity.step')}</TableHead>
+            <TableHead>{t('activity.document')}</TableHead>
+            <TableHead>{t('activity.erp')}</TableHead>
+            <TableHead>{t('activity.actor')}</TableHead>
+            <TableHead>{t('activity.collectors')}</TableHead>
+            <TableHead className="text-right">{t('detail.quantity')}</TableHead>
+            <TableHead className="text-center">{t('common.actions')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {activities.map((activity) => (
+            <ActivityRow
+              key={`${activity.batchId}-${activity.sequenceNo}-${activity.sourceHeaderId ?? 0}-${activity.stepType}`}
+              activity={activity}
+              statusLabel={statusLabel}
+              onSelect={onSelect}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function ActivityDetailCard({ title, children }: { title: string; children: ReactNode }): ReactElement {
+  return (
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#170b29]">
+      <h3 className="mb-3 text-sm font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">{title}</h3>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function DetailLine({ label, value }: { label: string; value: string }): ReactElement {
+  return (
+    <div className="min-w-0 rounded-xl bg-slate-50 px-3 py-2 dark:bg-white/5">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</div>
+      <div className="mt-1 break-words text-sm font-bold text-slate-950 dark:text-white">{value || '-'}</div>
+    </div>
+  );
+}
+
+function ActivitySummaryCard({ label, value, tone }: { label: string; value: string; tone: 'slate' | 'blue' | 'emerald' | 'amber' }): ReactElement {
+  const toneClass = {
+    slate: 'border-slate-200 bg-slate-100 text-slate-950 dark:border-white/10 dark:bg-white/10 dark:text-white',
+    blue: 'border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-100',
+    emerald: 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-100',
+    amber: 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100',
+  }[tone];
+
+  return (
+    <div className={`min-w-0 rounded-2xl border p-4 shadow-sm ${toneClass}`}>
+      <div className="text-xs font-black uppercase tracking-[0.14em] opacity-70">{label}</div>
+      <div className="mt-2 break-words text-2xl font-black leading-tight sm:text-3xl">{value || '-'}</div>
+    </div>
+  );
+}
+
+function PlanLineChip({ plan, selected, onSelect }: { plan: BilginogluHakEdisPlan; selected: boolean; onSelect: () => void }): ReactElement {
+  const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
+  const requiredQty = Math.max(0, plan.remainingOrderQty - plan.allocatedToHakEdisQty - plan.shippedQty);
+  const usableQty = Math.min(requiredQty, Math.max(0, plan.warehouseAvailableQty));
+  const hasUsableQty = usableQty > 0.0001;
+
+  return (
+    <Button
+      type="button"
+      variant={selected ? 'default' : 'outline'}
+      className={`h-auto max-w-full justify-start whitespace-normal rounded-2xl px-3 py-3 text-left leading-5 ${
+        selected
+          ? 'bg-slate-950 text-white hover:bg-slate-900 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100'
+          : 'border-slate-200 bg-white text-slate-950 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10'
+      }`}
+      onClick={onSelect}
+    >
+      <span className="flex min-w-0 flex-col gap-2">
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-black">{plan.stockCode ?? t('detail.stock')}</span>
+          <span className="block truncate text-xs font-semibold opacity-75">{plan.stockName ?? '-'}</span>
+        </span>
+        <span className="flex flex-wrap gap-2 text-xs">
+          <span className="rounded-full bg-slate-100 px-2 py-1 font-bold text-slate-700 dark:bg-white/10 dark:text-slate-200">
+            {t('need.required')}: {formatQty(requiredQty)}
+          </span>
+          <span className="rounded-full bg-cyan-100 px-2 py-1 font-bold text-cyan-800 dark:bg-cyan-400/15 dark:text-cyan-100">
+            {t('detail.sourceWarehouse')}: {plan.sourceWarehouseCode ?? '-'}
+          </span>
+          <span className="rounded-full bg-blue-100 px-2 py-1 font-bold text-blue-800 dark:bg-blue-400/15 dark:text-blue-100">
+            {t('detail.hakEdisWarehouse')}: {plan.hakEdisWarehouseCode ?? '-'}
+          </span>
+          <span className={`rounded-full px-2 py-1 font-black ${
+            hasUsableQty
+              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/20 dark:text-emerald-100'
+              : 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-100'
+          }`}>
+            {hasUsableQty
+              ? t('detail.willUseQty', { qty: formatQty(usableQty), warehouse: plan.sourceWarehouseCode ?? '-' })
+              : t('detail.noUsableBalance', { warehouse: plan.sourceWarehouseCode ?? '-' })}
+          </span>
+        </span>
+      </span>
+    </Button>
   );
 }
 

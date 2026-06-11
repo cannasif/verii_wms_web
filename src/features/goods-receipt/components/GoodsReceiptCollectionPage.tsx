@@ -33,6 +33,10 @@ import {
 
 import type { StokBarcodeDto } from '../types/goods-receipt';
 
+function isPreReceiptBarcode(value: string): boolean {
+  return value.trim().toUpperCase().startsWith('GRPL-');
+}
+
 export function GoodsReceiptCollectionPage(): ReactElement {
   const { headerId } = useParams<{ headerId: string }>();
   const navigate = useNavigate();
@@ -50,6 +54,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
+  const collectedSectionRef = useRef<HTMLDivElement>(null);
 
   const headerIdNum = headerId ? parseInt(headerId, 10) : 0;
 
@@ -105,10 +110,22 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       return;
     }
 
-    if (!barcodeInput.trim()) {
+    const scannedBarcode = barcodeInput.trim();
+    if (!scannedBarcode) {
       toast.error(t('goodsReceipt.collection.enterBarcode'));
       return;
     }
+
+    if (isPreReceiptBarcode(scannedBarcode)) {
+      setSearchBarcode(scannedBarcode);
+      setSelectedStock(null);
+      setAmbiguousCandidates([]);
+      setBarcodeErrorMessage(null);
+      setEnableSearch(false);
+      toast.success(t('preLabels.scanReady'));
+      return;
+    }
+
     setSearchBarcode(barcodeInput);
     setSelectedStock(null);
     setAmbiguousCandidates([]);
@@ -119,6 +136,43 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   const handleCollect = (): void => {
     if (!permission.canUpdate) {
       toast.error(t('common.noPermission'));
+      return;
+    }
+
+    const scannedBarcode = barcodeInput.trim() || searchBarcode.trim();
+    if (!selectedStock && isPreReceiptBarcode(scannedBarcode)) {
+      addBarcodeMutation.mutate(
+        {
+          headerId: headerIdNum,
+          barcode: scannedBarcode,
+          stockCode: '',
+          stockName: '',
+          quantity: 0,
+          serialNo: '',
+          serialNo2: '',
+          serialNo3: '',
+          serialNo4: '',
+          sourceCellCode: '',
+          targetCellCode,
+        },
+        {
+          onSuccess: (response) => {
+            if (response.success) {
+              toast.success(t('goodsReceipt.collection.collected'));
+              setBarcodeInput('');
+              setSearchBarcode('');
+              setTargetCellCode('');
+              setQuantity(1);
+            } else {
+              toast.error(response.message || t('goodsReceipt.collection.collectError'));
+            }
+          },
+          onError: (error: Error) => {
+            const feedback = extractBarcodeFeedback(error, t('goodsReceipt.collection.collectError'));
+            toast.error(feedback.message);
+          },
+        }
+      );
       return;
     }
 
@@ -300,6 +354,14 @@ export function GoodsReceiptCollectionPage(): ReactElement {
     return collectedData.data.reduce((total, item) => total + item.routes.length, 0);
   }, [collectedData?.data]);
 
+  const totalCollectedQuantity = useMemo(() => {
+    if (!collectedData?.data) return 0;
+    return collectedData.data.reduce(
+      (total, item) => total + item.routes.reduce((routeTotal, route) => routeTotal + route.quantity, 0),
+      0
+    );
+  }, [collectedData?.data]);
+
   const orderLinesWithCollected = useMemo(() => {
     if (!orderLinesData?.data?.lines) return [];
     
@@ -325,6 +387,8 @@ export function GoodsReceiptCollectionPage(): ReactElement {
     }));
   }, [orderLinesData?.data?.lines, collectedData?.data]);
 
+  const preReceiptBarcodeReady = isPreReceiptBarcode(barcodeInput || searchBarcode);
+
   return (
     <div className="crm-page flex w-full flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/3">
       <div className="shrink-0 border-b border-slate-200/80 bg-white/80 p-4 space-y-4 dark:border-white/10 dark:bg-white/3">
@@ -333,7 +397,11 @@ export function GoodsReceiptCollectionPage(): ReactElement {
             <ArrowLeft className="size-4 mr-2" />
             {t('common.back')}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => navigate(`/goods-receipt/collected/${headerId}`)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => collectedSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          >
             <List className="size-4 mr-2" />
             {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
           </Button>
@@ -406,6 +474,25 @@ export function GoodsReceiptCollectionPage(): ReactElement {
               />
             ) : null}
 
+            {!selectedStock && preReceiptBarcodeReady ? (
+              <div className="rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-500/30 dark:bg-sky-950/30 dark:text-sky-100">
+                <div className="font-semibold">{t('preLabels.preReceiptScanTitle')}</div>
+                <p className="mt-1 text-xs leading-5 text-sky-700 dark:text-sky-200">
+                  {t('preLabels.preReceiptScanDescription')}
+                </p>
+                <Button
+                  onClick={handleCollect}
+                  disabled={!permission.canUpdate || addBarcodeMutation.isPending}
+                  className="mt-3 h-9 w-full bg-emerald-500 text-white hover:bg-emerald-600 sm:w-auto"
+                >
+                  {addBarcodeMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin mr-1" />
+                  ) : null}
+                  {t('preLabels.collectPreReceipt')}
+                </Button>
+              </div>
+            ) : null}
+
             {selectedStock && (
               <div className="border rounded-lg p-3 space-y-2 bg-muted/50">
                 <div className="flex items-start justify-between gap-2">
@@ -467,6 +554,65 @@ export function GoodsReceiptCollectionPage(): ReactElement {
       </div>
 
       <div className="custom-scrollbar flex-1 overflow-y-auto rounded-xl border border-slate-200/80 bg-white/70 p-4 space-y-2 dark:border-white/10 dark:bg-white/2">
+        {collectedData?.data && collectedData.data.length > 0 ? (
+          <div ref={collectedSectionRef} className="mb-4 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-100">
+              <div className="flex items-center gap-2 font-semibold">
+                <CheckCircle2 className="size-4" />
+                {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
+              </div>
+              <Badge variant="secondary">
+                {t('goodsReceipt.collection.total')}: {totalCollectedQuantity}
+              </Badge>
+            </div>
+            {collectedData.data.map((item) => (
+              <Card key={item.importLine.id} className="border border-emerald-100 py-2 dark:border-emerald-500/20">
+                <CardContent className="space-y-2 px-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <Badge variant="outline" className="mb-1 text-[10px]">
+                        {item.importLine.stockCode}
+                      </Badge>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        {item.importLine.stockName || item.importLine.description || item.importLine.stockCode}
+                      </p>
+                      {item.importLine.yapKod ? (
+                        <p className="text-xs text-muted-foreground">
+                          {t('goodsReceipt.collection.yapKod')}: {item.importLine.yapKod}
+                        </p>
+                      ) : null}
+                    </div>
+                    <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
+                      {item.routes.reduce((sum, route) => sum + route.quantity, 0)}
+                    </Badge>
+                  </div>
+                  <div className="grid gap-2">
+                    {item.routes.map((route) => (
+                      <div
+                        key={route.id}
+                        className="rounded-lg border border-slate-200 bg-white/80 p-2 text-xs dark:border-white/10 dark:bg-white/5"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-medium">{route.scannedBarcode || '-'}</span>
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">
+                            {t('goodsReceipt.collection.quantity')}: {route.quantity}
+                          </span>
+                        </div>
+                        {(route.serialNo || route.targetCellCode) ? (
+                          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+                            {route.serialNo ? <span>{t('preLabels.serial')}: {route.serialNo}</span> : null}
+                            {route.targetCellCode ? <span>{t('warehouse.details.targetCellCode')}: {route.targetCellCode}</span> : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : null}
+
         {isLoadingOrderLines ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />

@@ -9,3 +9,4 @@ export { AssignedGrListPage } from './components/AssignedGrListPage';
 export { GoodsReceiptCollectionPage } from './components/GoodsReceiptCollectionPage';
 export { GoodsReceiptApprovalPage } from './components/GoodsReceiptApprovalPage';
 export { GoodsReceiptPreReceiptLabelsPage } from './components/GoodsReceiptPreReceiptLabelsPage';
+export { GoodsReceiptPreLabelReceivingPage } from './components/GoodsReceiptPreLabelReceivingPage';

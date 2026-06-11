@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ClipboardCheck, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -225,15 +225,16 @@ export function InventoryCountListPage(): ReactElement {
         renderActionsCell={(row) => (
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button type="button" variant="secondary" size="sm" onClick={() => navigate('/inventory-count/edit/' + String(row.id))} disabled={!permission.canUpdate || !canEditInventoryCount(row)}>
-              <Pencil className="mr-1 h-3.5 w-3.5" />
-              {t('inventoryCount.actions.edit', { defaultValue: 'Düzenle' })}
+              <Pencil className="size-4" />
+              <span className="ml-2">{t('inventoryCount.actions.edit', { defaultValue: 'Düzenle' })}</span>
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))} disabled={!permission.canUpdate}>
-              {t('inventoryCount.actions.process', { defaultValue: 'Missing translation' })}
+              <ClipboardCheck className="size-4" />
+              <span className="ml-2">{t('inventoryCount.actions.process', { defaultValue: 'Missing translation' })}</span>
             </Button>
             <Button type="button" variant="destructive" size="sm" onClick={() => setItemToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
-              <Trash2 className="mr-1 h-3.5 w-3.5" />
-              {t('common.delete')}
+              <Trash2 className="size-4" />
+              <span className="ml-2">{t('common.delete')}</span>
             </Button>
           </div>
         )}

@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
@@ -195,13 +195,15 @@ export function ParameterListPage(): ReactElement {
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => navigate(`/parameters/${parameterType}/edit/${item.id}`)}>
-                {t('common.edit')}
+                <Pencil className="size-4" />
+                <span className="ml-2">{t('common.edit')}</span>
               </Button>
               <Button variant="ghost" size="sm" className="text-red-600" onClick={() => {
                 setSelectedParameter(item);
                 setDeleteDialogOpen(true);
               }}>
-                {t('common.delete')}
+                <Trash2 className="size-4" />
+                <span className="ml-2">{t('common.delete')}</span>
               </Button>
             </div>
           )}

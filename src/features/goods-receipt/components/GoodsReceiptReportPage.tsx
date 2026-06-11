@@ -119,7 +119,6 @@ export function GoodsReceiptReportPage(): ReactElement {
           emptyText={t('goodsReceipt.report.noData')}
           showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
           actionsHeaderLabel={t('goodsReceipt.report.actions')}
-          iconOnlyActions={false}
           renderActionsCell={(row) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelectedGrHeaderId(row.id)} disabled={!permission.canView}><Eye className="size-4" /><span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span></Button>

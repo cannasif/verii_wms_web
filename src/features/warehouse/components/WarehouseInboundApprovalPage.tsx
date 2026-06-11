@@ -163,7 +163,6 @@ export function WarehouseInboundApprovalPage(): ReactElement {
             emptyText={t('warehouse.inbound.approval.noData')}
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canApprove)}
             actionsHeaderLabel={t('warehouse.inbound.approval.actions')}
-            iconOnlyActions={false}
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
                 <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}>

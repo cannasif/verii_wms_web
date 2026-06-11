@@ -30,6 +30,23 @@ interface DataTableGridBodyProps<TRow, TKey extends string> {
 const ACTIONS_CELL_BASE =
   'border-l border-slate-200/70 dark:border-white/10 bg-inherit';
 
+const ICON_ONLY_ACTIONS_CLASS =
+  [
+    '[&_button]:h-8',
+    '[&_button]:w-8',
+    '[&_button]:min-w-8',
+    '[&_button]:rounded-full',
+    '[&_button]:p-0',
+    '[&_button]:shadow-sm',
+    '[&_button]:transition-transform',
+    '[&_button:hover]:scale-105',
+    '[&_button_span]:sr-only',
+    '[&_button_svg]:mx-auto',
+    '[&_button_svg]:h-4',
+    '[&_button_svg]:w-4',
+    '[&_button_svg]:shrink-0',
+  ].join(' ');
+
 export function DataTableGridBody<TRow, TKey extends string>({
   columns,
   visibleColumnKeys,
@@ -118,7 +135,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
 
               {showActionsColumn && (
                 <TableCell
-                  className={cn(ACTIONS_CELL_BASE, actionsCellClassName, iconOnlyActions && '[&_button]:h-8 [&_button]:w-8 [&_button]:min-w-8 [&_button]:p-0 [&_button]:text-[0px] [&_button]:leading-none [&_button_span]:hidden [&_button_svg]:mx-auto [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:shrink-0')}
+                  className={cn(ACTIONS_CELL_BASE, actionsCellClassName, iconOnlyActions && ICON_ONLY_ACTIONS_CLASS)}
                   onClick={(event) => event.stopPropagation()}
                   data-no-drag-scroll="true"
                 >

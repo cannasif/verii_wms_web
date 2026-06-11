@@ -50,6 +50,7 @@
     "title": "Hakedis Siparis Havuzu",
     "search": "Siparis, cari veya stok ara...",
     "order": "Siparis",
+    "orderDate": "Siparis Tarihi",
     "customer": "Cari",
     "hakEdisRequired": "Hakediş Gerekli",
     "transferAll": "Tumunu Transfer Et",
@@ -84,11 +85,15 @@
     "steps": "Batch adimlari",
     "chooseBatch": "Adimlari gormek icin bir batch secin.",
     "warehouseSourceTypes": "WT/SH",
+    "sourceWarehouse": "Bulunduğu depo",
+    "hakEdisWarehouse": "Hakediş depo",
+    "willUseQty": "{{warehouse}} deposundan {{qty}} kullanılacak",
+    "noUsableBalance": "{{warehouse}} deposunda kullanılabilir bakiye yok",
     "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
   "transferPreview": {
-    "title": "Onerilen DAT / sevk hazirligi",
-    "description": "Siparis miktari, islem goren miktar, kalan bakiye ve depo bakiyesine gore acilabilecek DAT kalemleri.",
+    "title": "DAT / sevk uygunluk özeti",
+    "description": "Sipariş miktarı, işlem gören miktar, kalan bakiye ve depo bakiyesine göre mevcut durum özeti.",
     "orderQty": "Siparis Miktari",
     "processedQty": "Ayrilan / Sevk Edilen",
     "remainingQty": "Kalan Ihtiyac",
@@ -163,6 +168,49 @@
       "notReady": "Sevke hazır değil"
     }
   },
+  "pendingOperations": {
+    "eyebrow": "Operasyon kuyruğu",
+    "empty": "Bekleyen operasyon bulunamadı.",
+    "error": "Bekleyen operasyonlar alınamadı.",
+    "searchPlaceholder": "Sipariş, batch, cari veya stok ara...",
+    "transfer": {
+      "title": "Bekleyen Hakediş Transferleri",
+      "description": "Hakedişe çıkış, ara depo onayı, hakediş dönüşü ve ikmal DAT adımlarında bekleyen batch'leri sipariş ve stok kalemi bazında izleyin."
+    },
+    "shipment": {
+      "title": "Bekleyen Çıkış/Yükleme Emirleri",
+      "description": "Hakedişten dönmüş ya da direkt sevke hazır olan, çıkış/yükleme emri bekleyen veya sevk emri açılmış batch'leri izleyin."
+    },
+    "cards": {
+      "rows": "Kayıt",
+      "quantity": "Toplam Miktar",
+      "linkedDocuments": "Bağlı Belge"
+    },
+    "table": {
+      "order": "Sipariş",
+      "customer": "Cari",
+      "stock": "Stok / Kalem",
+      "warehouseFlow": "Depo Akışı",
+      "quantity": "Miktar",
+      "stage": "Aşama",
+      "pendingAction": "Bekleyen Aksiyon",
+      "documents": "Bağlı Belgeler",
+      "updatedAt": "Son Güncelleme"
+    },
+    "actions": {
+      "WaitReplenishmentToIntermediateCompletion": "İkmal ara depo tamamlanması bekleniyor",
+      "ApproveReplenishmentIntermediate": "İkmal ara depo onayı bekleniyor",
+      "WaitReplenishmentToOrderWarehouseCompletion": "İkmal sipariş depo tamamlanması bekleniyor",
+      "CreateTransferToHakEdis": "Hakediş DAT açılabilir",
+      "WaitTransferToHakEdisCompletion": "Hakedişe çıkış tamamlanması bekleniyor",
+      "ApproveIntermediate": "Ara depo onayı bekleniyor",
+      "CreateReturnTransfer": "Hakediş dönüş DAT açılabilir",
+      "WaitReturnTransferCompletion": "Hakediş dönüş tamamlanması bekleniyor",
+      "CreateShipment": "Çıkış/yükleme emri açılabilir",
+      "WaitShipmentCompletion": "Sevkiyat tamamlanması bekleniyor",
+      "Review": "Kontrol gerekli"
+    }
+  },
   "activity": {
     "title": "Tamamlanan islemler",
     "description": "Siparise bagli DAT, hakedis, donus ve sevk adimlarinin belge, ERP ve toplama izleri.",
@@ -170,6 +218,14 @@
     "shipmentCount": "Sevk: {{count}}",
     "completedCount": "Tamamlanan: {{count}}",
     "empty": "Bu siparis icin henuz operasyon gecmisi yok.",
+    "hakEdisSection": "Hakediş / DAT hareketleri",
+    "shipmentSection": "Sevkiyat / Yükleme hareketleri",
+    "emptyHakEdis": "Bu sipariş için henüz hakediş/DAT hareketi yok.",
+    "emptyShipment": "Bu sipariş için henüz sevkiyat/yükleme hareketi yok.",
+    "createFromQueues": "Emir açma işlemleri bekleyen transfer ve çıkış/yükleme ekranlarından yapılır.",
+    "readOnlyDetail": "Detay ekranı - işlem başlatılmaz",
+    "pendingTransfers": "Bekleyen transferlere git",
+    "pendingShipments": "Bekleyen çıkış/yüklemeye git",
     "step": "Asama",
     "document": "Belge",
     "erp": "ERP",
@@ -178,7 +234,23 @@
     "series": "Seri",
     "type": "Tip",
     "collectorCount": "{{count}} kisi",
-    "erpIntegrated": "ERP'ye aktarildi"
+    "erpIntegrated": "ERP'ye aktarildi",
+    "openDetail": "Operasyon detayını aç",
+    "detailTitle": "{{step}} operasyon izi",
+    "detailDescription": "Bu adımın kim tarafından, ne zaman, hangi belge/ERP iziyle tamamlandığını gösterir.",
+    "batch": "Batch",
+    "quantity": "Miktar",
+    "status": "Durum",
+    "whoCompleted": "Kim / Ne zaman",
+    "actionDate": "İşlem tarihi",
+    "completionDate": "Tamamlanma tarihi",
+    "collectorCountLabel": "Toplayan kişi sayısı",
+    "documentTrace": "Belge ve ERP izi",
+    "source": "Kaynak belge",
+    "erpDate": "ERP aktarım tarihi",
+    "stockTrace": "Stok ve sipariş izi",
+    "stockName": "Stok adı",
+    "orderLineId": "Sipariş kalem ID"
   },
   "policy": {
     "allocation": "Aktarim politikasi",
@@ -204,6 +276,9 @@
     "TransferToHakEdis": "Hakedise Transfer",
     "AtHakEdis": "Hakediste",
     "ReturnFromHakEdis": "Hakedisten Donus",
+    "ReplenishmentToIntermediate": "İkmal Ara Depoya Transfer",
+    "ReplenishmentAwaitingIntermediateApproval": "İkmal Ara Depo Onayı Bekliyor",
+    "ReplenishmentToOrderWarehouse": "İkmal Sipariş Deposuna Transfer",
     "Pending": "Bekliyor",
     "Ready": "Hazir",
     "InProgress": "Islemde",

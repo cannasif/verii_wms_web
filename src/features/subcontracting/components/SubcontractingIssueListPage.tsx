@@ -184,7 +184,6 @@ export function SubcontractingIssueListPage(): ReactElement {
             emptyText={t('subcontracting.issue.list.noData')}
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('subcontracting.issue.list.actions')}
-            iconOnlyActions={false}
             renderActionsCell={(row) => (
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}>

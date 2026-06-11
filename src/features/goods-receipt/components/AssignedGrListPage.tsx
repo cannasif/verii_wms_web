@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, PlayCircle, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -230,7 +230,8 @@ export function AssignedGrListPage(): ReactElement {
           renderActionsCell={(item) => (
             <div className="flex items-center justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)} disabled={!permission.canView}>
-                {t('goodsReceipt.report.viewDetails')}
+                <Eye className="size-4" />
+                <span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span>
               </Button>
               <Button
                 variant="default"
@@ -239,7 +240,8 @@ export function AssignedGrListPage(): ReactElement {
                 onClick={() => navigate(`/goods-receipt/collection/${item.id}`)}
                 disabled={!permission.canUpdate}
               >
-                {t('common.start')}
+                <PlayCircle className="size-4" />
+                <span className="ml-2">{t('common.start')}</span>
               </Button>
               <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
                 <Trash2 className="size-4" />

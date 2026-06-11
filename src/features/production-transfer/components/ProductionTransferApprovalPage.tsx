@@ -156,7 +156,6 @@ export function ProductionTransferApprovalPage(): ReactElement {
             emptyText={t('productionTransfer.approval.noData')}
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canApprove)}
             actionsHeaderLabel={t('productionTransfer.approval.actions')}
-            iconOnlyActions={false}
             renderActionsCell={(row) => (
               <div className="flex items-center justify-end gap-2">
                 <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => navigate(`/production-transfer/detail/${row.id}`)}>

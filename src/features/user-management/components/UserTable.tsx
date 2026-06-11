@@ -1,5 +1,5 @@
 import { type ReactElement, useMemo } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -205,11 +205,11 @@ export function UserTable({
       renderActionsCell={(user) => (
         onEdit && canUpdate ? (
           <Button variant="ghost" size="sm" onClick={() => onEdit(user)}>
+            <Pencil className="size-4" />
             <span>{t('common.edit')}</span>
           </Button>
         ) : null
       )}
-      iconOnlyActions={false}
       pageSize={pagedGrid.pageSize}
       pageSizeOptions={pagedGrid.pageSizeOptions}
       onPageSizeChange={pagedGrid.handlePageSizeChange}

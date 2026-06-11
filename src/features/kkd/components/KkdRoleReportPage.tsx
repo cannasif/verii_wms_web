@@ -1,7 +1,9 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { Eye } from 'lucide-react';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -121,7 +123,22 @@ export function KkdRoleReportPage(): ReactElement {
               sortBy={pagedGrid.sortBy}
               sortDirection={pagedGrid.sortDirection}
               onSort={pagedGrid.handleSort}
-              onRowClick={setSelectedRow}
+              actionsHeaderLabel={t('common.actions')}
+              renderActionsCell={(row) => (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    title={t('common.view')}
+                    aria-label={t('common.view')}
+                    onClick={() => setSelectedRow(row)}
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span>{t('common.view')}</span>
+                  </Button>
+                </div>
+              )}
               pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
               pageSizeOptions={pagedGrid.pageSizeOptions}
               onPageSizeChange={pagedGrid.handlePageSizeChange}

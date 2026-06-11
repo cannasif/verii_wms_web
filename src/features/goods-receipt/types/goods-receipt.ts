@@ -320,7 +320,9 @@ export interface AddBarcodeRequest {
   serialNo3: string;
   serialNo4: string;
   sourceCellCode: string;
+  sourceWarehouseId?: number;
   targetCellCode: string;
+  targetWarehouseId?: number;
 }
 
 export interface AddBarcodeResponseData {

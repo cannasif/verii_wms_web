@@ -83,7 +83,6 @@ export function ProductionApprovalPage(): ReactElement {
           emptyText={t('production.approval.noData')}
           showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canApprove)}
           actionsHeaderLabel={t('production.approval.actions')}
-          iconOnlyActions={false}
           renderActionsCell={(row) => <div className="flex items-center justify-end gap-2"><Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => navigate(`/production/detail/${row.id}`)}><Eye className="size-4" /><span className="ml-2">{t('production.approval.viewDetails')}</span></Button><Button variant="default" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, true)}><Check className="size-4" /><span className="ml-2">{t('production.approval.approve')}</span></Button><Button variant="destructive" size="sm" disabled={!permission.canApprove || approveMutation.isPending} onClick={() => handleApproval(row.id, false)}><X className="size-4" /><span className="ml-2">{t('production.approval.reject')}</span></Button></div>}
           pageSize={pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}

@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
@@ -179,10 +179,12 @@ export function QualityControlInspectionListPage(): ReactElement {
           renderActionsCell={(row) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/quality-control/inspections?id=${row.id}`)}>
-                {t('common.update')}
+                <Pencil className="size-4" />
+                <span className="ml-2">{t('common.update')}</span>
               </Button>
               <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
-                {t('common.delete')}
+                <Trash2 className="size-4" />
+                <span className="ml-2">{t('common.delete')}</span>
               </Button>
             </div>
           )}
