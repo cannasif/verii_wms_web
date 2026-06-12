@@ -59,6 +59,7 @@ type OrderColumnKey =
   | 'siparisNo'
   | 'orderDate'
   | 'customer'
+  | 'hakEdisRequired'
   | 'transferAll'
   | 'orderDetail'
   | 'remaining'
@@ -76,6 +77,8 @@ function mapOrderSortBy(value: OrderColumnKey): string {
       return 'OrderDate';
     case 'customer':
       return 'CustomerCode';
+    case 'hakEdisRequired':
+      return 'HakEdisFlag';
     case 'transferAll':
       return 'TransferAllFlag';
     case 'orderDetail':
@@ -158,6 +161,7 @@ export function BilginogluHakEdisPage(): ReactElement {
     { key: 'siparisNo', label: t('table.order') },
     { key: 'orderDate', label: t('table.orderDate') },
     { key: 'customer', label: t('table.customer') },
+    { key: 'hakEdisRequired', label: t('table.hakEdisRequired') },
     { key: 'transferAll', label: t('table.transferAll') },
     { key: 'orderDetail', label: t('table.orderDetail') },
     { key: 'remaining', label: t('table.remaining') },
@@ -669,6 +673,8 @@ export function BilginogluHakEdisPage(): ReactElement {
                       <span className="text-xs text-slate-500 dark:text-slate-400">{order.customerName ?? '-'}</span>
                     </div>
                   );
+                case 'hakEdisRequired':
+                  return order.hakEdisFlag === 'E' ? t('common.yes') : t('common.no');
                 case 'transferAll':
                   return order.transferAllFlag === 'E' ? t('common.yes') : t('common.no');
                 case 'orderDetail':

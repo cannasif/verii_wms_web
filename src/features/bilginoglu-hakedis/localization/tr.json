@@ -6,18 +6,18 @@
   },
   "views": {
     "open": {
-      "nav": "Acik Hakedisler",
-      "title": "Acik Bilginoglu Hakedisleri",
-      "tableTitle": "Acik Hakedis Siparisleri",
+      "nav": "Açık Sevk Siparişleri",
+      "title": "Açık Sevk Siparişleri",
+      "tableTitle": "Açık Sevk Siparişleri",
       "description": "Siparis acildi ve temp planlama havuzuna dustu. Depo bakiyesi geldikce DAT, hakedis donusu ve sevk adimlari buradan yonetilir.",
-      "empty": "Acik hakedis siparisi bulunamadi."
+      "empty": "Açık sevk siparişi bulunamadı."
     },
     "completed": {
-      "nav": "Tamamlanmis Hakedisler",
-      "title": "Tamamlanmis Bilginoglu Hakedisleri",
-      "tableTitle": "Kapanan Hakedis Siparisleri",
+      "nav": "Tamamlanan Sevk Siparişleri",
+      "title": "Tamamlanan Sevk Siparişleri",
+      "tableTitle": "Tamamlanan Sevk Siparişleri",
       "description": "Siparis miktarinin tamami hakedis DAT akisindan gecip sevk edildiginde siparis bu kapali havuza duser.",
-      "empty": "Tamamlanmis hakedis siparisi bulunamadi."
+      "empty": "Tamamlanan sevk siparişi bulunamadı."
     }
   },
   "hero": {

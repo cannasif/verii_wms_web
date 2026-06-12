@@ -6,18 +6,18 @@
   },
   "views": {
     "open": {
-      "nav": "Open Entitlements",
-      "title": "Open Bilginoglu Entitlements",
-      "tableTitle": "Open Entitlement Orders",
+      "nav": "Open Shipment Orders",
+      "title": "Open Shipment Orders",
+      "tableTitle": "Open Shipment Orders",
       "description": "Orders that have entered the temporary planning pool. DAT, entitlement return, and shipment stages are managed here as warehouse balance becomes available.",
-      "empty": "No open entitlement orders found."
+      "empty": "No open shipment orders found."
     },
     "completed": {
-      "nav": "Completed Entitlements",
-      "title": "Completed Bilginoglu Entitlements",
-      "tableTitle": "Closed Entitlement Orders",
+      "nav": "Completed Shipment Orders",
+      "title": "Completed Shipment Orders",
+      "tableTitle": "Completed Shipment Orders",
       "description": "Orders move here when the full order quantity has completed the entitlement DAT flow and shipment process.",
-      "empty": "No completed entitlement orders found."
+      "empty": "No completed shipment orders found."
     }
   },
   "hero": {

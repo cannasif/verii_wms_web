@@ -6,18 +6,18 @@
   },
   "views": {
     "open": {
-      "nav": "Offene Abschlagszahlungen",
-      "title": "Offene Bilginoglu Abschlagszahlungen",
-      "tableTitle": "Offene Abschlagszahlungsaufträge",
+      "nav": "Offene Versandaufträge",
+      "title": "Offene Versandaufträge",
+      "tableTitle": "Offene Versandaufträge",
       "description": "Aufträge, die in den temporären Planungspool aufgenommen wurden. DAT-, Rückführungs- und Versandstufen werden hier gesteuert, sobald Lagerbestand verfügbar ist.",
-      "empty": "Keine offenen Abschlagszahlungsaufträge gefunden."
+      "empty": "Keine offenen Versandaufträge gefunden."
     },
     "completed": {
-      "nav": "Abgeschlossene Abschlagszahlungen",
-      "title": "Abgeschlossene Bilginoglu Abschlagszahlungen",
-      "tableTitle": "Geschlossene Abschlagszahlungsaufträge",
+      "nav": "Abgeschlossene Versandaufträge",
+      "title": "Abgeschlossene Versandaufträge",
+      "tableTitle": "Abgeschlossene Versandaufträge",
       "description": "Aufträge wechseln hierher, wenn die komplette Auftragsmenge den DAT-Ablauf und den Versand abgeschlossen hat.",
-      "empty": "Keine abgeschlossenen Abschlagszahlungsaufträge gefunden."
+      "empty": "Keine abgeschlossenen Versandaufträge gefunden."
     }
   },
   "hero": {

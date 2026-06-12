@@ -279,8 +279,8 @@ export const WMS_NAV_ITEMS: NavItem[] = [
             title: 'sidebar.bilginogluHakEdis',
             titleFallback: 'Bilginoğlu Hakediş',
             children: [
-              { title: 'sidebar.bilginogluHakEdisOpen', titleFallback: 'Açık Hakedişler', href: '/service-allocation/bilginoglu-hakedis/open' },
-              { title: 'sidebar.bilginogluHakEdisCompleted', titleFallback: 'Tamamlanmış Hakedişler', href: '/service-allocation/bilginoglu-hakedis/completed' },
+              { title: 'sidebar.bilginogluHakEdisOpen', titleFallback: 'Açık Sevk Siparişleri', href: '/service-allocation/bilginoglu-hakedis/open' },
+              { title: 'sidebar.bilginogluHakEdisCompleted', titleFallback: 'Tamamlanan Sevk Siparişleri', href: '/service-allocation/bilginoglu-hakedis/completed' },
               { title: 'sidebar.bilginogluHakEdisPendingTransfers', titleFallback: 'Bekleyen Hakediş Transferleri', href: '/service-allocation/bilginoglu-hakedis/pending-transfers' },
               { title: 'sidebar.bilginogluHakEdisPendingShipments', titleFallback: 'Bekleyen Çıkış/Yükleme Emirleri', href: '/service-allocation/bilginoglu-hakedis/pending-shipments' },
               { title: 'sidebar.bilginogluHakEdisLocationSettings', titleFallback: 'Hakediş Lokasyon Tanımları', href: '/service-allocation/bilginoglu-hakedis/location-settings' },
