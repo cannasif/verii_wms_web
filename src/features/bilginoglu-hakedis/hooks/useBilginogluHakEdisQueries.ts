@@ -14,6 +14,7 @@ export const bilginogluHakEdisQueryKeys = {
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
+  moveTargets: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'move-targets', batchId] as const,
   pendingHakEdisTransfers: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-hakedis-transfers', params] as const,
   pendingShipmentOrders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-shipment-orders', params] as const,
   completedLocationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'completed-location-settings'] as const,

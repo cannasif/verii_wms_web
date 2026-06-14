@@ -14,6 +14,9 @@ import type {
   BilginogluHakEdisCompletedLocationSetting,
   BilginogluHakEdisOperationSetting,
   BilginogluHakEdisCreateTransfersResult,
+  BilginogluHakEdisMoveAllocationRequest,
+  BilginogluHakEdisMoveAllocationResult,
+  BilginogluHakEdisMoveTarget,
   BilginogluHakEdisTransferPreview,
   PagedParams,
   PagedResponse,
@@ -129,6 +132,22 @@ export const bilginogluHakEdisApi = {
   getSteps: async (batchId: number): Promise<BilginogluHakEdisBatchStep[]> => {
     const response = await api.get<ApiResponse<BilginogluHakEdisBatchStep[]>>(`/api/BilginogluHakEdis/batches/${batchId}/steps`);
     return extractData(response as ApiResponse<BilginogluHakEdisBatchStep[]>);
+  },
+
+  getMoveTargets: async (batchId: number): Promise<BilginogluHakEdisMoveTarget[]> => {
+    const response = await api.get<ApiResponse<BilginogluHakEdisMoveTarget[]>>(`/api/BilginogluHakEdis/batches/${batchId}/move-targets`);
+    return extractData(response as ApiResponse<BilginogluHakEdisMoveTarget[]>);
+  },
+
+  moveShipmentAllocation: async (
+    batchId: number,
+    input: BilginogluHakEdisMoveAllocationRequest,
+  ): Promise<BilginogluHakEdisMoveAllocationResult> => {
+    const response = await api.post<ApiResponse<BilginogluHakEdisMoveAllocationResult>>(
+      `/api/BilginogluHakEdis/batches/${batchId}/move-shipment-allocation`,
+      input,
+    );
+    return extractData(response as ApiResponse<BilginogluHakEdisMoveAllocationResult>);
   },
 
   getPendingHakEdisTransfers: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisPendingOperation>> => {

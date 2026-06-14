@@ -209,6 +209,30 @@
       "CreateShipment": "Loading/shipment order can be opened",
       "WaitShipmentCompletion": "Waiting shipment completion",
       "Review": "Review required"
+    },
+    "move": {
+      "open": "Move to another order",
+      "title": "Move ready-to-ship quantity to another order",
+      "description": "Move quantity to an open order line with the same stock/variant. If physical picking or ERP processing has started, the system blocks the move.",
+      "sourceOrder": "Source order",
+      "stock": "Stock",
+      "sourceQty": "Source quantity",
+      "targetOrder": "Target order line",
+      "targetPlaceholder": "Select an open target order",
+      "loadingTargets": "Loading targets...",
+      "targetError": "Target orders could not be loaded.",
+      "noTargets": "No movable open order line was found for this stock/variant.",
+      "quantity": "Quantity to move",
+      "availableHint": "Available on target: {{qty}}",
+      "reason": "Reason",
+      "reasonPlaceholder": "Example: customer priority changed, source order cancelled...",
+      "submit": "Move quantity",
+      "success": "{{qty}} quantity moved to order {{order}}.",
+      "error": "Move operation could not be completed.",
+      "validation": {
+        "targetRequired": "Target order line is required.",
+        "quantityRequired": "Quantity to move must be greater than zero."
+      }
     }
   },
   "activity": {

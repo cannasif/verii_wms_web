@@ -195,6 +195,38 @@ export interface BilginogluHakEdisPendingOperation {
   updatedDate?: string | null;
 }
 
+export interface BilginogluHakEdisMoveTarget {
+  planId: number;
+  orderHeaderId?: number | null;
+  siparisNo: string;
+  orderId: number;
+  customerCode?: string | null;
+  customerName?: string | null;
+  stockCode?: string | null;
+  stockName?: string | null;
+  yapKod?: string | null;
+  sourceWarehouseCode?: number | null;
+  hakEdisWarehouseCode?: number | null;
+  remainingOrderQty: number;
+  alreadyAllocatedQty: number;
+  shippedQty: number;
+  availableToMoveQty: number;
+}
+
+export interface BilginogluHakEdisMoveAllocationRequest {
+  targetPlanId: number;
+  quantity: number;
+  reason?: string | null;
+}
+
+export interface BilginogluHakEdisMoveAllocationResult {
+  sourceBatch: BilginogluHakEdisBatch;
+  targetBatch: BilginogluHakEdisBatch;
+  sourcePlan: BilginogluHakEdisPlan;
+  targetPlan: BilginogluHakEdisPlan;
+  movedQty: number;
+}
+
 export interface BilginogluHakEdisBatchStep {
   id: number;
   batchId: number;

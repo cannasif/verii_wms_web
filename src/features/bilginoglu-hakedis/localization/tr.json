@@ -209,6 +209,30 @@
       "CreateShipment": "Çıkış/yükleme emri açılabilir",
       "WaitShipmentCompletion": "Sevkiyat tamamlanması bekleniyor",
       "Review": "Kontrol gerekli"
+    },
+    "move": {
+      "open": "Başka siparişe taşı",
+      "title": "Sevke hazır miktarı başka siparişe taşı",
+      "description": "Aynı stok/yapı koduna sahip açık sipariş kalemine miktar aktarın. Fiziksel toplama veya ERP işlemi başladıysa sistem bu taşıma işlemini engeller.",
+      "sourceOrder": "Kaynak sipariş",
+      "stock": "Stok",
+      "sourceQty": "Kaynak miktar",
+      "targetOrder": "Hedef sipariş kalemi",
+      "targetPlaceholder": "Açık hedef sipariş seçin",
+      "loadingTargets": "Hedefler yükleniyor...",
+      "targetError": "Hedef siparişler alınamadı.",
+      "noTargets": "Bu stok/yapı kodu için taşınabilir açık sipariş kalemi bulunamadı.",
+      "quantity": "Taşınacak miktar",
+      "availableHint": "Hedefte taşınabilir kalan: {{qty}}",
+      "reason": "Gerekçe",
+      "reasonPlaceholder": "Örn. müşteri önceliği değişti, kaynak sipariş iptal edildi...",
+      "submit": "Miktarı taşı",
+      "success": "{{qty}} miktar {{order}} siparişine taşındı.",
+      "error": "Taşıma işlemi tamamlanamadı.",
+      "validation": {
+        "targetRequired": "Hedef sipariş kalemi seçilmelidir.",
+        "quantityRequired": "Taşınacak miktar sıfırdan büyük olmalıdır."
+      }
     }
   },
   "activity": {
