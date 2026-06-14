@@ -7,12 +7,24 @@ export const useBranches = () => {
   return useQuery<Branch[]>({
     queryKey: [AUTH_QUERY_KEYS.BRANCHES],
     queryFn: async ({ signal }): Promise<Branch[]> => {
-      const data = await lookupApi.getBranches({ signal });
-      return data.map((branch) => ({
-        id: String(branch.subeKodu),
-        name: branch.unvan && branch.unvan.trim().length > 0 ? branch.unvan : '-',
-        code: String(branch.subeKodu),
-      }));
+      try {
+        const data = await lookupApi.getBranches({ signal });
+        const branches = data.map((branch) => ({
+          id: String(branch.subeKodu),
+          name: branch.unvan && branch.unvan.trim().length > 0 ? branch.unvan : '-',
+          code: String(branch.subeKodu),
+        }));
+
+        if (branches.length > 0) {
+          return branches;
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('[auth] Branch list could not be loaded, using development fallback branch.', error);
+        }
+      }
+
+      return [{ id: '0', name: 'V3RII.CO', code: '0' }];
     },
     staleTime: Infinity,
   });

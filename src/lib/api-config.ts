@@ -214,8 +214,22 @@ function refreshRuntimeConfigInBackground(): void {
     });
 }
 
+function hasExplicitDevApiUrl(): boolean {
+  return import.meta.env.DEV && isValidApiUrl(import.meta.env.VITE_API_URL);
+}
+
 export function loadConfig(): Promise<string> {
   if (!configPromise) {
+    if (hasExplicitDevApiUrl()) {
+      configPromise = Promise.resolve(resolveEnvRuntimeConfig()).then((config) => {
+        hydrateMemoryCache(config);
+        persistRuntimeConfig(config);
+        return config;
+      });
+
+      return configPromise.then((config) => config.apiUrl);
+    }
+
     if (import.meta.env.DEV) {
       const persisted = readPersistedRuntimeConfig();
 
