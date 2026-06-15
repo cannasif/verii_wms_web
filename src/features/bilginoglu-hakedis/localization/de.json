@@ -25,7 +25,7 @@
     "description": "Plans batches from Netsis shipping orders up to available warehouse balance without creating shipment orders immediately. Ready quantities are traceable through outbound transfer, return, and shipment stages."
   },
   "actions": {
-    "evaluate": "Evaluate",
+    "evaluate": "ERP Orders Refresh",
     "refresh": "Refresh",
     "savePolicy": "Save Policy",
     "createHakEdisTransferOrders": "Create Entitlement Transfer Orders",
@@ -63,7 +63,7 @@
     "allocated": "Allocated",
     "ready": "Ready",
     "status": "Status",
-    "evaluatedAt": "Last Evaluation"
+    "evaluatedAt": "Last ERP Refresh"
   },
   "need": {
     "required": "Required",
@@ -324,8 +324,8 @@
   "loading": "Loading...",
   "empty": "No records found.",
   "messages": {
-    "evaluated": "Entitlement evaluated. Batches: {{count}}",
-    "evaluationFailed": "Entitlement evaluation could not be executed.",
+    "evaluated": "ERP orders refreshed. Batches: {{count}}",
+    "evaluationFailed": "ERP orders could not be refreshed.",
     "batchCompleted": "Entitlement batch action completed.",
     "batchFailed": "Entitlement batch action could not be completed.",
     "transfersCreated": "Suggested transfers created. Batch: {{count}}",

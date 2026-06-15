@@ -25,7 +25,7 @@
     "description": "Netsis sevk siparislerini ilk anda sevk emrine cevirmeden, depo bakiyesi kadar hakedis batch'i planlar. Hazir parcalar DAT, geri donus ve sevk zincirinde siparis bazinda izlenir."
   },
   "actions": {
-    "evaluate": "Degerlendir",
+    "evaluate": "ERP Siparislerini Tazele",
     "refresh": "Yenile",
     "savePolicy": "Politikayi Kaydet",
     "createHakEdisTransferOrders": "Hakediş Transfer Emirleri Aç",
@@ -63,7 +63,7 @@
     "allocated": "Hakedise Ayrilan",
     "ready": "Sevke Hazir",
     "status": "Durum",
-    "evaluatedAt": "Son Degerlendirme"
+    "evaluatedAt": "Son ERP Tazeleme"
   },
   "need": {
     "required": "Lazim",
@@ -324,8 +324,8 @@
   "loading": "Yukleniyor...",
   "empty": "Kayit bulunamadi.",
   "messages": {
-    "evaluated": "Hakedis degerlendirildi. Batch: {{count}}",
-    "evaluationFailed": "Hakedis degerlendirmesi calistirilamadi.",
+    "evaluated": "ERP siparisleri tazelendi. Batch: {{count}}",
+    "evaluationFailed": "ERP siparisleri tazelenemedi.",
     "batchCompleted": "Hakedis batch aksiyonu tamamlandi.",
     "batchFailed": "Hakedis batch aksiyonu calistirilamadi.",
     "transfersCreated": "Onerilen transferler olusturuldu. Batch: {{count}}",
