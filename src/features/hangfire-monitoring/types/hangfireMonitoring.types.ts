@@ -15,6 +15,8 @@ export interface HangfireStatsDto {
 export interface ManualSyncJobStatusDto {
   jobKey: string;
   jobName: string;
+  description: string;
+  category: string;
   lastTriggeredAtUtc?: string;
   nextAvailableAtUtc?: string;
   isCoolingDown: boolean;
@@ -24,6 +26,8 @@ export interface ManualSyncJobStatusDto {
 export interface TriggerManualSyncJobResponseDto {
   jobKey: string;
   jobName: string;
+  description: string;
+  category: string;
   jobId: string;
   queue: string;
   enqueuedAtUtc: string;

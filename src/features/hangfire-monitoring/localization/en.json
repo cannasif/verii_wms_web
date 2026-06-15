@@ -8,10 +8,10 @@
   "refresh": "Refresh",
   "manualSync": {
     "title": "Run Manual Sync",
-    "description": "Trigger ERP mirror jobs in a controlled way. The same job cannot be queued again for 5 minutes at the API level.",
-    "selectLabel": "Select Job",
-    "selectPlaceholder": "Choose a sync job",
-    "runButton": "Run Sync",
+    "description": "Trigger ERP and customer-specific synchronization jobs in a controlled way. The same job cannot be queued again for 5 minutes at the API level.",
+    "selectLabel": "Job to Run",
+    "selectPlaceholder": "Select a job",
+    "runButton": "Run Selected Job",
     "lastRun": "Last Run",
     "nextAvailable": "Next Available",
     "cooldown": "Cooldown",
@@ -32,7 +32,7 @@
   },
   "table": {
     "jobId": "Job ID",
-    "jobName": "job",
+    "jobName": "Job",
     "state": "State",
     "time": "Time",
     "reason": "Reason"

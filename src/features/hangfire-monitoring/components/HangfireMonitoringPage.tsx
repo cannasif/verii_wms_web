@@ -317,7 +317,10 @@ export function HangfireMonitoringPage(): ReactElement {
                   <SelectContent>
                     {manualJobs.map((job) => (
                       <SelectItem key={job.jobKey} value={job.jobKey}>
-                        {job.jobName}
+                        <div className="flex flex-col gap-0.5 py-1">
+                          <span className="font-semibold">{job.jobName}</span>
+                          <span className="text-xs text-slate-500">{job.description || job.jobKey}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -352,6 +355,11 @@ export function HangfireMonitoringPage(): ReactElement {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {selectedJob?.category ? (
+                <Badge variant="secondary" className="border-sky-200 bg-sky-50 text-sky-700">
+                  {selectedJob.category}
+                </Badge>
+              ) : null}
               {selectedJobCooldown > 0 ? (
                 <Badge variant="secondary" className="border-amber-200 bg-amber-50 text-amber-700">
                   {t('manualSync.cooldownActive', { duration: formatDuration(selectedJobCooldown) })}
@@ -363,6 +371,9 @@ export function HangfireMonitoringPage(): ReactElement {
               )}
               <span className="text-xs text-sky-100">{t('manualSync.cooldownHelp')}</span>
             </div>
+            {selectedJob?.description ? (
+              <p className="text-sm font-medium leading-6 text-sky-50">{selectedJob.description}</p>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -406,9 +417,14 @@ export function HangfireMonitoringPage(): ReactElement {
             <Card key={job.jobKey} className="border-slate-200/80 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">{job.jobName}</CardTitle>
-                <CardDescription>{job.jobKey}</CardDescription>
+                <CardDescription>{job.description || job.jobKey}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
+                {job.category ? (
+                  <Badge variant="outline" className="border-sky-200 text-sky-700">
+                    {job.category}
+                  </Badge>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">{t('manualSync.lastRun')}</span>
                   <span className="font-medium text-slate-900">{formatDate(job.lastTriggeredAtUtc)}</span>

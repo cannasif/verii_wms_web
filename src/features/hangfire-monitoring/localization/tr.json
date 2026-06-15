@@ -7,21 +7,21 @@
   },
   "refresh": "Yenile",
   "manualSync": {
-    "title": "Manuel Sync Çalıştır",
-    "description": "ERP mirror job'larını kontrollü şekilde tetikleyin. Aynı job, API seviyesinde 5 dakika boyunca tekrar kuyruğa alınmaz.",
-    "selectLabel": "Job Seç",
-    "selectPlaceholder": "Bir sync job seçin",
-    "runButton": "Sync Çalıştır",
+    "title": "Manuel Senkronizasyon Çalıştır",
+    "description": "ERP ve müşteri özel senkronizasyon işlerini kontrollü şekilde tetikleyin. Aynı iş, API seviyesinde 5 dakika boyunca tekrar kuyruğa alınmaz.",
+    "selectLabel": "Çalıştırılacak İş",
+    "selectPlaceholder": "Bir iş seçin",
+    "runButton": "Seçili İşi Çalıştır",
     "lastRun": "Son Çalışma",
     "nextAvailable": "Tekrar Açılma",
     "cooldown": "Bekleme Süresi",
-    "cooldownHelp": "Aynı job için 5 dakika boyunca ikinci tetikleme kabul edilmez.",
+    "cooldownHelp": "Aynı iş için 5 dakika boyunca ikinci tetikleme kabul edilmez.",
     "cooldownActive": "Tekrar çalıştırmak için {{duration}} bekleyin",
     "cooldownShort": "{{duration}} kaldı",
     "ready": "Hazır",
     "status": "Durum",
     "success": "{{jobName}} kuyruğa alındı. JobId: {{jobId}}",
-    "error": "Sync job kuyruğa alınamadı."
+    "error": "Senkronizasyon işi kuyruğa alınamadı."
   },
   "stats": {
     "enqueued": "Kuyrukta",
@@ -32,14 +32,14 @@
   },
   "table": {
     "jobId": "Job ID",
-    "jobName": "Job",
+    "jobName": "İş",
     "state": "Durum",
     "time": "Zaman",
     "reason": "Neden"
   },
   "failed": {
     "title": "Başarısız İşler",
-    "empty": "Başarısız job bulunamadı.",
+    "empty": "Başarısız iş bulunamadı.",
     "total": "Toplam"
   },
   "deadLetter": {

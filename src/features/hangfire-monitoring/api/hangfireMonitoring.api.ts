@@ -17,6 +17,8 @@ function normalizeManualSyncJobs(items: unknown): ManualSyncJobStatusDto[] {
     return {
       jobKey: String(row.JobKey ?? row.jobKey ?? ''),
       jobName: String(row.JobName ?? row.jobName ?? ''),
+      description: String(row.Description ?? row.description ?? ''),
+      category: String(row.Category ?? row.category ?? ''),
       lastTriggeredAtUtc: row.LastTriggeredAtUtc ? String(row.LastTriggeredAtUtc) : row.lastTriggeredAtUtc ? String(row.lastTriggeredAtUtc) : undefined,
       nextAvailableAtUtc: row.NextAvailableAtUtc ? String(row.NextAvailableAtUtc) : row.nextAvailableAtUtc ? String(row.nextAvailableAtUtc) : undefined,
       isCoolingDown: Boolean(row.IsCoolingDown ?? row.isCoolingDown ?? false),
@@ -132,6 +134,8 @@ export const hangfireMonitoringApi = {
     return {
       jobKey: String(response.data?.JobKey ?? response.data?.jobKey ?? ''),
       jobName: String(response.data?.JobName ?? response.data?.jobName ?? ''),
+      description: String(response.data?.Description ?? response.data?.description ?? ''),
+      category: String(response.data?.Category ?? response.data?.category ?? ''),
       jobId: String(response.data?.JobId ?? response.data?.jobId ?? ''),
       queue: String(response.data?.Queue ?? response.data?.queue ?? 'default'),
       enqueuedAtUtc: String(response.data?.EnqueuedAtUtc ?? response.data?.enqueuedAtUtc ?? new Date().toISOString()),
