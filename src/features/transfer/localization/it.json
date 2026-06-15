@@ -5,7 +5,8 @@
     "serialsLoaded": "Transfer serial list loaded"
   },
   "detail": {
-    "movePackage": "Move Package"
+    "movePackage": "Move Package",
+    "targetLabel": "Transfer #{{number}}"
   },
   "transfer": {
     "approval": {
@@ -205,6 +206,9 @@
       "BilginogluHakEdis": "Bilginoglu Entitlement DAT",
       "TransferToHakEdis": "DAT to Entitlement",
       "ReturnFromHakEdis": "Return DAT from Entitlement"
+    },
+    "detail": {
+      "targetLabel": "Target Label"
     }
   }
 }

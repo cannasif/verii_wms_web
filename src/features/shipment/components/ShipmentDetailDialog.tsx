@@ -264,7 +264,7 @@ export function ShipmentDetailDialog({
         onOpenChange={setMoveDialogOpen}
         targetSourceType="SH"
         targetSourceHeaderId={headerId}
-        targetLabel={`Sevkiyat #${headerId}`}
+        targetLabel={t('shipment.detail.targetLabel', { number: headerId })}
         targetPackageStatus="Loaded"
       />
     </Dialog>

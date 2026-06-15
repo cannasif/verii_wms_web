@@ -33,7 +33,22 @@ const filterColumns: readonly FilterColumnConfig[] = [
   { value: 'plannedDate', type: 'date', labelKey: 'goodsReceipt.report.plannedDate' },
   { value: 'createdDate', type: 'date', labelKey: 'goodsReceipt.report.createdDate' },
 ];
-const ElectronicDispatchDocumentType = 'E-İrsaliye';
+
+const ELECTRONIC_DISPATCH_DOCUMENT_TYPE = 'E-IRSALIYE';
+const ELECTRONIC_DISPATCH_DOCUMENT_TYPE_ALTERNATE = 'E-INVOICE';
+
+const normalizeDocumentType = (value: string | null | undefined): string =>
+  (value ?? '')
+    .trim()
+    .replace(/\s/g, '')
+    .replace(/İ/g, 'I')
+    .replace(/ı/g, 'I')
+    .toUpperCase();
+
+const isElectronicDispatchDocumentType = (documentType: string | null | undefined): boolean => {
+  const normalized = normalizeDocumentType(documentType);
+  return normalized === ELECTRONIC_DISPATCH_DOCUMENT_TYPE || normalized === ELECTRONIC_DISPATCH_DOCUMENT_TYPE_ALTERNATE;
+};
 
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
@@ -108,7 +123,20 @@ export function GoodsReceiptReportPage(): ReactElement {
           visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[]}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(row, key) => ({ id: row.id, orderId: <span className="font-medium">{row.orderId || '-'}</span>, customerCode: row.customerCode || '-', projectCode: row.projectCode || '-', documentType: <Badge variant={row.documentType === ElectronicDispatchDocumentType ? 'secondary' : 'default'}>{row.documentType || '-'}</Badge>, plannedDate: formatDate(row.plannedDate), status: statusBadge(row), createdDate: formatDateTime(row.createdDate) } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+          renderCell={(row, key) => ({
+            id: row.id,
+            orderId: <span className="font-medium">{row.orderId || '-'}</span>,
+            customerCode: row.customerCode || '-',
+            projectCode: row.projectCode || '-',
+            documentType: (
+              <Badge variant={isElectronicDispatchDocumentType(row.documentType) ? 'secondary' : 'default'}>
+                {row.documentType || '-'}
+              </Badge>
+            ),
+            plannedDate: formatDate(row.plannedDate),
+            status: statusBadge(row),
+            createdDate: formatDateTime(row.createdDate),
+          } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(key) => { if (key !== 'status' && key !== 'actions') pagedGrid.handleSort(key); }}

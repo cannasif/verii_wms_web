@@ -42,6 +42,31 @@
       "selectDepartment": "Select Department",
       "selectEmployee": "Select Employee"
     },
+    "employeeForm": {
+      "systemUser": "System User *",
+      "customer": "Customer *",
+      "employeeCode": "Employee Code *",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "department": "Department *",
+      "role": "Role",
+      "employmentStartDate": "Employment Start Date *",
+      "qrCode": "QR Code *",
+      "selectUser": "Select User",
+      "selectCustomer": "Select Customer",
+      "selectDepartment": "Select Department",
+      "selectRole": "Select Role",
+      "selectRoleDisabled": "Select a department first",
+      "selectRolePlaceholder": "Select role",
+      "selectRoleTip": "Role",
+      "customerPlaceholder": "Select customer",
+      "departmentPlaceholder": "Select department",
+      "userPlaceholder": "Select user",
+      "qrPlaceholder": "Employee QR reference",
+      "systemUserId": "System User Id",
+      "customerId": "Customer Id",
+      "customerCode": "Customer Code"
+    },
     "messages": {
       "groupNotFound": "Group Not Found",
       "manualOverrideNotice": "This screen is used for manual extra entitlement assignments for exceptional employee needs; it does not replace the base entitlement rule."
@@ -346,31 +371,6 @@
       "selectEmployee": "Select Employee",
       "selectStockGroup": "Select Stock Group",
       "selectUser": "Select User"
-    },
-    "employeeForm": {
-      "systemUser": "System User *",
-      "customer": "Customer *",
-      "employeeCode": "Employee Code *",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "department": "Department *",
-      "role": "Role",
-      "employmentStartDate": "Employment Start Date *",
-      "qrCode": "QR Code *",
-      "selectUser": "Select User",
-      "selectCustomer": "Select Customer",
-      "selectDepartment": "Select Department",
-      "selectRole": "Select Role",
-      "selectRoleDisabled": "Select a department first",
-      "selectRolePlaceholder": "Select role",
-      "selectRoleTip": "Role",
-      "customerPlaceholder": "Select customer",
-      "departmentPlaceholder": "Select department",
-      "userPlaceholder": "Select user",
-      "qrPlaceholder": "Employee QR reference",
-      "systemUserId": "System User Id",
-      "customerId": "Customer Id",
-      "customerCode": "Customer Code"
     }
   }
 }

@@ -5,9 +5,19 @@
     "serialsLoaded": "Sevkiyat seri listesi yüklendi"
   },
   "detail": {
-    "loadPallet": "Paleti Yükle"
+    "loadPallet": "Paleti Yükle",
+    "targetLabel": "Sevkiyat #{{number}}"
   },
   "shipment": {
+    "api": {
+      "headersLoaded": "Sevkiyat listesi yüklendi",
+      "linesLoaded": "Sevkiyat satırları yüklendi",
+      "serialsLoaded": "Sevkiyat seri listesi yüklendi"
+    },
+    "detail": {
+      "loadPallet": "Paleti Yükle",
+      "targetLabel": "Sevkiyat #{{number}}"
+    },
     "approval": {
       "actions": "Actions",
       "approve": "Approve",

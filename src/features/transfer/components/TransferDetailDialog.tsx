@@ -272,7 +272,7 @@ export function TransferDetailDialog({
         onOpenChange={setMoveDialogOpen}
         targetSourceType="WT"
         targetSourceHeaderId={headerId}
-        targetLabel={`Transfer #${headerId}`}
+        targetLabel={t('transfer.detail.targetLabel', { number: headerId })}
         targetPackageStatus="Transferred"
       />
     </Dialog>

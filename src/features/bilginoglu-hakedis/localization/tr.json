@@ -125,6 +125,7 @@
       "willCreate": "{{qty}} miktar için hakediş transferi açılacak.",
       "willSkip": "Bu sipariş bu turda atlanacak.",
       "stock": "Stok / Kalem",
+      "yapCode": "Yap Kodu",
       "warehouse": "Depo Akışı",
       "details": "Kalem detaylarını aç/kapat",
       "willCreateLine": "{{stock}} için {{qty}} miktar hakediş transferi açılacak.",
@@ -173,6 +174,13 @@
     "empty": "Bekleyen operasyon bulunamadı.",
     "error": "Bekleyen operasyonlar alınamadı.",
     "searchPlaceholder": "Sipariş, batch, cari veya stok ara...",
+    "documentLinks": {
+      "replenishmentToIntermediate": "İkmal ara depo taşıma",
+      "replenishmentToOrderWarehouse": "İkmal sipariş deposu taşıma",
+      "transferToHakEdis": "Hakedişten çıkış DAT",
+      "returnFromHakEdis": "Hakediş dönüş DAT",
+      "shipment": "Sevk emri"
+    },
     "transfer": {
       "title": "Bekleyen Hakediş Transferleri",
       "description": "Hakedişe çıkış, ara depo onayı, hakediş dönüşü ve ikmal DAT adımlarında bekleyen batch'leri sipariş ve stok kalemi bazında izleyin."
@@ -227,6 +235,7 @@
       "reason": "Gerekçe",
       "reasonPlaceholder": "Örn. müşteri önceliği değişti, kaynak sipariş iptal edildi...",
       "submit": "Miktarı taşı",
+      "remainingHint": "Kalan: {{qty}}",
       "success": "{{qty}} miktar {{order}} siparişine taşındı.",
       "error": "Taşıma işlemi tamamlanamadı.",
       "validation": {

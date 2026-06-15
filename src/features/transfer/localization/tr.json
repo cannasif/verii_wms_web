@@ -5,7 +5,8 @@
     "serialsLoaded": "Transfer seri listesi yüklendi"
   },
   "detail": {
-    "movePackage": "Paketi Taşı"
+    "movePackage": "Paketi Taşı",
+    "targetLabel": "Transfer #{{number}}"
   },
   "transfer": {
     "approval": {
@@ -205,6 +206,9 @@
       "BilginogluHakEdis": "Bilginoğlu Hakediş DAT",
       "TransferToHakEdis": "Hakedişe Çıkış DAT",
       "ReturnFromHakEdis": "Hakediş Dönüş DAT"
+    },
+    "detail": {
+      "targetLabel": "Target Label"
     }
   }
 }

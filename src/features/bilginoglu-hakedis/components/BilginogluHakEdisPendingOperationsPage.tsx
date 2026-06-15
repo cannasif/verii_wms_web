@@ -1,5 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { ArrowRightLeft, MoveRight, RefreshCcw, Truck } from 'lucide-react';
+import type { TFunction } from 'i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -245,11 +246,31 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                 case 'documents':
                   return (
                     <div className="flex flex-wrap gap-1 text-xs">
-                      {row.replenishmentToIntermediateHeaderId ? <Badge variant="outline">IKM1 #{row.replenishmentToIntermediateHeaderId}</Badge> : null}
-                      {row.replenishmentToOrderWarehouseHeaderId ? <Badge variant="outline">IKM2 #{row.replenishmentToOrderWarehouseHeaderId}</Badge> : null}
-                      {row.transferToHakEdisHeaderId ? <Badge variant="outline">DAT1 #{row.transferToHakEdisHeaderId}</Badge> : null}
-                      {row.returnFromHakEdisHeaderId ? <Badge variant="outline">DAT2 #{row.returnFromHakEdisHeaderId}</Badge> : null}
-                      {row.shipmentHeaderId ? <Badge variant="outline">SH #{row.shipmentHeaderId}</Badge> : null}
+                      {row.replenishmentToIntermediateHeaderId ? (
+                        <Badge variant="outline">
+                          {t('pendingOperations.documentLinks.replenishmentToIntermediate')} #{row.replenishmentToIntermediateHeaderId}
+                        </Badge>
+                      ) : null}
+                      {row.replenishmentToOrderWarehouseHeaderId ? (
+                        <Badge variant="outline">
+                          {t('pendingOperations.documentLinks.replenishmentToOrderWarehouse')} #{row.replenishmentToOrderWarehouseHeaderId}
+                        </Badge>
+                      ) : null}
+                      {row.transferToHakEdisHeaderId ? (
+                        <Badge variant="outline">
+                          {t('pendingOperations.documentLinks.transferToHakEdis')} #{row.transferToHakEdisHeaderId}
+                        </Badge>
+                      ) : null}
+                      {row.returnFromHakEdisHeaderId ? (
+                        <Badge variant="outline">
+                          {t('pendingOperations.documentLinks.returnFromHakEdis')} #{row.returnFromHakEdisHeaderId}
+                        </Badge>
+                      ) : null}
+                      {row.shipmentHeaderId ? (
+                        <Badge variant="outline">
+                          {t('pendingOperations.documentLinks.shipment')} #{row.shipmentHeaderId}
+                        </Badge>
+                      ) : null}
                       {!row.replenishmentToIntermediateHeaderId && !row.replenishmentToOrderWarehouseHeaderId && !row.transferToHakEdisHeaderId && !row.returnFromHakEdisHeaderId && !row.shipmentHeaderId ? '-' : null}
                     </div>
                   );
@@ -351,7 +372,7 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                   <SelectContent>
                     {moveTargets.map((target) => (
                       <SelectItem key={target.planId} value={String(target.planId)}>
-                        {formatMoveTarget(target)}
+                        {formatMoveTarget(target, t)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -425,9 +446,9 @@ function InfoCard({ label, value }: { label: string; value: string }): ReactElem
   );
 }
 
-function formatMoveTarget(target: BilginogluHakEdisMoveTarget): string {
+function formatMoveTarget(target: BilginogluHakEdisMoveTarget, t: TFunction): string {
   const customer = [target.customerCode, target.customerName].filter(Boolean).join(' - ');
-  return `${target.siparisNo} | ${customer || '-'} | Kalan: ${formatNumber(target.availableToMoveQty)}`;
+  return `${target.siparisNo} | ${customer || '-'} | ${t('pendingOperations.move.remainingHint', { qty: formatNumber(target.availableToMoveQty) })}`;
 }
 
 export function BilginogluHakEdisPendingTransfersPage(): ReactElement {

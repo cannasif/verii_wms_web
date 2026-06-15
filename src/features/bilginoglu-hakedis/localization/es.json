@@ -125,6 +125,7 @@
       "willCreate": "An entitlement transfer will be opened for {{qty}} quantity.",
       "willSkip": "This order will be skipped in this run.",
       "stock": "Stock / Line",
+      "yapCode": "Yap Kod",
       "warehouse": "Warehouse Flow",
       "details": "Expand or collapse line details",
       "willCreateLine": "An entitlement transfer will be opened for {{qty}} quantity of {{stock}}.",
@@ -173,6 +174,13 @@
     "empty": "No pending operation was found.",
     "error": "Pending operations could not be loaded.",
     "searchPlaceholder": "Search order, batch, customer or stock...",
+    "documentLinks": {
+      "replenishmentToIntermediate": "Replenishment transfer to intermediate",
+      "replenishmentToOrderWarehouse": "Replenishment transfer to order warehouse",
+      "transferToHakEdis": "Transfer to entitlement",
+      "returnFromHakEdis": "Return from entitlement",
+      "shipment": "Shipment order"
+    },
     "transfer": {
       "title": "Pending Entitlement Transfers",
       "description": "Track batches waiting in entitlement outbound, intermediate approval, entitlement return, and replenishment DAT stages by order and stock line."
@@ -226,6 +234,7 @@
       "availableHint": "Available on target: {{qty}}",
       "reason": "Reason",
       "reasonPlaceholder": "Example: customer priority changed, source order cancelled...",
+      "remainingHint": "Remaining: {{qty}}",
       "submit": "Move quantity",
       "success": "{{qty}} quantity moved to order {{order}}.",
       "error": "Move operation could not be completed.",

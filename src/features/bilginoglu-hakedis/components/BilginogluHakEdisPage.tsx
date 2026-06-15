@@ -1295,7 +1295,7 @@ function BulkTransferOrderLines({ orderHeaderId }: { orderHeaderId: number }): R
                 <TableCell className="align-top">
                   <div className="font-black text-slate-950 dark:text-white">{line.stockCode ?? '-'}</div>
                   <div className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">{line.stockName ?? '-'}</div>
-                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">YapKod: {line.yapKod}</div> : null}
+                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('bulkTransferPreview.table.yapCode')} {line.yapKod}</div> : null}
                 </TableCell>
                 <TableCell className="align-top">
                   <Badge variant="secondary" className="rounded-xl">
@@ -1388,7 +1388,7 @@ function BulkShipmentOrderLines({ orderHeaderId }: { orderHeaderId: number }): R
                 <TableCell className="align-top">
                   <div className="font-black text-slate-950 dark:text-white">{line.stockCode ?? '-'}</div>
                   <div className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">{line.stockName ?? '-'}</div>
-                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">YapKod: {line.yapKod}</div> : null}
+                  {line.yapKod ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('bulkTransferPreview.table.yapCode')} {line.yapKod}</div> : null}
                 </TableCell>
                 <TableCell className="text-right align-top font-bold text-slate-800 dark:text-slate-100">{formatQty(line.orderQty)}</TableCell>
                 <TableCell className="text-right align-top font-bold text-blue-700 dark:text-blue-200">{formatQty(line.processedQty)}</TableCell>

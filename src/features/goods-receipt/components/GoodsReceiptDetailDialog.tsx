@@ -40,7 +40,21 @@ interface GoodsReceiptDetailDialogProps {
   onClose: () => void;
 }
 
-const ElectronicDispatchDocumentType = 'E-İrsaliye';
+const ELECTRONIC_DISPATCH_DOCUMENT_TYPE = 'E-IRSALIYE';
+const ELECTRONIC_DISPATCH_DOCUMENT_TYPE_ALTERNATE = 'E-INVOICE';
+
+const normalizeDocumentType = (value: string | null | undefined): string =>
+  (value ?? '')
+    .trim()
+    .replace(/\\s/g, '')
+    .replace(/İ/g, 'I')
+    .replace(/ı/g, 'I')
+    .toUpperCase();
+
+const isElectronicDispatchDocumentType = (documentType: string | null | undefined): boolean => {
+  const normalized = normalizeDocumentType(documentType);
+  return normalized === ELECTRONIC_DISPATCH_DOCUMENT_TYPE || normalized === ELECTRONIC_DISPATCH_DOCUMENT_TYPE_ALTERNATE;
+};
 
 interface ImportLineDetailDialogProps {
   importLine: GrImportLine | null;
@@ -333,9 +347,12 @@ export function GoodsReceiptDetailDialog({
                   </div>
                           <div>
                             <span className="text-muted-foreground">{t('goodsReceipt.report.documentType')}: </span>
-                            <Badge variant={data.documentType === ElectronicDispatchDocumentType ? 'secondary' : 'default'} className="ml-1">
-                      {data.documentType || '-'}
-                    </Badge>
+                            <Badge
+                              variant={isElectronicDispatchDocumentType(data.documentType) ? 'secondary' : 'default'}
+                              className="ml-1"
+                            >
+                              {data.documentType || '-'}
+                            </Badge>
                   </div>
                           <div>
                             <span className="text-muted-foreground">{t('goodsReceipt.report.plannedDate')}: </span>
@@ -618,7 +635,7 @@ export function GoodsReceiptDetailDialog({
                                     </Badge>
                                     {warehouses.length > 0 && (
                                       <span className="text-xs text-muted-foreground">
-                                        Depo: {warehouses.join(', ')}
+                                        {t('goodsReceipt.report.warehouse')}: {warehouses.join(', ')}
                                       </span>
                                     )}
                                   </div>
