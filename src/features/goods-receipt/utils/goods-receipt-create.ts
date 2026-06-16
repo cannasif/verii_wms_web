@@ -223,7 +223,8 @@ export function buildGoodsReceiptGenerateOrderRequest(
 
 export function buildGoodsReceiptProcessRequest(
   formData: GoodsReceiptFormData,
-  selectedItems: SelectedStockItem[],
+  selectedItems: Array<SelectedOrderItem | SelectedStockItem>,
+  isStockBased: boolean = true,
 ): ProcessGoodsReceiptRequest {
   const currentYear = new Date().getFullYear().toString();
   const plannedDate = formData.receiptDate ? new Date(formData.receiptDate).toISOString() : new Date().toISOString();
@@ -257,7 +258,7 @@ export function buildGoodsReceiptProcessRequest(
     header: {
       branchCode: getActiveBranchCode(),
       projectCode: formData.projectCode || undefined,
-      orderId: undefined,
+      orderId: isStockBased ? undefined : ('siparisNo' in (selectedItems[0] ?? {}) ? (selectedItems[0] as SelectedOrderItem).siparisNo : undefined),
       documentType: DocumentType.GR,
       yearCode: currentYear,
       description1: formData.documentNo || undefined,

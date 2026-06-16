@@ -9,6 +9,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { FormPageShell } from '@/components/shared';
 import {
   createGoodsReceiptFormSchema,
+  type SelectedOrderItem,
+  type OrderItem,
   type SelectedStockItem,
   type Product,
   type GoodsReceiptFormData,
@@ -18,9 +20,11 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
+import { Step2OrderSelection } from './steps/Step2OrderSelection';
 import { Step2StockSelection } from './steps/Step2StockSelection';
 
 export function GoodsReceiptProcessPage(): ReactElement {
@@ -29,7 +33,9 @@ export function GoodsReceiptProcessPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedItems, setSelectedItems] = useState<SelectedStockItem[]>([]);
+  const [processMode, setProcessMode] = useState<'order' | 'stock'>('order');
+  const [selectedOrderItems, setSelectedOrderItems] = useState<SelectedOrderItem[]>([]);
+  const [selectedStockItems, setSelectedStockItems] = useState<SelectedStockItem[]>([]);
 
   useEffect(() => {
     setPageTitle(t('goodsReceipt.process.title'));
@@ -55,7 +61,9 @@ export function GoodsReceiptProcessPage(): ReactElement {
 
   const createMutation = useMutation({
     mutationFn: async (formData: GoodsReceiptFormData) => {
-      return goodsReceiptApi.processGoodsReceipt(formData, selectedItems);
+      return processMode === 'order'
+        ? goodsReceiptApi.processGoodsReceipt(formData, selectedOrderItems, false)
+        : goodsReceiptApi.processGoodsReceipt(formData, selectedStockItems, true);
     },
     onSuccess: () => {
       toast.success(t('goodsReceipt.process.success'));
@@ -72,7 +80,12 @@ export function GoodsReceiptProcessPage(): ReactElement {
       if (!isValid) return;
     }
 
-    if (currentStep === 2 && selectedItems.length === 0) {
+    if (currentStep === 2 && processMode === 'order' && selectedOrderItems.length === 0) {
+      toast.error(t('common.validation.selectAtLeastOneItem'));
+      return;
+    }
+
+    if (currentStep === 2 && processMode === 'stock' && selectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -84,8 +97,34 @@ export function GoodsReceiptProcessPage(): ReactElement {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleToggleItem = (item: Product): void => {
-    setSelectedItems((prev) => [
+  const handleToggleOrderItem = (item: OrderItem): void => {
+    setSelectedOrderItems((prev) => {
+      const existingIndex = prev.findIndex((selected) => selected.id === item.id);
+      if (existingIndex >= 0) {
+        return prev.filter((_, idx) => idx !== existingIndex);
+      }
+
+      return [
+        ...prev,
+        {
+          ...item,
+          receiptQuantity: item.quantity || 0,
+          isSelected: true,
+        } as SelectedOrderItem,
+      ];
+    });
+  };
+
+  const handleUpdateOrderItem = (itemId: string, updates: Partial<SelectedOrderItem>): void => {
+    setSelectedOrderItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  };
+
+  const handleRemoveOrderItem = (itemId: string): void => {
+    setSelectedOrderItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
+  const handleToggleStockItem = (item: Product): void => {
+    setSelectedStockItems((prev) => [
       ...prev,
       {
         id: `stock-${item.stokKodu}-${crypto.randomUUID()}`,
@@ -99,12 +138,12 @@ export function GoodsReceiptProcessPage(): ReactElement {
     ]);
   };
 
-  const handleUpdateItem = (itemId: string, updates: Partial<SelectedStockItem>): void => {
-    setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
+  const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedStockItem>): void => {
+    setSelectedStockItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
-  const handleRemoveItem = (itemId: string): void => {
-    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId));
+  const handleRemoveStockItem = (itemId: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleSave = async (): Promise<void> => {
@@ -114,14 +153,28 @@ export function GoodsReceiptProcessPage(): ReactElement {
 
   const steps = [
     { label: t('goodsReceipt.create.steps.basicInfo') },
-    { label: t('goodsReceipt.create.steps.stockSelection') },
+    { label: processMode === 'order' ? t('goodsReceipt.create.steps.orderSelection') : t('goodsReceipt.create.steps.stockSelection') },
   ];
 
   return (
     <div className="space-y-6 crm-page">
-      <Badge variant="secondary" className="mb-4">
-        {t('goodsReceipt.create.mode.stock')}
-      </Badge>
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge variant={processMode === 'order' ? 'default' : 'secondary'}>
+          {processMode === 'order' ? t('goodsReceipt.create.mode.order') : t('goodsReceipt.create.mode.stock')}
+        </Badge>
+        <Tabs
+          value={processMode}
+          onValueChange={(value) => {
+            setProcessMode(value as 'order' | 'stock');
+            setCurrentStep(1);
+          }}
+        >
+          <TabsList>
+            <TabsTrigger value="order">{t('goodsReceipt.create.mode.order')}</TabsTrigger>
+            <TabsTrigger value="stock">{t('goodsReceipt.create.mode.stock')}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
       <Breadcrumb
         items={steps.map((step, index) => ({
@@ -143,12 +196,19 @@ export function GoodsReceiptProcessPage(): ReactElement {
             <form className="space-y-6 crm-page">
               {currentStep === 1 ? (
                 <Step1BasicInfo />
+              ) : processMode === 'order' ? (
+                <Step2OrderSelection
+                  selectedItems={selectedOrderItems}
+                  onToggleItem={handleToggleOrderItem}
+                  onUpdateItem={handleUpdateOrderItem}
+                  onRemoveItem={handleRemoveOrderItem}
+                />
               ) : (
                 <Step2StockSelection
-                  selectedItems={selectedItems}
-                  onToggleItem={handleToggleItem}
-                  onUpdateItem={handleUpdateItem}
-                  onRemoveItem={handleRemoveItem}
+                  selectedItems={selectedStockItems}
+                  onToggleItem={handleToggleStockItem}
+                  onUpdateItem={handleUpdateStockItem}
+                  onRemoveItem={handleRemoveStockItem}
                 />
               )}
 
@@ -162,7 +222,15 @@ export function GoodsReceiptProcessPage(): ReactElement {
                       {t('common.next')}
                     </Button>
                   ) : (
-                    <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || selectedItems.length === 0}>
+                    <Button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={
+                        !permission.canCreate
+                        || createMutation.isPending
+                        || (processMode === 'order' ? selectedOrderItems.length === 0 : selectedStockItems.length === 0)
+                      }
+                    >
                       {createMutation.isPending ? t('common.saving') : t('common.save')}
                     </Button>
                   )}

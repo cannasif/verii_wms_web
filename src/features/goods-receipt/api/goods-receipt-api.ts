@@ -70,8 +70,12 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
   },
 
-  processGoodsReceipt: async (formData: GoodsReceiptFormData, selectedItems: SelectedStockItem[]): Promise<number> => {
-    const request = buildGoodsReceiptProcessRequest(formData, selectedItems);
+  processGoodsReceipt: async (
+    formData: GoodsReceiptFormData,
+    selectedItems: Array<SelectedOrderItem | SelectedStockItem>,
+    isStockBased: boolean = true,
+  ): Promise<number> => {
+    const request = buildGoodsReceiptProcessRequest(formData, selectedItems, isStockBased);
     const response = await api.post<ApiResponse<number>>('/api/GrHeader/process', request);
     if (response.success) {
       return response.data || 0;
