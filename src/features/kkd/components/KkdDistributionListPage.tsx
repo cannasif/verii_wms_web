@@ -17,7 +17,7 @@ import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
 
 type DistributionColumnKey =
-  | 'actions'
+  | 'rowActions'
   | 'documentNo'
   | 'documentDate'
   | 'customerCode'
@@ -31,7 +31,7 @@ type DistributionColumnKey =
 
 function mapSortBy(value: DistributionColumnKey): string {
   switch (value) {
-    case 'actions':
+    case 'rowActions':
       return 'DocumentDate';
     case 'documentNo':
       return 'DocumentNo';
@@ -112,7 +112,7 @@ export function KkdDistributionListPage(): ReactElement {
   const columns = useMemo<PagedDataGridColumn<DistributionColumnKey>[]>(
     () => [
       {
-        key: 'actions',
+        key: 'rowActions',
         label: t('common.actions'),
         sortable: false,
         headClassName: 'sticky left-0 z-20 w-[176px] min-w-[176px] shadow-[8px_0_16px_-14px_rgba(15,23,42,0.6)]',
@@ -267,7 +267,7 @@ export function KkdDistributionListPage(): ReactElement {
               rowKey={(row) => row.id}
               renderCell={(row, columnKey) => {
                 switch (columnKey) {
-                  case 'actions':
+                  case 'rowActions':
                     return (
                       <div className="flex items-center gap-2" data-no-drag-scroll="true">
                         <Button
