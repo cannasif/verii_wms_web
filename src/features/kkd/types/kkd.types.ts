@@ -84,6 +84,7 @@ export interface KkdEmployeeDto extends BaseEntityDto {
   userId?: number | null;
   customerId: number;
   customerCode: string;
+  customerName?: string | null;
   employeeCode: string;
   firstName: string;
   lastName: string;
@@ -130,6 +131,7 @@ export interface KkdResolvedEmployeeDto {
   fullName: string;
   customerId: number;
   customerCode: string;
+  customerName?: string | null;
   departmentCode?: string | null;
   departmentName?: string | null;
   roleCode?: string | null;
@@ -421,6 +423,7 @@ export interface KkdDistributionContextDto {
   employeeName: string;
   customerId: number;
   customerCode: string;
+  customerName?: string | null;
   remainingEntitlements: KkdRemainingEntitlementDto[];
   cariAcikSiparis: KkdCariAcikSiparisDto[];
 }

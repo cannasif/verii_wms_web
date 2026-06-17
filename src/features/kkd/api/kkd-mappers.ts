@@ -119,6 +119,7 @@ export function normalizeKkdEmployee(row: ApiRecord): KkdEmployeeDto {
     userId: pickNumber(row, 'userId', 'UserId') ?? null,
     customerId: pickNumber(row, 'customerId', 'CustomerId') ?? 0,
     customerCode: pickString(row, 'customerCode', 'CustomerCode') ?? '',
+    customerName: pickNullableString(row, 'customerName', 'CustomerName') ?? null,
     employeeCode: pickString(row, 'employeeCode', 'EmployeeCode') ?? '',
     firstName: pickString(row, 'firstName', 'FirstName') ?? '',
     lastName: pickString(row, 'lastName', 'LastName') ?? '',

@@ -15,6 +15,16 @@ import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelp
 
 type ColumnKey = 'employeeCode' | 'firstName' | 'lastName' | 'customerCode' | 'employmentStartDate' | 'qrCode' | 'departmentName' | 'roleName' | 'isActive';
 
+function resolveCustomerText(row: Pick<KkdEmployeeDto, 'customerCode' | 'customerName' | 'customerId'>): string {
+  const code = row.customerCode?.trim();
+  const name = row.customerName?.trim();
+  if (code || name) {
+    return `${code || ''}${code && name ? ' - ' : ''}${name || ''}`.trim();
+  }
+
+  return row.customerId ? `#${row.customerId}` : '-';
+}
+
 function EmployeeForm({
   formState,
   setFormState,
@@ -283,7 +293,13 @@ export function KkdEmployeePage(): ReactElement {
         roleName: 'RoleName',
         isActive: 'IsActive',
       }[value] ?? 'EmployeeCode')}
-      renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
+      renderCell={(row, columnKey) => {
+        if (columnKey === 'customerCode') {
+          return resolveCustomerText(row);
+        }
+
+        return renderKkdGenericCell(row[columnKey]);
+      }}
       renderForm={({ formState, setFormState }) => (
         <EmployeeForm formState={formState} setFormState={setFormState} />
       )}
