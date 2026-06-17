@@ -393,6 +393,8 @@ export interface KkdEntitlementPhaseStatusDto {
 export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
   customerCode: string;
   employeeId: number;
+  employeeCode?: string | null;
+  employeeName?: string | null;
   warehouseId: number;
   status: string;
   sourceChannel: string;

@@ -73,6 +73,28 @@ function escapeHtml(value: string | number | null | undefined): string {
     .replace(/'/g, '&#39;');
 }
 
+function resolveLineStockCode(line: { stockCode?: string | null; stockId?: number | null }): string {
+  return line.stockCode?.trim() || (line.stockId ? `#${line.stockId}` : '-');
+}
+
+function resolveLineStockName(line: { stockName?: string | null; description?: string | null }): string {
+  return line.stockName?.trim() || line.description?.trim() || '-';
+}
+
+function resolveEmployeeText(
+  detail: KkdDistributionHeaderDto | null,
+  row?: Pick<KkdDistributionListItemDto, 'employeeId' | 'employeeCode' | 'employeeName'> | null,
+): string {
+  const employeeCode = detail?.employeeCode || row?.employeeCode;
+  const employeeName = detail?.employeeName || row?.employeeName;
+  if (employeeCode || employeeName) {
+    return `${employeeCode || ''}${employeeCode && employeeName ? ' - ' : ''}${employeeName || ''}`.trim();
+  }
+
+  const employeeId = detail?.employeeId ?? row?.employeeId;
+  return employeeId ? `#${employeeId}` : '-';
+}
+
 export function KkdDistributionListPage(): ReactElement {
   const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
@@ -140,28 +162,46 @@ export function KkdDistributionListPage(): ReactElement {
   };
 
   const openPdf = async (row: KkdDistributionListItemDto): Promise<void> => {
+    const printWindow = window.open('', '_blank', 'width=1000,height=760');
+    if (!printWindow) return;
+
+    const writePrintDocument = (html: string): void => {
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+    };
+
+    writePrintDocument(`<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; color: #111827; background: #f8fafc; }
+    .box { border: 1px solid #cbd5e1; border-radius: 16px; background: #fff; padding: 28px 34px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12); }
+  </style>
+</head>
+<body><div class="box">${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</div></body>
+</html>`);
+
     setPdfLoadingId(row.id);
     try {
       const distribution = await kkdApi.getDistributionById(row.id);
-      const employeeName = row.employeeName || `#${row.employeeId}`;
+      const employeeName = resolveEmployeeText(distribution, row);
       const documentDate = formatDate(distribution.documentDate ?? row.documentDate, dateLocale);
       const generatedDate = formatDate(new Date().toISOString(), dateLocale);
       const lineRows = distribution.lines.length
         ? distribution.lines.map((line, index) => `
             <tr>
               <td>${index + 1}</td>
-              <td>${escapeHtml(line.stockCode)}</td>
-              <td>${escapeHtml(line.stockName)}</td>
+              <td>${escapeHtml(resolveLineStockCode(line))}</td>
+              <td>${escapeHtml(resolveLineStockName(line))}</td>
               <td class="qty">${escapeHtml(line.quantity)}</td>
             </tr>
           `).join('')
         : `<tr><td colspan="4" class="empty">${escapeHtml(t('kkd.operational.distributionList.pdfEmptyLines'))}</td></tr>`;
 
-      const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1000,height=760');
-      if (!printWindow) return;
-
-      printWindow.document.open();
-      printWindow.document.write(`<!doctype html>
+      writePrintDocument(`<!doctype html>
 <html lang="tr">
 <head>
   <meta charset="utf-8" />
@@ -194,10 +234,15 @@ export function KkdDistributionListPage(): ReactElement {
     .signature-box h3 { margin: 0; text-align: center; font-size: 12px; }
     .signature-line { border-top: 1px solid #111827; padding-top: 8px; color: #374151; }
     .footer { margin-top: 18px; display: flex; justify-content: space-between; color: #6b7280; font-size: 10px; }
+    .print-actions { margin: 12px 0 16px; display: flex; justify-content: flex-end; gap: 8px; }
+    .print-actions button { border: 1px solid #111827; background: #111827; color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
     @media print { .no-print { display: none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
   </style>
 </head>
 <body>
+  <div class="print-actions no-print">
+    <button type="button" onclick="window.print()">${escapeHtml(t('kkd.operational.distributionList.pdfAction'))}</button>
+  </div>
   <div class="form">
     <div class="top">
       <div class="brand">V3RII</div>
@@ -239,12 +284,24 @@ export function KkdDistributionListPage(): ReactElement {
   <script>
     window.addEventListener('load', function () {
       window.focus();
-      window.print();
+      window.setTimeout(function () { window.print(); }, 250);
     });
   </script>
 </body>
 </html>`);
-      printWindow.document.close();
+    } catch {
+      writePrintDocument(`<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(t('kkd.operational.distributionList.errLoad'))}</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; color: #991b1b; background: #fef2f2; }
+    .box { border: 1px solid #fecaca; border-radius: 16px; background: #fff; padding: 28px 34px; box-shadow: 0 20px 50px rgba(127, 29, 29, 0.12); }
+  </style>
+</head>
+<body><div class="box">${escapeHtml(t('kkd.operational.distributionList.errLoad'))}</div></body>
+</html>`);
     } finally {
       setPdfLoadingId(null);
     }
@@ -371,7 +428,7 @@ export function KkdDistributionListPage(): ReactElement {
                 <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
                   <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {detail.customerCode || '-'} / #{detail.employeeId}
+                    {detail.customerCode || '-'} / {resolveEmployeeText(detail, selectedHeader)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
@@ -402,11 +459,11 @@ export function KkdDistributionListPage(): ReactElement {
                         <div key={line.id} className="grid gap-3 px-4 py-4 text-sm md:grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] md:items-center">
                           <div>
                             <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockCode')}</p>
-                            <Badge>{line.stockCode || '-'}</Badge>
+                            <Badge>{resolveLineStockCode(line)}</Badge>
                           </div>
                           <div className="font-medium text-slate-900 dark:text-white">
                             <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockName')}</p>
-                            {line.stockName || '-'}
+                            {resolveLineStockName(line)}
                           </div>
                           <div>
                             <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.quantity')}</p>
