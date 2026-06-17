@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Eye } from 'lucide-react';
+import { Eye, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -60,12 +60,23 @@ function formatDate(value: string | null | undefined, locale: string): string {
   return new Date(value).toLocaleString(locale);
 }
 
+function escapeHtml(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return '-';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function KkdDistributionListPage(): ReactElement {
   const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const [selectedHeader, setSelectedHeader] = useState<KkdDistributionHeaderDto | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [pdfLoadingId, setPdfLoadingId] = useState<number | null>(null);
   const pagedGrid = usePagedDataGrid<DistributionColumnKey>({
     pageKey: 'kkd-distribution-list-grid',
     defaultSortBy: 'documentDate',
@@ -118,6 +129,117 @@ export function KkdDistributionListPage(): ReactElement {
     setDetailOpen(true);
   };
 
+  const openPdf = async (row: KkdDistributionListItemDto): Promise<void> => {
+    setPdfLoadingId(row.id);
+    try {
+      const distribution = await kkdApi.getDistributionById(row.id);
+      const employeeName = row.employeeName || `#${row.employeeId}`;
+      const documentDate = formatDate(distribution.documentDate ?? row.documentDate, dateLocale);
+      const generatedDate = formatDate(new Date().toISOString(), dateLocale);
+      const lineRows = distribution.lines.length
+        ? distribution.lines.map((line, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${escapeHtml(line.stockCode)}</td>
+              <td>${escapeHtml(line.stockName)}</td>
+              <td class="qty">${escapeHtml(line.quantity)}</td>
+            </tr>
+          `).join('')
+        : `<tr><td colspan="4" class="empty">${escapeHtml(t('kkd.operational.distributionList.pdfEmptyLines'))}</td></tr>`;
+
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1000,height=760');
+      if (!printWindow) return;
+
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(t('kkd.operational.distributionList.pdfTitle'))}</title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .form { border: 1px solid #111827; min-height: calc(297mm - 32mm); padding: 16px; }
+    .top { display: grid; grid-template-columns: 1fr 2fr 1fr; border: 1px solid #111827; }
+    .top > div { min-height: 54px; display: flex; align-items: center; justify-content: center; padding: 8px; border-right: 1px solid #111827; text-align: center; }
+    .top > div:last-child { border-right: 0; }
+    .brand { font-weight: 800; font-size: 18px; letter-spacing: 0.08em; }
+    .title { font-weight: 800; font-size: 16px; letter-spacing: 0.04em; }
+    .code { flex-direction: column; gap: 3px; align-items: flex-start !important; font-size: 10px; }
+    .info { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-row { border: 1px solid #111827; min-height: 34px; display: grid; grid-template-columns: 130px 1fr; }
+    .info-row strong { background: #f3f4f6; border-right: 1px solid #111827; display: flex; align-items: center; padding: 8px; }
+    .info-row span { display: flex; align-items: center; padding: 8px; }
+    .section-title { margin: 22px 0 8px; font-weight: 800; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #111827; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f3f4f6; font-weight: 800; }
+    th:first-child, td:first-child { width: 36px; text-align: center; }
+    .qty { width: 90px; text-align: right; }
+    .empty { text-align: center; color: #6b7280; }
+    .declaration { margin-top: 18px; line-height: 1.55; border: 1px solid #111827; padding: 12px; min-height: 70px; }
+    .signatures { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .signature-box { border: 1px solid #111827; min-height: 124px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+    .signature-box h3 { margin: 0; text-align: center; font-size: 12px; }
+    .signature-line { border-top: 1px solid #111827; padding-top: 8px; color: #374151; }
+    .footer { margin-top: 18px; display: flex; justify-content: space-between; color: #6b7280; font-size: 10px; }
+    @media print { .no-print { display: none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <div class="form">
+    <div class="top">
+      <div class="brand">V3RII</div>
+      <div class="title">${escapeHtml(t('kkd.operational.distributionList.pdfTitle'))}</div>
+      <div class="code">
+        <div>${escapeHtml(t('kkd.operational.distributionList.pdfDocumentNo'))}: ${escapeHtml(distribution.documentNo || row.documentNo || row.id)}</div>
+        <div>${escapeHtml(t('kkd.operational.distributionList.pdfRevision'))}: 00</div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfEmployee'))}</strong><span>${escapeHtml(employeeName)}</span></div>
+      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDate'))}</strong><span>${escapeHtml(documentDate)}</span></div>
+      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(distribution.customerCode || row.customerCode)}</span></div>
+      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>#${escapeHtml(distribution.warehouseId || row.warehouseId)}</span></div>
+    </div>
+    <div class="section-title">${escapeHtml(t('kkd.operational.distributionList.pdfLinesTitle'))}</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>${escapeHtml(t('kkd.operational.distributionList.stockCode'))}</th>
+          <th>${escapeHtml(t('kkd.operational.distributionList.stockName'))}</th>
+          <th class="qty">${escapeHtml(t('kkd.operational.distributionList.quantity'))}</th>
+        </tr>
+      </thead>
+      <tbody>${lineRows}</tbody>
+    </table>
+    <div class="declaration">${escapeHtml(t('kkd.operational.distributionList.pdfDeclaration'))}</div>
+    <div class="signatures">
+      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfDeliveredBy'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
+      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfReceivedBy'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
+      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfStamp'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfStampSignature'))}</div></div>
+    </div>
+    <div class="footer">
+      <span>${escapeHtml(t('kkd.operational.distributionList.pdfGeneratedAt'))}: ${escapeHtml(generatedDate)}</span>
+      <span>${escapeHtml(t('kkd.operational.distributionList.pdfFooter'))}</span>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function () {
+      window.focus();
+      window.print();
+    });
+  </script>
+</body>
+</html>`);
+      printWindow.document.close();
+    } finally {
+      setPdfLoadingId(null);
+    }
+  };
+
   return (
     <div className="crm-page space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.kkdOperationsGroup') }, { label: t('kkd.operational.distributionList.breadcrumb'), isActive: true }]} />
@@ -164,7 +286,7 @@ export function KkdDistributionListPage(): ReactElement {
               onSort={pagedGrid.handleSort}
               actionsHeaderLabel={t('common.actions')}
               renderActionsCell={(row) => (
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <Button
                     type="button"
                     variant="ghost"
@@ -175,6 +297,18 @@ export function KkdDistributionListPage(): ReactElement {
                   >
                     <Eye className="h-4 w-4" />
                     <span>{t('common.view')}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    title={t('kkd.operational.distributionList.pdfAction')}
+                    aria-label={t('kkd.operational.distributionList.pdfAction')}
+                    disabled={pdfLoadingId === row.id}
+                    onClick={() => void openPdf(row)}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>{pdfLoadingId === row.id ? t('kkd.operational.distributionList.pdfPreparing') : t('kkd.operational.distributionList.pdfAction')}</span>
                   </Button>
                 </div>
               )}
