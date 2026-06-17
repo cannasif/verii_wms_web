@@ -19,23 +19,17 @@ import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AuthBackground } from './AuthBackground';
 import logo from '@/assets/v3riiwms.png';
+import { Building2, Eye, EyeOff, Lock, Mail, Pause, Play, TriangleAlert } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Building2,
-  Eye,
-  EyeOff,
-  Globe2,
-  Hash,
-  Instagram,
-  Lock,
-  Mail,
-  MessageCircle,
-  Pause,
-  Phone,
-  Play,
-  Send,
-  TriangleAlert,
-} from 'lucide-react';
-import { WmsBackgroundAnimation } from './WmsBackgroundAnimation';
+  TelephoneIcon,
+  GlobalIcon,
+  Mail01Icon,
+  WhatsappIcon,
+  TelegramIcon,
+  InstagramIcon,
+  Linkedin01Icon,
+} from '@hugeicons/core-free-icons';
 
 export function LoginPage(): React.JSX.Element {
   const { t, i18n } = useTranslation('common');
@@ -111,7 +105,7 @@ export function LoginPage(): React.JSX.Element {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-[#070d1f] text-white">
+    <div className="relative min-h-dvh w-full overflow-x-hidden overflow-y-auto bg-[#070d1f] text-white">
       <style>{`
         input { color-scheme: dark; }
         input:-webkit-autofill,
@@ -125,19 +119,19 @@ export function LoginPage(): React.JSX.Element {
         }
       `}</style>
 
-      <div className="absolute inset-0 z-0 transition-opacity duration-1000 opacity-100">
-        <div className="absolute left-[-12%] top-[-12%] h-[58vw] w-[58vw] rounded-full bg-cyan-900/20 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] h-[58vw] w-[58vw] rounded-full bg-blue-900/20 blur-[120px] mix-blend-screen" />
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-1000 opacity-100">
+        <div className="absolute left-[-12%] top-[-12%] h-[58vw] max-h-[520px] w-[58vw] max-w-[520px] rounded-full bg-cyan-900/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] h-[58vw] max-h-[520px] w-[58vw] max-w-[520px] rounded-full bg-blue-900/20 blur-[120px] mix-blend-screen" />
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#070d1f]/60 to-[#070d1f]" />
       </div>
 
       <AuthBackground isActive isPaused={isBgAnimationPaused} />
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <div className="fixed bottom-6 right-6 z-50 hidden flex-col items-end gap-3 sm:flex">
         <button
           type="button"
           onClick={() => setIsBgAnimationPaused((p) => !p)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-[#0b1228]/80 text-slate-300 transition hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-300"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-sky-400/20 bg-[#0b1228]/80 text-cyan-300/80 shadow-[0_0_14px_rgba(56,132,246,0.20)] transition-all duration-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:text-cyan-300 hover:shadow-[0_0_20px_rgba(56,132,246,0.40)]"
           title={isBgAnimationPaused ? t('auth.login.startAnimation') : t('auth.login.stopAnimation')}
           aria-label={isBgAnimationPaused ? t('auth.login.startAnimation') : t('auth.login.stopAnimation')}
         >
@@ -146,49 +140,52 @@ export function LoginPage(): React.JSX.Element {
         <LanguageSwitcher variant="pill" />
       </div>
 
-      <div className="relative z-10 flex h-full w-full items-center justify-center px-4 py-8">
-        <div className="w-full max-w-[480px] -translate-y-16 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1228]/70 shadow-[0_0_10px_2px_rgba(255,255,255,0.04),inset_0_0_10px_2px_rgba(255,255,255,0.04),0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-          <div className="relative overflow-hidden px-6 pt-12 pb-22 sm:px-10">
-            <WmsBackgroundAnimation isPaused={isBgAnimationPaused} />
-            <div className="relative z-10 mb-6 text-center">
-              <div className="mx-auto mb-4 flex justify-center">
-                <img src={logo} alt="V3RII WMS" className="h-42 w-auto object-contain" />
-              </div>
-              <h1 className="text-sm tracking-tight text-white/70">{t('auth.login.title')}</h1>
-            </div>
+      <div className="relative z-10 mx-auto box-border flex min-h-dvh w-full flex-col px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:px-4 sm:pb-6 sm:pt-8">
+        <main className="flex flex-1 flex-col items-center justify-center py-4 sm:py-6 lg:py-8 [@media(max-height:720px)]:py-2">
+          <div className="w-full max-w-[480px] min-w-0">
+            <div className="overflow-hidden rounded-2xl border border-sky-400/15 bg-[#0b1228]/70 shadow-[0_0_24px_2px_rgba(56,132,246,0.10),inset_0_0_14px_1px_rgba(96,150,255,0.05),0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:rounded-3xl">
+              <div className="relative overflow-hidden px-4 pb-6 pt-6 sm:px-10 sm:pb-10 sm:pt-12 [@media(max-height:720px)]:px-4 [@media(max-height:720px)]:pb-5 [@media(max-height:720px)]:pt-5">
+                <div className="relative z-10 mb-4 text-center sm:mb-6 [@media(max-height:720px)]:mb-3">
+                  <div className="mx-auto mb-3 flex justify-center sm:mb-4 [@media(max-height:720px)]:mb-2">
+                    <img src={logo} alt="V3RII WMS" className="h-20 w-auto max-w-[85%] object-contain sm:h-32 md:h-36 [@media(max-height:720px)]:h-16" />
+                  </div>
+                  <h1 className="text-xs tracking-tight text-white/70 sm:text-sm">{t('auth.login.title')}</h1>
+                </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4" noValidate>
                 <FormField
                   control={form.control}
                   name="branchId"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="group relative">
-                        <Building2
-                          className={`absolute left-4 top-1/2 z-10 -translate-y-1/2 ${fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
-                          size={18}
-                        />
+                        <div className="absolute inset-y-0 left-0 z-10 flex w-12 items-center justify-center rounded-l-xl border-r border-white/10 bg-black/30">
+                          <Building2
+                            className={fieldState.invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}
+                            size={18}
+                          />
+                        </div>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger
-                              className={`!h-14 w-full rounded-xl px-12 pr-4 text-sm text-white transition-all focus:ring-0 ${fieldState.invalid
+                              className={`!h-12 !w-full min-w-0 rounded-xl pl-14 pr-4 text-sm text-white transition-all focus:ring-0 ${fieldState.invalid
                                 ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                : 'border border-white/15 bg-black/25 focus:border-cyan-500 focus-visible:!border-cyan-500'
+                                : 'border border-white/10 bg-white/[0.03] transition-all duration-200 hover:border-white/20 focus:border-cyan-400/70 focus-visible:!border-cyan-400/70'
                                 }`}
                             >
                               <SelectValue placeholder={t('auth.login.selectBranch')} />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="border-white/10 bg-[#0b1228] text-white">
+                          <SelectContent className="border-sky-400/20 !bg-[#0b1733] text-white shadow-[0_0_24px_rgba(56,132,246,0.18)]">
                             {branches?.length ? (
                               branches.map((branch) => (
-                                <SelectItem key={branch.id} value={branch.id} className="h-14 cursor-pointer focus:bg-cyan-500/20 focus:text-white">
+                                <SelectItem key={branch.id} value={branch.id} className="h-12 cursor-pointer focus:!bg-sky-500/25 focus:!text-white data-[state=checked]:!text-sky-300">
                                   {branch.name}
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem value="no-branch" disabled className="h-14 focus:text-white">
+                              <SelectItem value="no-branch" disabled className="h-12 focus:text-white">
                                 {t('auth.login.branchNotFound')}
                               </SelectItem>
                             )}
@@ -209,18 +206,20 @@ export function LoginPage(): React.JSX.Element {
                     return (
                       <FormItem>
                         <div className="group relative">
-                          <Mail
-                            className={`pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 ${invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
-                            size={18}
-                          />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-12 items-center justify-center rounded-l-xl border-r border-white/10 bg-black/30">
+                            <Mail
+                              className={invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}
+                              size={18}
+                            />
+                          </div>
                           <FormControl>
                             <Input
                               {...field}
                               type="email"
                               placeholder={t('auth.login.emailPlaceholder')}
-                              className={`h-14 rounded-xl px-12 pr-4 text-sm text-white placeholder:text-slate-500 ${invalid
+                              className={`h-12 min-w-0 rounded-xl pl-14 pr-4 text-sm text-white placeholder:text-slate-500 ${invalid
                                 ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                                : 'border border-white/10 bg-white/[0.03] transition-all duration-200 hover:border-white/20 focus-visible:!border-cyan-400/70 focus-visible:!ring-cyan-500/25'
                                 }`}
                               onChange={(e) => {
                                 form.clearErrors('root');
@@ -244,18 +243,20 @@ export function LoginPage(): React.JSX.Element {
                     return (
                       <FormItem>
                         <div className="group relative">
-                          <Lock
-                            className={`pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 ${invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}`}
-                            size={18}
-                          />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-12 items-center justify-center rounded-l-xl border-r border-white/10 bg-black/30">
+                            <Lock
+                              className={invalid ? 'text-red-400' : 'text-slate-400 group-focus-within:text-cyan-300'}
+                              size={18}
+                            />
+                          </div>
                           <FormControl>
                             <Input
                               {...field}
                               type={isPasswordVisible ? 'text' : 'password'}
                               placeholder={t('auth.login.passwordPlaceholder')}
-                              className={`h-14 rounded-xl px-12 pr-11 text-sm text-white placeholder:text-slate-500 ${invalid
+                              className={`h-12 min-w-0 rounded-xl pl-14 pr-11 text-sm text-white placeholder:text-slate-500 ${invalid
                                 ? 'border-2 border-red-500 bg-red-950/25 ring-2 ring-red-500/40 focus-visible:!border-red-500 focus-visible:!ring-2 focus-visible:!ring-red-500/40'
-                                : 'border border-white/15 bg-black/25 focus-visible:!border-cyan-500 focus-visible:!ring-cyan-500/35'
+                                : 'border border-white/10 bg-white/[0.03] transition-all duration-200 hover:border-white/20 focus-visible:!border-cyan-400/70 focus-visible:!ring-cyan-500/25'
                                 }`}
                               onChange={(e) => {
                                 form.clearErrors('root');
@@ -304,71 +305,113 @@ export function LoginPage(): React.JSX.Element {
 
                 <Button
                   type="submit"
-                  className="mt-2 h-12 w-full rounded-xl bg-linear-to-r from-cyan-600 via-blue-600 to-orange-400 text-sm font-semibold uppercase tracking-wide text-white hover:opacity-95"
+                  className="mt-2 h-12 w-full rounded-xl bg-linear-to-r from-cyan-600 via-blue-600 to-orange-400 text-sm font-semibold uppercase tracking-wide text-white transition-all duration-300 hover:brightness-105 hover:shadow-[0_0_16px_rgba(56,132,246,0.30)]"
                   disabled={isPending}
                 >
                   {isPending ? t('auth.login.loggingIn') : t('auth.login.loginButton')}
                 </Button>
               </form>
             </Form>
+              </div>
+            </div>
+
+            <p className="mt-3 px-1 text-center text-[0.65rem] font-light uppercase leading-relaxed tracking-[0.08em] text-white/50 sm:mt-5 sm:text-sm sm:tracking-[0.14em] md:tracking-[0.2em] [@media(max-height:720px)]:mt-2">
+              <Trans
+                i18nKey="auth.login.slogan"
+                components={{
+                  brand: (
+                    <span
+                      lang="en"
+                      className="bg-linear-to-r from-pink-400 to-yellow-400 bg-clip-text font-bold text-transparent border-b border-pink-500/20 pb-0.5"
+                    >
+                      v3rii
+                    </span>
+                  ),
+                }}
+              />
+            </p>
           </div>
-        </div>
-      </div>
-      <div className="absolute bottom-35 left-0 right-0 z-10 text-center">
-        <p className="px-4 text-sm font-light tracking-[0.2em] text-white/50 uppercase sm:text-base">
-          <Trans
-            i18nKey="auth.login.slogan"
-            components={{
-              brand: (
-                <span className="bg-linear-to-r from-pink-400 to-yellow-400 bg-clip-text font-bold text-transparent border-b border-pink-500/20 pb-0.5">
-                  v3rii
-                </span>
-              ),
-            }}
-          />
-        </p>
+        </main>
 
-      </div>
-      <div className="absolute bottom-15 left-0 right-0 z-10  flex flex-wrap items-center justify-center gap-4 px-4">
-        <a href="tel:+905070123018" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-lime-400 hover:bg-zinc-800 hover:border-lime-500/30 hover:shadow-[0_0_15px_rgba(132,204,22,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
-          <Phone size={20} />
-        </a>
+        <footer className="shrink-0 pb-4 pt-2 sm:pt-1 [@media(max-height:720px)]:pb-2">
+          <div className="mx-auto grid w-full max-w-[480px] grid-cols-7 items-center gap-0 rounded-2xl border border-white/10 bg-white/[0.04] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.4)] backdrop-blur-md sm:p-1.5">
+            <a
+              href="tel:+905070123018"
+              aria-label={t('auth.login.title')}
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-lime-400/10 hover:text-lime-300 hover:shadow-[0_0_14px_rgba(132,204,22,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={TelephoneIcon} size={20} strokeWidth={1.8} />
+            </a>
 
-        <a href="https://v3rii.com" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
-          <Globe2 size={20} />
-        </a>
+            <a
+              href="https://v3rii.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Website"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-cyan-400/10 hover:text-cyan-300 hover:shadow-[0_0_14px_rgba(34,211,238,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={GlobalIcon} size={20} strokeWidth={1.8} />
+            </a>
 
-        <a href="mailto:info@v3rii.com" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-orange-400 hover:bg-zinc-800 hover:border-orange-500/30 hover:shadow-[0_0_15px_rgba(251,146,60,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
-          <Mail size={20} />
-        </a>
+            <a
+              href="mailto:info@v3rii.com"
+              aria-label="E-mail"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-orange-400/10 hover:text-orange-300 hover:shadow-[0_0_14px_rgba(251,146,60,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={Mail01Icon} size={20} strokeWidth={1.8} />
+            </a>
 
-        <a href="https://wa.me/905070123018" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-emerald-400 hover:bg-zinc-800 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
-          <MessageCircle size={20} />
-        </a>
+            <a
+              href="https://wa.me/905070123018"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-emerald-400/10 hover:text-emerald-300 hover:shadow-[0_0_14px_rgba(52,211,153,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={WhatsappIcon} size={20} strokeWidth={1.8} />
+            </a>
 
-        <button
-          type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon'))}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-sky-400 hover:bg-zinc-800 hover:border-sky-500/30 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
-        >
-          <Send size={20} />
-        </button>
+            <button
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon'))}
+              aria-label="Telegram"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-sky-400/10 hover:text-sky-300 hover:shadow-[0_0_14px_rgba(56,189,248,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={TelegramIcon} size={20} strokeWidth={1.8} />
+            </button>
 
-        <button
-          type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon'))}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-fuchsia-400 hover:bg-zinc-800 hover:border-fuchsia-500/30 hover:shadow-[0_0_15px_rgba(232,121,249,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
-        >
-          <Instagram size={20} />
-        </button>
+            <button
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon'))}
+              aria-label="Instagram"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-fuchsia-400/10 hover:text-fuchsia-300 hover:shadow-[0_0_14px_rgba(232,121,249,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={InstagramIcon} size={20} strokeWidth={1.8} />
+            </button>
 
-        <button
-          type="button"
-          onClick={() => toast.info(t('auth.login.comingSoon'))}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-white hover:bg-zinc-800 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg"
-        >
-          <Hash size={20} />
-        </button>
+            <button
+              type="button"
+              onClick={() => toast.info(t('auth.login.comingSoon'))}
+              aria-label="LinkedIn"
+              className="flex aspect-square w-full items-center justify-center rounded-lg text-slate-300 transition-all duration-300 hover:bg-blue-400/10 hover:text-blue-300 hover:shadow-[0_0_14px_rgba(96,165,250,0.35)] sm:rounded-xl"
+            >
+              <HugeiconsIcon icon={Linkedin01Icon} size={20} strokeWidth={1.8} />
+            </button>
+          </div>
+
+          <div className="mx-auto mt-3 flex max-w-[480px] items-center justify-center gap-3 sm:hidden">
+            <button
+              type="button"
+              onClick={() => setIsBgAnimationPaused((p) => !p)}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-sky-400/20 bg-[#0b1228]/80 text-cyan-300/80 shadow-[0_0_14px_rgba(56,132,246,0.20)] transition-all duration-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:text-cyan-300 hover:shadow-[0_0_20px_rgba(56,132,246,0.40)]"
+              title={isBgAnimationPaused ? t('auth.login.startAnimation') : t('auth.login.stopAnimation')}
+              aria-label={isBgAnimationPaused ? t('auth.login.startAnimation') : t('auth.login.stopAnimation')}
+            >
+              {isBgAnimationPaused ? <Play size={18} /> : <Pause size={18} />}
+            </button>
+            <LanguageSwitcher variant="pill" />
+          </div>
+        </footer>
       </div>
     </div>
   );

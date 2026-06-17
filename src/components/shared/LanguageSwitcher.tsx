@@ -36,30 +36,43 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
   return (
     <Select value={normalizedLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger
+        aria-label={currentName}
         className={cn(
           'h-10 w-[140px] border bg-background shadow-lg hover:bg-accent',
           variant === 'pill' &&
-            'h-11 w-[176px] rounded-full border-white/20 bg-slate-900/80 px-4 text-slate-100 shadow-[0_10px_30px_rgba(2,6,23,0.45)] backdrop-blur-xl hover:border-cyan-400/40 hover:bg-slate-900'
+            'h-11 w-11 justify-center rounded-full border-sky-400/20 bg-slate-900/80 p-0 text-cyan-300 shadow-[0_0_14px_rgba(56,132,246,0.20)] backdrop-blur-xl transition-all duration-300 hover:border-cyan-400/50 hover:bg-slate-900 hover:text-cyan-200 hover:shadow-[0_0_20px_rgba(56,132,246,0.40)] [&>svg]:hidden'
         )}
       >
-        <div className="flex items-center gap-2 flex-1">
-          <Languages className={cn('h-4 w-4 shrink-0', variant === 'pill' && 'text-cyan-300')} />
-          <SelectValue>
-            <span className="flex items-center gap-1.5">
-              <span className="text-base">{currentLanguage.flag}</span>
-              <span className={cn('hidden text-sm sm:inline', variant === 'pill' && 'font-medium text-slate-100')}>
-                {currentName}
+        {variant === 'pill' ? (
+          <span className="flex items-center justify-center">
+            <Languages className="h-5 w-5 text-cyan-300" />
+          </span>
+        ) : (
+          <div className="flex items-center gap-2 flex-1">
+            <Languages className="h-4 w-4 shrink-0" />
+            <SelectValue>
+              <span className="flex items-center gap-1.5">
+                <span className="text-base">{currentLanguage.flag}</span>
+                <span className="hidden text-sm sm:inline">{currentName}</span>
               </span>
-            </span>
-          </SelectValue>
-        </div>
+            </SelectValue>
+          </div>
+        )}
       </SelectTrigger>
-      <SelectContent className={cn(variant === 'pill' && 'border-white/10 bg-[#0b1228] text-white')}>
+      <SelectContent
+        className={cn(
+          variant === 'pill' && 'border-sky-400/20 !bg-[#0b1733] text-white shadow-[0_0_24px_rgba(56,132,246,0.18)]'
+        )}
+      >
         {languages.map((language) => (
           <SelectItem
             key={language.code}
             value={language.code}
-            className={cn(variant === 'pill' && 'focus:bg-cyan-500/20 focus:text-white')}
+            className={cn(
+              'cursor-pointer',
+              variant === 'pill' &&
+                'focus:!bg-sky-500/25 focus:!text-white data-[state=checked]:!text-sky-300'
+            )}
           >
             <div className="flex items-center gap-2">
               <span className="text-base">{language.flag}</span>

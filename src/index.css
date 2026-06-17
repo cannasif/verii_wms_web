@@ -366,125 +366,72 @@ input:-webkit-autofill:active {
   animation: portal-overlay-out 0.2s ease-in forwards;
 }
 
-.wms-bg-noise {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.1) 0.6px, transparent 0.6px);
-  background-size: 3px 3px;
-  opacity: 0.12;
+.wms-bg-photo {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.62;
 }
 
-.wms-bg-aisles {
-  background-image:
-    linear-gradient(to right, rgba(14, 165, 233, 0.12) 1px, transparent 1px),
-    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-  background-size: 96px 100%, 24px 100%;
-  opacity: 0.24;
-}
-
-.wms-bg-grid-perspective {
-  background-image:
-    linear-gradient(87deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
-    linear-gradient(-87deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
-    linear-gradient(3deg, rgba(14, 165, 233, 0.06) 1px, transparent 1px);
-  background-size: 64px 48px, 64px 48px, 100% 32px;
-  opacity: 0.6;
-  animation: wms-grid-drift 25s linear infinite;
-}
-
-.wms-bg-conveyor::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 18%;
-  height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 12px,
-    rgba(34, 211, 238, 0.35) 12px,
-    rgba(34, 211, 238, 0.35) 14px
-  );
-  animation: wms-conveyor-move 8s linear infinite;
-}
-
-.wms-bg-data-lines {
-  background-image:
-    linear-gradient(105deg, transparent 48%, rgba(56, 189, 248, 0.12) 49%, rgba(56, 189, 248, 0.12) 51%, transparent 52%),
-    linear-gradient(75deg, transparent 52%, rgba(34, 211, 238, 0.08) 53%, rgba(34, 211, 238, 0.08) 55%, transparent 56%);
-  background-size: 200% 100%, 180% 100%;
-  animation: wms-data-flow 20s ease-in-out infinite;
-}
-
-.wms-bg-floating-icons {
-  overflow: hidden;
-}
-
-.wms-float-icon {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  animation: wms-float 18s ease-in-out infinite;
-}
-
-.wms-float-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.wms-float-1 { left: 8%; top: 22%; animation-delay: 0s; animation-duration: 20s; }
-.wms-float-2 { left: 78%; top: 15%; animation-delay: -4s; animation-duration: 22s; }
-.wms-float-3 { left: 15%; top: 68%; animation-delay: -8s; animation-duration: 19s; }
-.wms-float-4 { left: 82%; top: 72%; animation-delay: -2s; animation-duration: 24s; }
-.wms-float-5 { left: 45%; top: 35%; animation-delay: -6s; animation-duration: 21s; }
-
-@keyframes wms-grid-drift {
-  0% { background-position: 0 0, 0 0, 0 0; }
-  100% { background-position: 64px 0, -64px 0, 0 32px; }
-}
-
-@keyframes wms-conveyor-move {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(28px); }
-}
-
-@keyframes wms-data-flow {
-  0%, 100% { background-position: 0% 0%, 10% 0%; }
-  50% { background-position: 100% 0%, 90% 0%; }
-}
-
-@keyframes wms-float {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-  25% { transform: translate(6px, -8px) scale(1.05); opacity: 0.9; }
-  50% { transform: translate(-4px, 4px) scale(0.98); opacity: 0.7; }
-  75% { transform: translate(-6px, -4px) scale(1.02); opacity: 0.85; }
-}
-
-.wms-bg-scan::before {
-  content: '';
-  position: absolute;
-  inset: -30% -25% auto auto;
-  width: 70%;
-  height: 180%;
-  background: linear-gradient(120deg, rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.14), rgba(56, 189, 248, 0));
-  transform: rotate(8deg);
-  animation: wms-scan-sweep 11s ease-in-out infinite;
+.wms-bg-photo-tint {
+  background: linear-gradient(180deg, rgba(7, 14, 31, 0.35) 0%, rgba(7, 14, 31, 0.15) 45%, rgba(5, 11, 26, 0.45) 100%);
 }
 
 .wms-bg-vignette {
-  background: radial-gradient(circle at center, rgba(2, 6, 23, 0) 42%, rgba(2, 6, 23, 0.58) 100%);
+  background: radial-gradient(circle at center, rgba(2, 6, 23, 0) 58%, rgba(2, 6, 23, 0.4) 100%);
 }
 
-@keyframes wms-scan-sweep {
-  0%,
-  100% {
-    transform: translateX(12%) rotate(8deg);
-    opacity: 0.25;
-  }
-  50% {
-    transform: translateX(-32%) rotate(8deg);
-    opacity: 0.75;
-  }
+.wms-sunset {
+  background: linear-gradient(
+    218deg,
+    rgba(255, 170, 105, 0.14) 0%,
+    rgba(255, 152, 96, 0.07) 22%,
+    rgba(255, 150, 95, 0.025) 40%,
+    rgba(255, 150, 95, 0) 55%
+  );
+  animation: wms-sunset-drift 18s ease-in-out infinite;
 }
+
+@keyframes wms-sunset-drift {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+.wms-lightning {
+  background:
+    radial-gradient(ellipse 20% 15% at 13% 9%, rgba(192, 214, 255, 0.15), rgba(192, 214, 255, 0) 60%),
+    radial-gradient(ellipse 14% 11% at 24% 15%, rgba(192, 214, 255, 0.11), rgba(192, 214, 255, 0) 62%),
+    radial-gradient(ellipse 11% 18% at 7% 18%, rgba(192, 214, 255, 0.08), rgba(192, 214, 255, 0) 64%),
+    radial-gradient(ellipse 9% 8% at 30% 7%, rgba(192, 214, 255, 0.07), rgba(192, 214, 255, 0) 66%);
+  opacity: 0;
+  animation: wms-lightning-flash 14s ease-in-out infinite;
+}
+
+@keyframes wms-lightning-flash {
+  0%, 41% { opacity: 0; }
+  43% { opacity: 0.38; }
+  45% { opacity: 0.1; }
+  47.5% { opacity: 0.55; }
+  50% { opacity: 0.16; }
+  53% { opacity: 0.34; }
+  58% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.wms-truck-light {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0.05;
+  animation: wms-truck-flicker 6s ease-in-out infinite;
+}
+
+@keyframes wms-truck-flicker {
+  0%, 100% { opacity: 0.04; }
+  48% { opacity: 0.08; }
+  52% { opacity: 0.2; }
+  57% { opacity: 0.09; }
+}
+
 
 .wms-forklift-wrap {
   position: absolute;
@@ -578,11 +525,9 @@ input:-webkit-autofill:active {
   }
 }
 
-.wms-bg-paused .wms-bg-grid-perspective,
-.wms-bg-paused .wms-bg-scan::before,
-.wms-bg-paused .wms-bg-conveyor::after,
-.wms-bg-paused .wms-bg-data-lines,
-.wms-bg-paused .wms-float-icon {
+.wms-bg-paused .wms-sunset,
+.wms-bg-paused .wms-lightning,
+.wms-bg-paused .wms-truck-light {
   animation-play-state: paused !important;
 }
 
@@ -594,10 +539,9 @@ input:-webkit-autofill:active {
 @media (prefers-reduced-motion: reduce) {
   .wms-forklift-chassis,
   .wms-forklift-pallet,
-  .wms-bg-grid-perspective,
-  .wms-bg-conveyor::after,
-  .wms-bg-data-lines,
-  .wms-float-icon {
+  .wms-sunset,
+  .wms-lightning,
+  .wms-truck-light {
     animation: none !important;
   }
 }
