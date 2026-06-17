@@ -108,6 +108,18 @@ function resolveWarehouseText(
   return value?.warehouseId ? `#${value.warehouseId}` : '-';
 }
 
+function resolveCustomerText(
+  value: Pick<KkdDistributionHeaderDto | KkdDistributionListItemDto, 'customerCode' | 'customerName' | 'customerId'> | null | undefined,
+): string {
+  const customerCode = value?.customerCode?.trim();
+  const customerName = value?.customerName?.trim();
+  if (customerCode || customerName) {
+    return `${customerCode || ''}${customerCode && customerName ? ' - ' : ''}${customerName || ''}`.trim();
+  }
+
+  return value?.customerId ? `#${value.customerId}` : '-';
+}
+
 function safePdfText(value: string | number | null | undefined): string {
   return value === null || value === undefined || value === '' ? '-' : String(value);
 }
@@ -422,7 +434,7 @@ export function KkdDistributionListPage(): ReactElement {
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDate'))}</strong><span>${escapeHtml(documentDate)}</span></div>
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfEmployee'))}</strong><span>${escapeHtml(employeeName)}</span></div>
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>${escapeHtml(warehouseText)}</span></div>
-            <div class="kkd-info-row full"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(distribution.customerCode || row.customerCode)}</span></div>
+            <div class="kkd-info-row full"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(resolveCustomerText(distribution) !== '-' ? resolveCustomerText(distribution) : resolveCustomerText(row))}</span></div>
           </div>
           <div class="kkd-section-title">${escapeHtml(t('kkd.operational.distributionList.pdfLinesTitle'))}</div>
           <table class="kkd-lines">
@@ -618,7 +630,7 @@ export function KkdDistributionListPage(): ReactElement {
         drawInfo(rightX, infoY, 'Tarih', formatDate(distribution.documentDate ?? row.documentDate, dateLocale));
         drawInfo(leftX, infoY + 10, 'Personel', safePdfText(employeeName));
         drawInfo(rightX, infoY + 10, 'Depo', safePdfText(warehouseText));
-        drawInfo(leftX, infoY + 20, 'Cari', safePdfText(distribution.customerCode || row.customerCode));
+        drawInfo(leftX, infoY + 20, 'Cari', safePdfText(resolveCustomerText(distribution) !== '-' ? resolveCustomerText(distribution) : resolveCustomerText(row)));
 
         autoTable(doc, {
           startY: 84,
@@ -754,7 +766,7 @@ export function KkdDistributionListPage(): ReactElement {
                   case 'documentDate':
                     return formatDate(row.documentDate, dateLocale);
                   case 'customerCode':
-                    return row.customerCode;
+                    return resolveCustomerText(row);
                   case 'employee':
                     return row.employeeCode ? `${row.employeeCode} - ${row.employeeName || ''}`.trim() : row.employeeName || '-';
                   case 'warehouseId':
@@ -825,7 +837,7 @@ export function KkdDistributionListPage(): ReactElement {
                 <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
                   <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {detail.customerCode || '-'} / {resolveEmployeeText(detail, selectedHeader)}
+                    {resolveCustomerText(detail)} / {resolveEmployeeText(detail, selectedHeader)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">

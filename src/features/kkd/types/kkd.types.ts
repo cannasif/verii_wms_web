@@ -9,6 +9,7 @@ interface BaseHeaderEntityDto extends BaseEntityDto {
   documentNo?: string | null;
   documentDate?: string | null;
   documentType?: string | null;
+  customerId?: number | null;
   yearCode?: string | null;
   description1?: string | null;
   description2?: string | null;
@@ -394,6 +395,7 @@ export interface KkdEntitlementPhaseStatusDto {
 
 export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
   customerCode: string;
+  customerName?: string | null;
   employeeId: number;
   employeeCode?: string | null;
   employeeName?: string | null;
@@ -493,6 +495,7 @@ export interface KkdOrderHeaderDto extends BaseHeaderEntityDto {
 
 export interface KkdDistributionListItemDto extends BaseHeaderEntityDto {
   customerCode: string;
+  customerName?: string | null;
   employeeId: number;
   employeeCode?: string | null;
   employeeName?: string | null;
