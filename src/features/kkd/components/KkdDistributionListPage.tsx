@@ -479,11 +479,83 @@ export function KkdDistributionListPage(): ReactElement {
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
         if (pendingWindow) {
-          pendingWindow.location.href = url;
+          pendingWindow.document.open();
+          pendingWindow.document.write(`
+            <!doctype html>
+            <html lang="${escapeHtml(i18n.language || 'tr')}">
+              <head>
+                <title>${escapeHtml(fileName)}</title>
+                <style>
+                  html, body {
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                    background: #0f172a;
+                    font-family: Arial, Helvetica, sans-serif;
+                  }
+                  .toolbar {
+                    height: 56px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    padding: 0 18px;
+                    background: #111827;
+                    color: #fff;
+                    box-sizing: border-box;
+                  }
+                  .title {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 14px;
+                    font-weight: 700;
+                  }
+                  .actions {
+                    display: flex;
+                    gap: 10px;
+                    flex: 0 0 auto;
+                  }
+                  .actions a,
+                  .actions button {
+                    border: 0;
+                    border-radius: 999px;
+                    padding: 9px 14px;
+                    background: #0ea5e9;
+                    color: #fff;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 800;
+                    text-decoration: none;
+                  }
+                  .actions button { background: #334155; }
+                  iframe {
+                    width: 100%;
+                    height: calc(100% - 56px);
+                    border: 0;
+                    background: #fff;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="toolbar">
+                  <div class="title">${escapeHtml(fileName)}</div>
+                  <div class="actions">
+                    <a href="${url}" download="${escapeHtml(fileName)}">İndir</a>
+                    <button type="button" onclick="window.print()">Yazdır</button>
+                  </div>
+                </div>
+                <iframe title="${escapeHtml(fileName)}" src="${url}"></iframe>
+              </body>
+            </html>
+          `);
+          pendingWindow.document.close();
+          pendingWindow.focus();
         } else {
           doc.save(fileName);
         }
-        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        window.setTimeout(() => URL.revokeObjectURL(url), 10 * 60_000);
       } finally {
         document.body.removeChild(element);
       }
