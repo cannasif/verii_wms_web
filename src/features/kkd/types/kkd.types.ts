@@ -396,6 +396,8 @@ export interface KkdDistributionHeaderDto extends BaseHeaderEntityDto {
   employeeCode?: string | null;
   employeeName?: string | null;
   warehouseId: number;
+  warehouseCode?: number | null;
+  warehouseName?: string | null;
   status: string;
   sourceChannel: string;
   lines: KkdDistributionLineDto[];
@@ -492,6 +494,8 @@ export interface KkdDistributionListItemDto extends BaseHeaderEntityDto {
   employeeCode?: string | null;
   employeeName?: string | null;
   warehouseId: number;
+  warehouseCode?: number | null;
+  warehouseName?: string | null;
   status: string;
   sourceChannel: string;
   lineCount: number;

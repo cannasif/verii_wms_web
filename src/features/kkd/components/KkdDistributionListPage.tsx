@@ -95,6 +95,19 @@ function resolveEmployeeText(
   return employeeId ? `#${employeeId}` : '-';
 }
 
+function resolveWarehouseText(
+  value: Pick<KkdDistributionHeaderDto | KkdDistributionListItemDto, 'warehouseId' | 'warehouseCode' | 'warehouseName'> | null | undefined,
+): string {
+  const warehouseCode = value?.warehouseCode;
+  const warehouseName = value?.warehouseName?.trim();
+  const hasWarehouseCode = warehouseCode !== null && warehouseCode !== undefined;
+  if (hasWarehouseCode || warehouseName) {
+    return `${warehouseCode ?? ''}${hasWarehouseCode && warehouseName ? ' - ' : ''}${warehouseName || ''}`.trim();
+  }
+
+  return value?.warehouseId ? `#${value.warehouseId}` : '-';
+}
+
 function safePdfText(value: string | number | null | undefined): string {
   return value === null || value === undefined || value === '' ? '-' : String(value);
 }
@@ -181,6 +194,11 @@ export function KkdDistributionListPage(): ReactElement {
       ]);
       const distribution = await kkdApi.getDistributionById(row.id);
       const employeeName = resolveEmployeeText(distribution, row);
+      const warehouseText = resolveWarehouseText({
+        warehouseId: distribution.warehouseId || row.warehouseId,
+        warehouseCode: distribution.warehouseCode ?? row.warehouseCode,
+        warehouseName: distribution.warehouseName ?? row.warehouseName,
+      });
       const documentDate = formatDate(distribution.documentDate ?? row.documentDate, dateLocale);
       const generatedDate = formatDate(new Date().toISOString(), dateLocale);
       const lineRows = distribution.lines.length
@@ -363,7 +381,7 @@ export function KkdDistributionListPage(): ReactElement {
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDocumentNo'))}</strong><span>${escapeHtml(distribution.documentNo || row.documentNo || row.id)}</span></div>
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDate'))}</strong><span>${escapeHtml(documentDate)}</span></div>
             <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfEmployee'))}</strong><span>${escapeHtml(employeeName)}</span></div>
-            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>#${escapeHtml(distribution.warehouseId || row.warehouseId)}</span></div>
+            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>${escapeHtml(warehouseText)}</span></div>
             <div class="kkd-info-row full"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(distribution.customerCode || row.customerCode)}</span></div>
           </div>
           <div class="kkd-section-title">${escapeHtml(t('kkd.operational.distributionList.pdfLinesTitle'))}</div>
@@ -489,7 +507,7 @@ export function KkdDistributionListPage(): ReactElement {
                   case 'employee':
                     return row.employeeCode ? `${row.employeeCode} - ${row.employeeName || ''}`.trim() : row.employeeName || '-';
                   case 'warehouseId':
-                    return `#${row.warehouseId}`;
+                    return resolveWarehouseText(row);
                   case 'status':
                     return localizeStatus(row.status, t);
                   case 'sourceChannel':
@@ -557,6 +575,12 @@ export function KkdDistributionListPage(): ReactElement {
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
                   <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
                     {detail.customerCode || '-'} / {resolveEmployeeText(detail, selectedHeader)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.pdfWarehouse')}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
+                    {resolveWarehouseText(detail)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
