@@ -228,7 +228,7 @@ export function KkdDistributionListPage(): ReactElement {
     }
 
     try {
-      const [{ default: JsPDF }, { default: html2canvas }] = await Promise.all([
+      const [{ jsPDF: JsPDF }, { default: html2canvas }] = await Promise.all([
         import('jspdf'),
         import('html2canvas'),
       ]);
@@ -559,14 +559,145 @@ export function KkdDistributionListPage(): ReactElement {
       } finally {
         document.body.removeChild(element);
       }
-    } catch {
-      if (pendingWindow) {
-        pendingWindow.document.body.innerHTML = `
-          <div style="max-width: 520px; margin: 80px auto; padding: 24px; border: 1px solid #fecaca; border-radius: 16px; background: #fff1f2; color: #7f1d1d; font-family: Arial, Helvetica, sans-serif;">
-            <h1 style="margin: 0 0 10px; font-size: 18px;">PDF oluşturulamadı</h1>
-            <p style="margin: 0; font-size: 14px;">Lütfen sayfayı yenileyip tekrar deneyin. Sorun devam ederse dağıtım fişi detayını kontrol edin.</p>
-          </div>
-        `;
+    } catch (error) {
+      try {
+        const [{ jsPDF: JsPDF }, autoTableModule] = await Promise.all([
+          import('jspdf'),
+          import('jspdf-autotable'),
+        ]);
+        const autoTable = autoTableModule.default ?? autoTableModule.autoTable;
+        const distribution = await kkdApi.getDistributionById(row.id);
+        const employeeName = resolveEmployeeText(distribution, row);
+        const warehouseText = resolveWarehouseText({
+          warehouseId: distribution.warehouseId || row.warehouseId,
+          warehouseCode: distribution.warehouseCode ?? row.warehouseCode,
+          warehouseName: distribution.warehouseName ?? row.warehouseName,
+        });
+        const documentNo = distribution.documentNo || row.documentNo || String(row.id);
+        const fileName = `kkd-zimmet-${fileSafeName(documentNo)}.pdf`;
+        const doc = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 12;
+
+        doc.setDrawColor(17, 24, 39);
+        doc.setLineWidth(0.3);
+        doc.rect(margin, 10, 60, 28);
+        doc.rect(margin + 60, 10, pageWidth - (margin * 2) - 120, 28);
+        doc.rect(pageWidth - margin - 60, 10, 60, 28);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(29, 95, 143);
+        doc.text('IZMIR BUYUKSEHIR', margin + 30, 21, { align: 'center' });
+        doc.text('BELEDIYESI', margin + 30, 28, { align: 'center' });
+        doc.setTextColor(17, 24, 39);
+        doc.setFontSize(18);
+        doc.text('IZENERJI A.S.', pageWidth / 2, 21, { align: 'center' });
+        doc.text('DEMIRBAS/SABIT KIYMET ZIMMET FORMU', pageWidth / 2, 31, { align: 'center' });
+        doc.setTextColor(36, 86, 106);
+        doc.setFontSize(18);
+        doc.text('IZENERJI', pageWidth - margin - 30, 27, { align: 'center' });
+
+        doc.setTextColor(17, 24, 39);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        const infoY = 48;
+        const leftX = margin;
+        const rightX = pageWidth / 2 + 4;
+        const labelWidth = 34;
+        const valueWidth = (pageWidth / 2) - margin - 10 - labelWidth;
+        const drawInfo = (x: number, y: number, label: string, value: string): void => {
+          doc.rect(x, y, labelWidth, 9);
+          doc.rect(x + labelWidth, y, valueWidth, 9);
+          doc.setFont('helvetica', 'bold');
+          doc.text(label, x + 2, y + 6);
+          doc.setFont('helvetica', 'normal');
+          doc.text(value || '-', x + labelWidth + 2, y + 6, { maxWidth: valueWidth - 4 });
+        };
+        drawInfo(leftX, infoY, 'Belge No', safePdfText(documentNo));
+        drawInfo(rightX, infoY, 'Tarih', formatDate(distribution.documentDate ?? row.documentDate, dateLocale));
+        drawInfo(leftX, infoY + 10, 'Personel', safePdfText(employeeName));
+        drawInfo(rightX, infoY + 10, 'Depo', safePdfText(warehouseText));
+        drawInfo(leftX, infoY + 20, 'Cari', safePdfText(distribution.customerCode || row.customerCode));
+
+        autoTable(doc, {
+          startY: 84,
+          head: [['#', 'Stok Kodu', 'Stok Adi', 'Miktar', 'Grup', 'Barkod / Seri / Raf']],
+          body: distribution.lines.length
+            ? distribution.lines.map((line, index) => [
+              String(index + 1),
+              resolveLineStockCode(line),
+              resolveLineStockName(line),
+              safePdfText(line.quantity),
+              safePdfText(line.groupName ? `${line.groupCode} - ${line.groupName}` : line.groupCode),
+              safePdfText(line.barcode || line.serialNo || line.shelfId),
+            ])
+            : [['-', 'Kalem yok', '-', '-', '-', '-']],
+          theme: 'grid',
+          styles: { font: 'helvetica', fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+          headStyles: { fillColor: [242, 242, 242], textColor: [17, 24, 39], fontStyle: 'bold' },
+          columnStyles: {
+            0: { cellWidth: 10, halign: 'center' },
+            3: { cellWidth: 20, halign: 'right' },
+            5: { cellWidth: 48 },
+          },
+          margin: { left: margin, right: margin },
+        });
+
+        const signatureY = pageHeight - 42;
+        const signatureWidth = (pageWidth - (margin * 2) - 16) / 3;
+        ['Teslim Eden', 'Teslim Alan', 'Kase / Imza'].forEach((title, index) => {
+          const x = margin + index * (signatureWidth + 8);
+          doc.rect(x, signatureY, signatureWidth, 26);
+          doc.setFont('helvetica', 'bold');
+          doc.text(title, x + signatureWidth / 2, signatureY + 8, { align: 'center' });
+          doc.setFont('helvetica', 'normal');
+          doc.line(x + 8, signatureY + 20, x + signatureWidth - 8, signatureY + 20);
+        });
+
+        doc.setFontSize(7);
+        doc.setTextColor(71, 85, 105);
+        doc.text(`Olusturma: ${formatDate(new Date().toISOString(), dateLocale)}`, margin, pageHeight - 6);
+
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        if (pendingWindow) {
+          pendingWindow.document.open();
+          pendingWindow.document.write(`
+            <!doctype html>
+            <html lang="${escapeHtml(i18n.language || 'tr')}">
+              <head><title>${escapeHtml(fileName)}</title></head>
+              <body style="margin:0;background:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+                <div style="height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#111827;color:white;box-sizing:border-box;">
+                  <strong>${escapeHtml(fileName)}</strong>
+                  <span>
+                    <a style="border-radius:999px;padding:9px 14px;background:#0ea5e9;color:white;text-decoration:none;font-weight:800;" href="${url}" download="${escapeHtml(fileName)}">İndir</a>
+                    <button style="margin-left:8px;border:0;border-radius:999px;padding:9px 14px;background:#334155;color:white;font-weight:800;cursor:pointer;" onclick="window.print()">Yazdır</button>
+                  </span>
+                </div>
+                <iframe title="${escapeHtml(fileName)}" src="${url}" style="width:100%;height:calc(100vh - 56px);border:0;background:white;"></iframe>
+              </body>
+            </html>
+          `);
+          pendingWindow.document.close();
+          pendingWindow.focus();
+        } else {
+          doc.save(fileName);
+        }
+        window.setTimeout(() => URL.revokeObjectURL(url), 10 * 60_000);
+      } catch (fallbackError) {
+        // Keep the grid usable and expose the real failure for support diagnostics.
+        console.error('KKD distribution PDF generation failed', { error, fallbackError });
+        if (pendingWindow) {
+          const message = fallbackError instanceof Error ? fallbackError.message : error instanceof Error ? error.message : 'Bilinmeyen hata';
+          pendingWindow.document.body.innerHTML = `
+            <div style="max-width: 640px; margin: 80px auto; padding: 24px; border: 1px solid #fecaca; border-radius: 16px; background: #fff1f2; color: #7f1d1d; font-family: Arial, Helvetica, sans-serif;">
+              <h1 style="margin: 0 0 10px; font-size: 18px;">PDF oluşturulamadı</h1>
+              <p style="margin: 0 0 12px; font-size: 14px;">Lütfen sayfayı yenileyip tekrar deneyin. Sorun devam ederse dağıtım fişi detayını kontrol edin.</p>
+              <code style="display:block;white-space:pre-wrap;font-size:12px;color:#991b1b;">${escapeHtml(message)}</code>
+            </div>
+          `;
+        }
       }
     } finally {
       setPdfLoadingId(null);

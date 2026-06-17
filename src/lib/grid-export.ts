@@ -29,7 +29,7 @@ type JsPdfConstructor = new (options?: { orientation?: 'portrait' | 'landscape' 
 };
 
 type JsPdfModule = {
-  default: JsPdfConstructor;
+  jsPDF: JsPdfConstructor;
 };
 
 type AutoTableModule = {
@@ -137,7 +137,7 @@ export async function exportGridToExcel(params: GridExportParams): Promise<void>
 export async function exportGridToPdf(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+    const [{ jsPDF: JsPDF }, { default: autoTable }] = await Promise.all([
       dynamicImport<JsPdfModule>('jspdf'),
       dynamicImport<AutoTableModule>('jspdf-autotable'),
     ]);
