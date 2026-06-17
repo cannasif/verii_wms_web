@@ -95,6 +95,17 @@ function resolveEmployeeText(
   return employeeId ? `#${employeeId}` : '-';
 }
 
+function safePdfText(value: string | number | null | undefined): string {
+  return value === null || value === undefined || value === '' ? '-' : String(value);
+}
+
+function fileSafeName(value: string | number | null | undefined): string {
+  return safePdfText(value)
+    .replace(/[^a-zA-Z0-9-_]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export function KkdDistributionListPage(): ReactElement {
   const { t, i18n } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
@@ -162,146 +173,256 @@ export function KkdDistributionListPage(): ReactElement {
   };
 
   const openPdf = async (row: KkdDistributionListItemDto): Promise<void> => {
-    const printWindow = window.open('', '_blank', 'width=1000,height=760');
-    if (!printWindow) return;
-
-    const writePrintDocument = (html: string): void => {
-      printWindow.document.open();
-      printWindow.document.write(html);
-      printWindow.document.close();
-    };
-
-    writePrintDocument(`<!doctype html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <title>${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</title>
-  <style>
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; color: #111827; background: #f8fafc; }
-    .box { border: 1px solid #cbd5e1; border-radius: 16px; background: #fff; padding: 28px 34px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12); }
-  </style>
-</head>
-<body><div class="box">${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</div></body>
-</html>`);
-
     setPdfLoadingId(row.id);
     try {
+      const [{ default: JsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas'),
+      ]);
       const distribution = await kkdApi.getDistributionById(row.id);
       const employeeName = resolveEmployeeText(distribution, row);
       const documentDate = formatDate(distribution.documentDate ?? row.documentDate, dateLocale);
       const generatedDate = formatDate(new Date().toISOString(), dateLocale);
       const lineRows = distribution.lines.length
         ? distribution.lines.map((line, index) => `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${escapeHtml(resolveLineStockCode(line))}</td>
-              <td>${escapeHtml(resolveLineStockName(line))}</td>
-              <td class="qty">${escapeHtml(line.quantity)}</td>
-            </tr>
-          `).join('')
-        : `<tr><td colspan="4" class="empty">${escapeHtml(t('kkd.operational.distributionList.pdfEmptyLines'))}</td></tr>`;
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(resolveLineStockCode(line))}</td>
+            <td>${escapeHtml(resolveLineStockName(line))}</td>
+            <td class="right">${escapeHtml(line.quantity)}</td>
+            <td>${escapeHtml(line.groupName ? `${line.groupCode} - ${line.groupName}` : line.groupCode)}</td>
+            <td>${escapeHtml(line.barcode || line.serialNo || line.shelfId)}</td>
+          </tr>`).join('')
+        : `<tr><td colspan="6" class="empty">${escapeHtml(t('kkd.operational.distributionList.pdfEmptyLines'))}</td></tr>`;
 
-      writePrintDocument(`<!doctype html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <title>${escapeHtml(t('kkd.operational.distributionList.pdfTitle'))}</title>
-  <style>
-    @page { size: A4; margin: 16mm; }
-    * { box-sizing: border-box; }
-    body { margin: 0; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
-    .form { border: 1px solid #111827; min-height: calc(297mm - 32mm); padding: 16px; }
-    .top { display: grid; grid-template-columns: 1fr 2fr 1fr; border: 1px solid #111827; }
-    .top > div { min-height: 54px; display: flex; align-items: center; justify-content: center; padding: 8px; border-right: 1px solid #111827; text-align: center; }
-    .top > div:last-child { border-right: 0; }
-    .brand { font-weight: 800; font-size: 18px; letter-spacing: 0.08em; }
-    .title { font-weight: 800; font-size: 16px; letter-spacing: 0.04em; }
-    .code { flex-direction: column; gap: 3px; align-items: flex-start !important; font-size: 10px; }
-    .info { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .info-row { border: 1px solid #111827; min-height: 34px; display: grid; grid-template-columns: 130px 1fr; }
-    .info-row strong { background: #f3f4f6; border-right: 1px solid #111827; display: flex; align-items: center; padding: 8px; }
-    .info-row span { display: flex; align-items: center; padding: 8px; }
-    .section-title { margin: 22px 0 8px; font-weight: 800; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #111827; padding: 8px; text-align: left; vertical-align: top; }
-    th { background: #f3f4f6; font-weight: 800; }
-    th:first-child, td:first-child { width: 36px; text-align: center; }
-    .qty { width: 90px; text-align: right; }
-    .empty { text-align: center; color: #6b7280; }
-    .declaration { margin-top: 18px; line-height: 1.55; border: 1px solid #111827; padding: 12px; min-height: 70px; }
-    .signatures { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .signature-box { border: 1px solid #111827; min-height: 124px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-    .signature-box h3 { margin: 0; text-align: center; font-size: 12px; }
-    .signature-line { border-top: 1px solid #111827; padding-top: 8px; color: #374151; }
-    .footer { margin-top: 18px; display: flex; justify-content: space-between; color: #6b7280; font-size: 10px; }
-    .print-actions { margin: 12px 0 16px; display: flex; justify-content: flex-end; gap: 8px; }
-    .print-actions button { border: 1px solid #111827; background: #111827; color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
-    @media print { .no-print { display: none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-  </style>
-</head>
-<body>
-  <div class="print-actions no-print">
-    <button type="button" onclick="window.print()">${escapeHtml(t('kkd.operational.distributionList.pdfAction'))}</button>
-  </div>
-  <div class="form">
-    <div class="top">
-      <div class="brand">V3RII</div>
-      <div class="title">${escapeHtml(t('kkd.operational.distributionList.pdfTitle'))}</div>
-      <div class="code">
-        <div>${escapeHtml(t('kkd.operational.distributionList.pdfDocumentNo'))}: ${escapeHtml(distribution.documentNo || row.documentNo || row.id)}</div>
-        <div>${escapeHtml(t('kkd.operational.distributionList.pdfRevision'))}: 00</div>
-      </div>
-    </div>
-    <div class="info">
-      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfEmployee'))}</strong><span>${escapeHtml(employeeName)}</span></div>
-      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDate'))}</strong><span>${escapeHtml(documentDate)}</span></div>
-      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(distribution.customerCode || row.customerCode)}</span></div>
-      <div class="info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>#${escapeHtml(distribution.warehouseId || row.warehouseId)}</span></div>
-    </div>
-    <div class="section-title">${escapeHtml(t('kkd.operational.distributionList.pdfLinesTitle'))}</div>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>${escapeHtml(t('kkd.operational.distributionList.stockCode'))}</th>
-          <th>${escapeHtml(t('kkd.operational.distributionList.stockName'))}</th>
-          <th class="qty">${escapeHtml(t('kkd.operational.distributionList.quantity'))}</th>
-        </tr>
-      </thead>
-      <tbody>${lineRows}</tbody>
-    </table>
-    <div class="declaration">${escapeHtml(t('kkd.operational.distributionList.pdfDeclaration'))}</div>
-    <div class="signatures">
-      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfDeliveredBy'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
-      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfReceivedBy'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
-      <div class="signature-box"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfStamp'))}</h3><div class="signature-line">${escapeHtml(t('kkd.operational.distributionList.pdfStampSignature'))}</div></div>
-    </div>
-    <div class="footer">
-      <span>${escapeHtml(t('kkd.operational.distributionList.pdfGeneratedAt'))}: ${escapeHtml(generatedDate)}</span>
-      <span>${escapeHtml(t('kkd.operational.distributionList.pdfFooter'))}</span>
-    </div>
-  </div>
-  <script>
-    window.addEventListener('load', function () {
-      window.focus();
-      window.setTimeout(function () { window.print(); }, 250);
-    });
-  </script>
-</body>
-</html>`);
+      const element = document.createElement('div');
+      element.style.position = 'fixed';
+      element.style.left = '-10000px';
+      element.style.top = '0';
+      element.style.width = '1123px';
+      element.style.background = '#ffffff';
+      element.innerHTML = `
+        <div class="kkd-pdf-form">
+          <style>
+            .kkd-pdf-form {
+              width: 1123px;
+              min-height: 794px;
+              padding: 44px;
+              background: #fff;
+              color: #111827;
+              font-family: Arial, Helvetica, sans-serif;
+              box-sizing: border-box;
+            }
+            .kkd-pdf-form * { box-sizing: border-box; }
+            .kkd-antet {
+              display: grid;
+              grid-template-columns: 230px 1fr 230px;
+              border: 2px solid #111;
+              height: 118px;
+            }
+            .kkd-antet > div {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              border-right: 2px solid #111;
+              padding: 10px;
+            }
+            .kkd-antet > div:last-child { border-right: 0; }
+            .kkd-municipality {
+              color: #1d5f8f;
+              font-size: 18px;
+              line-height: 1.22;
+              font-weight: 800;
+              letter-spacing: 0.02em;
+            }
+            .kkd-title {
+              font-family: Georgia, 'Times New Roman', serif;
+              font-size: 32px;
+              line-height: 1.16;
+              font-weight: 900;
+              letter-spacing: 0.02em;
+            }
+            .kkd-izenerji {
+              color: #24566a;
+              font-size: 28px;
+              font-weight: 900;
+              letter-spacing: 0.03em;
+              position: relative;
+            }
+            .kkd-izenerji::before {
+              content: '';
+              position: absolute;
+              top: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 48px;
+              height: 18px;
+              background: linear-gradient(135deg, #ff6a00, #f04a23);
+              border-radius: 48px 48px 0 0;
+              opacity: 0.95;
+            }
+            .kkd-info {
+              margin-top: 26px;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px 14px;
+            }
+            .kkd-info-row {
+              min-height: 38px;
+              display: grid;
+              grid-template-columns: 132px 1fr;
+              border: 1.5px solid #111;
+            }
+            .kkd-info-row.full { grid-column: 1 / -1; }
+            .kkd-info-row strong {
+              display: flex;
+              align-items: center;
+              padding: 8px 10px;
+              background: #f2f2f2;
+              border-right: 1.5px solid #111;
+              font-size: 12px;
+            }
+            .kkd-info-row span {
+              display: flex;
+              align-items: center;
+              padding: 8px 10px;
+              font-size: 12px;
+            }
+            .kkd-section-title {
+              margin: 24px 0 10px;
+              color: #24566a;
+              font-size: 15px;
+              font-weight: 900;
+              letter-spacing: 0.18em;
+            }
+            .kkd-lines {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: fixed;
+              font-size: 11px;
+            }
+            .kkd-lines th,
+            .kkd-lines td {
+              border: 1.2px solid #111;
+              padding: 8px 7px;
+              vertical-align: middle;
+              word-break: break-word;
+            }
+            .kkd-lines th {
+              background: #f2f2f2;
+              text-align: center;
+              font-weight: 800;
+            }
+            .kkd-lines .right { text-align: right; }
+            .kkd-lines .empty { text-align: center; color: #64748b; }
+            .kkd-declaration {
+              margin-top: 12px;
+              min-height: 84px;
+              border: 1.5px solid #111;
+              padding: 13px;
+              font-size: 12px;
+              line-height: 1.55;
+            }
+            .kkd-signatures {
+              margin-top: 34px;
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 18px;
+            }
+            .kkd-signature {
+              height: 126px;
+              border: 1.5px solid #111;
+              padding: 16px;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              text-align: center;
+              font-size: 12px;
+            }
+            .kkd-signature h3 { margin: 0; font-size: 13px; }
+            .kkd-signature div {
+              padding-top: 8px;
+              border-top: 1.5px solid #111;
+              font-size: 11px;
+            }
+            .kkd-footer {
+              margin-top: 28px;
+              display: flex;
+              justify-content: space-between;
+              color: #475569;
+              font-size: 10px;
+            }
+          </style>
+          <div class="kkd-antet">
+            <div class="kkd-municipality">İZMİR<br />BÜYÜKŞEHİR<br />BELEDİYESİ</div>
+            <div class="kkd-title">İZENERJİ A.Ş.<br />DEMİRBAŞ/SABİT KIYMET ZİMMET FORMU</div>
+            <div class="kkd-izenerji">İZENERJİ</div>
+          </div>
+          <div class="kkd-info">
+            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDocumentNo'))}</strong><span>${escapeHtml(distribution.documentNo || row.documentNo || row.id)}</span></div>
+            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfDate'))}</strong><span>${escapeHtml(documentDate)}</span></div>
+            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfEmployee'))}</strong><span>${escapeHtml(employeeName)}</span></div>
+            <div class="kkd-info-row"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfWarehouse'))}</strong><span>#${escapeHtml(distribution.warehouseId || row.warehouseId)}</span></div>
+            <div class="kkd-info-row full"><strong>${escapeHtml(t('kkd.operational.distributionList.pdfCustomer'))}</strong><span>${escapeHtml(distribution.customerCode || row.customerCode)}</span></div>
+          </div>
+          <div class="kkd-section-title">${escapeHtml(t('kkd.operational.distributionList.pdfLinesTitle'))}</div>
+          <table class="kkd-lines">
+            <thead>
+              <tr>
+                <th style="width: 34px;">#</th>
+                <th style="width: 112px;">${escapeHtml(t('kkd.operational.distributionList.stockCode'))}</th>
+                <th>${escapeHtml(t('kkd.operational.distributionList.stockName'))}</th>
+                <th style="width: 70px;">${escapeHtml(t('kkd.operational.distributionList.quantity'))}</th>
+                <th style="width: 102px;">${escapeHtml(t('kkd.operational.distributionList.group'))}</th>
+                <th style="width: 150px;">${escapeHtml(t('kkd.operational.distributionList.barcodeSerial'))}</th>
+              </tr>
+            </thead>
+            <tbody>${lineRows}</tbody>
+          </table>
+          <div class="kkd-section-title">Teslim Beyanı</div>
+          <div class="kkd-declaration">${escapeHtml(t('kkd.operational.distributionList.pdfDeclaration'))}</div>
+          <div class="kkd-signatures">
+            <div class="kkd-signature"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfDeliveredBy'))}</h3><div>${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
+            <div class="kkd-signature"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfReceivedBy'))}</h3><div>${escapeHtml(t('kkd.operational.distributionList.pdfNameDateSignature'))}</div></div>
+            <div class="kkd-signature"><h3>${escapeHtml(t('kkd.operational.distributionList.pdfStamp'))}</h3><div>${escapeHtml(t('kkd.operational.distributionList.pdfStampSignature'))}</div></div>
+          </div>
+          <div class="kkd-footer">
+            <span>${escapeHtml(t('kkd.operational.distributionList.pdfGeneratedAt'))}: ${escapeHtml(generatedDate)}</span>
+            <span>${escapeHtml(t('kkd.operational.distributionList.pdfFooter'))}</span>
+          </div>
+        </div>`;
+
+      document.body.appendChild(element);
+      try {
+        const canvas = await html2canvas(element.firstElementChild as HTMLElement, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+        });
+        const doc = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = doc.internal.pageSize.getHeight();
+        const imgData = canvas.toDataURL('image/png');
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        while (heightLeft > 0) {
+          position -= pdfHeight;
+          doc.addPage();
+          doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        doc.save(`kkd-zimmet-${fileSafeName(distribution.documentNo || row.documentNo || row.id)}.pdf`);
+      } finally {
+        document.body.removeChild(element);
+      }
     } catch {
-      writePrintDocument(`<!doctype html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <title>${escapeHtml(t('kkd.operational.distributionList.errLoad'))}</title>
-  <style>
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; color: #991b1b; background: #fef2f2; }
-    .box { border: 1px solid #fecaca; border-radius: 16px; background: #fff; padding: 28px 34px; box-shadow: 0 20px 50px rgba(127, 29, 29, 0.12); }
-  </style>
-</head>
-<body><div class="box">${escapeHtml(t('kkd.operational.distributionList.errLoad'))}</div></body>
-</html>`);
+      // Keep the action fail-safe; grid remains usable even if a browser blocks file generation.
     } finally {
       setPdfLoadingId(null);
     }
