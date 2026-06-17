@@ -187,6 +187,46 @@ export function KkdDistributionListPage(): ReactElement {
 
   const openPdf = async (row: KkdDistributionListItemDto): Promise<void> => {
     setPdfLoadingId(row.id);
+    const pendingWindow = window.open('', '_blank');
+    if (pendingWindow) {
+      pendingWindow.document.write(`
+        <!doctype html>
+        <html lang="${escapeHtml(i18n.language || 'tr')}">
+          <head>
+            <title>${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</title>
+            <style>
+              body {
+                min-height: 100vh;
+                margin: 0;
+                display: grid;
+                place-items: center;
+                background: #f8fafc;
+                color: #0f172a;
+                font-family: Arial, Helvetica, sans-serif;
+              }
+              .box {
+                padding: 28px 32px;
+                border: 1px solid #dbe4ef;
+                border-radius: 18px;
+                background: #fff;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+                text-align: center;
+              }
+              .title { font-size: 18px; font-weight: 800; }
+              .desc { margin-top: 8px; color: #64748b; font-size: 13px; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <div class="title">${escapeHtml(t('kkd.operational.distributionList.pdfPreparing'))}</div>
+              <div class="desc">${escapeHtml(row.documentNo || row.id)}</div>
+            </div>
+          </body>
+        </html>
+      `);
+      pendingWindow.document.close();
+    }
+
     try {
       const [{ default: JsPDF }, { default: html2canvas }] = await Promise.all([
         import('jspdf'),
@@ -438,8 +478,9 @@ export function KkdDistributionListPage(): ReactElement {
         const fileName = `kkd-zimmet-${fileSafeName(distribution.documentNo || row.documentNo || row.id)}.pdf`;
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
-        const pdfWindow = window.open(url, '_blank', 'noopener,noreferrer');
-        if (!pdfWindow) {
+        if (pendingWindow) {
+          pendingWindow.location.href = url;
+        } else {
           doc.save(fileName);
         }
         window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -447,7 +488,14 @@ export function KkdDistributionListPage(): ReactElement {
         document.body.removeChild(element);
       }
     } catch {
-      // Keep the action fail-safe; grid remains usable even if a browser blocks file generation.
+      if (pendingWindow) {
+        pendingWindow.document.body.innerHTML = `
+          <div style="max-width: 520px; margin: 80px auto; padding: 24px; border: 1px solid #fecaca; border-radius: 16px; background: #fff1f2; color: #7f1d1d; font-family: Arial, Helvetica, sans-serif;">
+            <h1 style="margin: 0 0 10px; font-size: 18px;">PDF oluşturulamadı</h1>
+            <p style="margin: 0; font-size: 14px;">Lütfen sayfayı yenileyip tekrar deneyin. Sorun devam ederse dağıtım fişi detayını kontrol edin.</p>
+          </div>
+        `;
+      }
     } finally {
       setPdfLoadingId(null);
     }
