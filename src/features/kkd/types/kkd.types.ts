@@ -24,6 +24,7 @@ interface BaseHeaderEntityDto extends BaseEntityDto {
 interface BaseLineEntityDto extends BaseEntityDto {
   stockCode: string;
   stockId?: number | null;
+  stockName?: string | null;
   yapKod?: string | null;
   yapKodId?: number | null;
   quantity: number;

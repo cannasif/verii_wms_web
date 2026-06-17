@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -64,6 +65,7 @@ export function KkdDistributionListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const dateLocale = getLocaleForFormatting(i18n.language);
   const [selectedHeader, setSelectedHeader] = useState<KkdDistributionHeaderDto | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const pagedGrid = usePagedDataGrid<DistributionColumnKey>({
     pageKey: 'kkd-distribution-list-grid',
     defaultSortBy: 'documentDate',
@@ -111,11 +113,16 @@ export function KkdDistributionListPage(): ReactElement {
 
   const detail = detailQuery.data ?? selectedHeader;
 
+  const openDetail = (row: KkdDistributionListItemDto): void => {
+    setSelectedHeader({ ...row, lines: [] });
+    setDetailOpen(true);
+  };
+
   return (
     <div className="crm-page space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.kkdOperationsGroup') }, { label: t('kkd.operational.distributionList.breadcrumb'), isActive: true }]} />
 
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-6">
         <Card>
           <CardHeader>
             <CardTitle>{t('kkd.operational.distributionList.gridTitle')}</CardTitle>
@@ -164,7 +171,7 @@ export function KkdDistributionListPage(): ReactElement {
                     size="sm"
                     title={t('common.view')}
                     aria-label={t('common.view')}
-                    onClick={() => setSelectedHeader({ ...row, lines: [] })}
+                    onClick={() => openDetail(row)}
                   >
                     <Eye className="h-4 w-4" />
                     <span>{t('common.view')}</span>
@@ -196,71 +203,97 @@ export function KkdDistributionListPage(): ReactElement {
             />
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.distributionList.detailTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {detail ? (
-              <>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</Badge>
-                  <Badge variant="secondary">{localizeStatus(detail.status, t)}</Badge>
-                  <Badge variant="outline">{detail.sourceChannel}</Badge>
-                  <Badge variant="outline">{t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}</Badge>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {detail.customerCode || '-'} / #{detail.employeeId}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.documentCompletion')}</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {formatDate(detail.documentDate, dateLocale)} / {formatDate(detail.completionDate, dateLocale)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.linesTitle')}</h2>
-                  {detailQuery.isLoading ? (
-                    <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      {t('kkd.operational.distributionList.linesLoading')}
-                    </div>
-                  ) : detail.lines.length ? (
-                    detail.lines.map((line) => (
-                      <div key={line.id} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                        <div className="flex flex-wrap gap-2">
-                          <Badge>{line.stockCode}</Badge>
-                          {line.groupCode ? <Badge variant="secondary">{line.groupCode}</Badge> : null}
-                          <Badge variant="outline">{t('kkd.operational.distributionList.qtyPrefix')}: {line.quantity}</Badge>
-                          <Badge variant="outline">{line.entitlementType}</Badge>
-                        </div>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                          {t('kkd.operational.distributionList.lineMeta', { b: line.barcode || '-', s: line.serialNo || '-', r: line.shelfId || '-' })}
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                      {t('kkd.operational.distributionList.pickDocument')}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('kkd.operational.distributionList.pickLeft')}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
+
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="max-h-[88vh] max-w-5xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('kkd.operational.distributionList.detailTitle')}</DialogTitle>
+            <DialogDescription>
+              {detail?.documentNo || (detail ? t('kkd.operational.distributionList.headerBadge', { id: detail.id }) : t('kkd.operational.distributionList.linesLoading'))}
+            </DialogDescription>
+          </DialogHeader>
+
+          {detail ? (
+            <div className="space-y-5">
+              <div className="flex flex-wrap gap-2">
+                <Badge>{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</Badge>
+                <Badge variant="secondary">{localizeStatus(detail.status, t)}</Badge>
+                <Badge variant="outline">{detail.sourceChannel}</Badge>
+                <Badge variant="outline">{t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}</Badge>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
+                    {detail.customerCode || '-'} / #{detail.employeeId}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.documentCompletion')}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
+                    {formatDate(detail.documentDate, dateLocale)} / {formatDate(detail.completionDate, dateLocale)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.linesTitle')}</h2>
+                {detailQuery.isLoading ? (
+                  <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    {t('kkd.operational.distributionList.linesLoading')}
+                  </div>
+                ) : detail.lines.length ? (
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+                    <div className="hidden grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400 md:grid">
+                      <span>{t('kkd.operational.distributionList.stockCode')}</span>
+                      <span>{t('kkd.operational.distributionList.stockName')}</span>
+                      <span>{t('kkd.operational.distributionList.quantity')}</span>
+                      <span>{t('kkd.operational.distributionList.group')}</span>
+                      <span>{t('kkd.operational.distributionList.barcodeSerial')}</span>
+                    </div>
+                    <div className="divide-y divide-slate-200 dark:divide-white/10">
+                      {detail.lines.map((line) => (
+                        <div key={line.id} className="grid gap-3 px-4 py-4 text-sm md:grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] md:items-center">
+                          <div>
+                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockCode')}</p>
+                            <Badge>{line.stockCode || '-'}</Badge>
+                          </div>
+                          <div className="font-medium text-slate-900 dark:text-white">
+                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockName')}</p>
+                            {line.stockName || '-'}
+                          </div>
+                          <div>
+                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.quantity')}</p>
+                            {line.quantity}
+                          </div>
+                          <div>
+                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.group')}</p>
+                            {line.groupCode ? <Badge variant="secondary">{line.groupName ? `${line.groupCode} - ${line.groupName}` : line.groupCode}</Badge> : '-'}
+                          </div>
+                          <div className="text-slate-600 dark:text-slate-300">
+                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.barcodeSerial')}</p>
+                            {t('kkd.operational.distributionList.lineMeta', { b: line.barcode || '-', s: line.serialNo || '-', r: line.shelfId || '-' })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    {t('kkd.operational.distributionList.pickDocument')}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+              {t('kkd.operational.distributionList.linesLoading')}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
