@@ -25,7 +25,7 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
         <Sidebar items={items} />
         <div
           className={cn(
-            'flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300',
+            'flex min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-[260ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none',
             isSidebarOpen ? 'lg:ml-72' : 'lg:ml-20',
           )}
         >

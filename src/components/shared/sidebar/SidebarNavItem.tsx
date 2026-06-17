@@ -1,14 +1,27 @@
 import { type MouseEvent, type ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { useUIStore } from '@/stores/ui-store';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { NavItem } from '../nav-items';
 import {
+  getItemKey,
   getToneByTitle,
   nodeHasActiveDescendant,
   nodeMatchesSearch,
   toneClassMap,
 } from './sidebar-utils';
+import {
+  sidebarActiveDotClassName,
+  sidebarActiveLeafClassName,
+  sidebarActiveParentClassName,
+  sidebarIconBoxClassName,
+  sidebarItemHoverClassName,
+  sidebarLabelClassName,
+  sidebarLeafAccentClassName,
+} from './sidebar-styles';
 
 interface SidebarNavItemProps {
   item: NavItem;
@@ -17,6 +30,76 @@ interface SidebarNavItemProps {
   onToggle: (key: string) => void;
   resolveTitle: (item: NavItem) => string;
   level?: number;
+}
+
+function getLevelItemClassName(level: number, hasChildren: boolean): string {
+  if (level === 0) {
+    return 'px-2.5 py-2.5';
+  }
+  if (level === 1 && hasChildren) {
+    return 'px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500';
+  }
+  if (level === 1) {
+    return 'px-2 py-1.5';
+  }
+  if (level === 2) {
+    return 'px-2 py-1.5';
+  }
+  return 'px-1.5 py-1';
+}
+
+function getLevelTextClassName(level: number, hasChildren: boolean): string {
+  if (level === 0) {
+    return 'text-sm font-semibold';
+  }
+  if (level === 1 && hasChildren) {
+    return 'text-[11px] font-semibold uppercase tracking-wide';
+  }
+  if (level === 1) {
+    return 'text-[13px] font-medium';
+  }
+  if (level === 2) {
+    return 'text-xs font-medium';
+  }
+  return 'text-xs font-normal text-slate-500 dark:text-slate-400';
+}
+
+function getChildrenContainerClassName(level: number): string {
+  if (level === 0) {
+    return 'ml-7 space-y-0.5 border-l border-slate-200/80 pl-2 dark:border-white/10';
+  }
+  return 'ml-2 space-y-0.5 border-l border-slate-200/60 pl-2 dark:border-white/5';
+}
+
+function SidebarNavLabel({
+  title,
+  isSidebarOpen,
+  level,
+  hasChildren,
+}: {
+  title: string;
+  isSidebarOpen: boolean;
+  level: number;
+  hasChildren: boolean;
+}): ReactElement | null {
+  if (!isSidebarOpen) {
+    return null;
+  }
+
+  const label = (
+    <span className={cn('flex-1 min-w-0', sidebarLabelClassName(isSidebarOpen))}>
+      <span className={cn('block truncate leading-5', getLevelTextClassName(level, hasChildren))}>{title}</span>
+    </span>
+  );
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{label}</TooltipTrigger>
+      <TooltipContent side="right" sideOffset={10} className="max-w-xs">
+        {title}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 export function SidebarNavItem({
@@ -32,12 +115,14 @@ export function SidebarNavItem({
   const hasChildren = (item.children?.length ?? 0) > 0;
   const isActive = item.href ? location.pathname === item.href : false;
   const hasActiveChild = item.children?.some((child) => nodeHasActiveDescendant(child, location.pathname)) ?? false;
-  const itemKey = item.href || `${level}:${item.title}`;
+  const itemKey = getItemKey(item, level);
   const title = resolveTitle(item);
   const searchMatched = nodeMatchesSearch(item, searchQuery, resolveTitle);
   const isExpanded = expandedItemKeys.includes(itemKey) || (Boolean(searchQuery.trim()) && hasChildren && searchMatched);
   const iconTone = getToneByTitle(item.title);
   const toneClasses = toneClassMap[iconTone];
+  const isParentActive = hasActiveChild || isActive;
+  const isSectionHeader = level === 1 && hasChildren;
 
   if (!searchMatched) {
     return <></>;
@@ -56,32 +141,31 @@ export function SidebarNavItem({
 
   if (hasChildren) {
     return (
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         <button
           type="button"
-          title={title}
           onClick={() => {
             if (!isSidebarOpen) {
               setSidebarOpen(true);
-              setTimeout(() => onToggle(itemKey), 100);
+              setTimeout(() => onToggle(itemKey), 80);
             } else {
               onToggle(itemKey);
             }
           }}
           className={cn(
-            'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
-            'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
-            (hasActiveChild || isActive)
-              ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'
-              : 'text-slate-500 dark:text-slate-400',
+            'flex w-full items-center gap-2.5 rounded-lg transition-colors duration-200',
+            getLevelItemClassName(level, hasChildren),
+            !isSectionHeader && sidebarItemHoverClassName,
+            !isSectionHeader && (isParentActive ? sidebarActiveParentClassName : 'text-slate-600 dark:text-slate-300'),
+            isSectionHeader && (isParentActive ? 'text-cyan-700 dark:text-cyan-400' : ''),
             !isSidebarOpen && 'justify-center',
           )}
         >
           {item.icon && level === 0 ? (
             <span
               className={cn(
-                'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
-                (hasActiveChild || isActive) ? toneClasses.active : toneClasses.idle,
+                sidebarIconBoxClassName(isParentActive, toneClasses.idle),
+                '[&_svg]:h-5 [&_svg]:w-5',
                 !isSidebarOpen && 'mx-auto',
               )}
               onClick={handleIconClick}
@@ -89,31 +173,21 @@ export function SidebarNavItem({
               {item.icon}
             </span>
           ) : null}
-          {level > 0 && isSidebarOpen ? (
-            <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />
+          <SidebarNavLabel title={title} isSidebarOpen={isSidebarOpen} level={level} hasChildren={hasChildren} />
+          {isSidebarOpen && !isSectionHeader ? (
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              size={13}
+              strokeWidth={1.75}
+              className={cn(
+                'shrink-0 text-slate-400 transition-transform duration-200 dark:text-slate-500',
+                isExpanded && 'rotate-90',
+              )}
+            />
           ) : null}
-          <span className={cn('flex-1 text-left text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
-            <span className="line-clamp-2 break-words">{title}</span>
-          </span>
-          {isSidebarOpen && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={cn('text-slate-400 transition-transform dark:text-slate-500', isExpanded && 'rotate-90')}
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          )}
         </button>
         {isExpanded && isSidebarOpen ? (
-          <div className={cn('space-y-1 border-l border-slate-200 dark:border-white/10', level === 0 ? 'ml-4 pl-4' : 'ml-3 pl-3')}>
+          <div className={getChildrenContainerClassName(level)}>
             {item.children?.map((child) => (
               <SidebarNavItem
                 key={child.href || `${itemKey}:${child.title}`}
@@ -138,14 +212,13 @@ export function SidebarNavItem({
   return (
     <Link
       to={item.href}
-      title={title}
       className={cn(
-        'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200',
-        'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
-        isActive
-          ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'
-          : 'text-slate-500 dark:text-slate-400',
+        'flex items-center gap-2.5 rounded-lg transition-colors duration-200',
+        getLevelItemClassName(level, false),
+        sidebarItemHoverClassName,
+        isActive ? sidebarActiveLeafClassName : 'text-slate-600 dark:text-slate-300',
         !isSidebarOpen && 'justify-center',
+        isActive && level === 0 && item.icon ? sidebarLeafAccentClassName : '',
       )}
       onClick={(e) => {
         if (!isSidebarOpen) {
@@ -159,8 +232,8 @@ export function SidebarNavItem({
       {item.icon && level === 0 ? (
         <span
           className={cn(
-            'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 shadow-xs transition-all [&>svg]:h-[21px] [&>svg]:w-[21px] dark:border-white/10',
-            isActive ? toneClasses.active : toneClasses.idle,
+            sidebarIconBoxClassName(isActive, toneClasses.idle),
+            '[&_svg]:h-5 [&_svg]:w-5',
             !isSidebarOpen && 'mx-auto',
           )}
           onClick={handleIconClick}
@@ -168,10 +241,8 @@ export function SidebarNavItem({
           {item.icon}
         </span>
       ) : null}
-      {level > 0 && isSidebarOpen ? <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" /> : null}
-      <span className={cn('text-[13px] leading-5 transition-opacity', !isSidebarOpen && 'hidden')}>
-        <span className="line-clamp-2 break-words">{title}</span>
-      </span>
+      <SidebarNavLabel title={title} isSidebarOpen={isSidebarOpen} level={level} hasChildren={false} />
+      {level > 0 && isActive && isSidebarOpen ? <span className={sidebarActiveDotClassName} /> : null}
     </Link>
   );
 }

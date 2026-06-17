@@ -103,7 +103,7 @@ export function nodeHasActiveDescendant(node: NavItem, pathname: string): boolea
 
 export function collectActiveAncestorKeys(nodes: NavItem[], pathname: string, level = 0): string[] {
   for (const node of nodes) {
-    const itemKey = node.href || `${level}:${node.title}`;
+    const itemKey = getItemKey(node, level);
     if (node.href && node.href === pathname) {
       return [];
     }
@@ -117,4 +117,110 @@ export function collectActiveAncestorKeys(nodes: NavItem[], pathname: string, le
   }
 
   return [];
+}
+
+export function getItemKey(item: NavItem, level: number): string {
+  return item.href || `${level}:${item.title}`;
+}
+
+interface NavIndexEntry {
+  key: string;
+  level: number;
+  parentKey: string | null;
+  topLevelKey: string;
+  hasChildren: boolean;
+}
+
+export function buildNavIndex(
+  nodes: NavItem[],
+  level = 0,
+  parentKey: string | null = null,
+  topLevelKey: string | null = null,
+  map = new Map<string, NavIndexEntry>(),
+): Map<string, NavIndexEntry> {
+  for (const node of nodes) {
+    const key = getItemKey(node, level);
+    const top = level === 0 ? key : topLevelKey!;
+    map.set(key, {
+      key,
+      level,
+      parentKey,
+      topLevelKey: top,
+      hasChildren: Boolean(node.children?.length),
+    });
+    if (node.children?.length) {
+      buildNavIndex(node.children, level + 1, key, top, map);
+    }
+  }
+  return map;
+}
+
+function isDescendantKey(key: string, ancestorKey: string, index: Map<string, NavIndexEntry>): boolean {
+  let current = index.get(key);
+  while (current) {
+    if (current.key === ancestorKey) {
+      return true;
+    }
+    if (!current.parentKey) {
+      return false;
+    }
+    current = index.get(current.parentKey);
+  }
+  return false;
+}
+
+function collectSubtreeExpandKeys(rootKey: string, index: Map<string, NavIndexEntry>): string[] {
+  const keys: string[] = [];
+  for (const [key] of index) {
+    if (key === rootKey || isDescendantKey(key, rootKey, index)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
+export function resolveExpandedKeysAfterToggle(
+  prev: string[],
+  toggledKey: string,
+  items: NavItem[],
+  pathname: string,
+): string[] {
+  const index = buildNavIndex(items);
+  const toggled = index.get(toggledKey);
+  if (!toggled) {
+    return prev;
+  }
+
+  const activeAncestors = collectActiveAncestorKeys(items, pathname);
+
+  if (prev.includes(toggledKey)) {
+    const toRemove = new Set(collectSubtreeExpandKeys(toggledKey, index));
+    return prev.filter((key) => !toRemove.has(key));
+  }
+
+  const next = prev.filter((key) => {
+    if (key === toggledKey) {
+      return true;
+    }
+    if (activeAncestors.includes(key)) {
+      return true;
+    }
+
+    const entry = index.get(key);
+    if (!entry) {
+      return false;
+    }
+
+    if (entry.topLevelKey !== toggled.topLevelKey) {
+      return false;
+    }
+
+    if (entry.parentKey === toggled.parentKey && entry.hasChildren && key !== toggledKey) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return Array.from(new Set([...next, toggledKey, ...activeAncestors]));
 }
