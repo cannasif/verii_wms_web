@@ -381,41 +381,72 @@ input:-webkit-autofill:active {
   background: radial-gradient(circle at center, rgba(2, 6, 23, 0) 58%, rgba(2, 6, 23, 0.4) 100%);
 }
 
+.wms-storm-gloom {
+  background:
+    radial-gradient(ellipse 42% 38% at 12% 14%, rgba(8, 16, 36, 0.42), rgba(8, 16, 36, 0) 68%),
+    linear-gradient(105deg, rgba(6, 12, 28, 0.38) 0%, rgba(6, 12, 28, 0.12) 28%, rgba(6, 12, 28, 0) 48%);
+}
+
 .wms-sunset {
   background: linear-gradient(
-    218deg,
-    rgba(255, 170, 105, 0.14) 0%,
-    rgba(255, 152, 96, 0.07) 22%,
-    rgba(255, 150, 95, 0.025) 40%,
-    rgba(255, 150, 95, 0) 55%
+    228deg,
+    rgba(255, 178, 112, 0.22) 0%,
+    rgba(255, 158, 98, 0.12) 18%,
+    rgba(255, 148, 92, 0.05) 38%,
+    rgba(255, 148, 92, 0) 58%
   );
-  animation: wms-sunset-drift 18s ease-in-out infinite;
+  animation: wms-sunset-drift 20s ease-in-out infinite;
+}
+
+.wms-sunset-beam {
+  background: linear-gradient(
+    248deg,
+    rgba(255, 195, 130, 0) 32%,
+    rgba(255, 175, 110, 0.08) 48%,
+    rgba(255, 160, 100, 0.14) 58%,
+    rgba(255, 150, 95, 0.06) 68%,
+    rgba(255, 150, 95, 0) 78%
+  );
+  animation: wms-sunset-beam-flow 24s ease-in-out infinite;
 }
 
 @keyframes wms-sunset-drift {
-  0%, 100% { opacity: 0.65; }
+  0%, 100% { opacity: 0.72; }
   50% { opacity: 1; }
+}
+
+@keyframes wms-sunset-beam-flow {
+  0%, 100% {
+    opacity: 0.55;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-14px, 10px);
+  }
 }
 
 .wms-lightning {
   background:
-    radial-gradient(ellipse 20% 15% at 13% 9%, rgba(192, 214, 255, 0.15), rgba(192, 214, 255, 0) 60%),
-    radial-gradient(ellipse 14% 11% at 24% 15%, rgba(192, 214, 255, 0.11), rgba(192, 214, 255, 0) 62%),
-    radial-gradient(ellipse 11% 18% at 7% 18%, rgba(192, 214, 255, 0.08), rgba(192, 214, 255, 0) 64%),
-    radial-gradient(ellipse 9% 8% at 30% 7%, rgba(192, 214, 255, 0.07), rgba(192, 214, 255, 0) 66%);
+    radial-gradient(ellipse 22% 16% at 11% 8%, rgba(210, 228, 255, 0.28), rgba(210, 228, 255, 0) 58%),
+    radial-gradient(ellipse 16% 12% at 22% 14%, rgba(200, 220, 255, 0.2), rgba(200, 220, 255, 0) 60%),
+    radial-gradient(ellipse 12% 20% at 6% 17%, rgba(195, 218, 255, 0.14), rgba(195, 218, 255, 0) 62%),
+    radial-gradient(ellipse 10% 9% at 28% 6%, rgba(190, 214, 255, 0.12), rgba(190, 214, 255, 0) 64%);
   opacity: 0;
-  animation: wms-lightning-flash 14s ease-in-out infinite;
+  animation: wms-lightning-flash 16s ease-in-out infinite;
 }
 
 @keyframes wms-lightning-flash {
-  0%, 41% { opacity: 0; }
-  43% { opacity: 0.38; }
-  45% { opacity: 0.1; }
-  47.5% { opacity: 0.55; }
-  50% { opacity: 0.16; }
-  53% { opacity: 0.34; }
-  58% { opacity: 0; }
-  100% { opacity: 0; }
+  0%, 36% { opacity: 0; }
+  37.5% { opacity: 0.72; }
+  38.5% { opacity: 0.08; }
+  40% { opacity: 0.95; }
+  41% { opacity: 0.18; }
+  42.5% { opacity: 0.55; }
+  44% { opacity: 0.06; }
+  46% { opacity: 0.28; }
+  49% { opacity: 0; }
+  72%, 100% { opacity: 0; }
 }
 
 .wms-truck-light {
@@ -526,6 +557,7 @@ input:-webkit-autofill:active {
 }
 
 .wms-bg-paused .wms-sunset,
+.wms-bg-paused .wms-sunset-beam,
 .wms-bg-paused .wms-lightning,
 .wms-bg-paused .wms-truck-light {
   animation-play-state: paused !important;
@@ -540,8 +572,20 @@ input:-webkit-autofill:active {
   .wms-forklift-chassis,
   .wms-forklift-pallet,
   .wms-sunset,
+  .wms-sunset-beam,
   .wms-lightning,
   .wms-truck-light {
     animation: none !important;
   }
 }
+
+.group:hover .navbar-icon-gradient path,
+.group:hover .navbar-icon-gradient circle,
+.group:hover .navbar-icon-gradient line,
+.group:hover .navbar-icon-gradient rect,
+.group:hover .navbar-icon-gradient polyline,
+.group:hover .navbar-icon-gradient polygon {
+  stroke: url(#navbar-icon-gradient) !important;
+  transition: stroke 300ms ease;
+}
+

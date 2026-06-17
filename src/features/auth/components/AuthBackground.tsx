@@ -30,10 +30,14 @@ export const AuthBackground = ({ isActive, isPaused = false }: AuthBackgroundPro
         </g>
       </svg>
 
-      {/* gun batimi isigi - login kartina dogru cok hafif suzulur */}
-      <div className="wms-sunset absolute inset-0" />
+      {/* sol: kasvetli gecmis - kara bulut hissi */}
+      <div className="wms-storm-gloom absolute inset-0" />
 
-      {/* simsek cakmasi - cok hafif, arada bir */}
+      {/* sag: gunesli gelecek - login kartina dogru suzulen isik */}
+      <div className="wms-sunset absolute inset-0" />
+      <div className="wms-sunset-beam absolute inset-0" />
+
+      {/* sol bulutlardan simsek - arada belirgin, arada soluk */}
       <div className="wms-lightning absolute inset-0" />
 
       <div className="wms-bg-photo-tint absolute inset-0" />
