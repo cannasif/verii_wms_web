@@ -17,6 +17,7 @@ import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
 
 type DistributionColumnKey =
+  | 'actions'
   | 'documentNo'
   | 'documentDate'
   | 'customerCode'
@@ -30,6 +31,8 @@ type DistributionColumnKey =
 
 function mapSortBy(value: DistributionColumnKey): string {
   switch (value) {
+    case 'actions':
+      return 'DocumentDate';
     case 'documentNo':
       return 'DocumentNo';
     case 'documentDate':
@@ -108,6 +111,13 @@ export function KkdDistributionListPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<DistributionColumnKey>[]>(
     () => [
+      {
+        key: 'actions',
+        label: t('common.actions'),
+        sortable: false,
+        headClassName: 'sticky left-0 z-20 w-[176px] min-w-[176px] shadow-[8px_0_16px_-14px_rgba(15,23,42,0.6)]',
+        cellClassName: 'sticky left-0 z-10 w-[176px] min-w-[176px] bg-white dark:bg-[#130822] shadow-[8px_0_16px_-14px_rgba(15,23,42,0.6)]',
+      },
       { key: 'documentNo', label: t('kkd.operational.distributionList.colDocNo') },
       { key: 'documentDate', label: t('kkd.operational.distributionList.colDocDate') },
       { key: 'customerCode', label: t('kkd.operational.distributionList.colCustomer') },
@@ -257,6 +267,34 @@ export function KkdDistributionListPage(): ReactElement {
               rowKey={(row) => row.id}
               renderCell={(row, columnKey) => {
                 switch (columnKey) {
+                  case 'actions':
+                    return (
+                      <div className="flex items-center gap-2" data-no-drag-scroll="true">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          title={t('common.view')}
+                          aria-label={t('common.view')}
+                          onClick={() => openDetail(row)}
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span>{t('common.view')}</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          title={t('kkd.operational.distributionList.pdfAction')}
+                          aria-label={t('kkd.operational.distributionList.pdfAction')}
+                          disabled={pdfLoadingId === row.id}
+                          onClick={() => void openPdf(row)}
+                        >
+                          <FileText className="h-4 w-4" />
+                          <span>{pdfLoadingId === row.id ? t('kkd.operational.distributionList.pdfPreparing') : t('kkd.operational.distributionList.pdfAction')}</span>
+                        </Button>
+                      </div>
+                    );
                   case 'documentNo':
                     return row.documentNo || '-';
                   case 'documentDate':
@@ -284,34 +322,6 @@ export function KkdDistributionListPage(): ReactElement {
               sortBy={pagedGrid.sortBy}
               sortDirection={pagedGrid.sortDirection}
               onSort={pagedGrid.handleSort}
-              actionsHeaderLabel={t('common.actions')}
-              renderActionsCell={(row) => (
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title={t('common.view')}
-                    aria-label={t('common.view')}
-                    onClick={() => openDetail(row)}
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span>{t('common.view')}</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title={t('kkd.operational.distributionList.pdfAction')}
-                    aria-label={t('kkd.operational.distributionList.pdfAction')}
-                    disabled={pdfLoadingId === row.id}
-                    onClick={() => void openPdf(row)}
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>{pdfLoadingId === row.id ? t('kkd.operational.distributionList.pdfPreparing') : t('kkd.operational.distributionList.pdfAction')}</span>
-                  </Button>
-                </div>
-              )}
               pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
               pageSizeOptions={pagedGrid.pageSizeOptions}
               onPageSizeChange={pagedGrid.handlePageSizeChange}
