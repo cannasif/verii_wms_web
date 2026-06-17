@@ -417,7 +417,14 @@ export function KkdDistributionListPage(): ReactElement {
           heightLeft -= pdfHeight;
         }
 
-        doc.save(`kkd-zimmet-${fileSafeName(distribution.documentNo || row.documentNo || row.id)}.pdf`);
+        const fileName = `kkd-zimmet-${fileSafeName(distribution.documentNo || row.documentNo || row.id)}.pdf`;
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const pdfWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!pdfWindow) {
+          doc.save(fileName);
+        }
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
       } finally {
         document.body.removeChild(element);
       }
