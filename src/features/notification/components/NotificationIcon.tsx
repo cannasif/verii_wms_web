@@ -1,14 +1,15 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BellIcon } from 'lucide-react';
+import { Notification01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
+import { NavbarGradientIcon, navbarIconButtonClassName } from '@/components/shared/NavbarGradientIcon';
 import { cn } from '@/lib/utils';
 import { useNotificationStore } from '../stores/notification-store';
 import { NotificationDropdown } from './NotificationDropdown';
 
 export function NotificationIcon(): ReactElement {
   const { t } = useTranslation();
-  const { unreadCount, connectionState } = useNotificationStore();
+  const { unreadCount } = useNotificationStore();
   const hasUnread = unreadCount > 0;
 
   return (
@@ -17,33 +18,21 @@ export function NotificationIcon(): ReactElement {
         <Button
           variant="ghost"
           size="icon"
-          className="relative"
+          className={cn(
+            navbarIconButtonClassName,
+            'relative size-10 hover:!bg-sky-400/[0.06] dark:hover:!bg-cyan-400/[0.08] hover:!text-slate-500 dark:hover:!text-slate-400',
+          )}
           aria-label={`${t('notification.notifications')}${hasUnread ? ` (${unreadCount} ${t('notification.new')})` : ''}`}
         >
-          <BellIcon className="size-5" />
+          <NavbarGradientIcon icon={Notification01Icon} size={22} />
           {hasUnread && (
-            <span className="absolute top-1 right-1 flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-destructive" />
+            <span className="absolute right-2 top-2 flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#EC4899] opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-[#EC4899]" />
             </span>
-          )}
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-          {connectionState === 'disconnected' && (
-            <span
-              className={cn(
-                'absolute bottom-0 right-0 size-2 rounded-full border-2 border-background',
-                'bg-yellow-500'
-              )}
-              title={t('notification.connectionDisconnected')}
-            />
           )}
         </Button>
       }
     />
   );
 }
-

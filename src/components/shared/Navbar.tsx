@@ -1,10 +1,17 @@
 import { type ReactElement, Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Search, X, Mic } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  Cancel01Icon,
+  Mic01Icon,
+  Search01Icon,
+  SidebarLeft01Icon,
+} from '@hugeicons/core-free-icons';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
+import { NavbarGradientIcon, NavbarIconGradientDefs, navbarIconButtonClassName } from '@/components/shared/NavbarGradientIcon';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 import type { NavItem } from './nav-items';
@@ -59,6 +66,17 @@ const flattenSearchTargets = (items: NavItem[], resolveTitle: (item: NavItem) =>
   }
   return targets;
 };
+
+const searchInputClassName = (isFocused: boolean): string =>
+  cn(
+    'w-full rounded-2xl border py-2.5 pl-11 pr-20 text-sm font-medium outline-none transition-all duration-300',
+    'border-slate-200 bg-slate-100/60 text-slate-900 placeholder:text-slate-500',
+    isFocused
+      ? 'border-cyan-400/40 bg-white ring-4 ring-cyan-400/15 shadow-[0_4px_24px_rgba(34,211,238,0.08)]'
+      : '',
+    'dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500',
+    isFocused ? 'dark:border-cyan-500/35 dark:bg-[#150a25] dark:ring-cyan-500/10' : '',
+  );
 
 export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const { t } = useTranslation();
@@ -137,20 +155,62 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
       ? `${navbarBranchCodeTrimmed} • `
       : '';
 
+  const renderSearchResults = (): ReactElement | null => {
+    if (!isSearchFocus || !searchQuery.trim().length) return null;
+
+    return (
+      <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#130822]/95">
+        {quickResults.length > 0 ? (
+          quickResults.map((item) => (
+            <button
+              key={item.href}
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => handleSearchNavigate(item)}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-white/10"
+            >
+              <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">{item.title}</span>
+              <span className="ml-3 truncate text-xs text-slate-400">{item.subtitle}</span>
+            </button>
+          ))
+        ) : (
+          <p className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">{t('common.notFound')}</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-xl transition-all dark:border-white/5 dark:bg-[#0c0516]/80 sm:px-6">
-        <div className="flex h-14 items-center justify-between gap-2 sm:gap-4">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/75 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-[#0c0516]/80 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:px-6">
+        <NavbarIconGradientDefs />
+        <div className="flex h-20 items-center justify-between gap-3 sm:gap-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
+              type="button"
               onClick={toggleSidebar}
-              className="rounded-xl p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+              className={navbarIconButtonClassName}
+              aria-label={t('navbar.toggleSidebar', { defaultValue: 'Toggle sidebar' })}
             >
-              <Menu size={24} />
+              <NavbarGradientIcon icon={SidebarLeft01Icon} size={24} />
             </button>
 
-            <div className="relative hidden w-full max-w-md md:block">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors focus-within:text-pink-500" />
+            <div className="relative hidden w-[min(100%,20rem)] shrink-0 md:block lg:w-80">
+              {isSearchFocus && (
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-1 -z-10 rounded-[1.25rem] bg-gradient-to-r from-cyan-400/25 via-sky-400/20 to-teal-400/25 opacity-80 blur-2xl transition-opacity duration-300"
+                />
+              )}
+              <HugeiconsIcon
+                icon={Search01Icon}
+                size={18}
+                strokeWidth={1.75}
+                className={cn(
+                  'pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300',
+                  isSearchFocus ? 'text-cyan-500' : 'text-slate-400',
+                )}
+              />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -160,79 +220,72 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 onFocus={() => setIsSearchFocus(true)}
                 onBlur={() => setTimeout(() => setIsSearchFocus(false), 120)}
                 placeholder={t('navbar.search_placeholder')}
-                className={cn(
-                  'w-full rounded-2xl border py-3 pl-12 pr-24 text-sm font-medium outline-none transition-all duration-300',
-                  'border-slate-200 bg-slate-100/60 text-slate-900 placeholder:text-slate-500 focus:border-pink-500/30 focus:bg-white focus:ring-4 focus:ring-pink-500/10',
-                  'dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-[#150a25]'
-                )}
+                className={searchInputClassName(isSearchFocus)}
               />
-              <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
+              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
                 {isSupported && (
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       setIsSearchFocus(true);
                       startListening();
                     }}
                     className={cn(
-                      'rounded-xl p-2 transition-all duration-300',
+                      'rounded-xl p-1.5 transition-all duration-300',
                       isListening
-                        ? 'animate-pulse bg-pink-500/10 text-pink-500'
-                        : 'text-slate-400 hover:bg-slate-200 hover:text-pink-500 dark:hover:bg-white/10'
+                        ? 'animate-pulse bg-cyan-500/10 text-cyan-500'
+                        : 'text-slate-400 hover:bg-slate-200/80 hover:text-cyan-500 dark:hover:bg-white/10',
                     )}
                     title={t('voiceSearch.start')}
                   >
-                    <Mic size={18} />
+                    <HugeiconsIcon icon={Mic01Icon} size={16} strokeWidth={1.75} />
                   </button>
                 )}
                 {searchQuery && (
                   <button
+                    type="button"
                     onClick={() => setSearchQuery('')}
-                    className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
+                    className="rounded-full p-1 text-slate-400 transition-colors duration-300 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
                   >
-                    <X size={14} />
+                    <HugeiconsIcon icon={Cancel01Icon} size={13} strokeWidth={1.75} />
                   </button>
                 )}
               </div>
 
-              {isSearchFocus && searchQuery.trim().length > 0 && (
-                <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#130822]/95">
-                  {quickResults.length > 0 ? (
-                    quickResults.map((item) => (
-                      <button
-                        key={item.href}
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSearchNavigate(item)}
-                        className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-white/10"
-                      >
-                        <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">{item.title}</span>
-                        <span className="ml-3 truncate text-xs text-slate-400">{item.subtitle}</span>
-                      </button>
-                    ))
-                  ) : (
-                    <p className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
-                      {t('common.notFound')}
-                    </p>
-                  )}
-                </div>
-              )}
+              {renderSearchResults()}
             </div>
+
+            {isSupported && (
+              <button
+                type="button"
+                onClick={() => startListening()}
+                className={cn(
+                  navbarIconButtonClassName,
+                  'md:hidden',
+                  isListening && 'shadow-[0_0_12px_rgba(14,165,233,0.28),0_0_22px_rgba(251,146,60,0.16)]',
+                )}
+                title={t('voiceSearch.start')}
+                aria-label={t('voiceSearch.start')}
+              >
+                <NavbarGradientIcon icon={Mic01Icon} size={22} className={isListening ? 'animate-pulse' : undefined} />
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
             <NotificationIcon />
 
-            {user && <div className="hidden h-6 w-px bg-slate-200 dark:bg-white/10 sm:block" />}
+            {user && <div className="hidden h-8 w-px bg-slate-200/80 dark:bg-white/10 sm:block" />}
 
             {user && (
               <button
                 type="button"
                 onClick={() => setUserProfileModalOpen(true)}
-                className="group flex items-center gap-3"
+                className="group flex items-center gap-3 rounded-xl transition-all duration-300"
               >
                 <div className="hidden text-right lg:block">
-                  <p className="max-w-[170px] truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  <p className="max-w-[190px] truncate text-sm font-semibold text-slate-700 dark:text-slate-100">
                     {navbarBranchCodePrefix}
                     {displayName}
                   </p>
@@ -256,41 +309,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 </div>
               </button>
             )}
-
           </div>
-        </div>
-        <div className="relative pb-3 md:hidden">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            onKeyDown={handleSearchKeyDown}
-            placeholder={t('navbar.search_placeholder')}
-            className="w-full rounded-xl border border-slate-200 bg-slate-100/70 py-2.5 pl-10 pr-20 text-sm text-slate-900 outline-none focus:border-pink-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
-          />
-          <button
-            type="button"
-            onClick={() => startListening()}
-            className={cn(
-              'absolute right-9 top-1/2 -translate-y-1/2 rounded-lg p-1 transition-colors',
-              isListening
-                ? 'bg-pink-500/20 text-pink-500'
-                : 'text-slate-400 hover:bg-slate-200 hover:text-pink-500 dark:hover:bg-white/20',
-              !isSupported && 'cursor-not-allowed opacity-40'
-            )}
-            disabled={!isSupported}
-          >
-            <Mic size={14} />
-          </button>
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
-            >
-              <X size={13} />
-            </button>
-          )}
         </div>
       </header>
 
