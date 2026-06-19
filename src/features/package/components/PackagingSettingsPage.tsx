@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { packageApi } from '../api/package-api';
 import { PACKAGE_QUERY_KEYS } from '../utils/query-keys';
 import type {
@@ -192,13 +193,27 @@ export function PackagingSettingsPage(): ReactElement {
       {!permission.canMutate ? <PermissionNotice /> : null}
       <Card className="overflow-hidden border-slate-200/80">
         <CardHeader className="bg-gradient-to-r from-slate-950 to-slate-700 text-white">
-          <div className="flex items-center gap-3">
-            <PackageCheck className="size-7" />
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <CardTitle>{t('package.settings.title')}</CardTitle>
+              <div className="flex items-center gap-3">
+                <PackageCheck className="size-7" />
+                <CardTitle>{t('package.settings.title')}</CardTitle>
+              </div>
               <CardDescription className="text-slate-200">
                 {t('package.settings.description')}
               </CardDescription>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <DefinitionExcelActions
+                definitionKey="package-packaging-material"
+                fileNamePrefix="ambalaj-malzemeleri"
+                onImportCompleted={refreshDefinitions}
+              />
+              <DefinitionExcelActions
+                definitionKey="package-packaging-specification"
+                fileNamePrefix="paketleme-spesifikasyonlari"
+                onImportCompleted={refreshDefinitions}
+              />
             </div>
           </div>
         </CardHeader>
