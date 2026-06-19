@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, Barcode, Eye, PackageCheck, Plus, Printer, RefreshCcw, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, Barcode, Eye, PackageCheck, Plus, Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -660,53 +660,127 @@ export function GoodsReceiptPreReceiptLabelsPage(): ReactElement {
       </OpsListPageShell>
 
       <Dialog open={Boolean(selectedBatch)} onOpenChange={(open) => !open && setSelectedBatch(null)}>
-        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-5xl overflow-hidden border-0 p-0 shadow-none">
-          <DialogHeader className="wms-ops-detail-dialog__header px-6 pt-5 pb-4">
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog wms-ops-prelabel-detail-dialog flex h-[min(92vh,56rem)] max-h-[min(92vh,56rem)] w-[96vw] max-w-[96vw] flex-col gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-[96vw] lg:max-w-[92vw] xl:max-w-[88rem]">
+          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-6 py-4">
             <DialogTitle className="wms-ops-detail-dialog__title">{selectedBatch?.batchNo}</DialogTitle>
             <DialogDescription className="wms-ops-detail-dialog__description">
               {t('preLabels.detailDescription', { orderNo: selectedBatch?.siparisNo ?? '-' })}
             </DialogDescription>
           </DialogHeader>
-          <div className="max-h-[60vh] overflow-auto px-6 pb-6 custom-scrollbar">
-            <div className="wms-ops-prelabel-lines">
-              <div className="wms-ops-prelabel-lines__table-wrap max-h-none">
-                <table>
+          {selectedBatch ? (
+            <div className="wms-ops-prelabel-detail__stats shrink-0">
+              <div className="wms-ops-prelabel-detail__stat">
+                <Barcode className="size-3.5 shrink-0" aria-hidden />
+                <span>{t('preLabels.barcode')}</span>
+                <strong>{selectedBatch.totalLabelCount}</strong>
+              </div>
+              <div className="wms-ops-prelabel-detail__stat">
+                <Printer className="size-3.5 shrink-0" aria-hidden />
+                <span>{t('preLabels.printCount')}</span>
+                <strong>{selectedBatch.printedLabelCount}</strong>
+              </div>
+              <div className="wms-ops-prelabel-detail__stat">
+                <PackageCheck className="size-3.5 shrink-0" aria-hidden />
+                <span>{t('preLabels.consumed')}</span>
+                <strong>{selectedBatch.consumedLabelCount}</strong>
+              </div>
+            </div>
+          ) : null}
+          <div className="flex min-h-0 flex-1 flex-col px-6 py-4">
+            <div className="wms-ops-prelabel-detail custom-scrollbar">
+              <div className="wms-ops-prelabel-detail__table-wrap">
+                <table className="wms-ops-prelabel-detail__table">
+                  <colgroup>
+                    <col />
+                    <col />
+                    <col className="wms-ops-prelabel-detail__col--serial" />
+                    <col className="wms-ops-prelabel-detail__col--num" />
+                    <col className="wms-ops-prelabel-detail__col--status" />
+                    <col className="wms-ops-prelabel-detail__col--num" />
+                    <col className="wms-ops-prelabel-detail__col--actions" />
+                  </colgroup>
                   <thead>
                     <tr>
-                      <th>{t('preLabels.barcode')}</th>
-                      <th>{t('preLabels.stock')}</th>
-                      <th>{t('preLabels.serial')}</th>
-                      <th>{t('preLabels.quantity')}</th>
-                      <th>{t('preLabels.status')}</th>
-                      <th>{t('preLabels.printCount')}</th>
-                      <th className="text-right">{t('preLabels.actions')}</th>
+                      <th className="wms-ops-prelabel-detail__col--barcode">{t('preLabels.barcode')}</th>
+                      <th className="wms-ops-prelabel-detail__col--stock">{t('preLabels.stock')}</th>
+                      <th className="wms-ops-prelabel-detail__col--serial">{t('preLabels.serial')}</th>
+                      <th className="wms-ops-prelabel-detail__col--num">{t('preLabels.quantity')}</th>
+                      <th className="wms-ops-prelabel-detail__col--status">{t('preLabels.status')}</th>
+                      <th className="wms-ops-prelabel-detail__col--num">{t('preLabels.printCount')}</th>
+                      <th className="wms-ops-prelabel-detail__col--actions">{t('preLabels.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {labelsQuery.isLoading ? (
-                      <tr><td colSpan={7}>{t('common.loading')}</td></tr>
+                      <tr className="wms-ops-prelabel-detail__state-row">
+                        <td colSpan={7}>
+                          <div className="wms-ops-detail-empty">{t('common.loading')}</div>
+                        </td>
+                      </tr>
                     ) : labels.length === 0 ? (
-                      <tr><td colSpan={7}>{t('preLabels.noLabels')}</td></tr>
+                      <tr className="wms-ops-prelabel-detail__state-row">
+                        <td colSpan={7}>
+                          <div className="wms-ops-detail-empty">{t('preLabels.noLabels')}</div>
+                        </td>
+                      </tr>
                     ) : labels.map((label) => (
                       <tr key={label.id}>
-                        <td className="font-mono text-xs">{label.barcodeValue}</td>
-                        <td>{[label.stockCodeSnapshot, label.stockNameSnapshot].filter(Boolean).join(' - ')}</td>
-                        <td>{label.serialNo || '-'}</td>
-                        <td>{label.labelQuantity}</td>
-                        <td>
-                          <Badge variant="outline" className={getPreLabelStatusBadgeClass(label.status)}>
+                        <td className="wms-ops-prelabel-detail__col--barcode">
+                          <div className="wms-ops-prelabel-detail__barcode" title={label.barcodeValue}>
+                            <span className="wms-ops-prelabel-detail__barcode-text">{label.barcodeValue}</span>
+                          </div>
+                        </td>
+                        <td className="wms-ops-prelabel-detail__col--stock">
+                          <div className="wms-ops-prelabel-detail__stock">
+                            <span className="wms-ops-prelabel-detail__stock-code" title={label.stockCodeSnapshot ?? undefined}>
+                              {label.stockCodeSnapshot || '-'}
+                            </span>
+                            {label.stockNameSnapshot ? (
+                              <span className="wms-ops-prelabel-detail__stock-name" title={label.stockNameSnapshot}>
+                                {label.stockNameSnapshot}
+                              </span>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="wms-ops-prelabel-detail__col--serial">{label.serialNo || '-'}</td>
+                        <td className="wms-ops-prelabel-detail__col--num">{label.labelQuantity}</td>
+                        <td className="wms-ops-prelabel-detail__col--status">
+                          <Badge
+                            variant="outline"
+                            className={cn('wms-ops-status-badge wms-ops-prelabel-detail__status-badge', getPreLabelStatusBadgeClass(label.status))}
+                          >
                             {t(`preLabels.statuses.${label.status}`, label.status)}
                           </Badge>
                         </td>
-                        <td>{label.printCount}</td>
-                        <td>
-                          <div className="flex justify-end gap-1">
-                            <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => markPrintedMutation.mutate([label.id])} disabled={label.status === 'Consumed' || label.status === 'Void'}>
-                              <Printer className="size-3" aria-hidden />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger" onClick={() => voidLabelMutation.mutate(label)} disabled={label.status === 'Consumed' || label.status === 'Void'}>
-                              <XCircle className="size-3" aria-hidden />
-                            </Button>
+                        <td className="wms-ops-prelabel-detail__col--num">
+                          <span className="wms-ops-prelabel-detail__print-count">{label.printCount}</span>
+                        </td>
+                        <td className="wms-ops-prelabel-detail__col--actions">
+                          <div className="wms-ops-prelabel-detail__actions">
+                            <OpsActionButton
+                              type="button"
+                              variant="secondary"
+                              className="wms-ops-prelabel-detail__action-btn wms-ops-prelabel-detail__action-btn--print"
+                              onClick={() => markPrintedMutation.mutate([label.id])}
+                              disabled={label.status === 'Consumed' || label.status === 'Void'}
+                              aria-label={t('preLabels.markPrinted')}
+                              title={t('preLabels.markPrinted')}
+                            >
+                              <Printer className="size-3.5 shrink-0" aria-hidden />
+                              {t('preLabels.markPrinted')}
+                            </OpsActionButton>
+                            <OpsActionButton
+                              type="button"
+                              variant="secondary"
+                              className="wms-ops-prelabel-detail__action-btn wms-ops-prelabel-detail__action-btn--void"
+                              onClick={() => voidLabelMutation.mutate(label)}
+                              disabled={label.status === 'Consumed' || label.status === 'Void'}
+                              aria-label={t('common.delete')}
+                              title={t('common.delete')}
+                            >
+                              <Trash2 className="size-3.5 shrink-0" aria-hidden />
+                              {t('common.delete')}
+                            </OpsActionButton>
                           </div>
                         </td>
                       </tr>
