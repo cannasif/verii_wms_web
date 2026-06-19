@@ -1,0 +1,38 @@
+---
+description: WMS Ops terminal tasarımı — proje genelinde create/process form sayfalarının ortak şablonu
+alwaysApply: true
+---
+
+# WMS Ops Create Page Template (Onaylı Tasarım Yaklaşımı)
+
+Bu proje için **create / process form sayfalarının resmi ortak tasarım şablonu** budur. Kullanıcı onayladı; yeni veya mevcut create sayfalarına uygulanırken bu yapı esas alınır.
+
+## Referans implementasyon
+
+- `src/features/goods-receipt/components/GoodsReceiptCreatePage.tsx`
+- `src/features/goods-receipt/components/GoodsReceiptProcessPage.tsx`
+
+## Sayfa iskeleti
+
+- `OpsFormPageShell` + `wms-ops-form` wrapper
+- Eyebrow: monospace uppercase breadcrumb (`GİRİŞ_OP / MODÜL_KODU` benzeri)
+- Toolbar: başlık + açıklama + sağda mod sekmeleri (`wms-ops-tabs`, `wms-ops-tab`, `wms-ops-tab-indicator`)
+- Adım göstergesi: `Breadcrumb` + `wms-ops-steps`
+- Alt aksiyonlar: `wms-ops-actions` + `OpsActionButton` (secondary: geri, primary: ileri/kaydet)
+
+## Bileşen pattern'i
+
+- İşleyişi bozmadan sadece görünüm: step/panel bileşenlerine `variant="ops"` prop'u
+- Paylaşılan ops bileşenleri: `src/components/shared/` (`OpsInput`, `OpsFieldShell`, `OpsActionButton`, `OpsFormPageShell`, `OpsPanelPagination`, `OpsSelectedEntityCard`, `PagedLookupDialog variant="ops"`)
+- Stiller: `src/index.css` altında `.wms-ops-*` (form, field, tabs, stock/order panelleri, light/dark ayarları)
+
+## Uygulama kuralları
+
+- Fonksiyonellik ve API akışı değişmez; sadece shell + variant + CSS
+- Hard-text yok; mevcut localization kullan
+- Yeni create sayfası: önce referans sayfayı kopyala yapı olarak, domain step'lerine `variant="ops"` ekle veya ops destekli panel yaz
+- Birden fazla feature'da kullanılacak UI `features/shared` veya `components/shared`'a taşınır
+
+## Henüz ops olmayan create sayfalar
+
+Diğer modüllerin create/process sayfalarına kullanıcı onayıyla kademeli uygulanacak; bu rule o zaman da geçerli şablondur.
