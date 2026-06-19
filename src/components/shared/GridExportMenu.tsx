@@ -8,16 +8,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { OpsActionButton } from './OpsActionButton';
+import type { DataTableVariant } from './DataTableActionBar';
 import { exportGridToExcel, exportGridToPdf, type GridExportColumn } from '@/lib/grid-export';
+import { cn } from '@/lib/utils';
 
 interface GridExportMenuProps {
   fileName: string;
   columns: GridExportColumn[];
   rows: Record<string, unknown>[];
   getExportData?: () => Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }>;
+  variant?: DataTableVariant;
 }
 
-export function GridExportMenu({ fileName, columns, rows, getExportData }: GridExportMenuProps): ReactElement {
+export function GridExportMenu({ fileName, columns, rows, getExportData, variant = 'default' }: GridExportMenuProps): ReactElement {
   const { t } = useTranslation('common');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -54,16 +58,26 @@ export function GridExportMenu({ fileName, columns, rows, getExportData }: GridE
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
-        >
-          <Download className="mr-2 h-4 w-4" />
-          {t('export')}
-        </Button>
+        {variant === 'ops' ? (
+          <OpsActionButton type="button" variant="secondary" className="wms-ops-list-toolbar-btn">
+            <Download className="size-3.5" aria-hidden />
+            {t('export')}
+          </OpsActionButton>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {t('export')}
+          </Button>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent
+        align="end"
+        className={cn(variant === 'ops' ? 'wms-ops-list-dropdown w-52 min-w-[11rem]' : 'w-44')}
+      >
         <DropdownMenuItem
           onClick={handleExcelExport}
           disabled={isExporting || rows.length === 0}

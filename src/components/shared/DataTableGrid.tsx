@@ -6,16 +6,25 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { DataTableActionBar, type DataTableActionBarProps } from './DataTableActionBar';
+import { DataTableActionBar, type DataTableActionBarProps, type DataTableVariant } from './DataTableActionBar';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 import { DataTableGridBody } from './data-table-grid/DataTableGridBody';
 import { DataTableGridPagination } from './data-table-grid/DataTableGridPagination';
+import {
+  DEFAULT_ACTIONS_COLUMN_WEIGHT,
+  getColumnWidthPercent,
+  getTableMinWidthPx,
+  MIN_COLUMN_WEIGHT,
+  normalizeColumnWeights,
+  pixelDeltaToWeightDelta,
+} from './data-table-grid/column-widths';
 import { findColumn, isInteractiveTarget } from './data-table-grid/shared';
 import { ArrowUpDown, GripVertical } from 'lucide-react';
 import {
@@ -90,7 +99,14 @@ interface DataTableGridProps<TRow, TKey extends string> {
   disablePaginationButtons?: boolean;
   enableColumnDragAndDrop?: boolean;
   onColumnOrderChange?: (newOrder: TKey[]) => void;
+  columnWidths?: Record<string, number>;
+  onResizeColumnPair?: (leftKey: string, rightKey: string, deltaWeight: number) => void;
+  getCellText?: (row: TRow, columnKey: TKey) => string | undefined;
+  enableColumnResize?: boolean;
+  variant?: DataTableVariant;
 }
+
+const ACTIONS_COLUMN_KEY = '__actions__';
 
 
 interface SortableHeadProps {
@@ -98,9 +114,19 @@ interface SortableHeadProps {
   isDraggable: boolean;
   className?: string;
   children: ReactNode;
+  trailing?: ReactNode;
+  variant?: DataTableVariant;
 }
 
-function SortableHead({ id, isDraggable, className, children }: SortableHeadProps): ReactElement {
+function SortableHead({
+  id,
+  isDraggable,
+  className,
+  children,
+  trailing,
+  variant = 'default',
+}: SortableHeadProps): ReactElement {
+  const isOps = variant === 'ops';
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled: !isDraggable,
@@ -123,20 +149,31 @@ function SortableHead({ id, isDraggable, className, children }: SortableHeadProp
       className={cn(className, isDragging && 'shadow-md')}
       {...(isDraggable ? attributes : {})}
     >
-      <div className="flex w-full items-center gap-1">
-        {isDraggable && (
+      <div
+        className={cn(
+          'flex w-full min-w-0 items-center',
+          isOps ? 'wms-ops-table-head__layout gap-0.5' : 'gap-1',
+        )}
+      >
+        {isDraggable ? (
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 py-1.5 ml-1 rounded-[.3rem] border border-slate-200 bg-white/50 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none shadow-sm"
+            className={cn(
+              'cursor-grab active:cursor-grabbing touch-none shadow-sm shrink-0',
+              isOps
+                ? 'wms-ops-table-head__grip'
+                : 'p-1 py-1.5 ml-1 rounded-[.3rem] border border-slate-200 bg-white/50 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:text-slate-300 transition-colors',
+            )}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
             data-no-drag-scroll="true"
           >
-            <GripVertical size={14} />
+            <GripVertical size={isOps ? 12 : 14} />
           </div>
-        )}
-        {children}
+        ) : null}
+        <div className="min-w-0 flex-1 overflow-hidden">{children}</div>
       </div>
+      {trailing}
     </TableHead>
   );
 }
@@ -182,8 +219,14 @@ export function DataTableGrid<TRow, TKey extends string>({
   disablePaginationButtons = false,
   enableColumnDragAndDrop = true,
   onColumnOrderChange,
+  columnWidths,
+  onResizeColumnPair,
+  getCellText,
+  enableColumnResize,
+  variant = 'default',
 }: DataTableGridProps<TRow, TKey>): ReactElement {
-
+  const isOps = variant === 'ops';
+  const canResizeColumns = (enableColumnResize ?? isOps) && Boolean(onResizeColumnPair);
   const [localVisibleColumnKeys, setLocalVisibleColumnKeys] = useState<TKey[]>(visibleColumnKeys);
   const lastPropKeysRef = useRef(visibleColumnKeys);
 
@@ -201,6 +244,15 @@ export function DataTableGrid<TRow, TKey extends string>({
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
   const suppressNativeDoubleClickUntilRef = useRef(0);
   const tableScrollRef = useRef<HTMLDivElement | null>(null);
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const resizeStateRef = useRef<{
+    leftKey: string;
+    rightKey: string;
+    startX: number;
+    tableWidth: number;
+    totalWeight: number;
+    pointerId: number;
+  } | null>(null);
   const resolvedScrollKey = pageKey ?? actionBar?.pageKey ?? null;
   const dragStateRef = useRef({
     isDragging: false,
@@ -294,6 +346,73 @@ export function DataTableGrid<TRow, TKey extends string>({
 
   const colSpan = localVisibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
 
+  const widthKeys = useMemo(() => {
+    const keys = [...localVisibleColumnKeys] as string[];
+    if (showActionsColumn) keys.push(ACTIONS_COLUMN_KEY);
+    return keys;
+  }, [localVisibleColumnKeys, showActionsColumn]);
+
+  const resolvedColumnWidths = useMemo(
+    () => columnWidths ?? normalizeColumnWeights(
+      localVisibleColumnKeys as string[],
+      {},
+      DEFAULT_ACTIONS_COLUMN_WEIGHT,
+      showActionsColumn,
+    ),
+    [columnWidths, localVisibleColumnKeys, showActionsColumn],
+  );
+
+  const totalColumnWeight = useMemo(
+    () => widthKeys.reduce((sum, key) => sum + (resolvedColumnWidths[key] ?? MIN_COLUMN_WEIGHT), 0),
+    [resolvedColumnWidths, widthKeys],
+  );
+
+  const tableMinWidthPx = useMemo(
+    () => (canResizeColumns ? getTableMinWidthPx(totalColumnWeight) : undefined),
+    [canResizeColumns, totalColumnWeight],
+  );
+
+  const handleResizePointerDown = useCallback(
+    (leftKey: string, rightKey: string) => (event: ReactPointerEvent<HTMLDivElement>): void => {
+      if (!canResizeColumns || !onResizeColumnPair) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const tableWidth = tableRef.current?.getBoundingClientRect().width ?? 0;
+      if (tableWidth <= 0) return;
+      resizeStateRef.current = {
+        leftKey,
+        rightKey,
+        startX: event.clientX,
+        tableWidth,
+        totalWeight: totalColumnWeight,
+        pointerId: event.pointerId,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [canResizeColumns, onResizeColumnPair, totalColumnWeight],
+  );
+
+  const handleResizePointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>): void => {
+      const state = resizeStateRef.current;
+      if (!state || !onResizeColumnPair || state.pointerId !== event.pointerId) return;
+      const deltaPx = event.clientX - state.startX;
+      if (Math.abs(deltaPx) < 1) return;
+      const deltaWeight = pixelDeltaToWeightDelta(deltaPx, state.tableWidth, state.totalWeight);
+      onResizeColumnPair(state.leftKey, state.rightKey, deltaWeight);
+      resizeStateRef.current = { ...state, startX: event.clientX };
+    },
+    [onResizeColumnPair],
+  );
+
+  const handleResizePointerEnd = useCallback((event: ReactPointerEvent<HTMLDivElement>): void => {
+    if (resizeStateRef.current?.pointerId !== event.pointerId) return;
+    resizeStateRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
+
   useLayoutEffect(() => {
     if (!resolvedScrollKey) return;
     const container = tableScrollRef.current;
@@ -322,10 +441,17 @@ export function DataTableGrid<TRow, TKey extends string>({
     const isLast = index === localVisibleColumnKeys.length - 1 && !showActionsColumn;
     const isDraggable = enableColumnDragAndDrop && String(key).toLowerCase() !== 'id';
 
+    const rightKey = index < localVisibleColumnKeys.length - 1
+      ? String(localVisibleColumnKeys[index + 1])
+      : showActionsColumn
+        ? ACTIONS_COLUMN_KEY
+        : null;
+
     const headCellClass = cn(
-      'bg-slate-100/90 dark:bg-white/[0.06]',
-      'text-xs uppercase tracking-wide font-semibold text-slate-600 dark:text-slate-300',
-      !isLast && 'border-r border-slate-200/90 dark:border-white/10',
+      isOps ? 'wms-ops-table-head' : 'bg-slate-100/90 dark:bg-white/[0.06]',
+      !isOps && 'text-xs uppercase tracking-wide font-semibold text-slate-600 dark:text-slate-300',
+      !isLast && (isOps ? 'border-r' : 'border-r border-slate-200/90 dark:border-white/10'),
+      canResizeColumns && rightKey && 'relative',
       column?.headClassName,
     );
 
@@ -335,7 +461,8 @@ export function DataTableGrid<TRow, TKey extends string>({
         size="sm"
         onClick={() => onSort?.(key)}
         className={cn(
-          'h-7 flex-1 justify-center gap-1.5 px-2 min-w-0',
+          'h-7 w-full min-w-0 overflow-hidden px-1',
+          isOps ? 'justify-center gap-0.5' : 'flex-1 justify-center gap-1.5 px-2',
           'rounded',
           'text-slate-600 dark:text-slate-300',
           'hover:bg-slate-200/60 dark:hover:bg-white/10',
@@ -343,19 +470,39 @@ export function DataTableGrid<TRow, TKey extends string>({
           'transition-colors',
         )}
       >
-        <span>{column?.label ?? key}</span>
+        <span className="truncate" title={column?.label ?? key}>{column?.label ?? key}</span>
         {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
         {renderSortIcon?.(key) ?? <ArrowUpDown size={12} className="opacity-60 shrink-0" />}
       </Button>
     ) : (
-      <span className="inline-flex flex-1 items-center justify-center gap-1.5 px-2 min-w-0">
-        <span>{column?.label ?? key}</span>
+      <span className="inline-flex w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden px-1">
+        <span className="truncate" title={column?.label ?? key}>{column?.label ?? key}</span>
         {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
       </span>
     );
 
+    const resizeHandle = canResizeColumns && rightKey ? (
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        className={cn('wms-ops-col-resize-handle', !isOps && 'data-table-col-resize-handle')}
+        onPointerDown={handleResizePointerDown(String(key), rightKey)}
+        onPointerMove={handleResizePointerMove}
+        onPointerUp={handleResizePointerEnd}
+        onPointerCancel={handleResizePointerEnd}
+        data-no-drag-scroll="true"
+      />
+    ) : null;
+
     return (
-      <SortableHead key={key} id={key} isDraggable={isDraggable} className={headCellClass}>
+      <SortableHead
+        key={key}
+        id={key}
+        isDraggable={isDraggable}
+        className={headCellClass}
+        variant={variant}
+        trailing={resizeHandle}
+      >
         {content}
       </SortableHead>
     );
@@ -364,10 +511,10 @@ export function DataTableGrid<TRow, TKey extends string>({
   const actionsHead = showActionsColumn ? (
     <TableHead
       className={cn(
-        'w-[156px] min-w-[156px] text-right',
-        'bg-slate-100/90 dark:bg-white/[0.06]',
-        'text-xs uppercase tracking-wide font-semibold text-slate-600 dark:text-slate-300',
-        'border-l border-slate-200/70 dark:border-white/10',
+        'text-center border-l',
+        isOps
+          ? 'wms-ops-table-actions-col wms-ops-table-head'
+          : 'w-[156px] min-w-[156px] text-right bg-slate-100/90 dark:bg-white/[0.06] text-xs uppercase tracking-wide font-semibold text-slate-600 dark:text-slate-300 border-slate-200/70 dark:border-white/10',
       )}
     >
       {actionsHeaderLabel}
@@ -375,13 +522,16 @@ export function DataTableGrid<TRow, TKey extends string>({
   ) : null;
 
   return (
-    <div className="min-w-0 w-full space-y-4">
-      {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
+    <div className={cn('min-w-0 w-full space-y-4', isOps && 'wms-ops-data-grid')}>
+      {actionBar ? <DataTableActionBar {...actionBar} variant={actionBar.variant ?? variant} /> : toolbar}
 
       <div
         ref={tableScrollRef}
         className={cn(
-          'w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-slate-200/70 bg-white dark:border-white/10 dark:bg-[#130822]',
+          'w-full min-w-0 overflow-x-auto overflow-y-hidden',
+          isOps
+            ? 'wms-ops-table-wrap border'
+            : 'rounded-2xl border border-slate-200/70 bg-white dark:border-white/10 dark:bg-[#130822]',
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab',
         )}
         onPointerDown={handleScrollDragStart}
@@ -396,7 +546,25 @@ export function DataTableGrid<TRow, TKey extends string>({
           onDragEnd={handleColumnDragEnd}
           autoScroll={false}
         >
-          <Table className={minTableWidthClassName}>
+          <Table
+            ref={tableRef}
+            className={cn(
+              isOps
+                ? cn('w-full table-fixed wms-ops-table-fixed', minTableWidthClassName)
+                : minTableWidthClassName,
+            )}
+            style={tableMinWidthPx ? { minWidth: tableMinWidthPx } : undefined}
+          >
+            {canResizeColumns ? (
+              <colgroup>
+                {widthKeys.map((key) => (
+                  <col
+                    key={key}
+                    style={{ width: `${getColumnWidthPercent(resolvedColumnWidths[key] ?? MIN_COLUMN_WEIGHT, totalColumnWeight)}%` }}
+                  />
+                ))}
+              </colgroup>
+            ) : null}
             <TableHeader>
               <TableRow>
                 <SortableContext
@@ -415,6 +583,8 @@ export function DataTableGrid<TRow, TKey extends string>({
               rows={rows}
               rowKey={rowKey}
               renderCell={renderCell}
+              getCellText={getCellText}
+              variant={variant}
               isLoading={isLoading}
               isError={isError}
               errorText={errorText}
@@ -436,6 +606,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       </div>
 
       <DataTableGridPagination
+        variant={variant}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
         onPageSizeChange={onPageSizeChange}

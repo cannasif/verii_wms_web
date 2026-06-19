@@ -2,6 +2,8 @@ import { type ReactElement, type ReactNode } from 'react';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import type { DataTableGridColumn } from '../DataTableGrid';
+import type { DataTableVariant } from '../DataTableActionBar';
+import { DataTableGridCell } from './DataTableGridCell';
 import { findColumn } from './shared';
 
 interface DataTableGridBodyProps<TRow, TKey extends string> {
@@ -10,6 +12,8 @@ interface DataTableGridBodyProps<TRow, TKey extends string> {
   rows: TRow[];
   rowKey: (row: TRow) => string | number;
   renderCell: (row: TRow, columnKey: TKey) => ReactNode;
+  getCellText?: (row: TRow, columnKey: TKey) => string | undefined;
+  variant?: DataTableVariant;
   isLoading: boolean;
   isError: boolean;
   errorText: string;
@@ -53,6 +57,8 @@ export function DataTableGridBody<TRow, TKey extends string>({
   rows,
   rowKey,
   renderCell,
+  getCellText,
+  variant = 'default',
   isLoading,
   isError,
   errorText,
@@ -69,6 +75,17 @@ export function DataTableGridBody<TRow, TKey extends string>({
   handleRowClick,
   handleRowDoubleClick,
 }: DataTableGridBodyProps<TRow, TKey>): ReactElement {
+  const isOps = variant === 'ops';
+
+  const wrapCell = (row: TRow, key: TKey, content: ReactNode): ReactNode => {
+    if (!isOps) return content;
+    return (
+      <DataTableGridCell title={getCellText?.(row, key)}>
+        {content}
+      </DataTableGridCell>
+    );
+  };
+
   return (
     <TableBody>
       {isLoading &&
@@ -92,16 +109,26 @@ export function DataTableGridBody<TRow, TKey extends string>({
 
       {!isLoading && isError && (
         <TableRow>
-          <TableCell colSpan={colSpan} className="py-8 text-center text-red-600">
-            {errorText}
+          <TableCell colSpan={colSpan} className={cn(isOps ? 'border-0 p-0' : 'py-8 text-center text-red-600')}>
+            {isOps ? (
+              <div className="wms-ops-grid-error" role="alert">
+                {errorText}
+              </div>
+            ) : (
+              errorText
+            )}
           </TableCell>
         </TableRow>
       )}
 
       {!isLoading && !isError && rows.length === 0 && (
         <TableRow>
-          <TableCell colSpan={colSpan} className="py-8 text-center text-muted-foreground">
-            {emptyText}
+          <TableCell colSpan={colSpan} className={cn(isOps ? 'border-0 p-0' : 'py-8 text-center text-muted-foreground')}>
+            {isOps ? (
+              <div className="wms-ops-grid-empty">{emptyText}</div>
+            ) : (
+              emptyText
+            )}
           </TableCell>
         </TableRow>
       )}
@@ -128,7 +155,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
                       column?.cellClassName,
                     )}
                   >
-                    {renderCell(row, key)}
+                    {wrapCell(row, key, renderCell(row, key))}
                   </TableCell>
                 );
               })}

@@ -8,8 +8,13 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { AdvancedFilter } from './AdvancedFilter';
 import { ColumnPreferencesPopover, type ColumnDef } from './ColumnPreferencesPopover';
 import { GridExportMenu } from './GridExportMenu';
+import { OpsActionButton } from './OpsActionButton';
+import { OpsListSearchField } from './OpsListSearchField';
+import { cn } from '@/lib/utils';
 import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
+
+export type DataTableVariant = 'default' | 'ops';
 
 export interface DataTableSearchConfig {
   value?: string;
@@ -61,6 +66,7 @@ export interface DataTableActionBarProps {
   refresh?: DataTableRefreshConfig;
   searchDebounceMs?: number;
   leftSlot?: React.ReactNode;
+  variant?: DataTableVariant;
 }
 
 export function DataTableActionBar({
@@ -93,8 +99,10 @@ export function DataTableActionBar({
   refresh,
   searchDebounceMs = 700,
   leftSlot,
+  variant = 'default',
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
+  const isOps = variant === 'ops';
   const [showFilters, setShowFilters] = useState(false);
   const [internalSearchValue, setInternalSearchValue] = useState(search?.defaultValue ?? '');
   const [legacyDisplayValue, setLegacyDisplayValue] = useState(searchValue ?? '');
@@ -175,7 +183,7 @@ export function DataTableActionBar({
   };
 
   const resolvedSearchPlaceholder = search?.placeholder ?? searchPlaceholder ?? t('common.search');
-  const resolvedSearchClassName = search?.className ?? searchClassName;
+  const resolvedSearchClassName = search?.className ?? (isOps ? 'md:w-64' : searchClassName);
   const shouldRenderSearch = Boolean(search || onSearchChange);
   const refreshCooldownSeconds = Math.max(refresh?.cooldownSeconds ?? 60, 0);
   const refreshRemainingSeconds = refreshCooldownUntil == null
@@ -194,59 +202,109 @@ export function DataTableActionBar({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-center gap-2">
+    <div className={cn('flex flex-wrap items-center justify-between gap-2', isOps && 'wms-ops-data-grid-toolbar')}>
+      <div className={cn('flex min-w-0 items-center gap-2', isOps && 'wms-ops-data-grid-toolbar__start')}>
         {shouldRenderSearch && (
-          <Input
-            placeholder={resolvedSearchPlaceholder}
-            value={currentSearchValue}
-            onChange={(event) => handleSearchInputChange(event.target.value)}
-            className={resolvedSearchClassName}
-          />
+          isOps ? (
+            <OpsListSearchField
+              value={currentSearchValue}
+              placeholder={resolvedSearchPlaceholder}
+              onValueChange={handleSearchInputChange}
+              rightSlot={leftSlot}
+              className={resolvedSearchClassName}
+            />
+          ) : (
+            <Input
+              placeholder={resolvedSearchPlaceholder}
+              value={currentSearchValue}
+              onChange={(event) => handleSearchInputChange(event.target.value)}
+              className={resolvedSearchClassName}
+            />
+          )
         )}
         {refresh && (
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshDisabled}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${refresh?.isLoading ? 'animate-spin' : ''}`} />
-            {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
-          </Button>
+          isOps ? (
+            <OpsActionButton
+              type="button"
+              variant="secondary"
+              className="wms-ops-list-toolbar-btn"
+              onClick={handleRefresh}
+              disabled={isRefreshDisabled}
+            >
+              <RefreshCw className={cn('size-3.5', refresh?.isLoading && 'animate-spin')} aria-hidden />
+              {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
+            </OpsActionButton>
+          ) : (
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshDisabled}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${refresh?.isLoading ? 'animate-spin' : ''}`} />
+              {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
+            </Button>
+          )
         )}
-        {leftSlot}
+        {(!isOps || !shouldRenderSearch) && leftSlot ? leftSlot : null}
       </div>
-      <div className="flex items-center gap-2">
+      <div className={cn('flex flex-wrap items-center gap-2', isOps && 'wms-ops-data-grid-toolbar__end')}>
         <Popover open={showFilters} onOpenChange={setShowFilters}>
           <PopoverTrigger asChild>
-            <Button
-              variant={appliedFilterCount > 0 ? 'default' : 'outline'}
-              size="sm"
-              className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                appliedFilterCount > 0
-                  ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                  : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-              }`}
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              {t('common.filters')}
-              {appliedFilterCount > 0 && (
-                <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
-                  {appliedFilterCount}
-                </span>
-              )}
-            </Button>
+            {isOps ? (
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                className={cn(
+                  'wms-ops-list-toolbar-btn',
+                  appliedFilterCount > 0 && 'wms-ops-list-toolbar-btn--active',
+                )}
+              >
+                <Filter className="size-3.5" aria-hidden />
+                {t('common.filters')}
+                {appliedFilterCount > 0 && (
+                  <span className="ml-1 inline-flex min-w-5 items-center justify-center rounded-none bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                    {appliedFilterCount}
+                  </span>
+                )}
+              </OpsActionButton>
+            ) : (
+              <Button
+                variant={appliedFilterCount > 0 ? 'default' : 'outline'}
+                size="sm"
+                className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
+                  appliedFilterCount > 0
+                    ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                    : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                }`}
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {t('common.filters')}
+                {appliedFilterCount > 0 && (
+                  <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                    {appliedFilterCount}
+                  </span>
+                )}
+              </Button>
+            )}
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between p-3 border-b border-white/5">
-              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+          <PopoverContent
+            side="bottom"
+            align="end"
+            className={cn(
+              isOps
+                ? 'wms-ops-list-popover wms-ops-list-popover--filter w-[640px] max-w-[95vw] p-0 border-0 shadow-none'
+                : 'w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden',
+            )}
+          >
+            <div className={cn(isOps ? 'wms-ops-list-popover__header' : 'flex items-center justify-between p-3 border-b border-white/5')}>
+              <h3 className={cn(isOps ? 'wms-ops-list-popover__title' : 'text-sm font-semibold text-slate-700 dark:text-slate-200')}>
                 {t('advancedFilter.title', { ns: translationNamespace, defaultValue: t('advancedFilter.title', { ns: 'common' }) })}
               </h3>
               <button
                 onClick={() => setShowFilters(false)}
-                className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className={cn(isOps ? 'wms-ops-list-popover__close' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors')}
                 aria-label={t('common.close')}
               >
                 <X size={16} />
               </button>
             </div>
-            <div className="max-h-[420px] overflow-y-auto p-3">
+            <div className={cn(isOps ? 'wms-ops-list-popover__body' : 'max-h-[420px] overflow-y-auto p-3')}>
               <AdvancedFilter
                 columns={filterColumns}
                 defaultColumn={defaultFilterColumn}
@@ -264,6 +322,8 @@ export function DataTableActionBar({
                 }}
                 translationNamespace={translationNamespace}
                 embedded
+                variant={variant}
+                appliedFilterCount={appliedFilterCount}
               />
             </div>
           </PopoverContent>
@@ -274,6 +334,7 @@ export function DataTableActionBar({
           columns={exportColumns}
           rows={exportRows}
           getExportData={getExportData}
+          variant={variant}
         />
 
         <ColumnPreferencesPopover
@@ -284,6 +345,7 @@ export function DataTableActionBar({
           columnOrder={columnOrder}
           onVisibleColumnsChange={onVisibleColumnsChange}
           onColumnOrderChange={onColumnOrderChange}
+          variant={variant}
         />
       </div>
     </div>

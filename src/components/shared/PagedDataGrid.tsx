@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { DataTableGrid, type DataTableGridColumn, type DataTableSortDirection } from './DataTableGrid';
-import type { DataTableActionBarProps } from './DataTableActionBar';
+import type { DataTableActionBarProps, DataTableVariant } from './DataTableActionBar';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { inferFilterColumnType, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
@@ -80,6 +80,12 @@ interface PagedDataGridProps<TRow, TKey extends string> {
     cooldownSeconds?: number;
     label?: string;
   };
+  variant?: DataTableVariant;
+  defaultColumnWidths?: Record<string, number>;
+  columnWidths?: Record<string, number>;
+  onResizeColumnPair?: (leftKey: string, rightKey: string, deltaWeight: number) => void;
+  getCellText?: (row: TRow, columnKey: TKey) => string | undefined;
+  enableColumnResize?: boolean;
 }
 
 export function PagedDataGrid<TRow, TKey extends string>({
@@ -138,12 +144,31 @@ export function PagedDataGrid<TRow, TKey extends string>({
   search,
   leftSlot,
   refresh,
+  variant = 'default',
+  defaultColumnWidths,
+  columnWidths: columnWidthsProp,
+  onResizeColumnPair: onResizeColumnPairProp,
+  getCellText,
+  enableColumnResize,
 }: PagedDataGridProps<TRow, TKey>): ReactElement {
   const resolvedPageKey = pageKey ?? actionBar?.pageKey ?? 'paged-data-grid';
-  const { columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const {
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths: internalColumnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
     pageKey: resolvedPageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: defaultColumnWidths,
+    includeActionsColumn: showActionsColumn,
   });
+
+  const resolvedColumnWidths = columnWidthsProp ?? internalColumnWidths;
+  const resolvedResizeColumnPair = onResizeColumnPairProp ?? resizeColumnPair;
 
   const resolvedVisibleColumnKeys = useMemo(
     () => visibleColumnKeys ?? (orderedVisibleColumns.filter((key) => key !== 'actions') as TKey[]),
@@ -223,6 +248,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
 
   return (
     <DataTableGrid<TRow, TKey>
+      variant={variant}
       pageKey={resolvedPageKey}
       columns={columns}
       visibleColumnKeys={resolvedVisibleColumnKeys}
@@ -260,6 +286,10 @@ export function PagedDataGrid<TRow, TKey extends string>({
       minTableWidthClassName={minTableWidthClassName}
       disablePaginationButtons={disablePaginationButtons}
       actionBar={resolvedActionBar}
+      columnWidths={resolvedColumnWidths}
+      onResizeColumnPair={resolvedResizeColumnPair}
+      getCellText={getCellText}
+      enableColumnResize={enableColumnResize}
     />
   );
 }
