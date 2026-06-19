@@ -55,6 +55,7 @@ interface KkdCrudPageProps<TItem extends { id: number }, TForm extends object, T
   mapSortBy: (value: TColumnKey) => string;
   renderCell: (row: TItem, columnKey: TColumnKey) => ReactElement | string | number | null;
   renderForm?: (props: KkdCrudFormRenderProps<TForm, TItem>) => ReactElement;
+  headerActions?: ReactElement;
 }
 
 function formatDateInput(value: unknown): string {
@@ -113,6 +114,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   mapSortBy,
   renderCell,
   renderForm,
+  headerActions,
 }: KkdCrudPageProps<TItem, TForm, TColumnKey>): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
@@ -276,13 +278,16 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{title}</h1>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{description}</p>
           </div>
-          <Button
-            onClick={openCreate}
-            className="h-11 rounded-2xl border-0 bg-linear-to-r from-cyan-600 to-emerald-600 px-6 text-white shadow-lg shadow-cyan-500/20 hover:text-white"
-          >
-            <Plus size={18} className="mr-2" />
-            {t('common.add')}
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {headerActions}
+            <Button
+              onClick={openCreate}
+              className="h-11 rounded-2xl border-0 bg-linear-to-r from-cyan-600 to-emerald-600 px-6 text-white shadow-lg shadow-cyan-500/20 hover:text-white"
+            >
+              <Plus size={18} className="mr-2" />
+              {t('common.add')}
+            </Button>
+          </div>
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">

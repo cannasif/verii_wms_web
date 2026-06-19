@@ -1,8 +1,10 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/features/shared/api/lookup-api';
@@ -221,6 +223,7 @@ function EmployeeForm({
 
 export function KkdEmployeePage(): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
+  const queryClient = useQueryClient();
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'employeeCode', label: t('kkd.columns.employeeCode') },
     { key: 'firstName', label: t('kkd.columns.firstName') },
@@ -282,6 +285,13 @@ export function KkdEmployeePage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateEmployee(id, dto as UpdateKkdEmployeeDto)}
       deleteItem={kkdApi.deleteEmployee}
       queryKey={['kkd', 'employees']}
+      headerActions={(
+        <DefinitionExcelActions
+          definitionKey="kkd-employee"
+          fileNamePrefix="kkd-calisan-kartlari"
+          onImportCompleted={() => queryClient.invalidateQueries({ queryKey: ['kkd', 'employees'] })}
+        />
+      )}
       mapSortBy={(value) => ({
         employeeCode: 'EmployeeCode',
         firstName: 'FirstName',

@@ -1,8 +1,10 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeRoleDto, KkdEmployeeDepartmentDto, KkdEmployeeRoleDto, UpdateKkdEmployeeRoleDto } from '../types/kkd.types';
@@ -65,6 +67,7 @@ function RoleForm({
 
 export function KkdEmployeeRolePage(): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
+  const queryClient = useQueryClient();
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'departmentCode', label: t('kkd.columns.departmentCode') },
     { key: 'departmentName', label: t('kkd.columns.department') },
@@ -96,6 +99,13 @@ export function KkdEmployeeRolePage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateRole(id, dto as UpdateKkdEmployeeRoleDto)}
       deleteItem={kkdApi.deleteRole}
       queryKey={['kkd', 'roles']}
+      headerActions={(
+        <DefinitionExcelActions
+          definitionKey="kkd-employee-role"
+          fileNamePrefix="kkd-gorev-tanimlari"
+          onImportCompleted={() => queryClient.invalidateQueries({ queryKey: ['kkd', 'roles'] })}
+        />
+      )}
       mapSortBy={(value) => value === 'departmentCode' ? 'DepartmentCode' : value === 'departmentName' ? 'DepartmentName' : value === 'roleName' ? 'RoleName' : value === 'updatedDate' ? 'UpdatedDate' : value === 'isActive' ? 'IsActive' : 'RoleCode'}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
       renderForm={({ formState, setFormState }) => (
