@@ -4,18 +4,16 @@ import { ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { PagedDataGrid, OpsActionButton, OpsFieldShell, type PagedDataGridColumn } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { printerManagementApi } from '@/features/printer-management/api/printer-management.api';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/ui-store';
 import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
 import type { PrinterProfile } from '@/features/printer-management/types/printer-management.types';
@@ -28,6 +26,7 @@ import type {
   BarcodeTemplate,
 } from '../types/barcode-designer-editor.types';
 import { DEFAULT_TEMPLATE_DOCUMENT } from '../utils/barcode-designer-document';
+import { getPrintSourceStatusBadgeClass, localizePrintSourceStatus } from '../utils/print-source-status';
 
 type HeaderColumnKey = 'select' | 'documentNo' | 'subtitle' | 'status' | 'documentDate';
 type HeaderSortKey = 'id';
@@ -50,6 +49,14 @@ const operationOptions: OperationOption[] = [
   { value: 'package', label: 'Paketleme', description: 'Paket ve koli belgeleri' },
   { value: 'production-transfer', label: 'Üretim Transfer', description: 'Üretim transfer belgeleri' },
 ];
+
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  select: 5,
+  documentNo: 22,
+  subtitle: 28,
+  status: 14,
+  documentDate: 16,
+};
 
 function mapSortBy(_: HeaderSortKey): string {
   return 'Id';
@@ -81,10 +88,13 @@ export function BarcodePrintPage(): ReactElement {
     : 'goods-receipt';
   const initialSourceHeaderId = Number(searchParams.get('sourceHeaderId') ?? 0);
 
+  const initialPrintMode = searchParams.get('printMode');
+  const hasDeepLinkSelection = Number.isFinite(initialSourceHeaderId) && initialSourceHeaderId > 0;
+
   const [sourceModule, setSourceModule] = useState<BarcodePrintSourceModule>(initialSourceModule);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(initialTemplateId);
   const [selectedHeaderMap, setSelectedHeaderMap] = useState<Record<number, BarcodeSourceHeaderOption>>(
-    Number.isFinite(initialSourceHeaderId) && initialSourceHeaderId > 0
+    hasDeepLinkSelection
       ? { [initialSourceHeaderId]: { id: initialSourceHeaderId, sourceModule: initialSourceModule, title: `#${initialSourceHeaderId}` } }
       : {},
   );
@@ -92,7 +102,7 @@ export function BarcodePrintPage(): ReactElement {
   const [selectedServerPrinterId, setSelectedServerPrinterId] = useState('');
   const [selectedServerPrinterProfileId, setSelectedServerPrinterProfileId] = useState('');
   const [copies, setCopies] = useState(1);
-  const [printSettingsExpanded, setPrintSettingsExpanded] = useState(false);
+  const [printSettingsExpanded, setPrintSettingsExpanded] = useState(hasDeepLinkSelection || Boolean(initialPrintMode));
   const screenReadyReportedRef = useRef(false);
   const sourceModuleHydratedRef = useRef(false);
 
@@ -413,81 +423,70 @@ export function BarcodePrintPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
-          { label: t('sidebar.erpBarcodePrint', { defaultValue: 'Missing translation' }), isActive: true },
-        ]}
-      />
+    <div className="wms-ops-form wms-ops-list wms-ops-barcode-print space-y-5">
+      <header className="wms-ops-header">
+        <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+          {t('sidebar.erp', { defaultValue: 'ERP' })} / {t('barcodePrint.badge', { defaultValue: 'WMS Print' })}
+        </div>
+      </header>
 
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.12),_transparent_30%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">{t('barcodePrint.badge', { defaultValue: 'Missing translation' })}</Badge>
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-                {t('sidebar.erpBarcodePrint', { defaultValue: 'Missing translation' })}
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {t('barcodePrint.heroDescription', { defaultValue: 'Missing translation' })}
-              </p>
-            </div>
+      <section className="wms-ops-barcode-print__hero">
+        <div className="wms-ops-barcode-print__hero-grid">
+          <div>
+            <h1 className="wms-ops-barcode-print__title">
+              {t('sidebar.erpBarcodePrint', { defaultValue: 'Barcode Print' })}
+            </h1>
+            <p className="wms-ops-barcode-print__description">
+              {t('barcodePrint.heroDescription', { defaultValue: 'Missing translation' })}
+            </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.operation', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedDocuments', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodePrint.selectedLines', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{selectedLineIds.length}</div>
-              </CardContent>
-            </Card>
+          <div className="wms-ops-barcode-print__stats">
+            <div className="wms-ops-barcode-print__stat">
+              <div className="wms-ops-barcode-print__stat-label">{t('barcodePrint.operation', { defaultValue: 'Operation' })}</div>
+              <div className="wms-ops-barcode-print__stat-value">{getOperationLabel(sourceModule)}</div>
+            </div>
+            <div className="wms-ops-barcode-print__stat">
+              <div className="wms-ops-barcode-print__stat-label">{t('barcodePrint.selectedDocuments', { defaultValue: 'Documents' })}</div>
+              <div className="wms-ops-barcode-print__stat-value">{selectedHeaderIds.length}</div>
+            </div>
+            <div className="wms-ops-barcode-print__stat">
+              <div className="wms-ops-barcode-print__stat-label">{t('barcodePrint.selectedLines', { defaultValue: 'Lines' })}</div>
+              <div className="wms-ops-barcode-print__stat-value">{selectedLineIds.length}</div>
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[0.72fr_0.28fr]">
-        <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-            <CardHeader>
-              <CardTitle>{t('barcodePrint.operationAndDocumentList', { defaultValue: 'Missing translation' })}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="grid gap-4 lg:grid-cols-[0.35fr_0.65fr]">
-                <div className="space-y-2">
-                  <Label>{t('barcodePrint.operation', { defaultValue: 'Missing translation' })}</Label>
-                  <Select value={sourceModule} onValueChange={(value) => setSourceModule(value as BarcodePrintSourceModule)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('barcodePrint.selectOperation', { defaultValue: 'Missing translation' })} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {operationOptions.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+      <div className="wms-ops-barcode-print__layout">
+        <div className="wms-ops-barcode-print__main">
+          <section className="wms-ops-barcode-print__panel">
+            <div className="wms-ops-barcode-print__panel-head">
+              <h2 className="wms-ops-barcode-print__panel-title">
+                {t('barcodePrint.operationAndDocumentList', { defaultValue: 'Missing translation' })}
+              </h2>
+            </div>
+            <div className="wms-ops-barcode-print__panel-body space-y-4">
+              <div className="wms-ops-barcode-print__operation-row">
+                <div className="wms-ops-barcode-print__operation-field">
+                  <span className="wms-ops-barcode-print__field-label">{t('barcodePrint.operation', { defaultValue: 'Operation' })}</span>
+                  <OpsFieldShell className="wms-ops-barcode-print__operation-shell">
+                    <Select value={sourceModule} onValueChange={(value) => setSourceModule(value as BarcodePrintSourceModule)}>
+                      <SelectTrigger className={cn(OPS_FIELD_CLASS, 'wms-ops-barcode-print__operation-trigger h-11 w-full')}>
+                        <SelectValue placeholder={t('barcodePrint.selectOperation', { defaultValue: 'Missing translation' })} />
+                      </SelectTrigger>
+                      <SelectContent className="wms-ops-list-select-content">
+                        {operationOptions.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </OpsFieldShell>
                 </div>
-                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
-                  <div className="font-medium text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
-                  <div className="mt-1 text-slate-600 dark:text-slate-300">
-                    {operationOptions.find((item) => item.value === sourceModule)?.description}
-                  </div>
+                <div className="wms-ops-barcode-print__info-box">
+                  <strong>{getOperationLabel(sourceModule)}</strong>
+                  {operationOptions.find((item) => item.value === sourceModule)?.description}
                 </div>
               </div>
 
@@ -496,6 +495,9 @@ export function BarcodePrintPage(): ReactElement {
                 columns={columns}
                 rows={currentPageRows}
                 rowKey={(row) => row.id}
+                idColumnKey="select"
+                lockedColumnKeys={['select']}
+                defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
                 renderCell={(row, columnKey) => {
                   switch (columnKey) {
                     case 'select':
@@ -505,15 +507,28 @@ export function BarcodePrintPage(): ReactElement {
                           checked={selectedHeaderMap[row.id] != null}
                           onClick={(event) => event.stopPropagation()}
                           onChange={() => toggleHeaderSelection(row)}
-                          className="h-4 w-4 rounded border-slate-300"
+                          className="wms-ops-barcode-print__checkbox"
                         />
                       );
                     case 'documentNo':
                       return <span className="font-medium">{row.title}</span>;
                     case 'subtitle':
                       return row.subtitle ?? '-';
-                    case 'status':
-                      return <Badge variant="outline">{row.status ?? '-'}</Badge>;
+                    case 'status': {
+                      const status = row.status ?? '';
+                      const statusLabel = localizePrintSourceStatus(status, t);
+                      return status ? (
+                        <Badge
+                          variant="outline"
+                          className={getPrintSourceStatusBadgeClass(status)}
+                          title={status !== statusLabel ? status : undefined}
+                        >
+                          {statusLabel}
+                        </Badge>
+                      ) : (
+                        '-'
+                      );
+                    }
                     case 'documentDate':
                       return formatDate(row.documentDate);
                     default:
@@ -542,20 +557,8 @@ export function BarcodePrintPage(): ReactElement {
                   onValueChange: pagedGrid.searchConfig.onValueChange,
                   onSearchChange: pagedGrid.searchConfig.onSearchChange,
                   placeholder: t('barcodePrint.searchInOperation', { defaultValue: 'Missing translation', operation: getOperationLabel(sourceModule) }),
+                  className: 'wms-ops-barcode-print__search',
                 }}
-                leftSlot={(
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={toggleAllVisibleRows}>
-                      {allVisibleRowsSelected
-                        ? t('barcodePrint.clearVisible', { defaultValue: 'Missing translation' })
-                        : t('barcodePrint.selectVisible', { defaultValue: 'Missing translation' })}
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={clearSelection} disabled={selectedHeaderIds.length === 0 && selectedLineIds.length === 0}>
-                      <Trash2 className="mr-2 size-4" />
-                      {t('barcodePrint.clearSelection', { defaultValue: 'Missing translation' })}
-                    </Button>
-                  </div>
-                )}
                 refresh={{
                   onRefresh: () => {
                     void headersQuery.refetch();
@@ -563,29 +566,54 @@ export function BarcodePrintPage(): ReactElement {
                   isLoading: headersQuery.isFetching,
                   label: t('common.refresh', { defaultValue: 'Missing translation' }),
                 }}
+                afterRefreshSlot={(
+                  <>
+                    <OpsActionButton
+                      type="button"
+                      variant="secondary"
+                      className="wms-ops-barcode-print__toolbar-select-btn"
+                      onClick={toggleAllVisibleRows}
+                    >
+                      {allVisibleRowsSelected
+                        ? t('barcodePrint.clearVisible', { defaultValue: 'Missing translation' })
+                        : t('barcodePrint.selectVisible', { defaultValue: 'Missing translation' })}
+                    </OpsActionButton>
+                    <OpsActionButton
+                      type="button"
+                      variant="secondary"
+                      className="wms-ops-barcode-print__toolbar-select-btn"
+                      onClick={clearSelection}
+                      disabled={selectedHeaderIds.length === 0 && selectedLineIds.length === 0}
+                    >
+                      <Trash2 className="size-3 shrink-0" aria-hidden />
+                      {t('barcodePrint.clearSelection', { defaultValue: 'Missing translation' })}
+                    </OpsActionButton>
+                  </>
+                )}
+                variant="ops"
               />
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-            <CardHeader>
-              <CardTitle>{t('barcodePrint.documentLines', { defaultValue: 'Missing translation' })}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <section className="wms-ops-barcode-print__panel">
+            <div className="wms-ops-barcode-print__panel-head">
+              <h2 className="wms-ops-barcode-print__panel-title">
+                {t('barcodePrint.documentLines', { defaultValue: 'Missing translation' })}
+              </h2>
+            </div>
+            <div className="wms-ops-barcode-print__panel-body">
               {singleSelectedHeader ? (
-                <>
-                  <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
-                    <div className="font-medium text-slate-900 dark:text-white">{singleSelectedHeader.title}</div>
-                    <div className="mt-1 text-slate-600 dark:text-slate-300">
-                      {t('barcodePrint.linesHelp', { defaultValue: 'Missing translation' })}
-                    </div>
+                <div className="space-y-4">
+                  <div className="wms-ops-barcode-print__info-box">
+                    <strong>{singleSelectedHeader.title}</strong>
+                    {t('barcodePrint.linesHelp', { defaultValue: 'Missing translation' })}
                   </div>
 
-                  <div className="max-h-[360px] overflow-auto rounded-2xl border border-slate-200/80 dark:border-white/10">
-                    <table className="min-w-full text-sm">
-                      <thead className="bg-slate-50/80 dark:bg-slate-900/50">
+                  <div className="wms-ops-barcode-print__lines-wrap custom-scrollbar">
+                    <table className="wms-ops-barcode-print__lines-table">
+                      <thead>
                         <tr>
-                          <th className="w-12 px-3 py-3 text-left">
+                          <th className="w-12">
                             <input
                               type="checkbox"
                               checked={(linesQuery.data ?? []).length > 0 && (linesQuery.data ?? []).every((line) => selectedLineMap[line.id] != null)}
@@ -608,201 +636,223 @@ export function BarcodePrintPage(): ReactElement {
                                   return next;
                                 });
                               }}
-                              className="h-4 w-4 rounded border-slate-300"
+                              className="wms-ops-barcode-print__checkbox"
                             />
                           </th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.stock', { defaultValue: 'Missing translation' })}</th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.description')}</th>
-                          <th className="px-3 py-3 text-left font-medium text-slate-600 dark:text-slate-300">{t('common.quantity', { defaultValue: 'Missing translation' })}</th>
+                          <th>{t('common.stock', { defaultValue: 'Stock' })}</th>
+                          <th>{t('common.description')}</th>
+                          <th>{t('common.quantity', { defaultValue: 'Quantity' })}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {(linesQuery.data ?? []).map((line) => (
-                          <tr
-                            key={line.id}
-                            className="cursor-pointer border-t border-slate-200/70 hover:bg-slate-50/70 dark:border-white/10 dark:hover:bg-white/[0.03]"
-                            onClick={() => toggleLineSelection(line)}
-                          >
-                            <td className="px-3 py-3">
+                          <tr key={line.id} onClick={() => toggleLineSelection(line)}>
+                            <td>
                               <input
                                 type="checkbox"
                                 checked={selectedLineMap[line.id] != null}
                                 onClick={(event) => event.stopPropagation()}
                                 onChange={() => toggleLineSelection(line)}
-                                className="h-4 w-4 rounded border-slate-300"
+                                className="wms-ops-barcode-print__checkbox"
                               />
                             </td>
-                            <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">{line.title}</td>
-                            <td className="px-3 py-3 text-slate-600 dark:text-slate-300">{line.subtitle ?? '-'}</td>
-                            <td className="px-3 py-3 text-slate-600 dark:text-slate-300">{line.quantity ?? '-'}</td>
+                            <td className="font-medium">{line.title}</td>
+                            <td>{line.subtitle ?? '-'}</td>
+                            <td>{line.quantity ?? '-'}</td>
                           </tr>
                         ))}
                         {linesQuery.isLoading ? (
                           <tr>
-                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">{t('barcodePrint.linesLoading', { defaultValue: 'Missing translation' })}</td>
+                            <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                              {t('barcodePrint.linesLoading', { defaultValue: 'Missing translation' })}
+                            </td>
                           </tr>
                         ) : null}
                         {!linesQuery.isLoading && (linesQuery.data ?? []).length === 0 ? (
                           <tr>
-                            <td colSpan={4} className="px-3 py-8 text-center text-slate-500">{t('barcodePrint.linesEmpty', { defaultValue: 'Missing translation' })}</td>
+                            <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                              {t('barcodePrint.linesEmpty', { defaultValue: 'Missing translation' })}
+                            </td>
                           </tr>
                         ) : null}
                       </tbody>
                     </table>
                   </div>
-                </>
+                </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-slate-300/80 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                <div className="wms-ops-barcode-print__empty">
                   {t('barcodePrint.selectSingleDocument', { defaultValue: 'Missing translation' })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
 
-        <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-            <CardHeader>
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-3 text-left"
-                onClick={() => setPrintSettingsExpanded((current) => !current)}
-              >
-                <CardTitle>{t('barcodePrint.printSettings', { defaultValue: 'Missing translation' })}</CardTitle>
-                <Badge variant="outline" className="gap-2">
-                  {printSettingsExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-                  {printSettingsExpanded ? 'Acik' : 'Yukle'}
-                </Badge>
-              </button>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <aside className="wms-ops-barcode-print__aside">
+          <section className="wms-ops-barcode-print__panel">
+            <button
+              type="button"
+              className="wms-ops-barcode-print__panel-head wms-ops-barcode-print__panel-head--toggle"
+              onClick={() => setPrintSettingsExpanded((current) => !current)}
+            >
+              <h2 className="wms-ops-barcode-print__panel-title">
+                {t('barcodePrint.printSettings', { defaultValue: 'Missing translation' })}
+              </h2>
+              <span className="wms-ops-barcode-print__settings-toggle">
+                {printSettingsExpanded ? <ChevronDown className="size-3.5" aria-hidden /> : <ChevronRight className="size-3.5" aria-hidden />}
+                {printSettingsExpanded
+                  ? t('barcodePrint.settingsExpanded', { defaultValue: 'Open' })
+                  : t('barcodePrint.settingsCollapsed', { defaultValue: 'Load' })}
+              </span>
+            </button>
+            <div className="wms-ops-barcode-print__panel-body wms-ops-barcode-print__panel-body--compact space-y-4">
               {!printSettingsExpanded ? (
-                <div className="rounded-2xl border border-dashed border-slate-300/80 px-4 py-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                  Yazdirma ayarlari ilk acilista yuklenmez. Tasarim, yazici ve profile ihtiyac oldugunda bu paneli acin.
+                <div className="wms-ops-barcode-print__empty min-h-[5rem]">
+                  {t('barcodePrint.settingsLazyHint', { defaultValue: 'Missing translation' })}
                 </div>
-              ) : null}
-              {printSettingsExpanded ? (
+              ) : (
                 <>
-              <div className="space-y-2">
-                <Label>Tasarım</Label>
-                <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Barkod tasarımı seç" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(templatesQuery.data?.data ?? []).map((template) => (
-                      <SelectItem key={template.id} value={String(template.id)}>
-                        {template.displayName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <span className="wms-ops-barcode-print__field-label">{t('barcodePrint.design', { defaultValue: 'Design' })}</span>
+                    <OpsFieldShell>
+                      <Select value={selectedTemplateId ? String(selectedTemplateId) : ''} onValueChange={(value) => setSelectedTemplateId(Number(value))}>
+                        <SelectTrigger className={cn(OPS_FIELD_CLASS, 'h-10 w-full')}>
+                          <SelectValue placeholder={t('barcodePrint.selectDesign', { defaultValue: 'Missing translation' })} />
+                        </SelectTrigger>
+                        <SelectContent className="wms-ops-list-select-content">
+                          {(templatesQuery.data?.data ?? []).map((template) => (
+                            <SelectItem key={template.id} value={String(template.id)}>
+                              {template.displayName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </OpsFieldShell>
+                  </div>
 
-              <div className="space-y-2">
-                <Label>Yazıcı</Label>
-                <Select value={selectedServerPrinterId} onValueChange={setSelectedServerPrinterId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sunucu yazıcısı seç" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(serverPrintersQuery.data?.data ?? []).filter((item) => item.isActive).map((printer) => (
-                      <SelectItem key={printer.id} value={String(printer.id)}>
-                        {printer.displayName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <span className="wms-ops-barcode-print__field-label">{t('barcodePrint.printer', { defaultValue: 'Printer' })}</span>
+                    <OpsFieldShell>
+                      <Select value={selectedServerPrinterId} onValueChange={setSelectedServerPrinterId}>
+                        <SelectTrigger className={cn(OPS_FIELD_CLASS, 'h-10 w-full')}>
+                          <SelectValue placeholder={t('barcodePrint.selectServerPrinter', { defaultValue: 'Missing translation' })} />
+                        </SelectTrigger>
+                        <SelectContent className="wms-ops-list-select-content">
+                          {(serverPrintersQuery.data?.data ?? []).filter((item) => item.isActive).map((printer) => (
+                            <SelectItem key={printer.id} value={String(printer.id)}>
+                              {printer.displayName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </OpsFieldShell>
+                  </div>
 
-              <div className="space-y-2">
-                <Label>Printer Profile</Label>
-                <Select value={selectedServerPrinterProfileId} onValueChange={setSelectedServerPrinterProfileId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Printer profile seç" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableServerProfiles.map((profile) => (
-                      <SelectItem key={profile.id} value={String(profile.id)}>
-                        {profile.displayName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <span className="wms-ops-barcode-print__field-label">{t('barcodePrint.printerProfile', { defaultValue: 'Profile' })}</span>
+                    <OpsFieldShell>
+                      <Select value={selectedServerPrinterProfileId} onValueChange={setSelectedServerPrinterProfileId}>
+                        <SelectTrigger className={cn(OPS_FIELD_CLASS, 'h-10 w-full')}>
+                          <SelectValue placeholder={t('barcodePrint.selectPrinterProfile', { defaultValue: 'Missing translation' })} />
+                        </SelectTrigger>
+                        <SelectContent className="wms-ops-list-select-content">
+                          {availableServerProfiles.map((profile) => (
+                            <SelectItem key={profile.id} value={String(profile.id)}>
+                              {profile.displayName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </OpsFieldShell>
+                  </div>
 
-              <div className="space-y-2">
-                <Label>Kopya</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={copies}
-                  onChange={(event) => setCopies(Math.max(1, Number(event.target.value) || 1))}
-                  disabled={!permission.canCreate && !permission.canUpdate}
-                />
-              </div>
+                  <div>
+                    <span className="wms-ops-barcode-print__field-label">{t('barcodePrint.copies', { defaultValue: 'Copies' })}</span>
+                    <OpsFieldShell>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={copies}
+                        onChange={(event) => setCopies(Math.max(1, Number(event.target.value) || 1))}
+                        disabled={!permission.canCreate && !permission.canUpdate}
+                        className={cn(OPS_FIELD_CLASS, 'h-10')}
+                      />
+                    </OpsFieldShell>
+                  </div>
 
-              <Button
-                className="w-full"
-                onClick={() => printMutation.mutate()}
-                disabled={printMutation.isPending || (!permission.canCreate && !permission.canUpdate)}
-              >
-                <Printer className="mr-2 size-4" />
-                {selectedLineIds.length > 0 ? 'Seçili Satırları Yazdır' : 'Seçili Belgeleri Yazdır'}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  void serverPrintersQuery.refetch();
-                  void printerProfilesQuery.refetch();
-                }}
-              >
-                <RefreshCcw className="mr-2 size-4" />
-                Yazıcıları Yenile
-              </Button>
+                  <div className="wms-ops-barcode-print__actions">
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      onClick={() => printMutation.mutate()}
+                      disabled={printMutation.isPending || (!permission.canCreate && !permission.canUpdate)}
+                    >
+                      <Printer className="size-3.5 shrink-0" aria-hidden />
+                      {selectedLineIds.length > 0
+                        ? t('barcodePrint.printSelectedLines', { defaultValue: 'Missing translation' })
+                        : t('barcodePrint.printSelectedDocuments', { defaultValue: 'Missing translation' })}
+                    </OpsActionButton>
+                    <OpsActionButton
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        void serverPrintersQuery.refetch();
+                        void printerProfilesQuery.refetch();
+                      }}
+                    >
+                      <RefreshCcw className="size-3.5 shrink-0" aria-hidden />
+                      {t('barcodePrint.refreshPrinters', { defaultValue: 'Missing translation' })}
+                    </OpsActionButton>
+                  </div>
                 </>
-              ) : null}
-            </CardContent>
-          </Card>
+              )}
+            </div>
+          </section>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-            <CardHeader>
-              <CardTitle>Seçim Özeti</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="text-xs text-slate-500 dark:text-slate-400">İşlem</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">{getOperationLabel(sourceModule)}</div>
+          <section className="wms-ops-barcode-print__panel">
+            <div className="wms-ops-barcode-print__panel-head">
+              <h2 className="wms-ops-barcode-print__panel-title">
+                {t('barcodePrint.selectionSummary', { defaultValue: 'Selection summary' })}
+              </h2>
+            </div>
+            <div className="wms-ops-barcode-print__panel-body space-y-2">
+              <div className="wms-ops-barcode-print__summary-item">
+                <div className="wms-ops-barcode-print__summary-label">{t('barcodePrint.operation', { defaultValue: 'Operation' })}</div>
+                <div className="wms-ops-barcode-print__summary-value">{getOperationLabel(sourceModule)}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Belgeler</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedHeaderIds.length}</div>
+              <div className="wms-ops-barcode-print__summary-item">
+                <div className="wms-ops-barcode-print__summary-label">{t('barcodePrint.selectedDocuments', { defaultValue: 'Documents' })}</div>
+                <div className="wms-ops-barcode-print__summary-value">{selectedHeaderIds.length}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Seçili Satırlar</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedLineIds.length}</div>
+              <div className="wms-ops-barcode-print__summary-item">
+                <div className="wms-ops-barcode-print__summary-label">{t('barcodePrint.selectedLines', { defaultValue: 'Lines' })}</div>
+                <div className="wms-ops-barcode-print__summary-value">{selectedLineIds.length}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Tasarım</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">{selectedTemplate?.displayName ?? '-'}</div>
+              <div className="wms-ops-barcode-print__summary-item">
+                <div className="wms-ops-barcode-print__summary-label">{t('barcodePrint.design', { defaultValue: 'Design' })}</div>
+                <div className="wms-ops-barcode-print__summary-value">{selectedTemplate?.displayName ?? '-'}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-slate-900/30">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Baskı Kapsamı</div>
-                <div className="mt-1 font-medium text-slate-900 dark:text-white">
+              <div className="wms-ops-barcode-print__summary-item">
+                <div className="wms-ops-barcode-print__summary-label">{t('barcodePrint.printScope', { defaultValue: 'Print scope' })}</div>
+                <div className="wms-ops-barcode-print__summary-value">
                   {selectedLineIds.length > 0 && singleSelectedHeader
-                    ? `${singleSelectedHeader.title} içinden ${selectedLineIds.length} satır`
-                    : `${selectedHeaderIds.length} belge`}
+                    ? t('barcodePrint.printScopeLines', {
+                        defaultValue: '{{count}} lines from {{document}}',
+                        document: singleSelectedHeader.title,
+                        count: selectedLineIds.length,
+                      })
+                    : t('barcodePrint.printScopeDocuments', {
+                        defaultValue: '{{count}} documents',
+                        count: selectedHeaderIds.length,
+                      })}
                 </div>
               </div>
-              <div className="text-xs leading-6 text-slate-500 dark:text-slate-400">
-                Bu ekran operasyon içindir. Tasarım seçimi yapılır, belge grid’den seçilir ve baskı işi doğrudan kuyruklanır.
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              <p className="wms-ops-barcode-print__hint pt-1">
+                {t('barcodePrint.screenHint', { defaultValue: 'Missing translation' })}
+              </p>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );
