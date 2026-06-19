@@ -4,9 +4,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, FileText, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { cn } from '@/lib/utils';
 import {
   createGoodsReceiptFormSchema,
   type SelectedOrderItem,
@@ -15,9 +17,7 @@ import {
 } from '../types/goods-receipt';
 import { goodsReceiptApi } from '../api/goods-receipt-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2OrderSelection } from './steps/Step2OrderSelection';
@@ -46,6 +46,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
 
   const form = useForm({
     resolver: zodResolver(schema),
+    shouldFocusError: false,
     defaultValues: {
       receiptDate: new Date().toISOString().split('T')[0],
       documentNo: '',
@@ -147,87 +148,137 @@ export function GoodsReceiptCreatePage(): ReactElement {
     setSelectedStockItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
+  const handleRemoveLastStockItem = (stockCode: string): void => {
+    setSelectedStockItems((prev) => {
+      for (let index = prev.length - 1; index >= 0; index -= 1) {
+        if (prev[index]?.stockCode === stockCode) {
+          return prev.filter((_, itemIndex) => itemIndex !== index);
+        }
+      }
+
+      return prev;
+    });
+  };
+
+  const handleClearStockSelection = (stockCode: string): void => {
+    setSelectedStockItems((prev) => prev.filter((item) => item.stockCode !== stockCode));
+  };
+
   const steps = [
     { label: t('goodsReceipt.create.steps.basicInfo') },
     { label: createMode === 'order' ? t('goodsReceipt.create.steps.orderSelection') : t('goodsReceipt.create.steps.stockSelection') },
   ];
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center gap-3 mb-4">
-        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('goodsReceipt.create.mode.order') : t('goodsReceipt.create.mode.stock')}
-        </Badge>
-        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
-          <TabsList>
-            <TabsTrigger value="order">{t('goodsReceipt.create.mode.order')}</TabsTrigger>
-            <TabsTrigger value="stock">{t('goodsReceipt.create.mode.stock')}</TabsTrigger>
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('goodsReceipt.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('goodsReceipt.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('goodsReceipt.create.title')}
+        description={t('goodsReceipt.create.subtitle')}
+        actions={
+          <Tabs
+            value={createMode}
+            onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}
+            className="w-full sm:w-auto"
+          >
+          <TabsList
+            className={cn(
+              'wms-ops-tabs w-full sm:w-auto',
+              createMode === 'order' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock',
+            )}
+          >
+            <span className="wms-ops-tab-indicator" aria-hidden />
+            <TabsTrigger value="order" className="wms-ops-tab gap-1.5">
+              <FileText className="size-3.5" />
+              {t('goodsReceipt.create.mode.order')}
+            </TabsTrigger>
+            <TabsTrigger value="stock" className="wms-ops-tab gap-1.5">
+              <Package className="size-3.5" />
+              {t('goodsReceipt.create.mode.stock')}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
-
+      }
+    >
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
           isActive: index + 1 === currentStep,
         }))}
-        className="mb-4"
+        className="wms-ops-steps mb-6"
       />
 
-      <FormPageShell
-        title={t('goodsReceipt.create.title')}
-        description={t('goodsReceipt.create.subtitle')}
-      >
-        <Form {...form}>
-          <form className="space-y-6 crm-page">
-            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
-            {currentStep === 1 ? (
-              <Step1BasicInfo />
-            ) : createMode === 'order' ? (
-              <Step2OrderSelection
-                selectedItems={selectedItems}
-                onToggleItem={handleToggleItem}
-                onUpdateItem={handleUpdateItem}
-                onRemoveItem={handleRemoveItem}
-              />
-            ) : (
-              <Step2StockSelection
-                selectedItems={selectedStockItems}
-                onToggleItem={handleToggleStockItem}
-                onUpdateItem={handleUpdateStockItem}
-                onRemoveItem={handleRemoveStockItem}
-              />
-            )}
+      <form className="space-y-6">
+        <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+          {currentStep === 1 ? (
+            <Step1BasicInfo variant="ops" />
+          ) : createMode === 'order' ? (
+            <Step2OrderSelection
+              variant="ops"
+              selectedItems={selectedItems}
+              onToggleItem={handleToggleItem}
+              onUpdateItem={handleUpdateItem}
+              onRemoveItem={handleRemoveItem}
+            />
+          ) : (
+            <Step2StockSelection
+              variant="ops"
+              selectedItems={selectedStockItems}
+              onToggleItem={handleToggleStockItem}
+              onUpdateItem={handleUpdateStockItem}
+              onRemoveItem={handleRemoveStockItem}
+              onRemoveLastOfStock={handleRemoveLastStockItem}
+              onClearStockSelection={handleClearStockSelection}
+            />
+          )}
 
-            <div className="flex justify-between pt-6 border-t">
-              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                {t('common.previous')}
-              </Button>
-              <div className="flex gap-2">
-                {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
-                    {t('common.next')}
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={
-                      !permission.canCreate
-                      ||
-                      createMutation.isPending
-                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
-                    }
-                  >
-                    {createMutation.isPending ? t('common.saving') : t('common.save')}
-                  </Button>
-                )}
-              </div>
+          <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+            <OpsActionButton
+              type="button"
+              variant="secondary"
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+            >
+              <ChevronLeft className="size-3.5" aria-hidden />
+              {t('common.previous')}
+            </OpsActionButton>
+            <div className="flex gap-3">
+              {currentStep < steps.length ? (
+                <OpsActionButton
+                  type="button"
+                  variant="primary"
+                  onClick={handleNext}
+                  disabled={!permission.canCreate}
+                >
+                  {t('common.next')}
+                  <ChevronRight className="size-3.5" aria-hidden />
+                </OpsActionButton>
+              ) : (
+                <OpsActionButton
+                  type="button"
+                  variant="primary"
+                  onClick={handleSave}
+                  disabled={
+                    !permission.canCreate
+                    || createMutation.isPending
+                    || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                  }
+                >
+                  {createMutation.isPending ? t('common.saving') : t('common.save')}
+                  <ChevronRight className="size-3.5" aria-hidden />
+                </OpsActionButton>
+              )}
             </div>
-            </fieldset>
-          </form>
-        </Form>
-      </FormPageShell>
-    </div>
+          </div>
+        </fieldset>
+      </form>
+    </OpsFormPageShell>
+    </Form>
   );
 }

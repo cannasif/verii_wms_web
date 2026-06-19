@@ -1,8 +1,9 @@
 import { type ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/lib/i18n';
-import { Search, Calendar } from 'lucide-react';
-import { PageState } from '@/components/shared';
+import { Search, Calendar, Loader2, Inbox } from 'lucide-react';
+import { OpsInput, PageState } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,7 @@ interface OrderSelectionPanelProps {
     selectedOrderId: string | null;
     onSelectOrder: (orderId: string) => void;
     isLoading: boolean;
+    variant?: 'default' | 'ops';
 }
 
 export function OrderSelectionPanel({
@@ -20,9 +22,11 @@ export function OrderSelectionPanel({
     selectedOrderId,
     onSelectOrder,
     isLoading,
+    variant = 'default',
 }: OrderSelectionPanelProps): ReactElement {
     const { t } = useTranslation(['goods-receipt', 'common']);
     const [searchQuery, setSearchQuery] = useState('');
+    const isOps = variant === 'ops';
 
     const filteredOrders = useMemo(() => {
         if (!orders) return [];
@@ -35,31 +39,62 @@ export function OrderSelectionPanel({
     }, [orders, searchQuery]);
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="pb-2 border-b px-2">
-                <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                    <Input
-                        placeholder={t('common.search')}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-7 h-7 text-xs"
-                    />
-                </div>
+        <div className={cn('flex flex-col h-full', isOps && 'wms-ops-order-panel')}>
+            <div className={cn('pb-2 border-b px-2', isOps && 'wms-ops-order-panel__search border-b')}>
+                {isOps ? (
+                    <div className="relative">
+                        <Search className="pointer-events-none absolute left-2.5 top-1/2 z-[1] size-3.5 -translate-y-1/2" aria-hidden />
+                        <OpsInput
+                            placeholder={t('common.search')}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={cn(OPS_FIELD_CLASS, 'h-9 pl-8 text-xs')}
+                        />
+                    </div>
+                ) : (
+                    <div className="relative">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input
+                            placeholder={t('common.search')}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-7 h-7 text-xs"
+                        />
+                    </div>
+                )}
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-1.5 p-2">
+            <div className={cn('flex-1 overflow-y-auto space-y-1.5 p-2', isOps && 'wms-ops-order-panel__list')}>
                 {isLoading ? (
-                    <PageState tone="loading" title={t('common.loading')} compact />
+                    isOps ? (
+                        <div className="wms-ops-panel-empty">
+                            <Loader2 className="size-6 animate-spin" aria-hidden />
+                            <p>{t('common.loading')}</p>
+                        </div>
+                    ) : (
+                        <PageState tone="loading" title={t('common.loading')} compact />
+                    )
                 ) : filteredOrders.length === 0 ? (
-                    <PageState tone="empty" title={t('common.noResults')} compact />
+                    isOps ? (
+                        <div className="wms-ops-panel-empty">
+                            <Inbox className="size-6" aria-hidden />
+                            <p>{t('common.noResults')}</p>
+                        </div>
+                    ) : (
+                        <PageState tone="empty" title={t('common.noResults')} compact />
+                    )
                 ) : (
                     filteredOrders.map((order) => (
                         <div
                             key={order.siparisNo}
                             className={cn(
                                 'cursor-pointer border rounded p-2 transition-all hover:bg-accent',
-                                selectedOrderId === order.siparisNo && 'ring-1 ring-primary border-primary bg-primary/5'
+                                isOps && 'wms-ops-order-card',
+                                selectedOrderId === order.siparisNo && (
+                                    isOps
+                                        ? 'wms-ops-order-card--active'
+                                        : 'ring-1 ring-primary border-primary bg-primary/5'
+                                ),
                             )}
                             onClick={() => onSelectOrder(order.siparisNo)}
                         >
@@ -72,7 +107,14 @@ export function OrderSelectionPanel({
                                         {order.customerName}
                                     </p>
                                 </div>
-                                <Badge variant={order.remainingForImport > 0 ? 'default' : 'secondary'} className="text-[10px] shrink-0 px-1.5 py-0">
+                                <Badge
+                                    variant={order.remainingForImport > 0 ? 'default' : 'secondary'}
+                                    className={cn(
+                                        'text-[10px] shrink-0 px-1.5 py-0',
+                                        isOps && 'wms-ops-order-badge',
+                                        isOps && order.remainingForImport > 0 && 'wms-ops-order-badge--pending',
+                                    )}
+                                >
                                     {order.remainingForImport > 0 
                                         ? t('goodsReceipt.step2.pending')
                                         : t('goodsReceipt.step2.completed')}

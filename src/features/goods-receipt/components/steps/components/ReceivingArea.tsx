@@ -1,10 +1,13 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { PackageOpen, Search } from 'lucide-react';
+import { PackageOpen, Search, Loader2 } from 'lucide-react';
+import { OpsInput } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { goodsReceiptApi } from '../../../api/goods-receipt-api';
 import { useWarehouses } from '../../../hooks/useWarehouses';
 import { ReceivingItemRow } from './ReceivingItemRow';
@@ -17,6 +20,7 @@ interface ReceivingAreaProps {
   onUpdateItem: (itemId: string, updates: Partial<SelectedOrderItem>) => void;
   onToggleItem: (item: OrderItem) => void;
   onRemoveItem: (itemId: string) => void;
+  variant?: 'default' | 'ops';
 }
 
 export function ReceivingArea({
@@ -26,9 +30,11 @@ export function ReceivingArea({
   onUpdateItem,
   onToggleItem,
   onRemoveItem,
+  variant = 'default',
 }: ReceivingAreaProps): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
+  const isOps = variant === 'ops';
 
   const { data: orderItems, isLoading } = useQuery({
     queryKey: ['orderItems', customerCode, siparisNo],
@@ -64,6 +70,18 @@ export function ReceivingArea({
 
 
   if (!siparisNo) {
+    if (isOps) {
+      return (
+        <div className="flex h-full min-h-[280px] flex-col items-center justify-center p-6">
+          <div className="wms-ops-panel-empty wms-ops-panel-empty--detail">
+            <PackageOpen className="size-10" aria-hidden />
+            <p className="wms-ops-panel-empty__title">{t('goodsReceipt.step2.noOrderSelected')}</p>
+            <p className="wms-ops-panel-empty__hint">{t('goodsReceipt.step2.selectOrderPrompt')}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -82,6 +100,17 @@ export function ReceivingArea({
   }
 
   if (isLoading) {
+    if (isOps) {
+      return (
+        <div className="flex h-full min-h-[280px] items-center justify-center p-6">
+          <div className="wms-ops-panel-empty">
+            <Loader2 className="size-8 animate-spin" aria-hidden />
+            <p>{t('common.loading')}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-12">
@@ -92,6 +121,17 @@ export function ReceivingArea({
   }
 
   if (!mappedOrderItems || mappedOrderItems.length === 0) {
+    if (isOps) {
+      return (
+        <div className="flex h-full min-h-[280px] items-center justify-center p-6">
+          <div className="wms-ops-panel-empty">
+            <PackageOpen className="size-8" aria-hidden />
+            <p>{t('goodsReceipt.orderItems.itemNotFound')}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -110,33 +150,47 @@ export function ReceivingArea({
   ).length;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="pb-2 space-y-2 border-b px-2 shrink-0">
+    <div className={cn('flex h-full flex-col', isOps && 'wms-ops-receiving-area')}>
+      <div className={cn('shrink-0 space-y-2 border-b px-2 pb-2', isOps && 'wms-ops-receiving-area__header')}>
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h3 className="font-semibold text-sm">
+            <h3 className={cn('text-sm font-semibold', isOps && 'wms-ops-receiving-area__title')}>
               {t('goodsReceipt.step2.orderContent')}
             </h3>
-            <p className="text-xs text-muted-foreground">
+            <p className={cn('text-xs text-muted-foreground', isOps && 'wms-ops-receiving-area__meta')}>
               {t('goodsReceipt.step2.itemsCount', { count: totalItems })}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">
+            <p className={cn('text-xs text-muted-foreground', isOps && 'wms-ops-receiving-area__meta')}>
               {t('goodsReceipt.step2.started')}
             </p>
-            <p className="text-sm font-semibold">{startedItems}/{totalItems}</p>
+            <p className={cn('text-sm font-semibold', isOps && 'wms-ops-receiving-area__stat')}>
+              {startedItems}/{totalItems}
+            </p>
           </div>
         </div>
         <div className="relative flex items-center">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input
-            placeholder={t('goodsReceipt.step2.searchItems')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 pr-9 h-7 text-xs"
+          <Search
+            className="pointer-events-none absolute left-2 top-1/2 z-[1] h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
           />
-          <div className="absolute right-1 top-1/2 transform -translate-y-1/2">
+          {isOps ? (
+            <OpsInput
+              placeholder={t('goodsReceipt.step2.searchItems')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(OPS_FIELD_CLASS, 'h-9 pl-8 pr-9 text-xs')}
+            />
+          ) : (
+            <Input
+              placeholder={t('goodsReceipt.step2.searchItems')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-7 pl-7 pr-9 text-xs"
+            />
+          )}
+          <div className="absolute right-1 top-1/2 -translate-y-1/2 transform">
             <VoiceSearchButton
               onResult={(text) => setSearchQuery(text)}
               size="sm"
@@ -146,10 +200,10 @@ export function ReceivingArea({
           </div>
         </div>
       </div>
-      <div className="overflow-y-auto space-y-1.5 p-2 max-h-[500px]">
+      <div className={cn('max-h-[500px] space-y-1.5 overflow-y-auto p-2', isOps && 'wms-ops-receiving-area__list')}>
         {filteredItems.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
+          <div className={cn('py-8 text-center', isOps && 'wms-ops-panel-empty wms-ops-panel-empty--inline')}>
+            <p className={cn('text-sm text-muted-foreground', isOps && 'wms-ops-panel-empty__hint')}>
               {t('common.noResults')}
             </p>
           </div>
@@ -165,6 +219,7 @@ export function ReceivingArea({
                 onUpdateItem={onUpdateItem}
                 onToggleItem={onToggleItem}
                 onRemoveItem={onRemoveItem}
+                variant={variant}
               />
             );
           })
