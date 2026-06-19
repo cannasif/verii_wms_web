@@ -439,7 +439,7 @@ export function DataTableGrid<TRow, TKey extends string>({
     const column = findColumn(columns, key);
     const sortable = Boolean(onSort && column?.sortable !== false);
     const isLast = index === localVisibleColumnKeys.length - 1 && !showActionsColumn;
-    const isDraggable = enableColumnDragAndDrop && String(key).toLowerCase() !== 'id';
+    const isDraggable = enableColumnDragAndDrop && !['id', 'select', 'actions'].includes(String(key).toLowerCase());
 
     const rightKey = index < localVisibleColumnKeys.length - 1
       ? String(localVisibleColumnKeys[index + 1])

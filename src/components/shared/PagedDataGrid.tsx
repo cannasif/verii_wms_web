@@ -73,6 +73,7 @@ interface PagedDataGridProps<TRow, TKey extends string> {
     resetKey?: string | number;
   };
   leftSlot?: ReactNode;
+  afterRefreshSlot?: ReactNode;
   refresh?: {
     onRefresh: () => void;
     isLoading?: boolean;
@@ -86,6 +87,8 @@ interface PagedDataGridProps<TRow, TKey extends string> {
   onResizeColumnPair?: (leftKey: string, rightKey: string, deltaWeight: number) => void;
   getCellText?: (row: TRow, columnKey: TKey) => string | undefined;
   enableColumnResize?: boolean;
+  idColumnKey?: string;
+  lockedColumnKeys?: string[];
 }
 
 export function PagedDataGrid<TRow, TKey extends string>({
@@ -143,6 +146,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
   appliedFilterCount = 0,
   search,
   leftSlot,
+  afterRefreshSlot,
   refresh,
   variant = 'default',
   defaultColumnWidths,
@@ -150,8 +154,11 @@ export function PagedDataGrid<TRow, TKey extends string>({
   onResizeColumnPair: onResizeColumnPairProp,
   getCellText,
   enableColumnResize,
+  idColumnKey = 'id',
+  lockedColumnKeys,
 }: PagedDataGridProps<TRow, TKey>): ReactElement {
   const resolvedPageKey = pageKey ?? actionBar?.pageKey ?? 'paged-data-grid';
+  const resolvedLockedKeys = lockedColumnKeys ?? (columns.some((column) => column.key === idColumnKey) ? [idColumnKey] : ['id']);
   const {
     columnOrder,
     visibleColumns,
@@ -165,6 +172,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
     columns: columns.map(({ key, label }) => ({ key, label })),
     defaultWidths: defaultColumnWidths,
     includeActionsColumn: showActionsColumn,
+    idColumnKey,
   });
 
   const resolvedColumnWidths = columnWidthsProp ?? internalColumnWidths;
@@ -197,6 +205,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       columnOrder,
       onVisibleColumnsChange: setVisibleColumns,
       onColumnOrderChange: setColumnOrder,
+      lockedKeys: resolvedLockedKeys,
       exportFileName: exportFileName ?? resolvedPageKey,
       exportColumns: exportColumns ?? [],
       exportRows: exportRows ?? [],
@@ -213,6 +222,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       appliedFilterCount,
       search,
       leftSlot,
+      afterRefreshSlot,
       refresh,
     },
     [
@@ -231,6 +241,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       filterLogic,
       getExportData,
       leftSlot,
+      afterRefreshSlot,
       onApplyFilters,
       onClearFilters,
       onDraftFilterRowsChange,
@@ -243,6 +254,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       translationNamespace,
       userId,
       visibleColumns,
+      resolvedLockedKeys,
     ],
   );
 

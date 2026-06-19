@@ -44,6 +44,7 @@ export interface DataTableActionBarProps {
   columnOrder: string[];
   onVisibleColumnsChange: (visible: string[]) => void;
   onColumnOrderChange: (order: string[]) => void;
+  lockedKeys?: string[];
   exportFileName: string;
   exportColumns: GridExportColumn[];
   exportRows: Record<string, unknown>[];
@@ -66,6 +67,7 @@ export interface DataTableActionBarProps {
   refresh?: DataTableRefreshConfig;
   searchDebounceMs?: number;
   leftSlot?: React.ReactNode;
+  afterRefreshSlot?: React.ReactNode;
   variant?: DataTableVariant;
 }
 
@@ -77,6 +79,7 @@ export function DataTableActionBar({
   columnOrder,
   onVisibleColumnsChange,
   onColumnOrderChange,
+  lockedKeys = ['id'],
   exportFileName,
   exportColumns,
   exportRows,
@@ -99,6 +102,7 @@ export function DataTableActionBar({
   refresh,
   searchDebounceMs = 700,
   leftSlot,
+  afterRefreshSlot,
   variant = 'default',
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
@@ -241,6 +245,11 @@ export function DataTableActionBar({
             </Button>
           )
         )}
+        {afterRefreshSlot ? (
+          <div className={cn('flex shrink-0 flex-wrap items-center gap-1.5', isOps && 'wms-ops-data-grid-toolbar__after-refresh')}>
+            {afterRefreshSlot}
+          </div>
+        ) : null}
         {(!isOps || !shouldRenderSearch) && leftSlot ? leftSlot : null}
       </div>
       <div className={cn('flex flex-wrap items-center gap-2', isOps && 'wms-ops-data-grid-toolbar__end')}>
@@ -345,6 +354,7 @@ export function DataTableActionBar({
           columnOrder={columnOrder}
           onVisibleColumnsChange={onVisibleColumnsChange}
           onColumnOrderChange={onColumnOrderChange}
+          lockedKeys={lockedKeys}
           variant={variant}
         />
       </div>
