@@ -1,4 +1,5 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Navbar } from '../Navbar';
 import { Sidebar } from '../Sidebar';
 import { Footer } from '../Footer';
@@ -13,6 +14,12 @@ interface MainLayoutFrameProps {
 
 export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
   const { isSidebarOpen } = useUIStore();
+  const location = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, left: 0 });
+  }, [location.key]);
 
   return (
     <div className="relative flex h-screen flex-col overflow-hidden bg-[#f8f9fc] transition-colors duration-300 dark:bg-[#090114]">
@@ -30,8 +37,19 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
           )}
         >
           <Navbar navItems={items} />
-          <main className="custom-scrollbar crm-skin flex-1 overflow-y-auto pb-20 md:pb-16">
-            <div className="w-full px-3 py-3 sm:px-4 sm:py-4">
+          <main
+            ref={mainRef}
+            className="custom-scrollbar crm-skin relative flex-1 overflow-y-auto pb-20 md:pb-16"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 wms-ops-main-glow"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 wms-ops-grid-bg"
+            />
+            <div className="relative z-[1] w-full px-3 py-3 sm:px-4 sm:py-4">
               <RoutePermissionGuard />
             </div>
           </main>

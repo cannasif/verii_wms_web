@@ -54,16 +54,17 @@ export function VoiceSearchButton({
       onClick={handleClick}
       className={cn(
         'shrink-0',
-        isListening && 'animate-pulse bg-primary text-primary-foreground',
-        className
+        isListening && 'wms-ops-voice-btn--listening animate-pulse',
+        !className?.includes('wms-ops-voice-btn') && isListening && 'bg-primary text-primary-foreground',
+        className,
       )}
       disabled={!isSupported}
       title={isListening ? t('voiceSearch.stop') : t('voiceSearch.start')}
     >
       {isListening ? (
-        <MicOff className="h-4 w-4" />
+        <MicOff className="size-3.5" aria-hidden />
       ) : (
-        <Mic className="h-4 w-4" />
+        <Mic className="size-3.5" aria-hidden />
       )}
     </Button>
   );

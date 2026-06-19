@@ -30,6 +30,7 @@ interface SearchableSelectProps<T> {
   isLoading?: boolean;
   disabled?: boolean;
   className?: string;
+  popoverClassName?: string;
   maxHeight?: string;
   itemLimit?: number;
   modal?: boolean;
@@ -47,6 +48,7 @@ export function SearchableSelect<T>({
   isLoading = false,
   disabled = false,
   className,
+  popoverClassName,
   maxHeight = '220px',
   itemLimit = 100,
   modal = false,
@@ -90,7 +92,11 @@ export function SearchableSelect<T>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn('w-full justify-between', className)}
+          className={cn(
+            'w-full justify-between',
+            className?.includes('wms-ops-field') && 'wms-ops-lookup-trigger font-normal',
+            className,
+          )}
           disabled={disabled || isLoading}
         >
           {isLoading ? (
@@ -107,7 +113,7 @@ export function SearchableSelect<T>({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="p-0"
+        className={cn('p-0', popoverClassName)}
         align="start"
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
