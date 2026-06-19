@@ -3,12 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import { OpsActionButton, OpsFieldShell } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { useGrStokBarcode } from '../hooks/useGrStokBarcode';
 import { useAddGrBarcode } from '../hooks/useAddGrBarcode';
 import { useCollectedGrBarcodes } from '../hooks/useCollectedGrBarcodes';
@@ -16,6 +15,7 @@ import { useAssignedGrOrderLines } from '../hooks/useAssignedGrOrderLines';
 import { useCompleteGoodsReceipt } from '../hooks/useCompleteGoodsReceipt';
 import { Barcode, Package, ArrowLeft, Loader2, CheckCircle2, List, Camera, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 import { barcodeApi } from '@/features/shared/api/barcode-api';
 import type { BarcodeMatchCandidate } from '@/features/shared/api/barcode-types';
@@ -390,324 +390,328 @@ export function GoodsReceiptCollectionPage(): ReactElement {
   const preReceiptBarcodeReady = isPreReceiptBarcode(barcodeInput || searchBarcode);
 
   return (
-    <div className="crm-page flex w-full flex-col h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/10 dark:bg-white/3">
-      <div className="shrink-0 border-b border-slate-200/80 bg-white/80 p-4 space-y-4 dark:border-white/10 dark:bg-white/3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/goods-receipt/assigned')}>
-            <ArrowLeft className="size-4 mr-2" />
+    <div className="wms-ops-form wms-ops-collection h-[calc(100vh-10rem)] min-h-[32rem]">
+      <div className="wms-ops-collection__toolbar">
+        <div className="wms-ops-collection__toolbar-group">
+          <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/goods-receipt/assigned')}>
+            <ArrowLeft className="size-3.5 shrink-0" aria-hidden />
             {t('common.back')}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => collectedSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          </OpsActionButton>
+          <span className="wms-ops-collection__header-id">#{headerIdNum}</span>
+        </div>
+        <OpsActionButton
+          type="button"
+          variant="secondary"
+          onClick={() => collectedSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        >
+          <List className="size-3.5 shrink-0" aria-hidden />
+          {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
+        </OpsActionButton>
+      </div>
+
+      <div className="wms-ops-collection__scan">
+        <div className="wms-ops-collection__scan-row">
+          <OpsFieldShell
+            className="wms-ops-collection__barcode-field"
+            title={!barcodeInput.trim() ? t('goodsReceipt.collection.barcodePlaceholder') : undefined}
           >
-            <List className="size-4 mr-2" />
-            {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
-          </Button>
+            <Barcode className="wms-ops-collection__barcode-icon" aria-hidden />
+            <button
+              type="button"
+              className="wms-ops-collection__camera-btn"
+              disabled={!permission.canUpdate}
+              onClick={handleOpenCamera}
+              aria-label={t('goodsReceipt.collection.scanBarcode')}
+            >
+              <Camera className="size-3.5" aria-hidden />
+            </button>
+            <Input
+              placeholder={t('goodsReceipt.collection.barcodePlaceholder')}
+              value={barcodeInput}
+              onChange={(e) => setBarcodeInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={!permission.canUpdate}
+              className={cn(OPS_FIELD_CLASS, 'wms-ops-collection__barcode-input')}
+            />
+          </OpsFieldShell>
+          <div className="wms-ops-collection__scan-actions">
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              onClick={handleBarcodeSearch}
+              disabled={!permission.canUpdate || isSearching}
+            >
+              {isSearching ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : null}
+              {t('common.search')}
+            </OpsActionButton>
+          </div>
         </div>
 
-        <Card className='py-0'>
-          <CardContent className="p-3 space-y-3">
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <div className="relative flex-1">
-                <Barcode className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4 hidden md:block" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
-                  disabled={!permission.canUpdate}
-                  onClick={handleOpenCamera}
-                >
-                  <Camera className="size-4 text-muted-foreground" />
-                </Button>
-                <Input
-                  placeholder={t('goodsReceipt.collection.barcodePlaceholder')}
-                  value={barcodeInput}
-                  onChange={(e) => setBarcodeInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={!permission.canUpdate}
-                  className="pl-10 md:pl-9 h-10"
-                />
-                {barcodeDefinitionQuery.data?.data?.hintText ? (
-                  <p className='mt-2 text-xs text-slate-500 dark:text-slate-400'>
-                    {t('common.barcodeFormat', { format: barcodeDefinitionQuery.data.data.hintText })}
+        {barcodeDefinitionQuery.data?.data?.hintText ? (
+          <p className="wms-ops-collection__hint">
+            {t('common.barcodeFormat', { format: barcodeDefinitionQuery.data.data.hintText })}
+          </p>
+        ) : null}
+
+        {ambiguousCandidates.length > 0 ? (
+          <div className="mt-3">
+            <BarcodeCandidatePicker
+              candidates={ambiguousCandidates}
+              message={barcodeErrorMessage || t('common.warning')}
+              onSelect={(candidate) => {
+                setSelectedStock({
+                  barkod: barcodeInput.trim() || searchBarcode.trim(),
+                  stokKodu: candidate.stockCode ?? '',
+                  stokAdi: candidate.stockName ?? '',
+                  depoKodu: null,
+                  depoAdi: null,
+                  rafKodu: null,
+                  yapilandir: '',
+                  olcuBr: 0,
+                  olcuAdi: '',
+                  yapKod: candidate.yapKod ?? null,
+                  yapAcik: candidate.yapAcik ?? null,
+                  cevrim: 0,
+                  seriBarkodMu: Boolean(candidate.serialNumber),
+                  sktVarmi: null,
+                  isemriNo: null,
+                });
+                setTargetCellCode('');
+                setAmbiguousCandidates([]);
+                setBarcodeErrorMessage(null);
+              }}
+            />
+          </div>
+        ) : null}
+
+        {!selectedStock && preReceiptBarcodeReady ? (
+          <div className="wms-ops-collection__panel wms-ops-collection__panel--preceipt">
+            <div className="wms-ops-collection__panel-title">{t('preLabels.preReceiptScanTitle')}</div>
+            <p className="wms-ops-collection__panel-desc">{t('preLabels.preReceiptScanDescription')}</p>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              className="mt-3 min-h-[2.25rem]"
+              onClick={handleCollect}
+              disabled={!permission.canUpdate || addBarcodeMutation.isPending}
+            >
+              {addBarcodeMutation.isPending ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : null}
+              {t('preLabels.collectPreReceipt')}
+            </OpsActionButton>
+          </div>
+        ) : null}
+
+        {selectedStock ? (
+          <div className="wms-ops-collection__panel">
+            <div className="wms-ops-collection__stock-head">
+              <div className="min-w-0 flex-1">
+                <span className="wms-ops-collection__stock-code">{selectedStock.stokKodu}</span>
+                <p className="wms-ops-collection__stock-name">{selectedStock.stokAdi}</p>
+                {(selectedStock.yapKod || selectedStock.yapAcik) ? (
+                  <p className="wms-ops-collection__stock-meta">
+                    {selectedStock.yapKod || '-'}
+                    {selectedStock.yapAcik ? ` · ${selectedStock.yapAcik}` : ''}
                   </p>
                 ) : null}
               </div>
-              <Button onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching} size="default" className="w-full sm:w-auto">
-                {isSearching ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  t('common.search')
-                )}
-              </Button>
+              <span className="wms-ops-collection__unit-badge">
+                <Package className="size-3" aria-hidden />
+                {selectedStock.olcuAdi}
+              </span>
             </div>
-
-            {ambiguousCandidates.length > 0 ? (
-              <BarcodeCandidatePicker
-                candidates={ambiguousCandidates}
-                message={barcodeErrorMessage || t('common.warning')}
-                onSelect={(candidate) => {
-                  setSelectedStock({
-                    barkod: barcodeInput.trim() || searchBarcode.trim(),
-                    stokKodu: candidate.stockCode ?? '',
-                    stokAdi: candidate.stockName ?? '',
-                    depoKodu: null,
-                    depoAdi: null,
-                    rafKodu: null,
-                    yapilandir: '',
-                    olcuBr: 0,
-                    olcuAdi: '',
-                    yapKod: candidate.yapKod ?? null,
-                    yapAcik: candidate.yapAcik ?? null,
-                    cevrim: 0,
-                    seriBarkodMu: Boolean(candidate.serialNumber),
-                    sktVarmi: null,
-                    isemriNo: null,
-                  });
-                  setTargetCellCode('');
-                  setAmbiguousCandidates([]);
-                  setBarcodeErrorMessage(null);
-                }}
-              />
-            ) : null}
-
-            {!selectedStock && preReceiptBarcodeReady ? (
-              <div className="rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-500/30 dark:bg-sky-950/30 dark:text-sky-100">
-                <div className="font-semibold">{t('preLabels.preReceiptScanTitle')}</div>
-                <p className="mt-1 text-xs leading-5 text-sky-700 dark:text-sky-200">
-                  {t('preLabels.preReceiptScanDescription')}
-                </p>
-                <Button
-                  onClick={handleCollect}
-                  disabled={!permission.canUpdate || addBarcodeMutation.isPending}
-                  className="mt-3 h-9 w-full bg-emerald-500 text-white hover:bg-emerald-600 sm:w-auto"
-                >
-                  {addBarcodeMutation.isPending ? (
-                    <Loader2 className="size-4 animate-spin mr-1" />
-                  ) : null}
-                  {t('preLabels.collectPreReceipt')}
-                </Button>
+            <div className="wms-ops-collection__collect-row">
+              <div className="min-w-0">
+                <span className="wms-ops-collection__field-label">{t('warehouse.details.targetCellCode')}</span>
+                <ShelfLookupCombobox
+                  warehouseCode={selectedStock.depoKodu}
+                  value={targetCellCode}
+                  onValueChange={setTargetCellCode}
+                  disabled={!permission.canUpdate}
+                  placeholder={t('warehouse.details.targetCellCodePlaceholder')}
+                  searchPlaceholder={t('productionTransfer.create.cellSearch')}
+                  emptyText={t('productionTransfer.create.targetCellEmpty')}
+                />
               </div>
-            ) : null}
-
-            {selectedStock && (
-              <div className="border rounded-lg p-3 space-y-2 bg-muted/50">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <Badge variant="outline" className="mb-1 text-xs">
-                      {selectedStock.stokKodu}
-                    </Badge>
-                    <p className="text-sm font-medium line-clamp-1">{selectedStock.stokAdi}</p>
-                    {(selectedStock.yapKod || selectedStock.yapAcik) ? (
-                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                        {selectedStock.yapKod || '-'}{selectedStock.yapAcik ? ` - ${selectedStock.yapAcik}` : ''}
-                      </p>
-                    ) : null}
-                  </div>
-                  <Badge variant="secondary" className="shrink-0">
-                    <Package className="size-3 mr-1" />
-                    {selectedStock.olcuAdi}
-                  </Badge>
-                </div>
-                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
-                  <div className="flex-1 space-y-2">
-                    <Label>{t('warehouse.details.targetCellCode')}</Label>
-                    <ShelfLookupCombobox
-                      warehouseCode={selectedStock.depoKodu}
-                      value={targetCellCode}
-                      onValueChange={setTargetCellCode}
-                      disabled={!permission.canUpdate}
-                      placeholder={t('warehouse.details.targetCellCodePlaceholder')}
-                      searchPlaceholder={t('productionTransfer.create.cellSearch')}
-                      emptyText={t('productionTransfer.create.targetCellEmpty')}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                      disabled={!permission.canUpdate}
-                      className="h-9"
-                      placeholder={t('goodsReceipt.collection.quantity')}
-                    />
-                  </div>
-                  <Button
-                    onClick={handleCollect}
-                    disabled={!permission.canUpdate || addBarcodeMutation.isPending}
-                    className="h-9 w-full bg-emerald-500 text-white hover:bg-emerald-600 sm:w-auto"
-                  >
-                    {addBarcodeMutation.isPending ? (
-                      <Loader2 className="size-4 animate-spin mr-1" />
-                    ) : null}
-                    {t('goodsReceipt.collection.collect')}
-                  </Button>
-                </div>
+              <div>
+                <span className="wms-ops-collection__field-label">{t('goodsReceipt.collection.quantity')}</span>
+                <OpsFieldShell>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
+                    disabled={!permission.canUpdate}
+                    className={cn(OPS_FIELD_CLASS, 'h-10')}
+                  />
+                </OpsFieldShell>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <OpsActionButton
+                type="button"
+                variant="primary"
+                onClick={handleCollect}
+                disabled={!permission.canUpdate || addBarcodeMutation.isPending}
+              >
+                {addBarcodeMutation.isPending ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : null}
+                {t('goodsReceipt.collection.collect')}
+              </OpsActionButton>
+            </div>
+          </div>
+        ) : null}
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto rounded-xl border border-slate-200/80 bg-white/70 p-4 space-y-2 dark:border-white/10 dark:bg-white/2">
+      <div className="wms-ops-collection__body custom-scrollbar">
         {collectedData?.data && collectedData.data.length > 0 ? (
-          <div ref={collectedSectionRef} className="mb-4 space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-100">
-              <div className="flex items-center gap-2 font-semibold">
-                <CheckCircle2 className="size-4" />
+          <div ref={collectedSectionRef} className="mb-4">
+            <div className="wms-ops-collection__collected-banner">
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="size-3.5" aria-hidden />
                 {t('goodsReceipt.collection.viewCollected')} ({totalCollectedCount})
-              </div>
-              <Badge variant="secondary">
+              </span>
+              <span className="wms-ops-collection__collected-total">
                 {t('goodsReceipt.collection.total')}: {totalCollectedQuantity}
-              </Badge>
+              </span>
             </div>
             {collectedData.data.map((item) => (
-              <Card key={item.importLine.id} className="border border-emerald-100 py-2 dark:border-emerald-500/20">
-                <CardContent className="space-y-2 px-3">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <Badge variant="outline" className="mb-1 text-[10px]">
-                        {item.importLine.stockCode}
-                      </Badge>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                        {item.importLine.stockName || item.importLine.description || item.importLine.stockCode}
+              <div key={item.importLine.id} className="wms-ops-collection__collected-card">
+                <div className="wms-ops-collection__stock-head">
+                  <div className="min-w-0">
+                    <span className="wms-ops-collection__stock-code">{item.importLine.stockCode}</span>
+                    <p className="wms-ops-collection__stock-name">
+                      {item.importLine.stockName || item.importLine.description || item.importLine.stockCode}
+                    </p>
+                    {item.importLine.yapKod ? (
+                      <p className="wms-ops-collection__stock-meta">
+                        {t('goodsReceipt.collection.yapKod')}: {item.importLine.yapKod}
                       </p>
-                      {item.importLine.yapKod ? (
-                        <p className="text-xs text-muted-foreground">
-                          {t('goodsReceipt.collection.yapKod')}: {item.importLine.yapKod}
-                        </p>
-                      ) : null}
-                    </div>
-                    <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
-                      {item.routes.reduce((sum, route) => sum + route.quantity, 0)}
-                    </Badge>
+                    ) : null}
                   </div>
-                  <div className="grid gap-2">
-                    {item.routes.map((route) => (
-                      <div
-                        key={route.id}
-                        className="rounded-lg border border-slate-200 bg-white/80 p-2 text-xs dark:border-white/10 dark:bg-white/5"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="font-medium">{route.scannedBarcode || '-'}</span>
-                          <span className="rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">
-                            {t('goodsReceipt.collection.quantity')}: {route.quantity}
-                          </span>
-                        </div>
-                        {(route.serialNo || route.targetCellCode) ? (
-                          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
-                            {route.serialNo ? <span>{t('preLabels.serial')}: {route.serialNo}</span> : null}
-                            {route.targetCellCode ? <span>{t('warehouse.details.targetCellCode')}: {route.targetCellCode}</span> : null}
-                          </div>
+                  <Badge variant="outline" className="wms-ops-status-badge shrink-0">
+                    {item.routes.reduce((sum, route) => sum + route.quantity, 0)}
+                  </Badge>
+                </div>
+                {item.routes.map((route) => (
+                  <div key={route.id} className="wms-ops-collection__route-item">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="wms-ops-collection__route-barcode">{route.scannedBarcode || '-'}</span>
+                      <span className="wms-ops-collection__unit-badge">
+                        {t('goodsReceipt.collection.quantity')}: {route.quantity}
+                      </span>
+                    </div>
+                    {(route.serialNo || route.targetCellCode) ? (
+                      <div className="wms-ops-collection__route-meta">
+                        {route.serialNo ? <span>{t('preLabels.serial')}: {route.serialNo}</span> : null}
+                        {route.targetCellCode ? (
+                          <span>{t('warehouse.details.targetCellCode')}: {route.targetCellCode}</span>
                         ) : null}
                       </div>
-                    ))}
+                    ) : null}
                   </div>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
             ))}
           </div>
         ) : null}
 
+        <div className="wms-ops-collection__section-title">
+          <span>{t('goodsReceipt.collection.title')}</span>
+          {orderLinesWithCollected.length > 0 ? (
+            <span>{orderLinesWithCollected.length} {t('preLabels.lineCount')}</span>
+          ) : null}
+        </div>
+
         {isLoadingOrderLines ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          <div className="wms-ops-collection__loading">
+            <Loader2 className="size-7 animate-spin" aria-hidden />
           </div>
         ) : orderLinesWithCollected.length > 0 ? (
-          orderLinesWithCollected.map((line) => (
-            <Card key={line.id} className="border py-2">
-              <CardContent className="px-3">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex-1 min-w-0">
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
-                      {line.stockCode}
-                    </Badge>
-                    <p className="text-xs font-medium line-clamp-2 mt-1">{line.stockName || line.description}</p>
-                    {line.yapKod && (
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {t('goodsReceipt.collection.yapKod')}: {line.yapKod}{line.yapAcik ? ` - ${line.yapAcik}` : ''}
-                      </p>
-                    )}
-                  </div>
-                  {line.remainingQuantity === 0 && (
-                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                  )}
-                </div>
+          <div className="wms-ops-collection__line-grid">
+            {orderLinesWithCollected.map((line) => {
+              const progress = line.quantity > 0 ? (line.collectedQuantity / line.quantity) * 100 : 0;
+              const isDone = line.remainingQuantity === 0;
 
-                <div className="grid grid-cols-1 gap-1.5 mb-1.5 sm:grid-cols-3">
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.total')}
-                    </p>
-                    <p className="text-sm font-bold leading-none">
-                      {line.quantity}
-                    </p>
+              return (
+                <div
+                  key={line.id}
+                  className={cn('wms-ops-collection__line-card', isDone && 'wms-ops-collection__line-card--done')}
+                >
+                  <div className="wms-ops-collection__line-head">
+                    <div className="min-w-0 flex-1">
+                      <span className="wms-ops-collection__stock-code">{line.stockCode}</span>
+                      <p className="wms-ops-collection__line-name">{line.stockName || line.description}</p>
+                      {line.yapKod ? (
+                        <p className="wms-ops-collection__stock-meta">
+                          {t('goodsReceipt.collection.yapKod')}: {line.yapKod}
+                          {line.yapAcik ? ` · ${line.yapAcik}` : ''}
+                        </p>
+                      ) : null}
+                    </div>
+                    {isDone ? <CheckCircle2 className="size-4 shrink-0 text-emerald-500" aria-hidden /> : null}
                   </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.collected')}
-                    </p>
-                    <p className="text-sm font-bold text-emerald-600 leading-none">
-                      {line.collectedQuantity}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground mb-0.5">
-                      {t('goodsReceipt.collection.remaining')}
-                    </p>
-                    <p className={`text-sm font-bold leading-none ${line.remainingQuantity === 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
-                      {line.remainingQuantity}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="w-full bg-gray-200 rounded-full h-1">
-                  <div
-                    className="bg-emerald-500 h-1 rounded-full transition-all duration-300"
-                    style={{ width: `${(line.collectedQuantity / line.quantity) * 100}%` }}
-                  />
+                  <div className="wms-ops-collection__metrics">
+                    <div className="wms-ops-collection__metric">
+                      <div className="wms-ops-collection__metric-label">{t('goodsReceipt.collection.total')}</div>
+                      <div className="wms-ops-collection__metric-value">{line.quantity}</div>
+                    </div>
+                    <div className="wms-ops-collection__metric">
+                      <div className="wms-ops-collection__metric-label">{t('goodsReceipt.collection.collected')}</div>
+                      <div className="wms-ops-collection__metric-value wms-ops-collection__metric-value--ok">
+                        {line.collectedQuantity}
+                      </div>
+                    </div>
+                    <div className="wms-ops-collection__metric">
+                      <div className="wms-ops-collection__metric-label">{t('goodsReceipt.collection.remaining')}</div>
+                      <div
+                        className={cn(
+                          'wms-ops-collection__metric-value',
+                          isDone ? 'wms-ops-collection__metric-value--ok' : 'wms-ops-collection__metric-value--warn',
+                        )}
+                      >
+                        {line.remainingQuantity}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="wms-ops-collection__progress" aria-hidden>
+                    <span style={{ width: `${Math.min(progress, 100)}%` }} />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
-              {t('goodsReceipt.collection.noOrderLines')}
-            </p>
+              );
+            })}
           </div>
+        ) : (
+          <div className="wms-ops-collection__empty">{t('goodsReceipt.collection.noOrderLines')}</div>
         )}
       </div>
 
-      <div className="shrink-0 border-t border-slate-200/80 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-        <Button
+      <div className="wms-ops-collection__footer">
+        <OpsActionButton
+          type="button"
+          variant="primary"
           onClick={handleComplete}
           disabled={!permission.canUpdate || completeGoodsReceiptMutation.isPending}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-          size="lg"
         >
           {completeGoodsReceiptMutation.isPending ? (
-            <Loader2 className="size-4 animate-spin mr-2" />
+            <Loader2 className="size-3.5 animate-spin" aria-hidden />
           ) : (
-            <Check className="size-4 mr-2" />
+            <Check className="size-3.5" aria-hidden />
           )}
           {t('goodsReceipt.collection.complete')}
-        </Button>
+        </OpsActionButton>
       </div>
 
-      <Dialog open={isCameraOpen} onOpenChange={(open) => {
-        if (!open) {
-          handleCloseCamera();
-        }
-      }}>
-        <DialogContent className="max-w-[95vw] w-full p-0 gap-0" showCloseButton={true}>
-          <DialogHeader className="p-4 pb-2">
-            <DialogTitle>{t('goodsReceipt.collection.scanBarcode')}</DialogTitle>
-            <DialogDescription>
+      <Dialog
+        open={isCameraOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseCamera();
+          }
+        }}
+      >
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-[95vw] gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-lg">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('goodsReceipt.collection.scanBarcode')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
               {t('goodsReceipt.collection.scanBarcodeDescription')}
             </DialogDescription>
           </DialogHeader>
@@ -718,12 +722,12 @@ export function GoodsReceiptCollectionPage(): ReactElement {
               className="w-full"
               style={{ minHeight: '300px' }}
             />
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="border-2 border-white rounded-lg" style={{ width: '250px', height: '250px' }}>
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-white rounded-tl-lg"></div>
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-white rounded-tr-lg"></div>
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-white rounded-bl-lg"></div>
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-white rounded-br-lg"></div>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div className="rounded-lg border-2 border-white" style={{ width: '250px', height: '250px' }}>
+                <div className="absolute top-0 left-0 h-6 w-6 rounded-tl-lg border-t-4 border-l-4 border-white" />
+                <div className="absolute top-0 right-0 h-6 w-6 rounded-tr-lg border-t-4 border-r-4 border-white" />
+                <div className="absolute bottom-0 left-0 h-6 w-6 rounded-bl-lg border-b-4 border-l-4 border-white" />
+                <div className="absolute bottom-0 right-0 h-6 w-6 rounded-br-lg border-b-4 border-r-4 border-white" />
               </div>
             </div>
           </div>
