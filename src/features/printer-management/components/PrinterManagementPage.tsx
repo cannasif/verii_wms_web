@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeDesignerApi } from '@/features/barcode-designer/api/barcode-designer.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { printerManagementApi } from '../api/printer-management.api';
 import type { PrinterDefinitionUpsertRequest, PrinterProfileUpsertRequest } from '../types/printer-management.types';
 
@@ -189,16 +190,40 @@ export function PrinterManagementPage(): ReactElement {
               {t('printerManagement.description')}
             </p>
           </div>
-          <Button variant="outline" onClick={() => {
-            void printersQuery.refetch();
-            void profilesQuery.refetch();
-            void templatesQuery.refetch();
-            void templateMappingsQuery.refetch();
-            void jobsQuery.refetch();
-          }}>
-            <RefreshCcw className="mr-2 size-4" />
-            {t('common.refresh')}
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <DefinitionExcelActions
+              definitionKey="printer-definition"
+              fileNamePrefix="yazici-tanimlari"
+              onImportCompleted={async () => {
+                await printersQuery.refetch();
+                await profilesQuery.refetch();
+              }}
+            />
+            <DefinitionExcelActions
+              definitionKey="printer-profile"
+              fileNamePrefix="yazici-profilleri"
+              onImportCompleted={async () => {
+                await profilesQuery.refetch();
+              }}
+            />
+            <DefinitionExcelActions
+              definitionKey="barcode-template-printer-profile"
+              fileNamePrefix="barkod-sablon-yazici-eslesmeleri"
+              onImportCompleted={async () => {
+                await templateMappingsQuery.refetch();
+              }}
+            />
+            <Button variant="outline" onClick={() => {
+              void printersQuery.refetch();
+              void profilesQuery.refetch();
+              void templatesQuery.refetch();
+              void templateMappingsQuery.refetch();
+              void jobsQuery.refetch();
+            }}>
+              <RefreshCcw className="mr-2 size-4" />
+              {t('common.refresh')}
+            </Button>
+          </div>
         </div>
       </section>
 
