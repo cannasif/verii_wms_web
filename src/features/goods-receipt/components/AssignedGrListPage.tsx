@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Eye, PlayCircle, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,17 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'documentType', type: 'string', labelKey: 'goodsReceipt.report.documentType' },
   { value: 'isCompleted', type: 'boolean', labelKey: 'goodsReceipt.report.status' },
 ];
+
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  id: 9,
+  orderId: 14,
+  customerCode: 16,
+  projectCode: 12,
+  documentType: 12,
+  plannedDate: 14,
+  status: 12,
+  createdDate: 16,
+};
 
 function mapSortBy(value: AssignedGrColumnKey): string {
   switch (value) {
@@ -86,6 +97,7 @@ export function AssignedGrListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.goods-receipt');
   const pageKey = 'goods-receipt-assigned-list';
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<GrHeader | null>(null);
 
@@ -98,21 +110,37 @@ export function AssignedGrListPage(): ReactElement {
   });
 
   const columns = useMemo<PagedDataGridColumn<AssignedGrColumnKey>[]>(() => [
-    { key: 'id', label: t('goodsReceipt.report.id') },
-    { key: 'orderId', label: t('goodsReceipt.report.orderId') },
-    { key: 'customerCode', label: t('goodsReceipt.report.customerCode') },
-    { key: 'projectCode', label: t('goodsReceipt.report.projectCode') },
-    { key: 'documentType', label: t('goodsReceipt.report.documentType') },
-    { key: 'plannedDate', label: t('goodsReceipt.report.plannedDate') },
-    { key: 'status', label: t('goodsReceipt.report.status'), sortable: false },
-    { key: 'createdDate', label: t('goodsReceipt.report.createdDate') },
+    {
+      key: 'id',
+      label: t('goodsReceipt.report.id'),
+      headClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+    },
+    { key: 'orderId', label: t('goodsReceipt.report.orderId'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerCode', label: t('goodsReceipt.report.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'projectCode', label: t('goodsReceipt.report.projectCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentType', label: t('goodsReceipt.report.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'plannedDate', label: t('goodsReceipt.report.plannedDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'status', label: t('goodsReceipt.report.status'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('goodsReceipt.report.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useAssignedGrHeaders(pagedGrid.queryParams);
@@ -132,6 +160,36 @@ export function AssignedGrListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const statusLabel = (item: GrHeader): string => {
+    if (item.isCompleted) return t('goodsReceipt.report.completed');
+    if (item.isPendingApproval) return t('goodsReceipt.report.pendingApproval');
+    return t('goodsReceipt.report.inProgress');
+  };
+
+  const statusBadge = (item: GrHeader): ReactElement => {
+    if (item.isCompleted) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{t('goodsReceipt.report.completed')}</Badge>;
+    }
+    if (item.isPendingApproval) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{t('goodsReceipt.report.pendingApproval')}</Badge>;
+    }
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active mx-auto">{t('goodsReceipt.report.inProgress')}</Badge>;
+  };
+
+  const getCellText = (row: GrHeader, key: AssignedGrColumnKey): string | undefined => {
+    switch (key) {
+      case 'id': return String(row.id);
+      case 'orderId': return row.orderId || '-';
+      case 'customerCode': return row.customerCode || '-';
+      case 'projectCode': return row.projectCode || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'plannedDate': return formatDate(row.plannedDate);
+      case 'status': return statusLabel(row);
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
+  };
+
   const exportColumns = useMemo(
     () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
       key,
@@ -140,22 +198,16 @@ export function AssignedGrListPage(): ReactElement {
     [columns, orderedVisibleColumns],
   );
 
-  const exportRows = useMemo<Record<string, unknown>[]>(() => {
-    return (data?.data ?? []).map((item) => ({
-      id: item.id,
-      orderId: item.orderId || '-',
-      customerCode: item.customerCode || '-',
-      projectCode: item.projectCode || '-',
-      documentType: item.documentType || '-',
-      plannedDate: formatDate(item.plannedDate),
-      status: item.isCompleted
-        ? t('goodsReceipt.report.completed')
-        : item.isPendingApproval
-          ? t('goodsReceipt.report.pendingApproval')
-          : t('goodsReceipt.report.inProgress'),
-      createdDate: formatDateTime(item.createdDate),
-    }));
-  }, [data?.data, t]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
+    id: item.id,
+    orderId: item.orderId || '-',
+    customerCode: item.customerCode || '-',
+    projectCode: item.projectCode || '-',
+    documentType: item.documentType || '-',
+    plannedDate: formatDate(item.plannedDate),
+    status: statusLabel(item),
+    createdDate: formatDateTime(item.createdDate),
+  })), [data?.data, t]);
 
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', {
@@ -163,11 +215,6 @@ export function AssignedGrListPage(): ReactElement {
     total: range.to,
     totalCount: range.total,
   });
-
-  const visibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedGrColumnKey[],
-    [orderedVisibleColumns],
-  );
 
   const renderSortIcon = (columnKey: AssignedGrColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -177,43 +224,40 @@ export function AssignedGrListPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('goodsReceipt.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('goodsReceipt.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('goodsReceipt.assignedList.title')}
+        description={t('goodsReceipt.assignedList.subtitle', { defaultValue: t('goodsReceipt.list.subtitle') })}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
         <PagedDataGrid<GrHeader, AssignedGrColumnKey>
+          variant="ops"
           columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
+          visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedGrColumnKey[]}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(item, columnKey) => {
-            switch (columnKey) {
-              case 'id':
-                return item.id;
-              case 'orderId':
-                return <span className="font-medium">{item.orderId || '-'}</span>;
-              case 'customerCode':
-                return item.customerCode || '-';
-              case 'projectCode':
-                return item.projectCode || '-';
-              case 'documentType':
-                return <Badge variant="outline">{item.documentType || '-'}</Badge>;
-              case 'plannedDate':
-                return formatDate(item.plannedDate);
-              case 'status':
-                return item.isCompleted ? (
-                  <Badge variant="default" className="w-fit">{t('goodsReceipt.report.completed')}</Badge>
-                ) : item.isPendingApproval ? (
-                  <Badge variant="secondary" className="w-fit">{t('goodsReceipt.report.pendingApproval')}</Badge>
-                ) : (
-                  <Badge variant="outline" className="w-fit">{t('goodsReceipt.report.inProgress')}</Badge>
-                );
-              case 'createdDate':
-                return formatDateTime(item.createdDate);
-              case 'actions':
-              default:
-                return null;
-            }
-          }}
+          renderCell={(item, columnKey) => ({
+            id: <span className="wms-ops-table-id-value">{item.id}</span>,
+            orderId: <span className="font-medium font-mono text-xs">{item.orderId || '-'}</span>,
+            customerCode: item.customerCode || '-',
+            projectCode: item.projectCode || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
+            plannedDate: formatDate(item.plannedDate),
+            status: statusBadge(item),
+            createdDate: <span className="font-mono text-xs">{formatDateTime(item.createdDate)}</span>,
+          } as Record<Exclude<AssignedGrColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<AssignedGrColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(columnKey) => {
@@ -225,27 +269,47 @@ export function AssignedGrListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('goodsReceipt.assignedList.error')}
           emptyText={t('goodsReceipt.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
+          showActionsColumn={showActionsColumn}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)} disabled={!permission.canView}>
-                <Eye className="size-4" />
-                <span className="ml-2">{t('goodsReceipt.report.viewDetails')}</span>
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('goodsReceipt.report.viewDetails')}
+                title={t('goodsReceipt.report.viewDetails')}
+                onClick={() => setSelectedHeaderId(item.id)}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
               </Button>
               <Button
-                variant="default"
-                size="sm"
-                className="bg-emerald-500 text-white hover:bg-emerald-600"
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--start"
+                aria-label={t('common.start')}
+                title={t('common.start')}
                 onClick={() => navigate(`/goods-receipt/collection/${item.id}`)}
                 disabled={!permission.canUpdate}
               >
-                <PlayCircle className="size-4" />
-                <span className="ml-2">{t('common.start')}</span>
+                <PlayCircle className="size-3" aria-hidden />
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                <Trash2 className="size-4" />
-                <span className="ml-2">{t('common.delete')}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => setHeaderToDelete(item)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="size-3" aria-hidden />
               </Button>
             </div>
           )}
@@ -282,21 +346,21 @@ export function AssignedGrListPage(): ReactElement {
             onClearFilters: pagedGrid.clearAdvancedFilters,
             appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
             search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              ...pagedGrid.searchConfig,
               placeholder: t('goodsReceipt.assignedList.searchPlaceholder'),
             },
             leftSlot: (
               <VoiceSearchButton
                 onResult={pagedGrid.handleVoiceSearch}
-                size="sm"
-                variant="outline"
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
               />
             ),
+            variant: 'ops',
           }}
         />
-      </div>
+      </OpsListPageShell>
 
       {selectedHeaderId && (
         <GoodsReceiptDetailDialog
@@ -316,6 +380,6 @@ export function AssignedGrListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }
