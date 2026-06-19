@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -57,6 +58,20 @@ function formatDateTime(dateString: string | null): string {
   });
 }
 
+const parameterExcelKeys: Record<ParameterType, string> = {
+  gr: 'definition-gr-parameter',
+  wt: 'definition-wt-parameter',
+  wo: 'definition-wo-parameter',
+  wi: 'definition-wi-parameter',
+  sh: 'definition-sh-parameter',
+  srt: 'definition-srt-parameter',
+  sit: 'definition-sit-parameter',
+  pt: 'definition-pt-parameter',
+  pr: 'definition-pr-parameter',
+  ic: 'definition-ic-parameter',
+  p: 'definition-p-parameter',
+};
+
 export function ParameterListPage(): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -93,7 +108,7 @@ export function ParameterListPage(): ReactElement {
     idColumnKey: 'id',
   });
 
-  const { data, isLoading, error } = useParametersPaged(parameterType, pagedGrid.queryParams);
+  const { data, isLoading, error, refetch } = useParametersPaged(parameterType, pagedGrid.queryParams);
   const deleteMutation = useDeleteParameter(parameterType);
 
   useEffect(() => {
@@ -147,10 +162,19 @@ export function ParameterListPage(): ReactElement {
             {t(`parameters.${parameterType}.title`, parameterConfig?.name)}
           </h1>
         </div>
-        <Button onClick={() => navigate(`/parameters/${parameterType}/create`)}>
-          <Plus size={18} className="mr-2" />
-          {t('parameters.list.addNew')}
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <DefinitionExcelActions
+            definitionKey={parameterExcelKeys[parameterType]}
+            fileNamePrefix={`${parameterType}-parametreleri`}
+            onImportCompleted={async () => {
+              await refetch();
+            }}
+          />
+          <Button onClick={() => navigate(`/parameters/${parameterType}/create`)}>
+            <Plus size={18} className="mr-2" />
+            {t('parameters.list.addNew')}
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
