@@ -36,7 +36,7 @@ export function RoutePermissionGuard(): ReactElement {
     if (statusCode === 403) {
       return <UnauthorizedPage />;
     }
-    return <Outlet />;
+    return <Outlet key={location.key} />;
   }
 
   if (!permissions) {
@@ -44,7 +44,7 @@ export function RoutePermissionGuard(): ReactElement {
   }
 
   if (canAccessPath(permissions, location.pathname)) {
-    return <Outlet />;
+    return <Outlet key={location.key} />;
   }
 
   return <UnauthorizedPage />;

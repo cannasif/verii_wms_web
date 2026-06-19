@@ -1,4 +1,5 @@
 import { type ComponentType, type ReactElement, Suspense, lazy } from 'react';
+import { useLocation } from 'react-router-dom';
 import i18n from '@/lib/i18n';
 import { RouteRuntimeBoundary } from './RouteRuntimeBoundary';
 
@@ -27,12 +28,30 @@ export function RouteLoadingFallback(): ReactElement {
   );
 }
 
-export function withRoute(Component: ComponentType, options: RouteOptions): ReactElement {
+interface RoutePageShellProps {
+  Component: ComponentType;
+  routeName: string;
+  namespaces?: string[];
+}
+
+function RoutePageShell({ Component, routeName, namespaces }: RoutePageShellProps): ReactElement {
+  const location = useLocation();
+
   return (
-    <Suspense fallback={<RouteLoadingFallback />}>
-      <RouteRuntimeBoundary routeName={options.routeName} namespaces={options.namespaces}>
+    <Suspense key={location.key} fallback={<RouteLoadingFallback />}>
+      <RouteRuntimeBoundary routeName={routeName} namespaces={namespaces}>
         <Component />
       </RouteRuntimeBoundary>
     </Suspense>
+  );
+}
+
+export function withRoute(Component: ComponentType, options: RouteOptions): ReactElement {
+  return (
+    <RoutePageShell
+      Component={Component}
+      routeName={options.routeName}
+      namespaces={options.namespaces}
+    />
   );
 }
