@@ -3590,7 +3590,36 @@
     "linesLoading": "جار تحميل الأسطر...",
     "linesEmpty": "لم يتم العثور على أسطر لهذا المستند.",
     "selectSingleDocument": "اختر مستندًا واحدًا للطباعة حسب السطر.",
-    "printSettings": "إعدادات الطباعة"
+    "printSettings": "إعدادات الطباعة",
+    "settingsExpanded": "مفتوح",
+    "settingsCollapsed": "تحميل",
+    "settingsLazyHint": "لا يتم تحميل إعدادات الطباعة عند الفتح الأول. افتح هذه اللوحة عند الحاجة إلى القالب والطابعة والملف.",
+    "design": "التصميم",
+    "printer": "الطابعة",
+    "printerProfile": "ملف الطابعة",
+    "copies": "النسخ",
+    "selectDesign": "اختر تصميم الباركود",
+    "selectServerPrinter": "اختر طابعة الخادم",
+    "selectPrinterProfile": "اختر ملف الطابعة",
+    "printSelectedLines": "طباعة الصفوف المحددة",
+    "printSelectedDocuments": "طباعة المستندات المحددة",
+    "refreshPrinters": "تحديث الطابعات",
+    "selectionSummary": "ملخص التحديد",
+    "printScope": "نطاق الطباعة",
+    "printScopeLines": "{{count}} صفوف من {{document}}",
+    "printScopeDocuments": "{{count}} مستندات",
+    "screenHint": "اختر التصميم والمستندات من الجدول ثم أضف مهمة الطباعة إلى قائمة الانتظار.",
+    "statuses": {
+      "Acik": "مفتوح",
+      "Cancelled": "ملغى",
+      "Consumed": "مستهلك",
+      "Generated": "تم الإنشاء",
+      "PartiallyConsumed": "مستهلك جزئياً",
+      "PartiallyPrinted": "مطبوع جزئياً",
+      "Printed": "مطبوع",
+      "Tamamlandi": "مكتمل",
+      "Void": "ملغى"
+    }
   },
   "kkd": {
     "columns": {

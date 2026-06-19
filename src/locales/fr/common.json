@@ -3590,7 +3590,36 @@
     "linesLoading": "Chargement des lignes...",
     "linesEmpty": "Aucune ligne trouvée pour ce document.",
     "selectSingleDocument": "Sélectionnez un document pour l'impression par ligne.",
-    "printSettings": "Paramètres d'impression"
+    "printSettings": "Paramètres d'impression",
+    "settingsExpanded": "Ouvert",
+    "settingsCollapsed": "Charger",
+    "settingsLazyHint": "Les paramètres d'impression ne sont pas chargés au premier affichage. Ouvrez ce panneau pour le modèle, l'imprimante et le profil.",
+    "design": "Modèle",
+    "printer": "Imprimante",
+    "printerProfile": "Profil imprimante",
+    "copies": "Copies",
+    "selectDesign": "Sélectionner un modèle",
+    "selectServerPrinter": "Sélectionner une imprimante",
+    "selectPrinterProfile": "Sélectionner un profil",
+    "printSelectedLines": "Imprimer les lignes sélectionnées",
+    "printSelectedDocuments": "Imprimer les documents sélectionnés",
+    "refreshPrinters": "Actualiser les imprimantes",
+    "selectionSummary": "Résumé de sélection",
+    "printScope": "Portée d'impression",
+    "printScopeLines": "{{count}} lignes de {{document}}",
+    "printScopeDocuments": "{{count}} documents",
+    "screenHint": "Sélectionnez un modèle, choisissez les documents dans la grille et mettez le travail d'impression en file.",
+    "statuses": {
+      "Acik": "Ouvert",
+      "Cancelled": "Annulé",
+      "Consumed": "Consommé",
+      "Generated": "Généré",
+      "PartiallyConsumed": "Partiellement consommé",
+      "PartiallyPrinted": "Partiellement imprimé",
+      "Printed": "Imprimé",
+      "Tamamlandi": "Terminé",
+      "Void": "Annulé"
+    }
   },
   "kkd": {
     "columns": {

@@ -3590,7 +3590,36 @@
     "linesLoading": "Cargando líneas...",
     "linesEmpty": "No se encontraron líneas para este documento.",
     "selectSingleDocument": "Seleccione un documento para impresión por línea.",
-    "printSettings": "Configuración de impresión"
+    "printSettings": "Configuración de impresión",
+    "settingsExpanded": "Abierto",
+    "settingsCollapsed": "Cargar",
+    "settingsLazyHint": "La configuración de impresión no se carga al abrir. Expanda este panel cuando necesite plantilla, impresora y perfil.",
+    "design": "Diseño",
+    "printer": "Impresora",
+    "printerProfile": "Perfil de impresora",
+    "copies": "Copias",
+    "selectDesign": "Seleccionar diseño de código de barras",
+    "selectServerPrinter": "Seleccionar impresora del servidor",
+    "selectPrinterProfile": "Seleccionar perfil de impresora",
+    "printSelectedLines": "Imprimir líneas seleccionadas",
+    "printSelectedDocuments": "Imprimir documentos seleccionados",
+    "refreshPrinters": "Actualizar impresoras",
+    "selectionSummary": "Resumen de selección",
+    "printScope": "Alcance de impresión",
+    "printScopeLines": "{{count}} líneas de {{document}}",
+    "printScopeDocuments": "{{count}} documentos",
+    "screenHint": "Seleccione un diseño, elija documentos en la cuadrícula y encole el trabajo de impresión.",
+    "statuses": {
+      "Acik": "Abierto",
+      "Cancelled": "Cancelado",
+      "Consumed": "Consumido",
+      "Generated": "Generado",
+      "PartiallyConsumed": "Parcialmente consumido",
+      "PartiallyPrinted": "Parcialmente impreso",
+      "Printed": "Impreso",
+      "Tamamlandi": "Completado",
+      "Void": "Anulado"
+    }
   },
   "kkd": {
     "columns": {

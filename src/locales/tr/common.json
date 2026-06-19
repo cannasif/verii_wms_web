@@ -4294,7 +4294,36 @@
     "linesLoading": "Satırlar yükleniyor...",
     "linesEmpty": "Bu belge için satır bulunamadı.",
     "selectSingleDocument": "Satır bazlı baskı için listeden tek bir belge seç.",
-    "printSettings": "Baskı Ayarları"
+    "printSettings": "Baskı Ayarları",
+    "settingsExpanded": "Açık",
+    "settingsCollapsed": "Yükle",
+    "settingsLazyHint": "Yazdırma ayarları ilk açılışta yüklenmez. Tasarım, yazıcı ve profil gerektiğinde bu paneli açın.",
+    "design": "Tasarım",
+    "printer": "Yazıcı",
+    "printerProfile": "Printer Profile",
+    "copies": "Kopya",
+    "selectDesign": "Barkod tasarımı seç",
+    "selectServerPrinter": "Sunucu yazıcısı seç",
+    "selectPrinterProfile": "Printer profile seç",
+    "printSelectedLines": "Seçili Satırları Yazdır",
+    "printSelectedDocuments": "Seçili Belgeleri Yazdır",
+    "refreshPrinters": "Yazıcıları Yenile",
+    "selectionSummary": "Seçim Özeti",
+    "printScope": "Baskı Kapsamı",
+    "printScopeLines": "{{document}} içinden {{count}} satır",
+    "printScopeDocuments": "{{count}} belge",
+    "screenHint": "Bu ekran operasyon içindir. Tasarım seçilir, belge grid'den seçilir ve baskı işi doğrudan kuyruğa alınır.",
+    "statuses": {
+      "Acik": "Açık",
+      "Cancelled": "İptal",
+      "Consumed": "Tüketildi",
+      "Generated": "Oluşturuldu",
+      "PartiallyConsumed": "Kısmi tüketildi",
+      "PartiallyPrinted": "Kısmi basıldı",
+      "Printed": "Basıldı",
+      "Tamamlandi": "Tamamlandı",
+      "Void": "İptal"
+    }
   },
   "help": {
     "kkd": {

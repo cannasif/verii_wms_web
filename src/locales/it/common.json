@@ -3590,7 +3590,36 @@
     "linesLoading": "Caricamento righe...",
     "linesEmpty": "Nessuna riga trovata per questo documento.",
     "selectSingleDocument": "Seleziona un documento per la stampa per riga.",
-    "printSettings": "Impostazioni di stampa"
+    "printSettings": "Impostazioni di stampa",
+    "settingsExpanded": "Aperto",
+    "settingsCollapsed": "Carica",
+    "settingsLazyHint": "Le impostazioni di stampa non vengono caricate all'apertura. Espandi questo pannello per modello, stampante e profilo.",
+    "design": "Modello",
+    "printer": "Stampante",
+    "printerProfile": "Profilo stampante",
+    "copies": "Copie",
+    "selectDesign": "Seleziona modello barcode",
+    "selectServerPrinter": "Seleziona stampante server",
+    "selectPrinterProfile": "Seleziona profilo stampante",
+    "printSelectedLines": "Stampa righe selezionate",
+    "printSelectedDocuments": "Stampa documenti selezionati",
+    "refreshPrinters": "Aggiorna stampanti",
+    "selectionSummary": "Riepilogo selezione",
+    "printScope": "Ambito stampa",
+    "printScopeLines": "{{count}} righe da {{document}}",
+    "printScopeDocuments": "{{count}} documenti",
+    "screenHint": "Seleziona un modello, scegli i documenti dalla griglia e accoda il lavoro di stampa.",
+    "statuses": {
+      "Acik": "Aperto",
+      "Cancelled": "Annullato",
+      "Consumed": "Consumato",
+      "Generated": "Generato",
+      "PartiallyConsumed": "Parzialmente consumato",
+      "PartiallyPrinted": "Parzialmente stampato",
+      "Printed": "Stampato",
+      "Tamamlandi": "Completato",
+      "Void": "Annullato"
+    }
   },
   "kkd": {
     "columns": {

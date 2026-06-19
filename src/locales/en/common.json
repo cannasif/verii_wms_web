@@ -4294,7 +4294,36 @@
     "linesLoading": "Loading lines...",
     "linesEmpty": "No lines found for this document.",
     "selectSingleDocument": "Select one document for line-based printing.",
-    "printSettings": "Print settings"
+    "printSettings": "Print settings",
+    "settingsExpanded": "Open",
+    "settingsCollapsed": "Load",
+    "settingsLazyHint": "Print settings are not loaded on first open. Expand this panel when you need template, printer and profile.",
+    "design": "Design",
+    "printer": "Printer",
+    "printerProfile": "Printer profile",
+    "copies": "Copies",
+    "selectDesign": "Select barcode design",
+    "selectServerPrinter": "Select server printer",
+    "selectPrinterProfile": "Select printer profile",
+    "printSelectedLines": "Print selected lines",
+    "printSelectedDocuments": "Print selected documents",
+    "refreshPrinters": "Refresh printers",
+    "selectionSummary": "Selection summary",
+    "printScope": "Print scope",
+    "printScopeLines": "{{count}} lines from {{document}}",
+    "printScopeDocuments": "{{count}} documents",
+    "screenHint": "Select a design, pick documents from the grid, and queue the print job directly.",
+    "statuses": {
+      "Acik": "Open",
+      "Cancelled": "Cancelled",
+      "Consumed": "Consumed",
+      "Generated": "Generated",
+      "PartiallyConsumed": "Partially consumed",
+      "PartiallyPrinted": "Partially printed",
+      "Printed": "Printed",
+      "Tamamlandi": "Completed",
+      "Void": "Void"
+    }
   },
   "help": {
     "kkd": {
