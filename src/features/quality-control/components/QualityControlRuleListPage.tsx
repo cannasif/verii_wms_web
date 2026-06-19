@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -152,9 +153,18 @@ export function QualityControlRuleListPage(): ReactElement {
       <FormPageShell
         title={t('qualityControl.rules.list.pageTitle')}
         actions={
-          <Button type="button" onClick={() => navigate('/quality-control/rules')}>
-            {t('common.add')}
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <DefinitionExcelActions
+              definitionKey="quality-control-rule"
+              fileNamePrefix="kalite-kontrol-kurallari"
+              onImportCompleted={async () => {
+                await query.refetch();
+              }}
+            />
+            <Button type="button" onClick={() => navigate('/quality-control/rules')}>
+              {t('common.add')}
+            </Button>
+          </div>
         }
       >
         <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { lookupApi } from '@/features/shared/api/lookup-api';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { useUIStore } from '@/stores/ui-store';
 import { qualityControlApi } from '../api/quality-control.api';
@@ -128,6 +129,15 @@ export function QualityControlSettingsPage(): ReactElement {
       <FormPageShell
         title={t('qualityControl.settings.title')}
         description={t('qualityControl.settings.description')}
+        actions={(
+          <DefinitionExcelActions
+            definitionKey="quality-control-parameter"
+            fileNamePrefix="kalite-kontrol-ayarlari"
+            onImportCompleted={async () => {
+              await query.refetch();
+            }}
+          />
+        )}
         isLoading={query.isLoading}
         isError={Boolean(query.error)}
         errorTitle={t('common.error')}
