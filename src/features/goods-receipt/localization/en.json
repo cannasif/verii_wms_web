@@ -30,7 +30,7 @@
     "customerCodePlaceholder": "Example: 120.001",
     "detailDescription": "Labels generated for order {{orderNo}}",
     "details": "Details",
-    "empty": "No pre-label batches yet.",
+    "empty": "Data not found",
     "enterCustomerCode": "Enter a customer code to list orders.",
     "existingLabelsInfo": "{{count}} pre-labels already exist; these lines cannot be selected again.",
     "eyebrow": "Purchase order based receiving",
@@ -94,7 +94,7 @@
     "consumedShort": "consumed",
     "createdDate": "Created",
     "customer": "Customer",
-    "empty": "No unconsumed pre-label batch is available for receipt.",
+    "empty": "Data not found",
     "eyebrow": "Receipt from label",
     "helpText": "Starting a batch creates the goods receipt order and opens the barcode scanning screen.",
     "loadError": "Receipt-from-label batches could not be loaded.",
@@ -115,28 +115,30 @@
     "approval": {
       "actions": "Actions",
       "approve": "Approve",
-      "approveError": "Approve failed",
-      "approveSuccess": "Goods receipt approved",
+      "approveError": "Goods receipt order could not be approved",
+      "approveSuccess": "Goods receipt order approved successfully",
       "customerCode": "Customer Code",
       "customerName": "Customer Name",
       "documentDate": "Document Date",
       "documentNo": "Document No",
-      "error": "Unable to load approvals",
+      "error": "Failed to load data",
       "id": "ID",
-      "noData": "No approval records found",
+      "noData": "Data not found",
       "plannedDate": "Planned Date",
       "reject": "Reject",
-      "rejectError": "Reject failed",
-      "rejectSuccess": "Goods receipt rejected",
-      "searchPlaceholder": "Search approval list...",
-      "title": "Goods Receipt Approval",
-      "viewDetails": "View Details"
+      "rejectError": "Goods receipt order could not be rejected",
+      "rejectSuccess": "Goods receipt order rejected successfully",
+      "searchPlaceholder": "Search by document no, customer code, or planned date",
+      "subtitle": "Review and process orders awaiting approval",
+      "title": "Goods Receipt Orders Awaiting Approval",
+      "viewDetails": "Details"
     },
     "assignedList": {
-      "error": "Unable to load assigned goods receipt list",
-      "noData": "No assigned goods receipt found",
-      "searchPlaceholder": "Search assigned goods receipt",
-      "title": "Assigned Goods Receipts"
+      "error": "Failed to load data",
+      "noData": "Data not found",
+      "searchPlaceholder": "Search order no, customer code...",
+      "subtitle": "View, filter and manage records",
+      "title": "Assigned Goods Receipt Orders"
     },
     "collection": {
       "barcodePlaceholder": "Scan or enter barcode",
@@ -164,18 +166,26 @@
       "viewCollected": "View collected",
       "yapKod": "Operation Code"
     },
+    "grid": {
+      "empty": "Data not found",
+      "error": "Failed to load data"
+    },
     "create": {
+      "breadcrumb": {
+        "module": "GOODS_RECEIPT",
+        "parent": "INBOUND_OP"
+      },
       "error": "Unable to create goods receipt",
       "mode": {
         "order": "Order",
-        "stock": "Stock"
+        "stock": "Stock Detail"
       },
       "steps": {
         "basicInfo": "Basic Info",
         "orderSelection": "Order Selection",
         "stockSelection": "Stock Selection"
       },
-      "subtitle": "Create goods receipt",
+      "subtitle": "Initializing system record...",
       "success": "Goods receipt created",
       "title": "New Goods Receipt"
     },
@@ -196,6 +206,7 @@
       "title": "Edit Goods Receipt"
     },
     "list": {
+      "subtitle": "View, filter and manage records",
       "title": "Goods Receipt List"
     },
     "orderDetails": {
@@ -257,7 +268,7 @@
       "isERPIntegrated": "ERP Integrated",
       "isPendingApproval": "Approval Pending",
       "isPlanned": "Planned",
-      "noData": "No goods receipt found",
+      "noData": "Data not found",
       "noImportLines": "No import lines",
       "noOrderInfo": "Order information not available",
       "noSearchResults": "No result",
@@ -295,13 +306,16 @@
       "isInvoice": "Is Invoice",
       "isInvoiceDescription": "Mark whether there is an invoice",
       "notes": "Notes",
-      "notesPlaceholder": "Notes",
+      "notesDescription": "Optional notes or description for this goods receipt order.",
+      "notesPlaceholder": "Enter notes or description...",
       "projectCode": "Project Code",
       "receiptDate": "Receipt Date",
       "selectCustomer": "Select customer",
       "selectProjectCode": "Select project code",
       "selectWarehouse": "Select warehouse",
-      "selectedCustomer": "Selected Customer"
+      "selectedCustomer": "Selected Customer",
+      "selectedCustomerEyebrow": "CUST_REF",
+      "selectedCustomerStatus": "LINKED"
     },
     "step2": {
       "completed": "Completed",
@@ -313,6 +327,9 @@
       "orders": "Orders",
       "pending": "Pending",
       "remaining": "Remaining",
+      "removeSelection": "Remove selection",
+      "decreaseQuantity": "Decrease",
+      "increaseQuantity": "Increase",
       "searchItems": "Search items",
       "searchStocks": "Search stocks",
       "selectCustomerFirst": "Select customer first",

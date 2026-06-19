@@ -30,10 +30,10 @@
     "customerCodePlaceholder": "Example: 120.001",
     "detailDescription": "Labels generated for order {{orderNo}}",
     "details": "Details",
-    "empty": "No pre-label batches yet.",
+    "empty": "Dati non trovati",
     "enterCustomerCode": "Enter a customer code to list orders.",
     "existingLabelsInfo": "{{count}} pre-labels already exist; these lines cannot be selected again.",
-    "eyebrow": "Purchase order based receiving",
+    "eyebrow": "Ricezione basata su ordine",
     "lineCount": "lines",
     "markPrinted": "Mark printed",
     "noLabels": "No labels found for this batch.",
@@ -65,8 +65,8 @@
     "goodsReceiptStarted": "Goods receipt started from labels.",
     "status": "Status",
     "stock": "Stock",
-    "subtitle": "Track pre-printed receiving barcodes, reprints and scan consumption from one operational view.",
-    "title": "Goods Receipt Pre-Barcode Labels",
+    "subtitle": "Monitora codici a barre di ricezione pre-stampati, ristampe e consumo da scansione in un'unica vista operativa.",
+    "title": "Etichette pre-barcode di ricezione",
     "total": "Total",
     "voided": "Label voided.",
     "voidReason": "Voided by user from pre-label screen",
@@ -94,8 +94,8 @@
     "consumedShort": "consumed",
     "createdDate": "Created",
     "customer": "Customer",
-    "empty": "No unconsumed pre-label batch is available for receipt.",
-    "eyebrow": "Receipt from label",
+    "empty": "Dati non trovati",
+    "eyebrow": "Ricezione da etichetta",
     "helpText": "Starting a batch creates the goods receipt order and opens the barcode scanning screen.",
     "loadError": "Receipt-from-label batches could not be loaded.",
     "openBatchCount": "Open batches",
@@ -107,36 +107,38 @@
     "startScan": "Start scanning",
     "started": "Receipt-from-label scanning screen opened.",
     "status": "Status",
-    "subtitle": "Select unconsumed pre-label batches, open the order-linked goods receipt, and verify by scanning printed labels.",
-    "title": "Receipt From Label",
+    "subtitle": "Seleziona lotti di etichette non consumati, apri la ricezione collegata all'ordine e verifica scansionando le etichette stampate.",
+    "title": "Ricezione da etichetta",
     "totalLabels": "Total labels"
   },
   "goodsReceipt": {
     "approval": {
-      "actions": "Actions",
-      "approve": "Approve",
-      "approveError": "Approve failed",
-      "approveSuccess": "Goods receipt approved",
-      "customerCode": "Customer Code",
-      "customerName": "Customer Name",
-      "documentDate": "Document Date",
-      "documentNo": "Document No",
-      "error": "Unable to load approvals",
+      "actions": "Azioni",
+      "approve": "Approva",
+      "approveError": "Impossibile approvare la ricezione",
+      "approveSuccess": "Ricezione approvata con successo",
+      "customerCode": "Codice cliente",
+      "customerName": "Nome cliente",
+      "documentDate": "Data documento",
+      "documentNo": "N° documento",
+      "error": "Impossibile caricare i dati",
       "id": "ID",
-      "noData": "No approval records found",
-      "plannedDate": "Planned Date",
-      "reject": "Reject",
-      "rejectError": "Reject failed",
-      "rejectSuccess": "Goods receipt rejected",
-      "searchPlaceholder": "Search approval list...",
-      "title": "Goods Receipt Approval",
-      "viewDetails": "View Details"
+      "noData": "Dati non trovati",
+      "plannedDate": "Data pianificata",
+      "reject": "Rifiuta",
+      "rejectError": "Impossibile rifiutare la ricezione",
+      "rejectSuccess": "Ricezione rifiutata con successo",
+      "searchPlaceholder": "Cerca per n° documento, codice cliente o data pianificata",
+      "subtitle": "Visualizza e gestisci gli ordini in attesa di approvazione",
+      "title": "Ricezioni in attesa di approvazione",
+      "viewDetails": "Dettagli"
     },
     "assignedList": {
-      "error": "Unable to load assigned goods receipt list",
-      "noData": "No assigned goods receipt found",
-      "searchPlaceholder": "Search assigned goods receipt",
-      "title": "Assigned Goods Receipts"
+      "error": "Impossibile caricare i dati",
+      "noData": "Dati non trovati",
+      "searchPlaceholder": "Cerca n° ordine, codice cliente...",
+      "subtitle": "Visualizza, filtra e gestisci i record",
+      "title": "Ricezioni assegnate"
     },
     "collection": {
       "barcodePlaceholder": "Scan or enter barcode",
@@ -164,8 +166,16 @@
       "viewCollected": "View collected",
       "yapKod": "Operation Code"
     },
+    "grid": {
+      "empty": "Dati non trovati",
+      "error": "Impossibile caricare i dati"
+    },
     "create": {
-      "error": "Unable to create goods receipt",
+      "breadcrumb": {
+        "module": "RICEVZIONE",
+        "parent": "INGRESSO_OP"
+      },
+      "error": "Impossibile creare la ricezione",
       "mode": {
         "order": "Order",
         "stock": "Stock"
@@ -196,7 +206,8 @@
       "title": "Edit Goods Receipt"
     },
     "list": {
-      "title": "Goods Receipt List"
+      "subtitle": "Visualizza, filtra e gestisci i record",
+      "title": "Elenco ricezioni"
     },
     "orderDetails": {
       "description": "Order details",
@@ -257,7 +268,7 @@
       "isERPIntegrated": "ERP Integrated",
       "isPendingApproval": "Approval Pending",
       "isPlanned": "Planned",
-      "noData": "No goods receipt found",
+      "noData": "Dati non trovati",
       "noImportLines": "No import lines",
       "noOrderInfo": "Order information not available",
       "noSearchResults": "No result",
@@ -301,7 +312,9 @@
       "selectCustomer": "Select customer",
       "selectProjectCode": "Select project code",
       "selectWarehouse": "Select warehouse",
-      "selectedCustomer": "Selected Customer"
+      "selectedCustomer": "Selected Customer",
+      "selectedCustomerEyebrow": "CUST_REF",
+      "selectedCustomerStatus": "LINKED"
     },
     "step2": {
       "completed": "Completed",

@@ -4180,7 +4180,8 @@
   "paged": {
     "search": "Search",
     "searchPlaceholder": "Search records",
-    "loadingDescription": "Loading"
+    "loadingDescription": "Loading",
+    "pageIndicator": "Page {{page}} / {{totalPages}}"
   },
   "userManagement": {
     "searchPlaceholder": "Search users..."

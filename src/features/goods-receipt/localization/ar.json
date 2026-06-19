@@ -30,10 +30,10 @@
     "customerCodePlaceholder": "Example: 120.001",
     "detailDescription": "Labels generated for order {{orderNo}}",
     "details": "Details",
-    "empty": "No pre-label batches yet.",
+    "empty": "لم يتم العثور على بيانات",
     "enterCustomerCode": "Enter a customer code to list orders.",
     "existingLabelsInfo": "{{count}} pre-labels already exist; these lines cannot be selected again.",
-    "eyebrow": "Purchase order based receiving",
+    "eyebrow": "استلام بناءً على الطلب",
     "lineCount": "lines",
     "markPrinted": "Mark printed",
     "noLabels": "No labels found for this batch.",
@@ -65,8 +65,8 @@
     "goodsReceiptStarted": "Goods receipt started from labels.",
     "status": "Status",
     "stock": "Stock",
-    "subtitle": "Track pre-printed receiving barcodes, reprints and scan consumption from one operational view.",
-    "title": "Goods Receipt Pre-Barcode Labels",
+    "subtitle": "تتبع باركود الاستلام المطبوع مسبقاً وإعادة الطباعة واستهلاك المسح من واجهة تشغيل واحدة.",
+    "title": "ملصقات ما قبل الباركود للاستلام",
     "total": "Total",
     "voided": "Label voided.",
     "voidReason": "Voided by user from pre-label screen",
@@ -94,8 +94,8 @@
     "consumedShort": "consumed",
     "createdDate": "Created",
     "customer": "Customer",
-    "empty": "No unconsumed pre-label batch is available for receipt.",
-    "eyebrow": "Receipt from label",
+    "empty": "لم يتم العثور على بيانات",
+    "eyebrow": "استلام من الملصق",
     "helpText": "Starting a batch creates the goods receipt order and opens the barcode scanning screen.",
     "loadError": "Receipt-from-label batches could not be loaded.",
     "openBatchCount": "Open batches",
@@ -107,36 +107,38 @@
     "startScan": "Start scanning",
     "started": "Receipt-from-label scanning screen opened.",
     "status": "Status",
-    "subtitle": "Select unconsumed pre-label batches, open the order-linked goods receipt, and verify by scanning printed labels.",
-    "title": "Receipt From Label",
+    "subtitle": "اختر دفعات الملصقات غير المستهلكة، وافتح الاستلام المرتبط بالطلب وتحقق بمسح الملصقات المطبوعة.",
+    "title": "استلام من الملصق",
     "totalLabels": "Total labels"
   },
   "goodsReceipt": {
     "approval": {
-      "actions": "Actions",
-      "approve": "Approve",
-      "approveError": "Approve failed",
-      "approveSuccess": "Goods receipt approved",
-      "customerCode": "Customer Code",
-      "customerName": "Customer Name",
-      "documentDate": "Document Date",
-      "documentNo": "Document No",
-      "error": "Unable to load approvals",
-      "id": "ID",
-      "noData": "No approval records found",
-      "plannedDate": "Planned Date",
-      "reject": "Reject",
-      "rejectError": "Reject failed",
-      "rejectSuccess": "Goods receipt rejected",
-      "searchPlaceholder": "Search approval list...",
-      "title": "Goods Receipt Approval",
-      "viewDetails": "View Details"
+      "actions": "الإجراءات",
+      "approve": "موافقة",
+      "approveError": "تعذرت الموافقة على الاستلام",
+      "approveSuccess": "تمت الموافقة على الاستلام بنجاح",
+      "customerCode": "رمز العميل",
+      "customerName": "اسم العميل",
+      "documentDate": "تاريخ المستند",
+      "documentNo": "رقم المستند",
+      "error": "فشل تحميل البيانات",
+      "id": "المعرف",
+      "noData": "لم يتم العثور على بيانات",
+      "plannedDate": "التاريخ المخطط",
+      "reject": "رفض",
+      "rejectError": "تعذر رفض الاستلام",
+      "rejectSuccess": "تم رفض الاستلام بنجاح",
+      "searchPlaceholder": "البحث برقم المستند أو رمز العميل أو التاريخ المخطط",
+      "subtitle": "عرض ومعالجة الطلبات بانتظار الموافقة",
+      "title": "طلبات الاستلام بانتظار الموافقة",
+      "viewDetails": "التفاصيل"
     },
     "assignedList": {
-      "error": "Unable to load assigned goods receipt list",
-      "noData": "No assigned goods receipt found",
-      "searchPlaceholder": "Search assigned goods receipt",
-      "title": "Assigned Goods Receipts"
+      "error": "فشل تحميل البيانات",
+      "noData": "لم يتم العثور على بيانات",
+      "searchPlaceholder": "البحث برقم الطلب أو رمز العميل...",
+      "subtitle": "عرض وتصفية وإدارة السجلات",
+      "title": "طلبات الاستلام المعينة"
     },
     "collection": {
       "barcodePlaceholder": "Scan or enter barcode",
@@ -164,8 +166,16 @@
       "viewCollected": "View collected",
       "yapKod": "Operation Code"
     },
+    "grid": {
+      "empty": "لم يتم العثور على بيانات",
+      "error": "فشل تحميل البيانات"
+    },
     "create": {
-      "error": "Unable to create goods receipt",
+      "breadcrumb": {
+        "module": "استلام_بضائع",
+        "parent": "عمليات_الوارد"
+      },
+      "error": "تعذر إنشاء الاستلام",
       "mode": {
         "order": "Order",
         "stock": "Stock"
@@ -196,7 +206,8 @@
       "title": "Edit Goods Receipt"
     },
     "list": {
-      "title": "Goods Receipt List"
+      "subtitle": "عرض وتصفية وإدارة السجلات",
+      "title": "قائمة الاستلام"
     },
     "orderDetails": {
       "description": "Order details",
@@ -257,7 +268,7 @@
       "isERPIntegrated": "ERP Integrated",
       "isPendingApproval": "Approval Pending",
       "isPlanned": "Planned",
-      "noData": "No goods receipt found",
+      "noData": "لم يتم العثور على بيانات",
       "noImportLines": "No import lines",
       "noOrderInfo": "Order information not available",
       "noSearchResults": "No result",
@@ -301,7 +312,9 @@
       "selectCustomer": "Select customer",
       "selectProjectCode": "Select project code",
       "selectWarehouse": "Select warehouse",
-      "selectedCustomer": "Selected Customer"
+      "selectedCustomer": "Selected Customer",
+      "selectedCustomerEyebrow": "CUST_REF",
+      "selectedCustomerStatus": "LINKED"
     },
     "step2": {
       "completed": "Completed",

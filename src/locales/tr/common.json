@@ -4180,7 +4180,8 @@
   "paged": {
     "search": "Ara",
     "searchPlaceholder": "Kayıtlarda ara",
-    "loadingDescription": "Yükleniyor"
+    "loadingDescription": "Yükleniyor",
+    "pageIndicator": "Sayfa {{page}} / {{totalPages}}"
   },
   "userManagement": {
     "searchPlaceholder": "Kullanıcılarda ara..."
