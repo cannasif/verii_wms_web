@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { applyDocumentTextDirection } from './text-direction';
 
 const i18n = i18next.createInstance();
 
@@ -162,6 +163,7 @@ function syncDocumentLanguage(language: SupportedLanguage): void {
   }
 
   document.documentElement.lang = language;
+  applyDocumentTextDirection(language);
 }
 
 function persistLanguage(language: SupportedLanguage): void {

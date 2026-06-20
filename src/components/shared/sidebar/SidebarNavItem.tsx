@@ -66,9 +66,9 @@ function getLevelTextClassName(level: number, hasChildren: boolean): string {
 
 function getChildrenContainerClassName(level: number): string {
   if (level === 0) {
-    return 'ml-7 space-y-0.5 border-l border-slate-200/80 pl-2 dark:border-white/10';
+    return 'ms-7 space-y-0.5 border-s border-slate-200/80 ps-2 dark:border-white/10';
   }
-  return 'ml-2 space-y-0.5 border-l border-slate-200/60 pl-2 dark:border-white/5';
+  return 'ms-2 space-y-0.5 border-s border-slate-200/60 ps-2 dark:border-white/5';
 }
 
 function SidebarNavLabel({
@@ -181,7 +181,7 @@ export function SidebarNavItem({
               strokeWidth={1.75}
               className={cn(
                 'shrink-0 text-slate-400 transition-transform duration-200 dark:text-slate-500',
-                isExpanded && 'rotate-90',
+                isExpanded && 'rotate-90 rtl:-rotate-90',
               )}
             />
           ) : null}

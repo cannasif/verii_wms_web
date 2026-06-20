@@ -100,7 +100,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
               );
             })}
             {showActionsColumn && (
-              <TableCell className={ACTIONS_CELL_BASE}>
+              <TableCell className={ACTIONS_CELL_BASE} data-wms-action-cell="true">
                 <div className="ml-auto h-8 w-32 animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
               </TableCell>
             )}
@@ -165,6 +165,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
                   className={cn(ACTIONS_CELL_BASE, actionsCellClassName, iconOnlyActions && ICON_ONLY_ACTIONS_CLASS)}
                   onClick={(event) => event.stopPropagation()}
                   data-no-drag-scroll="true"
+                  data-wms-action-cell="true"
                 >
                   {renderActionsCell?.(row)}
                 </TableCell>

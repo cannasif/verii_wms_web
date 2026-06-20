@@ -34,6 +34,9 @@ const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
   { code: 'en', name: 'English', flagEmoji: '🇬🇧', flagLabel: 'EN' },
   { code: 'de', name: 'Deutsch', flagEmoji: '🇩🇪', flagLabel: 'DE' },
   { code: 'fr', name: 'Français', flagEmoji: '🇫🇷', flagLabel: 'FR' },
+  { code: 'ar', name: 'العربية', flagEmoji: '🇸🇦', flagLabel: 'AR' },
+  { code: 'es', name: 'Español', flagEmoji: '🇪🇸', flagLabel: 'ES' },
+  { code: 'it', name: 'Italiano', flagEmoji: '🇮🇹', flagLabel: 'IT' },
 ];
 
 const settingsRowBaseClass = cn(

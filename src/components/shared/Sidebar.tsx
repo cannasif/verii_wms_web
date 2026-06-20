@@ -57,8 +57,9 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       />
 
       <aside
+        data-sidebar-open={isSidebarOpen ? 'true' : 'false'}
         className={cn(
-          'custom-scrollbar fixed bottom-0 left-0 top-0 z-50 flex h-dvh flex-col border-r',
+          'app-sidebar-panel custom-scrollbar fixed bottom-0 left-0 top-0 z-50 flex h-dvh flex-col border-r',
           sidebarShellClassName,
           sidebarMotionClassName,
           'w-72',
@@ -104,6 +105,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
               onClick={() => useUIStore.getState().setSidebarOpen(false)}
               className={cn(
                 'absolute right-3 rounded-xl p-2 text-slate-500 transition-colors duration-300 hover:text-cyan-600 lg:hidden',
+                'rtl:right-auto rtl:left-3',
                 !isSidebarOpen && 'pointer-events-none opacity-0',
               )}
               aria-label={t('common.close', { defaultValue: 'Close' })}

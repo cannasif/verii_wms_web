@@ -14,7 +14,7 @@ export const sidebarShellClassName = cn(
 
 export const sidebarLabelClassName = (isOpen: boolean): string =>
   cn(
-    'overflow-hidden whitespace-nowrap text-left transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]',
+    'overflow-hidden whitespace-nowrap text-start transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]',
     isOpen ? 'max-w-[12rem] opacity-100' : 'max-w-0 opacity-0',
   );
 
@@ -37,8 +37,8 @@ export const sidebarIconBoxClassName = (isActive: boolean, idleToneClass: string
   );
 
 export const sidebarLeafAccentClassName = cn(
-  'relative pl-4',
-  'before:absolute before:left-0 before:top-1/2 before:h-6 before:w-1 before:-translate-y-1/2 before:rounded-r-full',
+  'relative ps-4',
+  'before:absolute before:start-0 before:top-1/2 before:h-6 before:w-1 before:-translate-y-1/2 before:rounded-e-full',
   'before:bg-linear-to-b before:from-cyan-500 before:to-sky-400 before:content-[""]',
 );
 

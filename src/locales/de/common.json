@@ -4987,7 +4987,13 @@
     "badge": "Stahlkennzeichen-Annahme"
   },
   "languageNames": {
-    "en": "Englisch"
+    "en": "English",
+    "tr": "Türkçe",
+    "de": "Deutsch",
+    "fr": "Français",
+    "ar": "العربية",
+    "es": "Español",
+    "it": "Italiano"
   },
   "roles": {
     "admin": "Admin"

@@ -3705,5 +3705,14 @@
     "messages": {
       "groupNotFound": "Group not found"
     }
+  },
+  "languageNames": {
+    "tr": "Türkçe",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français",
+    "ar": "العربية",
+    "es": "Español",
+    "it": "Italiano"
   }
 }
