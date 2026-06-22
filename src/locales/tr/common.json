@@ -464,6 +464,7 @@
     "erpWarehouseStockBalance": "Depo Stok Bakiyesi",
     "erpWarehouseSerialBalance": "Depo Seri Bakiyesi",
     "bilginogluHakEdisLocationSettings": "Hakediş Lokasyon Tanımları",
+    "bilginogluHakEdisOrderSummaryReport": "Sipariş Özet Raporu",
     "bilginogluHakEdisOperationSettings": "Operasyon Tanımları",
     "goodsReceiptPreLabels": "Mal Kabul Ön Barkod Etiketleri",
     "goodsReceiptPreLabelReceiving": "Etiketten Mal Kabul"

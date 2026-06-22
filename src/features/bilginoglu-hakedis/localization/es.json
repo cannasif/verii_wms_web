@@ -383,6 +383,54 @@
       "deleteFailed": "Entitlement location setting could not be deleted."
     }
   },
+  "reports": {
+    "orderSummary": {
+      "title": "Order Summary Report",
+      "description": "Track expected, entitlement outbound, entitlement return, and shipment waiting quantities per order in one operational view.",
+      "eyebrow": "Bilginoglu monitoring",
+      "searchPlaceholder": "Search order, customer, or description...",
+      "empty": "No order summary record was found.",
+      "error": "Order summary report could not be loaded.",
+      "cards": {
+        "expected": "Expected Total",
+        "unplanned": "Need To Plan",
+        "hakEdisFlow": "Entitlement Flow",
+        "shipmentWaiting": "Waiting Shipment",
+        "shipped": "Shipped",
+        "missing": "Missing"
+      },
+      "table": {
+        "order": "Order",
+        "orderDate": "Order Date",
+        "customer": "Customer",
+        "flags": "Rules",
+        "expected": "Expected / Remaining",
+        "unplannedNeed": "To Plan",
+        "hakEdisFlow": "Entitlement Outbound",
+        "returnFlow": "Entitlement Return",
+        "shipmentFlow": "Shipment Flow",
+        "warehouse": "Warehouse Status",
+        "status": "Status",
+        "lastEvaluation": "Last Sync"
+      },
+      "labels": {
+        "lineCount": "Lines",
+        "hakEdisRequired": "Entitlement",
+        "transferAll": "Transfer All",
+        "expected": "Expected",
+        "remaining": "Remaining",
+        "toGo": "To Go",
+        "atHakEdis": "At Entitlement",
+        "returnPending": "To Return",
+        "ready": "Ready",
+        "shipmentOrder": "In Order",
+        "shipped": "Shipped",
+        "available": "In Stock",
+        "canCreate": "Can Create",
+        "missing": "Missing"
+      }
+    }
+  },
   "operationSettings": {
     "title": "Operation Settings",
     "hero": {

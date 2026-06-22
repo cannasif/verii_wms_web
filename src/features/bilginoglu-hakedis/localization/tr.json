@@ -383,6 +383,54 @@
       "deleteFailed": "Hakediş lokasyon tanımı silinemedi."
     }
   },
+  "reports": {
+    "orderSummary": {
+      "title": "Sipariş Özet Raporu",
+      "description": "Sipariş bazında beklenen, hakedişe gidecek, hakedişten dönecek ve sevk bekleyen miktarları tek ekranda izleyin.",
+      "eyebrow": "Bilginoğlu izleme",
+      "searchPlaceholder": "Sipariş, cari veya açıklama ara...",
+      "empty": "Sipariş özet kaydı bulunamadı.",
+      "error": "Sipariş özet raporu alınamadı.",
+      "cards": {
+        "expected": "Beklenen Toplam",
+        "unplanned": "Planlanacak İhtiyaç",
+        "hakEdisFlow": "Hakediş Akışı",
+        "shipmentWaiting": "Sevk Bekleyen",
+        "shipped": "Sevk Edilen",
+        "missing": "Eksik"
+      },
+      "table": {
+        "order": "Sipariş",
+        "orderDate": "Sipariş Tarihi",
+        "customer": "Cari",
+        "flags": "Kurallar",
+        "expected": "Beklenen / Kalan",
+        "unplannedNeed": "Planlanacak",
+        "hakEdisFlow": "Hakediş Gidiş",
+        "returnFlow": "Hakediş Dönüş",
+        "shipmentFlow": "Sevk Akışı",
+        "warehouse": "Depo Durumu",
+        "status": "Durum",
+        "lastEvaluation": "Son Senkron"
+      },
+      "labels": {
+        "lineCount": "Kalem",
+        "hakEdisRequired": "Hakediş",
+        "transferAll": "Tümünü",
+        "expected": "Beklenen",
+        "remaining": "Kalan",
+        "toGo": "Gidecek",
+        "atHakEdis": "Hakedişte",
+        "returnPending": "Dönecek",
+        "ready": "Hazır",
+        "shipmentOrder": "Emirde",
+        "shipped": "Sevk",
+        "available": "Depoda",
+        "canCreate": "Açılabilir",
+        "missing": "Eksik"
+      }
+    }
+  },
   "operationSettings": {
     "title": "Operasyon Tanımları",
     "hero": {

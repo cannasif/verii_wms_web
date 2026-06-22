@@ -464,6 +464,7 @@
     "erpWarehouseStockBalance": "Warehouse Stock Balance",
     "erpWarehouseSerialBalance": "Warehouse Serial Balance",
     "bilginogluHakEdisLocationSettings": "Entitlement Location Settings",
+    "bilginogluHakEdisOrderSummaryReport": "Order Summary Report",
     "bilginogluHakEdisOperationSettings": "Operation Settings",
     "goodsReceiptPreLabels": "Goods Receipt Pre-Labels",
     "goodsReceiptPreLabelReceiving": "Receipt From Label"

@@ -33,6 +33,36 @@ export interface BilginogluHakEdisOrderHeader {
   lastEvaluationDate?: string | null;
 }
 
+export interface BilginogluHakEdisOrderSummaryReport {
+  id: number;
+  branchCode: string;
+  siparisNo: string;
+  customerId?: number | null;
+  customerCode?: string | null;
+  customerName?: string | null;
+  orderDate?: string | null;
+  hakEdisFlag: string;
+  transferAllFlag: string;
+  orderDetail?: string | null;
+  lineCount: number;
+  expectedTotalQty: number;
+  remainingOrderQty: number;
+  unplannedNeedQty: number;
+  hakEdisToGoQty: number;
+  atHakEdisQty: number;
+  hakEdisReturnPendingQty: number;
+  readyForShipmentQty: number;
+  shipmentWaitingQty: number;
+  shippedQty: number;
+  missingQty: number;
+  warehouseAvailableQty: number;
+  canCreateNewBatchQty: number;
+  isCompleted: boolean;
+  completedDate?: string | null;
+  status: string;
+  lastEvaluationDate?: string | null;
+}
+
 export interface UpdateBilginogluHakEdisOrderPolicy {
   allocationPolicy: string;
   shipmentPolicy: string;

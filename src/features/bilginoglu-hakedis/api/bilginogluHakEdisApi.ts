@@ -18,6 +18,7 @@ import type {
   BilginogluHakEdisMoveAllocationResult,
   BilginogluHakEdisMoveTarget,
   BilginogluHakEdisTransferPreview,
+  BilginogluHakEdisOrderSummaryReport,
   PagedParams,
   PagedResponse,
   UpsertBilginogluHakEdisCompletedLocationSetting,
@@ -44,6 +45,14 @@ export const bilginogluHakEdisApi = {
       buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'OrderDate', sortDirection: 'asc' }),
     );
     return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisOrderHeader>>));
+  },
+
+  getOrderSummaryReport: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisOrderSummaryReport>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisOrderSummaryReport>>>(
+      '/api/BilginogluHakEdis/reports/order-summary/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'OrderDate', sortDirection: 'asc' }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisOrderSummaryReport>>));
   },
 
   getOrderPlans: async (orderHeaderId: number): Promise<BilginogluHakEdisPlan[]> => {

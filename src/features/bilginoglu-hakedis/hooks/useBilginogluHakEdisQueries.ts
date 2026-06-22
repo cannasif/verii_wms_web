@@ -7,6 +7,7 @@ import type { PagedParams, UpsertBilginogluHakEdisCompletedLocationSetting, Upse
 export const bilginogluHakEdisQueryKeys = {
   all: ['bilginoglu-hakedis'] as const,
   orders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'orders', params] as const,
+  orderSummaryReport: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'order-summary-report', params] as const,
   orderPlans: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-plans', orderHeaderId] as const,
   orderActivities: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-activities', orderHeaderId] as const,
   transferPreview: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'transfer-preview', orderHeaderId] as const,
@@ -25,6 +26,13 @@ export function useBilginogluHakEdisOrdersQuery(params: PagedParams) {
   return useQuery({
     queryKey: bilginogluHakEdisQueryKeys.orders(params),
     queryFn: () => bilginogluHakEdisApi.getOrders(params),
+  });
+}
+
+export function useBilginogluHakEdisOrderSummaryReportQuery(params: PagedParams) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.orderSummaryReport(params),
+    queryFn: () => bilginogluHakEdisApi.getOrderSummaryReport(params),
   });
 }
 

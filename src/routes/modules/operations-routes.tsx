@@ -74,6 +74,7 @@ const TransferChainListPage = lazyNamed(() => import('@/features/transfer-chain'
 const BilginogluHakEdisPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPage');
 const BilginogluHakEdisLocationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisLocationSettingsPage');
 const BilginogluHakEdisOperationSettingsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisOperationSettingsPage');
+const BilginogluHakEdisOrderSummaryReportPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisOrderSummaryReportPage');
 const BilginogluHakEdisPendingTransfersPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPendingTransfersPage');
 const BilginogluHakEdisPendingShipmentsPage = lazyNamed(() => import('@/features/bilginoglu-hakedis'), 'BilginogluHakEdisPendingShipmentsPage');
 
@@ -404,6 +405,7 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'bilginoglu-hakedis/completed', element: withRoute(BilginogluHakEdisPage, { routeName: 'service-bilginoglu-hakedis-completed', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/pending-transfers', element: withRoute(BilginogluHakEdisPendingTransfersPage, { routeName: 'service-bilginoglu-hakedis-pending-transfers', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/pending-shipments', element: withRoute(BilginogluHakEdisPendingShipmentsPage, { routeName: 'service-bilginoglu-hakedis-pending-shipments', namespaces: ['bilginoglu-hakedis', 'common'] }) },
+      { path: 'bilginoglu-hakedis/order-summary-report', element: withRoute(BilginogluHakEdisOrderSummaryReportPage, { routeName: 'service-bilginoglu-hakedis-order-summary-report', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/location-settings', element: withRoute(BilginogluHakEdisLocationSettingsPage, { routeName: 'service-bilginoglu-hakedis-location-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
       { path: 'bilginoglu-hakedis/operation-settings', element: withRoute(BilginogluHakEdisOperationSettingsPage, { routeName: 'service-bilginoglu-hakedis-operation-settings', namespaces: ['bilginoglu-hakedis', 'common'] }) },
     ],
