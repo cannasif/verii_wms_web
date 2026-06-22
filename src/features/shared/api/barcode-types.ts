@@ -47,6 +47,8 @@ export interface ResolvedBarcode {
   yapKod?: string | null;
   yapAcik?: string | null;
   serialNumber?: string | null;
+  originCountryCode?: string | null;
+  originCountryName?: string | null;
   lotNo?: string | null;
   batchNo?: string | null;
   packageNo?: string | null;

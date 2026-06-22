@@ -109,7 +109,17 @@
     "status": "Durum",
     "subtitle": "Tüketilmemiş ön barkod partilerini seçin, siparişe bağlı mal kabulü açın ve basılmış etiketleri okutarak doğrulayın.",
     "title": "Etiketten Mal Kabul",
-    "totalLabels": "Toplam etiket"
+    "totalLabels": "Toplam etiket",
+    "tabs": {
+      "orders": "Siparişler ile",
+      "assigned": "Emirler ile"
+    },
+    "orderHelpText": "Siparişler ile modunda ön etiket zorunlu değildir; siparişi seçip kalem/miktar doğrulayarak doğrudan mal kabul yapılır.",
+    "orderStarted": "Siparişten mal kabul başarıyla oluşturuldu.",
+    "orderModeTitle": "Siparişe bağlı etiketsiz veya okutmalı mal kabul",
+    "orderModeDescription": "Önceden etiket oluşturmak zorunda kalmadan açık Netsis siparişini seçin. Ürün etiketi varsa okutma adımında kullanılabilir; yoksa kalem ve miktarı elle doğrulayarak mal kabulü tamamlayabilirsiniz.",
+    "noPreLabelRequired": "Ön etiket zorunlu değil",
+    "startOrderReceipt": "Siparişten Mal Kabulü Tamamla"
   },
   "goodsReceipt": {
     "approval": {

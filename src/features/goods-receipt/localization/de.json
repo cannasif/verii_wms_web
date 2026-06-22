@@ -109,7 +109,17 @@
     "status": "Status",
     "subtitle": "Nicht verbrauchte Vor-Etiketten-Chargen auswählen, verknüpften Wareneingang öffnen und gedruckte Etiketten scannen.",
     "title": "Wareneingang vom Etikett",
-    "totalLabels": "Total labels"
+    "totalLabels": "Total labels",
+    "tabs": {
+      "orders": "By Orders",
+      "assigned": "By Orders/Labels"
+    },
+    "orderHelpText": "In order mode, pre-labels are not required; select the order, verify lines and quantities, then complete goods receipt directly.",
+    "orderStarted": "Goods receipt from order was created successfully.",
+    "orderModeTitle": "Order-linked receiving without mandatory pre-labels",
+    "orderModeDescription": "Select an open Netsis order without creating labels up front. If the product has a supplier label, it can be used during scanning; otherwise verify the line and quantity manually.",
+    "noPreLabelRequired": "Pre-label not required",
+    "startOrderReceipt": "Complete Receipt From Order"
   },
   "goodsReceipt": {
     "approval": {
