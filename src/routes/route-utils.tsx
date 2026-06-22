@@ -34,9 +34,13 @@ interface RoutePageShellProps {
   namespaces?: string[];
 }
 
+function buildRouteInstanceKey(routeName: string, location: ReturnType<typeof useLocation>): string {
+  return `${routeName}:${location.pathname}${location.search}${location.hash}`;
+}
+
 function RoutePageShell({ Component, routeName, namespaces }: RoutePageShellProps): ReactElement {
   const location = useLocation();
-  const routeInstanceKey = `${routeName}:${location.pathname}`;
+  const routeInstanceKey = buildRouteInstanceKey(routeName, location);
 
   return (
     <Suspense key={routeInstanceKey} fallback={<RouteLoadingFallback />}>
