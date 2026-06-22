@@ -36,10 +36,11 @@ interface RoutePageShellProps {
 
 function RoutePageShell({ Component, routeName, namespaces }: RoutePageShellProps): ReactElement {
   const location = useLocation();
+  const routeInstanceKey = `${routeName}:${location.pathname}`;
 
   return (
-    <Suspense key={location.key} fallback={<RouteLoadingFallback />}>
-      <RouteRuntimeBoundary routeName={routeName} namespaces={namespaces}>
+    <Suspense key={routeInstanceKey} fallback={<RouteLoadingFallback />}>
+      <RouteRuntimeBoundary key={routeInstanceKey} routeName={routeName} namespaces={namespaces}>
         <Component />
       </RouteRuntimeBoundary>
     </Suspense>
