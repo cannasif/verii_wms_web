@@ -20,6 +20,7 @@ import type {
   CreateGrPreReceiptLabelBatchRequest,
   GrPreReceiptLabel,
   GrPreReceiptLabelBatch,
+  StartGoodsReceiptFromScannedLabelsRequest,
 } from '../types/goods-receipt';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import {
@@ -232,6 +233,14 @@ export const goodsReceiptApi = {
 
   startGoodsReceiptFromPreReceiptBatch: async (batchId: number): Promise<number> => {
     const response = await api.post<ApiResponse<number>>(`/api/GrPreReceiptLabel/batches/${batchId}/start-goods-receipt`);
+    if (response.success && typeof response.data === 'number') {
+      return response.data;
+    }
+    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
+  },
+
+  startGoodsReceiptFromScannedPreReceiptLabels: async (batchId: number, request: StartGoodsReceiptFromScannedLabelsRequest): Promise<number> => {
+    const response = await api.post<ApiResponse<number>>(`/api/GrPreReceiptLabel/batches/${batchId}/start-goods-receipt-from-scans`, request);
     if (response.success && typeof response.data === 'number') {
       return response.data;
     }

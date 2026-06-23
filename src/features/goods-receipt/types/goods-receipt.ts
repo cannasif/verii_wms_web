@@ -446,3 +446,8 @@ export interface CreateGrPreReceiptLabelLineRequest {
   serialNo4?: string | null;
   description?: string | null;
 }
+
+export interface StartGoodsReceiptFromScannedLabelsRequest {
+  labelIds?: number[];
+  barcodeValues?: string[];
+}
