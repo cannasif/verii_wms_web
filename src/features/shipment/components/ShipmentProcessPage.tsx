@@ -4,14 +4,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import type { Product } from '@/features/shared';
@@ -147,32 +146,37 @@ export function ShipmentProcessPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Badge variant="secondary" className="mb-4">
-        {t('shipment.process.badge')}
-      </Badge>
-
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
-
-      <FormPageShell
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('shipment.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('shipment.create.breadcrumb.module')}</span>
+          </>
+        }
         title={t('shipment.process.title')}
         description={t('shipment.process.subtitle')}
+        actions={
+          <span className="wms-ops-code-badge">{t('shipment.create.mode.stock')}</span>
+        }
       >
-        {!permission.canCreate ? (
-          <PermissionNotice />
-        ) : null}
-        <Form {...form}>
+        {!permission.canCreate ? <PermissionNotice /> : null}
+
+        <Breadcrumb
+          items={steps.map((step, index) => ({
+            label: step.label,
+            isActive: index + 1 === currentStep,
+          }))}
+          className="wms-ops-steps mb-6"
+        />
+
+        <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
-            <form className="crm-page space-y-6">
-              {currentStep === 1 ? (
-                <Step1ShipmentBasicInfo />
-              ) : (
+            {currentStep === 1 ? (
+              <Step1ShipmentBasicInfo variant="ops" />
+            ) : (
+              <div className="wms-ops-form wms-ops-list">
                 <ProcessStockSelection
                   selectedItems={selectedItems}
                   onToggleItem={handleToggleItem}
@@ -180,28 +184,46 @@ export function ShipmentProcessPage(): ReactElement {
                   onRemoveItem={handleRemoveItem}
                   labels={labels}
                 />
-              )}
-
-              <div className="flex justify-between border-t pt-6">
-                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}>
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
               </div>
-            </form>
+            )}
+
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
+                {currentStep < steps.length ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!permission.canCreate}
+                  >
+                    {t('common.next')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                ) : (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}
+                  >
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                )}
+              </div>
+            </div>
           </fieldset>
-        </Form>
-      </FormPageShell>
-    </div>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

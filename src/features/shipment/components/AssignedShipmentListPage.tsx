@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Eye, PlayCircle, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,6 @@ type AssignedShipmentColumnKey =
   | 'sourceWarehouse'
   | 'targetWarehouse'
   | 'documentType'
-  | 'status'
   | 'createdDate'
   | 'actions';
 
@@ -41,8 +40,19 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'sourceWarehouse', type: 'string', labelKey: 'shipment.list.sourceWarehouse' },
   { value: 'targetWarehouse', type: 'string', labelKey: 'shipment.list.targetWarehouse' },
   { value: 'documentType', type: 'string', labelKey: 'shipment.list.documentType' },
-  { value: 'isCompleted', type: 'boolean', labelKey: 'shipment.list.status' },
 ];
+
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  id: 8,
+  documentNo: 14,
+  documentDate: 12,
+  customerCode: 12,
+  customerName: 14,
+  sourceWarehouse: 12,
+  targetWarehouse: 12,
+  documentType: 10,
+  createdDate: 14,
+};
 
 function mapSortBy(value: AssignedShipmentColumnKey): string {
   switch (value) {
@@ -94,6 +104,7 @@ export function AssignedShipmentListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
   const pageKey = 'shipment-assigned-list';
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<ShipmentHeader | null>(null);
 
@@ -105,27 +116,39 @@ export function AssignedShipmentListPage(): ReactElement {
     mapSortBy,
   });
 
-  const columns = useMemo<PagedDataGridColumn<AssignedShipmentColumnKey>[]>(
-    () => [
-      { key: 'id', label: t('shipment.list.id') },
-      { key: 'documentNo', label: t('shipment.list.documentNo') },
-      { key: 'documentDate', label: t('shipment.list.documentDate') },
-      { key: 'customerCode', label: t('shipment.list.customerCode') },
-      { key: 'customerName', label: t('shipment.list.customerName') },
-      { key: 'sourceWarehouse', label: t('shipment.list.sourceWarehouse') },
-      { key: 'targetWarehouse', label: t('shipment.list.targetWarehouse') },
-      { key: 'documentType', label: t('shipment.list.documentType') },
-      { key: 'status', label: t('shipment.list.status'), sortable: false },
-      { key: 'createdDate', label: t('shipment.list.createdDate') },
-      { key: 'actions', label: t('common.actions'), sortable: false },
-    ],
-    [t],
-  );
+  const columns = useMemo<PagedDataGridColumn<AssignedShipmentColumnKey>[]>(() => [
+    {
+      key: 'id',
+      label: t('shipment.list.id'),
+      headClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+    },
+    { key: 'documentNo', label: t('shipment.list.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentDate', label: t('shipment.list.documentDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerCode', label: t('shipment.list.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerName', label: t('shipment.list.customerName'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'sourceWarehouse', label: t('shipment.list.sourceWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'targetWarehouse', label: t('shipment.list.targetWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentType', label: t('shipment.list.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('shipment.list.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'actions', label: t('common.actions'), sortable: false },
+  ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useAssignedShipmentHeaders(pagedGrid.queryParams);
@@ -145,34 +168,40 @@ export function AssignedShipmentListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const getCellText = (row: ShipmentHeader, key: AssignedShipmentColumnKey): string | undefined => {
+    switch (key) {
+      case 'id': return String(row.id);
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'customerCode': return row.customerCode || '-';
+      case 'customerName': return row.customerName || '-';
+      case 'sourceWarehouse': return row.sourceWarehouse || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
+  };
+
   const exportColumns = useMemo(
-    () => orderedVisibleColumns
-      .filter((key) => key !== 'actions')
-      .map((key) => ({
-        key,
-        label: columns.find((column) => column.key === key)?.label ?? key,
-      })),
+    () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
+      key,
+      label: columns.find((column) => column.key === key)?.label ?? key,
+    })),
     [columns, orderedVisibleColumns],
   );
 
-  const exportRows = useMemo<Record<string, unknown>[]>(() => {
-    return (data?.data ?? []).map((item) => ({
-      id: item.id,
-      documentNo: item.documentNo || '-',
-      documentDate: formatDate(item.documentDate),
-      customerCode: item.customerCode || '-',
-      customerName: item.customerName || '-',
-      sourceWarehouse: item.sourceWarehouse || '-',
-      targetWarehouse: item.targetWarehouse || '-',
-      documentType: item.documentType || '-',
-      status: item.isCompleted
-        ? t('shipment.list.completed')
-        : item.isPendingApproval
-          ? t('shipment.list.pendingApproval')
-          : t('shipment.list.inProgress'),
-      createdDate: formatDateTime(item.createdDate),
-    }));
-  }, [data?.data, t]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
+    id: item.id,
+    documentNo: item.documentNo || '-',
+    documentDate: formatDate(item.documentDate),
+    customerCode: item.customerCode || '-',
+    customerName: item.customerName || '-',
+    sourceWarehouse: item.sourceWarehouse || '-',
+    targetWarehouse: item.targetWarehouse || '-',
+    documentType: item.documentType || '-',
+    createdDate: formatDateTime(item.createdDate),
+  })), [data?.data]);
 
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', {
@@ -180,11 +209,6 @@ export function AssignedShipmentListPage(): ReactElement {
     total: range.to,
     totalCount: range.total,
   });
-
-  const visibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedShipmentColumnKey[],
-    [orderedVisibleColumns],
-  );
 
   const renderSortIcon = (columnKey: AssignedShipmentColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -194,50 +218,45 @@ export function AssignedShipmentListPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('shipment.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('shipment.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('shipment.assignedList.title')}
+        description={t('shipment.assignedList.subtitle', { defaultValue: t('shipment.list.subtitle') })}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
         <PagedDataGrid<ShipmentHeader, AssignedShipmentColumnKey>
+          variant="ops"
           columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
+          visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedShipmentColumnKey[]}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(item, columnKey) => {
-            switch (columnKey) {
-              case 'id':
-                return item.id;
-              case 'documentNo':
-                return <span className="font-medium">{item.documentNo || '-'}</span>;
-              case 'documentDate':
-                return formatDate(item.documentDate);
-              case 'customerCode':
-                return item.customerCode || '-';
-              case 'customerName':
-                return item.customerName || '-';
-              case 'sourceWarehouse':
-                return item.sourceWarehouse || '-';
-              case 'targetWarehouse':
-                return item.targetWarehouse || '-';
-              case 'documentType':
-                return <Badge variant="outline">{item.documentType || '-'}</Badge>;
-              case 'status':
-                return item.isCompleted ? (
-                  <Badge variant="default" className="w-fit">{t('shipment.list.completed')}</Badge>
-                ) : item.isPendingApproval ? (
-                  <Badge variant="secondary" className="w-fit">{t('shipment.list.pendingApproval')}</Badge>
-                ) : (
-                  <Badge variant="outline" className="w-fit">{t('shipment.list.inProgress')}</Badge>
-                );
-              case 'createdDate':
-                return formatDateTime(item.createdDate);
-              default:
-                return null;
-            }
-          }}
+          renderCell={(item, columnKey) => ({
+            id: <span className="wms-ops-table-id-value">{item.id}</span>,
+            documentNo: <span className="font-medium font-mono text-xs">{item.documentNo || '-'}</span>,
+            documentDate: <span className="font-mono text-xs">{formatDate(item.documentDate)}</span>,
+            customerCode: item.customerCode || '-',
+            customerName: item.customerName || '-',
+            sourceWarehouse: item.sourceWarehouse || '-',
+            targetWarehouse: item.targetWarehouse || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
+            createdDate: <span className="font-mono text-xs">{formatDateTime(item.createdDate)}</span>,
+          } as Record<Exclude<AssignedShipmentColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<AssignedShipmentColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(columnKey) => {
-            if (columnKey === 'status' || columnKey === 'actions') return;
+            if (columnKey === 'actions') return;
             pagedGrid.handleSort(columnKey);
           }}
           renderSortIcon={renderSortIcon}
@@ -245,27 +264,47 @@ export function AssignedShipmentListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('shipment.assignedList.error')}
           emptyText={t('shipment.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
+          showActionsColumn={showActionsColumn}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(item.id)} disabled={!permission.canView}>
-                <Eye className="size-4" />
-                <span className="ml-2">{t('shipment.list.viewDetails')}</span>
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('shipment.list.viewDetails')}
+                title={t('shipment.list.viewDetails')}
+                onClick={() => setSelectedHeaderId(item.id)}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
               </Button>
               <Button
-                variant="default"
-                size="sm"
-                className="bg-emerald-500 text-white hover:bg-emerald-600"
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--start"
+                aria-label={t('common.start')}
+                title={t('common.start')}
                 onClick={() => navigate(`/shipment/collection/${item.id}`)}
                 disabled={!permission.canUpdate}
               >
-                <PlayCircle className="size-4" />
-                <span className="ml-2">{t('common.start')}</span>
+                <PlayCircle className="size-3" aria-hidden />
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                <Trash2 className="size-4" />
-                <span className="ml-2">{t('common.delete')}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => setHeaderToDelete(item)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="size-3" aria-hidden />
               </Button>
             </div>
           )}
@@ -302,15 +341,21 @@ export function AssignedShipmentListPage(): ReactElement {
             onClearFilters: pagedGrid.clearAdvancedFilters,
             appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
             search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              ...pagedGrid.searchConfig,
               placeholder: t('shipment.assignedList.searchPlaceholder'),
             },
-            leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
           }}
         />
-      </div>
+      </OpsListPageShell>
 
       {selectedHeaderId && (
         <ShipmentDetailDialog
@@ -330,6 +375,6 @@ export function AssignedShipmentListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

@@ -6,11 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -72,6 +71,7 @@ export function ShipmentListPage(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.shipment');
+  const pageKey = 'shipment-list';
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<ShipmentHeader | null>(null);
 
@@ -195,128 +195,164 @@ export function ShipmentListPage(): ReactElement {
     totalCount: range.total,
   });
 
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
+
   return (
-    <div className="crm-page space-y-6">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('shipment.list.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<ShipmentHeader, ShipmentColumnKey>
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={data?.data ?? []}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'documentNo':
-                  return <span className="font-medium">{row.documentNo || '-'}</span>;
-                case 'documentDate':
-                  return formatDate(row.documentDate);
-                case 'customerCode':
-                  return row.customerCode || '-';
-                case 'customerName':
-                  return row.customerName || '-';
-                case 'sourceWarehouse':
-                  return row.sourceWarehouse || '-';
-                case 'targetWarehouse':
-                  return row.targetWarehouse || '-';
-                case 'documentType':
-                  return <Badge variant="outline">{row.documentType || '-'}</Badge>;
-                case 'status':
-                  return row.isCompleted ? (
-                    <Badge variant="default" className="w-fit">{t('shipment.list.completed')}</Badge>
-                  ) : row.isPendingApproval ? (
-                    <Badge variant="secondary" className="w-fit">{t('shipment.list.pendingApproval')}</Badge>
-                  ) : (
-                    <Badge variant="outline" className="w-fit">{t('shipment.list.inProgress')}</Badge>
-                  );
-                case 'createdDate':
-                  return formatDateTime(row.createdDate);
-                case 'actions':
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={(columnKey) => {
-              if (columnKey === 'status' || columnKey === 'actions') return;
-              pagedGrid.handleSort(columnKey);
-            }}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('shipment.list.error')}
-            emptyText={t('shipment.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
-            actionsHeaderLabel={t('shipment.list.actions')}
-            renderActionsCell={(row) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
-                  <Eye className="size-4" />
-                  <span className="ml-2">{t('shipment.list.viewDetails')}</span>
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => navigate(`/shipment/edit/${row.id}`)} disabled={!permission.canUpdate || row.isCompleted}>
-                  <Pencil className="size-4" />
-                  <span className="ml-2">{t('common.edit')}</span>
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                  <Trash2 className="size-4" />
-                  <span className="ml-2">{t('common.delete')}</span>
-                </Button>
-              </div>
-            )}
-            pageSize={pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={data?.totalPages ?? 1}
-            hasPreviousPage={data?.hasPreviousPage ?? false}
-            hasNextPage={data?.hasNextPage ?? false}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey: 'shipment-list',
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'shipment-list',
-              exportColumns,
-              exportRows,
-              filterColumns: advancedFilterColumns,
-              defaultFilterColumn: 'documentNo',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              translationNamespace: 'common',
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              search: {
-                ...pagedGrid.searchConfig,
-                placeholder: t('shipment.list.searchPlaceholder'),
-                className: 'h-9 w-full md:w-64',
-              },
-              leftSlot: (
-                <VoiceSearchButton
-                  onResult={pagedGrid.handleVoiceSearch}
-                  size="sm"
-                  variant="outline"
-                />
-              ),
-            }}
-          />
-        </CardContent>
-      </Card>
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('shipment.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('shipment.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('shipment.list.title')}
+        description={t('shipment.list.subtitle')}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
+        <PagedDataGrid<ShipmentHeader, ShipmentColumnKey>
+          variant="ops"
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => {
+            switch (columnKey) {
+              case 'documentNo':
+                return <span className="font-medium font-mono text-xs">{row.documentNo || '-'}</span>;
+              case 'documentDate':
+                return <span className="font-mono text-xs">{formatDate(row.documentDate)}</span>;
+              case 'customerCode':
+                return row.customerCode || '-';
+              case 'customerName':
+                return row.customerName || '-';
+              case 'sourceWarehouse':
+                return row.sourceWarehouse || '-';
+              case 'targetWarehouse':
+                return row.targetWarehouse || '-';
+              case 'documentType':
+                return <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{row.documentType || '-'}</Badge>;
+              case 'status':
+                return row.isCompleted ? (
+                  <Badge variant="default" className="wms-ops-status-badge w-fit">{t('shipment.list.completed')}</Badge>
+                ) : row.isPendingApproval ? (
+                  <Badge variant="secondary" className="wms-ops-status-badge w-fit">{t('shipment.list.pendingApproval')}</Badge>
+                ) : (
+                  <Badge variant="outline" className="wms-ops-status-badge w-fit">{t('shipment.list.inProgress')}</Badge>
+                );
+              case 'createdDate':
+                return <span className="font-mono text-xs">{formatDateTime(row.createdDate)}</span>;
+              case 'actions':
+              default:
+                return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey === 'status' || columnKey === 'actions') return;
+            pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={Boolean(error)}
+          errorText={t('shipment.list.error')}
+          emptyText={t('shipment.list.noData')}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(row) => (
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('shipment.list.viewDetails')}
+                title={t('shipment.list.viewDetails')}
+                onClick={() => setSelectedHeaderId(row.id)}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('common.edit')}
+                title={t('common.edit')}
+                onClick={() => navigate(`/shipment/edit/${row.id}`)}
+                disabled={!permission.canUpdate || row.isCompleted}
+              >
+                <Pencil className="size-3" aria-hidden />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => setHeaderToDelete(row)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="size-3" aria-hidden />
+              </Button>
+            </div>
+          )}
+          pageSize={pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={data?.totalPages ?? 1}
+          hasPreviousPage={data?.hasPreviousPage ?? false}
+          hasNextPage={data?.hasNextPage ?? false}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: pageKey,
+            exportColumns,
+            exportRows,
+            filterColumns: advancedFilterColumns,
+            defaultFilterColumn: 'documentNo',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            translationNamespace: 'common',
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              ...pagedGrid.searchConfig,
+              placeholder: t('shipment.list.searchPlaceholder'),
+            },
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
+          }}
+        />
+      </OpsListPageShell>
 
       <ShipmentDetailDialog
         headerId={selectedHeaderId ?? 0}
@@ -334,6 +370,6 @@ export function ShipmentListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

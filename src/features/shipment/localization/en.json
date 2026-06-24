@@ -20,6 +20,7 @@
     },
     "approval": {
       "actions": "Actions",
+      "subtitle": "Review and process shipment orders awaiting approval",
       "approve": "Approve",
       "approveError": "Approve Error",
       "approveSuccess": "Approve Success",
@@ -44,6 +45,7 @@
       "error": "Error",
       "noData": "No Data",
       "searchPlaceholder": "Search Placeholder",
+      "subtitle": "View, filter and manage assigned shipment orders",
       "title": "Title"
     },
     "collection": {
@@ -59,6 +61,7 @@
       "enterBarcode": "Enter Barcode",
       "invalidHeaderId": "Invalid Header Id",
       "invalidQuantity": "Invalid Quantity",
+      "itemsCollected": "lines",
       "noOrderLines": "No Order Lines",
       "noStockSelected": "No Stock Selected",
       "quantity": "Quantity",
@@ -73,6 +76,10 @@
       "yapKod": "Yap Kod"
     },
     "create": {
+      "breadcrumb": {
+        "module": "SHIPMENT",
+        "parent": "OUTBOUND_OP"
+      },
       "error": "Error",
       "mode": {
         "order": "Order",
@@ -83,6 +90,7 @@
         "orderSelection": "Order Selection"
       },
       "success": "Success",
+      "subtitle": "Initializing system record...",
       "title": "Title",
       "unknownStep": "Unknown Step"
     },
@@ -127,6 +135,7 @@
       "searchPlaceholder": "Search Placeholder",
       "serialNo": "Serial No",
       "sourceWarehouse": "Source Warehouse",
+      "subtitle": "View, filter and manage shipment records",
       "status": "Status",
       "stockCode": "Stock Code",
       "stockName": "Stock Name",
