@@ -17,7 +17,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, PageState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -594,7 +594,16 @@ export function ProductionProcessPage(): ReactElement {
   };
 
   return (
-    <FormPageShell
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('production.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('production.breadcrumb.module')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('production.process.title')}</span>
+        </>
+      }
       title={t('production.process.title')}
       description={t('production.process.subtitle')}
       actions={(
@@ -613,12 +622,21 @@ export function ProductionProcessPage(): ReactElement {
           <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back')}</Button>
         </div>
       )}
-      isLoading={detailQuery.isLoading}
-      isError={detailQuery.isError}
-      errorTitle={t('common.error')}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.process.error')}
     >
-      {detailQuery.data && (
+      {detailQuery.isLoading ? (
+        <PageState tone="loading" title={t('common.loading')} compact />
+      ) : null}
+
+      {detailQuery.isError ? (
+        <PageState
+          tone="error"
+          title={t('common.error')}
+          description={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.process.error')}
+          compact
+        />
+      ) : null}
+
+      {detailQuery.data && !detailQuery.isLoading && !detailQuery.isError ? (
         <div className={isKioskMode ? 'space-y-6 pb-32' : 'space-y-6'}>
           <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
             <Card className="overflow-hidden border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_36%),linear-gradient(135deg,_#0f172a,_#1e293b_58%,_#334155)] text-white dark:border-white/10">
@@ -1641,7 +1659,7 @@ export function ProductionProcessPage(): ReactElement {
             </div>
           </div>
         </div>
-      )}
-    </FormPageShell>
+      ) : null}
+    </OpsFormPageShell>
   );
 }

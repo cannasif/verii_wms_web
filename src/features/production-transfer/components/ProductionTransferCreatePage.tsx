@@ -3,9 +3,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { Info } from 'lucide-react';
+import { ChevronLeft, Info } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -241,64 +241,85 @@ export function ProductionTransferCreatePage(): ReactElement {
       OutputMove: t('productionTransfer.create.lineRoleOutput', { defaultValue: 'Missing translation' }),
     })[value];
 
+  const pageTitle = isEditMode
+    ? t('productionTransfer.create.editTitle', { defaultValue: 'Missing translation' })
+    : isCloneMode
+      ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Missing translation' })
+      : t('productionTransfer.create.title', { defaultValue: 'Missing translation' });
+  const pageDescription = isEditMode
+    ? t('productionTransfer.create.editSubtitle', { defaultValue: 'Missing translation' })
+    : isCloneMode
+      ? t('productionTransfer.create.cloneSubtitle', { defaultValue: 'Missing translation' })
+      : t('productionTransfer.create.subtitle', { defaultValue: 'Missing translation' });
+  const showInitialLoading = (isEditMode || isCloneMode) && detailQuery.isLoading;
+  const showInitialError = (isEditMode || isCloneMode) && detailQuery.isError;
+  const showFormContent = !showInitialLoading && !showInitialError;
+
+  const resetDraft = (): void => {
+    setDraft(detailQuery.data ? {
+      documentNo: isCloneMode ? '' : detailQuery.data.documentNo,
+      documentDate: detailQuery.data.documentDate ? detailQuery.data.documentDate.split('T')[0] : new Date().toISOString().split('T')[0],
+      transferPurpose: detailQuery.data.transferPurpose,
+      productionDocumentNo: detailQuery.data.productionDocumentNo ?? '',
+      productionOrderNo: detailQuery.data.productionOrderNo ?? '',
+      sourceWarehouseCode: detailQuery.data.sourceWarehouseCode ?? '',
+      targetWarehouseCode: detailQuery.data.targetWarehouseCode ?? '',
+      description: detailQuery.data.description ?? '',
+      lines: detailQuery.data.lines.length > 0
+        ? detailQuery.data.lines.map((line, index) => ({
+            localId: `${isCloneMode ? 'pt-clone' : 'pt-edit'}-line-${line.id}-${index}`,
+            stockId: line.stockId ?? undefined,
+            stockCode: line.stockCode,
+            yapKod: line.yapKod ?? '',
+            quantity: line.quantity,
+            lineRole: line.lineRole,
+            sourceCellCode: line.sourceCellCode ?? '',
+            targetCellCode: line.targetCellCode ?? '',
+            productionOrderNo: line.productionOrderNo ?? '',
+          }))
+        : [createEmptyProductionTransferLineDraft()],
+    } : createEmptyProductionTransferDraft());
+  };
+
   return (
-    <FormPageShell
-      title={
-        isEditMode
-          ? t('productionTransfer.create.editTitle', { defaultValue: 'Missing translation' })
-          : isCloneMode
-            ? t('productionTransfer.create.cloneTitle', { defaultValue: 'Missing translation' })
-            : t('productionTransfer.create.title', { defaultValue: 'Missing translation' })
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('productionTransfer.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('productionTransfer.breadcrumb.module')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>
+            {isEditMode
+              ? t('common.edit', { defaultValue: 'Missing translation' })
+              : isCloneMode
+                ? t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })
+                : t('common.add', { defaultValue: 'Missing translation' })}
+          </span>
+        </>
       }
-      description={
-        isEditMode
-          ? t('productionTransfer.create.editSubtitle', { defaultValue: 'Missing translation' })
-          : isCloneMode
-            ? t('productionTransfer.create.cloneSubtitle', { defaultValue: 'Missing translation' })
-            : t('productionTransfer.create.subtitle', { defaultValue: 'Missing translation' })
+      title={pageTitle}
+      description={pageDescription}
+      actions={
+        isEditMode && Number.isFinite(editId) && editId > 0 ? (
+          <span className="wms-ops-code-badge">#{editId}</span>
+        ) : null
       }
-      isLoading={detailQuery.isLoading}
-      isError={detailQuery.isError}
-      errorTitle={t('common.error')}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.create.error', { defaultValue: 'Missing translation' })}
-      actions={(
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={() => navigate('/production-transfer/list')}>{t('common.cancel')}</Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setDraft(detailQuery.data ? {
-              documentNo: isCloneMode ? '' : detailQuery.data.documentNo,
-              documentDate: detailQuery.data.documentDate ? detailQuery.data.documentDate.split('T')[0] : new Date().toISOString().split('T')[0],
-              transferPurpose: detailQuery.data.transferPurpose,
-              productionDocumentNo: detailQuery.data.productionDocumentNo ?? '',
-              productionOrderNo: detailQuery.data.productionOrderNo ?? '',
-              sourceWarehouseCode: detailQuery.data.sourceWarehouseCode ?? '',
-              targetWarehouseCode: detailQuery.data.targetWarehouseCode ?? '',
-              description: detailQuery.data.description ?? '',
-              lines: detailQuery.data.lines.length > 0
-                ? detailQuery.data.lines.map((line, index) => ({
-                    localId: `${isCloneMode ? 'pt-clone' : 'pt-edit'}-line-${line.id}-${index}`,
-                    stockId: line.stockId ?? undefined,
-                    stockCode: line.stockCode,
-                    yapKod: line.yapKod ?? '',
-                    quantity: line.quantity,
-                    lineRole: line.lineRole,
-                    sourceCellCode: line.sourceCellCode ?? '',
-                    targetCellCode: line.targetCellCode ?? '',
-                    productionOrderNo: line.productionOrderNo ?? '',
-                  }))
-                : [createEmptyProductionTransferLineDraft()],
-            } : createEmptyProductionTransferDraft())}
-          >
-            {t('common.clear')}
-          </Button>
-          <Button type="button" onClick={() => createMutation.mutate()} disabled={!canSaveTransfer || createMutation.isPending}>
-            {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : isCloneMode ? t('common.save', { defaultValue: 'Missing translation' }) : t('common.save')}
-          </Button>
-        </div>
-      )}
     >
+      {showInitialLoading ? (
+        <PageState tone="loading" title={t('common.loading')} compact />
+      ) : null}
+
+      {showInitialError ? (
+        <PageState
+          tone="error"
+          title={t('common.error')}
+          description={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.create.error', { defaultValue: 'Missing translation' })}
+          compact
+        />
+      ) : null}
+
+      {showFormContent ? (
       <div className="space-y-6">
         {!permission.canMutate ? <PermissionNotice /> : null}
         {!canSaveTransfer ? (
@@ -324,7 +345,7 @@ export function ProductionTransferCreatePage(): ReactElement {
           body={t('productionTransfer.create.info.overviewBody', { defaultValue: 'Missing translation' })}
         />
         <div className="grid gap-3 md:grid-cols-3">
-          <Card className="border-slate-200/70 dark:border-white/10">
+          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader className="gap-1">
               <CardDescription>{t('productionTransfer.create.steps.connect.eyebrow')}</CardDescription>
               <CardTitle className="text-lg">{t('productionTransfer.create.steps.connect.title')}</CardTitle>
@@ -333,7 +354,7 @@ export function ProductionTransferCreatePage(): ReactElement {
               {t('productionTransfer.create.steps.connect.body')}
             </CardContent>
           </Card>
-          <Card className="border-slate-200/70 dark:border-white/10">
+          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader className="gap-1">
               <CardDescription>{t('productionTransfer.create.steps.purpose.eyebrow')}</CardDescription>
               <CardTitle className="text-lg">{t('productionTransfer.create.steps.purpose.title')}</CardTitle>
@@ -342,7 +363,7 @@ export function ProductionTransferCreatePage(): ReactElement {
               {t('productionTransfer.create.steps.purpose.body')}
             </CardContent>
           </Card>
-          <Card className="border-slate-200/70 dark:border-white/10">
+          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader className="gap-1">
               <CardDescription>{t('productionTransfer.create.steps.lines.eyebrow')}</CardDescription>
               <CardTitle className="text-lg">{t('productionTransfer.create.steps.lines.title')}</CardTitle>
@@ -353,19 +374,19 @@ export function ProductionTransferCreatePage(): ReactElement {
           </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]">
+          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader>
               <CardDescription>{t('productionTransfer.create.summary.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{transferPurposeLabel(draft.transferPurpose)}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]">
+          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader>
               <CardDescription>{t('productionTransfer.create.summary.lines', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{summary.lineCount}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="gap-3 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]">
+          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
             <CardHeader>
               <CardDescription>{t('productionTransfer.create.summary.quantity', { defaultValue: 'Missing translation' })}</CardDescription>
               <CardTitle className="text-2xl">{summary.totalQuantity}</CardTitle>
@@ -374,12 +395,12 @@ export function ProductionTransferCreatePage(): ReactElement {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card>
-            <CardHeader>
+          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+            <CardHeader className="border-b px-4 py-4 sm:px-6">
               <CardTitle>{t('productionTransfer.create.header.title', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('productionTransfer.create.header.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-3">
+            <CardContent className="grid gap-4 px-4 py-6 md:grid-cols-3 sm:px-6">
               <div className="md:col-span-3">
                 <InfoCallout
                   title={t('productionTransfer.create.info.linkTitle', { defaultValue: 'Missing translation' })}
@@ -479,12 +500,12 @@ export function ProductionTransferCreatePage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+            <CardHeader className="border-b px-4 py-4 sm:px-6">
               <CardTitle>{t('productionTransfer.create.guide.title', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('productionTransfer.create.guide.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+            <CardContent className="space-y-3 px-4 py-6 text-sm sm:px-6">
               <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
                 <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' })}</div>
                 <div className="mt-1">{t('productionTransfer.create.guide.materialSupplyBody', { defaultValue: 'Missing translation' })}</div>
@@ -509,8 +530,8 @@ export function ProductionTransferCreatePage(): ReactElement {
           onApplySelected={applySuggestedLines}
         />
 
-        <Card>
-          <CardHeader>
+        <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+          <CardHeader className="border-b px-4 py-4 sm:px-6">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <CardTitle>{t('productionTransfer.create.lines.title', { defaultValue: 'Missing translation' })}</CardTitle>
@@ -531,7 +552,7 @@ export function ProductionTransferCreatePage(): ReactElement {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 py-6 sm:px-6">
             <div className="mb-4">
               <InfoCallout
                 title={t('productionTransfer.create.info.linesTitle', { defaultValue: 'Missing translation' })}
@@ -540,7 +561,7 @@ export function ProductionTransferCreatePage(): ReactElement {
             </div>
             <div className="space-y-4">
               {draft.lines.map((line, index) => (
-                <Card key={line.localId} className="border-slate-200/70 dark:border-white/10">
+                <Card key={line.localId} className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
                   <CardHeader className="pb-3">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
@@ -668,11 +689,36 @@ export function ProductionTransferCreatePage(): ReactElement {
         </Card>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">{t('productionTransfer.create.review.header', { defaultValue: 'Missing translation' })}: {draft.productionDocumentNo || '-'}</Badge>
-          <Badge variant="secondary">{t('productionTransfer.create.review.order', { defaultValue: 'Missing translation' })}: {draft.productionOrderNo || '-'}</Badge>
-          <Badge variant="secondary">{t('productionTransfer.create.review.purpose', { defaultValue: 'Missing translation' })}: {transferPurposeLabel(draft.transferPurpose)}</Badge>
+          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.header', { defaultValue: 'Missing translation' })}: {draft.productionDocumentNo || '-'}</Badge>
+          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.order', { defaultValue: 'Missing translation' })}: {draft.productionOrderNo || '-'}</Badge>
+          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.purpose', { defaultValue: 'Missing translation' })}: {transferPurposeLabel(draft.transferPurpose)}</Badge>
+        </div>
+
+        <div className="wms-ops-actions flex flex-wrap justify-between gap-4 border-t pt-6">
+          <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/production-transfer/list')}>
+            <ChevronLeft className="size-3.5" aria-hidden />
+            {t('common.cancel')}
+          </OpsActionButton>
+          <div className="flex flex-wrap gap-2">
+            <OpsActionButton type="button" variant="secondary" onClick={resetDraft}>
+              {t('common.clear')}
+            </OpsActionButton>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              onClick={() => createMutation.mutate()}
+              disabled={!canSaveTransfer || createMutation.isPending}
+            >
+              {createMutation.isPending
+                ? t('common.saving')
+                : isEditMode
+                  ? t('common.update', { defaultValue: 'Missing translation' })
+                  : t('common.save')}
+            </OpsActionButton>
+          </div>
         </div>
       </div>
-    </FormPageShell>
+      ) : null}
+    </OpsFormPageShell>
   );
 }

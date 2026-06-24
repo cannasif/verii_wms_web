@@ -4,11 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, PageState } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
@@ -94,33 +94,55 @@ export function ProductionDetailPage(): ReactElement {
 
   const canDeleteCurrentPlan = canDeleteProduction && Boolean(detailQuery.data?.header.canDelete);
 
+  const isPageLoading = detailQuery.isLoading || transfersQuery.isLoading;
+  const isPageError = detailQuery.isError;
+
   return (
-    <FormPageShell
-      title={t('production.detail.title', { defaultValue: 'Missing translation' })}
-      description={t('production.detail.subtitle', { defaultValue: 'Missing translation' })}
-      actions={(
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Missing translation' })}</Button>
-          {canDeleteCurrentPlan ? (
-            <Button
-              variant="destructive"
-              onClick={() => setDeleteDialogOpen(true)}
-              disabled={deleteMutation.isPending}
-            >
-              {t('common.delete', { defaultValue: 'Missing translation' })}
-            </Button>
-          ) : null}
-          {headerId > 0 ? (
-            <Button onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Missing translation' })}</Button>
-          ) : null}
-        </div>
-      )}
-      isLoading={detailQuery.isLoading || transfersQuery.isLoading}
-      isError={detailQuery.isError}
-      errorTitle={t('common.error', { defaultValue: 'Missing translation' })}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.detail.error', { defaultValue: 'Missing translation' })}
-    >
-      {detailQuery.data ? (
+    <>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('production.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('production.breadcrumb.module')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('production.detail.title', { defaultValue: 'Missing translation' })}</span>
+          </>
+        }
+        title={t('production.detail.title', { defaultValue: 'Missing translation' })}
+        description={t('production.detail.subtitle', { defaultValue: 'Missing translation' })}
+        actions={(
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Missing translation' })}</Button>
+            {canDeleteCurrentPlan ? (
+              <Button
+                variant="destructive"
+                onClick={() => setDeleteDialogOpen(true)}
+                disabled={deleteMutation.isPending}
+              >
+                {t('common.delete', { defaultValue: 'Missing translation' })}
+              </Button>
+            ) : null}
+            {headerId > 0 ? (
+              <Button onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Missing translation' })}</Button>
+            ) : null}
+          </div>
+        )}
+      >
+        {isPageLoading ? (
+          <PageState tone="loading" title={t('common.loading')} compact />
+        ) : null}
+
+        {isPageError ? (
+          <PageState
+            tone="error"
+            title={t('common.error', { defaultValue: 'Missing translation' })}
+            description={detailQuery.error instanceof Error ? detailQuery.error.message : t('production.detail.error', { defaultValue: 'Missing translation' })}
+            compact
+          />
+        ) : null}
+
+        {detailQuery.data && !isPageLoading && !isPageError ? (
         <div className="space-y-6">
           {!permission.canMutate ? <PermissionNotice /> : null}
           <InfoCallout
@@ -344,34 +366,19 @@ export function ProductionDetailPage(): ReactElement {
             </Card>
           </div>
         </div>
-      ) : null}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('production.list.deleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('production.list.deleteDescription', {
-                documentNo: detailQuery.data?.header.documentNo ?? '-',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel', { defaultValue: 'Missing translation' })}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (!detailQuery.data?.header.id) return;
-                deleteMutation.mutate(detailQuery.data.header.id);
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('common.delete', { defaultValue: 'Missing translation' })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </FormPageShell>
+        ) : null}
+      </OpsFormPageShell>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        itemLabel={detailQuery.data?.header.documentNo || (headerId > 0 ? `#${headerId}` : undefined)}
+        isPending={deleteMutation.isPending}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={() => {
+          if (!detailQuery.data?.header.id) return;
+          deleteMutation.mutate(detailQuery.data.header.id);
+        }}
+      />
+    </>
   );
 }

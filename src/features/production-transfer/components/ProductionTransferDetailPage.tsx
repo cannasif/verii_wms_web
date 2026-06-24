@@ -3,7 +3,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { FormPageShell } from '@/components/shared';
+import { ChevronLeft } from 'lucide-react';
+import { OpsActionButton, OpsFormPageShell, PageState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -55,9 +56,9 @@ function lineRoleLabel(value?: string | null, t?: (key: string, options?: Record
 
 function InfoCallout({ title, body }: { title: string; body: string }): ReactElement {
   return (
-    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-      <div className="font-medium text-slate-900 dark:text-slate-100">{title}</div>
-      <div className="mt-1 leading-6">{body}</div>
+    <div className="wms-ops-panel-empty wms-ops-panel-empty--inline rounded-2xl border p-4 text-sm">
+      <div className="wms-ops-panel-empty__title">{title}</div>
+      <div className="wms-ops-panel-empty__hint mt-1 leading-6">{body}</div>
     </div>
   );
 }
@@ -103,172 +104,214 @@ export function ProductionTransferDetailPage(): ReactElement {
   });
 
   const canDeleteCurrentTransfer = canDeleteTransfer && Boolean(detailQuery.data?.canDelete);
+  const pageTitle = t('productionTransfer.detail.title', { defaultValue: 'Missing translation' });
+  const pageDescription = t('productionTransfer.detail.subtitle', { defaultValue: 'Missing translation' });
 
   return (
-    <FormPageShell
-      title={t('productionTransfer.detail.title', { defaultValue: 'Missing translation' })}
-      description={t('productionTransfer.detail.subtitle', { defaultValue: 'Missing translation' })}
-      isLoading={detailQuery.isLoading}
-      isError={detailQuery.isError}
-      errorTitle={t('common.error')}
-      errorDescription={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.detail.error', { defaultValue: 'Missing translation' })}
-      actions={(
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={() => navigate('/production-transfer/list')}>
-            {t('common.back')}
-          </Button>
-          {detailQuery.data ? (
-            <>
-              {canDeleteCurrentTransfer ? (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  disabled={deleteMutation.isPending}
-                >
-                  {t('common.delete', { defaultValue: 'Missing translation' })}
-                </Button>
+    <>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('productionTransfer.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('productionTransfer.breadcrumb.module')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('productionTransfer.list.openDetail', { defaultValue: 'Missing translation' })}</span>
+          </>
+        }
+        title={pageTitle}
+        description={pageDescription}
+        actions={
+          Number.isFinite(detailId) && detailId > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="wms-ops-code-badge">#{detailId}</span>
+              {detailQuery.data?.documentNo ? (
+                <span className="wms-ops-code-badge">{detailQuery.data.documentNo}</span>
               ) : null}
-              {canCreateTransfer ? (
-                <Button type="button" variant="outline" onClick={() => navigate(`/production-transfer/create?cloneId=${detailQuery.data.id}`)}>
-                  {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
-                </Button>
-              ) : null}
-              {canUpdateTransfer ? (
-                <Button type="button" onClick={() => navigate(`/production-transfer/edit/${detailQuery.data.id}`)} disabled={detailQuery.data.isCompleted}>
-                  {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
-                </Button>
-              ) : null}
-            </>
-          ) : null}
-        </div>
-      )}
-    >
-      {detailQuery.data ? (
-        <div className="space-y-6">
-          {!permission.canMutate ? <PermissionNotice /> : null}
-          <InfoCallout
-            title={t('productionTransfer.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
-            body={
-              !canUpdateTransfer
-                ? t('productionTransfer.detail.statusInfoNoUpdate')
-                : !detailQuery.data.canDelete
-                  ? (detailQuery.data.deleteBlockedReason || t('productionTransfer.detail.statusInfoLocked', { defaultValue: 'Missing translation' }))
-                  : t('productionTransfer.detail.statusInfoOpen', { defaultValue: 'Missing translation' })
-            }
+            </div>
+          ) : null
+        }
+      >
+        {detailQuery.isLoading ? (
+          <PageState tone="loading" title={t('common.loading')} compact />
+        ) : null}
+
+        {detailQuery.isError ? (
+          <PageState
+            tone="error"
+            title={t('common.error')}
+            description={detailQuery.error instanceof Error ? detailQuery.error.message : t('productionTransfer.detail.error', { defaultValue: 'Missing translation' })}
+            compact
           />
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <Card>
-              <CardHeader>
-                <CardDescription>{t('common.documentNo')}</CardDescription>
-                <CardTitle className="text-xl">{detailQuery.data.documentNo || '-'}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>{t('common.documentDate')}</CardDescription>
-                <CardTitle className="text-xl">{formatDate(detailQuery.data.documentDate)}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>{t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
-                <CardTitle className="text-xl">{transferPurposeLabel(detailQuery.data.transferPurpose, t)}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>{t('common.status')}</CardDescription>
-                <CardTitle className="text-xl">
-                  <Badge variant="secondary">
-                    {detailQuery.data.isCompleted
-                      ? t('productionTransfer.detail.completed', { defaultValue: 'Missing translation' })
-                      : t('productionTransfer.detail.open', { defaultValue: 'Missing translation' })}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </div>
+        ) : null}
 
-          <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('productionTransfer.detail.linkTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.detail.linkSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
+        {detailQuery.data ? (
+          <div className="space-y-6">
+            {!permission.canMutate ? <PermissionNotice /> : null}
+            <InfoCallout
+              title={t('productionTransfer.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
+              body={
+                !canUpdateTransfer
+                  ? t('productionTransfer.detail.statusInfoNoUpdate')
+                  : !detailQuery.data.canDelete
+                    ? (detailQuery.data.deleteBlockedReason || t('productionTransfer.detail.statusInfoLocked', { defaultValue: 'Missing translation' }))
+                    : t('productionTransfer.detail.statusInfoOpen', { defaultValue: 'Missing translation' })
+              }
+            />
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="px-4 py-4 sm:px-6">
+                  <CardDescription>{t('common.documentNo')}</CardDescription>
+                  <CardTitle className="text-xl font-mono">{detailQuery.data.documentNo || '-'}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="px-4 py-4 sm:px-6">
+                  <CardDescription>{t('common.documentDate')}</CardDescription>
+                  <CardTitle className="text-xl font-mono">{formatDate(detailQuery.data.documentDate)}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="px-4 py-4 sm:px-6">
+                  <CardDescription>{t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
+                  <CardTitle className="text-xl">{transferPurposeLabel(detailQuery.data.transferPurpose, t)}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="px-4 py-4 sm:px-6">
+                  <CardDescription>{t('common.status')}</CardDescription>
+                  <CardTitle className="text-xl">
+                    <Badge variant="outline" className={`wms-ops-status-badge ${detailQuery.data.isCompleted ? 'wms-ops-status-badge--done' : 'wms-ops-status-badge--active'}`}>
+                      {detailQuery.data.isCompleted
+                        ? t('productionTransfer.detail.completed', { defaultValue: 'Missing translation' })
+                        : t('productionTransfer.detail.open', { defaultValue: 'Missing translation' })}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="border-b px-4 py-4 sm:px-6">
+                  <CardTitle>{t('productionTransfer.detail.linkTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardDescription>{t('productionTransfer.detail.linkSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4 px-4 py-6 md:grid-cols-2 sm:px-6">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider opacity-70">{t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}</div>
+                    <div className="mt-1 text-sm font-medium font-mono">{detailQuery.data.productionDocumentNo || '-'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider opacity-70">{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</div>
+                    <div className="mt-1 text-sm font-medium font-mono">{detailQuery.data.productionOrderNo || '-'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider opacity-70">{t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}</div>
+                    <div className="mt-1 text-sm font-medium font-mono">{detailQuery.data.sourceWarehouseCode || '-'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider opacity-70">{t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}</div>
+                    <div className="mt-1 text-sm font-medium font-mono">{detailQuery.data.targetWarehouseCode || '-'}</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+                <CardHeader className="border-b px-4 py-4 sm:px-6">
+                  <CardTitle>{t('productionTransfer.detail.descriptionTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardDescription>{t('productionTransfer.detail.descriptionSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
+                </CardHeader>
+                <CardContent className="px-4 py-6 sm:px-6">
+                  <div className="wms-ops-panel-empty wms-ops-panel-empty--inline rounded-xl border p-4 text-sm">
+                    {detailQuery.data.description?.trim() || t('productionTransfer.detail.noDescription', { defaultValue: 'Missing translation' })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+              <CardHeader className="border-b px-4 py-4 sm:px-6">
+                <CardTitle>{t('productionTransfer.detail.linesTitle', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardDescription>{t('productionTransfer.detail.linesSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}</div>
-                  <div className="mt-1 text-sm font-medium">{detailQuery.data.productionDocumentNo || '-'}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</div>
-                  <div className="mt-1 text-sm font-medium">{detailQuery.data.productionOrderNo || '-'}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}</div>
-                  <div className="mt-1 text-sm font-medium">{detailQuery.data.sourceWarehouseCode || '-'}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}</div>
-                  <div className="mt-1 text-sm font-medium">{detailQuery.data.targetWarehouseCode || '-'}</div>
-                </div>
+              <CardContent className="px-4 py-6 sm:px-6">
+                {detailQuery.data.lines.length === 0 ? (
+                  <div className="wms-ops-panel-empty rounded-xl border border-dashed p-6 text-sm">
+                    {t('productionTransfer.detail.noLines', { defaultValue: 'Missing translation' })}
+                  </div>
+                ) : (
+                  <div className="wms-ops-table-wrap overflow-hidden rounded-xl border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</TableHead>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}</TableHead>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}</TableHead>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}</TableHead>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}</TableHead>
+                          <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {detailQuery.data.lines.map((line) => (
+                          <TableRow key={line.id}>
+                            <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.productionOrderNo || '-'}</TableCell>
+                            <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.stockCode}{line.yapKod ? ` / ${line.yapKod}` : ''}</TableCell>
+                            <TableCell className="wms-ops-table-center-col">{lineRoleLabel(line.lineRole, t)}</TableCell>
+                            <TableCell className="wms-ops-table-center-col">{line.quantity}</TableCell>
+                            <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.sourceCellCode || '-'}</TableCell>
+                            <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.targetCellCode || '-'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('productionTransfer.detail.descriptionTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.detail.descriptionSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-                  {detailQuery.data.description?.trim() || t('productionTransfer.detail.noDescription', { defaultValue: 'Missing translation' })}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="wms-ops-actions flex flex-wrap justify-between gap-4 border-t pt-6">
+              <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/production-transfer/list')}>
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.back')}
+              </OpsActionButton>
+              <div className="flex flex-wrap gap-2">
+                {canDeleteCurrentTransfer ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    {t('common.delete', { defaultValue: 'Missing translation' })}
+                  </OpsActionButton>
+                ) : null}
+                {canCreateTransfer ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="secondary"
+                    onClick={() => navigate(`/production-transfer/create?cloneId=${detailQuery.data.id}`)}
+                  >
+                    {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
+                  </OpsActionButton>
+                ) : null}
+                {canUpdateTransfer ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={() => navigate(`/production-transfer/edit/${detailQuery.data.id}`)}
+                    disabled={detailQuery.data.isCompleted}
+                  >
+                    {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
+                  </OpsActionButton>
+                ) : null}
+              </div>
+            </div>
           </div>
+        ) : null}
+      </OpsFormPageShell>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('productionTransfer.detail.linesTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.detail.linesSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {detailQuery.data.lines.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-200/70 p-6 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                  {t('productionTransfer.detail.noLines', { defaultValue: 'Missing translation' })}
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}</TableHead>
-                      <TableHead>{t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {detailQuery.data.lines.map((line) => (
-                      <TableRow key={line.id}>
-                        <TableCell>{line.productionOrderNo || '-'}</TableCell>
-                        <TableCell>{line.stockCode}{line.yapKod ? ` / ${line.yapKod}` : ''}</TableCell>
-                        <TableCell>{lineRoleLabel(line.lineRole, t)}</TableCell>
-                        <TableCell>{line.quantity}</TableCell>
-                        <TableCell>{line.sourceCellCode || '-'}</TableCell>
-                        <TableCell>{line.targetCellCode || '-'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -297,6 +340,6 @@ export function ProductionTransferDetailPage(): ReactElement {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </FormPageShell>
+    </>
   );
 }

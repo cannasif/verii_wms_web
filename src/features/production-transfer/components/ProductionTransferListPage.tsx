@@ -1,18 +1,17 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -39,6 +38,16 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'targetWarehouse', type: 'string', labelKey: 'production.create.targetWarehouse' },
   { value: 'isCompleted', type: 'boolean', labelKey: 'common.status' },
 ];
+
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  documentNo: 14,
+  documentDate: 12,
+  transferPurpose: 14,
+  productionLink: 12,
+  sourceWarehouse: 12,
+  targetWarehouse: 12,
+  status: 10,
+};
 
 function mapSortBy(value: ProductionTransferColumnKey): string {
   switch (value) {
@@ -97,6 +106,7 @@ export function ProductionTransferListPage(): ReactElement {
   const canCreateTransfer = permission.canCreate;
   const canDeleteTransfer = permission.canDelete;
   const pageKey = 'production-transfer-list';
+  const showActionsColumn = permission.canView || canUpdateTransfer || canDeleteTransfer || canCreateTransfer;
   const [itemToDelete, setItemToDelete] = useState<ProductionTransferListItem | null>(null);
 
   const pagedGrid = usePagedDataGrid<ProductionTransferColumnKey>({
@@ -113,20 +123,31 @@ export function ProductionTransferListPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ProductionTransferColumnKey>[]>(() => [
-    { key: 'documentNo', label: t('common.documentNo') },
-    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }) },
-    { key: 'transferPurpose', label: t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' }) },
-    { key: 'productionLink', label: t('productionTransfer.list.productionLink', { defaultValue: 'Missing translation' }) },
-    { key: 'sourceWarehouse', label: t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' }) },
-    { key: 'targetWarehouse', label: t('production.create.targetWarehouse', { defaultValue: 'Missing translation' }) },
-    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }) },
+    { key: 'documentNo', label: t('common.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentDate', label: t('common.documentDate', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'transferPurpose', label: t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'productionLink', label: t('productionTransfer.list.productionLink', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'sourceWarehouse', label: t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'targetWarehouse', label: t('production.create.targetWarehouse', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'status', label: t('common.status', { defaultValue: 'Missing translation' }), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     { key: 'actions', label: t('common.actions', { defaultValue: 'Missing translation' }), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'documentNo',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -148,6 +169,24 @@ export function ProductionTransferListPage(): ReactElement {
       toast.error(error.message || t('productionTransfer.list.deleteError'));
     },
   });
+
+  const getCellText = (row: ProductionTransferListItem, key: ProductionTransferColumnKey): string | undefined => {
+    switch (key) {
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'transferPurpose': return transferPurposeLabel(row.transferPurpose, t);
+      case 'productionLink':
+        return row.productionOrderId
+          ? t('productionTransfer.list.orderLink', { id: row.productionOrderId })
+          : row.productionHeaderId
+            ? t('productionTransfer.list.planLink', { id: row.productionHeaderId })
+            : '-';
+      case 'sourceWarehouse': return row.sourceWarehouse || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'status': return row.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open');
+      default: return undefined;
+    }
+  };
 
   const exportColumns = useMemo(
     () => orderedVisibleColumns
@@ -192,164 +231,187 @@ export function ProductionTransferListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card>
-        <CardContent className="pt-6">
-          <PagedDataGrid<ProductionTransferListItem, ProductionTransferColumnKey>
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={data?.data ?? []}
-        rowKey={(row) => row.id}
-        renderCell={(row, columnKey) => {
-          switch (columnKey) {
-            case 'documentNo':
-              return <span className="font-medium">{row.documentNo || '-'}</span>;
-            case 'documentDate':
-              return formatDate(row.documentDate);
-            case 'transferPurpose':
-              return transferPurposeLabel(row.transferPurpose, t);
-            case 'productionLink':
-              return row.productionOrderId
-                ? <Badge variant="outline">{t('productionTransfer.list.orderLink', { id: row.productionOrderId })}</Badge>
-                : row.productionHeaderId
-                  ? <Badge variant="outline">{t('productionTransfer.list.planLink', { id: row.productionHeaderId })}</Badge>
-                  : '-';
-            case 'sourceWarehouse':
-              return row.sourceWarehouse || '-';
-            case 'targetWarehouse':
-              return row.targetWarehouse || '-';
-            case 'status':
-              return <Badge variant="secondary">{row.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}</Badge>;
-            case 'actions':
-            default:
-              return null;
-          }
-        }}
-        sortBy={pagedGrid.sortBy}
-        sortDirection={pagedGrid.sortDirection}
-        onSort={(columnKey) => {
-          if (columnKey === 'actions') return;
-          pagedGrid.handleSort(columnKey);
-        }}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={Boolean(error)}
-        errorText={error instanceof Error ? error.message : t('productionTransfer.list.error', { defaultValue: 'Missing translation' })}
-        emptyText={t('productionTransfer.list.noData', { defaultValue: 'Missing translation' })}
-        showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || canUpdateTransfer || canDeleteTransfer || canCreateTransfer)}
-        actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
-        renderActionsCell={(row) => (
-          <div className="flex min-w-[220px] flex-wrap justify-end gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production-transfer/detail/${row.id}`)}>
-              {t('productionTransfer.list.openDetail', { defaultValue: 'Missing translation' })}
-            </Button>
-            <div className="flex items-center gap-1">
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('productionTransfer.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('productionTransfer.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('productionTransfer.list.title', { defaultValue: 'Missing translation' })}
+        description={t('productionTransfer.list.subtitle', { defaultValue: t('productionTransfer.list.searchPlaceholder') })}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
+        <PagedDataGrid<ProductionTransferListItem, ProductionTransferColumnKey>
+          variant="ops"
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
+          rows={data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => ({
+            documentNo: <span className="font-medium font-mono text-xs">{row.documentNo || '-'}</span>,
+            documentDate: <span className="font-mono text-xs">{formatDate(row.documentDate)}</span>,
+            transferPurpose: transferPurposeLabel(row.transferPurpose, t),
+            productionLink: row.productionOrderId
+              ? <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t('productionTransfer.list.orderLink', { id: row.productionOrderId })}</Badge>
+              : row.productionHeaderId
+                ? <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t('productionTransfer.list.planLink', { id: row.productionHeaderId })}</Badge>
+                : '-',
+            sourceWarehouse: row.sourceWarehouse || '-',
+            targetWarehouse: row.targetWarehouse || '-',
+            status: (
+              <Badge
+                variant="outline"
+                className={`wms-ops-status-badge mx-auto ${row.isCompleted ? 'wms-ops-status-badge--done' : 'wms-ops-status-badge--active'}`}
+              >
+                {row.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}
+              </Badge>
+            ),
+          } as Record<Exclude<ProductionTransferColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<ProductionTransferColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey === 'actions') return;
+            pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={Boolean(error)}
+          errorText={error instanceof Error ? error.message : t('productionTransfer.list.error', { defaultValue: 'Missing translation' })}
+          emptyText={t('productionTransfer.list.noData', { defaultValue: 'Missing translation' })}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={t('common.actions', { defaultValue: 'Missing translation' })}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(row) => (
+            <div className="wms-ops-row-actions">
               <Button
                 type="button"
-                variant="default"
-                size="sm"
-                onClick={() => navigate(`/production-transfer/edit/${row.id}`)}
-                disabled={!canUpdateTransfer || Boolean(row.isCompleted)}
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('productionTransfer.list.openDetail', { defaultValue: 'Missing translation' })}
+                title={t('productionTransfer.list.openDetail', { defaultValue: 'Missing translation' })}
+                onClick={() => navigate(`/production-transfer/detail/${row.id}`)}
               >
-                {t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
+                <Eye className="size-3" aria-hidden />
               </Button>
-              {!canUpdateTransfer || row.isCompleted ? (
-                <FieldHelpTooltip
-                  text={!canUpdateTransfer
-                    ? t('productionTransfer.list.editDisabledPermission')
-                    : t('productionTransfer.list.editDisabledHelp', {
-                      defaultValue: 'Missing translation',
-                    })}
-                />
-              ) : null}
-            </div>
-            <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/production-transfer/create?cloneId=${row.id}`)} disabled={!canCreateTransfer}>
-              {t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
-            </Button>
+              <div className="flex items-center gap-0.5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  aria-label={t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
+                  title={t('productionTransfer.list.editTransfer', { defaultValue: 'Missing translation' })}
+                  onClick={() => navigate(`/production-transfer/edit/${row.id}`)}
+                  disabled={!canUpdateTransfer || Boolean(row.isCompleted)}
+                >
+                  <Pencil className="size-3" aria-hidden />
+                </Button>
+                {!canUpdateTransfer || row.isCompleted ? (
+                  <FieldHelpTooltip
+                    text={!canUpdateTransfer
+                      ? t('productionTransfer.list.editDisabledPermission')
+                      : t('productionTransfer.list.editDisabledHelp', { defaultValue: 'Missing translation' })}
+                  />
+                ) : null}
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
+                title={t('productionTransfer.list.cloneTransfer', { defaultValue: 'Missing translation' })}
+                onClick={() => navigate(`/production-transfer/create?cloneId=${row.id}`)}
+                disabled={!canCreateTransfer}
+              >
+                <Copy className="size-3" aria-hidden />
+              </Button>
               {canDeleteTransfer && row.canDelete ? (
                 <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => setItemToDelete(row)}
-              >
-                {t('common.delete')}
-              </Button>
-            ) : null}
-          </div>
-        )}
-        pageSize={data?.pageSize ?? pagedGrid.pageSize}
-        pageSizeOptions={pagedGrid.pageSizeOptions}
-        onPageSizeChange={pagedGrid.handlePageSizeChange}
-        pageNumber={pagedGrid.getDisplayPageNumber(data)}
-        totalPages={Math.max(data?.totalPages ?? 1, 1)}
-        hasPreviousPage={Boolean(data?.hasPreviousPage)}
-        hasNextPage={Boolean(data?.hasNextPage)}
-        onPreviousPage={pagedGrid.goToPreviousPage}
-        onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common.previous')}
-        nextLabel={t('common.next')}
-        paginationInfoText={paginationInfoText}
-        actionBar={{
-          pageKey,
-          userId,
-          columns: columns.map(({ key, label }) => ({ key, label })),
-          visibleColumns,
-          columnOrder,
-          onVisibleColumnsChange: setVisibleColumns,
-          onColumnOrderChange: setColumnOrder,
-          exportFileName: 'production-transfer-list',
-          exportColumns,
-          exportRows,
-          filterColumns: advancedFilterColumns,
-          defaultFilterColumn: 'documentNo',
-          draftFilterRows: pagedGrid.draftFilterRows,
-          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-          filterLogic: pagedGrid.filterLogic,
-          onFilterLogicChange: pagedGrid.setFilterLogic,
-          onApplyFilters: pagedGrid.applyAdvancedFilters,
-          onClearFilters: pagedGrid.clearAdvancedFilters,
-          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-          search: {
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('productionTransfer.list.searchPlaceholder', { defaultValue: 'Missing translation' }),
-          },
-          leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                  aria-label={t('common.delete')}
+                  title={t('common.delete')}
+                  onClick={() => setItemToDelete(row)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Trash2 className="size-3" aria-hidden />
+                </Button>
+              ) : null}
+            </div>
+          )}
+          pageSize={data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={Math.max(data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(data?.hasPreviousPage)}
+          hasNextPage={Boolean(data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: pageKey,
+            exportColumns,
+            exportRows,
+            filterColumns: advancedFilterColumns,
+            defaultFilterColumn: 'documentNo',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              ...pagedGrid.searchConfig,
+              placeholder: t('productionTransfer.list.searchPlaceholder', { defaultValue: 'Missing translation' }),
+            },
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
+          }}
+        />
+      </OpsListPageShell>
+
+      <DeleteConfirmDialog
+        open={Boolean(itemToDelete)}
+        itemLabel={itemToDelete?.documentNo || `#${itemToDelete?.id ?? ''}`}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setItemToDelete(null);
+        }}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
         }}
       />
-        </CardContent>
-      </Card>
-
-      <Dialog open={Boolean(itemToDelete)} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('productionTransfer.list.deleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('productionTransfer.list.deleteDescription', {
-                documentNo: itemToDelete?.documentNo ?? '',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setItemToDelete(null)} disabled={deleteMutation.isPending}>
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (!itemToDelete) return;
-                deleteMutation.mutate(itemToDelete.id);
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+    </>
   );
 }

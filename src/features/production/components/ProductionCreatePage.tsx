@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, GripVertical, Info } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -934,29 +934,50 @@ export function ProductionCreatePage(): ReactElement {
   );
 
   return (
-    <div className="space-y-4">
-      <FormPageShell
-        title={isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title')}
-        description={isEditMode ? t('production.create.editSubtitle', { defaultValue: 'Missing translation' }) : t('production.create.subtitle')}
-        isLoading={editDetailQuery.isLoading}
-        isError={editDetailQuery.isError}
-        errorTitle={t('common.error')}
-        errorDescription={editDetailQuery.error instanceof Error ? editDetailQuery.error.message : t('production.create.error')}
-        className="gap-4 py-4 shadow-md **:data-[slot=card-content]:px-5 **:data-[slot=card-header]:gap-1.5 **:data-[slot=card-header]:px-5 **:data-[slot=card-description]:text-xs **:data-[slot=card-description]:leading-snug"
-        actions={(
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => navigate('/production/list')}>
-              {t('common.cancel')}
-            </Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => setDraft(isEditMode && editDetailQuery.data ? mapDetailToDraft(editDetailQuery.data) : createEmptyProductionPlanDraft())}>
-              {t('common.clear')}
-            </Button>
-            <Button type="button" size="sm" onClick={() => createMutation.mutate()} disabled={!canSaveProduction || createMutation.isPending || draft.orders.length === 0}>
-              {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : t('common.save')}
-            </Button>
-          </div>
-        )}
-      >
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('production.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('production.breadcrumb.module')}</span>
+          {isEditMode ? (
+            <>
+              <span className="mx-2 opacity-60">/</span>
+              <span>{t('common.edit')}</span>
+            </>
+          ) : null}
+        </>
+      }
+      title={isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title')}
+      description={isEditMode ? t('production.create.editSubtitle', { defaultValue: 'Missing translation' }) : t('production.create.subtitle')}
+      actions={(
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" size="sm" variant="outline" onClick={() => navigate('/production/list')}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="button" size="sm" variant="outline" onClick={() => setDraft(isEditMode && editDetailQuery.data ? mapDetailToDraft(editDetailQuery.data) : createEmptyProductionPlanDraft())}>
+            {t('common.clear')}
+          </Button>
+          <Button type="button" size="sm" onClick={() => createMutation.mutate()} disabled={!canSaveProduction || createMutation.isPending || draft.orders.length === 0}>
+            {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : t('common.save')}
+          </Button>
+        </div>
+      )}
+    >
+      {editDetailQuery.isLoading ? (
+        <PageState tone="loading" title={t('common.loading')} compact />
+      ) : null}
+
+      {editDetailQuery.isError ? (
+        <PageState
+          tone="error"
+          title={t('common.error')}
+          description={editDetailQuery.error instanceof Error ? editDetailQuery.error.message : t('production.create.error')}
+          compact
+        />
+      ) : null}
+
+      {!editDetailQuery.isLoading && !editDetailQuery.isError ? (
         <div className="space-y-4 text-sm leading-normal">
           {!permission.canMutate ? <PermissionNotice /> : null}
           {!canSaveProduction ? (
@@ -2301,7 +2322,7 @@ export function ProductionCreatePage(): ReactElement {
             </TabsContent>
           </Tabs>
         </div>
-      </FormPageShell>
-    </div>
+      ) : null}
+    </OpsFormPageShell>
   );
 }

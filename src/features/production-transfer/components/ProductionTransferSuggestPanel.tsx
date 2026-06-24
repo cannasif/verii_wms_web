@@ -46,57 +46,59 @@ export function ProductionTransferSuggestPanel({ lines, onApplySelected, applyMo
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('productionTransfer.create.suggestPanel.title')}</CardTitle>
+    <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+      <CardHeader className="border-b px-4 py-4 sm:px-6">
+        <CardTitle className="text-base">{t('productionTransfer.create.suggestPanel.title')}</CardTitle>
         <CardDescription>{t('productionTransfer.create.suggestPanel.description')}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+      <CardContent className="space-y-4 px-4 py-6 sm:px-6">
+        <div className="wms-ops-panel-empty wms-ops-panel-empty--inline rounded-xl border p-4 text-sm">
           {t('productionTransfer.create.suggestPanel.hint')}
         </div>
         {lines.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+          <div className="wms-ops-panel-empty rounded-xl border border-dashed p-4 text-sm">
             {t('productionTransfer.create.suggestPanel.noSuggestions')}
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.selection')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.order')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.lineRole')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.stock')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.quantity')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.source')}</TableHead>
-                <TableHead>{t('productionTransfer.create.suggestPanel.columns.target')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lines.map((line, index) => (
-                <TableRow key={`${line.productionOrderNo}-${line.stockCode}-${index}`}>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant={selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleLine(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)}
-                    >
-                      {selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)
-                        ? t('productionTransfer.create.suggestPanel.actions.selected')
-                        : t('productionTransfer.create.suggestPanel.actions.select')}
-                    </Button>
-                  </TableCell>
-                  <TableCell>{line.productionOrderNo}</TableCell>
-                  <TableCell><Badge variant="secondary">{lineRoleLabel(line.lineRole)}</Badge></TableCell>
-                  <TableCell>{line.stockCode}</TableCell>
-                  <TableCell>{line.quantity}</TableCell>
-                  <TableCell>{line.sourceWarehouseCode || line.sourceCellCode || '-'}</TableCell>
-                  <TableCell>{line.targetWarehouseCode || line.targetCellCode || '-'}</TableCell>
+          <div className="wms-ops-table-wrap overflow-hidden rounded-xl border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.selection')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.order')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.lineRole')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.stock')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.quantity')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.source')}</TableHead>
+                  <TableHead className="wms-ops-table-head wms-ops-table-center-col">{t('productionTransfer.create.suggestPanel.columns.target')}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {lines.map((line, index) => (
+                  <TableRow key={`${line.productionOrderNo}-${line.stockCode}-${index}`}>
+                    <TableCell className="wms-ops-table-center-col">
+                      <Button
+                        type="button"
+                        variant={selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`) ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => toggleLine(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)}
+                      >
+                        {selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)
+                          ? t('productionTransfer.create.suggestPanel.actions.selected')
+                          : t('productionTransfer.create.suggestPanel.actions.select')}
+                      </Button>
+                    </TableCell>
+                    <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.productionOrderNo}</TableCell>
+                    <TableCell className="wms-ops-table-center-col"><Badge variant="secondary">{lineRoleLabel(line.lineRole)}</Badge></TableCell>
+                    <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.stockCode}</TableCell>
+                    <TableCell className="wms-ops-table-center-col">{line.quantity}</TableCell>
+                    <TableCell className="wms-ops-table-center-col">{line.sourceWarehouseCode || line.sourceCellCode || '-'}</TableCell>
+                    <TableCell className="wms-ops-table-center-col">{line.targetWarehouseCode || line.targetCellCode || '-'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-wrap items-end gap-3">
