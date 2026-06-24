@@ -41,42 +41,42 @@ export const adminChildRoutes: RouteObject[] = [
     children: [
       {
         path: 'user-management',
-        element: withRoute(UserManagementPage, {
+        Component: withRoute(UserManagementPage, {
           routeName: 'user-management',
           namespaces: ['user-management', 'common'],
         }),
       },
       {
         path: 'permission-definitions',
-        element: withRoute(PermissionDefinitionsPage, {
+        Component: withRoute(PermissionDefinitionsPage, {
           routeName: 'permission-definitions',
           namespaces: ['access-control', 'common'],
         }),
       },
       {
         path: 'permission-groups',
-        element: withRoute(PermissionGroupsPage, {
+        Component: withRoute(PermissionGroupsPage, {
           routeName: 'permission-groups',
           namespaces: ['access-control', 'common'],
         }),
       },
       {
         path: 'user-group-assignments',
-        element: withRoute(UserGroupAssignmentsPage, {
+        Component: withRoute(UserGroupAssignmentsPage, {
           routeName: 'user-group-assignments',
           namespaces: ['access-control', 'common'],
         }),
       },
       {
         path: 'wms-scope-policies',
-        element: withRoute(WmsScopePoliciesPage, {
+        Component: withRoute(WmsScopePoliciesPage, {
           routeName: 'wms-scope-policies',
           namespaces: ['access-control', 'common'],
         }),
       },
       {
         path: 'wms-scope-assignments',
-        element: withRoute(WmsScopeAssignmentsPage, {
+        Component: withRoute(WmsScopeAssignmentsPage, {
           routeName: 'wms-scope-assignments',
           namespaces: ['access-control', 'common'],
         }),
@@ -88,7 +88,7 @@ export const adminChildRoutes: RouteObject[] = [
     children: [
       {
         path: 'mail-settings',
-        element: withRoute(MailSettingsPage, {
+        Component: withRoute(MailSettingsPage, {
           routeName: 'mail-settings',
           namespaces: ['mail-settings', 'common'],
         }),
@@ -97,14 +97,14 @@ export const adminChildRoutes: RouteObject[] = [
   },
   {
     path: 'hangfire-monitoring',
-    element: withRoute(HangfireMonitoringPage, {
+    Component: withRoute(HangfireMonitoringPage, {
       routeName: 'hangfire-monitoring',
       namespaces: ['hangfire-monitoring', 'common'],
     }),
   },
   {
     path: 'trace-explorer',
-    element: withRoute(TraceExplorerPage, {
+    Component: withRoute(TraceExplorerPage, {
       routeName: 'trace-explorer',
       namespaces: ['trace-explorer', 'common'],
     }),

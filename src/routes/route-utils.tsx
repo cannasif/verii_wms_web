@@ -45,18 +45,28 @@ function RoutePageShell({ Component, routeName, namespaces }: RoutePageShellProp
   return (
     <Suspense key={routeInstanceKey} fallback={<RouteLoadingFallback />}>
       <RouteRuntimeBoundary key={routeInstanceKey} routeName={routeName} namespaces={namespaces}>
-        <Component />
+        <Component key={routeInstanceKey} />
       </RouteRuntimeBoundary>
     </Suspense>
   );
 }
 
-export function withRoute(Component: ComponentType, options: RouteOptions): ReactElement {
-  return (
-    <RoutePageShell
-      Component={Component}
-      routeName={options.routeName}
-      namespaces={options.namespaces}
-    />
-  );
+export function withRoute(Component: ComponentType, options: RouteOptions): ComponentType {
+  function RoutedPage(): ReactElement {
+    const location = useLocation();
+    const routeInstanceKey = buildRouteInstanceKey(options.routeName, location);
+
+    return (
+      <div key={routeInstanceKey} className="contents">
+        <RoutePageShell
+          Component={Component}
+          routeName={options.routeName}
+          namespaces={options.namespaces}
+        />
+      </div>
+    );
+  }
+
+  RoutedPage.displayName = `RoutedPage(${options.routeName})`;
+  return RoutedPage;
 }

@@ -13,9 +13,9 @@ export const authRouteTrees: RouteObject[] = [
     errorElement: <RouteErrorPage />,
     element: <AuthLayout />,
     children: [
-      { path: 'login', element: withRoute(LoginPage, { routeName: 'auth-login' }) },
-      { path: 'forgot-password', element: withRoute(ForgotPasswordPage, { routeName: 'auth-forgot-password' }) },
-      { path: 'reset-password', element: withRoute(ResetPasswordPage, { routeName: 'auth-reset-password' }) },
+      { path: 'login', Component: withRoute(LoginPage, { routeName: 'auth-login' }) },
+      { path: 'forgot-password', Component: withRoute(ForgotPasswordPage, { routeName: 'auth-forgot-password' }) },
+      { path: 'reset-password', Component: withRoute(ResetPasswordPage, { routeName: 'auth-reset-password' }) },
     ],
   },
   {
@@ -23,8 +23,8 @@ export const authRouteTrees: RouteObject[] = [
     errorElement: <RouteErrorPage />,
     element: <AuthLayout />,
     children: [
-      { path: 'forgot-password', element: withRoute(ForgotPasswordPage, { routeName: 'forgot-password-shortcut' }) },
-      { path: 'reset-password', element: withRoute(ResetPasswordPage, { routeName: 'reset-password-shortcut' }) },
+      { path: 'forgot-password', Component: withRoute(ForgotPasswordPage, { routeName: 'forgot-password-shortcut' }) },
+      { path: 'reset-password', Component: withRoute(ResetPasswordPage, { routeName: 'reset-password-shortcut' }) },
     ],
   },
 ];

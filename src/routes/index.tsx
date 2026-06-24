@@ -26,17 +26,17 @@ export function createAppRouter() {
         </ProtectedRoute>
       ),
       children: [
-        { index: true, element: withRoute(WelcomePage, { routeName: 'welcome' }) },
-        { path: 'dashboard', element: withRoute(DashboardPage, { routeName: 'dashboard' }) },
-        { path: 'reports', element: withRoute(ReportsPage, { routeName: 'reports', namespaces: ['report', 'common'] }) },
+        { index: true, Component: withRoute(WelcomePage, { routeName: 'welcome' }) },
+        { path: 'dashboard', Component: withRoute(DashboardPage, { routeName: 'dashboard' }) },
+        { path: 'reports', Component: withRoute(ReportsPage, { routeName: 'reports', namespaces: ['report', 'common'] }) },
         ...operationsChildRoutes,
         {
           path: 'parameters',
-          children: [{ path: ':type', element: withRoute(ParameterFormPage, { routeName: 'parameters-form' }) }],
+          children: [{ path: ':type', Component: withRoute(ParameterFormPage, { routeName: 'parameters-form' }) }],
         },
         ...adminChildRoutes,
         ...erpChildRoutes,
-        { path: 'profile', element: withRoute(ProfilePage, { routeName: 'profile' }) },
+        { path: 'profile', Component: withRoute(ProfilePage, { routeName: 'profile' }) },
       ],
     },
     ...authRouteTrees,
