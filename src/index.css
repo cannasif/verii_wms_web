@@ -2746,6 +2746,18 @@ html:not(.dark) .wms-ops-detail-dialog .wms-ops-flag-badge--off {
   color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
 }
 
+.wms-ops-transfer-collection__chain {
+  flex-shrink: 0;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  padding: 0.65rem 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .wms-ops-transfer-collection__chain {
+    padding: 0.65rem 1.25rem 0;
+  }
+}
+
 /* Barcode print operations — baskı terminali */
 .wms-ops-barcode-print__hero {
   border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));

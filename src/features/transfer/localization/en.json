@@ -11,6 +11,7 @@
   "transfer": {
     "approval": {
       "actions": "Actions",
+      "subtitle": "Review and process transfer orders awaiting approval",
       "approve": "Approve",
       "approveError": "Approve Error",
       "approveSuccess": "Approve Success",
@@ -35,6 +36,7 @@
       "error": "Error",
       "noData": "No Data",
       "searchPlaceholder": "Search Placeholder",
+      "subtitle": "View, filter and manage records",
       "title": "Title"
     },
     "collection": {
@@ -80,20 +82,24 @@
       "yapKod": "Yap Kod"
     },
     "create": {
-      "error": "Error",
+      "breadcrumb": {
+        "module": "TRANSFER",
+        "parent": "INBOUND_OP"
+      },
+      "error": "Failed to create transfer order",
       "mode": {
         "free": "Free",
         "order": "Order",
-        "stock": "Stock"
+        "stock": "Stock Detail"
       },
       "steps": {
         "basicInfo": "Basic Info",
         "orderSelection": "Order Selection",
         "stockSelection": "Stock Selection"
       },
-      "subtitle": "Subtitle",
-      "success": "Success",
-      "title": "Title"
+      "subtitle": "Initializing system record...",
+      "success": "Transfer order created",
+      "title": "Create New Transfer Order"
     },
     "details": {
       "batchNo": "Batch No",
@@ -109,10 +115,10 @@
       "sourceWarehouse": "Source Warehouse"
     },
     "edit": {
-      "error": "Error",
-      "subtitle": "Subtitle",
-      "success": "Success",
-      "title": "Title"
+      "error": "Failed to update transfer",
+      "subtitle": "Update transfer header information",
+      "success": "Transfer updated",
+      "title": "Edit Transfer"
     },
     "list": {
       "completed": "Completed",
@@ -133,6 +139,7 @@
       "noData": "No Data",
       "quantity": "Quantity",
       "searchPlaceholder": "Search Placeholder",
+      "subtitle": "View, filter and manage records",
       "serialNo": "Serial No",
       "serialNo2": "Serial No2",
       "sourceCellCode": "Source Cell Code",
@@ -149,25 +156,35 @@
       "orderQuantity": "Order Quantity"
     },
     "process": {
-      "error": "Error",
-      "subtitle": "Subtitle",
-      "success": "Success",
-      "title": "Title"
+      "error": "Failed to process free transfer",
+      "subtitle": "Initializing system record...",
+      "success": "Free transfer completed",
+      "title": "Free Transfer Process"
     },
     "step1": {
       "customer": "Customer",
       "documentNo": "Document No",
-      "documentNoPlaceholder": "Document No Placeholder",
-      "noProject": "No Project",
+      "documentNoPlaceholder": "Enter document number",
+      "noProject": "No project found",
       "notes": "Notes",
-      "notesPlaceholder": "Notes Placeholder",
+      "notesDescription": "Additional notes for this operation",
+      "notesPlaceholder": "Enter notes",
       "operationUsers": "Operation Users",
       "projectCode": "Project Code",
       "selectCustomer": "Select Customer",
-      "selectOperationUsers": "Select Operation Users",
-      "selectProjectCode": "Select Project Code",
-      "selectSourceWarehouse": "Select Source Warehouse",
-      "selectTargetWarehouse": "Select Target Warehouse",
+      "selectOperationUsers": "Select operation users",
+      "selectProjectCode": "Select project code",
+      "selectSourceWarehouse": "Select source warehouse",
+      "selectTargetWarehouse": "Select target warehouse",
+      "selectedCustomer": "Selected Customer",
+      "selectedCustomerEyebrow": "CUSTOMER_REF",
+      "selectedCustomerStatus": "LINKED",
+      "selectedSourceWarehouse": "Selected Source Warehouse",
+      "selectedSourceWarehouseEyebrow": "SOURCE_WH",
+      "selectedSourceWarehouseStatus": "LINKED",
+      "selectedTargetWarehouse": "Selected Target Warehouse",
+      "selectedTargetWarehouseEyebrow": "TARGET_WH",
+      "selectedTargetWarehouseStatus": "LINKED",
       "sourceWarehouse": "Source Warehouse",
       "targetWarehouse": "Target Warehouse",
       "transferDate": "Transfer Date"

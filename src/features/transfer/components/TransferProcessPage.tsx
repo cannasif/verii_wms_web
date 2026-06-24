@@ -4,9 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import {
   createTransferFormSchema,
   type SelectedTransferStockItem,
@@ -15,9 +16,7 @@ import {
 import type { Product } from '@/features/shared';
 import { transferApi } from '../api/transfer-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { Step1TransferBasicInfo } from './steps/Step1TransferBasicInfo';
@@ -131,57 +130,82 @@ export function TransferProcessPage(): ReactElement {
   ];
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary" className="mb-4">
-        {t('transfer.create.mode.free')}
-      </Badge>
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('transfer.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('transfer.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('transfer.process.title')}
+        description={t('transfer.process.subtitle')}
+        actions={
+          <span className="wms-ops-code-badge">{t('transfer.create.mode.free')}</span>
+        }
+      >
+        {!permission.canCreate ? <PermissionNotice /> : null}
 
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
+        <Breadcrumb
+          items={steps.map((step, index) => ({
+            label: step.label,
+            isActive: index + 1 === currentStep,
+          }))}
+          className="wms-ops-steps mb-6"
+        />
 
-      <FormPageShell title={t('transfer.process.title')} description={t('transfer.process.subtitle')}>
-        {!permission.canCreate ? (
-          <PermissionNotice />
-        ) : null}
-        <Form {...form}>
+        <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
-            <form className="space-y-6 crm-page">
-              {currentStep === 1 ? (
-                <Step1TransferBasicInfo isFreeTransfer />
-              ) : (
-                <Step2TransferStockSelection
-                  selectedItems={selectedItems}
-                  onToggleItem={handleToggleItem}
-                  onUpdateItem={handleUpdateItem}
-                  onRemoveItem={handleRemoveItem}
-                />
-              )}
+            {currentStep === 1 ? (
+              <Step1TransferBasicInfo isFreeTransfer variant="ops" />
+            ) : (
+              <Step2TransferStockSelection
+                variant="ops"
+                selectedItems={selectedItems}
+                onToggleItem={handleToggleItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
+              />
+            )}
 
-              <div className="flex justify-between pt-6 border-t">
-                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}>
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
+                {currentStep < steps.length ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!permission.canCreate}
+                  >
+                    {t('common.next')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                ) : (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}
+                  >
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                )}
               </div>
-            </form>
+            </div>
           </fieldset>
-        </Form>
-      </FormPageShell>
-    </div>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

@@ -4,9 +4,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, FileText, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { cn } from '@/lib/utils';
 import {
   createTransferFormSchema,
   type SelectedTransferOrderItem,
@@ -15,9 +17,7 @@ import {
 } from '../types/transfer';
 import { transferApi } from '../api/transfer-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1TransferBasicInfo } from './steps/Step1TransferBasicInfo';
 import { Step2TransferOrderSelection } from './steps/Step2TransferOrderSelection';
@@ -160,34 +160,57 @@ export function TransferCreatePage(): ReactElement {
   ];
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center gap-3">
-        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('transfer.create.mode.order') : t('transfer.create.mode.stock')}
-        </Badge>
-        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
-          <TabsList>
-            <TabsTrigger value="order">{t('transfer.create.mode.order')}</TabsTrigger>
-            <TabsTrigger value="stock">{t('transfer.create.mode.stock')}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('transfer.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('transfer.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('transfer.create.title')}
+        description={t('transfer.create.subtitle')}
+        actions={
+          <Tabs
+            value={createMode}
+            onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}
+            className="w-full sm:w-auto"
+          >
+            <TabsList
+              className={cn(
+                'wms-ops-tabs w-full sm:w-auto',
+                createMode === 'order' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock',
+              )}
+            >
+              <span className="wms-ops-tab-indicator" aria-hidden />
+              <TabsTrigger value="order" className="wms-ops-tab gap-1.5">
+                <FileText className="size-3.5" />
+                {t('transfer.create.mode.order')}
+              </TabsTrigger>
+              <TabsTrigger value="stock" className="wms-ops-tab gap-1.5">
+                <Package className="size-3.5" />
+                {t('transfer.create.mode.stock')}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+      >
+        <Breadcrumb
+          items={steps.map((step, index) => ({
+            label: step.label,
+            isActive: index + 1 === currentStep,
+          }))}
+          className="wms-ops-steps mb-6"
+        />
 
-      <FormPageShell title={t('transfer.create.title')} description={t('transfer.create.subtitle')}>
-        <Form {...form}>
-          <form className="space-y-6 crm-page">
-            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+        <form className="space-y-6">
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1TransferBasicInfo isFreeTransfer={false} />
+              <Step1TransferBasicInfo isFreeTransfer={false} variant="ops" />
             ) : createMode === 'order' ? (
               <Step2TransferOrderSelection
+                variant="ops"
                 selectedItems={selectedItems}
                 onToggleItem={handleToggleItem}
                 onUpdateItem={handleUpdateItem}
@@ -195,6 +218,7 @@ export function TransferCreatePage(): ReactElement {
               />
             ) : (
               <Step2TransferStockSelection
+                variant="ops"
                 selectedItems={selectedStockItems}
                 onToggleItem={handleToggleStockItem}
                 onUpdateItem={handleUpdateStockItem}
@@ -202,26 +226,47 @@ export function TransferCreatePage(): ReactElement {
               />
             )}
 
-            <div className="flex justify-between pt-6 border-t">
-              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
                 {t('common.previous')}
-              </Button>
-              <div className="flex gap-2">
+              </OpsActionButton>
+              <div className="flex gap-3">
                 {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!permission.canCreate}
+                  >
                     {t('common.next')}
-                  </Button>
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 ) : (
-                  <Button type="button" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={
+                      !permission.canCreate
+                      || createMutation.isPending
+                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                    }
+                  >
                     {createMutation.isPending ? t('common.saving') : t('common.save')}
-                  </Button>
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 )}
               </div>
             </div>
-            </fieldset>
-          </form>
-        </Form>
-      </FormPageShell>
-    </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

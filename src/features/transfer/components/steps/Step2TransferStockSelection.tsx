@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Product } from '@/features/shared';
 import type { SelectedTransferStockItem } from '../../types/transfer';
@@ -17,6 +18,7 @@ interface Step2TransferStockSelectionProps {
   onToggleItem: (item: Product) => void;
   onUpdateItem: (itemId: string, updates: Partial<SelectedTransferStockItem>) => void;
   onRemoveItem: (itemId: string) => void;
+  variant?: 'default' | 'ops';
 }
 
 export function Step2TransferStockSelection({
@@ -24,11 +26,13 @@ export function Step2TransferStockSelection({
   onToggleItem,
   onUpdateItem,
   onRemoveItem,
+  variant = 'default',
 }: Step2TransferStockSelectionProps): ReactElement {
   const { t } = useTranslation(['transfer', 'common']);
   const [searchStocks, setSearchStocks] = useState('');
   const [searchSelected, setSearchSelected] = useState('');
   const [activeTab, setActiveTab] = useState<'stocks' | 'selected'>('stocks');
+  const isOps = variant === 'ops';
   const stockListRefs = useRef<Array<HTMLDivElement | null>>([]);
   const productsQuery = useInfiniteQuery({
     queryKey: ['transfer', 'products', searchStocks],
@@ -82,20 +86,28 @@ export function Step2TransferStockSelection({
   };
 
   return (
-    <Card className="flex flex-col">
+    <div className={cn(isOps && 'wms-ops-form wms-ops-list')}>
+    <Card className={cn('flex flex-col', isOps && 'wms-ops-order-step')}>
       <CardContent className="flex-1 overflow-hidden p-0">
         <div className="lg:hidden">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as 'stocks' | 'selected')}
-            className="h-full flex flex-col"
+            className="flex h-full flex-col"
           >
-            <div className="px-4 border-b">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="stocks" className="w-full">
+            <div className={cn('border-b px-4 py-2', isOps && 'wms-ops-order-step__mobile-tabs')}>
+              <TabsList
+                className={cn(
+                  'grid w-full grid-cols-2',
+                  isOps && 'wms-ops-tabs wms-ops-step-tabs',
+                  isOps && (activeTab === 'stocks' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock'),
+                )}
+              >
+                {isOps ? <span className="wms-ops-tab-indicator wms-ops-step-tab-indicator" aria-hidden /> : null}
+                <TabsTrigger value="stocks" className={cn('w-full', isOps && 'wms-ops-tab')}>
                   {t('transfer.step2.stocks')}
                 </TabsTrigger>
-                <TabsTrigger value="selected" className="w-full">
+                <TabsTrigger value="selected" className={cn('w-full', isOps && 'wms-ops-tab')}>
                   {t('transfer.step2.selectedItems')}
                 </TabsTrigger>
               </TabsList>
@@ -130,8 +142,13 @@ export function Step2TransferStockSelection({
           </Tabs>
         </div>
 
-        <div className="hidden min-h-[560px] lg:grid lg:grid-cols-[32%_1fr]">
-          <div className="flex min-h-0 flex-col border-r">
+        <div
+          className={cn(
+            'hidden min-h-[560px] lg:grid lg:grid-cols-[32%_1fr]',
+            isOps && 'lg:divide-x lg:divide-[color-mix(in_oklab,var(--wms-ops-accent)_18%,var(--wms-ops-card-border))]',
+          )}
+        >
+          <div className={cn('flex min-h-0 flex-col', !isOps && 'border-r')}>
             <StockListPane
               t={t}
               listRef={(element) => {
@@ -162,6 +179,7 @@ export function Step2TransferStockSelection({
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
 

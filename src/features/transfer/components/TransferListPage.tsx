@@ -6,12 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -46,6 +45,18 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'createdDate', type: 'date', labelKey: 'transfer.list.createdDate' },
 ];
 
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  id: 8,
+  documentNo: 14,
+  documentDate: 12,
+  customerCode: 12,
+  customerName: 14,
+  sourceWarehouse: 12,
+  targetWarehouse: 12,
+  documentType: 10,
+  createdDate: 14,
+};
+
 function mapSortBy(value: TransferColumnKey): string {
   switch (value) {
     case 'id':
@@ -70,46 +81,79 @@ function mapSortBy(value: TransferColumnKey): string {
   }
 }
 
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+function formatDateTime(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export function TransferListPage(): ReactElement {
   const { t } = useTranslation(['transfer', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.transfer');
+  const pageKey = 'transfer-list';
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<TransferHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<TransferColumnKey>({
-    pageKey: 'transfer-list',
+    pageKey,
     defaultSortBy: 'createdDate',
     defaultSortDirection: 'desc',
     mapSortBy,
   });
 
-  useEffect(() => {
-    setPageTitle(t('transfer.list.title'));
-    return () => setPageTitle(null);
-  }, [setPageTitle, t]);
-
   const columns = useMemo<PagedDataGridColumn<TransferColumnKey>[]>(
     () => [
-      { key: 'id', label: t('transfer.list.id') },
-      { key: 'documentNo', label: t('transfer.list.documentNo') },
-      { key: 'documentDate', label: t('transfer.list.documentDate') },
-      { key: 'customerCode', label: t('transfer.list.customerCode') },
-      { key: 'customerName', label: t('transfer.list.customerName') },
-      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse') },
-      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse') },
-      { key: 'documentType', label: t('transfer.list.documentType') },
-      { key: 'createdDate', label: t('transfer.list.createdDate') },
-      { key: 'actions', label: t('goodsReceipt.report.actions'), sortable: false },
+      {
+        key: 'id',
+        label: t('transfer.list.id'),
+        headClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+        cellClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+      },
+      { key: 'documentNo', label: t('transfer.list.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'documentDate', label: t('transfer.list.documentDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'customerCode', label: t('transfer.list.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'customerName', label: t('transfer.list.customerName'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'sourceWarehouse', label: t('transfer.list.sourceWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'targetWarehouse', label: t('transfer.list.targetWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'documentType', label: t('transfer.list.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'createdDate', label: t('transfer.list.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'actions', label: t('common.actions'), sortable: false },
     ],
     [t],
   );
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey: 'transfer-list',
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
+    pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useTransferHeadersPaged(pagedGrid.queryParams);
@@ -129,24 +173,24 @@ export function TransferListPage(): ReactElement {
     },
   });
 
-  const formatDate = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
+  useEffect(() => {
+    setPageTitle(t('transfer.list.title'));
+    return () => setPageTitle(null);
+  }, [setPageTitle, t]);
 
-  const formatDateTime = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const getCellText = (row: TransferHeader, key: TransferColumnKey): string | undefined => {
+    switch (key) {
+      case 'id': return String(row.id);
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'customerCode': return row.customerCode || '-';
+      case 'customerName': return row.customerName || '-';
+      case 'sourceWarehouse': return row.sourceWarehouse || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
   };
 
   const exportColumns = useMemo(
@@ -159,25 +203,17 @@ export function TransferListPage(): ReactElement {
     [columns, orderedVisibleColumns],
   );
 
-  const visibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as TransferColumnKey[],
-    [orderedVisibleColumns],
-  );
-
-  const exportRows = useMemo<Record<string, unknown>[]>(() => {
-    if (!data?.data) return [];
-    return data.data.map((item) => ({
-      id: item.id,
-      documentNo: item.documentNo || '-',
-      documentDate: formatDate(item.documentDate),
-      customerCode: item.customerCode || '-',
-      customerName: item.customerName || '-',
-      sourceWarehouse: item.sourceWarehouse || '-',
-      targetWarehouse: item.targetWarehouse || '-',
-      documentType: item.documentType || '-',
-      createdDate: formatDateTime(item.createdDate),
-    }));
-  }, [data?.data]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
+    id: item.id,
+    documentNo: item.documentNo || '-',
+    documentDate: formatDate(item.documentDate),
+    customerCode: item.customerCode || '-',
+    customerName: item.customerName || '-',
+    sourceWarehouse: item.sourceWarehouse || '-',
+    targetWarehouse: item.targetWarehouse || '-',
+    documentType: item.documentType || '-',
+    createdDate: formatDateTime(item.createdDate),
+  })), [data?.data]);
 
   const renderSortIcon = (columnKey: TransferColumnKey): ReactElement | null => {
     if (columnKey !== pagedGrid.sortBy) return null;
@@ -193,133 +229,159 @@ export function TransferListPage(): ReactElement {
     totalCount: range.total,
   });
 
+  const renderDocumentNo = (row: TransferHeader): ReactElement => (
+    <div className="space-y-1">
+      <span className="font-medium font-mono text-xs">{row.documentNo || '-'}</span>
+      {row.businessContext === 'BilginogluHakEdis' ? (
+        <Badge className="rounded-xl border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-50">
+          {t(`transfer.businessContext.${row.businessContextStep || 'BilginogluHakEdis'}`, {
+            defaultValue: t('transfer.businessContext.BilginogluHakEdis'),
+          })}
+        </Badge>
+      ) : null}
+    </div>
+  );
+
   return (
-    <div className="crm-page space-y-6">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('transfer.list.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<TransferHeader, TransferColumnKey>
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={data?.data ?? []}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'id':
-                  return <span className="font-medium">{row.id}</span>;
-                case 'documentNo':
-                  return (
-                    <div className="space-y-1">
-                      <div className="font-medium">{row.documentNo || '-'}</div>
-                      {row.businessContext === 'BilginogluHakEdis' ? (
-                        <Badge className="rounded-xl border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-50">
-                          {t(`transfer.businessContext.${row.businessContextStep || 'BilginogluHakEdis'}`, {
-                            defaultValue: t('transfer.businessContext.BilginogluHakEdis'),
-                          })}
-                        </Badge>
-                      ) : null}
-                    </div>
-                  );
-                case 'documentDate':
-                  return formatDate(row.documentDate);
-                case 'customerCode':
-                  return row.customerCode || '-';
-                case 'customerName':
-                  return row.customerName || '-';
-                case 'sourceWarehouse':
-                  return row.sourceWarehouse || '-';
-                case 'targetWarehouse':
-                  return row.targetWarehouse || '-';
-                case 'documentType':
-                  return <Badge variant="outline">{row.documentType || '-'}</Badge>;
-                case 'createdDate':
-                  return formatDateTime(row.createdDate);
-                case 'actions':
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={(columnKey) => {
-              if (columnKey === 'actions') return;
-              pagedGrid.handleSort(columnKey);
-            }}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('transfer.list.error')}
-            emptyText={t('transfer.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
-            actionsHeaderLabel={t('goodsReceipt.report.actions')}
-            renderActionsCell={(row) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedHeaderId(row.id)} disabled={!permission.canView}>
-                  <Eye className="size-4" />
-                  <span className="ml-2">{t('transfer.list.viewDetails')}</span>
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => navigate(`/transfer/edit/${row.id}`)} disabled={!permission.canUpdate || row.isCompleted}>
-                  <Pencil className="size-4" />
-                  <span className="ml-2">{t('common.edit')}</span>
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                  <Trash2 className="size-4" />
-                  <span className="ml-2">{t('common.delete')}</span>
-                </Button>
-              </div>
-            )}
-            pageSize={pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={data?.totalPages ?? 1}
-            hasPreviousPage={data?.hasPreviousPage ?? false}
-            hasNextPage={data?.hasNextPage ?? false}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey: 'transfer-list',
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'transfer-list',
-              exportColumns,
-              exportRows,
-              filterColumns: advancedFilterColumns,
-              defaultFilterColumn: 'documentNo',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              translationNamespace: 'common',
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              search: {
-                ...pagedGrid.searchConfig,
-                placeholder: t('transfer.list.searchPlaceholder'),
-                className: 'h-9 w-full md:w-64',
-              },
-              leftSlot: (
-                <VoiceSearchButton
-                  onResult={pagedGrid.handleVoiceSearch}
-                  size="sm"
-                  variant="outline"
-                />
-              ),
-            }}
-          />
-        </CardContent>
-      </Card>
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('transfer.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('transfer.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('transfer.list.title')}
+        description={t('transfer.list.subtitle')}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
+        <PagedDataGrid<TransferHeader, TransferColumnKey>
+          variant="ops"
+          columns={columns}
+          visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as TransferColumnKey[]}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
+          rows={data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => ({
+            id: <span className="wms-ops-table-id-value">{row.id}</span>,
+            documentNo: renderDocumentNo(row),
+            documentDate: <span className="font-mono text-xs">{formatDate(row.documentDate)}</span>,
+            customerCode: row.customerCode || '-',
+            customerName: row.customerName || '-',
+            sourceWarehouse: row.sourceWarehouse || '-',
+            targetWarehouse: row.targetWarehouse || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{row.documentType || '-'}</Badge>,
+            createdDate: <span className="font-mono text-xs">{formatDateTime(row.createdDate)}</span>,
+          } as Record<Exclude<TransferColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<TransferColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey === 'actions') return;
+            pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={Boolean(error)}
+          errorText={t('transfer.list.error')}
+          emptyText={t('transfer.list.noData')}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(row) => (
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('transfer.list.viewDetails')}
+                title={t('transfer.list.viewDetails')}
+                onClick={() => setSelectedHeaderId(row.id)}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('common.edit')}
+                title={t('common.edit')}
+                onClick={() => navigate(`/transfer/edit/${row.id}`)}
+                disabled={!permission.canUpdate || row.isCompleted}
+              >
+                <Pencil className="size-3" aria-hidden />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => setHeaderToDelete(row)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="size-3" aria-hidden />
+              </Button>
+            </div>
+          )}
+          pageSize={pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={data?.totalPages ?? 1}
+          hasPreviousPage={data?.hasPreviousPage ?? false}
+          hasNextPage={data?.hasNextPage ?? false}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: pageKey,
+            exportColumns,
+            exportRows,
+            filterColumns: advancedFilterColumns,
+            defaultFilterColumn: 'documentNo',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            translationNamespace: 'common',
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              ...pagedGrid.searchConfig,
+              placeholder: t('transfer.list.searchPlaceholder'),
+            },
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
+          }}
+        />
+      </OpsListPageShell>
 
       <TransferDetailDialog
         headerId={selectedHeaderId ?? 0}
@@ -337,6 +399,6 @@ export function TransferListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

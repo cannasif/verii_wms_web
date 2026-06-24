@@ -1,11 +1,9 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { OpsActionButton, OpsListPageShell } from '@/components/shared';
 import { useCollectedBarcodes } from '../hooks/useCollectedBarcodes';
 import { useDeleteRoute } from '../hooks/useDeleteRoute';
 import { ArrowLeft, Loader2, Trash2, ExternalLink } from 'lucide-react';
@@ -22,12 +20,12 @@ export function CollectedBarcodesPage(): ReactElement {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState<{ routeId: number; packageNo: string | null } | null>(null);
 
-  const handleDeleteClick = (routeId: number, packageNo: string | null) => {
+  const handleDeleteClick = (routeId: number, packageNo: string | null): void => {
     setSelectedRoute({ routeId, packageNo });
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = (): void => {
     if (!selectedRoute) return;
 
     deleteRouteMutation.mutate(selectedRoute.routeId, {
@@ -48,7 +46,7 @@ export function CollectedBarcodesPage(): ReactElement {
 
   const allCollectedBarcodes = useMemo(() => {
     if (!collectedData?.data) return [];
-    
+
     return collectedData.data.flatMap((item) =>
       item.routes.map((route) => ({
         routeId: route.id,
@@ -73,172 +71,182 @@ export function CollectedBarcodesPage(): ReactElement {
   }, [collectedData?.data]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] overflow-hidden">
-      <div className="shrink-0 p-4 space-y-4 border-b bg-background">
-        <div className="flex items-center justify-between gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/transfer/collection/${headerId}`)}>
-            <ArrowLeft className="size-4 mr-2" />
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('transfer.assignedList.title')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>#{headerIdNum}</span>
+          </>
+        }
+        title={t('transfer.collection.viewCollected')}
+        description={`${t('transfer.collection.totalCollected')} ${allCollectedBarcodes.length} ${t('transfer.collection.itemsCollected')}`}
+        actions={(
+          <OpsActionButton
+            type="button"
+            variant="secondary"
+            onClick={() => navigate(`/transfer/collection/${headerId}`)}
+          >
+            <ArrowLeft className="size-3.5 shrink-0" aria-hidden />
             {t('common.back')}
-          </Button>
-          <div className="text-sm text-muted-foreground">
-            {t('transfer.collection.totalCollected')} {allCollectedBarcodes.length} {t('transfer.collection.itemsCollected')}
+          </OpsActionButton>
+        )}
+      >
+        {isLoading ? (
+          <div className="wms-ops-panel-empty wms-ops-panel-empty--detail">
+            <Loader2 className="size-7 animate-spin" aria-hidden />
+            <p>{t('common.loading')}</p>
           </div>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4">
-        <Card>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        ) : allCollectedBarcodes.length > 0 ? (
+          <div className="wms-ops-prelabel-lines">
+            <div className="wms-ops-prelabel-lines__head">
+              <div className="wms-ops-prelabel-panel__title text-[0.68rem]">
+                {t('transfer.collection.viewCollected')}
               </div>
-            ) : allCollectedBarcodes.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('transfer.collection.barcode')}</TableHead>
-                      <TableHead>{t('transfer.collection.stockCode')}</TableHead>
-                      <TableHead>{t('transfer.collection.stockName')}</TableHead>
-                      <TableHead>{t('transfer.collection.yapKod')}</TableHead>
-                      <TableHead>{t('transfer.collection.yapAcik')}</TableHead>
-                      <TableHead>{t('transfer.collection.serialNo')}</TableHead>
-                      <TableHead>{t('transfer.collection.packageNo')}</TableHead>
-                      <TableHead>{t('transfer.collection.packageHeaderId')}</TableHead>
-                      <TableHead className="text-right">{t('transfer.collection.quantity')}</TableHead>
-                      <TableHead className="text-right">{t('common.actions')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {allCollectedBarcodes.map((item) => (
-                      <TableRow key={item.routeId}>
-                        <TableCell>
-                          <Badge variant="outline" className="font-mono text-xs">
-                            {item.barcode}
+              <span className="wms-ops-code-badge">
+                {allCollectedBarcodes.length} {t('transfer.collection.itemsCollected')}
+              </span>
+            </div>
+            <div className="wms-ops-prelabel-lines__table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{t('transfer.collection.barcode')}</th>
+                    <th>{t('transfer.collection.stockCode')}</th>
+                    <th>{t('transfer.collection.stockName')}</th>
+                    <th>{t('transfer.collection.yapKod')}</th>
+                    <th>{t('transfer.collection.yapAcik')}</th>
+                    <th>{t('transfer.collection.serialNo')}</th>
+                    <th>{t('transfer.collection.packageNo')}</th>
+                    <th>{t('transfer.collection.packageHeaderId')}</th>
+                    <th className="text-right">{t('transfer.collection.quantity')}</th>
+                    <th className="text-right">{t('common.actions')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allCollectedBarcodes.map((item) => (
+                    <tr key={item.routeId}>
+                      <td>
+                        <Badge variant="outline" className="wms-ops-code-badge font-mono text-xs">
+                          {item.barcode}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge variant="secondary" className="wms-ops-code-badge text-xs">{item.stockCode}</Badge>
+                      </td>
+                      <td className="max-w-xs truncate">{item.stockName}</td>
+                      <td>
+                        {item.yapKod ? (
+                          <Badge variant="outline" className="wms-ops-code-badge text-xs">
+                            {item.yapKod}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs">{item.stockCode}</Badge>
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate text-sm">{item.stockName}</TableCell>
-                        <TableCell>
-                          {item.yapKod ? (
-                            <Badge variant="outline" className="text-xs">
-                              {item.yapKod}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="max-w-xs">
-                          {item.yapAcik ? (
-                            <p className="text-xs text-muted-foreground truncate" title={item.yapAcik}>
-                              {item.yapAcik}
-                            </p>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.serialNo ? (
-                            <Badge variant="outline" className="font-mono text-xs">
-                              {item.serialNo}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.packageNo ? (
-                            <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 text-xs">
-                              {item.packageNo}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.packageHeaderId ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-medium text-foreground">{item.packageHeaderId}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 hover:bg-accent"
-                                onClick={() => navigate(`/package/detail/${item.packageHeaderId}`)}
-                                title={t('transfer.collection.viewPackage')}
-                              >
-                                <ExternalLink className="size-3.5 text-muted-foreground hover:text-foreground" />
-                              </Button>
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">{item.quantity}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteClick(item.routeId, item.packageNo)}
-                            disabled={deleteRouteMutation.isPending}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="size-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  {t('transfer.collection.noCollectedBarcodes')}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td className="max-w-xs">
+                        {item.yapAcik ? (
+                          <span className="truncate text-xs text-muted-foreground" title={item.yapAcik}>
+                            {item.yapAcik}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td>
+                        {item.serialNo ? (
+                          <Badge variant="outline" className="wms-ops-code-badge font-mono text-xs">
+                            {item.serialNo}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td>
+                        {item.packageNo ? (
+                          <Badge variant="default" className="wms-ops-status-badge text-xs">
+                            {item.packageNo}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td>
+                        {item.packageHeaderId ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="wms-ops-table-id-value">{item.packageHeaderId}</span>
+                            <OpsActionButton
+                              type="button"
+                              variant="secondary"
+                              className="!min-h-7 !px-2"
+                              onClick={() => navigate(`/package/detail/${item.packageHeaderId}`)}
+                              title={t('transfer.collection.viewPackage')}
+                            >
+                              <ExternalLink className="size-3" aria-hidden />
+                            </OpsActionButton>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
+                      <td className="text-right font-semibold">{item.quantity}</td>
+                      <td className="text-right">
+                        <OpsActionButton
+                          type="button"
+                          variant="secondary"
+                          className="!min-h-8 !border-destructive/30 !text-destructive hover:!bg-destructive/10"
+                          onClick={() => handleDeleteClick(item.routeId, item.packageNo)}
+                          disabled={deleteRouteMutation.isPending}
+                          aria-label={t('common.delete')}
+                        >
+                          <Trash2 className="size-3.5" aria-hidden />
+                        </OpsActionButton>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="wms-ops-panel-empty wms-ops-panel-empty--detail">
+            <p className="wms-ops-panel-empty__title">{t('transfer.collection.noCollectedBarcodes')}</p>
+          </div>
+        )}
+      </OpsListPageShell>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('transfer.collection.deleteConfirmTitle')}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-md gap-0 overflow-hidden border-0 p-0 shadow-none">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">
+              {t('transfer.collection.deleteConfirmTitle')}
+            </DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
               {selectedRoute?.packageNo && selectedRoute.packageNo !== '-'
-                ? t(
-                    'transfer.collection.deleteConfirmWithPackage'
-                  )
-                : t(
-                    'transfer.collection.deleteConfirmWithoutPackage'
-                  )}
+                ? t('transfer.collection.deleteConfirmWithPackage')
+                : t('transfer.collection.deleteConfirmWithoutPackage')}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+          <DialogFooter className="gap-2 border-t px-6 py-4 sm:gap-2">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
               {t('common.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
+            </OpsActionButton>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              className="!border-destructive/40 !bg-destructive hover:!bg-destructive/90"
               onClick={handleDeleteConfirm}
               disabled={deleteRouteMutation.isPending}
             >
               {deleteRouteMutation.isPending ? (
-                <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                  {t('common.loading')}
-                </>
-              ) : (
-                t('common.delete')
-              )}
-            </Button>
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : null}
+              {t('common.delete')}
+            </OpsActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

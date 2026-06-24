@@ -1,17 +1,15 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, GitBranch, Link2, Plus, RefreshCw, ShieldCheck, Trash2, Workflow } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -43,6 +41,16 @@ import {
 } from '../types/transfer-chain.types';
 
 type ChainColumnKey = 'code' | 'name' | 'status' | 'chainType' | 'sourceDocument' | 'progress' | 'createdDate' | 'actions';
+
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  code: 12,
+  name: 16,
+  status: 10,
+  chainType: 10,
+  sourceDocument: 14,
+  progress: 10,
+  createdDate: 14,
+};
 
 const emptyChainForm: CreateTransferChainDto = {
   code: '',
@@ -150,19 +158,23 @@ export function TransferChainListPage(): ReactElement {
   ], [t]);
 
   const columns = useMemo<PagedDataGridColumn<ChainColumnKey>[]>(() => [
-    { key: 'code', label: t('table.code') },
-    { key: 'name', label: t('table.name') },
-    { key: 'status', label: t('table.status') },
-    { key: 'chainType', label: t('table.type') },
-    { key: 'sourceDocument', label: t('table.sourceDocument'), sortable: false },
-    { key: 'progress', label: t('table.progress'), sortable: false },
-    { key: 'createdDate', label: t('table.createdDate') },
+    { key: 'code', label: t('table.code'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'name', label: t('table.name'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'status', label: t('table.status'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'chainType', label: t('table.type'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'sourceDocument', label: t('table.sourceDocument'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'progress', label: t('table.progress'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('table.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     { key: 'actions', label: t('common:actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
+
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, columnWidths, setColumnOrder, setVisibleColumns, resizeColumnPair } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error } = useTransferChainsQuery(pagedGrid.queryParams);
@@ -197,13 +209,28 @@ export function TransferChainListPage(): ReactElement {
     setChainForm({ ...emptyChainForm, code: `CHAIN-${Date.now()}` });
   }, [editingItem, formOpen]);
 
-  const activeCount = useMemo(() => (data?.data ?? []).filter((item) => item.status === TRANSFER_CHAIN_STATUSES.active).length, [data?.data]);
-  const completedCount = useMemo(() => (data?.data ?? []).filter((item) => item.status === TRANSFER_CHAIN_STATUSES.completed).length, [data?.data]);
-  const totalStepCount = useMemo(() => (data?.data ?? []).reduce((sum, item) => sum + item.stepCount, 0), [data?.data]);
-
   const range = getPagedRange(data);
-  const paginationInfoText = `${range.from}-${range.to} / ${range.total}`;
+  const paginationInfoText = t('common:paginationInfo', {
+    current: range.from,
+    total: range.to,
+    totalCount: range.total,
+    defaultValue: `${range.from}-${range.to} / ${range.total}`,
+  });
   const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as ChainColumnKey[], [orderedVisibleColumns]);
+
+  const getCellText = (row: TransferChainPagedRowDto, key: ChainColumnKey): string | undefined => {
+    switch (key) {
+      case 'code': return row.code;
+      case 'name': return row.name;
+      case 'status': return labelStatus(row.status);
+      case 'chainType': return row.chainType;
+      case 'sourceDocument':
+        return row.sourceDocumentType ? `${row.sourceDocumentType}${row.sourceDocumentId ? ` #${row.sourceDocumentId}` : ''}` : '-';
+      case 'progress': return `${row.completedStepCount}/${row.stepCount}`;
+      case 'createdDate': return formatDate(row.createdDate, locale);
+      default: return undefined;
+    }
+  };
   const exportColumns = useMemo(
     () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })),
     [columns, orderedVisibleColumns],
@@ -291,158 +318,169 @@ export function TransferChainListPage(): ReactElement {
   };
 
   return (
-    <div className="w-full space-y-6 crm-page">
-      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('title'), isActive: true }]} />
-
-      <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-linear-to-br from-slate-950 via-cyan-950 to-emerald-950 p-6 text-white shadow-xl shadow-cyan-950/20">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-          <div className="space-y-3">
-            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.22em] text-cyan-100">
-              <GitBranch className="size-4" />
-              {t('hero.eyebrow')}
-            </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{t('title')}</h1>
-              <p className="mt-2 max-w-3xl text-sm font-medium text-cyan-50/80">
-                {t('hero.description')}
-              </p>
-            </div>
-          </div>
-          {permission.canCreate ? (
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('breadcrumb.module')}</span>
+          </>
+        }
+        title={t('title')}
+        description={t('hero.description')}
+        actions={
+          permission.canCreate ? (
             <Button
+              type="button"
               onClick={() => { setEditingItem(null); setFormOpen(true); }}
-              className="h-11 rounded-2xl border border-white/20 bg-white text-slate-950 shadow-lg hover:bg-cyan-50"
+              className="wms-ops-list-toolbar-btn"
             >
               <Plus className="mr-2 size-4" />
               {t('hero.create')}
             </Button>
-          ) : null}
-        </div>
-
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-            <div className="flex items-center gap-3">
-              <Workflow className="size-5 text-cyan-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.active')}</p><p className="text-2xl font-black">{activeCount}</p></div>
+          ) : null
+        }
+      >
+        <PagedDataGrid<TransferChainPagedRowDto, ChainColumnKey>
+          variant="ops"
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
+          rows={data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(item, columnKey) => ({
+            code: <span className="font-mono text-xs font-medium">{item.code}</span>,
+            name: (
+              <button
+                type="button"
+                className="font-medium hover:underline"
+                onClick={() => openDetail(item.id)}
+              >
+                {item.name}
+              </button>
+            ),
+            status: statusBadge(item.status, labelStatus(item.status)),
+            chainType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.chainType}</Badge>,
+            sourceDocument: item.sourceDocumentType
+              ? <span className="font-mono text-xs">{item.sourceDocumentType}{item.sourceDocumentId ? ` #${item.sourceDocumentId}` : ''}</span>
+              : '-',
+            progress: <span className="font-semibold">{item.completedStepCount}/{item.stepCount}</span>,
+            createdDate: <span className="font-mono text-xs">{formatDate(item.createdDate, locale)}</span>,
+          } as Record<Exclude<ChainColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<ChainColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={!!error}
+          errorText={error instanceof Error ? error.message : undefined}
+          emptyText={t('common:noData')}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={t('common:actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(item) => (
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('table.detail')}
+                title={t('table.detail')}
+                onClick={() => openDetail(item.id)}
+              >
+                <Eye className="size-3" aria-hidden />
+              </Button>
+              {permission.canUpdate ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  aria-label={t('common:edit')}
+                  title={t('common:edit')}
+                  onClick={async () => {
+                    const chain = await transferChainApi.getById(item.id);
+                    setEditingItem(chain);
+                    setFormOpen(true);
+                  }}
+                >
+                  <Pencil className="size-3" aria-hidden />
+                </Button>
+              ) : null}
+              {permission.canDelete ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                  aria-label={t('common:delete')}
+                  title={t('common:delete')}
+                  onClick={() => setDeleteItem(item)}
+                >
+                  <Trash2 className="size-3" aria-hidden />
+                </Button>
+              ) : null}
             </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="size-5 text-emerald-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.completed')}</p><p className="text-2xl font-black">{completedCount}</p></div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-            <div className="flex items-center gap-3">
-              <Link2 className="size-5 text-amber-200" />
-              <div><p className="text-xs font-black uppercase tracking-widest text-cyan-100/70">{t('stats.totalSteps')}</p><p className="text-2xl font-black">{totalStepCount}</p></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Card>
-        <CardContent className="pt-6">
-          <PagedDataGrid<TransferChainPagedRowDto, ChainColumnKey>
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={data?.data ?? []}
-            rowKey={(row) => row.id}
-            renderCell={(item, columnKey) => {
-              switch (columnKey) {
-                case 'code':
-                  return <span className="font-mono text-xs font-bold text-cyan-700 dark:text-cyan-300">{item.code}</span>;
-                case 'name':
-                  return <button type="button" className="text-left font-semibold text-slate-900 hover:text-cyan-700 dark:text-white" onClick={() => openDetail(item.id)}>{item.name}</button>;
-                case 'status':
-                  return statusBadge(item.status, labelStatus(item.status));
-                case 'chainType':
-                  return <Badge variant="outline">{item.chainType}</Badge>;
-                case 'sourceDocument':
-                  return item.sourceDocumentType ? <span className="text-sm">{item.sourceDocumentType} {item.sourceDocumentId ? `#${item.sourceDocumentId}` : ''}</span> : '-';
-                case 'progress':
-                  return <span className="font-semibold">{item.completedStepCount}/{item.stepCount}</span>;
-                case 'createdDate':
-                  return formatDate(item.createdDate, locale);
-                case 'actions':
-                  return (
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button size="sm" variant="outline" className="rounded-xl" onClick={() => openDetail(item.id)}>{t('table.detail')}</Button>
-                      {permission.canUpdate ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-xl"
-                          onClick={async () => {
-                            const chain = await transferChainApi.getById(item.id);
-                            setEditingItem(chain);
-                            setFormOpen(true);
-                          }}
-                        >
-                          {t('common:edit')}
-                        </Button>
-                      ) : null}
-                      {permission.canDelete ? (
-                        <Button size="sm" variant="outline" className="rounded-xl text-rose-600" onClick={() => setDeleteItem(item)}>{t('common:delete')}</Button>
-                      ) : null}
-                    </div>
-                  );
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={pagedGrid.handleSort}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={!!error}
-            errorText={error instanceof Error ? error.message : undefined}
-            emptyText={t('common:noData')}
-            pageSize={data?.pageSize ?? pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={Math.max(data?.totalPages ?? 1, 1)}
-            hasPreviousPage={Boolean(data?.hasPreviousPage)}
-            hasNextPage={Boolean(data?.hasNextPage)}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common:previous')}
-            nextLabel={t('common:next')}
-            paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey,
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: 'transfer-chain',
-              exportColumns,
-              exportRows,
-              filterColumns: advancedFilterColumns,
-              defaultFilterColumn: 'Code',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              search: {
-                value: pagedGrid.searchInput,
-                onValueChange: pagedGrid.searchConfig.onValueChange,
-                onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: t('common:search'),
-              },
-              refresh: { onRefresh: handleRefresh, isLoading, label: t('common:refresh') },
-              leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
-            }}
-          />
-        </CardContent>
-      </Card>
+          )}
+          pageSize={data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={Math.max(data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(data?.hasPreviousPage)}
+          hasNextPage={Boolean(data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common:previous')}
+          nextLabel={t('common:next')}
+          paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: 'transfer-chain',
+            exportColumns,
+            exportRows,
+            filterColumns: advancedFilterColumns,
+            defaultFilterColumn: 'Code',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('common:search'),
+            },
+            refresh: { onRefresh: handleRefresh, isLoading, label: t('common:refresh') },
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
+          }}
+        />
+      </OpsListPageShell>
 
       <Dialog open={formOpen} onOpenChange={(next) => { setFormOpen(next); if (!next) setEditingItem(null); }}>
         <DialogContent className="max-w-2xl">
@@ -587,7 +625,7 @@ export function TransferChainListPage(): ReactElement {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
 

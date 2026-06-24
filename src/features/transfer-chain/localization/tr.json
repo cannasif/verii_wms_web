@@ -1,7 +1,9 @@
 {
   "title": "Transfer Zincirleri",
   "breadcrumb": {
-    "operations": "Operasyonlar"
+    "operations": "Operasyonlar",
+    "parent": "OPERASYON_OP",
+    "module": "TRANSFER_ZINCIR"
   },
   "hero": {
     "eyebrow": "WT + PT ortak akış",
@@ -67,7 +69,7 @@
     "status": "Durum",
     "chainType": "Zincir Tipi",
     "sourceDocumentType": "Kaynak Belge Tipi",
-    "sourceDocumentTypePlaceholder": "Shipment, Production...",
+    "sourceDocumentTypePlaceholder": "Sevkiyat, Üretim...",
     "sourceDocumentId": "Kaynak Belge Id",
     "descriptionLabel": "Açıklama"
   },
