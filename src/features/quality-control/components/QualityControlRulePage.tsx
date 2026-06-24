@@ -3,21 +3,18 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsFormPageShell, OpsInput, OpsTextarea, OpsToggleField } from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { StockLookup } from '@/features/shared/api/lookup-types';
 import { useUIStore } from '@/stores/ui-store';
 import { qualityControlApi } from '../api/quality-control.api';
 import type { CreateInventoryQualityRuleDto, InventoryQualityRuleDto } from '../types/quality-control.types';
 import { buildStockLabel, createEmptyQualityRule } from './quality-control/shared';
+import { QcOpsField, QcOpsGuidance } from './quality-control/ops-form-ui';
 
 interface LookupPageArgs {
   pageNumber: number;
@@ -136,23 +133,26 @@ export function QualityControlRulePage(): ReactElement {
   }
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('qualityControl.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('qualityControl.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('qualityControl.rules.title')}
+      description={t('qualityControl.rules.description')}
+    >
+      <div className="wms-ops-form space-y-6">
+        <QcOpsGuidance
+          title={t('qualityControl.rules.guidanceTitle')}
+          lines={[t('qualityControl.rules.guidance1'), t('qualityControl.rules.guidance2')]}
+        />
 
-      <FormPageShell title={t('qualityControl.rules.title')} description={t('qualityControl.rules.description')}>
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('qualityControl.rules.guidanceTitle')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('qualityControl.rules.guidance1')}</p>
-              <p>{t('qualityControl.rules.guidance2')}</p>
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t('qualityControl.rules.fields.scopeType')}</Label>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <QcOpsField label={t('qualityControl.rules.fields.scopeType')}>
+            <OpsFieldShell>
               <Select
                 value={formState.scopeType}
                 onValueChange={(value) => setFormState((prev) => ({
@@ -163,25 +163,29 @@ export function QualityControlRulePage(): ReactElement {
                   stockGroupName: value === 'StockGroup' ? prev.stockGroupName : '',
                 }))}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                   <SelectItem value="Stock">{t('qualityControl.rules.scopeTypes.stock')}</SelectItem>
                   <SelectItem value="StockGroup">{t('qualityControl.rules.scopeTypes.stockGroup')}</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
 
-            {formState.scopeType === 'Stock' ? (
-              <div className="space-y-2">
-                <Label>{t('qualityControl.rules.fields.stock')} *</Label>
+          {formState.scopeType === 'Stock' ? (
+            <QcOpsField label={t('qualityControl.rules.fields.stock')} required>
+              <OpsFieldShell className={stockDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
                 <PagedLookupDialog<StockLookup>
+                  variant="ops"
                   open={stockDialogOpen}
                   onOpenChange={setStockDialogOpen}
                   title={t('qualityControl.rules.stockLookup.title')}
-                  description={t('qualityControl.rules.stockLookup.description')}
                   value={stockSummary}
                   placeholder={t('qualityControl.rules.fields.stockPlaceholder')}
                   searchPlaceholder={t('qualityControl.rules.stockLookup.searchPlaceholder')}
+                  triggerClassName={OPS_FIELD_CLASS}
                   queryKey={['quality-control', 'rule-stocks']}
                   fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
                     lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
@@ -192,121 +196,119 @@ export function QualityControlRulePage(): ReactElement {
                     setSelectedStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
                   }}
                 />
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="stockGroupCode">{t('qualityControl.rules.fields.stockGroupCode')} *</Label>
-                <Input
-                  id="stockGroupCode"
-                  value={formState.stockGroupCode || ''}
-                  onChange={(event) => setFormState((prev) => ({ ...prev, stockGroupCode: event.target.value }))}
-                  placeholder={t('qualityControl.rules.fields.stockGroupCodePlaceholder')}
-                />
-              </div>
-            )}
+              </OpsFieldShell>
+            </QcOpsField>
+          ) : (
+            <QcOpsField label={t('qualityControl.rules.fields.stockGroupCode')} required>
+              <OpsInput
+                id="stockGroupCode"
+                value={formState.stockGroupCode || ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, stockGroupCode: event.target.value }))}
+                placeholder={t('qualityControl.rules.fields.stockGroupCodePlaceholder')}
+              />
+            </QcOpsField>
+          )}
 
-            {formState.scopeType === 'StockGroup' ? (
-              <div className="space-y-2 lg:col-span-2">
-                <Label htmlFor="stockGroupName">{t('qualityControl.rules.fields.stockGroupName')}</Label>
-                <Input
-                  id="stockGroupName"
-                  value={formState.stockGroupName || ''}
-                  onChange={(event) => setFormState((prev) => ({ ...prev, stockGroupName: event.target.value }))}
-                  placeholder={t('qualityControl.rules.fields.stockGroupNamePlaceholder')}
-                />
-              </div>
-            ) : null}
+          {formState.scopeType === 'StockGroup' ? (
+            <QcOpsField label={t('qualityControl.rules.fields.stockGroupName')} className="lg:col-span-2">
+              <OpsInput
+                id="stockGroupName"
+                value={formState.stockGroupName || ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, stockGroupName: event.target.value }))}
+                placeholder={t('qualityControl.rules.fields.stockGroupNamePlaceholder')}
+              />
+            </QcOpsField>
+          ) : null}
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.rules.fields.inspectionMode')}</Label>
+          <QcOpsField label={t('qualityControl.rules.fields.inspectionMode')}>
+            <OpsFieldShell>
               <Select value={formState.inspectionMode} onValueChange={(value) => setFormState((prev) => ({ ...prev, inspectionMode: value }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                   <SelectItem value="NoCheck">{t('qualityControl.rules.inspectionModes.noCheck')}</SelectItem>
                   <SelectItem value="QuickCheck">{t('qualityControl.rules.inspectionModes.quickCheck')}</SelectItem>
                   <SelectItem value="InspectionRequired">{t('qualityControl.rules.inspectionModes.inspectionRequired')}</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.rules.fields.onFailAction')}</Label>
+          <QcOpsField label={t('qualityControl.rules.fields.onFailAction')}>
+            <OpsFieldShell>
               <Select value={formState.onFailAction} onValueChange={(value) => setFormState((prev) => ({ ...prev, onFailAction: value }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                   <SelectItem value="Quarantine">{t('qualityControl.rules.failActions.quarantine')}</SelectItem>
                   <SelectItem value="Reject">{t('qualityControl.rules.failActions.reject')}</SelectItem>
                   <SelectItem value="ManagerApproval">{t('qualityControl.rules.failActions.managerApproval')}</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label htmlFor="minShelfLife">{t('qualityControl.rules.fields.minRemainingShelfLifeDays')}</Label>
-              <Input
-                id="minShelfLife"
-                type="number"
-                min={0}
-                value={formState.minRemainingShelfLifeDays ?? ''}
-                onChange={(event) => setFormState((prev) => ({ ...prev, minRemainingShelfLifeDays: event.target.value ? Number(event.target.value) : null }))}
-                placeholder="0"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="nearExpiry">{t('qualityControl.rules.fields.nearExpiryWarningDays')}</Label>
-              <Input
-                id="nearExpiry"
-                type="number"
-                min={0}
-                value={formState.nearExpiryWarningDays ?? ''}
-                onChange={(event) => setFormState((prev) => ({ ...prev, nearExpiryWarningDays: event.target.value ? Number(event.target.value) : null }))}
-                placeholder="0"
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {[
-              ['autoQuarantine', 'qualityControl.rules.fields.autoQuarantine'],
-              ['requireLot', 'qualityControl.rules.fields.requireLot'],
-              ['requireSerial', 'qualityControl.rules.fields.requireSerial'],
-              ['requireExpiry', 'qualityControl.rules.fields.requireExpiry'],
-              ['isActive', 'qualityControl.rules.fields.isActive'],
-            ].map(([field, labelKey]) => (
-              <div key={field} className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-1">
-                  <Label>{t(labelKey)}</Label>
-                </div>
-                <Switch
-                  checked={Boolean(formState[field as keyof CreateInventoryQualityRuleDto])}
-                  onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field]: checked }))}
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ruleDescription">{t('qualityControl.rules.fields.description')}</Label>
-            <Textarea
-              id="ruleDescription"
-              rows={4}
-              value={formState.description || ''}
-              onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))}
-              placeholder={t('qualityControl.rules.fields.descriptionPlaceholder')}
+          <QcOpsField label={t('qualityControl.rules.fields.minRemainingShelfLifeDays')}>
+            <OpsInput
+              id="minShelfLife"
+              type="number"
+              min={0}
+              value={formState.minRemainingShelfLifeDays ?? ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, minRemainingShelfLifeDays: event.target.value ? Number(event.target.value) : null }))}
+              placeholder="0"
             />
-          </div>
+          </QcOpsField>
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending || getByIdMutation.isPending}>
-              {isEdit ? t('common.update') : t('common.save')}
-            </Button>
-            <Button type="button" variant="outline" onClick={handleReset}>
-              {t('common.clear')}
-            </Button>
-          </div>
+          <QcOpsField label={t('qualityControl.rules.fields.nearExpiryWarningDays')}>
+            <OpsInput
+              id="nearExpiry"
+              type="number"
+              min={0}
+              value={formState.nearExpiryWarningDays ?? ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, nearExpiryWarningDays: event.target.value ? Number(event.target.value) : null }))}
+              placeholder="0"
+            />
+          </QcOpsField>
         </div>
-      </FormPageShell>
-    </div>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {([
+            ['autoQuarantine', 'qualityControl.rules.fields.autoQuarantine'],
+            ['requireLot', 'qualityControl.rules.fields.requireLot'],
+            ['requireSerial', 'qualityControl.rules.fields.requireSerial'],
+            ['requireExpiry', 'qualityControl.rules.fields.requireExpiry'],
+            ['isActive', 'qualityControl.rules.fields.isActive'],
+          ] as const).map(([field, labelKey]) => (
+            <OpsToggleField
+              key={field}
+              checked={Boolean(formState[field])}
+              onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field]: checked }))}
+              title={t(labelKey)}
+            />
+          ))}
+        </div>
+
+        <QcOpsField label={t('qualityControl.rules.fields.description')}>
+          <OpsTextarea
+            id="ruleDescription"
+            rows={4}
+            value={formState.description || ''}
+            onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))}
+            placeholder={t('qualityControl.rules.fields.descriptionPlaceholder')}
+          />
+        </QcOpsField>
+
+        <div className="wms-ops-actions flex flex-wrap gap-3 border-t pt-6">
+          <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending || getByIdMutation.isPending}>
+            {isEdit ? t('common.update') : t('common.save')}
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="secondary" onClick={handleReset}>
+            {t('common.clear')}
+          </OpsActionButton>
+        </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

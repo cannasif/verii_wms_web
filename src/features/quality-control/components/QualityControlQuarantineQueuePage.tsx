@@ -1,13 +1,13 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -57,6 +57,7 @@ function formatDecisionLabel(t: (key: string) => string, decision: string): stri
 
 export function QualityControlQuarantineQueuePage(): ReactElement {
   const { t } = useTranslation('common');
+  const location = useLocation();
   const { setPageTitle } = useUIStore();
   const pageKey = 'quality-control-quarantine-queue';
   const [selectedInspectionId, setSelectedInspectionId] = useState<number | null>(null);
@@ -78,6 +79,12 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  useEffect(() => {
+    setDialogOpen(false);
+    setSelectedInspectionId(null);
+    setActionNote('');
+  }, [location.pathname]);
+
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'documentType', label: t('qualityControl.quarantine.columns.documentType') },
     { key: 'documentNumber', label: t('qualityControl.quarantine.columns.documentNumber') },
@@ -89,12 +96,6 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
     { key: 'serialTrackedLineCount', label: t('qualityControl.quarantine.columns.serialTrackedLineCount') },
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
-
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
-    idColumnKey: 'documentType',
-  });
 
   const query = useQuery({
     queryKey: ['quality-control', 'quarantine', pagedGrid.queryParams],
@@ -137,11 +138,9 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
-  const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[], [orderedVisibleColumns]);
-  const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
-    key,
-    label: columns.find((column) => column.key === key)?.label ?? key,
-  })), [columns, orderedVisibleColumns]);
+  const exportColumns = useMemo(() => columns
+    .filter((column) => column.key !== 'actions')
+    .map((column) => ({ key: column.key, label: column.label })), [columns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
     (query.data?.data ?? []).map((row) => ({
       documentType: row.documentType,
@@ -184,15 +183,22 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <FormPageShell
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('qualityControl.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('qualityControl.breadcrumb.module')}</span>
+          </>
+        }
         title={t('qualityControl.quarantine.title')}
         description={t('qualityControl.quarantine.description')}
       >
         <PagedDataGrid<InventoryQualityQuarantinePagedRowDto, ColumnKey>
+          variant="ops"
           pageKey={pageKey}
           columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
           rows={query.data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, columnKey) => {
@@ -227,7 +233,7 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
           isError={Boolean(query.error)}
           errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
           emptyText={t('qualityControl.quarantine.empty')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          showActionsColumn
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(row) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
@@ -248,41 +254,33 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
           previousLabel={t('common.previous')}
           nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
-          actionBar={{
-            pageKey,
-            userId,
-            columns: columns.map(({ key, label }) => ({ key, label })),
-            visibleColumns,
-            columnOrder,
-            onVisibleColumnsChange: setVisibleColumns,
-            onColumnOrderChange: setColumnOrder,
-            exportFileName: 'quality-control-quarantine-queue',
-            exportColumns,
-            exportRows,
-            filterColumns,
-            defaultFilterColumn: 'documentNumber',
-            draftFilterRows: pagedGrid.draftFilterRows,
-            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-            filterLogic: pagedGrid.filterLogic,
-            onFilterLogicChange: pagedGrid.setFilterLogic,
-            onApplyFilters: pagedGrid.applyAdvancedFilters,
-            onClearFilters: pagedGrid.clearAdvancedFilters,
-            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-            translationNamespace: 'common',
-            search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('qualityControl.quarantine.searchPlaceholder'),
-            },
-            refresh: {
-              onRefresh: () => { void query.refetch(); },
-              isLoading: query.isLoading,
-              label: t('common.refresh'),
-            },
+          exportFileName="quality-control-quarantine-queue"
+          exportColumns={exportColumns}
+          exportRows={exportRows}
+          filterColumns={filterColumns}
+          defaultFilterColumn="documentNumber"
+          draftFilterRows={pagedGrid.draftFilterRows}
+          onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+          filterLogic={pagedGrid.filterLogic}
+          onFilterLogicChange={pagedGrid.setFilterLogic}
+          onApplyFilters={pagedGrid.applyAdvancedFilters}
+          onClearFilters={pagedGrid.clearAdvancedFilters}
+          appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+          translationNamespace="common"
+          search={{
+            value: pagedGrid.searchInput,
+            onValueChange: pagedGrid.searchConfig.onValueChange,
+            onSearchChange: pagedGrid.searchConfig.onSearchChange,
+            placeholder: t('qualityControl.quarantine.searchPlaceholder'),
           }}
+          refresh={{
+            onRefresh: () => { void query.refetch(); },
+            isLoading: query.isLoading,
+            label: t('common.refresh'),
+          }}
+          idColumnKey="documentType"
         />
-      </FormPageShell>
+      </OpsListPageShell>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl">
@@ -315,7 +313,7 @@ export function QualityControlQuarantineQueuePage(): ReactElement {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
 

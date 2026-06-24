@@ -2,11 +2,10 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -76,12 +75,6 @@ export function QualityControlInspectionListPage(): ReactElement {
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
-    idColumnKey: 'documentType',
-  });
-
   const query = useQuery({
     queryKey: ['quality-control', 'inspections', pagedGrid.queryParams],
     queryFn: () => qualityControlApi.getInspectionsPaged(pagedGrid.queryParams),
@@ -96,11 +89,9 @@ export function QualityControlInspectionListPage(): ReactElement {
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
-  const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[], [orderedVisibleColumns]);
-  const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
-    key,
-    label: columns.find((column) => column.key === key)?.label ?? key,
-  })), [columns, orderedVisibleColumns]);
+  const exportColumns = useMemo(() => columns
+    .filter((column) => column.key !== 'actions')
+    .map((column) => ({ key: column.key, label: column.label })), [columns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
     (query.data?.data ?? []).map((row) => ({
       documentType: row.documentType,
@@ -129,112 +120,128 @@ export function QualityControlInspectionListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <FormPageShell
-        title={t('qualityControl.inspections.list.pageTitle')}
-        actions={
-          <Button type="button" onClick={() => navigate('/quality-control/inspections')}>
-            {t('common.add')}
-          </Button>
-        }
-      >
-        <PagedDataGrid<InventoryQualityInspectionPagedRowDto, ColumnKey>
-          pageKey={pageKey}
-          columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
-          rows={query.data?.data ?? []}
-          rowKey={(row) => row.id}
-          renderCell={(row, columnKey) => {
-            switch (columnKey) {
-              case 'documentType':
-                return row.documentType;
-              case 'documentNumber':
-                return row.documentNumber || '-';
-              case 'warehouse':
-                return [row.warehouseCode, row.warehouseName].filter(Boolean).join(' - ');
-              case 'supplier':
-                return [row.supplierCode, row.supplierName].filter(Boolean).join(' - ') || '-';
-              case 'inspectionDate':
-                return formatDateTime(row.inspectionDate);
-              case 'status':
-                return t(`qualityControl.inspections.statuses.${row.status.charAt(0).toLowerCase()}${row.status.slice(1)}`);
-              case 'lineCount':
-                return row.lineCount;
-              default:
-                return null;
-            }
-          }}
-          sortBy={pagedGrid.sortBy}
-          sortDirection={pagedGrid.sortDirection}
-          onSort={(columnKey) => {
-            if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
-          }}
-          renderSortIcon={renderSortIcon}
-          isLoading={query.isLoading}
-          isError={Boolean(query.error)}
-          errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
-          emptyText={t('qualityControl.inspections.list.empty')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
-          actionsHeaderLabel={t('common.actions')}
-          renderActionsCell={(row) => (
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/quality-control/inspections?id=${row.id}`)}>
-                <Pencil className="size-4" />
-                <span className="ml-2">{t('common.update')}</span>
-              </Button>
-              <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
-                <Trash2 className="size-4" />
-                <span className="ml-2">{t('common.delete')}</span>
-              </Button>
-            </div>
-          )}
-          pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
-          pageSizeOptions={pagedGrid.pageSizeOptions}
-          onPageSizeChange={pagedGrid.handlePageSizeChange}
-          pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
-          totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
-          hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
-          hasNextPage={Boolean(query.data?.hasNextPage)}
-          onPreviousPage={pagedGrid.goToPreviousPage}
-          onNextPage={pagedGrid.goToNextPage}
-          previousLabel={t('common.previous')}
-          nextLabel={t('common.next')}
-          paginationInfoText={paginationInfoText}
-          actionBar={{
-            pageKey,
-            userId,
-            columns: columns.map(({ key, label }) => ({ key, label })),
-            visibleColumns,
-            columnOrder,
-            onVisibleColumnsChange: setVisibleColumns,
-            onColumnOrderChange: setColumnOrder,
-            exportFileName: 'quality-control-inspections',
-            exportColumns,
-            exportRows,
-            filterColumns,
-            defaultFilterColumn: 'documentNumber',
-            draftFilterRows: pagedGrid.draftFilterRows,
-            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-            filterLogic: pagedGrid.filterLogic,
-            onFilterLogicChange: pagedGrid.setFilterLogic,
-            onApplyFilters: pagedGrid.applyAdvancedFilters,
-            onClearFilters: pagedGrid.clearAdvancedFilters,
-            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-            translationNamespace: 'common',
-            search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('qualityControl.inspections.list.searchPlaceholder'),
-            },
-            refresh: {
-              onRefresh: () => { void query.refetch(); },
-              isLoading: query.isLoading,
-              label: t('common.refresh'),
-            },
-          }}
-        />
-      </FormPageShell>
-    </div>
+    <OpsListPageShell
+      eyebrow={
+        <>
+          <span>{t('qualityControl.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('qualityControl.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('qualityControl.inspections.list.pageTitle')}
+      actions={(
+        <OpsActionButton
+          type="button"
+          variant="primary"
+          onClick={() => navigate('/quality-control/inspections')}
+        >
+          <Plus className="size-3.5" aria-hidden />
+          {t('common.add')}
+        </OpsActionButton>
+      )}
+    >
+      <PagedDataGrid<InventoryQualityInspectionPagedRowDto, ColumnKey>
+        variant="ops"
+        pageKey={pageKey}
+        columns={columns}
+        rows={query.data?.data ?? []}
+        rowKey={(row) => row.id}
+        renderCell={(row, columnKey) => {
+          switch (columnKey) {
+            case 'documentType':
+              return row.documentType;
+            case 'documentNumber':
+              return row.documentNumber || '-';
+            case 'warehouse':
+              return [row.warehouseCode, row.warehouseName].filter(Boolean).join(' - ');
+            case 'supplier':
+              return [row.supplierCode, row.supplierName].filter(Boolean).join(' - ') || '-';
+            case 'inspectionDate':
+              return formatDateTime(row.inspectionDate);
+            case 'status':
+              return t(`qualityControl.inspections.statuses.${row.status.charAt(0).toLowerCase()}${row.status.slice(1)}`);
+            case 'lineCount':
+              return row.lineCount;
+            default:
+              return null;
+          }
+        }}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={(columnKey) => {
+          if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
+        }}
+        renderSortIcon={renderSortIcon}
+        isLoading={query.isLoading}
+        isError={Boolean(query.error)}
+        errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
+        emptyText={t('qualityControl.inspections.list.empty')}
+        showActionsColumn
+        actionsHeaderLabel={t('common.actions')}
+        renderActionsCell={(row) => (
+          <div className="flex flex-wrap items-center justify-end gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn"
+              aria-label={t('common.update')}
+              title={t('common.update')}
+              onClick={() => navigate(`/quality-control/inspections?id=${row.id}`)}
+            >
+              <Pencil className="size-3" aria-hidden />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+              aria-label={t('common.delete')}
+              title={t('common.delete')}
+              onClick={() => deleteMutation.mutate(row.id)}
+            >
+              <Trash2 className="size-3" aria-hidden />
+            </Button>
+          </div>
+        )}
+        pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+        pageSizeOptions={pagedGrid.pageSizeOptions}
+        onPageSizeChange={pagedGrid.handlePageSizeChange}
+        pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+        totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
+        hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
+        hasNextPage={Boolean(query.data?.hasNextPage)}
+        onPreviousPage={pagedGrid.goToPreviousPage}
+        onNextPage={pagedGrid.goToNextPage}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
+        paginationInfoText={paginationInfoText}
+        exportFileName="quality-control-inspections"
+        exportColumns={exportColumns}
+        exportRows={exportRows}
+        filterColumns={filterColumns}
+        defaultFilterColumn="documentNumber"
+        draftFilterRows={pagedGrid.draftFilterRows}
+        onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+        filterLogic={pagedGrid.filterLogic}
+        onFilterLogicChange={pagedGrid.setFilterLogic}
+        onApplyFilters={pagedGrid.applyAdvancedFilters}
+        onClearFilters={pagedGrid.clearAdvancedFilters}
+        appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+        translationNamespace="common"
+        search={{
+          value: pagedGrid.searchInput,
+          onValueChange: pagedGrid.searchConfig.onValueChange,
+          onSearchChange: pagedGrid.searchConfig.onSearchChange,
+          placeholder: t('qualityControl.inspections.list.searchPlaceholder'),
+        }}
+        refresh={{
+          onRefresh: () => { void query.refetch(); },
+          isLoading: query.isLoading,
+          label: t('common.refresh'),
+        }}
+        idColumnKey="documentType"
+      />
+    </OpsListPageShell>
   );
 }

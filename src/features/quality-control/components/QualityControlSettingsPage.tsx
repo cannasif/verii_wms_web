@@ -2,14 +2,11 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsFormPageShell, OpsInput, OpsToggleField, PageState } from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { DefinitionExcelActions } from '@/features/definition-excel';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
@@ -17,6 +14,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { qualityControlApi } from '../api/quality-control.api';
 import type { CreateInventoryQualityParameterDto } from '../types/quality-control.types';
 import { buildWarehouseLabel } from './quality-control/shared';
+import { QcOpsField, QcOpsGuidance } from './quality-control/ops-form-ui';
 
 interface LookupPageArgs {
   pageNumber: number;
@@ -124,140 +122,161 @@ export function QualityControlSettingsPage(): ReactElement {
   }
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('qualityControl.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('qualityControl.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('qualityControl.settings.title')}
+      description={t('qualityControl.settings.description')}
+      actions={(
+        <DefinitionExcelActions
+          definitionKey="quality-control-parameter"
+          fileNamePrefix="kalite-kontrol-ayarlari"
+          onImportCompleted={async () => {
+            await query.refetch();
+          }}
+        />
+      )}
+    >
+      {query.isLoading ? (
+        <PageState tone="loading" title={t('common.loading')} compact />
+      ) : null}
 
-      <FormPageShell
-        title={t('qualityControl.settings.title')}
-        description={t('qualityControl.settings.description')}
-        actions={(
-          <DefinitionExcelActions
-            definitionKey="quality-control-parameter"
-            fileNamePrefix="kalite-kontrol-ayarlari"
-            onImportCompleted={async () => {
-              await query.refetch();
-            }}
+      {query.error ? (
+        <PageState
+          tone="error"
+          title={t('common.error')}
+          description={query.error instanceof Error ? query.error.message : t('common.generalError')}
+          compact
+        />
+      ) : null}
+
+      {!query.isLoading && !query.error ? (
+        <div className="wms-ops-form space-y-6">
+          <QcOpsGuidance
+            title={t('qualityControl.settings.guidanceTitle')}
+            lines={[t('qualityControl.settings.guidance1'), t('qualityControl.settings.guidance2')]}
           />
-        )}
-        isLoading={query.isLoading}
-        isError={Boolean(query.error)}
-        errorTitle={t('common.error')}
-        errorDescription={query.error instanceof Error ? query.error.message : t('common.generalError')}
-      >
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('qualityControl.settings.guidanceTitle')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('qualityControl.settings.guidance1')}</p>
-              <p>{t('qualityControl.settings.guidance2')}</p>
-            </CardContent>
-          </Card>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t('qualityControl.settings.fields.defaultInspectionMode')}</Label>
-              <Select value={formState.defaultInspectionMode} onValueChange={(value) => setFormState((prev) => ({ ...prev, defaultInspectionMode: value }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NoCheck">{t('qualityControl.rules.inspectionModes.noCheck')}</SelectItem>
-                  <SelectItem value="QuickCheck">{t('qualityControl.rules.inspectionModes.quickCheck')}</SelectItem>
-                  <SelectItem value="InspectionRequired">{t('qualityControl.rules.inspectionModes.inspectionRequired')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <QcOpsField label={t('qualityControl.settings.fields.defaultInspectionMode')}>
+              <OpsFieldShell>
+                <Select value={formState.defaultInspectionMode} onValueChange={(value) => setFormState((prev) => ({ ...prev, defaultInspectionMode: value }))}>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                    <SelectItem value="NoCheck">{t('qualityControl.rules.inspectionModes.noCheck')}</SelectItem>
+                    <SelectItem value="QuickCheck">{t('qualityControl.rules.inspectionModes.quickCheck')}</SelectItem>
+                    <SelectItem value="InspectionRequired">{t('qualityControl.rules.inspectionModes.inspectionRequired')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </OpsFieldShell>
+            </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.settings.fields.defaultOnFailAction')}</Label>
-              <Select value={formState.defaultOnFailAction} onValueChange={(value) => setFormState((prev) => ({ ...prev, defaultOnFailAction: value }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Quarantine">{t('qualityControl.rules.failActions.quarantine')}</SelectItem>
-                  <SelectItem value="Reject">{t('qualityControl.rules.failActions.reject')}</SelectItem>
-                  <SelectItem value="ManagerApproval">{t('qualityControl.rules.failActions.managerApproval')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <QcOpsField label={t('qualityControl.settings.fields.defaultOnFailAction')}>
+              <OpsFieldShell>
+                <Select value={formState.defaultOnFailAction} onValueChange={(value) => setFormState((prev) => ({ ...prev, defaultOnFailAction: value }))}>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                    <SelectItem value="Quarantine">{t('qualityControl.rules.failActions.quarantine')}</SelectItem>
+                    <SelectItem value="Reject">{t('qualityControl.rules.failActions.reject')}</SelectItem>
+                    <SelectItem value="ManagerApproval">{t('qualityControl.rules.failActions.managerApproval')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </OpsFieldShell>
+            </QcOpsField>
 
-            <div className="space-y-2 lg:col-span-2">
-              <Label>{t('qualityControl.settings.fields.defaultQuarantineWarehouse')}</Label>
-              <PagedLookupDialog<WarehouseLookup>
-                open={warehouseDialogOpen}
-                onOpenChange={setWarehouseDialogOpen}
-                title={t('qualityControl.settings.warehouseLookup.title')}
-                description={t('qualityControl.settings.warehouseLookup.description')}
-                value={currentWarehouseLabel}
-                placeholder={t('qualityControl.settings.fields.defaultQuarantineWarehousePlaceholder')}
-                searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
-                queryKey={['quality-control', 'settings-warehouses']}
-                fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
-                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
-                getKey={(item) => String(item.id)}
-                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
-                onSelect={(item) => {
-                  setFormState((prev) => ({ ...prev, defaultQuarantineWarehouseId: item.id }));
-                  setWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
-                }}
-                disabled={!formState.useQuarantineWarehouse}
-              />
-            </div>
+            <QcOpsField label={t('qualityControl.settings.fields.defaultQuarantineWarehouse')} className="lg:col-span-2">
+              <OpsFieldShell className={warehouseDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
+                <PagedLookupDialog<WarehouseLookup>
+                  variant="ops"
+                  open={warehouseDialogOpen}
+                  onOpenChange={setWarehouseDialogOpen}
+                  title={t('qualityControl.settings.warehouseLookup.title')}
+                  value={currentWarehouseLabel}
+                  placeholder={t('qualityControl.settings.fields.defaultQuarantineWarehousePlaceholder')}
+                  searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
+                  triggerClassName={OPS_FIELD_CLASS}
+                  queryKey={['quality-control', 'settings-warehouses']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
+                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                  getKey={(item) => String(item.id)}
+                  getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                  onSelect={(item) => {
+                    setFormState((prev) => ({ ...prev, defaultQuarantineWarehouseId: item.id }));
+                    setWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
+                  }}
+                  disabled={!formState.useQuarantineWarehouse}
+                />
+              </OpsFieldShell>
+            </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.settings.fields.defaultApprovedWarehouse')}</Label>
-              <PagedLookupDialog<WarehouseLookup>
-                open={approvedWarehouseDialogOpen}
-                onOpenChange={setApprovedWarehouseDialogOpen}
-                title={t('qualityControl.settings.warehouseLookup.title')}
-                description={t('qualityControl.settings.warehouseLookup.description')}
-                value={currentApprovedWarehouseLabel}
-                placeholder={t('qualityControl.settings.fields.defaultApprovedWarehousePlaceholder')}
-                searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
-                queryKey={['quality-control', 'settings-approved-warehouses']}
-                fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
-                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
-                getKey={(item) => String(item.id)}
-                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
-                onSelect={(item) => {
-                  setFormState((prev) => ({ ...prev, defaultApprovedWarehouseId: item.id }));
-                  setApprovedWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
-                }}
-              />
-            </div>
+            <QcOpsField label={t('qualityControl.settings.fields.defaultApprovedWarehouse')}>
+              <OpsFieldShell className={approvedWarehouseDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
+                <PagedLookupDialog<WarehouseLookup>
+                  variant="ops"
+                  open={approvedWarehouseDialogOpen}
+                  onOpenChange={setApprovedWarehouseDialogOpen}
+                  title={t('qualityControl.settings.warehouseLookup.title')}
+                  value={currentApprovedWarehouseLabel}
+                  placeholder={t('qualityControl.settings.fields.defaultApprovedWarehousePlaceholder')}
+                  searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
+                  triggerClassName={OPS_FIELD_CLASS}
+                  queryKey={['quality-control', 'settings-approved-warehouses']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
+                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                  getKey={(item) => String(item.id)}
+                  getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                  onSelect={(item) => {
+                    setFormState((prev) => ({ ...prev, defaultApprovedWarehouseId: item.id }));
+                    setApprovedWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
+                  }}
+                />
+              </OpsFieldShell>
+            </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.settings.fields.defaultRejectWarehouse')}</Label>
-              <PagedLookupDialog<WarehouseLookup>
-                open={rejectWarehouseDialogOpen}
-                onOpenChange={setRejectWarehouseDialogOpen}
-                title={t('qualityControl.settings.warehouseLookup.title')}
-                description={t('qualityControl.settings.warehouseLookup.description')}
-                value={currentRejectWarehouseLabel}
-                placeholder={t('qualityControl.settings.fields.defaultRejectWarehousePlaceholder')}
-                searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
-                queryKey={['quality-control', 'settings-reject-warehouses']}
-                fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
-                  lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
-                getKey={(item) => String(item.id)}
-                getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
-                onSelect={(item) => {
-                  setFormState((prev) => ({ ...prev, defaultRejectWarehouseId: item.id }));
-                  setRejectWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
-                }}
-              />
-            </div>
+            <QcOpsField label={t('qualityControl.settings.fields.defaultRejectWarehouse')}>
+              <OpsFieldShell className={rejectWarehouseDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
+                <PagedLookupDialog<WarehouseLookup>
+                  variant="ops"
+                  open={rejectWarehouseDialogOpen}
+                  onOpenChange={setRejectWarehouseDialogOpen}
+                  title={t('qualityControl.settings.warehouseLookup.title')}
+                  value={currentRejectWarehouseLabel}
+                  placeholder={t('qualityControl.settings.fields.defaultRejectWarehousePlaceholder')}
+                  searchPlaceholder={t('qualityControl.settings.warehouseLookup.searchPlaceholder')}
+                  triggerClassName={OPS_FIELD_CLASS}
+                  queryKey={['quality-control', 'settings-reject-warehouses']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
+                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
+                  getKey={(item) => String(item.id)}
+                  getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+                  onSelect={(item) => {
+                    setFormState((prev) => ({ ...prev, defaultRejectWarehouseId: item.id }));
+                    setRejectWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
+                  }}
+                />
+              </OpsFieldShell>
+            </QcOpsField>
 
-            <div className="space-y-2 lg:col-span-2">
-              <Label>{t('qualityControl.settings.fields.defaultReturnOutboundType')}</Label>
-              <Input
+            <QcOpsField label={t('qualityControl.settings.fields.defaultReturnOutboundType')} className="lg:col-span-2">
+              <OpsInput
                 value={formState.defaultReturnOutboundType}
                 onChange={(event) => setFormState((prev) => ({ ...prev, defaultReturnOutboundType: event.target.value }))}
                 placeholder={t('qualityControl.settings.fields.defaultReturnOutboundTypePlaceholder')}
               />
-            </div>
+            </QcOpsField>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {[
+            {([
               ['autoCreateInspectionOnReceipt', 'qualityControl.settings.fields.autoCreateInspectionOnReceipt'],
               ['useQuarantineWarehouse', 'qualityControl.settings.fields.useQuarantineWarehouse'],
               ['allowDirectReceiptWhenNoRule', 'qualityControl.settings.fields.allowDirectReceiptWhenNoRule'],
@@ -267,24 +286,23 @@ export function QualityControlSettingsPage(): ReactElement {
               ['requireManagerApprovalForRelease', 'qualityControl.settings.fields.requireManagerApprovalForRelease'],
               ['enableTraceabilityEvents', 'qualityControl.settings.fields.enableTraceabilityEvents'],
               ['enableNearExpiryWarning', 'qualityControl.settings.fields.enableNearExpiryWarning'],
-            ].map(([field, labelKey]) => (
-              <div key={field} className="flex items-center justify-between rounded-lg border p-4">
-                <Label>{t(labelKey)}</Label>
-                <Switch
-                  checked={Boolean(formState[field as keyof CreateInventoryQualityParameterDto])}
-                  onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field]: checked }))}
-                />
-              </div>
+            ] as const).map(([field, labelKey]) => (
+              <OpsToggleField
+                key={field}
+                checked={Boolean(formState[field])}
+                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field]: checked }))}
+                title={t(labelKey)}
+              />
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending || query.isLoading}>
+          <div className="wms-ops-actions flex flex-wrap gap-3 border-t pt-6">
+            <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending || query.isLoading}>
               {t('common.save')}
-            </Button>
-            <Button
+            </OpsActionButton>
+            <OpsActionButton
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => {
                 setFormState(createDefaultSettings());
                 setWarehouseLabel('');
@@ -293,10 +311,10 @@ export function QualityControlSettingsPage(): ReactElement {
               }}
             >
               {t('common.clear')}
-            </Button>
+            </OpsActionButton>
           </div>
         </div>
-      </FormPageShell>
-    </div>
+      ) : null}
+    </OpsFormPageShell>
   );
 }

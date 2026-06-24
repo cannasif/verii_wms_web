@@ -3,14 +3,17 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { FormPageShell } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsFieldShell,
+  OpsFormPageShell,
+  OpsInput,
+  OpsTextarea,
+} from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { CustomerLookup, StockLookup, WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -21,6 +24,7 @@ import type {
   InventoryQualityInspectionDto,
 } from '../types/quality-control.types';
 import { buildCustomerLabel, buildStockLabel, buildWarehouseLabel, createEmptyInspectionLine, createEmptyQualityInspection } from './quality-control/shared';
+import { QcOpsField, QcOpsGuidance } from './quality-control/ops-form-ui';
 
 interface LookupPageArgs {
   pageNumber: number;
@@ -184,66 +188,66 @@ export function QualityControlInspectionPage(): ReactElement {
   );
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('qualityControl.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('qualityControl.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('qualityControl.inspections.title')}
+      description={t('qualityControl.inspections.description')}
+    >
+      <div className="wms-ops-form space-y-6">
+        <QcOpsGuidance
+          title={t('qualityControl.inspections.guidanceTitle')}
+          lines={[t('qualityControl.inspections.guidance1'), t('qualityControl.inspections.guidance2')]}
+        />
 
-      <FormPageShell title={t('qualityControl.inspections.title')} description={t('qualityControl.inspections.description')}>
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('qualityControl.inspections.guidanceTitle')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('qualityControl.inspections.guidance1')}</p>
-              <p>{t('qualityControl.inspections.guidance2')}</p>
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <QcOpsField label={t('qualityControl.inspections.fields.documentType')} required>
+            <OpsInput
+              id="documentType"
+              value={formState.documentType}
+              onChange={(event) => setFormState((prev) => ({ ...prev, documentType: event.target.value }))}
+              placeholder={t('qualityControl.inspections.fields.documentTypePlaceholder')}
+            />
+          </QcOpsField>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="documentType">{t('qualityControl.inspections.fields.documentType')} *</Label>
-              <Input
-                id="documentType"
-                value={formState.documentType}
-                onChange={(event) => setFormState((prev) => ({ ...prev, documentType: event.target.value }))}
-                placeholder={t('qualityControl.inspections.fields.documentTypePlaceholder')}
-              />
-            </div>
+          <QcOpsField label={t('qualityControl.inspections.fields.documentNumber')}>
+            <OpsInput
+              id="documentNumber"
+              value={formState.documentNumber || ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, documentNumber: event.target.value }))}
+              placeholder={t('qualityControl.inspections.fields.documentNumberPlaceholder')}
+            />
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label htmlFor="documentNumber">{t('qualityControl.inspections.fields.documentNumber')}</Label>
-              <Input
-                id="documentNumber"
-                value={formState.documentNumber || ''}
-                onChange={(event) => setFormState((prev) => ({ ...prev, documentNumber: event.target.value }))}
-                placeholder={t('qualityControl.inspections.fields.documentNumberPlaceholder')}
-              />
-            </div>
+          <QcOpsField label={t('qualityControl.inspections.fields.documentId')}>
+            <OpsInput
+              id="documentId"
+              type="number"
+              min={0}
+              value={formState.documentId ?? ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, documentId: event.target.value ? Number(event.target.value) : null }))}
+              placeholder="0"
+            />
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label htmlFor="documentId">{t('qualityControl.inspections.fields.documentId')}</Label>
-              <Input
-                id="documentId"
-                type="number"
-                min={0}
-                value={formState.documentId ?? ''}
-                onChange={(event) => setFormState((prev) => ({ ...prev, documentId: event.target.value ? Number(event.target.value) : null }))}
-                placeholder="0"
-              />
-            </div>
+          <QcOpsField label={t('qualityControl.inspections.fields.inspectionDate')}>
+            <OpsInput
+              id="inspectionDate"
+              type="datetime-local"
+              value={formState.inspectionDate || ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, inspectionDate: event.target.value }))}
+            />
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label htmlFor="inspectionDate">{t('qualityControl.inspections.fields.inspectionDate')}</Label>
-              <Input
-                id="inspectionDate"
-                type="datetime-local"
-                value={formState.inspectionDate || ''}
-                onChange={(event) => setFormState((prev) => ({ ...prev, inspectionDate: event.target.value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('qualityControl.inspections.fields.warehouse')} *</Label>
+          <QcOpsField label={t('qualityControl.inspections.fields.warehouse')} required>
+            <OpsFieldShell className={warehouseDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
               <PagedLookupDialog<WarehouseLookup>
+                variant="ops"
                 open={warehouseDialogOpen}
                 onOpenChange={setWarehouseDialogOpen}
                 title={t('qualityControl.inspections.warehouseLookup.title')}
@@ -251,6 +255,7 @@ export function QualityControlInspectionPage(): ReactElement {
                 value={currentWarehouseLabel}
                 placeholder={t('qualityControl.inspections.fields.warehousePlaceholder')}
                 searchPlaceholder={t('qualityControl.inspections.warehouseLookup.searchPlaceholder')}
+                triggerClassName={OPS_FIELD_CLASS}
                 queryKey={['quality-control', 'inspection-warehouses']}
                 fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
                   lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
@@ -261,11 +266,13 @@ export function QualityControlInspectionPage(): ReactElement {
                   setWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
                 }}
               />
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.inspections.fields.supplier')}</Label>
+          <QcOpsField label={t('qualityControl.inspections.fields.supplier')}>
+            <OpsFieldShell className={supplierDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
               <PagedLookupDialog<CustomerLookup>
+                variant="ops"
                 open={supplierDialogOpen}
                 onOpenChange={setSupplierDialogOpen}
                 title={t('qualityControl.inspections.supplierLookup.title')}
@@ -273,6 +280,7 @@ export function QualityControlInspectionPage(): ReactElement {
                 value={currentSupplierLabel}
                 placeholder={t('qualityControl.inspections.fields.supplierPlaceholder')}
                 searchPlaceholder={t('qualityControl.inspections.supplierLookup.searchPlaceholder')}
+                triggerClassName={OPS_FIELD_CLASS}
                 queryKey={['quality-control', 'inspection-suppliers']}
                 fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
                   lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })}
@@ -283,13 +291,16 @@ export function QualityControlInspectionPage(): ReactElement {
                   setSupplierLabel(`${item.cariKod} - ${item.cariIsim}`);
                 }}
               />
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
 
-            <div className="space-y-2">
-              <Label>{t('qualityControl.inspections.fields.status')}</Label>
+          <QcOpsField label={t('qualityControl.inspections.fields.status')}>
+            <OpsFieldShell>
               <Select value={formState.status} onValueChange={(value) => setFormState((prev) => ({ ...prev, status: value }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                   <SelectItem value="Pending">{t('qualityControl.inspections.statuses.pending')}</SelectItem>
                   <SelectItem value="Approved">{t('qualityControl.inspections.statuses.approved')}</SelectItem>
                   <SelectItem value="Rejected">{t('qualityControl.inspections.statuses.rejected')}</SelectItem>
@@ -297,132 +308,132 @@ export function QualityControlInspectionPage(): ReactElement {
                   <SelectItem value="Released">{t('qualityControl.inspections.statuses.released')}</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </OpsFieldShell>
+          </QcOpsField>
+        </div>
+
+        <QcOpsField label={t('qualityControl.inspections.fields.note')}>
+          <OpsTextarea
+            id="inspectionNote"
+            rows={4}
+            value={formState.note || ''}
+            onChange={(event) => setFormState((prev) => ({ ...prev, note: event.target.value }))}
+            placeholder={t('qualityControl.inspections.fields.notePlaceholder')}
+          />
+        </QcOpsField>
+
+        <div className="space-y-4 border-t pt-6">
+          <h2 className="font-mono text-xs font-semibold uppercase tracking-[0.14em]">
+            {t('qualityControl.inspections.lines.title')}
+          </h2>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <QcOpsField label={t('qualityControl.inspections.lines.stock')} required className="lg:col-span-2">
+              <OpsFieldShell className={stockDialogOpen ? 'wms-ops-field-shell--active' : undefined}>
+                <PagedLookupDialog<StockLookup>
+                  variant="ops"
+                  open={stockDialogOpen}
+                  onOpenChange={setStockDialogOpen}
+                  title={t('qualityControl.inspections.stockLookup.title')}
+                  description={t('qualityControl.inspections.stockLookup.description')}
+                  value={lineStockLabel}
+                  placeholder={t('qualityControl.inspections.lines.stockPlaceholder')}
+                  searchPlaceholder={t('qualityControl.inspections.stockLookup.searchPlaceholder')}
+                  triggerClassName={OPS_FIELD_CLASS}
+                  queryKey={['quality-control', 'inspection-stocks']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
+                    lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
+                  getKey={(item) => String(item.id)}
+                  getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                  onSelect={(item) => {
+                    setLineDraft((prev) => ({ ...prev, stockId: item.id }));
+                    setLineStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
+                  }}
+                />
+              </OpsFieldShell>
+            </QcOpsField>
+
+            <QcOpsField label={t('qualityControl.inspections.lines.lotNo')}>
+              <OpsInput id="lineLot" value={lineDraft.lotNo || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, lotNo: event.target.value }))} />
+            </QcOpsField>
+            <QcOpsField label={t('qualityControl.inspections.lines.serialNo')}>
+              <OpsInput id="lineSerial" value={lineDraft.serialNo || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, serialNo: event.target.value }))} />
+            </QcOpsField>
+            <QcOpsField label={t('qualityControl.inspections.lines.expiryDate')}>
+              <OpsInput id="lineExpiry" type="date" value={lineDraft.expiryDate || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, expiryDate: event.target.value || null }))} />
+            </QcOpsField>
+            <QcOpsField label={t('qualityControl.inspections.lines.quantity')}>
+              <OpsInput id="lineQuantity" type="number" min={0.0001} step="0.0001" value={lineDraft.quantity} onChange={(event) => setLineDraft((prev) => ({ ...prev, quantity: Number(event.target.value || 0) }))} />
+            </QcOpsField>
+            <QcOpsField label={t('qualityControl.inspections.lines.decision')}>
+              <OpsFieldShell>
+                <Select value={lineDraft.decision} onValueChange={(value) => setLineDraft((prev) => ({ ...prev, decision: value }))}>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                    <SelectItem value="Accept">{t('qualityControl.inspections.decisions.accept')}</SelectItem>
+                    <SelectItem value="Quarantine">{t('qualityControl.inspections.decisions.quarantine')}</SelectItem>
+                    <SelectItem value="Reject">{t('qualityControl.inspections.decisions.reject')}</SelectItem>
+                    <SelectItem value="Return">{t('qualityControl.inspections.decisions.return')}</SelectItem>
+                    <SelectItem value="Hold">{t('qualityControl.inspections.decisions.hold')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </OpsFieldShell>
+            </QcOpsField>
+            <QcOpsField label={t('qualityControl.inspections.lines.reasonCode')}>
+              <OpsInput id="lineReasonCode" value={lineDraft.reasonCode || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, reasonCode: event.target.value }))} />
+            </QcOpsField>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="inspectionNote">{t('qualityControl.inspections.fields.note')}</Label>
-            <Textarea
-              id="inspectionNote"
-              rows={4}
-              value={formState.note || ''}
-              onChange={(event) => setFormState((prev) => ({ ...prev, note: event.target.value }))}
-              placeholder={t('qualityControl.inspections.fields.notePlaceholder')}
-            />
-          </div>
+          <QcOpsField label={t('qualityControl.inspections.lines.reasonNote')}>
+            <OpsTextarea id="lineReasonNote" rows={3} value={lineDraft.reasonNote || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, reasonNote: event.target.value }))} />
+          </QcOpsField>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('qualityControl.inspections.lines.title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="space-y-2 lg:col-span-2">
-                  <Label>{t('qualityControl.inspections.lines.stock')} *</Label>
-                  <PagedLookupDialog<StockLookup>
-                    open={stockDialogOpen}
-                    onOpenChange={setStockDialogOpen}
-                    title={t('qualityControl.inspections.stockLookup.title')}
-                    description={t('qualityControl.inspections.stockLookup.description')}
-                    value={lineStockLabel}
-                    placeholder={t('qualityControl.inspections.lines.stockPlaceholder')}
-                    searchPlaceholder={t('qualityControl.inspections.stockLookup.searchPlaceholder')}
-                    queryKey={['quality-control', 'inspection-stocks']}
-                    fetchPage={({ pageNumber, pageSize, search, signal }: LookupPageArgs) =>
-                      lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })}
-                    getKey={(item) => String(item.id)}
-                    getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
-                    onSelect={(item) => {
-                      setLineDraft((prev) => ({ ...prev, stockId: item.id }));
-                      setLineStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
-                    }}
-                  />
-                </div>
+          <OpsActionButton type="button" variant="secondary" onClick={handleAddLine}>
+            {t('qualityControl.inspections.lines.add')}
+          </OpsActionButton>
 
-                <div className="space-y-2">
-                  <Label htmlFor="lineLot">{t('qualityControl.inspections.lines.lotNo')}</Label>
-                  <Input id="lineLot" value={lineDraft.lotNo || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, lotNo: event.target.value }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lineSerial">{t('qualityControl.inspections.lines.serialNo')}</Label>
-                  <Input id="lineSerial" value={lineDraft.serialNo || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, serialNo: event.target.value }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lineExpiry">{t('qualityControl.inspections.lines.expiryDate')}</Label>
-                  <Input id="lineExpiry" type="date" value={lineDraft.expiryDate || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, expiryDate: event.target.value || null }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lineQuantity">{t('qualityControl.inspections.lines.quantity')}</Label>
-                  <Input id="lineQuantity" type="number" min={0.0001} step="0.0001" value={lineDraft.quantity} onChange={(event) => setLineDraft((prev) => ({ ...prev, quantity: Number(event.target.value || 0) }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('qualityControl.inspections.lines.decision')}</Label>
-                  <Select value={lineDraft.decision} onValueChange={(value) => setLineDraft((prev) => ({ ...prev, decision: value }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Accept">{t('qualityControl.inspections.decisions.accept')}</SelectItem>
-                      <SelectItem value="Quarantine">{t('qualityControl.inspections.decisions.quarantine')}</SelectItem>
-                      <SelectItem value="Reject">{t('qualityControl.inspections.decisions.reject')}</SelectItem>
-                      <SelectItem value="Return">{t('qualityControl.inspections.decisions.return')}</SelectItem>
-                      <SelectItem value="Hold">{t('qualityControl.inspections.decisions.hold')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lineReasonCode">{t('qualityControl.inspections.lines.reasonCode')}</Label>
-                  <Input id="lineReasonCode" value={lineDraft.reasonCode || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, reasonCode: event.target.value }))} />
-                </div>
+          <div className="space-y-3">
+            {formState.lines.length === 0 ? (
+              <div className="wms-ops-grid-empty rounded-none border border-dashed p-4 text-sm">
+                {t('qualityControl.inspections.lines.empty')}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lineReasonNote">{t('qualityControl.inspections.lines.reasonNote')}</Label>
-                <Textarea id="lineReasonNote" rows={3} value={lineDraft.reasonNote || ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, reasonNote: event.target.value }))} />
-              </div>
-              <Button type="button" variant="outline" onClick={handleAddLine}>
-                {t('qualityControl.inspections.lines.add')}
-              </Button>
-
-              <div className="space-y-3">
-                {formState.lines.length === 0 ? (
-                  <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-                    {t('qualityControl.inspections.lines.empty')}
-                  </div>
-                ) : (
-                  formState.lines.map((line, index) => (
-                    <div key={`${line.stockId}-${index}`} className="flex flex-col gap-3 rounded-lg border p-4 lg:flex-row lg:items-center lg:justify-between">
-                      <div className="space-y-1 text-sm">
-                        <div className="font-medium">
-                          {currentRecord?.lines[index]
-                            ? buildStockLabel(currentRecord.lines[index]?.stockCode, currentRecord.lines[index]?.stockName)
-                            : t('qualityControl.inspections.lines.lineSummary', { stockId: line.stockId, quantity: line.quantity, decision: line.decision })}
-                        </div>
-                        <div className="text-muted-foreground">
-                          {t('qualityControl.inspections.lines.lineMeta', {
-                            lot: line.lotNo || '-',
-                            serial: line.serialNo || '-',
-                            expiry: line.expiryDate || '-',
-                          })}
-                        </div>
-                      </div>
-                      <Button type="button" size="sm" variant="outline" onClick={() => handleRemoveLine(index)}>
-                        {t('common.delete')}
-                      </Button>
+            ) : (
+              formState.lines.map((line, index) => (
+                <div key={`${line.stockId}-${index}`} className="flex flex-col gap-3 border border-[color-mix(in_oklab,var(--wms-ops-accent)_22%,var(--wms-ops-card-border))] p-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="space-y-1 font-mono text-sm">
+                    <div className="font-semibold tracking-wide">
+                      {currentRecord?.lines[index]
+                        ? buildStockLabel(currentRecord.lines[index]?.stockCode, currentRecord.lines[index]?.stockName)
+                        : t('qualityControl.inspections.lines.lineSummary', { stockId: line.stockId, quantity: line.quantity, decision: line.decision })}
                     </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending || getByIdMutation.isPending}>
-              {isEdit ? t('common.update') : t('common.save')}
-            </Button>
-            <Button type="button" variant="outline" onClick={handleReset}>
-              {t('common.clear')}
-            </Button>
+                    <div className="text-muted-foreground">
+                      {t('qualityControl.inspections.lines.lineMeta', {
+                        lot: line.lotNo || '-',
+                        serial: line.serialNo || '-',
+                        expiry: line.expiryDate || '-',
+                      })}
+                    </div>
+                  </div>
+                  <OpsActionButton type="button" variant="secondary" onClick={() => handleRemoveLine(index)}>
+                    {t('common.delete')}
+                  </OpsActionButton>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      </FormPageShell>
-    </div>
+
+        <div className="wms-ops-actions flex flex-wrap gap-3 border-t pt-6">
+          <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending || getByIdMutation.isPending}>
+            {isEdit ? t('common.update') : t('common.save')}
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="secondary" onClick={handleReset}>
+            {t('common.clear')}
+          </OpsActionButton>
+        </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

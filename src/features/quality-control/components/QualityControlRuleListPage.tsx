@@ -2,13 +2,12 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
-import { FormPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DefinitionExcelActions } from '@/features/definition-excel';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -92,12 +91,6 @@ export function QualityControlRuleListPage(): ReactElement {
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
-    idColumnKey: 'scopeType',
-  });
-
   const query = useQuery({
     queryKey: ['quality-control', 'rules', pagedGrid.queryParams],
     queryFn: () => qualityControlApi.getRulesPaged(pagedGrid.queryParams),
@@ -112,11 +105,9 @@ export function QualityControlRuleListPage(): ReactElement {
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
-  const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[], [orderedVisibleColumns]);
-  const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
-    key,
-    label: columns.find((column) => column.key === key)?.label ?? key,
-  })), [columns, orderedVisibleColumns]);
+  const exportColumns = useMemo(() => columns
+    .filter((column) => column.key !== 'actions')
+    .map((column) => ({ key: column.key, label: column.label })), [columns]);
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
     (query.data?.data ?? []).map((row) => ({
@@ -149,28 +140,35 @@ export function QualityControlRuleListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <FormPageShell
-        title={t('qualityControl.rules.list.pageTitle')}
-        actions={
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <DefinitionExcelActions
-              definitionKey="quality-control-rule"
-              fileNamePrefix="kalite-kontrol-kurallari"
-              onImportCompleted={async () => {
-                await query.refetch();
-              }}
-            />
-            <Button type="button" onClick={() => navigate('/quality-control/rules')}>
-              {t('common.add')}
-            </Button>
-          </div>
-        }
-      >
-        <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>
-          pageKey={pageKey}
+    <OpsListPageShell
+      eyebrow={
+        <>
+          <span>{t('qualityControl.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('qualityControl.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('qualityControl.rules.list.pageTitle')}
+      actions={
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <DefinitionExcelActions
+            definitionKey="quality-control-rule"
+            fileNamePrefix="kalite-kontrol-kurallari"
+            onImportCompleted={async () => {
+              await query.refetch();
+            }}
+          />
+          <OpsActionButton type="button" variant="primary" onClick={() => navigate('/quality-control/rules')}>
+            <Plus className="size-3.5" aria-hidden />
+            {t('common.add')}
+          </OpsActionButton>
+        </div>
+      }
+    >
+      <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>
+        variant="ops"
+        pageKey={pageKey}
           columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
           rows={query.data?.data ?? []}
           rowKey={(row) => row.id}
           renderCell={(row, columnKey) => {
@@ -206,17 +204,31 @@ export function QualityControlRuleListPage(): ReactElement {
           isError={Boolean(query.error)}
           errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
           emptyText={t('qualityControl.rules.list.empty')}
-          showActionsColumn={orderedVisibleColumns.includes('actions')}
+          showActionsColumn
           actionsHeaderLabel={t('common.actions')}
           renderActionsCell={(row) => (
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/quality-control/rules?id=${row.id}`)}>
-                <Pencil className="size-4" />
-                <span className="ml-2">{t('common.update')}</span>
+            <div className="flex flex-wrap items-center justify-end gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('common.update')}
+                title={t('common.update')}
+                onClick={() => navigate(`/quality-control/rules?id=${row.id}`)}
+              >
+                <Pencil className="size-3" aria-hidden />
               </Button>
-              <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
-                <Trash2 className="size-4" />
-                <span className="ml-2">{t('common.delete')}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => deleteMutation.mutate(row.id)}
+              >
+                <Trash2 className="size-3" aria-hidden />
               </Button>
             </div>
           )}
@@ -232,41 +244,32 @@ export function QualityControlRuleListPage(): ReactElement {
           previousLabel={t('common.previous')}
           nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
-          actionBar={{
-            pageKey,
-            userId,
-            columns: columns.map(({ key, label }) => ({ key, label })),
-            visibleColumns,
-            columnOrder,
-            onVisibleColumnsChange: setVisibleColumns,
-            onColumnOrderChange: setColumnOrder,
-            exportFileName: 'quality-control-rules',
-            exportColumns,
-            exportRows,
-            filterColumns,
-            defaultFilterColumn: 'stockCode',
-            draftFilterRows: pagedGrid.draftFilterRows,
-            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-            filterLogic: pagedGrid.filterLogic,
-            onFilterLogicChange: pagedGrid.setFilterLogic,
-            onApplyFilters: pagedGrid.applyAdvancedFilters,
-            onClearFilters: pagedGrid.clearAdvancedFilters,
-            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-            translationNamespace: 'common',
-            search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('qualityControl.rules.list.searchPlaceholder'),
-            },
-            refresh: {
-              onRefresh: () => { void query.refetch(); },
-              isLoading: query.isLoading,
-              label: t('common.refresh'),
-            },
+          exportFileName="quality-control-rules"
+          exportColumns={exportColumns}
+          exportRows={exportRows}
+          filterColumns={filterColumns}
+          defaultFilterColumn="stockCode"
+          draftFilterRows={pagedGrid.draftFilterRows}
+          onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+          filterLogic={pagedGrid.filterLogic}
+          onFilterLogicChange={pagedGrid.setFilterLogic}
+          onApplyFilters={pagedGrid.applyAdvancedFilters}
+          onClearFilters={pagedGrid.clearAdvancedFilters}
+          appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+          translationNamespace="common"
+          search={{
+            value: pagedGrid.searchInput,
+            onValueChange: pagedGrid.searchConfig.onValueChange,
+            onSearchChange: pagedGrid.searchConfig.onSearchChange,
+            placeholder: t('qualityControl.rules.list.searchPlaceholder'),
           }}
+          refresh={{
+            onRefresh: () => { void query.refetch(); },
+            isLoading: query.isLoading,
+            label: t('common.refresh'),
+          }}
+          idColumnKey="scopeType"
         />
-      </FormPageShell>
-    </div>
+    </OpsListPageShell>
   );
 }
