@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Edit } from 'lucide-react';
 import type { PHeaderDto } from '../../types/package';
+import { cn } from '@/lib/utils';
 
 interface Step4SummaryProps {
   headerData: PHeaderDto;
@@ -18,6 +19,7 @@ interface Step4SummaryProps {
   onComplete: () => void;
   onCancel: () => void;
   isLoading?: boolean;
+  variant?: 'default' | 'ops';
 }
 
 const getStatusBadgeColor = (status: string): string => {
@@ -55,8 +57,10 @@ export function Step4Summary({
   onComplete,
   onCancel,
   isLoading = false,
+  variant = 'default',
 }: Step4SummaryProps): ReactElement {
   const { t } = useTranslation(['package', 'common']);
+  const isOps = variant === 'ops';
 
   const { data: packagesData, isLoading: isLoadingPackages } = usePPackagesByHeader(headerData.id);
   const { data: linesData, isLoading: isLoadingLines } = usePLinesByHeader(headerData.id);
@@ -85,8 +89,8 @@ export function Step4Summary({
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <Card>
+    <div className={cn('space-y-6', isOps && 'wms-ops-form wms-ops-list')}>
+      <Card className={cn(isOps && 'wms-ops-order-step')}>
         <CardHeader>
           <div className="crm-toolbar flex items-center justify-between">
             <CardTitle>{t('package.wizard.step4.title')}</CardTitle>
@@ -96,7 +100,7 @@ export function Step4Summary({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 crm-page">
+        <CardContent className={cn('space-y-6', isOps && 'wms-ops-form')}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-semibold mb-2">{t('package.wizard.step4.headerInfo')}</h4>

@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface Step2PackageFormProps {
   packingHeaderId: number;
@@ -32,6 +33,7 @@ interface Step2PackageFormProps {
   onPrevious: () => void;
   onNext: () => void;
   onSaveAndExit: () => void;
+  variant?: 'default' | 'ops';
 }
 
 const getStatusBadgeColor = (status: string): string => {
@@ -54,8 +56,10 @@ export function Step2PackageForm({
   onPrevious,
   onNext,
   onSaveAndExit,
+  variant = 'default',
 }: Step2PackageFormProps): ReactElement {
   const { t } = useTranslation(['package', 'common']);
+  const isOps = variant === 'ops';
   const [packageDialogOpen, setPackageDialogOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<PPackageDto | null>(null);
 
@@ -225,8 +229,8 @@ export function Step2PackageForm({
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <Card>
+    <div className={cn('space-y-6', isOps && 'wms-ops-form wms-ops-list')}>
+      <Card className={cn(isOps && 'wms-ops-order-step')}>
         <CardHeader>
           <PageActionBar
             title={<CardTitle>{t('package.wizard.step2.title')}</CardTitle>}

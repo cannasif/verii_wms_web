@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PackageCheck, Plus, Save, Trash2 } from 'lucide-react';
+import { OpsFormPageShell } from '@/components/shared';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -189,8 +190,20 @@ export function PackagingSettingsPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('package.create.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('package.create.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('package.settings.title')}
+      description={t('package.settings.subtitle')}
+      actions={<PackageCheck className="size-5 opacity-80" aria-hidden />}
+    >
       {!permission.canMutate ? <PermissionNotice /> : null}
+      <div className="wms-ops-form space-y-6">
       <Card className="overflow-hidden border-slate-200/80">
         <CardHeader className="bg-gradient-to-r from-slate-950 to-slate-700 text-white">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -409,6 +422,7 @@ export function PackagingSettingsPage(): ReactElement {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

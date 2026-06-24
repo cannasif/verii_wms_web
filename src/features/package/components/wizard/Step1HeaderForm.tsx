@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Warehouse } from '@/features/shared';
 
@@ -20,6 +21,7 @@ interface Step1HeaderFormProps {
   onSubmit: (data: PHeaderFormData) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
+  variant?: 'default' | 'ops';
 }
 
 export function Step1HeaderForm({
@@ -27,6 +29,7 @@ export function Step1HeaderForm({
   onSubmit,
   onCancel,
   isLoading = false,
+  variant = 'default',
 }: Step1HeaderFormProps): ReactElement {
   const { t } = useTranslation(['package', 'common']);
   const [customerLookupOpen, setCustomerLookupOpen] = useState(false);
@@ -37,6 +40,8 @@ export function Step1HeaderForm({
   const [selectedSourceHeaderLabel, setSelectedSourceHeaderLabel] = useState('');
 
   const schema = useMemo(() => pHeaderFormSchema(t), [t]);
+
+  const isOps = variant === 'ops';
 
   const cargoCompanyOptions = useMemo(() => {
     return Object.entries(CargoCompany)
@@ -118,7 +123,7 @@ export function Step1HeaderForm({
   };
 
   return (
-    <Card>
+    <Card className={cn(isOps && 'wms-ops-order-step')}>
       <CardHeader>
         <CardTitle>{t('package.wizard.step1.title')}</CardTitle>
         <CardDescription>
@@ -127,7 +132,7 @@ export function Step1HeaderForm({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 crm-page">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className={cn('space-y-6', isOps && 'wms-ops-form')}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

@@ -13,6 +13,7 @@ import { Step1HeaderForm } from './wizard/Step1HeaderForm';
 import { Step2PackageForm } from './wizard/Step2PackageForm';
 import { Step3LineForm } from './wizard/Step3LineForm';
 import { Step4Summary } from './wizard/Step4Summary';
+import { OpsFormPageShell } from '@/components/shared';
 import { Card } from '@/components/ui/card';
 import {
   Dialog,
@@ -207,6 +208,7 @@ export function PackageCreatePage(): ReactElement {
       case 1:
         return (
           <Step1HeaderForm
+            variant="ops"
             initialData={headerData}
             onSubmit={handleStep1Submit}
             onCancel={handleStep1Cancel}
@@ -227,6 +229,7 @@ export function PackageCreatePage(): ReactElement {
         }
         return (
           <Step2PackageForm
+            variant="ops"
             packingHeaderId={headerId}
             canManagePackages={permission.canCreate || permission.canUpdate}
             canDeletePackages={permission.canDelete}
@@ -249,6 +252,7 @@ export function PackageCreatePage(): ReactElement {
         }
         return (
           <Step3LineForm
+            variant="ops"
             packingHeaderId={headerId}
             canManageLines={permission.canCreate || permission.canUpdate}
             canDeleteLines={permission.canDelete}
@@ -271,6 +275,7 @@ export function PackageCreatePage(): ReactElement {
         }
         return (
           <Step4Summary
+            variant="ops"
             headerData={headerData}
             onEditHeader={handleEditHeader}
             onEditPackages={handleEditPackages}
@@ -293,13 +298,23 @@ export function PackageCreatePage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('package.create.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('package.create.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('package.create.title')}
+      description={t('package.create.subtitle')}
+    >
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
           isActive: index + 1 === currentStep,
         }))}
-        className="mb-4"
+        className="wms-ops-steps mb-6"
       />
 
       {headerData && currentStep > 1 && (
@@ -335,6 +350,6 @@ export function PackageCreatePage(): ReactElement {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </OpsFormPageShell>
   );
 }

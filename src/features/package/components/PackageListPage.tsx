@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 import { usePHeaders } from '../hooks/usePHeaders';
 import { useDeletePHeader } from '../hooks/useDeletePHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -18,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -224,14 +223,22 @@ export function PackageListPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('package.list.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<PHeaderDto, PackageColumnKey>
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('package.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('package.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('package.list.title')}
+        description={t('package.list.subtitle')}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
+        <PagedDataGrid<PHeaderDto, PackageColumnKey>
+          variant="ops"
             columns={columns}
             visibleColumnKeys={visibleColumnKeys}
             rows={data?.data ?? []}
@@ -289,18 +296,38 @@ export function PackageListPage(): ReactElement {
             showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || canUpdate || permission.canDelete)}
             actionsHeaderLabel={t('package.list.actions')}
             renderActionsCell={(row) => (
-              <div className="flex items-center justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => navigate(`/package/detail/${row.id}`)} disabled={!permission.canView}>
-                  <Eye className="size-4" />
-                  <span className="ml-2">{t('package.list.detail')}</span>
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => navigate(`/package/edit/${row.id}`)} disabled={!canUpdate}>
-                  <Pencil className="size-4" />
-                  <span className="ml-2">{t('common.edit')}</span>
+              <div className="wms-ops-row-actions">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  aria-label={t('package.list.detail')}
+                  title={t('package.list.detail')}
+                  onClick={() => navigate(`/package/detail/${row.id}`)}
+                  disabled={!permission.canView}
+                >
+                  <Eye className="size-3" aria-hidden />
                 </Button>
                 <Button
+                  type="button"
                   variant="ghost"
-                  size="sm"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  aria-label={t('common.edit')}
+                  title={t('common.edit')}
+                  onClick={() => navigate(`/package/edit/${row.id}`)}
+                  disabled={!canUpdate}
+                >
+                  <Pencil className="size-3" aria-hidden />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                  aria-label={t('common.delete')}
+                  title={t('common.delete')}
                   onClick={() => {
                     if (!permission.canDelete) return;
                     setSelectedHeader(row);
@@ -308,7 +335,7 @@ export function PackageListPage(): ReactElement {
                   }}
                   disabled={!permission.canDelete}
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3" aria-hidden />
                 </Button>
               </div>
             )}
@@ -354,21 +381,22 @@ export function PackageListPage(): ReactElement {
                 <div className="flex items-center gap-2">
                   <VoiceSearchButton
                     onResult={pagedGrid.handleVoiceSearch}
-                    size="sm"
-                    variant="outline"
+                    size="icon"
+                    variant="ghost"
+                    className="wms-ops-voice-btn"
                   />
                   {permission.canCreate ? (
-                    <Button onClick={() => navigate('/package/create')}>
-                      <Plus className="mr-2 size-4" />
+                    <OpsActionButton type="button" variant="primary" onClick={() => navigate('/package/create')}>
+                      <Plus className="size-3.5" aria-hidden />
                       {t('package.list.createNew')}
-                    </Button>
+                    </OpsActionButton>
                   ) : null}
                 </div>
               ),
+              variant: 'ops',
             }}
           />
-        </CardContent>
-      </Card>
+      </OpsListPageShell>
 
       <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
@@ -386,6 +414,6 @@ export function PackageListPage(): ReactElement {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

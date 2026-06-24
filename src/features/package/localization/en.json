@@ -56,6 +56,11 @@
   },
   "package": {
     "create": {
+      "breadcrumb": {
+        "module": "PAKETLEME",
+        "parent": "OUTBOUND_OP"
+      },
+      "subtitle": "Initializing packing record...",
       "title": "Title"
     },
     "detail": {
@@ -203,6 +208,7 @@
       "searchPlaceholder": "Search Placeholder",
       "sourceType": "Source Type",
       "status": "Status",
+      "subtitle": "View, filter and manage packing records",
       "title": "Title",
       "totalGrossWeight": "Total Gross Weight",
       "totalPackageCount": "Total Package Count",
@@ -323,7 +329,8 @@
       "specSaved": "Spec Saved",
       "specs": "Specs",
       "stockId": "Stock ID",
-      "title": "Title",
+      "title": "Packaging Settings",
+      "subtitle": "Manage packaging materials and specifications",
       "unitsPerPackage": "Units PER Package"
     },
     "sourceType": {

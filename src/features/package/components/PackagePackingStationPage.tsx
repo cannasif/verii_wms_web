@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AlertTriangle, Barcode, CheckCircle2, PackageOpen, Printer, ShieldCheck } from 'lucide-react';
+import { OpsActionButton, OpsFieldShell, OpsFormPageShell } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +23,9 @@ interface QualityWarning {
   title: string;
   detail: string;
 }
+
+const STATION_SEARCH_PANEL_CLASS =
+  'grid gap-3 rounded-xl border border-[color-mix(in_oklab,var(--wms-ops-accent)_18%,var(--wms-ops-card-border))] bg-[color-mix(in_oklab,var(--wms-ops-card)_92%,transparent)] p-4 md:grid-cols-[1fr_auto]';
 
 function getPackageMaterial(pkg: PPackageDto | undefined, materials: PackagingMaterialDto[]): PackagingMaterialDto | undefined {
   if (!pkg?.packagingMaterialId) return undefined;
@@ -241,30 +246,34 @@ export function PackagePackingStationPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={
+        <>
+          <span>{t('package.create.breadcrumb.parent')}</span>
+          <span className="mx-2 opacity-60">/</span>
+          <span>{t('package.create.breadcrumb.module')}</span>
+        </>
+      }
+      title={t('package.station.title')}
+      description={t('package.station.description')}
+      actions={<PackageOpen className="size-5 opacity-80" aria-hidden />}
+    >
       {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-emerald-950 via-slate-900 to-cyan-900 text-white">
-          <CardTitle className="flex items-center gap-2">
-            <PackageOpen className="size-7" />
-            {t('package.station.title')}
-          </CardTitle>
-          <CardDescription className="text-emerald-50">
-            {t('package.station.description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6 p-6">
-          <div className="grid gap-3 rounded-xl border bg-slate-50 p-4 md:grid-cols-[1fr_auto]">
+      <div className="wms-ops-form space-y-6">
+          <div className={STATION_SEARCH_PANEL_CLASS}>
               <div className="space-y-1">
               <Label>{t('package.station.headerId')}</Label>
+              <OpsFieldShell>
               <Input
                 value={packingHeaderIdText}
                 onChange={(event) => setPackingHeaderIdText(event.target.value)}
                 onKeyDown={(event) => { if (event.key === 'Enter') loadHeader(); }}
                 placeholder={t('package.station.headerIdPlaceholder')}
+                className={OPS_FIELD_CLASS}
               />
+              </OpsFieldShell>
             </div>
-            <Button className="self-end" onClick={loadHeader}>{t('common.search')}</Button>
+            <OpsActionButton type="button" variant="primary" className="self-end" onClick={loadHeader}>{t('common.search')}</OpsActionButton>
           </div>
 
           {activeHeaderId ? (
@@ -380,8 +389,7 @@ export function PackagePackingStationPage(): ReactElement {
               </div>
             </div>
           ) : null}
-        </CardContent>
-      </Card>
-    </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

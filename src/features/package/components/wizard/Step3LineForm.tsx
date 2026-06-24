@@ -34,6 +34,7 @@ import {
   stopAndClearScanner,
   type Html5QrcodeInstance,
 } from '@/lib/html5-qrcode';
+import { cn } from '@/lib/utils';
 
 interface Step3LineFormProps {
   packingHeaderId: number;
@@ -42,6 +43,7 @@ interface Step3LineFormProps {
   onPrevious: () => void;
   onNext: () => void;
   onSaveAndExit: () => void;
+  variant?: 'default' | 'ops';
 }
 
 export function Step3LineForm({
@@ -51,8 +53,10 @@ export function Step3LineForm({
   onPrevious,
   onNext,
   onSaveAndExit,
+  variant = 'default',
 }: Step3LineFormProps): ReactElement {
   const { t } = useTranslation(['package', 'common']);
+  const isOps = variant === 'ops';
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [selectedPackageId, setSelectedPackageId] = useState<number | undefined>(undefined);
   const [barcodeInput, setBarcodeInput] = useState('');
@@ -295,8 +299,8 @@ export function Step3LineForm({
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <Card>
+    <div className={cn('space-y-6', isOps && 'wms-ops-form wms-ops-list')}>
+      <Card className={cn(isOps && 'wms-ops-order-step')}>
         <CardHeader>
           <PageActionBar
             title={<CardTitle>{t('package.wizard.step3.title')}</CardTitle>}
