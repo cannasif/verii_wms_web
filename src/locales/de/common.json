@@ -186,6 +186,7 @@
       "templateDownloaded": "Excel-Vorlage wurde heruntergeladen.",
       "templateDownloadFailed": "Excel-Vorlage konnte nicht heruntergeladen werden.",
       "importFromExcel": "Aus Excel importieren",
+      "importMenu": "Importieren",
       "importInProgress": "Import läuft...",
       "invalidFileType": "Nur .xlsx Excel-Dateien werden unterstützt.",
       "queueing": "Excel-Import wird in die Warteschlange gestellt...",

@@ -49,6 +49,8 @@
     "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
     "update": "Güncelle",
     "processing": "İşleniyor...",
+    "deleteConfirmTitle": "Kaydı sil",
+    "deleteConfirmSuffix": "kaydını silmek istediğine emin misin? Bu işlem geri alınamaz.",
     "pagePreparing": "Sayfa hazırlanıyor...",
     "statusLabels": {
       "waiting": "Beklemede",
@@ -186,6 +188,7 @@
       "templateDownloaded": "Excel şablonu indirildi.",
       "templateDownloadFailed": "Excel şablonu indirilemedi.",
       "importFromExcel": "Excel'den aktar",
+      "importMenu": "İçe Aktar",
       "importInProgress": "Aktarılıyor...",
       "invalidFileType": "Yalnızca .xlsx Excel dosyası yükleyebilirsiniz.",
       "queueing": "Excel aktarımı kuyruğa alınıyor...",
@@ -338,8 +341,10 @@
     "parametersIc": "Sayım Parametreleri",
     "parametersP": "Paket Parametreleri",
     "package": "Paketleme",
+    "packageStation": "Paketleme İstasyonu",
     "packageList": "Paketleme Listesi",
     "packageCreate": "Paketleme Emrini Oluşturma",
+    "packageSettings": "Paketleme Tanımları",
     "accessControl": "Erişim Kontrolü",
     "userManagement": "Kullanıcı Yönetimi",
     "permissionDefinitions": "İzin Tanımları",
@@ -517,41 +522,41 @@
     "parentShelf": "Üst Raf",
     "parentShelfPh": "Opsiyonel üst raf",
     "none": "Yok",
-    "code": "Code",
+    "code": "Kod",
     "name": "Ad",
     "type": "Tip",
     "levelNo": "Seviye No",
     "capacity": "Kapasite",
     "barcodeEntryMode": "Barkod Giriş Tipi",
     "barcode": "Barkod",
-    "barcodeAutoPh": "Code üzerinden otomatik oluşur",
+    "barcodeAutoPh": "Kod üzerinden otomatik oluşur",
     "barcodeManualPh": "Elle barkod girin",
-    "barcodePreviewTitle": "Barcode Preview",
-    "barcodePreviewHelp": "Auto modda barcode code üzerinden üretilir. Manual modda global unique barkod beklenir.",
+    "barcodePreviewTitle": "Barkod Önizleme",
+    "barcodePreviewHelp": "Otomatik modda barkod kod alanından üretilir. Manuel modda benzersiz barkod girilmelidir.",
     "activeRecord": "Aktif Kayıt",
     "activeRecordHelp": "Pasif raf seçim listelerinde çıkmaz.",
     "update": "Güncelle",
     "save": "Kaydet",
     "newRecord": "Yeni Kayıt",
     "listTitle": "Raf Listesi",
-    "searchPh": "Code, ad veya barkod ara",
+    "searchPh": "Kod, ad veya barkod ara",
     "colWarehouse": "Depo",
-    "colCode": "Code",
+    "colCode": "Kod",
     "colName": "Ad",
     "colType": "Tip",
     "colBarcode": "Barkod",
     "colStatus": "Durum",
-    "colAction": "Aksiyon",
+    "colAction": "İşlemler",
     "parentPrefix": "Üst",
     "active": "Aktif",
     "inactive": "Pasif",
     "edit": "Düzenle",
-    "locationZone": "Zone",
-    "locationRack": "Rack",
-    "locationShelf": "Shelf",
-    "locationCell": "Cell",
-    "barcodeModeAuto": "Auto",
-    "barcodeModeManual": "Manual",
+    "locationZone": "Bölge",
+    "locationRack": "Raf Sırası",
+    "locationShelf": "Raf",
+    "locationCell": "Hücre",
+    "barcodeModeAuto": "Otomatik",
+    "barcodeModeManual": "Manuel",
     "toastUpdated": "Raf kaydı güncellendi",
     "toastCreated": "Raf kaydı oluşturuldu",
     "toastSaveFailed": "Raf kaydı kaydedilemedi",
@@ -1352,7 +1357,11 @@
       "definition": "Belge Seri Tanımı",
       "customer": "Cari",
       "user": "Kullanıcı",
-      "priority": "Öncelik"
+      "priority": "Öncelik",
+      "yearMode": "Yıl Modu",
+      "numberLength": "Numara Uzunluğu",
+      "startNumber": "Başlangıç Numarası",
+      "incrementBy": "Artış Miktarı"
     },
     "placeholders": {
       "warehouse": "Depo seçiniz",
@@ -1362,12 +1371,14 @@
     },
     "definitions": {
       "pageTitle": "Belge Seri Tanımları",
+      "pageDescription": "Belge numarası seri tanımlarını yönetin.",
       "empty": "Gösterilecek belge seri tanımı bulunamadı.",
       "createTitle": "Belge Seri Tanımı Oluştur",
       "editTitle": "Belge Seri Tanımını Güncelle"
     },
     "rules": {
       "pageTitle": "Belge Seri Kuralları",
+      "pageDescription": "Depo, cari ve kullanıcıya göre belge seri eşleştirme kurallarını yönetin.",
       "empty": "Gösterilecek belge seri kuralı bulunamadı.",
       "createTitle": "Belge Seri Kuralı Oluştur",
       "editTitle": "Belge Seri Kuralını Güncelle"
@@ -3619,6 +3630,7 @@
         "title": "Üretim İhtiyacından Öneriler",
         "description": "Seçili plan veya emirdeki ihtiyaca göre sistem size hazır transfer kalemleri önerir.",
         "hint": "Önce gerekli satırları seçin. Sonra ister mevcut taslağa ekleyin, ister mevcut satırların yerine yazın.",
+        "hintTitle": "Kullanım",
         "noSuggestions": "Öneri henüz yok. Plan/emir ve transfer amacını seçip önerileri getirin.",
         "applyModeLabel": "Uygulama Modu",
         "applyMode": {
@@ -3664,65 +3676,69 @@
           "body": "Önerileri getirip seçilen satırları kontrollü şekilde taslağa ekleyin."
         }
       },
-      "purpose": "Transfer Amaci",
-      "productionDocument": "Uretim Plani No",
-      "productionOrder": "Uretim Emri No",
-      "lineRole": "Kalem Rolu",
-      "sourceCell": "Kaynak Hucre",
-      "targetCell": "Hedef Hucre",
+      "purpose": "Transfer Amacı",
+      "productionDocument": "Üretim Planı No",
+      "productionOrder": "Üretim Emri No",
+      "lineRole": "Kalem Rolü",
+      "sourceCell": "Kaynak Hücre",
+      "targetCell": "Hedef Hücre",
+      "workflow": {
+        "expand": "Göster",
+        "collapse": "Gizle"
+      },
       "guide": {
         "materialSupply": "Malzeme Besleme",
-        "semiFinishedMove": "Yari Mamul Tasima",
-        "outputMove": "Mamul Depoya Cikis",
-        "scrapMove": "Fire Tasima",
-        "returnToStock": "Stoga Iade",
+        "semiFinishedMove": "Yarı Mamul Taşıma",
+        "outputMove": "Mamul Depoya Çıkış",
+        "scrapMove": "Fire Taşıma",
+        "returnToStock": "Stoğa İade",
         "title": "Transfer Rehberi",
-        "subtitle": "Bu ekran PT tarafinda hangi rol ile neden acildigini netlestirir.",
-        "materialSupplyBody": "Uretim tuketimi icin gerekli hammaddeleri besleme alanina cekmek icin kullanilir.",
-        "semiFinishedMoveBody": "Bir emrin ciktisini sonraki emrin tuketimine veya istasyonuna tasir.",
-        "outputMoveBody": "Tamamlanan urunun uretimden mamul depoya cikisini yonetir."
+        "subtitle": "Bu ekran PT tarafında hangi rol ile neden açıldığını netleştirir.",
+        "materialSupplyBody": "Üretim tüketimi için gerekli hammaddeleri besleme alanına çekmek için kullanılır.",
+        "semiFinishedMoveBody": "Bir emrin çıktısını sonraki emrin tüketimine veya istasyonuna taşır.",
+        "outputMoveBody": "Tamamlanan ürünün üretimden mamul depoya çıkışını yönetir."
       },
-      "lineRoleConsumption": "Tuketimi Besle",
-      "lineRoleSemiFinished": "Ara Mamul Tasi",
-      "lineRoleOutput": "Ciktiyi Tasi",
+      "lineRoleConsumption": "Tüketimi Besle",
+      "lineRoleSemiFinished": "Ara Mamul Taşı",
+      "lineRoleOutput": "Çıktıyı Taşı",
       "info": {
-        "overviewTitle": "Bu ekran ne yapiyor?",
-        "overviewBody": "Bu ekran, uretim planindaki bir asamaya malzeme beslemek, ara mamulu sonraki istasyona tasimak veya tamamlanan urunu mamul depoya almak icin transfer emri olusturur. Oneri paneli, secili plan veya emrin ihtiyacindan otomatik satir uretir.",
-        "linkTitle": "Uretim baglantisi neden onemli?",
-        "linkBody": "Plan veya emir baglantisi kuruldugunda sistem, bu transferin hangi uretim ihtiyacini karşıladığını bilir. Boylece hangi tuketim satirinin beslendigi veya hangi ciktinin tasindigi izlenebilir olur.",
-        "linesTitle": "Kalemleri nasil kullanmaliyim?",
-        "linesBody": "Once onerileri getirerek sistemin uretim ihtiyacindan tavsiye uretmesini saglayin. Sonra gerekli satirlari secip mevcut taslaga ekleyin veya degistirin. Bu ekran planlamaciya malzeme besleme ve ara istasyon hareketlerini kontrollu kurdurmak icin tasarlandi."
+        "overviewTitle": "Bu ekran ne yapıyor?",
+        "overviewBody": "Bu ekran, üretim planındaki bir aşamaya malzeme beslemek, yarı mamulü sonraki istasyona taşımak veya tamamlanan ürünü mamul depoya almak için transfer emri oluşturur. Öneri paneli, seçili plan veya emrin ihtiyacından otomatik satır üretir.",
+        "linkTitle": "Üretim bağlantısı neden önemli?",
+        "linkBody": "Plan veya emir bağlantısı kurulduğunda sistem, bu transferin hangi üretim ihtiyacını karşıladığını bilir. Böylece hangi tüketim satırının beslendiği veya hangi çıktının taşındığı izlenebilir olur.",
+        "linesTitle": "Kalemleri nasıl kullanmalıyım?",
+        "linesBody": "Önce önerileri getirerek sistemin üretim ihtiyacından tavsiye üretmesini sağlayın. Sonra gerekli satırları seçip mevcut taslağa ekleyin veya değiştirin. Bu ekran planlamacıya malzeme besleme ve ara istasyon hareketlerini kontrollü kurdurmak için tasarlandı."
       },
       "summary": {
-        "purpose": "Transfer Amaci",
+        "purpose": "Transfer Amacı",
         "lines": "Kalem",
         "quantity": "Toplam Miktar"
       },
       "header": {
-        "title": "Transfer Ust Bilgisi",
-        "subtitle": "Transferin hangi uretim plani veya emri icin acildigini belirtin."
+        "title": "Transfer Üst Bilgisi",
+        "subtitle": "Transferin hangi üretim planı veya emri için açıldığını belirtin."
       },
-      "productionOrderSelect": "Bagli emri secin",
-      "productionOrderSearch": "Uretim emirlerinde ara",
-      "productionOrderEmpty": "Once onerileri getirerek emir listesini olusturun",
+      "productionOrderSelect": "Bağlı emri seçin",
+      "productionOrderSearch": "Üretim emirlerinde ara",
+      "productionOrderEmpty": "Önce önerileri getirerek emir listesini oluşturun",
       "lines": {
         "title": "Transfer Kalemleri",
-        "subtitle": "Uretim tuketimlerini besleyen veya ciktisini tasiyan satirlari tanimlayin.",
-        "fetchSuggestions": "Ihtiyactan Oneri Getir"
+        "subtitle": "Üretim tüketimlerini besleyen veya çıktısını taşıyan satırları tanımlayın.",
+        "fetchSuggestions": "İhtiyaçtan Öneri Getir"
       },
       "lineCardTitle": "Transfer Kalemi {{index}}",
-      "lineCardHintLinked": "Bu kalem {{orderNo}} emrine bagli ihtiyaci tasir.",
-      "lineCardHint": "Bu kalemin neyi, nereye ve hangi amacla tasiyacagini secin.",
-      "stockSelect": "Stok secin",
-      "stockSearch": "Transfer stoklarinda ara",
-      "stockEmpty": "Bu emre bagli onerili stok bulunmuyor",
-      "cellSearch": "Hucrelerde ara",
-      "sourceCellEmpty": "Bu secim icin kaynak hucre onerisi yok",
-      "targetCellEmpty": "Bu secim icin hedef hucre onerisi yok",
+      "lineCardHintLinked": "Bu kalem {{orderNo}} emrine bağlı ihtiyacı taşır.",
+      "lineCardHint": "Bu kalemin neyi, nereye ve hangi amaçla taşıyacağını seçin.",
+      "stockSelect": "Stok seçin",
+      "stockSearch": "Transfer stoklarında ara",
+      "stockEmpty": "Bu emre bağlı önerili stok bulunmuyor",
+      "cellSearch": "Hücrelerde ara",
+      "sourceCellEmpty": "Bu seçim için kaynak hücre önerisi yok",
+      "targetCellEmpty": "Bu seçim için hedef hücre önerisi yok",
       "review": {
         "header": "Plan No",
         "order": "Emir No",
-        "purpose": "Amac"
+        "purpose": "Amaç"
       }
     }
   },
@@ -4485,7 +4501,8 @@
       "selectUser": "Kullanıcı seçiniz"
     },
     "messages": {
-      "groupNotFound": "Grup bulunamadı"
+      "groupNotFound": "Grup bulunamadı",
+      "manualOverrideNotice": "Bu ekran, istisnai çalışan ihtiyaçları için manuel ek hak atamalarında kullanılır; görev bazlı temel hak kuralının yerine geçmez."
     },
     "operational": {
       "common": {
@@ -4802,7 +4819,16 @@
         "hintRoutineFreqDays": "Rutin dönemde aynı haktan tekrar almak için kaç gün beklenmesi gerektiğini yazın.",
         "hintRoutineFreqQty": "Rutin dönemde bir gelişte verilecek en yüksek adedi yazın.",
         "lblActive": "Aktif",
-        "lblMandatory": "Zorunlu"
+        "lblMandatory": "Zorunlu",
+        "sectionBase": "Bölüm, görev ve grup",
+        "sectionInitial": "İlk giriş hakkı",
+        "sectionThreeMonth": "3. ay sonrası",
+        "sectionRoutine": "Rutin dönem",
+        "sectionFlags": "Durum"
+      },
+      "override": {
+        "sectionEmployee": "Çalışan ve grup",
+        "sectionEntitlement": "Ek hak ve geçerlilik"
       },
       "deleteConfirm": "{{name}} kaydı silinsin mi?",
       "overview": {

@@ -49,6 +49,8 @@
     "generalError": "An error occurred. Please try again.",
     "update": "Update",
     "processing": "Processing...",
+    "deleteConfirmTitle": "Delete record",
+    "deleteConfirmSuffix": "Are you sure you want to delete this record? This action cannot be undone.",
     "pagePreparing": "Preparing page...",
     "statusLabels": {
       "waiting": "Waiting",
@@ -186,6 +188,7 @@
       "templateDownloaded": "Excel template downloaded.",
       "templateDownloadFailed": "Excel template could not be downloaded.",
       "importFromExcel": "Import from Excel",
+      "importMenu": "Import",
       "importInProgress": "Importing...",
       "invalidFileType": "Only .xlsx Excel files are supported.",
       "queueing": "Queueing Excel import...",
@@ -338,8 +341,10 @@
     "parametersIc": "Inventory Count Parameters",
     "parametersP": "Package Parameters",
     "package": "Packaging",
+    "packageStation": "Packing Station",
     "packageList": "Packaging List",
     "packageCreate": "Create Packaging Order",
+    "packageSettings": "Packaging Definitions",
     "accessControl": "Access Control",
     "userManagement": "User Management",
     "permissionDefinitions": "Permission Definitions",
@@ -1352,7 +1357,11 @@
       "definition": "Document Series Definition",
       "customer": "Customer",
       "user": "User",
-      "priority": "Priority"
+      "priority": "Priority",
+      "yearMode": "Year Mode",
+      "numberLength": "Number Length",
+      "startNumber": "Start Number",
+      "incrementBy": "Increment By"
     },
     "placeholders": {
       "warehouse": "Select warehouse",
@@ -1362,12 +1371,14 @@
     },
     "definitions": {
       "pageTitle": "Document Series Definitions",
+      "pageDescription": "Manage document number series definitions.",
       "empty": "No document series definition found.",
       "createTitle": "Create Document Series Definition",
       "editTitle": "Update Document Series Definition"
     },
     "rules": {
       "pageTitle": "Document Series Rules",
+      "pageDescription": "Manage document series matching rules by warehouse, customer, and user.",
       "empty": "No document series rule found.",
       "createTitle": "Create Document Series Rule",
       "editTitle": "Update Document Series Rule"

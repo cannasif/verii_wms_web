@@ -188,6 +188,7 @@
       "templateDownloaded": "Excel template downloaded.",
       "templateDownloadFailed": "Excel template could not be downloaded.",
       "importFromExcel": "Import from Excel",
+      "importMenu": "Import",
       "importInProgress": "Importing...",
       "invalidFileType": "Only .xlsx Excel files are supported.",
       "queueing": "Queueing Excel import...",
