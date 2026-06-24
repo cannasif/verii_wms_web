@@ -1,24 +1,47 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Plus, RefreshCcw, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, RefreshCcw, Save, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PagedDataGrid, PagedLookupDialog, type PagedDataGridColumn } from '@/components/shared';
+import { MasterDataOpsErpEyebrow, MasterDataOpsFormField, masterDataOpsGridColumn } from '@/features/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import type { ShelfDefinitionDto, ShelfUpsertRequest } from '../types/shelf-management.types';
 import { shelfManagementApi } from '../api/shelf-management.api';
+
+type ShelfColumnKey = 'warehouse' | 'code' | 'name' | 'type' | 'barcode' | 'status' | 'actions';
+
+const SHELF_DEFAULT_WIDTHS = {
+  warehouse: 18,
+  code: 14,
+  name: 22,
+  type: 10,
+  barcode: 16,
+  status: 10,
+  actions: 12,
+} as Record<string, number>;
+
+function mapShelfSortBy(value: ShelfColumnKey): string {
+  if (value === 'actions') return 'Code';
+  switch (value) {
+    case 'warehouse': return 'WarehouseName';
+    case 'name': return 'Name';
+    case 'type': return 'LocationType';
+    case 'barcode': return 'Barcode';
+    case 'status': return 'IsActive';
+    case 'code':
+    default: return 'Code';
+  }
+}
 
 const EMPTY_FORM: ShelfUpsertRequest = {
   warehouseId: 0,
@@ -63,8 +86,47 @@ export function ShelfManagementPage(): ReactElement {
   const permission = useCrudPermission('wms.print-management');
   const [form, setForm] = useState<ShelfUpsertRequest>(EMPTY_FORM);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [search, setSearch] = useState('');
   const [warehousePickerOpen, setWarehousePickerOpen] = useState(false);
+  const pageKey = 'shelf-management-list';
+  const showActionsColumn = permission.canUpdate || permission.canDelete;
+
+  const pagedGrid = usePagedDataGrid<ShelfColumnKey>({
+    pageKey,
+    defaultSortBy: 'code',
+    defaultSortDirection: 'asc',
+    defaultPageSize: 20,
+    mapSortBy: mapShelfSortBy,
+  });
+
+  const columns = useMemo<PagedDataGridColumn<ShelfColumnKey>[]>(
+    () => [
+      masterDataOpsGridColumn('warehouse', t('shelfManagement.colWarehouse')),
+      masterDataOpsGridColumn('code', t('shelfManagement.colCode')),
+      masterDataOpsGridColumn('name', t('shelfManagement.colName')),
+      masterDataOpsGridColumn('type', t('shelfManagement.colType')),
+      masterDataOpsGridColumn('barcode', t('shelfManagement.colBarcode')),
+      masterDataOpsGridColumn('status', t('shelfManagement.colStatus')),
+      masterDataOpsGridColumn('actions', t('shelfManagement.colAction'), false),
+    ],
+    [t],
+  );
+
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
+    pageKey,
+    columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: SHELF_DEFAULT_WIDTHS,
+    includeActionsColumn: showActionsColumn,
+    idColumnKey: 'code',
+  });
 
   useEffect(() => {
     setPageTitle(t('sidebar.erpShelves'));
@@ -77,11 +139,18 @@ export function ShelfManagementPage(): ReactElement {
   });
 
   const shelvesQuery = useQuery({
-    queryKey: ['shelf-management-list', search],
-    queryFn: ({ signal }) => shelfManagementApi.getPaged({ pageNumber: 1, pageSize: 200, search }, { signal }),
+    queryKey: ['shelf-management-list', pagedGrid.queryParams],
+    queryFn: ({ signal }) => shelfManagementApi.getPaged(pagedGrid.queryParams, { signal }),
   });
 
-  const allShelves = useMemo(() => shelvesQuery.data?.data?.data ?? [], [shelvesQuery.data?.data?.data]);
+  const parentShelvesQuery = useQuery({
+    queryKey: ['shelf-management-all'],
+    queryFn: ({ signal }) => shelfManagementApi.getAll({ signal }),
+  });
+
+  const shelfRows = shelvesQuery.data?.data?.data ?? [];
+  const allShelves = parentShelvesQuery.data?.data ?? [];
+  const shelfRange = getPagedRange(shelvesQuery.data?.data);
   const filteredParents = useMemo(
     () => allShelves.filter((item) => item.id !== selectedId && item.warehouseId === form.warehouseId),
     [allShelves, form.warehouseId, selectedId],
@@ -131,46 +200,51 @@ export function ShelfManagementPage(): ReactElement {
   const renderLocationType = (item: ShelfDefinitionDto): string => getLocationTypeLabel(item.locationType, t);
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.erp') },
-          { label: t('sidebar.erpShelves'), isActive: true },
-        ]}
-      />
-
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.14),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('shelfManagement.badgeShelf')}</Badge>
-              <Badge variant="secondary">{t('shelfManagement.badgeMaster')}</Badge>
+    <OpsFormPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpShelves')} />}
+      title={t('sidebar.erpShelves')}
+      description={t('shelfManagement.subtitle')}
+      actions={
+        <OpsActionButton type="button" variant="secondary" onClick={() => void shelvesQuery.refetch()}>
+          <RefreshCcw className="size-3.5" aria-hidden />
+          {t('common.refresh')}
+        </OpsActionButton>
+      }
+    >
+      <div className="wms-ops-form wms-ops-erp-skin space-y-6">
+        <section className="wms-ops-receiving-area wms-ops-pt-terminal-section border">
+          <div className="wms-ops-receiving-area__header flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+            <div className="wms-ops-pt-terminal__prompt min-w-0">
+              <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
+              <h3 className="wms-ops-pt-terminal__title">
+                {selectedId ? t('shelfManagement.formEdit') : t('shelfManagement.formNew')}
+              </h3>
             </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpShelves')}
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {t('shelfManagement.subtitle')}
-            </p>
+            <div className="wms-ops-actions flex flex-wrap gap-2">
+              <OpsActionButton type="button" variant="primary" onClick={() => saveMutation.mutate()} disabled={formReadOnly || saveMutation.isPending}>
+                <Save className="size-3.5" aria-hidden />
+                {selectedId ? t('shelfManagement.update') : t('shelfManagement.save')}
+              </OpsActionButton>
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setSelectedId(null);
+                  setForm(EMPTY_FORM);
+                }}
+              >
+                <Plus className="size-3.5" aria-hidden />
+                {t('shelfManagement.newRecord')}
+              </OpsActionButton>
+            </div>
           </div>
-          <Button variant="outline" onClick={() => void shelvesQuery.refetch()}>
-            <RefreshCcw className="mr-2 size-4" />
-            {t('common.refresh')}
-          </Button>
-        </div>
-      </section>
 
-      <div className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-          <CardHeader>
-            <CardTitle>{selectedId ? t('shelfManagement.formEdit') : t('shelfManagement.formNew')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <div className="wms-ops-form p-4 sm:px-5 sm:pb-5">
             <fieldset disabled={formReadOnly} className={formReadOnly ? 'pointer-events-none opacity-75' : undefined}>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.warehouse')}</Label>
+              <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <MasterDataOpsFormField label={t('shelfManagement.warehouse')} className="md:col-span-2 xl:col-span-2">
                   <PagedLookupDialog
+                    variant="ops"
                     open={warehousePickerOpen}
                     onOpenChange={setWarehousePickerOpen}
                     value={
@@ -192,16 +266,16 @@ export function ShelfManagementPage(): ReactElement {
                     }
                     disabled={formReadOnly}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.parentShelf')}</Label>
+                </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.parentShelf')} className="md:col-span-2 xl:col-span-2">
                   <Select
                     value={form.parentShelfId ? String(form.parentShelfId) : '__none__'}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, parentShelfId: value === '__none__' ? null : Number(value) }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder={t('shelfManagement.parentShelfPh')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -213,30 +287,24 @@ export function ShelfManagementPage(): ReactElement {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
+                </MasterDataOpsFormField>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.code')}</Label>
-                  <Input value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.name')}</Label>
-                  <Input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-                </div>
-              </div>
+                <MasterDataOpsFormField label={t('shelfManagement.code')}>
+                  <OpsInput value={form.code} onChange={(event) => setForm((current) => ({ ...current, code: event.target.value }))} />
+                </MasterDataOpsFormField>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.type')}</Label>
+                <MasterDataOpsFormField label={t('shelfManagement.name')}>
+                  <OpsInput value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+                </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.type')}>
                   <Select
                     value={form.locationType}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, locationType: value as ShelfUpsertRequest['locationType'] }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -246,39 +314,36 @@ export function ShelfManagementPage(): ReactElement {
                       <SelectItem value="Cell">{t('shelfManagement.locationCell')}</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.levelNo')}</Label>
-                  <Input
+                </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.levelNo')}>
+                  <OpsInput
                     type="number"
                     value={form.levelNo ?? ''}
                     onChange={(event) =>
                       setForm((current) => ({ ...current, levelNo: event.target.value ? Number(event.target.value) : null }))
                     }
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.capacity')}</Label>
-                  <Input
+                </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.capacity')}>
+                  <OpsInput
                     type="number"
                     value={form.capacity ?? ''}
                     onChange={(event) =>
                       setForm((current) => ({ ...current, capacity: event.target.value ? Number(event.target.value) : null }))
                     }
                   />
-                </div>
-              </div>
+                </MasterDataOpsFormField>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.barcodeEntryMode')}</Label>
+                <MasterDataOpsFormField label={t('shelfManagement.barcodeEntryMode')}>
                   <Select
                     value={form.barcodeEntryMode}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, barcodeEntryMode: value as ShelfUpsertRequest['barcodeEntryMode'] }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -286,10 +351,10 @@ export function ShelfManagementPage(): ReactElement {
                       <SelectItem value="Manual">{t('shelfManagement.barcodeModeManual')}</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('shelfManagement.barcode')}</Label>
-                  <Input
+                </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.barcode')} className="md:col-span-2 xl:col-span-2">
+                  <OpsInput
                     value={form.barcodeEntryMode === 'Auto' ? barcodePreview : (form.barcode ?? '')}
                     onChange={(event) => setForm((current) => ({ ...current, barcode: event.target.value }))}
                     disabled={form.barcodeEntryMode === 'Auto'}
@@ -299,141 +364,218 @@ export function ShelfManagementPage(): ReactElement {
                         : t('shelfManagement.barcodeManualPh')
                     }
                   />
+                </MasterDataOpsFormField>
+              </div>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="rounded-none border border-[color:var(--wms-ops-card-border)] bg-[color-mix(in_oklab,var(--wms-ops-accent)_6%,var(--wms-ops-card-bg))] p-4">
+                  <div className="font-mono text-xs uppercase tracking-wider text-[color:var(--wms-ops-accent)]">
+                    {t('shelfManagement.barcodePreviewTitle')}
+                  </div>
+                  <div className="mt-2 font-mono text-lg">{barcodePreview || '-'}</div>
+                  <div className="mt-2 text-xs opacity-70">{t('shelfManagement.barcodePreviewHelp')}</div>
                 </div>
-              </div>
 
-              <div className="mt-4 rounded-xl border border-slate-200/80 bg-slate-50/80 p-3 text-sm dark:border-white/10 dark:bg-slate-900/30">
-                <div className="font-medium text-slate-900 dark:text-white">{t('shelfManagement.barcodePreviewTitle')}</div>
-                <div className="mt-1 font-mono text-sky-700 dark:text-sky-300">{barcodePreview || '-'}</div>
-                <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('shelfManagement.barcodePreviewHelp')}</div>
-              </div>
+                <MasterDataOpsFormField label={t('common.description')} className="min-w-0">
+                  <OpsTextarea
+                    value={form.description ?? ''}
+                    onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                    rows={4}
+                    className="min-h-[7.5rem]"
+                  />
+                </MasterDataOpsFormField>
 
-              <div className="mt-4 space-y-2">
-                <Label>{t('common.description')}</Label>
-                <Textarea
-                  value={form.description ?? ''}
-                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                  rows={4}
-                />
-              </div>
-
-              <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                <div>
-                  <div className="text-sm font-medium text-slate-900 dark:text-white">{t('shelfManagement.activeRecord')}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('shelfManagement.activeRecordHelp')}</div>
+                <div className="flex min-w-[12rem] flex-col justify-center rounded-none border border-[color:var(--wms-ops-card-border)] px-4 py-3">
+                  <div className="text-sm font-medium">{t('shelfManagement.activeRecord')}</div>
+                  <div className="mt-1 text-xs opacity-70">{t('shelfManagement.activeRecordHelp')}</div>
+                  <div className="mt-3">
+                    <Switch checked={form.isActive} onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))} />
+                  </div>
                 </div>
-                <Switch checked={form.isActive} onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))} />
               </div>
             </fieldset>
+          </div>
+        </section>
 
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => saveMutation.mutate()} disabled={formReadOnly || saveMutation.isPending}>
-                <Save className="mr-2 size-4" />
-                {selectedId ? t('shelfManagement.update') : t('shelfManagement.save')}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSelectedId(null);
-                  setForm(EMPTY_FORM);
-                }}
-              >
-                <Plus className="mr-2 size-4" />
-                {t('shelfManagement.newRecord')}
-              </Button>
+        <section className="wms-ops-receiving-area wms-ops-pt-terminal-section border">
+          <div className="wms-ops-receiving-area__header px-4 py-3 sm:px-5">
+            <div className="wms-ops-pt-terminal__prompt">
+              <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
+              <h3 className="wms-ops-pt-terminal__title">{t('shelfManagement.listTitle')}</h3>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-          <CardHeader>
-            <div className="flex items-center justify-between gap-3">
-              <CardTitle>{t('shelfManagement.listTitle')}</CardTitle>
-              <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={t('shelfManagement.searchPh')}
-                className="max-w-xs"
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('shelfManagement.colWarehouse')}</TableHead>
-                  <TableHead>{t('shelfManagement.colCode')}</TableHead>
-                  <TableHead>{t('shelfManagement.colName')}</TableHead>
-                  <TableHead>{t('shelfManagement.colType')}</TableHead>
-                  <TableHead>{t('shelfManagement.colBarcode')}</TableHead>
-                  <TableHead>{t('shelfManagement.colStatus')}</TableHead>
-                  <TableHead className="text-right">{t('shelfManagement.colAction')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {allShelves.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      {item.warehouseCode} · {item.warehouseName}
-                    </TableCell>
-                    <TableCell className="font-mono">{item.code}</TableCell>
-                    <TableCell>
-                      <div className="font-medium">{item.name}</div>
-                      {item.parentShelfCode ? (
-                        <div className="text-xs text-slate-500">
-                          {t('shelfManagement.parentPrefix')}: {item.parentShelfCode}
-                        </div>
-                      ) : null}
-                    </TableCell>
-                    <TableCell>{renderLocationType(item)}</TableCell>
-                    <TableCell className="font-mono">{item.barcode || '-'}</TableCell>
-                    <TableCell>
-                      <Badge variant={item.isActive ? 'default' : 'secondary'}>
+          </div>
+          <div className="wms-ops-form p-4 sm:px-5 sm:pb-5">
+            <PagedDataGrid<ShelfDefinitionDto, ShelfColumnKey>
+              variant="ops"
+              pageKey={pageKey}
+              columns={columns}
+              visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ShelfColumnKey[]}
+              defaultColumnWidths={SHELF_DEFAULT_WIDTHS}
+              columnWidths={columnWidths}
+              onResizeColumnPair={resizeColumnPair}
+              rows={shelfRows}
+              rowKey={(row) => row.id}
+              renderCell={(item, columnKey) => {
+                switch (columnKey) {
+                  case 'warehouse':
+                    return `${item.warehouseCode ?? '-'} · ${item.warehouseName ?? '-'}`;
+                  case 'code':
+                    return <span className="wms-ops-table-id-value font-mono text-xs">{item.code}</span>;
+                  case 'name':
+                    return (
+                      <div>
+                        <div className="font-medium uppercase tracking-wide">{item.name}</div>
+                        {item.parentShelfCode ? (
+                          <div className="text-xs opacity-70">
+                            {t('shelfManagement.parentPrefix')}: {item.parentShelfCode}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  case 'type':
+                    return renderLocationType(item);
+                  case 'barcode':
+                    return <span className="font-mono text-xs">{item.barcode || '-'}</span>;
+                  case 'status':
+                    return (
+                      <Badge variant="outline" className="wms-ops-code-badge rounded-none text-[0.625rem]">
                         {item.isActive ? t('shelfManagement.active') : t('shelfManagement.inactive')}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={!permission.canUpdate}
-                          onClick={() => {
-                            setSelectedId(item.id);
-                            setForm({
-                              warehouseId: item.warehouseId,
-                              parentShelfId: item.parentShelfId ?? null,
-                              code: item.code,
-                              name: item.name,
-                              locationType: item.locationType,
-                              barcodeEntryMode: item.barcodeEntryMode,
-                              barcode: item.barcode ?? '',
-                              capacity: item.capacity ?? null,
-                              levelNo: item.levelNo ?? null,
-                              isActive: item.isActive,
-                              description: item.description ?? '',
-                            });
-                          }}
-                        >
-                          {t('shelfManagement.edit')}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={!permission.canDelete || deleteMutation.isPending}
-                          onClick={() => deleteMutation.mutate(item.id)}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    );
+                  default:
+                    return null;
+                }
+              }}
+              showActionsColumn={showActionsColumn}
+              actionsHeaderLabel={t('shelfManagement.colAction')}
+              actionsCellClassName="wms-ops-table-actions-col"
+              renderActionsCell={(item) => (
+                <div className="wms-ops-row-actions flex justify-end gap-1">
+                  {permission.canUpdate ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="wms-ops-grid-icon-btn"
+                      aria-label={t('shelfManagement.edit')}
+                      onClick={() => {
+                        setSelectedId(item.id);
+                        setForm({
+                          warehouseId: item.warehouseId,
+                          parentShelfId: item.parentShelfId ?? null,
+                          code: item.code,
+                          name: item.name,
+                          locationType: item.locationType,
+                          barcodeEntryMode: item.barcodeEntryMode,
+                          barcode: item.barcode ?? '',
+                          capacity: item.capacity ?? null,
+                          levelNo: item.levelNo ?? null,
+                          isActive: item.isActive,
+                          description: item.description ?? '',
+                        });
+                      }}
+                    >
+                      <Pencil className="size-3" aria-hidden />
+                    </Button>
+                  ) : null}
+                  {permission.canDelete ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="wms-ops-grid-icon-btn"
+                      aria-label={t('common.delete')}
+                      disabled={deleteMutation.isPending}
+                      onClick={() => deleteMutation.mutate(item.id)}
+                    >
+                      <Trash2 className="size-3" aria-hidden />
+                    </Button>
+                  ) : null}
+                </div>
+              )}
+              sortBy={pagedGrid.sortBy}
+              sortDirection={pagedGrid.sortDirection}
+              onSort={(columnKey) => {
+                if (columnKey === 'actions') return;
+                pagedGrid.handleSort(columnKey);
+              }}
+              renderSortIcon={(columnKey) =>
+                columnKey === pagedGrid.sortBy
+                  ? pagedGrid.sortDirection === 'asc'
+                    ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+                    : <ArrowDown className="ml-1 h-3.5 w-3.5" />
+                  : null
+              }
+              isLoading={shelvesQuery.isLoading}
+              isError={Boolean(shelvesQuery.error)}
+              errorText={shelvesQuery.error instanceof Error ? shelvesQuery.error.message : t('common.error')}
+              emptyText={t('common.noData')}
+              pageSize={shelvesQuery.data?.data?.pageSize ?? pagedGrid.pageSize}
+              pageSizeOptions={pagedGrid.pageSizeOptions}
+              onPageSizeChange={pagedGrid.handlePageSizeChange}
+              pageNumber={pagedGrid.getDisplayPageNumber(shelvesQuery.data?.data)}
+              totalPages={Math.max(shelvesQuery.data?.data?.totalPages ?? 1, 1)}
+              hasPreviousPage={Boolean(shelvesQuery.data?.data?.hasPreviousPage)}
+              hasNextPage={Boolean(shelvesQuery.data?.data?.hasNextPage)}
+              onPreviousPage={pagedGrid.goToPreviousPage}
+              onNextPage={pagedGrid.goToNextPage}
+              previousLabel={t('common.previous')}
+              nextLabel={t('common.next')}
+              paginationInfoText={t('common.paginationInfo', {
+                current: shelfRange.from,
+                total: shelfRange.to,
+                totalCount: shelfRange.total,
+                defaultValue: `${shelfRange.from}-${shelfRange.to} / ${shelfRange.total}`,
+              })}
+              lockedColumnKeys={['code']}
+              idColumnKey="code"
+              actionBar={{
+                pageKey,
+                userId,
+                columns: columns.map(({ key, label }) => ({ key, label })),
+                visibleColumns,
+                columnOrder,
+                onVisibleColumnsChange: setVisibleColumns,
+                onColumnOrderChange: setColumnOrder,
+                lockedKeys: ['code'],
+                exportFileName: pageKey,
+                exportColumns: orderedVisibleColumns
+                  .filter((key) => key !== 'actions')
+                  .map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })),
+                exportRows: shelfRows.map((item) => ({
+                  warehouse: `${item.warehouseCode ?? ''} · ${item.warehouseName ?? ''}`,
+                  code: item.code,
+                  name: item.name,
+                  type: renderLocationType(item),
+                  barcode: item.barcode ?? '',
+                  status: item.isActive ? t('shelfManagement.active') : t('shelfManagement.inactive'),
+                })),
+                filterColumns: [],
+                defaultFilterColumn: '',
+                draftFilterRows: [],
+                onDraftFilterRowsChange: () => undefined,
+                filterLogic: 'and',
+                onFilterLogicChange: () => undefined,
+                onApplyFilters: () => undefined,
+                onClearFilters: () => undefined,
+                appliedFilterCount: 0,
+                variant: 'ops',
+                search: {
+                  value: pagedGrid.searchInput,
+                  onValueChange: pagedGrid.searchConfig.onValueChange,
+                  onSearchChange: pagedGrid.searchConfig.onSearchChange,
+                  placeholder: t('shelfManagement.searchPh'),
+                },
+                refresh: {
+                  onRefresh: () => void shelvesQuery.refetch(),
+                  isLoading: shelvesQuery.isLoading,
+                  label: t('common.refresh'),
+                },
+              }}
+            />
+          </div>
+        </section>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

@@ -3,14 +3,24 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, PagedLookupDialog, type PagedDataGridColumn } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsInput,
+  OpsListPageShell,
+  OpsTextarea,
+  PagedDataGrid,
+  PagedLookupDialog,
+  type PagedDataGridColumn,
+} from '@/components/shared';
+import {
+  MasterDataOpsDialogContent,
+  MasterDataOpsErpEyebrow,
+  MasterDataOpsFormField,
+  masterDataOpsGridColumn,
+} from '@/features/shared';
 import { erpReferenceApi } from '@/features/erp-reference/api/erpReference.api';
 import type { CustomerReferenceDto, WarehouseReferenceDto } from '@/features/erp-reference/types/erpReference.types';
 import { userApi } from '@/features/user-management/api/user-api';
@@ -95,15 +105,15 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'definition', label: t('documentSeries.columns.definition') },
-    { key: 'operationType', label: t('documentSeries.columns.operationType') },
-    { key: 'warehouse', label: t('documentSeries.columns.warehouse') },
-    { key: 'customer', label: t('documentSeries.columns.customer') },
-    { key: 'user', label: t('documentSeries.columns.user') },
-    { key: 'requiresEDispatch', label: t('documentSeries.columns.eDispatch') },
-    { key: 'priority', label: t('documentSeries.columns.priority') },
-    { key: 'isActive', label: t('documentSeries.columns.isActive') },
-    { key: 'actions', label: t('common.actions'), sortable: false },
+    masterDataOpsGridColumn('definition', t('documentSeries.columns.definition')),
+    masterDataOpsGridColumn('operationType', t('documentSeries.columns.operationType')),
+    masterDataOpsGridColumn('warehouse', t('documentSeries.columns.warehouse')),
+    masterDataOpsGridColumn('customer', t('documentSeries.columns.customer')),
+    masterDataOpsGridColumn('user', t('documentSeries.columns.user')),
+    masterDataOpsGridColumn('requiresEDispatch', t('documentSeries.columns.eDispatch')),
+    masterDataOpsGridColumn('priority', t('documentSeries.columns.priority')),
+    masterDataOpsGridColumn('isActive', t('documentSeries.columns.isActive')),
+    masterDataOpsGridColumn('actions', t('common.actions'), false),
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -216,14 +226,26 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
         : <ArrowDown className="ml-1 h-3.5 w-3.5" />
       : null;
 
-  return (
-    <div className="crm-page space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <Badge variant="secondary">{t('documentSeries.badge')}</Badge>
-        <Button type="button" onClick={startCreate}>{t('common.add')}</Button>
-      </div>
+  function handleDialogOpenChange(nextOpen: boolean): void {
+    setDialogOpen(nextOpen);
+    if (!nextOpen) {
+      resetForm();
+    }
+  }
 
+  return (
+    <OpsListPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpDocumentSeriesRules')} />}
+      title={t('documentSeries.rules.pageTitle')}
+      description={t('documentSeries.rules.pageDescription', { defaultValue: t('documentSeries.badge') })}
+      actions={
+        <OpsActionButton type="button" variant="primary" onClick={startCreate}>
+          {t('common.add')}
+        </OpsActionButton>
+      }
+    >
       <PagedDataGrid<WmsDocumentSeriesRulePagedRowDto, ColumnKey>
+        variant="ops"
         pageKey={pageKey}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -301,108 +323,133 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
             placeholder: t('documentSeries.searchPlaceholder'),
           },
           refresh: { onRefresh: () => { void query.refetch(); }, isLoading: query.isLoading, label: t('common.refresh') },
+          variant: 'ops',
         }}
       />
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader><DialogTitle>{editing ? t('documentSeries.rules.editTitle') : t('documentSeries.rules.createTitle')}</DialogTitle></DialogHeader>
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <MasterDataOpsDialogContent size="xl">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+            <DialogTitle className="wms-ops-pt-terminal__title">
+              {editing ? t('documentSeries.rules.editTitle') : t('documentSeries.rules.createTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t('documentSeries.columns.definition')}</Label>
-              <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
-                open={definitionDialogOpen}
-                onOpenChange={setDefinitionDialogOpen}
-                title={t('documentSeries.columns.definition')}
-                placeholder={t('documentSeries.placeholders.definition')}
-                value={definitionLabel}
-                queryKey={['document-series', 'rules', 'definition']}
-                fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                  documentSeriesManagementApi.getDefinitionsPaged({ pageNumber, pageSize, search })}
-                getKey={(item: WmsDocumentSeriesDefinitionPagedRowDto) => String(item.id)}
-                getLabel={(item: WmsDocumentSeriesDefinitionPagedRowDto) => `${item.code} - ${item.name}`}
-                onSelect={(item: WmsDocumentSeriesDefinitionPagedRowDto) => {
-                  setFormState((prev) => ({ ...prev, documentSeriesDefinitionId: item.id }));
-                  setDefinitionLabel(`${item.code} - ${item.name}`);
-                }}
-              />
+          <div className="wms-ops-form max-h-[min(68dvh,720px)] overflow-y-auto px-5 py-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <MasterDataOpsFormField label={t('documentSeries.columns.definition')}>
+                <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
+                  variant="ops"
+                  open={definitionDialogOpen}
+                  onOpenChange={setDefinitionDialogOpen}
+                  title={t('documentSeries.columns.definition')}
+                  placeholder={t('documentSeries.placeholders.definition')}
+                  value={definitionLabel}
+                  queryKey={['document-series', 'rules', 'definition']}
+                  fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
+                    documentSeriesManagementApi.getDefinitionsPaged({ pageNumber, pageSize, search })}
+                  getKey={(item: WmsDocumentSeriesDefinitionPagedRowDto) => String(item.id)}
+                  getLabel={(item: WmsDocumentSeriesDefinitionPagedRowDto) => `${item.code} - ${item.name}`}
+                  onSelect={(item: WmsDocumentSeriesDefinitionPagedRowDto) => {
+                    setFormState((prev) => ({ ...prev, documentSeriesDefinitionId: item.id }));
+                    setDefinitionLabel(`${item.code} - ${item.name}`);
+                  }}
+                />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.operationType')}>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.companyCode')}>
+                <OpsInput value={formState.companyCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, companyCode: event.target.value }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.warehouse')}>
+                <PagedLookupDialog<WarehouseReferenceDto>
+                  variant="ops"
+                  open={warehouseDialogOpen}
+                  onOpenChange={setWarehouseDialogOpen}
+                  title={t('documentSeries.columns.warehouse')}
+                  placeholder={t('documentSeries.placeholders.warehouse')}
+                  value={warehouseLabel}
+                  queryKey={['document-series', 'rules', 'warehouse']}
+                  fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
+                    erpReferenceApi.getWarehouses({ pageNumber, pageSize, search })}
+                  getKey={(item: WarehouseReferenceDto) => String(item.id)}
+                  getLabel={(item: WarehouseReferenceDto) => `${item.warehouseCode} - ${item.warehouseName}`}
+                  onSelect={(item: WarehouseReferenceDto) => {
+                    setFormState((prev) => ({ ...prev, warehouseId: item.id }));
+                    setWarehouseLabel(`${item.warehouseCode} - ${item.warehouseName}`);
+                  }}
+                />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.customer')}>
+                <PagedLookupDialog<CustomerReferenceDto>
+                  variant="ops"
+                  open={customerDialogOpen}
+                  onOpenChange={setCustomerDialogOpen}
+                  title={t('documentSeries.columns.customer')}
+                  placeholder={t('documentSeries.placeholders.customer')}
+                  value={customerLabel}
+                  queryKey={['document-series', 'rules', 'customer']}
+                  fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
+                    erpReferenceApi.getCustomers({ pageNumber, pageSize, search })}
+                  getKey={(item: CustomerReferenceDto) => String(item.id)}
+                  getLabel={(item: CustomerReferenceDto) => `${item.customerCode} - ${item.customerName}`}
+                  onSelect={(item: CustomerReferenceDto) => {
+                    setFormState((prev) => ({ ...prev, customerId: item.id }));
+                    setCustomerLabel(`${item.customerCode} - ${item.customerName}`);
+                  }}
+                />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.user')}>
+                <PagedLookupDialog<UserDto>
+                  variant="ops"
+                  open={userDialogOpen}
+                  onOpenChange={setUserDialogOpen}
+                  title={t('documentSeries.columns.user')}
+                  placeholder={t('documentSeries.placeholders.user')}
+                  value={userLabel}
+                  queryKey={['document-series', 'rules', 'user']}
+                  fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
+                    userApi.getList({ pageNumber: pageNumber - 1, pageSize, search })}
+                  getKey={(item: UserDto) => String(item.id)}
+                  getLabel={(item: UserDto) => item.fullName || item.username}
+                  onSelect={(item: UserDto) => {
+                    setFormState((prev) => ({ ...prev, userId: item.id }));
+                    setUserLabel(item.fullName || item.username);
+                  }}
+                />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.priority')}>
+                <OpsInput type="number" value={formState.priority} onChange={(event) => setFormState((prev) => ({ ...prev, priority: Number(event.target.value) || 0 }))} />
+              </MasterDataOpsFormField>
             </div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.operationType')}</Label><select className="w-full rounded-xl border px-3 py-2 bg-background" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.companyCode')}</Label><Input value={formState.companyCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, companyCode: event.target.value }))} /></div>
-            <div className="space-y-2">
-              <Label>{t('documentSeries.columns.warehouse')}</Label>
-              <PagedLookupDialog<WarehouseReferenceDto>
-                open={warehouseDialogOpen}
-                onOpenChange={setWarehouseDialogOpen}
-                title={t('documentSeries.columns.warehouse')}
-                placeholder={t('documentSeries.placeholders.warehouse')}
-                value={warehouseLabel}
-                queryKey={['document-series', 'rules', 'warehouse']}
-                fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                  erpReferenceApi.getWarehouses({ pageNumber, pageSize, search })}
-                getKey={(item: WarehouseReferenceDto) => String(item.id)}
-                getLabel={(item: WarehouseReferenceDto) => `${item.warehouseCode} - ${item.warehouseName}`}
-                onSelect={(item: WarehouseReferenceDto) => {
-                  setFormState((prev) => ({ ...prev, warehouseId: item.id }));
-                  setWarehouseLabel(`${item.warehouseCode} - ${item.warehouseName}`);
-                }}
-              />
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-semibold">{t('documentSeries.columns.eDispatch')}</span>
+                <Switch checked={formState.requiresEDispatch} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, requiresEDispatch: checked }))} className="wms-ops-switch" />
+              </div>
+              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-semibold">{t('documentSeries.columns.isActive')}</span>
+                <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} className="wms-ops-switch" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>{t('documentSeries.columns.customer')}</Label>
-              <PagedLookupDialog<CustomerReferenceDto>
-                open={customerDialogOpen}
-                onOpenChange={setCustomerDialogOpen}
-                title={t('documentSeries.columns.customer')}
-                placeholder={t('documentSeries.placeholders.customer')}
-                value={customerLabel}
-                queryKey={['document-series', 'rules', 'customer']}
-                fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                  erpReferenceApi.getCustomers({ pageNumber, pageSize, search })}
-                getKey={(item: CustomerReferenceDto) => String(item.id)}
-                getLabel={(item: CustomerReferenceDto) => `${item.customerCode} - ${item.customerName}`}
-                onSelect={(item: CustomerReferenceDto) => {
-                  setFormState((prev) => ({ ...prev, customerId: item.id }));
-                  setCustomerLabel(`${item.customerCode} - ${item.customerName}`);
-                }}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('documentSeries.columns.user')}</Label>
-              <PagedLookupDialog<UserDto>
-                open={userDialogOpen}
-                onOpenChange={setUserDialogOpen}
-                title={t('documentSeries.columns.user')}
-                placeholder={t('documentSeries.placeholders.user')}
-                value={userLabel}
-                queryKey={['document-series', 'rules', 'user']}
-                fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                  userApi.getList({ pageNumber: pageNumber - 1, pageSize, search })}
-                getKey={(item: UserDto) => String(item.id)}
-                getLabel={(item: UserDto) => item.fullName || item.username}
-                onSelect={(item: UserDto) => {
-                  setFormState((prev) => ({ ...prev, userId: item.id }));
-                  setUserLabel(item.fullName || item.username);
-                }}
-              />
-            </div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.priority')}</Label><Input type="number" value={formState.priority} onChange={(event) => setFormState((prev) => ({ ...prev, priority: Number(event.target.value) || 0 }))} /></div>
+
+            <MasterDataOpsFormField label={t('common.description')} className="mt-4">
+              <OpsTextarea rows={3} value={formState.description ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
+            </MasterDataOpsFormField>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 mt-4">
-            <div className="flex items-center justify-between rounded-xl border p-3"><Label>{t('documentSeries.columns.eDispatch')}</Label><Switch checked={formState.requiresEDispatch} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, requiresEDispatch: checked }))} /></div>
-            <div className="flex items-center justify-between rounded-xl border p-3"><Label>{t('documentSeries.columns.isActive')}</Label><Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} /></div>
-          </div>
-
-          <div className="space-y-2 mt-4"><Label>{t('common.description')}</Label><Textarea rows={3} value={formState.description ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} /></div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t('common.close')}</Button>
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending}>{t('common.save')}</Button>
+          <DialogFooter className="wms-ops-actions border-t px-5 py-4">
+            <OpsActionButton type="button" variant="secondary" onClick={() => handleDialogOpenChange(false)}>
+              {t('common.close')}
+            </OpsActionButton>
+            <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending}>
+              {t('common.save')}
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </MasterDataOpsDialogContent>
       </Dialog>
-    </div>
+    </OpsListPageShell>
   );
 }

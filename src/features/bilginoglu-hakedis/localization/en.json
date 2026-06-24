@@ -76,6 +76,7 @@
   "detail": {
     "title": "{{order}} entitlement flow",
     "description": "Order lines, allocated batch quantities, and related DAT/shipment stages.",
+    "completedDescription": "Read-only summary of lines, batch history, and DAT/shipment movements for this completed order.",
     "lines": "Order lines",
     "stock": "Stock",
     "noLines": "No lines found.",
@@ -89,6 +90,7 @@
     "sourceWarehouse": "Available in warehouse",
     "hakEdisWarehouse": "Entitlement warehouse",
     "willUseQty": "{{qty}} will be used from warehouse {{warehouse}}",
+    "usableBalance": "Usable balance",
     "noUsableBalance": "No usable balance in warehouse {{warehouse}}",
     "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
@@ -183,10 +185,12 @@
       "shipment": "Shipment order"
     },
     "transfer": {
+      "nav": "Pending entitlement transfers",
       "title": "Pending Entitlement Transfers",
       "description": "Track batches waiting in entitlement outbound, intermediate approval, entitlement return, and replenishment DAT stages by order and stock line."
     },
     "shipment": {
+      "nav": "Pending loading/shipment",
       "title": "Pending Loading / Shipment Orders",
       "description": "Track batches that returned from entitlement or are directly ready to ship, including those waiting for loading/shipment orders or already opened shipment orders."
     },

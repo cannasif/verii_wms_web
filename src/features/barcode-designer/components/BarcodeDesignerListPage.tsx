@@ -1,17 +1,19 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Edit3, PauseCircle, Plus, Printer, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { MasterDataOpsErpEyebrow, masterDataOpsGridColumn } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import type { BarcodeTemplate } from '../types/barcode-designer-editor.types';
+
+type TemplateColumnKey = 'code' | 'name' | 'type' | 'size' | 'dpi' | 'draft' | 'status' | 'actions';
 
 export function BarcodeDesignerListPage(): ReactElement {
   const { t } = useTranslation('common');
@@ -19,6 +21,8 @@ export function BarcodeDesignerListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
   const permission = useCrudPermission('wms.print-management');
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 20;
 
   const templatesQuery = useQuery({
     queryKey: ['barcode-designer-templates'],
@@ -31,6 +35,25 @@ export function BarcodeDesignerListPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const templates = templatesQuery.data?.data ?? [];
+  const totalPages = Math.max(1, Math.ceil(templates.length / pageSize));
+  const pagedRows = useMemo(
+    () => templates.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [pageNumber, pageSize, templates],
+  );
+
+  const columns = useMemo<PagedDataGridColumn<TemplateColumnKey>[]>(
+    () => [
+      masterDataOpsGridColumn('code', t('barcodeDesigner.list.code')),
+      masterDataOpsGridColumn('name', t('barcodeDesigner.list.name')),
+      masterDataOpsGridColumn('type', t('barcodeDesigner.list.type')),
+      masterDataOpsGridColumn('size', t('barcodeDesigner.list.size')),
+      masterDataOpsGridColumn('dpi', 'DPI'),
+      masterDataOpsGridColumn('draft', t('barcodeDesigner.list.draft')),
+      masterDataOpsGridColumn('status', t('common.status')),
+      masterDataOpsGridColumn('actions', t('common.actions'), false),
+    ],
+    [t],
+  );
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => await barcodeDesignerApi.deleteTemplate(id),
@@ -55,111 +78,106 @@ export function BarcodeDesignerListPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.erp', { defaultValue: 'Missing translation' }) }, { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' }), isActive: true }]} />
-
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">{t('barcodeDesigner.list.badge')}</Badge>
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' })}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {t('barcodeDesigner.list.description')}
-              </p>
-            </div>
-          </div>
-          {permission.canCreate ? (
-          <Button onClick={() => navigate('/erp/barcode-designer/new')}>
-            <Plus className="mr-2 size-4" />
+    <OpsListPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpBarcodeDesignerList')} />}
+      title={t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' })}
+      description={t('barcodeDesigner.list.description')}
+      actions={
+        permission.canCreate ? (
+          <OpsActionButton type="button" variant="primary" onClick={() => navigate('/erp/barcode-designer/new')}>
+            <Plus className="size-3.5" aria-hidden />
             {t('barcodeDesigner.list.create')}
-          </Button>
-          ) : null}
-        </div>
-      </section>
-
-      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-        <CardHeader>
-          <CardTitle>{t('barcodeDesigner.list.tableTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('barcodeDesigner.list.code')}</TableHead>
-                <TableHead>{t('barcodeDesigner.list.name')}</TableHead>
-                <TableHead>{t('barcodeDesigner.list.type')}</TableHead>
-                <TableHead>{t('barcodeDesigner.list.size')}</TableHead>
-                <TableHead>DPI</TableHead>
-                <TableHead>{t('barcodeDesigner.list.draft')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">{t('common.actions')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {templates.map((template) => (
-                <TableRow key={template.id ?? template.templateCode}>
-                  <TableCell className="font-medium">{template.templateCode}</TableCell>
-                  <TableCell>{template.displayName}</TableCell>
-                  <TableCell>{template.labelType}</TableCell>
-                  <TableCell>{template.width} x {template.height} mm</TableCell>
-                  <TableCell>{template.dpi}</TableCell>
-                  <TableCell>{template.draftVersionId ?? '-'}</TableCell>
-                  <TableCell>
-                    <Badge variant={template.isActive ? 'default' : 'secondary'}>
-                      {template.isActive ? t('common.active') : t('common.passive')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {permission.canUpdate ? (
-                        <Button variant="outline" size="sm" onClick={() => navigate(`/erp/barcode-designer/${template.id}/edit`)}>
-                          <Edit3 className="mr-2 size-4" />
-                          {t('common.edit')}
-                        </Button>
-                      ) : null}
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/erp/barcode-designer/${template.id}/print`)}>
-                        <Printer className="mr-2 size-4" />
-                        {t('sidebar.erpBarcodePrint')}
-                      </Button>
-                      {permission.canUpdate ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleActiveMutation.mutate({ id: Number(template.id), isActive: !template.isActive })}
-                        >
-                          <PauseCircle className="mr-2 size-4" />
-                          {template.isActive ? t('common.deactivate') : t('common.activate')}
-                        </Button>
-                      ) : null}
-                      {permission.canDelete ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => deleteMutation.mutate(Number(template.id))}
-                        >
-                          <Trash2 className="mr-2 size-4" />
-                          {t('common.delete')}
-                        </Button>
-                      ) : null}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {templates.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center text-sm text-slate-500">
-                    {t('barcodeDesigner.list.empty')}
-                  </TableCell>
-                </TableRow>
-              ) : null}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+          </OpsActionButton>
+        ) : null
+      }
+    >
+      <PagedDataGrid<BarcodeTemplate, TemplateColumnKey>
+        variant="ops"
+        pageKey="barcode-designer-templates"
+        columns={columns}
+        rows={pagedRows}
+        rowKey={(row) => row.id ?? row.templateCode}
+        renderCell={(template, columnKey) => {
+          switch (columnKey) {
+            case 'code':
+              return <span className="wms-ops-table-id-value font-mono text-xs">{template.templateCode}</span>;
+            case 'name':
+              return <span className="font-medium uppercase tracking-wide">{template.displayName}</span>;
+            case 'type':
+              return template.labelType;
+            case 'size':
+              return `${template.width} x ${template.height} mm`;
+            case 'dpi':
+              return template.dpi;
+            case 'draft':
+              return template.draftVersionId ?? '-';
+            case 'status':
+              return (
+                <Badge variant="outline" className="wms-ops-code-badge rounded-none text-[0.625rem]">
+                  {template.isActive ? t('common.active') : t('common.passive')}
+                </Badge>
+              );
+            default:
+              return null;
+          }
+        }}
+        showActionsColumn
+        actionsHeaderLabel={t('common.actions')}
+        actionsCellClassName="wms-ops-table-actions-col"
+        renderActionsCell={(template) => (
+          <div className="wms-ops-row-actions flex flex-wrap justify-end gap-1">
+            {permission.canUpdate ? (
+              <Button variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => navigate(`/erp/barcode-designer/${template.id}/edit`)}>
+                <Edit3 className="size-3" aria-hidden />
+              </Button>
+            ) : null}
+            <Button variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => navigate(`/erp/barcode-designer/${template.id}/print`)}>
+              <Printer className="size-3" aria-hidden />
+            </Button>
+            {permission.canUpdate ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                onClick={() => toggleActiveMutation.mutate({ id: Number(template.id), isActive: !template.isActive })}
+              >
+                <PauseCircle className="size-3" aria-hidden />
+              </Button>
+            ) : null}
+            {permission.canDelete ? (
+              <Button variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => deleteMutation.mutate(Number(template.id))}>
+                <Trash2 className="size-3" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
+        )}
+        isLoading={templatesQuery.isLoading}
+        isError={Boolean(templatesQuery.error)}
+        errorText={templatesQuery.error instanceof Error ? templatesQuery.error.message : t('common.error')}
+        emptyText={t('common.noData')}
+        pageSize={pageSize}
+        pageSizeOptions={[20, 50, 100]}
+        onPageSizeChange={() => undefined}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        hasPreviousPage={pageNumber > 1}
+        hasNextPage={pageNumber < totalPages}
+        onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
+        onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
+        paginationInfoText={t('common.paginationInfo', {
+          current: templates.length === 0 ? 0 : (pageNumber - 1) * pageSize + 1,
+          total: Math.min(pageNumber * pageSize, templates.length),
+          totalCount: templates.length,
+          defaultValue: `${templates.length}`,
+        })}
+        refresh={{
+          onRefresh: () => void templatesQuery.refetch(),
+          isLoading: templatesQuery.isLoading,
+          label: t('common.refresh'),
+        }}
+      />
+    </OpsListPageShell>
   );
 }

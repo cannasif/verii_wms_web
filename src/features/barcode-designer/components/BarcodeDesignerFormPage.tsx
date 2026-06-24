@@ -5,7 +5,7 @@ import type { Stage as KonvaStage } from 'konva/lib/Stage';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { OpsFormPageShell } from '@/components/shared';
+import { MasterDataOpsErpEyebrow } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { loadJsPdfModule } from '@/lib/lazy-vendors';
 import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
@@ -533,7 +535,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
         return current;
       }
 
-      const nextDocument = {
+      return {
         ...current,
         canvas: {
           ...current.canvas,
@@ -542,10 +544,13 @@ export function BarcodeDesignerFormPage(): ReactElement {
           dpi: templateRequest.dpi,
         },
       };
-      setJsonValue(stringifyTemplateDocument(nextDocument));
-      return nextDocument;
     });
   }, [templateRequest.dpi, templateRequest.height, templateRequest.width]);
+
+  useEffect(() => {
+    const nextJson = stringifyTemplateDocument(documentState);
+    setJsonValue((prev) => (prev === nextJson ? prev : nextJson));
+  }, [documentState]);
 
   useEffect(() => {
     const draftJson = draftQuery.data?.data?.templateJson;
@@ -1703,41 +1708,26 @@ export function BarcodeDesignerFormPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
-          { label: t('sidebar.erpBarcodeDesigner', { defaultValue: 'Missing translation' }) },
-          {
-            label: isEditMode
+    <OpsFormPageShell
+      eyebrow={
+        <MasterDataOpsErpEyebrow
+          page={
+            isEditMode
               ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
-              : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' }),
-            isActive: true,
-          },
-        ]}
-      />
-
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">{isEditMode ? t('barcodeDesigner.form.badgeUpdate') : t('barcodeDesigner.form.badgeCreate')}</Badge>
-              <Badge variant="secondary">{t('barcodeDesigner.form.badgeDesigner')}</Badge>
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-                {isEditMode
-                  ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
-                  : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' })}
-              </h1>
-              <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {t('barcodeDesigner.form.heroDescription')}
-              </p>
-            </div>
-          </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="sm:col-span-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/4">
+              : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' })
+          }
+        />
+      }
+      title={
+        isEditMode
+          ? t('sidebar.erpBarcodeDesignerEdit', { defaultValue: 'Missing translation' })
+          : t('sidebar.erpBarcodeDesignerCreate', { defaultValue: 'Missing translation' })
+      }
+      description={t('barcodeDesigner.form.heroDescription')}
+    >
+      <div className="wms-ops-form wms-ops-erp-skin space-y-6">
+      <section className="wms-ops-receiving-area wms-ops-pt-terminal-section border p-4 sm:p-5 space-y-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/4">
                 <div className="mb-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -1902,6 +1892,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   </div>
                 ) : null}
               </div>
+        <div className="flex flex-wrap gap-2 border-t border-[color:var(--wms-ops-card-border)] pt-4">
               <Button variant="outline" onClick={() => handleAddElement('text')} disabled={!canManageTemplate}>
                 <Plus className="mr-2 size-4" />
                 Text
@@ -1923,7 +1914,6 @@ export function BarcodeDesignerFormPage(): ReactElement {
             <Button variant="outline" onClick={() => handleAddElement('image')} disabled={!canManageTemplate}>
               Logo
             </Button>
-          </div>
         </div>
       </section>
 
@@ -2876,6 +2866,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
           onConfirm={handleBindingPickerConfirm}
         />
       </Suspense>
-    </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

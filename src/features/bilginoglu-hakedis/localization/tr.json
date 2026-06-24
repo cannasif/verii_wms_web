@@ -76,6 +76,7 @@
   "detail": {
     "title": "{{order}} hakedis akisi",
     "description": "Siparisin kalemleri, ayrilan batch miktarlari ve bagli DAT/sevk adimlari.",
+    "completedDescription": "Tamamlanan siparisin kalemleri, batch gecmisi ve DAT/sevk hareketlerinin salt okunur ozeti.",
     "lines": "Siparis kalemleri",
     "stock": "Stok",
     "noLines": "Kalem bulunamadi.",
@@ -89,6 +90,7 @@
     "sourceWarehouse": "Bulunduğu depo",
     "hakEdisWarehouse": "Hakediş depo",
     "willUseQty": "{{warehouse}} deposundan {{qty}} kullanılacak",
+    "usableBalance": "Kullanılabilir bakiye",
     "noUsableBalance": "{{warehouse}} deposunda kullanılabilir bakiye yok",
     "batchLinkSummary": "IKM1 {{replenishmentToIntermediateHeaderId}} / IKM2 {{replenishmentToOrderWarehouseHeaderId}} / DAT1 {{datToHakEdisHeaderId}} / DAT2 {{returnFromHakEdisHeaderId}} / SH {{shipmentHeaderId}}"
   },
@@ -183,10 +185,12 @@
       "shipment": "Sevk emri"
     },
     "transfer": {
+      "nav": "Bekleyen hakediş transferleri",
       "title": "Bekleyen Hakediş Transferleri",
       "description": "Hakedişe çıkış, ara depo onayı, hakediş dönüşü ve ikmal DAT adımlarında bekleyen batch'leri sipariş ve stok kalemi bazında izleyin."
     },
     "shipment": {
+      "nav": "Bekleyen çıkış/yükleme",
       "title": "Bekleyen Çıkış/Yükleme Emirleri",
       "description": "Hakedişten dönmüş ya da direkt sevke hazır olan, çıkış/yükleme emri bekleyen veya sevk emri açılmış batch'leri izleyin."
     },
@@ -216,7 +220,7 @@
       "CreateReturnTransfer": "Hakediş dönüş DAT açılabilir",
       "WaitReturnTransferCompletion": "Hakediş dönüş tamamlanması bekleniyor",
       "CreateShipment": "Çıkış/yükleme emri açılabilir",
-      "WaitShipmentCompletion": "Sevkiyat tamamlanması bekleniyor",
+      "WaitShipmentCompletion": "Sevk tamamlanması bekleniyor",
       "Review": "Kontrol gerekli"
     },
     "move": {

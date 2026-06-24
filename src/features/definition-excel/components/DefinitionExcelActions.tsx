@@ -3,6 +3,13 @@ import { FileDown, Loader2, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { OpsActionButton } from '@/components/shared/OpsActionButton';
 import { cn } from '@/lib/utils';
 import { definitionExcelApi, type DefinitionExcelImportJobDto } from '../api/definition-excel-api';
 
@@ -10,6 +17,8 @@ interface DefinitionExcelActionsProps {
   definitionKey: string;
   fileNamePrefix: string;
   className?: string;
+  variant?: 'default' | 'ops-toolbar';
+  showLastJobSummary?: boolean;
   onImportCompleted?: () => void | Promise<void>;
 }
 
@@ -44,6 +53,8 @@ export function DefinitionExcelActions({
   definitionKey,
   fileNamePrefix,
   className,
+  variant = 'default',
+  showLastJobSummary = true,
   onImportCompleted,
 }: DefinitionExcelActionsProps): ReactElement {
   const { t } = useTranslation('common');
@@ -140,6 +151,52 @@ export function DefinitionExcelActions({
     }
   };
 
+  const isOpsToolbar = variant === 'ops-toolbar';
+  const isBusy = isTemplateDownloading || isImporting;
+
+  if (isOpsToolbar) {
+    return (
+      <div className={cn('flex shrink-0 items-center', className)}>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <OpsActionButton
+              type="button"
+              variant="secondary"
+              className="wms-ops-list-toolbar-btn"
+              disabled={isBusy}
+            >
+              {isBusy ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : <Upload className="size-3.5" aria-hidden />}
+              {isTemplateDownloading
+                ? t('common.definitionExcel.templateDownloading')
+                : isImporting
+                  ? t('common.definitionExcel.importInProgress')
+                  : t('common.definitionExcel.importMenu')}
+            </OpsActionButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="wms-ops-list-dropdown w-52 min-w-[11rem]">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              disabled={isBusy}
+              onClick={() => void handleTemplateDownload()}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              {t('common.definitionExcel.templateDownload')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              disabled={isBusy}
+              onClick={() => inputRef.current?.click()}
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              {t('common.definitionExcel.importFromExcel')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <input ref={inputRef} type="file" accept=".xlsx" className="hidden" onChange={(event) => void handleFileChange(event)} />
+      </div>
+    );
+  }
+
   return (
     <div className={cn('flex min-w-0 max-w-full flex-col gap-2 sm:items-end', className)}>
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
@@ -166,7 +223,7 @@ export function DefinitionExcelActions({
           {isImporting ? t('common.definitionExcel.importInProgress') : t('common.definitionExcel.importFromExcel')}
         </Button>
       </div>
-      {lastJob ? (
+      {showLastJobSummary && lastJob ? (
         <div className="hidden max-w-[min(100%,28rem)] rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300 lg:block">
           <span className="font-semibold">{t('common.definitionExcel.lastImport')}:</span>{' '}
           <span className={cn('font-semibold', getStatusTone(lastJob.status))}>

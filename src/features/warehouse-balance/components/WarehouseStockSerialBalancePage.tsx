@@ -1,12 +1,9 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Barcode, Layers3, RefreshCcw } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { MasterDataOpsErpEyebrow, MasterDataOpsStatGrid, masterDataOpsGridColumn } from '@/features/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -80,14 +77,14 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<SerialColumnKey>[]>(
     () => [
-      { key: 'warehouse', label: t('warehouseBalance.serial.columns.warehouse', { defaultValue: 'Missing translation' }) },
-      { key: 'shelf', label: t('warehouseBalance.serial.columns.shelf', { defaultValue: 'Missing translation' }) },
-      { key: 'stock', label: t('warehouseBalance.serial.columns.stock', { defaultValue: 'Missing translation' }) },
-      { key: 'yapKod', label: t('warehouseBalance.serial.columns.yapKod', { defaultValue: 'Missing translation' }) },
-      { key: 'serials', label: t('warehouseBalance.serial.columns.serials', { defaultValue: 'Missing translation' }) },
-      { key: 'quantity', label: t('warehouseBalance.serial.columns.quantity', { defaultValue: 'Missing translation' }) },
-      { key: 'status', label: t('warehouseBalance.serial.columns.status', { defaultValue: 'Missing translation' }) },
-      { key: 'transactionDate', label: t('warehouseBalance.serial.columns.transactionDate', { defaultValue: 'Missing translation' }) },
+      masterDataOpsGridColumn('warehouse', t('warehouseBalance.serial.columns.warehouse', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('shelf', t('warehouseBalance.serial.columns.shelf', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('stock', t('warehouseBalance.serial.columns.stock', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('yapKod', t('warehouseBalance.serial.columns.yapKod', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('serials', t('warehouseBalance.serial.columns.serials', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('quantity', t('warehouseBalance.serial.columns.quantity', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('status', t('warehouseBalance.serial.columns.status', { defaultValue: 'Missing translation' })),
+      masterDataOpsGridColumn('transactionDate', t('warehouseBalance.serial.columns.transactionDate', { defaultValue: 'Missing translation' })),
     ],
     [t],
   );
@@ -95,68 +92,30 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
   const totalQuantity = useMemo(() => rows.reduce((sum, row) => sum + row.quantity, 0), [rows]);
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
+    <OpsListPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpWarehouseSerialBalance')} />}
+      title={t('sidebar.erpWarehouseSerialBalance')}
+      description={t('warehouseBalance.serial.subtitle')}
+      actions={
+        <OpsActionButton type="button" variant="secondary" onClick={() => void query.refetch()}>
+          <RefreshCcw className="size-3.5" aria-hidden />
+          {t('common.refresh')}
+        </OpsActionButton>
+      }
+    >
+      <MasterDataOpsStatGrid
+        className="mb-6 md:grid-cols-3"
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
-          { label: t('sidebar.erpWarehouseSerialBalance', { defaultValue: 'Missing translation' }), isActive: true },
+          { label: t('warehouseBalance.serial.cards.rows', { defaultValue: 'Missing translation' }), value: query.data?.data?.totalCount ?? 0 },
+          { label: t('warehouseBalance.serial.cards.quantity', { defaultValue: 'Missing translation' }), value: formatNumber(totalQuantity) },
+          { label: t('warehouseBalance.serial.cards.filtered', { defaultValue: 'Missing translation' }), value: rows.length },
         ]}
       />
 
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(52,211,153,0.14),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('warehouseBalance.serial.badgeModule')}</Badge>
-              <Badge variant="secondary">{t('warehouseBalance.serial.badgeDetail')}</Badge>
-            </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              {t('sidebar.erpWarehouseSerialBalance')}
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {t('warehouseBalance.serial.subtitle')}
-            </p>
-          </div>
-          <Button variant="outline" onClick={() => void query.refetch()}>
-            <RefreshCcw className="mr-2 size-4" />
-            {t('common.refresh')}
-          </Button>
-        </div>
-      </section>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-          <CardContent className="flex items-center gap-3 p-5">
-            <Layers3 className="size-5 text-sky-600" />
-            <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.rows', { defaultValue: 'Missing translation' })}</div>
-              <div className="text-2xl font-semibold text-slate-950 dark:text-white">{query.data?.data?.totalCount ?? 0}</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-          <CardContent className="flex items-center gap-3 p-5">
-            <Barcode className="size-5 text-fuchsia-600" />
-            <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.quantity', { defaultValue: 'Missing translation' })}</div>
-              <div className="text-2xl font-semibold text-slate-950 dark:text-white">{formatNumber(totalQuantity)}</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-          <CardContent className="flex items-center gap-3 p-5">
-            <RefreshCcw className="size-5 text-emerald-600" />
-            <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('warehouseBalance.serial.cards.filtered', { defaultValue: 'Missing translation' })}</div>
-              <div className="text-2xl font-semibold text-slate-950 dark:text-white">{rows.length}</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
-        <CardContent className="p-5">
+      <section className="wms-ops-receiving-area border">
+        <div className="wms-ops-form p-4 sm:p-5">
           <PagedDataGrid<WarehouseStockSerialBalanceDto, SerialColumnKey>
+            variant="ops"
             pageKey="warehouse-serial-balance-grid"
             columns={columns}
             rows={rows}
@@ -242,9 +201,14 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('warehouseBalance.serial.searchPlaceholder', { defaultValue: 'Missing translation' }),
             }}
+            refresh={{
+              onRefresh: () => void query.refetch(),
+              isLoading: query.isLoading,
+              label: t('common.refresh'),
+            }}
           />
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </section>
+    </OpsListPageShell>
   );
 }

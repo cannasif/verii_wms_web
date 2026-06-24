@@ -4,16 +4,23 @@ import type { TFunction } from 'i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
-import { Badge } from '@/components/ui/badge';
+import { OpsActionButton, OpsInput, OpsListPageShell, OpsServiceEyebrow, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import {
+  HAK_EDIS_PENDING_COLUMN_WIDTHS,
+  HakEdisFlagChip,
+  HakEdisNeedCard,
+  HakEdisOpsDialogContent,
+  HakEdisPageSection,
+  HakEdisViewNav,
+  HakEdisWarehouseFlow,
+  hakEdisPendingActionBadge,
+  hakEdisPendingStageBadge,
+} from './bilginoglu-hakedis-ops-ui';
 import { getPagedRange } from '@/lib/paged';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
@@ -159,101 +166,137 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
     { key: 'customer', label: t('pendingOperations.table.customer') },
     { key: 'stock', label: t('pendingOperations.table.stock') },
     { key: 'warehouseFlow', label: t('pendingOperations.table.warehouseFlow'), sortable: false },
-    { key: 'quantity', label: t('pendingOperations.table.quantity') },
-    { key: 'currentStage', label: t('pendingOperations.table.stage') },
-    { key: 'pendingAction', label: t('pendingOperations.table.pendingAction'), sortable: false },
-    { key: 'documents', label: t('pendingOperations.table.documents'), sortable: false },
-    { key: 'updatedAt', label: t('pendingOperations.table.updatedAt') },
+    { key: 'quantity', label: t('pendingOperations.table.quantity'), headClassName: 'wms-ops-bilginoglu-pending-col--qty wms-ops-table-center-col', cellClassName: 'wms-ops-bilginoglu-pending-col--qty wms-ops-table-center-col' },
+    {
+      key: 'currentStage',
+      label: t('pendingOperations.table.stage'),
+      headClassName: 'wms-ops-bilginoglu-pending-col--stage wms-ops-table-center-col',
+      cellClassName: 'wms-ops-bilginoglu-pending-col--stage wms-ops-table-center-col',
+    },
+    {
+      key: 'pendingAction',
+      label: t('pendingOperations.table.pendingAction'),
+      sortable: false,
+      headClassName: 'wms-ops-bilginoglu-pending-col--action wms-ops-table-center-col',
+      cellClassName: 'wms-ops-bilginoglu-pending-col--action wms-ops-table-center-col',
+    },
+    {
+      key: 'documents',
+      label: t('pendingOperations.table.documents'),
+      sortable: false,
+      headClassName: 'wms-ops-bilginoglu-pending-col--documents',
+      cellClassName: 'wms-ops-bilginoglu-pending-col--documents',
+    },
+    { key: 'updatedAt', label: t('pendingOperations.table.updatedAt'), headClassName: 'wms-ops-bilginoglu-pending-col--updated', cellClassName: 'wms-ops-bilginoglu-pending-col--updated' },
   ], [t]);
 
   const renderStage = (value: string): string => t(`status.${value}`, { defaultValue: value });
   const renderAction = (value: string): string => t(`pendingOperations.actions.${value}`, { defaultValue: value });
 
   return (
+    <>
     <OpsListPageShell
+      className="wms-ops-bilginoglu-list wms-ops-bilginoglu-pending-list"
       eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
       title={pageTitle}
       description={pageDescription}
-      actions={
-        <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
-          <RefreshCcw className="mr-2 size-4" />
+      actions={(
+        <OpsActionButton type="button" variant="secondary" onClick={() => void query.refetch()}>
+          <RefreshCcw className="size-4" />
           {t('actions.refresh')}
-        </Button>
-      }
+        </OpsActionButton>
+      )}
     >
-      <Card className="wms-ops-panel border shadow-none">
-        <CardContent className="p-5">
-          <PagedDataGrid<BilginogluHakEdisPendingOperation, PendingColumnKey>
+      <div className="wms-ops-bilginoglu-page">
+        <HakEdisViewNav
+          active={queueType === 'transfer' ? 'open' : 'completed'}
+          openLabel={t('pendingOperations.transfer.nav')}
+          completedLabel={t('pendingOperations.shipment.nav')}
+          openHref="/service-allocation/bilginoglu-hakedis/pending-transfers"
+          completedHref="/service-allocation/bilginoglu-hakedis/pending-shipments"
+        />
+
+        <HakEdisPageSection className="wms-ops-bilginoglu-page-section--grid">
+      <PagedDataGrid<BilginogluHakEdisPendingOperation, PendingColumnKey>
             variant="ops"
             pageKey={pageKey}
             columns={columns}
             rows={rows}
             rowKey={(row) => row.batchId}
+            defaultColumnWidths={HAK_EDIS_PENDING_COLUMN_WIDTHS}
+            iconOnlyActions={queueType === 'shipment'}
             renderCell={(row, columnKey) => {
               switch (columnKey) {
                 case 'siparisNo':
                   return (
                     <div className="flex flex-col gap-1">
                       <span className="font-semibold">{row.siparisNo}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.batchNo}</span>
+                      <span className="wms-ops-prelabel-panel__hint">{row.batchNo}</span>
                     </div>
                   );
                 case 'customer':
                   return (
                     <div className="flex flex-col gap-1">
                       <span className="font-semibold">{row.customerCode ?? '-'}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.customerName ?? '-'}</span>
+                      <span className="wms-ops-prelabel-panel__hint">{row.customerName ?? '-'}</span>
                     </div>
                   );
                 case 'stock':
                   return (
                     <div className="flex flex-col gap-1">
                       <span className="font-semibold">{row.stockCode ?? '-'}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.stockName ?? '-'}</span>
-                      {row.yapKod ? <span className="text-xs text-slate-500 dark:text-slate-400">{row.yapKod}</span> : null}
+                      <span className="wms-ops-prelabel-panel__hint">{row.stockName ?? '-'}</span>
+                      {row.yapKod ? <span className="wms-ops-prelabel-panel__hint">{row.yapKod}</span> : null}
                     </div>
                   );
                 case 'warehouseFlow':
                   return (
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold dark:border-white/10">
-                      <span>{row.sourceWarehouseCode ?? '-'}</span>
-                      <span>→</span>
-                      <span>{row.hakEdisWarehouseCode ?? '-'}</span>
-                    </div>
+                    <HakEdisWarehouseFlow
+                      from={String(row.sourceWarehouseCode ?? '-')}
+                      to={String(row.hakEdisWarehouseCode ?? '-')}
+                    />
                   );
                 case 'quantity':
                   return <span className="font-semibold">{formatNumber(row.quantity)}</span>;
                 case 'currentStage':
-                  return <Badge variant="secondary">{renderStage(row.currentStage)}</Badge>;
+                  return (
+                    <div className="flex min-w-0 justify-center">
+                      {hakEdisPendingStageBadge(renderStage(row.currentStage))}
+                    </div>
+                  );
                 case 'pendingAction':
-                  return <Badge variant="outline">{renderAction(row.pendingAction)}</Badge>;
+                  return (
+                    <div className="flex min-w-0 justify-center">
+                      {hakEdisPendingActionBadge(renderAction(row.pendingAction))}
+                    </div>
+                  );
                 case 'documents':
                   return (
-                    <div className="flex flex-wrap gap-1 text-xs">
+                    <div className="flex flex-col gap-1">
                       {row.replenishmentToIntermediateHeaderId ? (
-                        <Badge variant="outline">
+                        <HakEdisFlagChip tone="info" className="wms-ops-bilginoglu-pending-doc-chip">
                           {t('pendingOperations.documentLinks.replenishmentToIntermediate')} #{row.replenishmentToIntermediateHeaderId}
-                        </Badge>
+                        </HakEdisFlagChip>
                       ) : null}
                       {row.replenishmentToOrderWarehouseHeaderId ? (
-                        <Badge variant="outline">
+                        <HakEdisFlagChip tone="info" className="wms-ops-bilginoglu-pending-doc-chip">
                           {t('pendingOperations.documentLinks.replenishmentToOrderWarehouse')} #{row.replenishmentToOrderWarehouseHeaderId}
-                        </Badge>
+                        </HakEdisFlagChip>
                       ) : null}
                       {row.transferToHakEdisHeaderId ? (
-                        <Badge variant="outline">
+                        <HakEdisFlagChip tone="info" className="wms-ops-bilginoglu-pending-doc-chip">
                           {t('pendingOperations.documentLinks.transferToHakEdis')} #{row.transferToHakEdisHeaderId}
-                        </Badge>
+                        </HakEdisFlagChip>
                       ) : null}
                       {row.returnFromHakEdisHeaderId ? (
-                        <Badge variant="outline">
+                        <HakEdisFlagChip tone="info" className="wms-ops-bilginoglu-pending-doc-chip">
                           {t('pendingOperations.documentLinks.returnFromHakEdis')} #{row.returnFromHakEdisHeaderId}
-                        </Badge>
+                        </HakEdisFlagChip>
                       ) : null}
                       {row.shipmentHeaderId ? (
-                        <Badge variant="outline">
+                        <HakEdisFlagChip tone="success" className="wms-ops-bilginoglu-pending-doc-chip">
                           {t('pendingOperations.documentLinks.shipment')} #{row.shipmentHeaderId}
-                        </Badge>
+                        </HakEdisFlagChip>
                       ) : null}
                       {!row.replenishmentToIntermediateHeaderId && !row.replenishmentToOrderWarehouseHeaderId && !row.transferToHakEdisHeaderId && !row.returnFromHakEdisHeaderId && !row.shipmentHeaderId ? '-' : null}
                     </div>
@@ -294,15 +337,16 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('pendingOperations.searchPlaceholder'),
             }}
+            minTableWidthClassName="min-w-[1240px]"
             actionsHeaderLabel={queueType === 'shipment' ? t('common.actions') : undefined}
-            actionsCellClassName="text-center align-middle"
+            actionsCellClassName="wms-ops-table-actions-col"
             renderActionsCell={queueType === 'shipment'
               ? (row) => (
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="mx-auto size-9 rounded-full border border-slate-200 bg-white shadow-sm hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  className="wms-ops-grid-icon-btn"
                   aria-label={t('pendingOperations.move.open')}
                   onClick={() => {
                     setMoveSource(row);
@@ -311,13 +355,14 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                     setMoveReason('');
                   }}
                 >
-                  <MoveRight className="size-4 text-sky-600 dark:text-sky-300" />
+                  <MoveRight className="size-3" />
                 </Button>
               )
               : undefined}
           />
-        </CardContent>
-      </Card>
+        </HakEdisPageSection>
+      </div>
+    </OpsListPageShell>
 
       <Dialog open={!!moveSource} onOpenChange={(open) => {
         if (!open) {
@@ -327,22 +372,28 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
           setMoveReason('');
         }
       }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[760px]">
-          <DialogHeader>
-            <DialogTitle>{t('pendingOperations.move.title')}</DialogTitle>
-            <DialogDescription>{t('pendingOperations.move.description')}</DialogDescription>
-          </DialogHeader>
+        <HakEdisOpsDialogContent size="bulk">
+          <div className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 sm:px-6">
+            <DialogHeader className="space-y-1 text-left">
+              <DialogTitle className="wms-ops-detail-dialog__title">{t('pendingOperations.move.title')}</DialogTitle>
+              <DialogDescription className="wms-ops-detail-dialog__description">{t('pendingOperations.move.description')}</DialogDescription>
+            </DialogHeader>
+          </div>
 
           {moveSource ? (
-            <div className="space-y-5">
-              <div className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5 md:grid-cols-3">
-                <InfoCard label={t('pendingOperations.move.sourceOrder')} value={moveSource.siparisNo} />
-                <InfoCard label={t('pendingOperations.move.stock')} value={`${moveSource.stockCode ?? '-'} ${moveSource.yapKod ? `/ ${moveSource.yapKod}` : ''}`} />
-                <InfoCard label={t('pendingOperations.move.sourceQty')} value={formatNumber(moveSource.quantity)} />
+            <div className="wms-ops-bilginoglu-detail__body wms-ops-form space-y-5">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <HakEdisNeedCard label={t('pendingOperations.move.sourceOrder')} value={moveSource.siparisNo} />
+                <HakEdisNeedCard
+                  label={t('pendingOperations.move.stock')}
+                  value={`${moveSource.stockCode ?? '-'} ${moveSource.yapKod ? `/ ${moveSource.yapKod}` : ''}`}
+                  tone="info"
+                />
+                <HakEdisNeedCard label={t('pendingOperations.move.sourceQty')} value={formatNumber(moveSource.quantity)} tone="success" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="move-target">{t('pendingOperations.move.targetOrder')}</Label>
+                <Label htmlFor="move-target" className="wms-ops-prelabel-form-label">{t('pendingOperations.move.targetOrder')}</Label>
                 <Select value={targetPlanId} onValueChange={(value) => {
                   const target = moveTargets.find((item) => String(item.planId) === value);
                   setTargetPlanId(value);
@@ -353,7 +404,7 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                   <SelectTrigger id="move-target">
                     <SelectValue placeholder={moveTargetsQuery.isLoading ? t('pendingOperations.move.loadingTargets') : t('pendingOperations.move.targetPlaceholder')} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                     {moveTargets.map((target) => (
                       <SelectItem key={target.planId} value={String(target.planId)}>
                         {formatMoveTarget(target, t)}
@@ -362,19 +413,19 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                   </SelectContent>
                 </Select>
                 {moveTargetsQuery.isError ? (
-                  <p className="text-sm font-semibold text-rose-600 dark:text-rose-300">
+                  <p className="wms-ops-hint-banner">
                     {moveTargetsQuery.error instanceof Error ? moveTargetsQuery.error.message : t('pendingOperations.move.targetError')}
                   </p>
                 ) : null}
                 {!moveTargetsQuery.isLoading && moveTargets.length === 0 ? (
-                  <p className="text-sm text-amber-700 dark:text-amber-200">{t('pendingOperations.move.noTargets')}</p>
+                  <p className="wms-ops-prelabel-panel__hint">{t('pendingOperations.move.noTargets')}</p>
                 ) : null}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="move-qty">{t('pendingOperations.move.quantity')}</Label>
-                  <Input
+                  <Label htmlFor="move-qty" className="wms-ops-prelabel-form-label">{t('pendingOperations.move.quantity')}</Label>
+                  <OpsInput
                     id="move-qty"
                     type="number"
                     min="0"
@@ -383,14 +434,14 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
                     onChange={(event) => setMoveQty(event.target.value)}
                   />
                   {selectedTarget ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="wms-ops-prelabel-panel__hint">
                       {t('pendingOperations.move.availableHint', { qty: formatNumber(selectedTarget.availableToMoveQty) })}
                     </p>
                   ) : null}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="move-reason">{t('pendingOperations.move.reason')}</Label>
-                  <Textarea
+                  <Label htmlFor="move-reason" className="wms-ops-prelabel-form-label">{t('pendingOperations.move.reason')}</Label>
+                  <OpsTextarea
                     id="move-reason"
                     rows={3}
                     value={moveReason}
@@ -402,31 +453,23 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
             </div>
           ) : null}
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setMoveSource(null)}>
+          <DialogFooter className="wms-ops-bilginoglu-detail__footer shrink-0">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setMoveSource(null)}>
               {t('common.cancel')}
-            </Button>
-            <Button
+            </OpsActionButton>
+            <OpsActionButton
               type="button"
+              variant="primary"
               disabled={!moveSource || !selectedTarget || moveMutation.isPending || moveTargetsQuery.isLoading}
               onClick={() => moveMutation.mutate()}
             >
-              <MoveRight className="mr-2 size-4" />
+              <MoveRight className="size-4" />
               {moveMutation.isPending ? t('common.processing') : t('pendingOperations.move.submit')}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </HakEdisOpsDialogContent>
       </Dialog>
-    </OpsListPageShell>
-  );
-}
-
-function InfoCard({ label, value }: { label: string; value: string }): ReactElement {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-950/40">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-1 break-words text-sm font-black text-slate-950 dark:text-white">{value}</p>
-    </div>
+    </>
   );
 }
 

@@ -3,14 +3,24 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, PagedLookupDialog, type PagedDataGridColumn } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsInput,
+  OpsListPageShell,
+  OpsTextarea,
+  PagedDataGrid,
+  PagedLookupDialog,
+  type PagedDataGridColumn,
+} from '@/components/shared';
+import {
+  MasterDataOpsDialogContent,
+  MasterDataOpsErpEyebrow,
+  MasterDataOpsFormField,
+  masterDataOpsGridColumn,
+} from '@/features/shared';
 import { erpReferenceApi } from '@/features/erp-reference/api/erpReference.api';
 import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpReference.types';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
@@ -94,17 +104,17 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'code', label: t('documentSeries.columns.code') },
-    { key: 'name', label: t('documentSeries.columns.name') },
-    { key: 'operationType', label: t('documentSeries.columns.operationType') },
-    { key: 'documentFlow', label: t('documentSeries.columns.documentFlow') },
-    { key: 'warehouse', label: t('documentSeries.columns.warehouse') },
-    { key: 'seriesPrefix', label: t('documentSeries.columns.seriesPrefix') },
-    { key: 'currentNumber', label: t('documentSeries.columns.currentNumber') },
-    { key: 'isEDispatchSeries', label: t('documentSeries.columns.eDispatch') },
-    { key: 'isDefault', label: t('documentSeries.columns.isDefault') },
-    { key: 'isActive', label: t('documentSeries.columns.isActive') },
-    { key: 'actions', label: t('common.actions'), sortable: false },
+    masterDataOpsGridColumn('code', t('documentSeries.columns.code')),
+    masterDataOpsGridColumn('name', t('documentSeries.columns.name')),
+    masterDataOpsGridColumn('operationType', t('documentSeries.columns.operationType')),
+    masterDataOpsGridColumn('documentFlow', t('documentSeries.columns.documentFlow')),
+    masterDataOpsGridColumn('warehouse', t('documentSeries.columns.warehouse')),
+    masterDataOpsGridColumn('seriesPrefix', t('documentSeries.columns.seriesPrefix')),
+    masterDataOpsGridColumn('currentNumber', t('documentSeries.columns.currentNumber')),
+    masterDataOpsGridColumn('isEDispatchSeries', t('documentSeries.columns.eDispatch')),
+    masterDataOpsGridColumn('isDefault', t('documentSeries.columns.isDefault')),
+    masterDataOpsGridColumn('isActive', t('documentSeries.columns.isActive')),
+    masterDataOpsGridColumn('actions', t('common.actions'), false),
   ], [t]);
 
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
@@ -222,14 +232,26 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
         : <ArrowDown className="ml-1 h-3.5 w-3.5" />
       : null;
 
-  return (
-    <div className="crm-page space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <Badge variant="secondary">{t('documentSeries.badge')}</Badge>
-        <Button type="button" onClick={startCreate}>{t('common.add')}</Button>
-      </div>
+  function handleDialogOpenChange(nextOpen: boolean): void {
+    setDialogOpen(nextOpen);
+    if (!nextOpen) {
+      resetForm();
+    }
+  }
 
+  return (
+    <OpsListPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpDocumentSeriesDefinitions')} />}
+      title={t('documentSeries.definitions.pageTitle')}
+      description={t('documentSeries.definitions.pageDescription', { defaultValue: t('documentSeries.badge') })}
+      actions={
+        <OpsActionButton type="button" variant="primary" onClick={startCreate}>
+          {t('common.add')}
+        </OpsActionButton>
+      }
+    >
       <PagedDataGrid<WmsDocumentSeriesDefinitionPagedRowDto, ColumnKey>
+        variant="ops"
         pageKey={pageKey}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -313,62 +335,104 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
             placeholder: t('documentSeries.searchPlaceholder'),
           },
           refresh: { onRefresh: () => { void query.refetch(); }, isLoading: query.isLoading, label: t('common.refresh') },
+          variant: 'ops',
         }}
       />
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{editing ? t('documentSeries.definitions.editTitle') : t('documentSeries.definitions.createTitle')}</DialogTitle>
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <MasterDataOpsDialogContent size="xl">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+            <DialogTitle className="wms-ops-pt-terminal__title">
+              {editing ? t('documentSeries.definitions.editTitle') : t('documentSeries.definitions.createTitle')}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2"><Label>{t('documentSeries.columns.code')}</Label><Input value={formState.code} onChange={(event) => setFormState((prev) => ({ ...prev, code: event.target.value }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.name')}</Label><Input value={formState.name} onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.operationType')}</Label><select className="w-full rounded-xl border px-3 py-2 bg-background" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.documentFlow')}</Label><select className="w-full rounded-xl border px-3 py-2 bg-background" value={formState.documentFlow} onChange={(event) => setFormState((prev) => ({ ...prev, documentFlow: event.target.value }))}>{documentSeriesDocumentFlows.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.companyCode')}</Label><Input value={formState.companyCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, companyCode: event.target.value }))} /></div>
-            <div className="space-y-2">
-              <Label>{t('documentSeries.columns.warehouse')}</Label>
-              <PagedLookupDialog<WarehouseReferenceDto>
-                open={warehouseDialogOpen}
-                onOpenChange={setWarehouseDialogOpen}
-                title={t('documentSeries.columns.warehouse')}
-                placeholder={t('documentSeries.placeholders.warehouse')}
-                value={warehouseLabel}
-                queryKey={['document-series', 'definitions', 'warehouse']}
-                fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                  erpReferenceApi.getWarehouses({ pageNumber, pageSize, search })}
-                getKey={(item: WarehouseReferenceDto) => String(item.id)}
-                getLabel={(item: WarehouseReferenceDto) => `${item.warehouseCode} - ${item.warehouseName}`}
-                onSelect={(item: WarehouseReferenceDto) => {
-                  setFormState((prev) => ({ ...prev, warehouseId: item.id }));
-                  setWarehouseLabel(`${item.warehouseCode} - ${item.warehouseName}`);
-                }}
-              />
+          <div className="wms-ops-form max-h-[min(68dvh,720px)] overflow-y-auto px-5 py-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <MasterDataOpsFormField label={t('documentSeries.columns.code')}>
+                <OpsInput value={formState.code} onChange={(event) => setFormState((prev) => ({ ...prev, code: event.target.value }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.name')}>
+                <OpsInput value={formState.name} onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.operationType')}>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.documentFlow')}>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.documentFlow} onChange={(event) => setFormState((prev) => ({ ...prev, documentFlow: event.target.value }))}>{documentSeriesDocumentFlows.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.companyCode')}>
+                <OpsInput value={formState.companyCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, companyCode: event.target.value }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.warehouse')}>
+                <PagedLookupDialog<WarehouseReferenceDto>
+                  variant="ops"
+                  open={warehouseDialogOpen}
+                  onOpenChange={setWarehouseDialogOpen}
+                  title={t('documentSeries.columns.warehouse')}
+                  placeholder={t('documentSeries.placeholders.warehouse')}
+                  value={warehouseLabel}
+                  queryKey={['document-series', 'definitions', 'warehouse']}
+                  fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
+                    erpReferenceApi.getWarehouses({ pageNumber, pageSize, search })}
+                  getKey={(item: WarehouseReferenceDto) => String(item.id)}
+                  getLabel={(item: WarehouseReferenceDto) => `${item.warehouseCode} - ${item.warehouseName}`}
+                  onSelect={(item: WarehouseReferenceDto) => {
+                    setFormState((prev) => ({ ...prev, warehouseId: item.id }));
+                    setWarehouseLabel(`${item.warehouseCode} - ${item.warehouseName}`);
+                  }}
+                />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.seriesPrefix')}>
+                <OpsInput value={formState.seriesPrefix} onChange={(event) => setFormState((prev) => ({ ...prev, seriesPrefix: event.target.value }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.yearMode')}>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.yearMode} onChange={(event) => setFormState((prev) => ({ ...prev, yearMode: event.target.value }))}>{documentSeriesYearModes.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.numberLength')}>
+                <OpsInput type="number" value={formState.numberLength} onChange={(event) => setFormState((prev) => ({ ...prev, numberLength: Number(event.target.value) || 0 }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.startNumber')}>
+                <OpsInput type="number" value={formState.startNumber} onChange={(event) => setFormState((prev) => ({ ...prev, startNumber: Number(event.target.value) || 0 }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.currentNumber')}>
+                <OpsInput type="number" value={formState.currentNumber} onChange={(event) => setFormState((prev) => ({ ...prev, currentNumber: Number(event.target.value) || 0 }))} />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={t('documentSeries.columns.incrementBy')}>
+                <OpsInput type="number" value={formState.incrementBy} onChange={(event) => setFormState((prev) => ({ ...prev, incrementBy: Number(event.target.value) || 1 }))} />
+              </MasterDataOpsFormField>
             </div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.seriesPrefix')}</Label><Input value={formState.seriesPrefix} onChange={(event) => setFormState((prev) => ({ ...prev, seriesPrefix: event.target.value }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.yearMode')}</Label><select className="w-full rounded-xl border px-3 py-2 bg-background" value={formState.yearMode} onChange={(event) => setFormState((prev) => ({ ...prev, yearMode: event.target.value }))}>{documentSeriesYearModes.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.numberLength')}</Label><Input type="number" value={formState.numberLength} onChange={(event) => setFormState((prev) => ({ ...prev, numberLength: Number(event.target.value) || 0 }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.startNumber')}</Label><Input type="number" value={formState.startNumber} onChange={(event) => setFormState((prev) => ({ ...prev, startNumber: Number(event.target.value) || 0 }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.currentNumber')}</Label><Input type="number" value={formState.currentNumber} onChange={(event) => setFormState((prev) => ({ ...prev, currentNumber: Number(event.target.value) || 0 }))} /></div>
-            <div className="space-y-2"><Label>{t('documentSeries.columns.incrementBy')}</Label><Input type="number" value={formState.incrementBy} onChange={(event) => setFormState((prev) => ({ ...prev, incrementBy: Number(event.target.value) || 1 }))} /></div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-semibold">{t('documentSeries.columns.eDispatch')}</span>
+                <Switch checked={formState.isEDispatchSeries} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isEDispatchSeries: checked }))} className="wms-ops-switch" />
+              </div>
+              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-semibold">{t('documentSeries.columns.isDefault')}</span>
+                <Switch checked={formState.isDefault} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isDefault: checked }))} className="wms-ops-switch" />
+              </div>
+              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-semibold">{t('documentSeries.columns.isActive')}</span>
+                <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} className="wms-ops-switch" />
+              </div>
+            </div>
+
+            <MasterDataOpsFormField label={t('common.description')} className="mt-4">
+              <OpsTextarea rows={3} value={formState.description ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
+            </MasterDataOpsFormField>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3 mt-4">
-            <div className="flex items-center justify-between rounded-xl border p-3"><Label>{t('documentSeries.columns.eDispatch')}</Label><Switch checked={formState.isEDispatchSeries} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isEDispatchSeries: checked }))} /></div>
-            <div className="flex items-center justify-between rounded-xl border p-3"><Label>{t('documentSeries.columns.isDefault')}</Label><Switch checked={formState.isDefault} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isDefault: checked }))} /></div>
-            <div className="flex items-center justify-between rounded-xl border p-3"><Label>{t('documentSeries.columns.isActive')}</Label><Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} /></div>
-          </div>
-
-          <div className="space-y-2 mt-4"><Label>{t('common.description')}</Label><Textarea rows={3} value={formState.description ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} /></div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t('common.close')}</Button>
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending}>{t('common.save')}</Button>
+          <DialogFooter className="wms-ops-actions border-t px-5 py-4">
+            <OpsActionButton type="button" variant="secondary" onClick={() => handleDialogOpenChange(false)}>
+              {t('common.close')}
+            </OpsActionButton>
+            <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending}>
+              {t('common.save')}
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </MasterDataOpsDialogContent>
       </Dialog>
-    </div>
+    </OpsListPageShell>
   );
 }

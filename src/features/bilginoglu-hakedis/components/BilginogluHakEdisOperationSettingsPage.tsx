@@ -1,14 +1,19 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Edit3, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
-import { Badge } from '@/components/ui/badge';
+import { OpsActionButton, OpsInput, OpsListPageShell, OpsServiceEyebrow, OpsToggleField, PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import {
+  HAK_EDIS_SETTINGS_COLUMN_WIDTHS,
+  HakEdisDetailPanel,
+  HakEdisOpsDialogContent,
+  HakEdisOpsTypePicker,
+  HakEdisWarehouseChainFacts,
+  hakEdisOperationTypeBadge,
+} from './bilginoglu-hakedis-ops-ui';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
@@ -176,69 +181,61 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
       title={t('operationSettings.title')}
       description={t('operationSettings.hero.description')}
       actions={
-        <Button type="button" variant="secondary" className="rounded-2xl" onClick={openCreateDialog} disabled={!permission.canCreate}>
-          <Plus className="mr-2 size-4" />
+        <OpsActionButton type="button" variant="primary" onClick={openCreateDialog} disabled={!permission.canCreate}>
+          <Plus className="size-4" />
           {t('operationSettings.actions.new')}
-        </Button>
+        </OpsActionButton>
       }
     >
       <Dialog open={dialogOpen} onOpenChange={(open) => {
         setDialogOpen(open);
         if (!open) resetForm();
       }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{form.id ? t('operationSettings.form.editTitle') : t('operationSettings.form.createTitle')}</DialogTitle>
-            <DialogDescription>{t('operationSettings.hero.description')}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>
-                  {t('operationSettings.form.operationType')}
-                  <RequiredMark />
-                </Label>
-                <Select
-                  value={form.operationType}
-                  onValueChange={(value) => setForm((prev) => ({
-                    ...prev,
-                    operationType: value as BilginogluHakEdisOperationType,
-                    mainWarehouse: requiresWarehouseChain(value as BilginogluHakEdisOperationType) ? prev.mainWarehouse : emptyWarehouse,
-                    intermediateWarehouse: requiresWarehouseChain(value as BilginogluHakEdisOperationType) ? prev.intermediateWarehouse : emptyWarehouse,
-                    finalWarehouse: requiresWarehouseChain(value as BilginogluHakEdisOperationType) ? prev.finalWarehouse : emptyWarehouse,
-                  }))}
-                >
-                  <SelectTrigger className="rounded-2xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {operationTypes.map((type) => (
-                      <SelectItem key={type} value={type}>{t(`operationSettings.operationTypes.${type}`)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <HakEdisOpsDialogContent className="max-w-2xl">
+          <div className="border-b px-4 py-4 sm:px-6">
+            <DialogHeader className="space-y-1 text-left">
+              <DialogTitle>{form.id ? t('operationSettings.form.editTitle') : t('operationSettings.form.createTitle')}</DialogTitle>
+              <DialogDescription>{t('operationSettings.hero.description')}</DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="space-y-4 p-4 sm:p-6 wms-ops-form wms-ops-bilginoglu-detail">
+            <div className="space-y-2">
+              <Label className="wms-ops-prelabel-form-label">
+                {t('operationSettings.form.operationType')}
+                <RequiredMark />
+              </Label>
+              <HakEdisOpsTypePicker
+                value={form.operationType}
+                options={operationTypes}
+                onChange={(value) => setForm((prev) => ({
+                  ...prev,
+                  operationType: value,
+                  mainWarehouse: requiresWarehouseChain(value) ? prev.mainWarehouse : emptyWarehouse,
+                  intermediateWarehouse: requiresWarehouseChain(value) ? prev.intermediateWarehouse : emptyWarehouse,
+                  finalWarehouse: requiresWarehouseChain(value) ? prev.finalWarehouse : emptyWarehouse,
+                }))}
+                getLabel={(type) => t(`operationSettings.operationTypes.${type}`)}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>
+              <Label className="wms-ops-prelabel-form-label">
                 {t('operationSettings.form.operationCode')}
                 <RequiredMark />
               </Label>
-              <Input value={form.operationCode} onChange={(event) => setForm((prev) => ({ ...prev, operationCode: event.target.value }))} />
+              <OpsInput value={form.operationCode} onChange={(event) => setForm((prev) => ({ ...prev, operationCode: event.target.value }))} />
             </div>
 
             <div className="space-y-2">
-              <Label>
+              <Label className="wms-ops-prelabel-form-label">
                 {t('operationSettings.form.operationDescription')}
                 <RequiredMark />
               </Label>
-              <Input value={form.operationDescription} onChange={(event) => setForm((prev) => ({ ...prev, operationDescription: event.target.value }))} />
+              <OpsInput value={form.operationDescription} onChange={(event) => setForm((prev) => ({ ...prev, operationDescription: event.target.value }))} />
             </div>
 
             {showWarehouseChain ? (
-              <div className="space-y-3 rounded-3xl border border-cyan-100 bg-cyan-50/60 p-4">
-                <p className="text-sm font-semibold text-cyan-900">{t('operationSettings.form.warehouseChainTitle')}</p>
+              <HakEdisDetailPanel title={t('operationSettings.form.warehouseChainTitle')} className="wms-ops-bilginoglu-warehouse-chain-form">
                 <WarehousePicker
                   title={t('operationSettings.form.mainWarehouse')}
                   value={form.mainWarehouse}
@@ -257,47 +254,42 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
                   onSelect={(warehouse) => setForm((prev) => ({ ...prev, finalWarehouse: warehouse }))}
                   queryKeySuffix="final"
                 />
-              </div>
+              </HakEdisDetailPanel>
             ) : null}
-
-            <label className="flex items-center gap-2 rounded-2xl border border-slate-200 p-3 text-sm font-medium">
-              <input
-                type="checkbox"
-                className="size-4 rounded border-slate-300"
-                checked={form.isActive}
-                onChange={(event) => setForm((prev) => ({ ...prev, isActive: event.target.checked }))}
-              />
-              {t('operationSettings.form.isActive')}
-            </label>
-
-            <Button
-              className="w-full rounded-2xl"
+          </div>
+          <DialogFooter className="flex-col gap-3 px-4 pb-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pb-6">
+            <OpsToggleField
+              checked={form.isActive}
+              onCheckedChange={(checked) => setForm((prev) => ({ ...prev, isActive: checked }))}
+              title={t('operationSettings.form.isActive')}
+              className="w-full sm:max-w-xs"
+            />
+            <div className="flex w-full flex-wrap justify-end gap-2 sm:ml-auto sm:w-auto">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDialogOpen(false)}>
+              {t('common.cancel')}
+            </OpsActionButton>
+            <OpsActionButton
               type="button"
+              variant="primary"
               disabled={!canSave || !form.operationCode.trim() || !form.operationDescription.trim() || !isWarehouseChainValid || saveMutation.isPending}
               onClick={submit}
             >
-              {saveMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+              {saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
               {t('operationSettings.actions.save')}
-            </Button>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-              {t('common.cancel')}
-            </Button>
+            </OpsActionButton>
+            </div>
           </DialogFooter>
-        </DialogContent>
+        </HakEdisOpsDialogContent>
       </Dialog>
 
-      <Card className="rounded-3xl border-slate-200 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('operationSettings.table.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<BilginogluHakEdisOperationSetting, OperationColumnKey>
+      <PagedDataGrid<BilginogluHakEdisOperationSetting, OperationColumnKey>
+            variant="ops"
             pageKey={pageKey}
             columns={columns}
             rows={pageRows}
             rowKey={(row) => row.id}
+            defaultColumnWidths={HAK_EDIS_SETTINGS_COLUMN_WIDTHS}
+            iconOnlyActions
             renderCell={(row, columnKey) => {
               switch (columnKey) {
                 case 'branch':
@@ -310,21 +302,31 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
                     </div>
                   );
                 case 'type':
-                  return t(`operationSettings.operationTypes.${row.operationType}`);
+                  return hakEdisOperationTypeBadge(t(`operationSettings.operationTypes.${row.operationType}`));
                 case 'warehouseChain':
                   return requiresWarehouseChain(row.operationType) ? (
-                    <div className="space-y-1 text-xs">
-                      <WarehouseLine label={t('operationSettings.form.mainWarehouse')} code={row.mainWarehouseCode} name={row.mainWarehouseName} />
-                      <WarehouseLine label={t('operationSettings.form.intermediateWarehouse')} code={row.intermediateWarehouseCode} name={row.intermediateWarehouseName} />
-                      <WarehouseLine label={t('operationSettings.form.finalWarehouse')} code={row.finalWarehouseCode} name={row.finalWarehouseName} />
-                    </div>
+                    <HakEdisWarehouseChainFacts
+                      items={[
+                        { label: t('operationSettings.form.mainWarehouse'), code: row.mainWarehouseCode, name: row.mainWarehouseName },
+                        { label: t('operationSettings.form.intermediateWarehouse'), code: row.intermediateWarehouseCode, name: row.intermediateWarehouseName },
+                        { label: t('operationSettings.form.finalWarehouse'), code: row.finalWarehouseCode, name: row.finalWarehouseName },
+                      ]}
+                    />
                   ) : '-';
-                case 'status':
+                case 'status': {
+                  const statusLabel = row.isActive ? t('operationSettings.badges.active') : t('operationSettings.badges.passive');
                   return (
-                    <Badge className={`rounded-xl ${row.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>
-                      {row.isActive ? t('operationSettings.badges.active') : t('operationSettings.badges.passive')}
-                    </Badge>
+                    <span
+                      className={cn(
+                        'wms-ops-status-badge inline-flex max-w-full truncate',
+                        row.isActive ? 'wms-ops-status-badge--active' : 'wms-ops-status-badge--pending',
+                      )}
+                      title={statusLabel}
+                    >
+                      {statusLabel}
+                    </span>
                   );
+                }
                 default:
                   return null;
               }
@@ -350,14 +352,14 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
             paginationInfoText={t('common.paginationInfo', { current: rangeFrom, total: rangeTo, totalCount: sortedSettings.length })}
             showActionsColumn
             actionsHeaderLabel={t('operationSettings.table.actions')}
-            actionsCellClassName="text-right"
+            actionsCellClassName="wms-ops-table-actions-col"
             renderActionsCell={(row) => (
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => edit(row)} disabled={!permission.canUpdate}>
-                  <Edit3 className="size-4" />
+              <div className="wms-ops-row-actions">
+                <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => edit(row)} disabled={!permission.canUpdate} aria-label={t('common.edit')}>
+                  <Edit3 className="size-3" />
                 </Button>
-                <Button type="button" variant="destructive" size="sm" className="rounded-xl" onClick={() => deleteMutation.mutate(row.id)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                  <Trash2 className="size-4" />
+                <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger" onClick={() => deleteMutation.mutate(row.id)} disabled={!permission.canDelete || deleteMutation.isPending} aria-label={t('common.delete')}>
+                  <Trash2 className="size-3" />
                 </Button>
               </div>
             )}
@@ -382,8 +384,6 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
               status: row.isActive ? t('operationSettings.badges.active') : t('operationSettings.badges.passive'),
             }))}
           />
-        </CardContent>
-      </Card>
     </OpsListPageShell>
   );
 }
@@ -403,14 +403,12 @@ function WarehousePicker({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-2">
-      <Label>
-        {title}
-        <RequiredMark />
-      </Label>
+    <div className="wms-ops-bilginoglu-warehouse-picker">
+      <span className="wms-ops-code-badge wms-ops-bilginoglu-warehouse-picker__label">{title}</span>
       <PagedLookupDialog<WarehouseLookup>
         open={open}
         onOpenChange={setOpen}
+        variant="ops"
         title={title}
         description={t('operationSettings.form.warehouseSelectDescription')}
         value={value.label}
@@ -425,14 +423,6 @@ function WarehousePicker({
           setOpen(false);
         }}
       />
-    </div>
-  );
-}
-
-function WarehouseLine({ label, code, name }: { label: string; code?: number | null; name?: string | null }): ReactElement {
-  return (
-    <div>
-      <span className="font-semibold">{label}:</span> {code ?? '-'} · {name ?? '-'}
     </div>
   );
 }

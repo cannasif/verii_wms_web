@@ -330,10 +330,56 @@ export function BarcodeDesignerCanvas({
   };
 
   return (
-    <div className="overflow-auto rounded-3xl border border-slate-200/80 bg-[linear-gradient(180deg,_rgba(248,250,252,0.95),_rgba(241,245,249,0.95))] p-4 dark:border-white/10 dark:bg-[linear-gradient(180deg,_rgba(15,23,42,0.82),_rgba(2,6,23,0.92))]">
+    <div className="wms-ops-barcode-canvas overflow-auto rounded-none border border-[color:var(--wms-ops-card-border)] bg-[color:var(--wms-ops-card-bg)]">
+      {measureBox && selectedElementIds.length === 1 ? (
+        <div className="wms-ops-barcode-canvas__toolbar flex flex-wrap items-center gap-2 border-b border-[color:var(--wms-ops-card-border)] px-3 py-2">
+          <button
+            type="button"
+            className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]"
+            onClick={onDuplicateSelected}
+          >
+            Kopyala
+          </button>
+          <button
+            type="button"
+            className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]"
+            onClick={onDeleteSelected}
+          >
+            Sil
+          </button>
+          {selectedElementType === 'text' ? (
+            <>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyTextPreset?.('title')}>Baslik</button>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyTextPreset?.('body')}>Govde</button>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyTextPreset?.('caption')}>Kucuk</button>
+            </>
+          ) : null}
+          {selectedElementType === 'barcode' ? (
+            <>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyBarcodePreset?.('code128')}>Code128</button>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyBarcodePreset?.('qrcode')}>QR</button>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyBarcodePreset?.('datamatrix')}>DataMatrix</button>
+            </>
+          ) : null}
+          {selectedElementType === 'image' ? (
+            <>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyImagePreset?.('logo')}>Logo</button>
+              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary px-2 py-1 text-[10px]" onClick={() => onApplyImagePreset?.('product')}>Urun</button>
+            </>
+          ) : null}
+          <span className="text-[10px] uppercase tracking-wider opacity-60">Kenar veya köşe tutup esnet</span>
+          <div className="ml-auto flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--wms-ops-accent)]">
+            <span>W {pxToCm(measureBox.width).toFixed(2)} cm</span>
+            <span>H {pxToCm(measureBox.height).toFixed(2)} cm</span>
+            <span>X {pxToCm(measureBox.x).toFixed(2)} cm</span>
+            <span>Y {pxToCm(measureBox.y).toFixed(2)} cm</span>
+          </div>
+        </div>
+      ) : null}
+      <div className="p-4">
       <div
         ref={dropZoneRef}
-        className="relative inline-block rounded-2xl"
+        className="relative inline-block rounded-none"
         style={{ width, height }}
         onDragOver={(event) => {
           event.preventDefault();
@@ -595,133 +641,6 @@ export function BarcodeDesignerCanvas({
             />
           </Layer>
         </Stage>
-        {measureBox ? (
-          <div
-            className="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-          >
-            <div
-              className="pointer-events-auto absolute flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/80 bg-white/95 px-2 py-2 text-xs shadow-lg dark:border-white/10 dark:bg-slate-950/95"
-              style={{
-                left: Math.max(8, Math.min(measureBox.x, width - 420)),
-                top: Math.max(8, measureBox.y - 48),
-              }}
-            >
-              <button
-                type="button"
-                className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                onClick={onDuplicateSelected}
-              >
-                Kopyala
-              </button>
-              <button
-                type="button"
-                className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                onClick={onDeleteSelected}
-              >
-                Sil
-              </button>
-              {selectedElementType === 'text' ? (
-                <>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyTextPreset?.('title')}
-                  >
-                    Baslik
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyTextPreset?.('body')}
-                  >
-                    Govde
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyTextPreset?.('caption')}
-                  >
-                    Kucuk
-                  </button>
-                </>
-              ) : null}
-              {selectedElementType === 'barcode' ? (
-                <>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyBarcodePreset?.('code128')}
-                  >
-                    Code128
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyBarcodePreset?.('qrcode')}
-                  >
-                    QR
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyBarcodePreset?.('datamatrix')}
-                  >
-                    DataMatrix
-                  </button>
-                </>
-              ) : null}
-              {selectedElementType === 'image' ? (
-                <>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyImagePreset?.('logo')}
-                  >
-                    Logo
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-                    onClick={() => onApplyImagePreset?.('product')}
-                  >
-                    Urun
-                  </button>
-                </>
-              ) : null}
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">Kenar veya köşe tutup esnet</span>
-            </div>
-            <div
-              className="absolute rounded-full border border-sky-200 bg-white/95 px-3 py-1 text-[11px] font-medium text-sky-700 shadow-sm dark:border-sky-500/40 dark:bg-slate-950/95 dark:text-sky-200"
-              style={{
-                left: Math.max(8, Math.min(measureBox.x + (measureBox.width / 2) - 52, width - 120)),
-                top: Math.max(8, measureBox.y - 26),
-              }}
-            >
-              W {pxToCm(measureBox.width).toFixed(2)} cm
-            </div>
-            <div
-              className="absolute rounded-full border border-violet-200 bg-white/95 px-3 py-1 text-[11px] font-medium text-violet-700 shadow-sm dark:border-violet-500/40 dark:bg-slate-950/95 dark:text-violet-200"
-              style={{
-                left: Math.max(8, measureBox.x - 18),
-                top: Math.max(8, Math.min(measureBox.y + (measureBox.height / 2) - 14, height - 32)),
-                writingMode: 'vertical-rl',
-                textOrientation: 'mixed',
-              }}
-            >
-              H {pxToCm(measureBox.height).toFixed(2)} cm
-            </div>
-            <div
-              className="absolute rounded-full border border-slate-200 bg-white/95 px-3 py-1 text-[11px] font-medium text-slate-700 shadow-sm dark:border-white/10 dark:bg-slate-950/95 dark:text-slate-200"
-              style={{
-                left: Math.max(8, Math.min(measureBox.x, width - 180)),
-                top: Math.min(height - 28, measureBox.y + measureBox.height + 8),
-              }}
-            >
-              X {pxToCm(measureBox.x).toFixed(2)} cm · Y {pxToCm(measureBox.y).toFixed(2)} cm
-            </div>
-          </div>
-        ) : null}
         {dropPreview && previewBox ? (
           <div className="pointer-events-none absolute inset-0" aria-hidden="true">
             <div
@@ -752,6 +671,7 @@ export function BarcodeDesignerCanvas({
             </div>
           </div>
         ) : null}
+      </div>
       </div>
     </div>
   );

@@ -423,7 +423,7 @@ export function BarcodePrintPage(): ReactElement {
   });
 
   return (
-    <div className="wms-ops-form wms-ops-list wms-ops-barcode-print space-y-5">
+    <div className="wms-ops-form wms-ops-erp-skin wms-ops-list wms-ops-barcode-print space-y-5">
       <header className="wms-ops-header">
         <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
           {t('sidebar.erp', { defaultValue: 'ERP' })} / {t('barcodePrint.badge', { defaultValue: 'WMS Print' })}

@@ -3,7 +3,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { RefreshCcw, Save, SendToBack } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { MasterDataOpsErpEyebrow } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeDesignerApi } from '@/features/barcode-designer/api/barcode-designer.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
@@ -169,65 +170,52 @@ export function PrinterManagementPage(): ReactElement {
   const canManageMappings = permission.canUpdate;
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.erp') },
-          { label: t('sidebar.erpBarcodeDesigner') },
-          { label: t('sidebar.printerManagement'), isActive: true },
-        ]}
-      />
-
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.14),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('printerManagement.badges.serverPrinting')}</Badge>
-              <Badge variant="secondary">{t('printerManagement.badges.queue')}</Badge>
-            </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('sidebar.printerManagement')}</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {t('printerManagement.description')}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <DefinitionExcelActions
-              definitionKey="printer-definition"
-              fileNamePrefix="yazici-tanimlari"
-              onImportCompleted={async () => {
-                await printersQuery.refetch();
-                await profilesQuery.refetch();
-              }}
-            />
-            <DefinitionExcelActions
-              definitionKey="printer-profile"
-              fileNamePrefix="yazici-profilleri"
-              onImportCompleted={async () => {
-                await profilesQuery.refetch();
-              }}
-            />
-            <DefinitionExcelActions
-              definitionKey="barcode-template-printer-profile"
-              fileNamePrefix="barkod-sablon-yazici-eslesmeleri"
-              onImportCompleted={async () => {
-                await templateMappingsQuery.refetch();
-              }}
-            />
-            <Button variant="outline" onClick={() => {
+    <OpsFormPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.printerManagement')} />}
+      title={t('sidebar.printerManagement')}
+      description={t('printerManagement.description')}
+      actions={
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <DefinitionExcelActions
+            definitionKey="printer-definition"
+            fileNamePrefix="yazici-tanimlari"
+            onImportCompleted={async () => {
+              await printersQuery.refetch();
+              await profilesQuery.refetch();
+            }}
+          />
+          <DefinitionExcelActions
+            definitionKey="printer-profile"
+            fileNamePrefix="yazici-profilleri"
+            onImportCompleted={async () => {
+              await profilesQuery.refetch();
+            }}
+          />
+          <DefinitionExcelActions
+            definitionKey="barcode-template-printer-profile"
+            fileNamePrefix="barkod-sablon-yazici-eslesmeleri"
+            onImportCompleted={async () => {
+              await templateMappingsQuery.refetch();
+            }}
+          />
+          <OpsActionButton
+            type="button"
+            variant="secondary"
+            onClick={() => {
               void printersQuery.refetch();
               void profilesQuery.refetch();
               void templatesQuery.refetch();
               void templateMappingsQuery.refetch();
               void jobsQuery.refetch();
-            }}>
-              <RefreshCcw className="mr-2 size-4" />
-              {t('common.refresh')}
-            </Button>
-          </div>
+            }}
+          >
+            <RefreshCcw className="size-3.5" aria-hidden />
+            {t('common.refresh')}
+          </OpsActionButton>
         </div>
-      </section>
-
-      <div className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
+      }
+    >
+      <div className="wms-ops-form wms-ops-erp-skin grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
         <div className="space-y-6">
           <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
@@ -431,6 +419,7 @@ export function PrinterManagementPage(): ReactElement {
               <CardTitle>{t('printerManagement.tables.printers')}</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="wms-ops-data-grid overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -491,6 +480,7 @@ export function PrinterManagementPage(): ReactElement {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
 
@@ -499,6 +489,7 @@ export function PrinterManagementPage(): ReactElement {
               <CardTitle>{t('printerManagement.tables.profiles')}</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="wms-ops-data-grid overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -563,6 +554,7 @@ export function PrinterManagementPage(): ReactElement {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
 
@@ -617,6 +609,7 @@ export function PrinterManagementPage(): ReactElement {
                   {t('printerManagement.mappingForm.addDefault')}
                 </Button>
               </div>
+              <div className="wms-ops-data-grid overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -660,6 +653,7 @@ export function PrinterManagementPage(): ReactElement {
                   ))}
                 </TableBody>
               </Table>
+              </div>
               {selectedTemplateId && (templateMappingsQuery.data?.data ?? []).length === 0 ? (
                 <div className="text-sm text-slate-500">{t('printerManagement.mappingForm.empty')}</div>
               ) : null}
@@ -671,6 +665,7 @@ export function PrinterManagementPage(): ReactElement {
               <CardTitle>{t('printerManagement.tables.jobs')}</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="wms-ops-data-grid overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -716,10 +711,11 @@ export function PrinterManagementPage(): ReactElement {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

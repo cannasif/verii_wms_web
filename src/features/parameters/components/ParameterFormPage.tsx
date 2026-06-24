@@ -7,14 +7,16 @@ import { useUIStore } from '@/stores/ui-store';
 import { useParameterFirst } from '../hooks/useParameterFirst';
 import { useUpsertParameter } from '../hooks/useUpsertParameter';
 import { parameterFormSchema } from '../types/parameter';
-import { FormPageShell } from '@/components/shared';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
+import {
+  OpsActionButton,
+  OpsFormPageShell,
+  OpsToggleField,
+  PageState,
+} from '@/components/shared';
+import { MasterDataOpsParameterEyebrow } from '@/features/shared';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { PARAMETER_TYPES, type ParameterType, type ParameterFormData } from '../types/parameter';
-import { CheckCircle2, XCircle } from 'lucide-react';
 
 type ParameterFormError = {
   response?: {
@@ -24,6 +26,13 @@ type ParameterFormError = {
     };
   };
   message?: string;
+};
+
+const DEFAULT_VALUES: ParameterFormData = {
+  allowLessQuantityBasedOnOrder: false,
+  allowMoreQuantityBasedOnOrder: false,
+  requireApprovalBeforeErp: false,
+  requireAllOrderItemsCollected: false,
 };
 
 export function ParameterFormPage(): ReactElement {
@@ -39,12 +48,7 @@ export function ParameterFormPage(): ReactElement {
 
   const form = useForm<ParameterFormData>({
     resolver: zodResolver(parameterFormSchema(t)),
-    defaultValues: {
-      allowLessQuantityBasedOnOrder: false,
-      allowMoreQuantityBasedOnOrder: false,
-      requireApprovalBeforeErp: false,
-      requireAllOrderItemsCollected: false,
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   useEffect(() => {
@@ -59,15 +63,11 @@ export function ParameterFormPage(): ReactElement {
         requireApprovalBeforeErp: parameter.requireApprovalBeforeErp,
         requireAllOrderItemsCollected: parameter.requireAllOrderItemsCollected ?? false,
       });
-    } else {
-      form.reset({
-        allowLessQuantityBasedOnOrder: false,
-        allowMoreQuantityBasedOnOrder: false,
-        requireApprovalBeforeErp: false,
-        requireAllOrderItemsCollected: false,
-      });
+      return;
     }
-  }, [parameter, form, parameterType, isLoadingParameter]);
+
+    form.reset(DEFAULT_VALUES);
+  }, [parameter, parameterType, isLoadingParameter, form.reset]);
 
   useEffect(() => {
     const title = t(`parameters.${parameterType}.title`, parameterConfig.name);
@@ -83,14 +83,14 @@ export function ParameterFormPage(): ReactElement {
       toast.success(
         parameter
           ? t('parameters.update.success')
-          : t('parameters.create.success')
+          : t('parameters.create.success'),
       );
     } catch (error: unknown) {
       console.error('Parameter update/create error:', error);
       let errorMessage = parameter
         ? t('parameters.update.error')
         : t('parameters.create.error');
-      
+
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if ((error as ParameterFormError)?.response?.data) {
@@ -101,191 +101,117 @@ export function ParameterFormPage(): ReactElement {
       } else if ((error as ParameterFormError)?.message) {
         errorMessage = (error as ParameterFormError).message ?? errorMessage;
       }
-      
+
       toast.error(errorMessage);
     }
   };
 
+  const pageTitle = t(`parameters.${parameterType}.title`, parameterConfig.name);
+  const pageDescription = parameter
+    ? t('parameters.form.editDescription')
+    : t('parameters.form.createDescription');
+
+  if (isLoadingParameter) {
+    return (
+      <PageState
+        tone="loading"
+        title={t('common.loading')}
+        description={pageDescription}
+      />
+    );
+  }
+
   return (
-    <div className="space-y-6 crm-page">
-      <FormPageShell
-        title={t(`parameters.${parameterType}.title`, parameterConfig.name)}
-        description={
-          parameter
-            ? t('parameters.form.editDescription')
-            : t('parameters.form.createDescription')
-        }
-        isLoading={isLoadingParameter}
-        loadingTitle={t('common.loading')}
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={<MasterDataOpsParameterEyebrow code={parameterType} />}
+        title={pageTitle}
+        description={pageDescription}
       >
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 crm-page">
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="allowLessQuantityBasedOnOrder"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/2 dark:hover:bg-white/[0.06]">
-                        <div className="flex-1 space-y-1">
-                          <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.allowLessQuantity')}
-                          </FormLabel>
-                          <FormDescription className="text-sm">
-                            {t(
-                              'parameters.form.allowLessQuantityDescription'
-                            )}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <div className="flex items-center space-x-2">
-                            {field.value ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            ) : (
-                              <XCircle className="h-5 w-5 text-gray-400" />
-                            )}
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="data-[state=checked]:bg-green-600"
-                            />
-                          </div>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+        <div className="wms-ops-form wms-ops-erp-skin">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="allowLessQuantityBasedOnOrder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <OpsToggleField
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      title={t('parameters.form.allowLessQuantity')}
+                      description={t('parameters.form.allowLessQuantityDescription')}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-                <Separator />
+            <FormField
+              control={form.control}
+              name="allowMoreQuantityBasedOnOrder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <OpsToggleField
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      title={t('parameters.form.allowMoreQuantity')}
+                      description={t('parameters.form.allowMoreQuantityDescription')}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-                <FormField
-                  control={form.control}
-                  name="allowMoreQuantityBasedOnOrder"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/2 dark:hover:bg-white/[0.06]">
-                        <div className="flex-1 space-y-1">
-                          <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.allowMoreQuantity')}
-                          </FormLabel>
-                          <FormDescription className="text-sm">
-                            {t(
-                              'parameters.form.allowMoreQuantityDescription'
-                            )}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <div className="flex items-center space-x-2">
-                            {field.value ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            ) : (
-                              <XCircle className="h-5 w-5 text-gray-400" />
-                            )}
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="data-[state=checked]:bg-green-600"
-                            />
-                          </div>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+            <FormField
+              control={form.control}
+              name="requireApprovalBeforeErp"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <OpsToggleField
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      title={t('parameters.form.requireApproval')}
+                      description={t('parameters.form.requireApprovalDescription')}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-                <Separator />
+            <FormField
+              control={form.control}
+              name="requireAllOrderItemsCollected"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <OpsToggleField
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      title={t('parameters.form.requireAllOrderItemsCollected')}
+                      description={t('parameters.form.requireAllOrderItemsCollectedDescription')}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-                <FormField
-                  control={form.control}
-                  name="requireApprovalBeforeErp"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/2 dark:hover:bg-white/[0.06]">
-                        <div className="flex-1 space-y-1">
-                          <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.requireApproval')}
-                          </FormLabel>
-                          <FormDescription className="text-sm">
-                            {t(
-                              'parameters.form.requireApprovalDescription'
-                            )}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <div className="flex items-center space-x-2">
-                            {field.value ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            ) : (
-                              <XCircle className="h-5 w-5 text-gray-400" />
-                            )}
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="data-[state=checked]:bg-green-600"
-                            />
-                          </div>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <Separator />
-
-                <FormField
-                  control={form.control}
-                  name="requireAllOrderItemsCollected"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-start space-x-4 rounded-xl border border-slate-200/70 bg-white/70 p-4 transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/2 dark:hover:bg-white/[0.06]">
-                        <div className="flex-1 space-y-1">
-                          <FormLabel className="text-base font-semibold">
-                            {t('parameters.form.requireAllOrderItemsCollected')}
-                          </FormLabel>
-                          <FormDescription className="text-sm">
-                            {t(
-                              'parameters.form.requireAllOrderItemsCollectedDescription'
-                            )}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <div className="flex items-center space-x-2">
-                            {field.value ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            ) : (
-                              <XCircle className="h-5 w-5 text-gray-400" />
-                            )}
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="data-[state=checked]:bg-green-600"
-                            />
-                          </div>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <Separator />
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="submit"
-                  disabled={upsertMutation.isPending}
-                  className="min-w-[120px]"
-                >
-                  {upsertMutation.isPending
-                    ? t('common.saving')
-                    : parameter
-                      ? t('parameters.form.updateButton')
-                      : t('parameters.form.createButton')}
-                </Button>
-              </div>
-            </form>
-          </Form>
-      </FormPageShell>
-    </div>
+          <div className="wms-ops-actions flex justify-end border-t pt-6">
+            <OpsActionButton type="submit" variant="primary" disabled={upsertMutation.isPending}>
+              {upsertMutation.isPending
+                ? t('common.saving')
+                : parameter
+                  ? t('parameters.form.updateButton')
+                  : t('parameters.form.createButton')}
+            </OpsActionButton>
+          </div>
+        </form>
+        </div>
+      </OpsFormPageShell>
+    </Form>
   );
 }

@@ -1,6 +1,8 @@
 import { type ReactElement, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Combobox } from '@/components/ui/combobox';
+import { OpsFieldShell } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { shelfManagementApi } from '../api/shelf-management.api';
 
@@ -13,6 +15,7 @@ interface ShelfLookupComboboxProps {
   emptyText?: string;
   disabled?: boolean;
   includeInactive?: boolean;
+  variant?: 'default' | 'ops';
 }
 
 export function ShelfLookupCombobox({
@@ -24,7 +27,9 @@ export function ShelfLookupCombobox({
   emptyText,
   disabled = false,
   includeInactive = false,
+  variant = 'default',
 }: ShelfLookupComboboxProps): ReactElement {
+  const isOps = variant === 'ops';
   const normalizedWarehouseCode = typeof warehouseCode === 'string'
     ? Number(warehouseCode)
     : warehouseCode;
@@ -55,7 +60,7 @@ export function ShelfLookupCombobox({
     }));
   }, [shelvesQuery.data?.data]);
 
-  return (
+  const combobox = (
     <Combobox
       options={options}
       value={value}
@@ -64,6 +69,14 @@ export function ShelfLookupCombobox({
       searchPlaceholder={searchPlaceholder}
       emptyText={emptyText}
       disabled={disabled || !warehouseQuery.data?.id}
+      className={isOps ? OPS_FIELD_CLASS : undefined}
+      popoverClassName={isOps ? 'wms-ops-lookup-popover' : undefined}
     />
   );
+
+  if (!isOps) {
+    return combobox;
+  }
+
+  return <OpsFieldShell>{combobox}</OpsFieldShell>;
 }

@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useCallback } from 'react';
+import { type ReactElement, useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -9,7 +9,12 @@ import v3riiWmsLogo from '@/assets/v3riiwms.png';
 import v3logo from '@/assets/v3logo.png';
 import type { NavItem } from './nav-items';
 import { SidebarNavItem } from './sidebar/SidebarNavItem';
-import { collectActiveAncestorKeys, resolveExpandedKeysAfterToggle } from './sidebar/sidebar-utils';
+import {
+  buildNavIndex,
+  collectActiveAncestorKeys,
+  collectSubtreeExpandKeys,
+  resolveExpandedKeysAfterToggle,
+} from './sidebar/sidebar-utils';
 import { sidebarMotionClassName, sidebarShellClassName } from './sidebar/sidebar-styles';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
@@ -22,6 +27,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
   const { t } = useTranslation();
   const location = useLocation();
   const [expandedItemKeys, setExpandedItemKeys] = useState<string[]>([]);
+  const collapsedByUserRef = useRef<Set<string>>(new Set());
   const resolveTitle = useCallback(
     (item: NavItem): string => t(item.title, { defaultValue: item.titleFallback ?? item.title }),
     [t],
@@ -38,11 +44,30 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       return;
     }
     const activeAncestorKeys = collectActiveAncestorKeys(items, location.pathname);
+    const activeAncestorSet = new Set(activeAncestorKeys);
+    collapsedByUserRef.current = new Set(
+      [...collapsedByUserRef.current].filter((collapsedKey) => !activeAncestorSet.has(collapsedKey)),
+    );
     setExpandedItemKeys(activeAncestorKeys);
   }, [items, location.pathname, searchQuery]);
 
   const handleToggle = useCallback((key: string): void => {
-    setExpandedItemKeys((prev) => resolveExpandedKeysAfterToggle(prev, key, items, location.pathname));
+    setExpandedItemKeys((prev) => {
+      const isCollapsing = prev.includes(key);
+      const index = buildNavIndex(items);
+      const subtreeKeys = collectSubtreeExpandKeys(key, index);
+      const collapsedSet = new Set(collapsedByUserRef.current);
+
+      if (isCollapsing) {
+        subtreeKeys.forEach((subtreeKey) => collapsedSet.add(subtreeKey));
+      } else {
+        subtreeKeys.forEach((subtreeKey) => collapsedSet.delete(subtreeKey));
+      }
+
+      collapsedByUserRef.current = collapsedSet;
+
+      return resolveExpandedKeysAfterToggle(prev, key, items, location.pathname, collapsedSet);
+    });
   }, [items, location.pathname]);
 
   return (

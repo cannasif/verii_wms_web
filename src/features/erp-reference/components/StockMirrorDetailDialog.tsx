@@ -1,12 +1,13 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, FileJson, Image as ImageIcon, PackageSearch, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { OpsActionButton } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { MasterDataOpsDialogContent } from '@/features/shared';
 import { erpReferenceApi } from '../api/erpReference.api';
 import type { CreateStockDetailDto, UpdateStockDetailDto } from '../types/erpReference.types';
 import { StockMirrorImageList } from './StockMirrorImageList';
@@ -108,12 +109,15 @@ export function StockMirrorDetailDialog({ stockId, open, onOpenChange }: StockMi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl">
-        <DialogHeader>
-          <DialogTitle>Stok Mirror Detayı</DialogTitle>
-          <DialogDescription>CRM’deki stok penceresinin WMS için sadeleştirilmiş uyarlaması. Görsel yönetimi ve detay notları burada tutulur.</DialogDescription>
+      <MasterDataOpsDialogContent size="xl">
+        <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+          <DialogTitle className="wms-ops-pt-terminal__title">Stok Mirror Detayı</DialogTitle>
+          <DialogDescription className="wms-ops-pt-terminal__meta">
+            ERP tarafından senkronlanan stok kaydının görsel ve detay bilgilerini yönetin.
+          </DialogDescription>
         </DialogHeader>
 
+        <div className="wms-ops-form wms-ops-erp-skin max-h-[min(72dvh,760px)] overflow-y-auto px-5 py-4">
         {isBusy ? (
           <div className="py-8 text-sm text-slate-500">Yükleniyor...</div>
         ) : !stock ? (
@@ -191,10 +195,10 @@ export function StockMirrorDetailDialog({ stockId, open, onOpenChange }: StockMi
                       />
                     </div>
                     <div className="flex justify-end">
-                      <Button type="button" onClick={() => void saveMutation.mutateAsync()} disabled={saveMutation.isPending}>
-                        <Save className="mr-2 h-4 w-4" />
+                      <OpsActionButton type="button" variant="primary" onClick={() => void saveMutation.mutateAsync()} disabled={saveMutation.isPending}>
+                        <Save className="size-3.5" aria-hidden />
                         {detailQuery.data ? 'Güncelle' : 'Kaydet'}
-                      </Button>
+                      </OpsActionButton>
                     </div>
                   </CardContent>
                 </Card>
@@ -207,7 +211,8 @@ export function StockMirrorDetailDialog({ stockId, open, onOpenChange }: StockMi
             </TabsContent>
           </Tabs>
         )}
-      </DialogContent>
+        </div>
+      </MasterDataOpsDialogContent>
     </Dialog>
   );
 }

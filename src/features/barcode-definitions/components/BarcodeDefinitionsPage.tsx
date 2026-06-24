@@ -13,16 +13,21 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import {
+  MasterDataOpsDialogContent,
+  MasterDataOpsErpEyebrow,
+  MasterDataOpsStatGrid,
+} from '@/features/shared';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeApi } from '@/features/shared/api/barcode-api';
@@ -171,10 +176,17 @@ export function BarcodeDefinitionsPage(): ReactElement {
   }, [setPageTitle, t]);
 
   useEffect(() => {
-    if (!definitions.some((definition) => definition.moduleKey === selectedModuleKey) && definitions.length > 0) {
-      setSelectedModuleKey(definitions[0].moduleKey);
+    if (definitions.length === 0) {
+      return;
     }
-  }, [definitions, selectedModuleKey]);
+
+    setSelectedModuleKey((current) => {
+      if (definitions.some((definition) => definition.moduleKey === current)) {
+        return current;
+      }
+      return definitions[0].moduleKey;
+    });
+  }, [definitions]);
 
   const selectedDefinition = useMemo(
     () => definitions.find((definition) => definition.moduleKey === selectedModuleKey) ?? null,
@@ -316,53 +328,29 @@ export function BarcodeDefinitionsPage(): ReactElement {
     });
   };
 
+  const handleDialogOpenChange = (nextOpen: boolean): void => {
+    setDialogOpen(nextOpen);
+    if (!nextOpen) {
+      setEditingDefinition(null);
+      setFormState(emptyFormState);
+    }
+  };
+
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
+    <OpsFormPageShell
+      eyebrow={<MasterDataOpsErpEyebrow page={t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Missing translation' })} />}
+      title={t('barcodeManagement.title', { defaultValue: 'Missing translation' })}
+      description={t('barcodeManagement.heroSubtitle')}
+    >
+      <div className="wms-ops-form wms-ops-erp-skin space-y-6">
+      <MasterDataOpsStatGrid
+        className="mb-6 md:grid-cols-3"
         items={[
-          { label: t('sidebar.erp', { defaultValue: 'Missing translation' }) },
-          { label: t('sidebar.erpBarcodeDefinitions', { defaultValue: 'Missing translation' }), isActive: true },
+          { label: t('barcodeManagement.totalDefinitions'), value: definitions.length },
+          { label: t('barcodeManagement.activeDefinitions'), value: definitions.filter((item) => item.isActive).length },
+          { label: t('barcodeManagement.mirrorLookupCard'), value: definitions.filter((item) => item.allowMirrorLookup).length },
         ]}
       />
-
-      <section className="rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.14),_transparent_32%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(241,245,249,0.92))] p-6 shadow-sm dark:border-white/10 dark:bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.18),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(15,23,42,0.88))]">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{t('sidebar.erp', { defaultValue: 'Missing translation' })}</Badge>
-              <Badge variant="secondary">{t('barcodeManagement.badgeSetup')}</Badge>
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">
-                {t('barcodeManagement.title', { defaultValue: 'Missing translation' })}
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {t('barcodeManagement.heroSubtitle')}
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.totalDefinitions')}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.length}</div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.activeDefinitions')}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.isActive).length}</div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
-              <CardContent className="p-4">
-                <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.mirrorLookupCard')}</div>
-                <div className="mt-1 font-semibold text-slate-900 dark:text-white">{definitions.filter((item) => item.allowMirrorLookup).length}</div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/4">
@@ -379,10 +367,10 @@ export function BarcodeDefinitionsPage(): ReactElement {
                   </p>
                 </div>
               </div>
-              <Button onClick={openCreateDialog} disabled={!permission.canCreate}>
-                <Plus className="mr-2 size-4" />
+              <OpsActionButton type="button" variant="primary" onClick={openCreateDialog} disabled={!permission.canCreate}>
+                <Plus className="size-3.5" aria-hidden />
                 {t('barcodeManagement.addButton')}
-              </Button>
+              </OpsActionButton>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -610,20 +598,22 @@ export function BarcodeDefinitionsPage(): ReactElement {
           </Card>
         </div>
       </div>
+      </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <MasterDataOpsDialogContent size="xl">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+            <DialogTitle className="wms-ops-pt-terminal__title">
               {editingDefinition
                 ? editingDefinition.id
                   ? t('barcodeManagement.dialogEditTitle')
                   : t('barcodeManagement.dialogOverrideTitle')
                 : t('barcodeManagement.dialogCreateTitle')}
             </DialogTitle>
-            <DialogDescription>{t('barcodeManagement.dialogSimpleDescription')}</DialogDescription>
+            <DialogDescription className="wms-ops-pt-terminal__meta">{t('barcodeManagement.dialogSimpleDescription')}</DialogDescription>
           </DialogHeader>
 
+          <div className="wms-ops-form max-h-[min(68dvh,720px)] overflow-y-auto px-5 py-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>{t('barcodeManagement.operationLabel')}</Label>
@@ -721,17 +711,18 @@ export function BarcodeDefinitionsPage(): ReactElement {
               />
             </div>
           </div>
+          </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+          <DialogFooter className="wms-ops-actions border-t px-5 py-4">
+            <OpsActionButton type="button" variant="secondary" onClick={() => handleDialogOpenChange(false)}>
               {t('common.cancel', { defaultValue: 'Missing translation' })}
-            </Button>
-            <Button onClick={handleSaveDefinition} disabled={saveMutation.isPending || (!permission.canCreate && !permission.canUpdate)}>
+            </OpsActionButton>
+            <OpsActionButton type="button" variant="primary" onClick={handleSaveDefinition} disabled={saveMutation.isPending || (!permission.canCreate && !permission.canUpdate)}>
               {saveMutation.isPending ? t('common.loading', { defaultValue: 'Missing translation' }) : t('common.save', { defaultValue: 'Missing translation' })}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </MasterDataOpsDialogContent>
       </Dialog>
-    </div>
+    </OpsFormPageShell>
   );
 }

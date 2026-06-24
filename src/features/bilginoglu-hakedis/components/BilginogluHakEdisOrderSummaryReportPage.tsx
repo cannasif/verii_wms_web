@@ -1,16 +1,20 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
-import { BarChart3, RefreshCcw } from 'lucide-react';
+import { AlertTriangle, Boxes, GitBranch, PackageCheck, RefreshCcw, Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useBilginogluHakEdisOrderSummaryReportQuery } from '../hooks/useBilginogluHakEdisQueries';
 import type { BilginogluHakEdisOrderSummaryReport } from '../types/bilginoglu-hakedis.types';
+import {
+  HAK_EDIS_ORDER_SUMMARY_COLUMN_WIDTHS,
+  HakEdisMetricGrid,
+  HakEdisPageSection,
+  HakEdisReportCellFacts,
+  HakEdisSummaryMetric,
+  hakEdisOpsStatusBadge,
+} from './bilginoglu-hakedis-ops-ui';
 
 type ReportColumnKey =
   | 'siparisNo'
@@ -51,24 +55,11 @@ function formatQty(value?: number | null): string {
 
 function formatDate(value?: string | null): string {
   if (!value) return '-';
-  return new Date(value).toLocaleString('tr-TR');
+  return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 }
 
-function FlowPair({ label, value, tone = 'slate' }: { label: string; value: number; tone?: 'slate' | 'emerald' | 'blue' | 'amber' | 'rose' }) {
-  const toneClass = {
-    slate: 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200',
-    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
-    blue: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200',
-    amber: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200',
-    rose: 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200',
-  }[tone];
-
-  return (
-    <div className={`rounded-xl px-3 py-2 ${toneClass}`}>
-      <div className="text-[11px] font-bold uppercase tracking-wide opacity-75">{label}</div>
-      <div className="mt-0.5 text-sm font-black">{formatQty(value)}</div>
-    </div>
-  );
+function yesNoLabel(flag: string, t: (key: string) => string): string {
+  return flag === 'E' ? t('common.yes') : t('common.no');
 }
 
 export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
@@ -93,18 +84,79 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
   const range = getPagedRange(query.data, 1);
 
   const columns = useMemo<PagedDataGridColumn<ReportColumnKey>[]>(() => [
-    { key: 'siparisNo', label: t('reports.orderSummary.table.order') },
-    { key: 'orderDate', label: t('reports.orderSummary.table.orderDate') },
+    {
+      key: 'siparisNo',
+      label: t('reports.orderSummary.table.order'),
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'orderDate',
+      label: t('reports.orderSummary.table.orderDate'),
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
     { key: 'customer', label: t('reports.orderSummary.table.customer') },
-    { key: 'flags', label: t('reports.orderSummary.table.flags') },
-    { key: 'expectedTotalQty', label: t('reports.orderSummary.table.expected'), sortable: false },
-    { key: 'unplannedNeedQty', label: t('reports.orderSummary.table.unplannedNeed'), sortable: false },
-    { key: 'hakEdisFlow', label: t('reports.orderSummary.table.hakEdisFlow'), sortable: false },
-    { key: 'returnFlow', label: t('reports.orderSummary.table.returnFlow'), sortable: false },
-    { key: 'shipmentFlow', label: t('reports.orderSummary.table.shipmentFlow'), sortable: false },
-    { key: 'warehouse', label: t('reports.orderSummary.table.warehouse'), sortable: false },
-    { key: 'status', label: t('reports.orderSummary.table.status') },
-    { key: 'lastEvaluationDate', label: t('reports.orderSummary.table.lastEvaluation') },
+    {
+      key: 'flags',
+      label: t('reports.orderSummary.table.flags'),
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'expectedTotalQty',
+      label: t('reports.orderSummary.table.expected'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'unplannedNeedQty',
+      label: t('reports.orderSummary.table.unplannedNeed'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'hakEdisFlow',
+      label: t('reports.orderSummary.table.hakEdisFlow'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'returnFlow',
+      label: t('reports.orderSummary.table.returnFlow'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'shipmentFlow',
+      label: t('reports.orderSummary.table.shipmentFlow'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'warehouse',
+      label: t('reports.orderSummary.table.warehouse'),
+      sortable: false,
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'status',
+      label: t('reports.orderSummary.table.status'),
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
+    {
+      key: 'lastEvaluationDate',
+      label: t('reports.orderSummary.table.lastEvaluation'),
+      headClassName: 'wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-center-col',
+    },
   ], [t]);
 
   const totals = useMemo(() => rows.reduce(
@@ -144,118 +196,141 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-bilginoglu-report-page"
       eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
       title={t('reports.orderSummary.title')}
       description={t('reports.orderSummary.description')}
-      actions={
-        <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
-          <RefreshCcw className="mr-2 size-4" />
+      actions={(
+        <OpsActionButton type="button" variant="secondary" onClick={() => void query.refetch()}>
+          <RefreshCcw className="size-4" />
           {t('actions.refresh')}
-        </Button>
-      }
+        </OpsActionButton>
+      )}
     >
-      <section className="wms-ops-panel overflow-hidden rounded-3xl border shadow-none">
-        <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="p-5 md:p-6">
-            <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.18em]">
-              <BarChart3 className="size-3.5" />
-              {t('reports.orderSummary.eyebrow')}
-            </div>
-          </div>
-          <div className="border-t border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-black/15 lg:border-l lg:border-t-0">
-            <div className="grid grid-cols-2 gap-3">
-              <FlowPair label={t('reports.orderSummary.cards.expected')} value={totals.expected} tone="slate" />
-              <FlowPair label={t('reports.orderSummary.cards.unplanned')} value={totals.unplanned} tone="amber" />
-              <FlowPair label={t('reports.orderSummary.cards.hakEdisFlow')} value={totals.hakEdisFlow} tone="blue" />
-              <FlowPair label={t('reports.orderSummary.cards.shipmentWaiting')} value={totals.shipmentWaiting} tone="emerald" />
-              <FlowPair label={t('reports.orderSummary.cards.shipped')} value={totals.shipped} tone="emerald" />
-              <FlowPair label={t('reports.orderSummary.cards.missing')} value={totals.missing} tone="rose" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="wms-ops-bilginoglu-page">
+        <HakEdisMetricGrid>
+          <HakEdisSummaryMetric icon={<Boxes className="size-4" />} label={t('reports.orderSummary.cards.expected')} value={formatQty(totals.expected)} />
+          <HakEdisSummaryMetric icon={<AlertTriangle className="size-4" />} label={t('reports.orderSummary.cards.unplanned')} value={formatQty(totals.unplanned)} />
+          <HakEdisSummaryMetric icon={<GitBranch className="size-4" />} label={t('reports.orderSummary.cards.hakEdisFlow')} value={formatQty(totals.hakEdisFlow)} />
+          <HakEdisSummaryMetric icon={<PackageCheck className="size-4" />} label={t('reports.orderSummary.cards.shipmentWaiting')} value={formatQty(totals.shipmentWaiting)} />
+          <HakEdisSummaryMetric icon={<Truck className="size-4" />} label={t('reports.orderSummary.cards.shipped')} value={formatQty(totals.shipped)} />
+          <HakEdisSummaryMetric icon={<AlertTriangle className="size-4" />} label={t('reports.orderSummary.cards.missing')} value={formatQty(totals.missing)} />
+        </HakEdisMetricGrid>
 
-      <Card className="border-slate-200/80 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/5">
-        <CardContent className="p-4 md:p-5">
+        <HakEdisPageSection className="wms-ops-bilginoglu-page-section--grid">
           <PagedDataGrid<BilginogluHakEdisOrderSummaryReport, ReportColumnKey>
             variant="ops"
             pageKey="bilginoglu-hakedis-order-summary-report"
+            idColumnKey="siparisNo"
+            lockedColumnKeys={['siparisNo']}
             columns={columns}
             rows={rows}
             rowKey={(row) => row.id}
+            defaultColumnWidths={HAK_EDIS_ORDER_SUMMARY_COLUMN_WIDTHS}
+            enableColumnResize
             renderCell={(row, columnKey) => {
               switch (columnKey) {
                 case 'siparisNo':
                   return (
-                    <div className="flex flex-col gap-1">
-                      <span className="font-black text-slate-950 dark:text-white">{row.siparisNo}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="wms-ops-bilginoglu-report-order">
+                      <span className="wms-ops-bilginoglu-report-order__no" title={row.siparisNo}>
+                        {row.siparisNo}
+                      </span>
+                      <span className="wms-ops-prelabel-panel__hint">
                         {t('reports.orderSummary.labels.lineCount')}: {row.lineCount}
                       </span>
                     </div>
                   );
                 case 'orderDate':
-                  return formatDate(row.orderDate);
+                  return <span className="tabular-nums" title={formatDate(row.orderDate)}>{formatDate(row.orderDate)}</span>;
                 case 'customer':
                   return (
-                    <div className="flex flex-col gap-1">
-                      <span className="font-semibold">{row.customerCode ?? '-'}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.customerName ?? '-'}</span>
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <span className="truncate font-semibold" title={String(row.customerCode ?? '-')}>
+                        {row.customerCode ?? '-'}
+                      </span>
+                      <span className="wms-ops-prelabel-panel__hint truncate" title={row.customerName ?? '-'}>
+                        {row.customerName ?? '-'}
+                      </span>
                     </div>
                   );
                 case 'flags':
                   return (
-                    <div className="flex flex-wrap gap-1.5">
-                      <Badge variant={row.hakEdisFlag === 'E' ? 'default' : 'secondary'} className="rounded-full">
-                        {t('reports.orderSummary.labels.hakEdisRequired')}: {row.hakEdisFlag === 'E' ? t('common.yes') : t('common.no')}
-                      </Badge>
-                      <Badge variant={row.transferAllFlag === 'E' ? 'default' : 'outline'} className="rounded-full">
-                        {t('reports.orderSummary.labels.transferAll')}: {row.transferAllFlag === 'E' ? t('common.yes') : t('common.no')}
-                      </Badge>
+                    <div className="wms-ops-bilginoglu-report-flags">
+                      <span className="wms-ops-code-badge" title={`${t('reports.orderSummary.labels.hakEdisRequired')}: ${yesNoLabel(row.hakEdisFlag, t)}`}>
+                        {t('reports.orderSummary.labels.hakEdisRequired')}: {yesNoLabel(row.hakEdisFlag, t)}
+                      </span>
+                      <span className="wms-ops-code-badge" title={`${t('reports.orderSummary.labels.transferAll')}: ${yesNoLabel(row.transferAllFlag, t)}`}>
+                        {t('reports.orderSummary.labels.transferAll')}: {yesNoLabel(row.transferAllFlag, t)}
+                      </span>
                     </div>
                   );
                 case 'expectedTotalQty':
                   return (
-                    <div className="grid min-w-36 grid-cols-2 gap-2">
-                      <FlowPair label={t('reports.orderSummary.labels.expected')} value={row.expectedTotalQty} />
-                      <FlowPair label={t('reports.orderSummary.labels.remaining')} value={row.remainingOrderQty} />
-                    </div>
+                    <HakEdisReportCellFacts
+                      items={[
+                        { label: t('reports.orderSummary.labels.expected'), value: formatQty(row.expectedTotalQty) },
+                        { label: t('reports.orderSummary.labels.remaining'), value: formatQty(row.remainingOrderQty) },
+                      ]}
+                    />
                   );
                 case 'unplannedNeedQty':
-                  return <FlowPair label={t('reports.orderSummary.labels.canCreate')} value={row.unplannedNeedQty} tone="amber" />;
+                  return (
+                    <span
+                      className="wms-ops-bilginoglu-report-fact__value wms-ops-bilginoglu-report-fact__value--warn tabular-nums"
+                      title={formatQty(row.unplannedNeedQty)}
+                    >
+                      {formatQty(row.unplannedNeedQty)}
+                    </span>
+                  );
                 case 'hakEdisFlow':
                   return (
-                    <div className="grid min-w-44 grid-cols-2 gap-2">
-                      <FlowPair label={t('reports.orderSummary.labels.toGo')} value={row.hakEdisToGoQty} tone="blue" />
-                      <FlowPair label={t('reports.orderSummary.labels.atHakEdis')} value={row.atHakEdisQty} tone="blue" />
-                    </div>
+                    <HakEdisReportCellFacts
+                      items={[
+                        { label: t('reports.orderSummary.labels.toGo'), value: formatQty(row.hakEdisToGoQty), tone: 'info' },
+                        { label: t('reports.orderSummary.labels.atHakEdis'), value: formatQty(row.atHakEdisQty), tone: 'info' },
+                      ]}
+                    />
                   );
                 case 'returnFlow':
-                  return <FlowPair label={t('reports.orderSummary.labels.returnPending')} value={row.hakEdisReturnPendingQty} tone="blue" />;
+                  return (
+                    <span
+                      className="wms-ops-bilginoglu-report-fact__value wms-ops-bilginoglu-report-fact__value--info tabular-nums"
+                      title={formatQty(row.hakEdisReturnPendingQty)}
+                    >
+                      {formatQty(row.hakEdisReturnPendingQty)}
+                    </span>
+                  );
                 case 'shipmentFlow':
                   return (
-                    <div className="grid min-w-48 grid-cols-3 gap-2">
-                      <FlowPair label={t('reports.orderSummary.labels.ready')} value={row.readyForShipmentQty} tone="emerald" />
-                      <FlowPair label={t('reports.orderSummary.labels.shipmentOrder')} value={row.shipmentWaitingQty} tone="emerald" />
-                      <FlowPair label={t('reports.orderSummary.labels.shipped')} value={row.shippedQty} tone="emerald" />
-                    </div>
+                    <HakEdisReportCellFacts
+                      items={[
+                        { label: t('reports.orderSummary.labels.ready'), value: formatQty(row.readyForShipmentQty), tone: 'success' },
+                        { label: t('reports.orderSummary.labels.shipmentOrder'), value: formatQty(row.shipmentWaitingQty), tone: 'success' },
+                        { label: t('reports.orderSummary.labels.shipped'), value: formatQty(row.shippedQty), tone: 'success' },
+                      ]}
+                    />
                   );
                 case 'warehouse':
                   return (
-                    <div className="grid min-w-48 grid-cols-3 gap-2">
-                      <FlowPair label={t('reports.orderSummary.labels.available')} value={row.warehouseAvailableQty} tone="slate" />
-                      <FlowPair label={t('reports.orderSummary.labels.canCreate')} value={row.canCreateNewBatchQty} tone="emerald" />
-                      <FlowPair label={t('reports.orderSummary.labels.missing')} value={row.missingQty} tone="rose" />
-                    </div>
+                    <HakEdisReportCellFacts
+                      items={[
+                        { label: t('reports.orderSummary.labels.available'), value: formatQty(row.warehouseAvailableQty) },
+                        { label: t('reports.orderSummary.labels.canCreate'), value: formatQty(row.canCreateNewBatchQty), tone: 'success' },
+                        { label: t('reports.orderSummary.labels.missing'), value: formatQty(row.missingQty), tone: 'danger' },
+                      ]}
+                    />
                   );
-                case 'status':
-                  return (
-                    <Badge variant={row.isCompleted ? 'default' : 'outline'} className="rounded-full">
-                      {renderStatus(row.status)}
-                    </Badge>
-                  );
+                case 'status': {
+                  const statusLabel = renderStatus(row.status);
+                  return hakEdisOpsStatusBadge(row.status, statusLabel);
+                }
                 case 'lastEvaluationDate':
-                  return formatDate(row.lastEvaluationDate);
+                  return (
+                    <span className="tabular-nums" title={formatDate(row.lastEvaluationDate)}>
+                      {formatDate(row.lastEvaluationDate)}
+                    </span>
+                  );
                 default:
                   return '-';
               }
@@ -302,10 +377,9 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
             exportFileName="bilginoglu-hakedis-order-summary-report"
             exportColumns={columns.map((column) => ({ key: column.key, label: column.label }))}
             exportRows={exportRows}
-            minTableWidthClassName="min-w-[1440px]"
           />
-        </CardContent>
-      </Card>
+        </HakEdisPageSection>
+      </div>
     </OpsListPageShell>
   );
 }

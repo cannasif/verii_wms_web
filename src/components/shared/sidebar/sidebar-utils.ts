@@ -169,7 +169,7 @@ function isDescendantKey(key: string, ancestorKey: string, index: Map<string, Na
   return false;
 }
 
-function collectSubtreeExpandKeys(rootKey: string, index: Map<string, NavIndexEntry>): string[] {
+export function collectSubtreeExpandKeys(rootKey: string, index: Map<string, NavIndexEntry>): string[] {
   const keys: string[] = [];
   for (const [key] of index) {
     if (key === rootKey || isDescendantKey(key, rootKey, index)) {
@@ -184,6 +184,7 @@ export function resolveExpandedKeysAfterToggle(
   toggledKey: string,
   items: NavItem[],
   pathname: string,
+  collapsedByUser: ReadonlySet<string> = new Set(),
 ): string[] {
   const index = buildNavIndex(items);
   const toggled = index.get(toggledKey);
@@ -202,7 +203,7 @@ export function resolveExpandedKeysAfterToggle(
     if (key === toggledKey) {
       return true;
     }
-    if (activeAncestors.includes(key)) {
+    if (activeAncestors.includes(key) && !collapsedByUser.has(key)) {
       return true;
     }
 
@@ -222,5 +223,5 @@ export function resolveExpandedKeysAfterToggle(
     return true;
   });
 
-  return Array.from(new Set([...next, toggledKey, ...activeAncestors]));
+  return Array.from(new Set([...next, toggledKey]));
 }

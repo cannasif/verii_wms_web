@@ -2,17 +2,19 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Edit3, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
-import { Badge } from '@/components/ui/badge';
+import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, OpsTextarea, OpsToggleField, PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  HAK_EDIS_SETTINGS_COLUMN_WIDTHS,
+  HakEdisFlagChip,
+  HakEdisOpsDialogContent,
+} from './bilginoglu-hakedis-ops-ui';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
+import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { shelfManagementApi } from '@/features/shelf-management/api/shelf-management.api';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useUIStore } from '@/stores/ui-store';
@@ -170,30 +172,33 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
       title={t('locationSettings.title')}
       description={t('locationSettings.hero.description')}
       actions={
-        <Button type="button" variant="secondary" className="rounded-2xl" onClick={openCreateDialog} disabled={!permission.canCreate}>
-          <Plus className="mr-2 size-4" />
+        <OpsActionButton type="button" variant="primary" onClick={openCreateDialog} disabled={!permission.canCreate}>
+          <Plus className="size-4" />
           {t('locationSettings.actions.new')}
-        </Button>
+        </OpsActionButton>
       }
     >
       <Dialog open={dialogOpen} onOpenChange={(open) => {
         setDialogOpen(open);
         if (!open) resetForm();
       }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{form.id ? t('locationSettings.form.editTitle') : t('locationSettings.form.createTitle')}</DialogTitle>
-            <DialogDescription>{t('locationSettings.hero.description')}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
+        <HakEdisOpsDialogContent className="max-w-2xl">
+          <div className="border-b px-4 py-4 sm:px-6">
+            <DialogHeader className="space-y-1 text-left">
+              <DialogTitle>{form.id ? t('locationSettings.form.editTitle') : t('locationSettings.form.createTitle')}</DialogTitle>
+              <DialogDescription>{t('locationSettings.hero.description')}</DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="space-y-4 p-4 sm:p-6 wms-ops-form">
             <div className="space-y-2">
-              <Label>
+              <Label className="wms-ops-prelabel-form-label">
                 {t('locationSettings.form.completedWarehouse')}
                 <RequiredMark />
               </Label>
               <PagedLookupDialog<WarehouseLookup>
                 open={warehouseLookupOpen}
                 onOpenChange={setWarehouseLookupOpen}
+                variant="ops"
                 title={t('locationSettings.form.completedWarehouse')}
                 description={t('locationSettings.form.completedWarehouseDescription')}
                 value={form.warehouseLabel}
@@ -218,81 +223,69 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             </div>
 
             <div className="space-y-2">
-              <Label>
+              <Label className="wms-ops-prelabel-form-label">
                 {t('locationSettings.form.completedShelf')}
                 <RequiredMark />
               </Label>
-              <Select
-                value={form.shelfId ? String(form.shelfId) : ''}
-                onValueChange={(value) => {
-                  const shelf = shelfOptions.find((item) => String(item.id) === value);
-                  setForm((prev) => ({ ...prev, shelfId: shelf?.id, shelfCode: shelf?.code ?? '' }));
+              <ShelfLookupCombobox
+                variant="ops"
+                warehouseCode={form.warehouseCode}
+                value={form.shelfCode}
+                onValueChange={(code) => {
+                  const shelf = shelfOptions.find((item) => item.code === code);
+                  setForm((prev) => ({ ...prev, shelfCode: code, shelfId: shelf?.id }));
                 }}
-                disabled={!form.warehouseId || shelvesQuery.isLoading}
-              >
-                <SelectTrigger className="rounded-2xl">
-                  <SelectValue placeholder={shelvesQuery.isLoading ? t('loading') : t('locationSettings.form.selectShelf')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {shelfOptions.map((item) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {item.code} · {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">{t('locationSettings.form.completedShelfDescription')}</p>
+                placeholder={t('locationSettings.form.selectShelf')}
+                searchPlaceholder={t('table.search')}
+                emptyText={t('locationSettings.table.empty')}
+                disabled={!form.warehouseId}
+              />
+              <p className="wms-ops-prelabel-panel__hint">{t('locationSettings.form.completedShelfDescription')}</p>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 p-3 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-slate-300"
-                  checked={form.isDefault}
-                  onChange={(event) => setForm((prev) => ({ ...prev, isDefault: event.target.checked }))}
-                />
-                {t('locationSettings.form.isDefault')}
-              </label>
-              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 p-3 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-slate-300"
-                  checked={form.isActive}
-                  onChange={(event) => setForm((prev) => ({ ...prev, isActive: event.target.checked }))}
-                />
-                {t('locationSettings.form.isActive')}
-              </label>
+              <OpsToggleField
+                checked={form.isDefault}
+                onCheckedChange={(checked) => setForm((prev) => ({ ...prev, isDefault: checked }))}
+                title={t('locationSettings.form.isDefault')}
+              />
+              <OpsToggleField
+                checked={form.isActive}
+                onCheckedChange={(checked) => setForm((prev) => ({ ...prev, isActive: checked }))}
+                title={t('locationSettings.form.isActive')}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>{t('locationSettings.form.description')}</Label>
-              <Textarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} rows={3} />
+              <Label className="wms-ops-prelabel-form-label">{t('locationSettings.form.description')}</Label>
+              <OpsTextarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} rows={3} />
             </div>
-
-            <Button className="w-full rounded-2xl" type="button" disabled={!canSave || !form.warehouseId || !form.shelfCode || saveMutation.isPending} onClick={submit}>
-              {saveMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-              {t('locationSettings.actions.save')}
-            </Button>
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+          <DialogFooter className="gap-2 px-4 pb-4 sm:px-6 sm:pb-6">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDialogOpen(false)}>
               {t('common.cancel')}
-            </Button>
+            </OpsActionButton>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              disabled={!canSave || !form.warehouseId || !form.shelfCode || saveMutation.isPending}
+              onClick={submit}
+            >
+              {saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
+              {t('locationSettings.actions.save')}
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </HakEdisOpsDialogContent>
       </Dialog>
 
-      <Card className="rounded-3xl border-slate-200 shadow-sm">
-        <CardHeader>
-          <CardTitle>{t('locationSettings.table.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<BilginogluHakEdisCompletedLocationSetting, LocationColumnKey>
+      <PagedDataGrid<BilginogluHakEdisCompletedLocationSetting, LocationColumnKey>
+            variant="ops"
             pageKey={pageKey}
             columns={columns}
             rows={pageRows}
             rowKey={(row) => row.id}
+            defaultColumnWidths={HAK_EDIS_SETTINGS_COLUMN_WIDTHS}
+            iconOnlyActions
             renderCell={(row, columnKey) => {
               switch (columnKey) {
                 case 'branch':
@@ -314,10 +307,10 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
                 case 'status':
                   return (
                     <div className="flex flex-wrap gap-2">
-                      {row.isDefault ? <Badge className="rounded-xl bg-amber-100 text-amber-800 hover:bg-amber-100">{t('locationSettings.badges.default')}</Badge> : null}
-                      <Badge className={`rounded-xl ${row.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-100'}`}>
+                      {row.isDefault ? <HakEdisFlagChip tone="warn">{t('locationSettings.badges.default')}</HakEdisFlagChip> : null}
+                      <HakEdisFlagChip tone={row.isActive ? 'success' : 'default'}>
                         {row.isActive ? t('locationSettings.badges.active') : t('locationSettings.badges.passive')}
-                      </Badge>
+                      </HakEdisFlagChip>
                     </div>
                   );
                 case 'description':
@@ -347,14 +340,14 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             paginationInfoText={t('common.paginationInfo', { current: rangeFrom, total: rangeTo, totalCount: sortedSettings.length })}
             showActionsColumn
             actionsHeaderLabel={t('locationSettings.table.actions')}
-            actionsCellClassName="text-right"
+            actionsCellClassName="wms-ops-table-actions-col"
             renderActionsCell={(row) => (
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => edit(row)} disabled={!permission.canUpdate}>
-                  <Edit3 className="size-4" />
+              <div className="wms-ops-row-actions">
+                <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => edit(row)} disabled={!permission.canUpdate} aria-label={t('common.edit')}>
+                  <Edit3 className="size-3" />
                 </Button>
-                <Button type="button" variant="destructive" size="sm" className="rounded-xl" onClick={() => deleteMutation.mutate(row.id)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                  <Trash2 className="size-4" />
+                <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger" onClick={() => deleteMutation.mutate(row.id)} disabled={!permission.canDelete || deleteMutation.isPending} aria-label={t('common.delete')}>
+                  <Trash2 className="size-3" />
                 </Button>
               </div>
             )}
@@ -377,8 +370,6 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
               description: row.description ?? '-',
             }))}
           />
-        </CardContent>
-      </Card>
     </OpsListPageShell>
   );
 }
