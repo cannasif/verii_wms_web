@@ -56,7 +56,7 @@ export function GridExportMenu({ fileName, columns, rows, getExportData, variant
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         {variant === 'ops' ? (
           <OpsActionButton type="button" variant="secondary" className="wms-ops-list-toolbar-btn">

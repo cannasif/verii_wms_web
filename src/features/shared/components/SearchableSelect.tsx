@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { OpsFieldShell } from '@/components/shared/OpsFieldShell';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -34,6 +35,7 @@ interface SearchableSelectProps<T> {
   maxHeight?: string;
   itemLimit?: number;
   modal?: boolean;
+  variant?: 'default' | 'ops';
 }
 
 export function SearchableSelect<T>({
@@ -52,10 +54,12 @@ export function SearchableSelect<T>({
   maxHeight = '220px',
   itemLimit = 100,
   modal = false,
+  variant = 'default',
 }: SearchableSelectProps<T>): ReactElement {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const isOps = variant === 'ops';
   const resolvedPlaceholder = placeholder ?? t('common.select');
   const resolvedSearchPlaceholder = searchPlaceholder ?? t('common.search');
   const resolvedEmptyText = emptyText ?? t('common.noResults');
@@ -85,35 +89,45 @@ export function SearchableSelect<T>({
     setOpen(false);
   };
 
+  const triggerButton = (
+    <Button
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      className={cn(
+        'w-full justify-between',
+        isOps && 'wms-ops-lookup-trigger font-normal',
+        !isOps && 'font-normal',
+        !isOps && className,
+        isOps && !selectedOption && !isLoading && 'wms-ops-field--placeholder',
+      )}
+      disabled={disabled || isLoading}
+    >
+      {isLoading ? (
+        <span className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className={cn(!isOps && 'text-muted-foreground')}>{t('common.loading')}</span>
+        </span>
+      ) : selectedOption ? (
+        <span className="truncate">{getOptionLabel(selectedOption)}</span>
+      ) : (
+        <span className={cn(!isOps && 'text-muted-foreground')}>{resolvedPlaceholder}</span>
+      )}
+      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+    </Button>
+  );
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn(
-            'w-full justify-between',
-            className?.includes('wms-ops-field') && 'wms-ops-lookup-trigger font-normal',
-            className,
-          )}
-          disabled={disabled || isLoading}
-        >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-muted-foreground">{t('common.loading')}</span>
-            </span>
-          ) : selectedOption ? (
-            <span className="truncate">{getOptionLabel(selectedOption)}</span>
-          ) : (
-            <span className="text-muted-foreground">{resolvedPlaceholder}</span>
-          )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+      {isOps ? (
+        <OpsFieldShell className={className}>
+          <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+        </OpsFieldShell>
+      ) : (
+        <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+      )}
       <PopoverContent
-        className={cn('p-0', popoverClassName)}
+        className={cn('p-0', isOps && 'wms-ops-list-popover', popoverClassName)}
         align="start"
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import type { PagedFilter, PagedParams, PagedResponse } from '@/types/api';
@@ -92,15 +92,16 @@ export function usePagedDataGrid<TSortKey extends string>({
     resetToFirstPage();
   };
 
-  const handleSearchChange = (value: string): void => {
+  const handleSearchChange = useCallback((value: string): void => {
     setSearchTerm(value);
-    resetToFirstPage();
-  };
+    setPageNumber(defaultPageNumber);
+  }, [defaultPageNumber]);
 
-  const handleVoiceSearch = (value: string): void => {
+  const handleVoiceSearch = useCallback((value: string): void => {
     setSearchInput(value);
-    handleSearchChange(value);
-  };
+    setSearchTerm(value);
+    setPageNumber(defaultPageNumber);
+  }, [defaultPageNumber]);
 
   const handlePageSizeChange = (value: number): void => {
     setPageSize(value);
@@ -120,11 +121,11 @@ export function usePagedDataGrid<TSortKey extends string>({
     return pageNumberBase === 1 ? response.pageNumber : response.pageNumber + 1;
   };
 
-  const searchConfig: SearchConfig = {
+  const searchConfig: SearchConfig = useMemo(() => ({
     value: searchInput,
     onValueChange: setSearchInput,
     onSearchChange: handleSearchChange,
-  };
+  }), [handleSearchChange, searchInput]);
 
   return {
     pageNumber,

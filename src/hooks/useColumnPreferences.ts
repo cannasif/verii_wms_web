@@ -28,6 +28,12 @@ function arraysEqual(left: string[], right: string[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
+function widthsEqual(left: Record<string, number>, right: Record<string, number>): boolean {
+  const leftKeys = Object.keys(left);
+  if (leftKeys.length !== Object.keys(right).length) return false;
+  return leftKeys.every((key) => left[key] === right[key]);
+}
+
 export function useColumnPreferences({
   pageKey,
   columns,
@@ -65,7 +71,7 @@ export function useColumnPreferences({
 
     setColumnOrder((current) => (arraysEqual(current, normalizedOrder) ? current : normalizedOrder));
     setVisibleColumns((current) => (arraysEqual(current, normalizedVisible) ? current : normalizedVisible));
-    setColumnWidths(normalizedWidths);
+    setColumnWidths((current) => (widthsEqual(current, normalizedWidths) ? current : normalizedWidths));
   }, [actionsColumnWeight, columnSignature, defaultOrder, defaultWidths, idColumnKey, includeActionsColumn, pageKey, userId]);
 
   const setColumnOrderPinned = useCallback((order: string[]) => {

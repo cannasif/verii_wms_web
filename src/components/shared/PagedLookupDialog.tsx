@@ -134,19 +134,21 @@ export function PagedLookupDialog<T>({
   const resolvedSearchPlaceholder = searchPlaceholder ?? t('paged.searchPlaceholder');
 
   const trigger = isOps ? (
-    <button
-      type="button"
-      className={cn(
-        'wms-ops-lookup-trigger wms-ops-field',
-        !value && 'wms-ops-field--placeholder',
-        triggerClassName,
-      )}
-      onClick={() => onOpenChange(true)}
-      disabled={disabled}
-    >
-      <span className="truncate">{value || placeholder}</span>
-      <Search className="size-4 shrink-0 opacity-60" aria-hidden />
-    </button>
+    <OpsFieldShell>
+      <button
+        type="button"
+        className={cn(
+          'wms-ops-lookup-trigger wms-ops-field',
+          !value && 'wms-ops-field--placeholder',
+          triggerClassName,
+        )}
+        onClick={() => onOpenChange(true)}
+        disabled={disabled}
+      >
+        <span className="truncate">{value || placeholder}</span>
+        <Search className="size-4 shrink-0 opacity-60" aria-hidden />
+      </button>
+    </OpsFieldShell>
   ) : (
     <Button
       type="button"

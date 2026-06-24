@@ -10,6 +10,7 @@ import { ColumnPreferencesPopover, type ColumnDef } from './ColumnPreferencesPop
 import { GridExportMenu } from './GridExportMenu';
 import { OpsActionButton } from './OpsActionButton';
 import { OpsListSearchField } from './OpsListSearchField';
+import { DefinitionExcelActions } from '@/features/definition-excel';
 import { cn } from '@/lib/utils';
 import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
@@ -34,6 +35,12 @@ export interface DataTableRefreshConfig {
   disabled?: boolean;
   cooldownSeconds?: number;
   label?: string;
+}
+
+export interface DataTableDefinitionExcelConfig {
+  definitionKey: string;
+  fileNamePrefix: string;
+  onImportCompleted?: () => void | Promise<void>;
 }
 
 export interface DataTableActionBarProps {
@@ -69,6 +76,7 @@ export interface DataTableActionBarProps {
   leftSlot?: React.ReactNode;
   afterRefreshSlot?: React.ReactNode;
   variant?: DataTableVariant;
+  definitionExcel?: DataTableDefinitionExcelConfig;
 }
 
 export function DataTableActionBar({
@@ -104,6 +112,7 @@ export function DataTableActionBar({
   leftSlot,
   afterRefreshSlot,
   variant = 'default',
+  definitionExcel,
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
   const isOps = variant === 'ops';
@@ -337,6 +346,16 @@ export function DataTableActionBar({
             </div>
           </PopoverContent>
         </Popover>
+
+        {definitionExcel ? (
+          <DefinitionExcelActions
+            variant={isOps ? 'ops-toolbar' : 'default'}
+            showLastJobSummary={!isOps}
+            definitionKey={definitionExcel.definitionKey}
+            fileNamePrefix={definitionExcel.fileNamePrefix}
+            onImportCompleted={definitionExcel.onImportCompleted}
+          />
+        ) : null}
 
         <GridExportMenu
           fileName={exportFileName}

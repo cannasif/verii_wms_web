@@ -1,14 +1,16 @@
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
+import { XIcon } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { OpsActionButton } from '@/components/shared';
+import { cn } from '@/lib/utils';
 
 type DeleteConfirmDialogProps = {
   open: boolean;
@@ -18,6 +20,8 @@ type DeleteConfirmDialogProps = {
   isPending?: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void | Promise<void>;
+  /** @deprecated Ops is now the default and only style. */
+  variant?: 'default' | 'ops';
 };
 
 export function DeleteConfirmDialog({
@@ -30,29 +34,60 @@ export function DeleteConfirmDialog({
   onConfirm,
 }: DeleteConfirmDialogProps): ReactElement {
   const { t } = useTranslation();
+  const resolvedTitle = title ?? t('common.deleteConfirmTitle', { defaultValue: 'Kaydı sil' });
+  const resolvedLabel = itemLabel ?? t('common.selected', { defaultValue: 'seçili' });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {title ?? t('common.deleteConfirmTitle', { defaultValue: 'Kaydı sil' })}
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          'wms-ops-form wms-ops-detail-dialog wms-ops-delete-dialog max-w-md gap-0 overflow-hidden border-0 p-0 shadow-none',
+        )}
+      >
+        <DialogHeader className="wms-ops-delete-dialog__header wms-ops-detail-dialog__header relative border-b px-6 py-4 pr-12 text-left">
+          <DialogTitle className="wms-ops-detail-dialog__title wms-ops-delete-dialog__title min-w-0 pr-2">
+            {resolvedTitle}
           </DialogTitle>
-          <DialogDescription>
-            {description
-              ?? t('common.deleteConfirmMessage', {
-                item: itemLabel ?? t('common.selected', { defaultValue: 'seçili' }),
-                defaultValue: '{{item}} kaydını silmek istediğine emin misin? Bu işlem geri alınamaz.',
-              })}
-          </DialogDescription>
+          <DialogClose
+            className={cn('wms-ops-delete-dialog__close', isPending && 'pointer-events-none opacity-45')}
+            aria-disabled={isPending}
+          >
+            <XIcon aria-hidden />
+            <span className="sr-only">{t('common.close')}</span>
+          </DialogClose>
         </DialogHeader>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+
+        <div className="wms-ops-delete-dialog__body px-6 py-5">
+          {description ? (
+            <p className="wms-ops-delete-dialog__message">{description}</p>
+          ) : (
+            <p className="wms-ops-delete-dialog__message">
+              <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
+              <span className="wms-ops-delete-dialog__target">{resolvedLabel}</span>
+              <span className="wms-ops-delete-dialog__suffix">
+                {t('common.deleteConfirmSuffix', {
+                  defaultValue: 'kaydını silmek istediğine emin misin? Bu işlem geri alınamaz.',
+                })}
+              </span>
+            </p>
+          )}
+        </div>
+
+        <DialogFooter className="wms-ops-delete-dialog__footer gap-2 border-t px-6 py-4 sm:justify-end sm:gap-2">
+          <OpsActionButton type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isPending}>
             {t('common.cancel')}
-          </Button>
-          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending}>
-            {isPending ? t('common.processing') : t('common.delete')}
-          </Button>
+          </OpsActionButton>
+          <button
+            type="button"
+            className="wms-ops-action-btn wms-ops-delete-btn"
+            onClick={onConfirm}
+            disabled={isPending}
+          >
+            <span className="wms-ops-delete-btn__label">
+              {isPending ? t('common.processing') : t('common.delete')}
+            </span>
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

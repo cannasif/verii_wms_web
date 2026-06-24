@@ -52,6 +52,7 @@ export interface DataTableGridColumn<TKey extends string> {
   key: TKey;
   label: string;
   headerHelpText?: string;
+  headerLayout?: 'default' | 'slant';
   sortable?: boolean;
   headClassName?: string;
   cellClassName?: string;
@@ -104,6 +105,7 @@ interface DataTableGridProps<TRow, TKey extends string> {
   getCellText?: (row: TRow, columnKey: TKey) => string | undefined;
   enableColumnResize?: boolean;
   variant?: DataTableVariant;
+  headerLayout?: 'default' | 'slant';
 }
 
 const ACTIONS_COLUMN_KEY = '__actions__';
@@ -224,6 +226,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   getCellText,
   enableColumnResize,
   variant = 'default',
+  headerLayout = 'default',
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const isOps = variant === 'ops';
   const canResizeColumns = (enableColumnResize ?? isOps) && Boolean(onResizeColumnPair);
@@ -457,6 +460,8 @@ export function DataTableGrid<TRow, TKey extends string>({
   const renderHeaderCell = (key: TKey, index: number): ReactElement => {
     const column = findColumn(columns, key);
     const sortable = Boolean(onSort && column?.sortable !== false);
+    const isSlant = (column?.headerLayout ?? headerLayout) === 'slant';
+    const label = column?.label ?? String(key);
     const isLast = index === localVisibleColumnKeys.length - 1 && !showActionsColumn;
     const isDraggable = enableColumnDragAndDrop && !['id', 'select', 'actions'].includes(String(key).toLowerCase());
 
@@ -471,10 +476,39 @@ export function DataTableGrid<TRow, TKey extends string>({
       !isOps && 'text-xs uppercase tracking-wide font-semibold text-slate-600 dark:text-slate-300',
       !isLast && (isOps ? 'border-r' : 'border-r border-slate-200/90 dark:border-white/10'),
       canResizeColumns && rightKey && 'relative',
+      isSlant && 'wms-ops-table-head--slant',
       column?.headClassName,
     );
 
-    const content = sortable ? (
+    const sortIcon = renderSortIcon?.(key) ?? (
+      <ArrowUpDown size={isSlant ? 10 : 12} className="opacity-60 shrink-0" aria-hidden />
+    );
+
+    const helpIcon = column?.headerHelpText ? (
+      <FieldHelpTooltip text={column.headerHelpText} side="top" />
+    ) : null;
+
+    const content = isSlant ? (
+      sortable ? (
+        <button
+          type="button"
+          onClick={() => onSort?.(key)}
+          className="wms-ops-table-head__slant-btn"
+          title={label}
+        >
+          <span className="wms-ops-table-head__slant-text">{label}</span>
+          <span className="wms-ops-table-head__slant-meta">
+            {helpIcon}
+            {sortIcon}
+          </span>
+        </button>
+      ) : (
+        <div className="wms-ops-table-head__slant-btn wms-ops-table-head__slant-btn--static" title={label}>
+          <span className="wms-ops-table-head__slant-text">{label}</span>
+          {helpIcon ? <span className="wms-ops-table-head__slant-meta">{helpIcon}</span> : null}
+        </div>
+      )
+    ) : sortable ? (
       <Button
         variant="ghost"
         size="sm"
@@ -489,14 +523,14 @@ export function DataTableGrid<TRow, TKey extends string>({
           'transition-colors',
         )}
       >
-        <span className="truncate" title={column?.label ?? key}>{column?.label ?? key}</span>
-        {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
-        {renderSortIcon?.(key) ?? <ArrowUpDown size={12} className="opacity-60 shrink-0" />}
+        <span className="truncate" title={label}>{label}</span>
+        {helpIcon}
+        {sortIcon}
       </Button>
     ) : (
       <span className="inline-flex w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden px-1">
-        <span className="truncate" title={column?.label ?? key}>{column?.label ?? key}</span>
-        {column?.headerHelpText ? <FieldHelpTooltip text={column.headerHelpText} side="top" /> : null}
+        <span className="truncate" title={label}>{label}</span>
+        {helpIcon}
       </span>
     );
 
@@ -569,7 +603,11 @@ export function DataTableGrid<TRow, TKey extends string>({
             ref={tableRef}
             className={cn(
               isOps
-                ? cn('w-full table-fixed wms-ops-table-fixed', minTableWidthClassName)
+                ? cn(
+                  'w-full table-fixed wms-ops-table-fixed',
+                  headerLayout === 'slant' && 'wms-ops-matrix-slant-headers',
+                  minTableWidthClassName,
+                )
                 : minTableWidthClassName,
             )}
             style={tableMinWidthPx ? { minWidth: tableMinWidthPx } : undefined}

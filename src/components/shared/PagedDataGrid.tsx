@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { DataTableGrid, type DataTableGridColumn, type DataTableSortDirection } from './DataTableGrid';
-import type { DataTableActionBarProps, DataTableVariant } from './DataTableActionBar';
+import type { DataTableActionBarProps, DataTableDefinitionExcelConfig, DataTableVariant } from './DataTableActionBar';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { inferFilterColumnType, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
@@ -89,6 +89,16 @@ interface PagedDataGridProps<TRow, TKey extends string> {
   enableColumnResize?: boolean;
   idColumnKey?: string;
   lockedColumnKeys?: string[];
+  definitionExcel?: DataTableDefinitionExcelConfig;
+  headerLayout?: 'default' | 'slant';
+}
+
+function noopFilterRowsChange(_rows: FilterRow[]): void {
+  /* stable fallback */
+}
+
+function noopVoid(): void {
+  /* stable fallback */
 }
 
 export function PagedDataGrid<TRow, TKey extends string>({
@@ -156,9 +166,18 @@ export function PagedDataGrid<TRow, TKey extends string>({
   enableColumnResize,
   idColumnKey = 'id',
   lockedColumnKeys,
+  definitionExcel,
+  headerLayout,
 }: PagedDataGridProps<TRow, TKey>): ReactElement {
   const resolvedPageKey = pageKey ?? actionBar?.pageKey ?? 'paged-data-grid';
-  const resolvedLockedKeys = lockedColumnKeys ?? (columns.some((column) => column.key === idColumnKey) ? [idColumnKey] : ['id']);
+  const resolvedLockedKeys = useMemo(
+    () => lockedColumnKeys ?? (columns.some((column) => column.key === idColumnKey) ? [idColumnKey] : ['id']),
+    [columns, idColumnKey, lockedColumnKeys],
+  );
+  const preferenceColumns = useMemo(
+    () => columns.map(({ key, label }) => ({ key, label })),
+    [columns],
+  );
   const {
     columnOrder,
     visibleColumns,
@@ -169,7 +188,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
     resizeColumnPair,
   } = useColumnPreferences({
     pageKey: resolvedPageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
+    columns: preferenceColumns,
     defaultWidths: defaultColumnWidths,
     includeActionsColumn: showActionsColumn,
     idColumnKey,
@@ -195,66 +214,72 @@ export function PagedDataGrid<TRow, TKey extends string>({
   );
   const resolvedFilterColumns = filterColumns ?? derivedFilterColumns;
   const resolvedDefaultFilterColumn = defaultFilterColumn ?? resolvedFilterColumns[0]?.value ?? '';
+  const resolvedDraftFilterRows = draftFilterRows ?? [];
+  const resolvedOnDraftFilterRowsChange = onDraftFilterRowsChange ?? noopFilterRowsChange;
+  const resolvedOnApplyFilters = onApplyFilters ?? noopVoid;
+  const resolvedOnClearFilters = onClearFilters ?? noopVoid;
+  const resolvedExportColumns = exportColumns ?? [];
+  const resolvedExportRows = exportRows ?? [];
 
   const resolvedActionBar = useMemo<DataTableActionBarProps | undefined>(
     () => actionBar ?? {
       pageKey: resolvedPageKey,
       userId,
-      columns: columns.map(({ key, label }) => ({ key, label })),
+      columns: preferenceColumns,
       visibleColumns,
       columnOrder,
       onVisibleColumnsChange: setVisibleColumns,
       onColumnOrderChange: setColumnOrder,
       lockedKeys: resolvedLockedKeys,
       exportFileName: exportFileName ?? resolvedPageKey,
-      exportColumns: exportColumns ?? [],
-      exportRows: exportRows ?? [],
+      exportColumns: resolvedExportColumns,
+      exportRows: resolvedExportRows,
       getExportData,
       filterColumns: resolvedFilterColumns,
       defaultFilterColumn: resolvedDefaultFilterColumn,
-      draftFilterRows: draftFilterRows ?? [],
-      onDraftFilterRowsChange: onDraftFilterRowsChange ?? (() => undefined),
+      draftFilterRows: resolvedDraftFilterRows,
+      onDraftFilterRowsChange: resolvedOnDraftFilterRowsChange,
       filterLogic,
       onFilterLogicChange,
-      onApplyFilters: onApplyFilters ?? (() => undefined),
-      onClearFilters: onClearFilters ?? (() => undefined),
+      onApplyFilters: resolvedOnApplyFilters,
+      onClearFilters: resolvedOnClearFilters,
       translationNamespace,
       appliedFilterCount,
       search,
       leftSlot,
       afterRefreshSlot,
       refresh,
+      definitionExcel,
     },
     [
       actionBar,
       appliedFilterCount,
       columnOrder,
-      columns,
-      defaultFilterColumn,
-      draftFilterRows,
-      exportColumns,
+      definitionExcel,
       exportFileName,
-      exportRows,
-      filterColumns,
-      resolvedDefaultFilterColumn,
-      resolvedFilterColumns,
-      filterLogic,
       getExportData,
       leftSlot,
       afterRefreshSlot,
-      onApplyFilters,
-      onClearFilters,
-      onDraftFilterRowsChange,
+      filterLogic,
       onFilterLogicChange,
-      resolvedPageKey,
+      preferenceColumns,
       refresh,
+      resolvedDefaultFilterColumn,
+      resolvedDraftFilterRows,
+      resolvedExportColumns,
+      resolvedExportRows,
+      resolvedFilterColumns,
+      resolvedLockedKeys,
+      resolvedOnApplyFilters,
+      resolvedOnClearFilters,
+      resolvedOnDraftFilterRowsChange,
+      resolvedPageKey,
       search,
       setColumnOrder,
       setVisibleColumns,
       translationNamespace,
       userId,
       visibleColumns,
-      resolvedLockedKeys,
     ],
   );
 
@@ -302,6 +327,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       onResizeColumnPair={resolvedResizeColumnPair}
       getCellText={getCellText}
       enableColumnResize={enableColumnResize}
+      headerLayout={headerLayout}
     />
   );
 }

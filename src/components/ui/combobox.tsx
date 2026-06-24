@@ -31,6 +31,7 @@ interface ComboboxProps {
   searchPlaceholder?: string
   emptyText?: string
   className?: string
+  popoverClassName?: string
   modal?: boolean
   disabled?: boolean
   listClassName?: string
@@ -44,6 +45,7 @@ export function Combobox({
   searchPlaceholder,
   emptyText,
   className,
+  popoverClassName,
   modal = false,
   disabled = false,
   listClassName
@@ -93,7 +95,7 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
+        className={cn('w-[--radix-popover-trigger-width] p-0', popoverClassName)}
         align="start"
         container={portalContainer}
       >

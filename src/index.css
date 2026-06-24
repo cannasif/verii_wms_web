@@ -1170,6 +1170,18 @@ input:-webkit-autofill:active {
   opacity: 0.55;
 }
 
+.wms-ops-form .wms-ops-field-shell button.wms-ops-field[role="combobox"] {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 400;
+}
+
 .wms-ops-form .wms-ops-field-shell:focus-within .wms-ops-field,
 .wms-ops-form .wms-ops-field-shell--active .wms-ops-field,
 .wms-ops-form .wms-ops-field-shell:has([data-state="open"]) .wms-ops-field,
@@ -1577,6 +1589,68 @@ input:-webkit-autofill:active {
   box-shadow: inset 2px 0 0 var(--wms-ops-accent);
 }
 
+.wms-ops-user-select__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-user-select__avatar--sm {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.wms-ops-user-select__initials {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.wms-ops-user-select__option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.wms-ops-user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.15rem 0.35rem 0.15rem 0.25rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+}
+
+.wms-ops-user-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.72;
+}
+
+.wms-ops-user-chip__remove:hover {
+  opacity: 1;
+}
+
+button.wms-ops-lookup-trigger--multi {
+  align-items: flex-start;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
 .wms-ops-detail-dialog {
   overflow: hidden;
   border-radius: 0 !important;
@@ -1634,6 +1708,22 @@ input:-webkit-autofill:active {
 .wms-ops-detail-dialog__header {
   border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
   background: color-mix(in oklab, var(--wms-ops-accent) 4%, var(--wms-ops-card-bg));
+}
+
+.wms-ops-detail-dialog__header-actions {
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .wms-ops-detail-dialog__header-actions {
+    margin-right: 3.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .wms-ops-detail-dialog__header-actions {
+    max-width: calc(100% - 2.75rem);
+  }
 }
 
 .wms-ops-detail-dialog__title {
@@ -1811,10 +1901,10 @@ input:-webkit-autofill:active {
 
 .wms-ops-detail-dialog .wms-ops-detail-row {
   display: grid;
-  grid-template-columns: minmax(8rem, 28%) minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.625rem 1rem;
+  grid-template-columns: minmax(9rem, 34%) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
 }
 
@@ -2259,6 +2349,244 @@ html:not(.dark) .wms-ops-detail-dialog .wms-ops-flag-badge--off {
 .wms-ops-detail-dialog .wms-ops-detail-state {
   flex: 1;
   padding: 1.5rem;
+}
+
+.wms-ops-detail-dialog .wms-ops-detail-section-title {
+  margin: 0;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 62%, hsl(var(--foreground)));
+}
+
+.wms-ops-detail-dialog .wms-ops-detail-panel__body {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+}
+
+.wms-ops-detail-dialog .wms-ops-detail-lines-panel {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table-wrap {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 72%, transparent);
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table {
+  width: 100%;
+  min-width: 72rem;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table th,
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table td {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  padding: 0.8rem 0.85rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table th {
+  text-align: center;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table th:not(:last-child),
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table td:not(:last-child) {
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table th {
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: normal;
+  word-break: break-word;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table tbody tr:nth-child(even) td {
+  background: color-mix(in oklab, var(--wms-ops-accent) 3%, transparent);
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table tbody tr:hover td {
+  background: color-mix(in oklab, var(--wms-ops-accent) 9%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table .wms-ops-transfer-detail__col--qty {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__th-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__stock-code {
+  display: inline-flex;
+  max-width: 100%;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, transparent);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__stock-name {
+  display: block;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.wms-ops-package-move-dialog__body {
+  min-height: 0;
+}
+
+.wms-ops-package-move-source-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.wms-ops-package-move-tree-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.wms-ops-package-move-tree {
+  flex: 1;
+  min-height: 12rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 72%, transparent);
+  padding: 0.75rem;
+}
+
+.wms-ops-package-move-tree-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.wms-ops-package-move-tree-row__check {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--wms-ops-accent);
+}
+
+.wms-ops-package-move-tree-row__no {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  word-break: break-word;
+}
+
+.wms-ops-package-move-tree-row__type {
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+@media (max-width: 767px) {
+  .wms-ops-transfer-detail-dialog .wms-ops-transfer-detail__body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .wms-ops-transfer-detail-dialog .wms-ops-detail-lines-panel {
+    flex: none;
+    min-height: auto;
+  }
+
+  .wms-ops-transfer-detail-dialog .wms-ops-transfer-detail__table-wrap {
+    flex: none;
+    min-height: auto;
+    overflow-y: visible;
+  }
+
+  .wms-ops-subcontracting-detail-dialog .wms-ops-subcontracting-detail__body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .wms-ops-subcontracting-detail-dialog .wms-ops-detail-lines-panel {
+    flex: none;
+    min-height: auto;
+  }
+
+  .wms-ops-subcontracting-detail-dialog .wms-ops-transfer-detail__table-wrap {
+    flex: none;
+    min-height: auto;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 1023px) {
+  .wms-ops-detail-dialog .wms-ops-detail-lines-panel {
+    padding: 0.75rem 0.75rem 1rem;
+  }
+
+  .wms-ops-detail-dialog .wms-ops-transfer-detail__table {
+    min-width: 64rem;
+    font-size: 0.6875rem;
+  }
+
+  .wms-ops-detail-dialog .wms-ops-transfer-detail__table th,
+  .wms-ops-detail-dialog .wms-ops-transfer-detail__table td {
+    padding: 0.65rem 0.55rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .wms-ops-transfer-detail-dialog {
+    width: calc(100vw - 0.5rem) !important;
+    max-width: calc(100vw - 0.5rem) !important;
+    height: min(92dvh, calc(100vh - 0.5rem)) !important;
+    max-height: min(92dvh, calc(100vh - 0.5rem)) !important;
+  }
+
+  .wms-ops-detail-dialog .wms-ops-detail-section-title {
+    padding: 0.75rem 0.75rem 0.6rem;
+  }
 }
 
 /* Goods receipt collection — barkod toplama terminali */
@@ -2744,6 +3072,600 @@ html:not(.dark) .wms-ops-detail-dialog .wms-ops-flag-badge--off {
   align-items: center;
   justify-content: center;
   color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
+}
+
+/* Package packing station — terminal workbench */
+.wms-ops-form .wms-ops-station__lookup {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 20%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #020617 5%, transparent), transparent),
+    color-mix(in oklab, var(--wms-ops-field-bg) 94%, transparent);
+  padding: 0.85rem 1rem;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent),
+    0 0 20px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+}
+
+@media (min-width: 768px) {
+  .wms-ops-form .wms-ops-station__lookup {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    padding: 1rem 1.15rem;
+  }
+}
+
+.wms-ops-form .wms-ops-station__layout {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .wms-ops-form .wms-ops-station__layout {
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.wms-ops-form .wms-ops-station__sidebar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #020617 8%, transparent), transparent),
+    color-mix(in oklab, var(--wms-ops-field-bg) 92%, #020617);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent),
+    0 0 28px color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__hero {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  padding: 0.9rem 1rem 0.85rem;
+}
+
+.wms-ops-form .wms-ops-station__header-id {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 38%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  padding: 0.2rem 0.55rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, hsl(var(--foreground)));
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 14%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__header-meta {
+  margin-top: 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__block {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  padding: 0.85rem 1rem;
+}
+
+.wms-ops-form .wms-ops-station__field-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 46%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__metrics {
+  display: grid;
+  gap: 0;
+}
+
+.wms-ops-form .wms-ops-station__metric {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px dashed color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  padding: 0.45rem 0;
+}
+
+.wms-ops-form .wms-ops-station__metric:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.wms-ops-form .wms-ops-station__metric-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 44%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__metric-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-form .wms-ops-station__token {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 36%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  padding: 0.15rem 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 76%, hsl(var(--foreground)));
+  box-shadow: 0 0 8px color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__token--done {
+  border-color: color-mix(in oklab, #22c55e 48%, transparent);
+  background: color-mix(in oklab, #22c55e 12%, var(--wms-ops-field-bg));
+  color: #86efac;
+  box-shadow: 0 0 10px color-mix(in oklab, #22c55e 18%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__token--active {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 52%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, var(--wms-ops-accent) 88%, hsl(var(--foreground)));
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 22%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__token--danger {
+  border-color: color-mix(in oklab, #ef4444 52%, transparent);
+  background: color-mix(in oklab, #ef4444 12%, var(--wms-ops-field-bg));
+  color: #fca5a5;
+  box-shadow: 0 0 10px color-mix(in oklab, #ef4444 18%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__token--idle {
+  border-color: color-mix(in oklab, hsl(var(--foreground)) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, hsl(var(--foreground)) 4%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+  box-shadow: none;
+}
+
+.wms-ops-form .wms-ops-station__scan {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.wms-ops-form .wms-ops-station__scan-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.75rem;
+  grid-template-rows: auto auto;
+  gap: 0.35rem 0.55rem;
+  align-items: end;
+}
+
+.wms-ops-form .wms-ops-station__scan-label--barcode {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: 0;
+}
+
+.wms-ops-form .wms-ops-station__scan-label--qty {
+  grid-column: 2;
+  grid-row: 1;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.wms-ops-form .wms-ops-station__barcode-field {
+  position: relative;
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+}
+
+.wms-ops-form .wms-ops-station__barcode-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.65rem;
+  z-index: 1;
+  width: 0.9rem;
+  height: 0.9rem;
+  transform: translateY(-50%);
+  color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
+  pointer-events: none;
+}
+
+.wms-ops-form .wms-ops-station__barcode-input {
+  height: 2.5rem;
+  padding-left: 2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-form .wms-ops-station__qty-field {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.wms-ops-form .wms-ops-station__qty-input {
+  height: 2.5rem;
+  padding-inline: 0.35rem;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-form .wms-ops-station__scan-submit {
+  margin-top: 0.65rem;
+  width: 100%;
+  min-height: 2.65rem;
+}
+
+.wms-ops-form .wms-ops-station__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.85rem 1rem 1rem;
+}
+
+.wms-ops-form .wms-ops-station__main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wms-ops-form .wms-ops-station__panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #020617 10%, transparent), transparent),
+    color-mix(in oklab, var(--wms-ops-field-bg) 90%, #020617);
+  box-shadow:
+    inset 2px 0 0 color-mix(in oklab, var(--wms-ops-accent) 55%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 5%, transparent),
+    0 0 24px color-mix(in oklab, var(--wms-ops-accent) 7%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    color-mix(in oklab, var(--wms-ops-accent) 4%, transparent) 2px,
+    color-mix(in oklab, var(--wms-ops-accent) 4%, transparent) 3px
+  );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.wms-ops-form .wms-ops-station__panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.wms-ops-form .wms-ops-station__panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+  padding: 0.75rem 1rem;
+}
+
+.wms-ops-form .wms-ops-station__panel-head svg {
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+  filter: drop-shadow(0 0 6px var(--wms-ops-accent-soft));
+}
+
+.wms-ops-form .wms-ops-station__panel-title {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-station__panel-desc {
+  margin: 0;
+  padding: 0.55rem 1rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 50%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__panel-body {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.wms-ops-form .wms-ops-station__alerts {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.wms-ops-form .wms-ops-station__alert {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 20%, var(--wms-ops-card-border));
+  border-left-width: 3px;
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  padding: 0.65rem 0.75rem;
+}
+
+.wms-ops-form .wms-ops-station__alert--danger {
+  border-color: color-mix(in oklab, #ef4444 42%, var(--wms-ops-card-border));
+  border-left-color: #ef4444;
+  background: color-mix(in oklab, #ef4444 7%, var(--wms-ops-field-bg));
+  box-shadow: 0 0 14px color-mix(in oklab, #ef4444 10%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__alert--warning {
+  border-color: color-mix(in oklab, #f59e0b 40%, var(--wms-ops-card-border));
+  border-left-color: #f59e0b;
+  background: color-mix(in oklab, #f59e0b 7%, var(--wms-ops-field-bg));
+  box-shadow: 0 0 14px color-mix(in oklab, #f59e0b 10%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__alert--info {
+  border-left-color: var(--wms-ops-accent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__alert-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.wms-ops-form .wms-ops-station__alert-detail {
+  margin-top: 0.2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.03em;
+  line-height: 1.45;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__feed {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #020617 10%, var(--wms-ops-field-bg));
+  padding: 0.85rem 1rem;
+  box-shadow: inset 0 0 18px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__feed-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.wms-ops-form .wms-ops-station__feed-stock {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-form .wms-ops-station__feed-qty {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 32%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+  padding: 0.1rem 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-station__feed-message {
+  margin-top: 0.55rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+  color: color-mix(in oklab, hsl(var(--foreground)) 62%, transparent);
+}
+
+.wms-ops-form .wms-ops-station__lines-panel .wms-ops-station__panel-body {
+  padding: 0;
+}
+
+.wms-ops-form .wms-ops-station__lines-panel .wms-ops-transfer-detail__table-wrap {
+  max-height: 360px;
+}
+
+html:not(.dark) .wms-ops-form .wms-ops-station__sidebar,
+html:not(.dark) .wms-ops-form .wms-ops-station__panel {
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 96%, #f8fafc);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-card-border) 65%, transparent),
+    0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+html:not(.dark) .wms-ops-form .wms-ops-station__token--done {
+  color: #15803d;
+}
+
+html:not(.dark) .wms-ops-form .wms-ops-station__token--danger {
+  color: #b91c1c;
+}
+
+/* Package settings — definition panels */
+.wms-ops-form .wms-ops-settings-toolbar {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-form .wms-ops-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wms-ops-form .wms-ops-settings-section-title {
+  margin: 0;
+  padding-top: 0.15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-settings-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.wms-ops-form .wms-ops-settings-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+}
+
+@media (max-width: 639px) {
+  .wms-ops-form .wms-ops-settings-metric-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.wms-ops-form .wms-ops-settings-metric-grid__section {
+  grid-column: 1 / -1;
+  margin-bottom: -0.15rem;
+}
+
+.wms-ops-form .wms-ops-settings-metric-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.wms-ops-form .wms-ops-settings-metric-field .wms-ops-station__field-label {
+  display: flex;
+  min-height: 2.1rem;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.wms-ops-form .wms-ops-settings-metric-field .wms-ops-field-shell {
+  width: 100%;
+}
+
+.wms-ops-form .wms-ops-settings-metric-field input[type='number'] {
+  height: 2.5rem;
+}
+
+.wms-ops-form .wms-ops-settings-toggle {
+  padding: 0.75rem 0.85rem;
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-transfer-detail__table-wrap {
+  min-height: 12rem;
+  max-height: min(60vh, 32rem);
+  overflow: auto;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 78%, transparent);
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table th,
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table td {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  padding: 0.7rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table th {
+  text-align: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: normal;
+  word-break: break-word;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table th:not(:last-child),
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table td:not(:last-child) {
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table tbody tr:nth-child(even) td {
+  background: color-mix(in oklab, var(--wms-ops-accent) 3%, transparent);
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-settings-table tbody tr:hover td {
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-table-actions-col {
+  width: 7.5rem;
+  min-width: 7.5rem;
+  max-width: 7.5rem;
+  text-align: center;
+  padding-inline: 0.35rem !important;
+}
+
+.wms-ops-form .wms-ops-settings-panel .wms-ops-row-actions {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
 }
 
 .wms-ops-transfer-collection__chain {
@@ -3394,6 +4316,59 @@ html:not(.dark) .wms-ops-detail-dialog .wms-ops-flag-badge--off {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
 }
 
+.wms-ops-wizard-summary__headline {
+  align-items: center;
+}
+
+.wms-ops-wizard-summary__step {
+  color: color-mix(in oklab, var(--wms-ops-text) 62%, transparent);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wms-ops-wizard-summary__meta {
+  display: grid;
+  gap: 0.65rem 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.wms-ops-wizard-summary__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.wms-ops-wizard-summary__meta-label {
+  color: color-mix(in oklab, var(--wms-ops-text) 55%, transparent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wms-ops-wizard-summary__meta-value {
+  color: var(--wms-ops-text);
+  font-size: 0.875rem;
+}
+
+.wms-ops-wizard-empty {
+  border: 1px dashed color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  border-radius: 0;
+  background: color-mix(in oklab, var(--wms-ops-card-bg) 88%, transparent);
+  min-height: 12rem;
+}
+
+.wms-ops-package-detail-page.wms-ops-detail-dialog {
+  overflow: visible;
+  box-shadow: none !important;
+}
+
+.wms-ops-package-detail-page .wms-ops-detail-lines-panel {
+  min-height: 16rem;
+}
+
 .wms-ops-form .wms-ops-step-tabs {
   width: 100%;
 }
@@ -3904,9 +4879,12 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
 }
 
 .wms-ops-list .wms-ops-table-actions-col {
+  width: 8rem;
+  min-width: 8rem;
+  max-width: 8rem;
   text-align: center;
   vertical-align: middle;
-  padding-inline: 0.25rem !important;
+  padding-inline: 0.5rem !important;
 }
 
 .wms-ops-list .wms-ops-row-actions {
@@ -3914,14 +4892,14 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 0.125rem;
+  gap: 0.35rem;
 }
 
 .wms-ops-list .wms-ops-grid-icon-btn {
-  height: 1.375rem;
-  width: 1.375rem;
-  min-height: 1.375rem;
-  min-width: 1.375rem;
+  height: 1.5rem;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  min-width: 1.5rem;
   padding: 0;
   border-radius: 0;
   color: color-mix(in oklab, #0e7490 78%, #0f172a);
@@ -4141,6 +5119,52 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   color: color-mix(in oklab, #b91c1c 80%, #0f172a);
 }
 
+.wms-ops-detail-dialog .wms-ops-status-badge {
+  border-radius: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wms-ops-detail-dialog .wms-ops-status-badge--done {
+  border-color: color-mix(in oklab, #10b981 45%, transparent);
+  background: color-mix(in oklab, #10b981 12%, transparent);
+  color: color-mix(in oklab, #047857 80%, #e2e8f0);
+}
+
+.wms-ops-detail-dialog .wms-ops-status-badge--pending {
+  border-color: color-mix(in oklab, #f59e0b 45%, transparent);
+  background: color-mix(in oklab, #f59e0b 12%, transparent);
+  color: color-mix(in oklab, #b45309 80%, #e2e8f0);
+}
+
+.wms-ops-detail-dialog .wms-ops-status-badge--active {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 40%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, #e2e8f0);
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__table--shipment {
+  min-width: 88rem;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__order-no {
+  display: inline-flex;
+  max-width: 100%;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 20%, transparent);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.wms-ops-detail-dialog .wms-ops-transfer-detail__col--order,
+.wms-ops-detail-dialog .wms-ops-transfer-detail__col--code {
+  overflow-wrap: anywhere;
+}
+
 .wms-ops-list .wms-ops-grid-icon-btn--start {
   color: color-mix(in oklab, #059669 78%, #0f172a);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, #10b981 35%, transparent);
@@ -4336,7 +5360,994 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   color: color-mix(in oklab, #b45309 80%, #0f172a);
 }
 
-.wms-ops-list .wms-ops-prelabel-form-label {
+.wms-ops-list .wms-ops-service-reports__kpi-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+  .wms-ops-list .wms-ops-service-reports__kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .wms-ops-list .wms-ops-service-reports__kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+  transition: opacity 0.15s ease;
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--warn {
+  border-color: color-mix(in oklab, #f59e0b 28%, var(--wms-ops-card-border));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--warn .wms-ops-service-reports__kpi-value {
+  color: color-mix(in oklab, #fbbf24 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--info {
+  border-color: color-mix(in oklab, #38bdf8 28%, var(--wms-ops-card-border));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--info .wms-ops-service-reports__kpi-value {
+  color: color-mix(in oklab, #38bdf8 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--success {
+  border-color: color-mix(in oklab, #10b981 28%, var(--wms-ops-card-border));
+}
+
+.wms-ops-list .wms-ops-service-reports__kpi--success .wms-ops-service-reports__kpi-value {
+  color: color-mix(in oklab, #34d399 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-service-reports__dist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wms-ops-list .wms-ops-service-reports__dist-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-list .wms-ops-service-reports__empty-cell {
+  padding: 1.25rem 0.75rem !important;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 46%, transparent);
+}
+
+.wms-ops-list .wms-ops-service-reports__footer-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .wms-ops-list .wms-ops-service-reports__footer-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-list .wms-ops-service-reports__footer-stat {
+  padding: 0.875rem 1rem;
+  text-align: left;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-metrics {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .wms-ops-list .wms-ops-bilginoglu-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-list .wms-ops-bilginoglu-summary-metric {
+  padding: 0.875rem 1rem;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-summary-metric__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+  padding: 0.5rem;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-stat-card,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-metric {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-metric--success .wms-ops-stat-card__value {
+  color: color-mix(in oklab, #34d399 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-metric--info .wms-ops-stat-card__value {
+  color: color-mix(in oklab, #38bdf8 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-metric--warn .wms-ops-stat-card__value {
+  color: color-mix(in oklab, #fbbf24 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-metric--danger .wms-ops-stat-card__value {
+  color: color-mix(in oklab, #f87171 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--wms-ops-accent) 4%, var(--wms-ops-field-bg)), var(--wms-ops-field-bg));
+  padding: 0;
+  overflow: hidden;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__item {
+  display: inline-flex;
+  flex: 1 1 12rem;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__item:last-child {
+  border-right: 0;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+  font-size: 0.5625rem;
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__label {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__item.is-active {
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, var(--wms-ops-accent) 88%, hsl(var(--foreground)));
+  box-shadow: inset 0 -2px 0 color-mix(in oklab, var(--wms-ops-accent) 72%, transparent);
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__item.is-active .wms-ops-bilginoglu-view-nav__code {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 18%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 92%, white);
+}
+
+.wms-ops-list .wms-ops-bilginoglu-view-nav__item:hover:not(.is-active) {
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
+}
+
+.wms-ops-list .wms-ops-bilginoglu-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-page-section--grid {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-table-actions-col {
+  width: 3.25rem;
+  min-width: 3.25rem;
+  max-width: 3.25rem;
+  padding-inline: 0.25rem !important;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-table-center-col .wms-ops-bilginoglu-status-badge,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge {
+  max-width: 11.5rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+  padding: 0.25rem 0.5rem;
+  font-weight: 700;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--active,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--active {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 62%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 22%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 92%, white);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 18%, transparent);
+}
+
+.dark .wms-ops-list.wms-ops-bilginoglu-list .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--active,
+.dark .wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--active {
+  color: color-mix(in oklab, var(--wms-ops-accent) 88%, white);
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--done,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--done {
+  border-color: color-mix(in oklab, #34d399 58%, transparent);
+  background: color-mix(in oklab, #34d399 18%, transparent);
+  color: color-mix(in oklab, #6ee7b7 88%, white);
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--pending,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--pending {
+  border-color: color-mix(in oklab, #fbbf24 58%, transparent);
+  background: color-mix(in oklab, #fbbf24 16%, transparent);
+  color: color-mix(in oklab, #fde68a 88%, white);
+}
+
+.wms-ops-list.wms-ops-bilginoglu-list .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--danger,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-status-badge.wms-ops-status-badge--danger {
+  border-color: color-mix(in oklab, #f87171 58%, transparent);
+  background: color-mix(in oklab, #f87171 16%, transparent);
+  color: color-mix(in oklab, #fecaca 88%, white);
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-col--action,
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-col--stage,
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-col--documents {
+  vertical-align: middle;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list th.wms-ops-bilginoglu-pending-col--stage,
+.wms-ops-list.wms-ops-bilginoglu-pending-list td.wms-ops-bilginoglu-pending-col--stage {
+  min-width: 6.75rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list th.wms-ops-bilginoglu-pending-col--action,
+.wms-ops-list.wms-ops-bilginoglu-pending-list td.wms-ops-bilginoglu-pending-col--action {
+  min-width: 10.5rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list th.wms-ops-bilginoglu-pending-col--documents,
+.wms-ops-list.wms-ops-bilginoglu-pending-list td.wms-ops-bilginoglu-pending-col--documents {
+  min-width: 9rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-stage-badge,
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-action-badge {
+  max-width: 100%;
+  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-pending-doc-chip {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list th.wms-ops-bilginoglu-pending-col--qty,
+.wms-ops-list.wms-ops-bilginoglu-pending-list td.wms-ops-bilginoglu-pending-col--qty {
+  min-width: 4.75rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list th.wms-ops-bilginoglu-pending-col--updated,
+.wms-ops-list.wms-ops-bilginoglu-pending-list td.wms-ops-bilginoglu-pending-col--updated {
+  min-width: 9.5rem;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-table-actions-col {
+  width: 3.25rem;
+  min-width: 3.25rem;
+  max-width: 3.25rem;
+  padding-inline: 0.25rem !important;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-pending-list .wms-ops-bilginoglu-page-section--grid {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.wms-ops-bilginoglu-type-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wms-ops-bilginoglu-type-picker__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 62%, transparent);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wms-ops-bilginoglu-type-picker__item:hover {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 42%, var(--wms-ops-card-border));
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-type-picker__item.is-active {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 55%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, var(--wms-ops-accent) 88%, hsl(var(--foreground)));
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 14%, transparent);
+}
+
+.wms-ops-bilginoglu-warehouse-chain-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.wms-ops-bilginoglu-warehouse-chain-fact {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, auto) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wms-ops-bilginoglu-warehouse-chain-fact__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+}
+
+.wms-ops-bilginoglu-warehouse-chain-fact__value {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.wms-ops-bilginoglu-warehouse-chain-fact__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-operation-type-badge {
+  max-width: 100%;
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-warehouse-chain-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-warehouse-picker {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-warehouse-picker__label {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines__table-wrap,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines__table-wrap {
+  max-height: 18rem;
+  overflow: auto;
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines--tall .wms-ops-prelabel-lines__table-wrap,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines--tall .wms-ops-prelabel-lines__table-wrap {
+  max-height: min(52dvh, 28rem);
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines table,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines th,
+.wms-ops-detail-dialog .wms-ops-prelabel-lines td,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines th,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines td {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines th:not(:last-child),
+.wms-ops-detail-dialog .wms-ops-prelabel-lines td:not(:last-child),
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines th:not(:last-child),
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines td:not(:last-child) {
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-detail-dialog .wms-ops-prelabel-lines th,
+.wms-ops-bilginoglu-detail .wms-ops-prelabel-lines th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-detail-dialog .wms-ops-grid-icon-btn,
+.wms-ops-bilginoglu-detail .wms-ops-grid-icon-btn {
+  height: 1.5rem;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  min-width: 1.5rem;
+  padding: 0;
+  border-radius: 0;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, white);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 28%, transparent);
+}
+
+.wms-ops-detail-dialog .wms-ops-grid-icon-btn:hover:not(:disabled),
+.wms-ops-bilginoglu-detail .wms-ops-grid-icon-btn:hover:not(:disabled) {
+  color: var(--wms-ops-accent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+}
+
+.wms-ops-list .wms-ops-sync-btn,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 45%, transparent) !important;
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--wms-ops-accent) 14%, #041018), color-mix(in oklab, var(--wms-ops-accent) 6%, #020617)) !important;
+  color: color-mix(in oklab, var(--wms-ops-accent) 88%, white) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 22%, transparent),
+    0 0 18px color-mix(in oklab, var(--wms-ops-accent) 12%, transparent);
+}
+
+.wms-ops-list .wms-ops-sync-btn__label,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn__label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wms-ops-list .wms-ops-sync-btn__scan,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn__scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.wms-ops-list .wms-ops-sync-btn--loading,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn--loading {
+  animation: wms-ops-sync-btn-glitch 2.4s steps(1, end) infinite;
+}
+
+.wms-ops-list .wms-ops-sync-btn--loading .wms-ops-sync-btn__scan,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn--loading .wms-ops-sync-btn__scan {
+  opacity: 1;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--wms-ops-accent) 35%, transparent) 45%,
+    color-mix(in oklab, #67e8f9 55%, transparent) 50%,
+    color-mix(in oklab, var(--wms-ops-accent) 35%, transparent) 55%,
+    transparent 100%
+  );
+  animation: wms-ops-sync-btn-scan 1.1s linear infinite;
+}
+
+.wms-ops-list .wms-ops-sync-btn--loading .wms-ops-sync-btn__label,
+.wms-ops-bilginoglu-detail .wms-ops-sync-btn--loading .wms-ops-sync-btn__label {
+  animation: wms-ops-sync-btn-label-glitch 2.4s steps(1, end) infinite;
+  text-shadow: 0 0 10px color-mix(in oklab, var(--wms-ops-accent) 55%, transparent);
+}
+
+@keyframes wms-ops-sync-btn-scan {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+@keyframes wms-ops-sync-btn-glitch {
+  0%, 88%, 100% { filter: none; transform: none; }
+  89% { filter: hue-rotate(18deg); transform: translateX(-1px); }
+  90% { filter: hue-rotate(-12deg); transform: translateX(1px); }
+  91% { filter: none; transform: none; }
+  94% { filter: saturate(1.4); transform: translateX(-1px); }
+  95% { filter: none; transform: none; }
+}
+
+@keyframes wms-ops-sync-btn-label-glitch {
+  0%, 86%, 100% { opacity: 1; letter-spacing: 0.08em; }
+  87% { opacity: 0.72; letter-spacing: 0.12em; }
+  88% { opacity: 1; letter-spacing: 0.06em; }
+  92% { opacity: 0.8; }
+  93% { opacity: 1; }
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-detail-dialog__title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-detail-dialog__description {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 62%, transparent);
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-detail__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .wms-ops-bilginoglu-detail .wms-ops-bilginoglu-detail__body {
+    padding: 1.25rem 1.5rem 1.5rem;
+    gap: 1.25rem;
+  }
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-detail__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  padding: 1rem 1rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .wms-ops-bilginoglu-detail .wms-ops-bilginoglu-detail__footer {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-detail-panel--rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.wms-ops-list .wms-ops-bilginoglu-report-strip,
+.wms-ops-bilginoglu-detail .wms-ops-bilginoglu-report-strip {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .wms-ops-list .wms-ops-bilginoglu-report-strip,
+  .wms-ops-bilginoglu-detail .wms-ops-bilginoglu-report-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-metrics {
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-page-section--grid {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+}
+
+.wms-ops-bilginoglu-report-facts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.wms-ops-bilginoglu-report-fact {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: baseline;
+  gap: 0.1875rem;
+  min-width: 0;
+  padding: 0.125rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+}
+
+.wms-ops-bilginoglu-report-fact:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wms-ops-bilginoglu-report-fact:first-child {
+  padding-top: 0;
+}
+
+.wms-ops-bilginoglu-report-fact__label {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+}
+
+.wms-ops-bilginoglu-report-fact__sep {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+  color: color-mix(in oklab, var(--wms-ops-accent) 42%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-report-fact__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-bilginoglu-report-fact__value--success {
+  color: color-mix(in oklab, #34d399 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-report-fact__value--info {
+  color: color-mix(in oklab, #38bdf8 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-report-fact__value--warn {
+  color: color-mix(in oklab, #fbbf24 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-report-fact__value--danger {
+  color: color-mix(in oklab, #f87171 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-report-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-report-order__no {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-report-flags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-report-flags .wms-ops-code-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wms-ops-list.wms-ops-bilginoglu-report-page .wms-ops-bilginoglu-status-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wms-ops-bilginoglu-flow-metric {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 0.5rem 0.625rem;
+  min-width: 0;
+}
+
+.wms-ops-bilginoglu-flow-metric__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 55%, transparent);
+}
+
+.wms-ops-bilginoglu-flow-metric__value {
+  margin-top: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-bilginoglu-flow-metric--success .wms-ops-bilginoglu-flow-metric__value {
+  color: color-mix(in oklab, #34d399 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-flow-metric--info .wms-ops-bilginoglu-flow-metric__value {
+  color: color-mix(in oklab, #38bdf8 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-flow-metric--warn .wms-ops-bilginoglu-flow-metric__value {
+  color: color-mix(in oklab, #fbbf24 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-flow-metric--danger .wms-ops-bilginoglu-flow-metric__value {
+  color: color-mix(in oklab, #f87171 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-warehouse-flow {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: 100%;
+}
+
+.wms-ops-bilginoglu-warehouse-flow__arrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+  padding: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 62%, transparent);
+}
+
+.wms-ops-bilginoglu-step-card {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  padding: 0.625rem 0.75rem;
+}
+
+.wms-ops-bilginoglu-step-card__title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.wms-ops-bilginoglu-step-card__meta {
+  margin-top: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+}
+
+.wms-ops-bilginoglu-step-card__note {
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+}
+
+.wms-ops-bilginoglu-plan-chip {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.wms-ops-bilginoglu-plan-chip:hover {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 36%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-bilginoglu-plan-chip.is-selected {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 55%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-bilginoglu-plan-chip__title {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wms-ops-bilginoglu-plan-chip__subtitle {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 62%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wms-ops-bilginoglu-plan-chip__facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+@media (min-width: 480px) {
+  .wms-ops-bilginoglu-plan-chip__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .wms-ops-bilginoglu-plan-chip__facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-bilginoglu-plan-fact {
+  min-width: 0;
+}
+
+.wms-ops-bilginoglu-plan-fact__label {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+}
+
+.wms-ops-bilginoglu-plan-fact__value {
+  display: block;
+  margin-top: 0.125rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: hsl(var(--foreground));
+  word-break: break-word;
+}
+
+.wms-ops-bilginoglu-plan-fact--warn .wms-ops-bilginoglu-plan-fact__value {
+  color: color-mix(in oklab, #f59e0b 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-plan-fact--success .wms-ops-bilginoglu-plan-fact__value {
+  color: color-mix(in oklab, #10b981 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-bilginoglu-detail .wms-ops-detail-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .wms-ops-bilginoglu-detail .wms-ops-detail-panel__actions {
+    width: auto;
+  }
+}
+
+.wms-ops-list .wms-ops-hint-banner {
   display: block;
   margin-bottom: 0.375rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -4786,6 +6797,23 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid .wms-ops-table-wrap {
     transition: none;
   }
 
+  .wms-ops-delete-dialog .wms-ops-delete-btn,
+  .wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled),
+  .wms-ops-delete-dialog .wms-ops-delete-btn::before,
+  .wms-ops-delete-dialog .wms-ops-delete-btn::after,
+  .wms-ops-delete-dialog .wms-ops-delete-btn__label {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+
+  .wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled) {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, #f87171 62%, transparent),
+      0 0 18px color-mix(in oklab, #ef4444 30%, transparent);
+  }
+
   .wms-ops-form .wms-ops-field {
     transition: none;
   }
@@ -5090,6 +7118,599 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid .wms-ops-table-wrap {
   }
 }
 
+/* Production transfer — form panels */
+.wms-ops-form .wms-ops-panel-empty--callout {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.wms-ops-form .wms-ops-pt-terminal {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #020617 6%, transparent), transparent),
+    color-mix(in oklab, var(--wms-ops-field-bg) 92%, #020617);
+  padding: 0.875rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.wms-ops-form .wms-ops-pt-terminal--collapsible {
+  padding: 0;
+  overflow: hidden;
+}
+
+.wms-ops-form .wms-ops-pt-terminal--compact {
+  padding: 0.75rem 0.875rem;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__toggle:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 5%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-terminal__toggle-meta {
+  margin-left: auto;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 62%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-pt-terminal__chevron {
+  color: var(--wms-ops-accent);
+  transition: transform 180ms ease;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  padding: 1.125rem 1.5rem 1.375rem;
+  text-align: left;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__prose,
+.wms-ops-form .wms-ops-pt-terminal__panel {
+  width: 100%;
+  align-self: stretch;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__content .wms-ops-pt-terminal__body {
+  margin-top: 0;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__prose {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #020617 8%, var(--wms-ops-field-bg));
+  padding: 0.875rem 1rem;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__prompt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.wms-ops-form .wms-ops-pt-terminal__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-pt-terminal__meta {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-terminal__body {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  text-align: left;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, hsl(var(--foreground)) 72%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-step {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 86%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-terminal-section {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #020617 4%, transparent), transparent),
+    color-mix(in oklab, var(--wms-ops-card-bg) 94%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-terminal .wms-ops-pt-step {
+  background: color-mix(in oklab, #020617 10%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-form .wms-ops-stat-grid {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.wms-ops-form .wms-ops-stat-card {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  padding: 0.625rem 0.75rem;
+  text-align: center;
+}
+
+.wms-ops-form .wms-ops-stat-card__value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-form .wms-ops-stat-card__label {
+  margin-top: 0.125rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-step__eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-form .wms-ops-pt-step__title {
+  margin-top: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-form .wms-ops-pt-step__body {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-line {
+  overflow: hidden;
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 20%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-line__toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+  padding: 0.875rem 1rem 0.875rem 0;
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-form .wms-ops-pt-line__identity {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.wms-ops-form .wms-ops-pt-line__index {
+  display: inline-flex;
+  min-width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  padding: 0 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--wms-ops-accent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-line__title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 76%, hsl(var(--foreground)));
+}
+
+.wms-ops-form .wms-ops-pt-line__hint {
+  margin-top: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+  color: color-mix(in oklab, hsl(var(--foreground)) 54%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-line__remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.75rem;
+  border: 1px solid color-mix(in oklab, #ef4444 35%, transparent);
+  background: color-mix(in oklab, #ef4444 8%, transparent);
+  color: #f87171;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.wms-ops-form .wms-ops-pt-line__remove:hover {
+  border-color: color-mix(in oklab, #ef4444 55%, transparent);
+  background: color-mix(in oklab, #ef4444 16%, transparent);
+  color: #ef4444;
+}
+
+.wms-ops-form .wms-ops-pt-line__body {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+/* Delete confirm — terminal ops */
+.wms-ops-delete-dialog {
+  border-color: color-mix(in oklab, #ef4444 28%, var(--wms-ops-card-border)) !important;
+  background:
+    linear-gradient(rgba(239, 68, 68, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(239, 68, 68, 0.035) 1px, transparent 1px),
+    var(--wms-ops-card-bg) !important;
+  background-size: 18px 18px, 18px 18px, auto !important;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, #ef4444 14%, transparent),
+    0 24px 48px rgba(15, 23, 42, 0.2),
+    0 0 36px color-mix(in oklab, #ef4444 12%, transparent) !important;
+}
+
+.dark .wms-ops-delete-dialog {
+  background:
+    linear-gradient(rgba(248, 113, 113, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248, 113, 113, 0.05) 1px, transparent 1px),
+    var(--wms-ops-card-bg) !important;
+  background-size: 18px 18px, 18px 18px, auto !important;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, #ef4444 20%, transparent),
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 0 40px color-mix(in oklab, #ef4444 16%, transparent) !important;
+}
+
+.wms-ops-delete-dialog__header {
+  border-bottom-color: color-mix(in oklab, #ef4444 32%, var(--wms-ops-card-border)) !important;
+}
+
+.wms-ops-delete-dialog__close {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.45rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 70%, hsl(var(--foreground)));
+  opacity: 1;
+  line-height: 0;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+}
+
+.wms-ops-delete-dialog__close svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+.wms-ops-delete-dialog__close:hover:not(:disabled) {
+  border-color: color-mix(in oklab, #ef4444 48%, transparent);
+  background: color-mix(in oklab, #ef4444 16%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, #ef4444 82%, hsl(var(--foreground)));
+  box-shadow: 0 0 14px color-mix(in oklab, #ef4444 18%, transparent);
+}
+
+.wms-ops-delete-dialog__close:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.wms-ops-delete-dialog__title {
+  color: color-mix(in oklab, #fca5a5 82%, hsl(var(--foreground))) !important;
+}
+
+.wms-ops-delete-dialog__title::before {
+  content: '!! ';
+  color: #f87171;
+}
+
+.wms-ops-delete-dialog__message {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, hsl(var(--foreground)) 74%, transparent);
+}
+
+.wms-ops-delete-dialog__target {
+  display: inline-block;
+  margin-right: 0.35rem;
+  border: 1px solid color-mix(in oklab, #ef4444 40%, transparent);
+  background: color-mix(in oklab, #ef4444 10%, var(--wms-ops-field-bg));
+  padding: 0.125rem 0.4rem;
+  font-weight: 700;
+  color: color-mix(in oklab, #fecaca 88%, hsl(var(--foreground)));
+  word-break: break-all;
+}
+
+.wms-ops-delete-dialog__suffix {
+  display: inline;
+}
+
+.wms-ops-delete-dialog__footer {
+  border-top-color: color-mix(in oklab, #ef4444 18%, var(--wms-ops-card-border)) !important;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn {
+  z-index: 0;
+  border: none !important;
+  background: color-mix(in oklab, #ef4444 7%, var(--wms-ops-field-bg)) !important;
+  color: color-mix(in oklab, #fca5a5 48%, hsl(var(--foreground))) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, #ef4444 20%, transparent),
+    0 0 10px color-mix(in oklab, #ef4444 5%, transparent);
+  text-shadow: none;
+  animation: none;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 36%,
+    color-mix(in oklab, #ef4444 18%, transparent) 46%,
+    color-mix(in oklab, #fef08a 42%, #f87171) 50%,
+    color-mix(in oklab, #ef4444 18%, transparent) 54%,
+    transparent 64%
+  );
+  transform: translateX(-140%);
+  opacity: 0;
+  pointer-events: none;
+  animation: wms-ops-delete-btn-shimmer-idle 16s ease-in-out infinite;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn__label {
+  position: relative;
+  z-index: 1;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 4px,
+    color-mix(in oklab, #ef4444 10%, transparent) 4px,
+    color-mix(in oklab, #ef4444 10%, transparent) 5px
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled) {
+  color: #fff !important;
+  background: color-mix(in oklab, #ef4444 22%, #140606) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, #f87171 55%, transparent),
+    0 0 16px color-mix(in oklab, #ef4444 32%, transparent),
+    0 0 28px color-mix(in oklab, #ef4444 14%, transparent);
+  text-shadow: 0 0 8px color-mix(in oklab, #fca5a5 70%, transparent);
+  transform: translateY(-1px);
+  animation: wms-ops-delete-btn-glitch 3s steps(1, end) infinite;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled)::before {
+  animation: wms-ops-delete-btn-shimmer-hover 9s ease-in-out infinite;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled)::after {
+  animation: wms-ops-delete-btn-glitch-scan 3s steps(1, end) infinite;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:hover:not(:disabled) .wms-ops-delete-btn__label {
+  animation: wms-ops-delete-btn-label-glitch 3s steps(1, end) infinite;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:disabled {
+  opacity: 0.42;
+  animation: none;
+  cursor: not-allowed;
+}
+
+.wms-ops-delete-dialog .wms-ops-delete-btn:disabled::before {
+  animation: none;
+}
+
+@keyframes wms-ops-delete-btn-shimmer-idle {
+  0%, 82%, 100% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+  83% {
+    opacity: 0.45;
+  }
+  94% {
+    transform: translateX(140%);
+    opacity: 0.45;
+  }
+  95%, 100% {
+    transform: translateX(140%);
+    opacity: 0;
+  }
+}
+
+@keyframes wms-ops-delete-btn-shimmer-hover {
+  0%, 70%, 100% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+  71% {
+    opacity: 0.75;
+  }
+  86% {
+    transform: translateX(140%);
+    opacity: 0.75;
+  }
+  87%, 100% {
+    transform: translateX(140%);
+    opacity: 0;
+  }
+}
+
+@keyframes wms-ops-delete-btn-glitch {
+  0%, 84%, 100% {
+    transform: translateY(-1px) translateX(0);
+    filter: none;
+  }
+  85% {
+    transform: translateY(-1px) translateX(-2px);
+    filter: drop-shadow(2px 0 color-mix(in oklab, #f43f5e 75%, transparent))
+      drop-shadow(-2px 0 color-mix(in oklab, #22d3ee 55%, transparent));
+  }
+  86% {
+    transform: translateY(-1px) translateX(2px);
+  }
+  87% {
+    transform: translateY(-2px) translateX(-1px);
+    filter: drop-shadow(-1px 0 color-mix(in oklab, #f43f5e 65%, transparent))
+      drop-shadow(1px 0 color-mix(in oklab, #22d3ee 45%, transparent));
+  }
+  88% {
+    transform: translateY(-1px) translateX(0);
+    filter: none;
+  }
+}
+
+@keyframes wms-ops-delete-btn-glitch-scan {
+  0%, 83%, 100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  84%, 89% {
+    opacity: 0.35;
+    transform: translateY(2px);
+  }
+  85%, 90% {
+    opacity: 0.22;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes wms-ops-delete-btn-label-glitch {
+  0%, 84%, 100% {
+    text-shadow: 0 0 8px color-mix(in oklab, #fca5a5 70%, transparent);
+    transform: translateX(0);
+  }
+  85% {
+    text-shadow:
+      -2px 0 color-mix(in oklab, #f43f5e 80%, transparent),
+      2px 0 color-mix(in oklab, #22d3ee 55%, transparent);
+    transform: translateX(-1px);
+  }
+  86% {
+    text-shadow:
+      2px 0 color-mix(in oklab, #f43f5e 80%, transparent),
+      -2px 0 color-mix(in oklab, #22d3ee 55%, transparent);
+    transform: translateX(1px);
+  }
+  87% {
+    transform: translateX(-1px);
+  }
+  88% {
+    text-shadow: 0 0 8px color-mix(in oklab, #fca5a5 70%, transparent);
+    transform: translateX(0);
+  }
+}
+
+.wms-ops-form .wms-ops-pt-detail-field__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+}
+
+.wms-ops-form .wms-ops-pt-detail-field__value {
+  margin-top: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  word-break: break-word;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wms-ops-toaster [data-sonner-toast],
   .wms-ops-toaster [data-sonner-toast] > * {
@@ -5097,3 +7718,606 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid .wms-ops-table-wrap {
     animation: none !important;
   }
 }
+
+.wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-metrics,
+.wms-ops-form.wms-ops-kkd-page .wms-ops-kkd-metrics {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-metrics,
+  .wms-ops-form.wms-ops-kkd-page .wms-ops-kkd-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-metrics,
+  .wms-ops-form.wms-ops-kkd-page .wms-ops-kkd-metrics {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-kkd-summary-metric {
+  padding: 0.875rem 1rem;
+}
+
+.wms-ops-kkd-summary-metric__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+  padding: 0.5rem;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-quick-link {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 1rem;
+  min-height: 100%;
+}
+
+.wms-ops-kkd-quick-link__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+  padding: 0.5rem;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-quick-link__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-kkd-quick-link__desc {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 58%, transparent);
+}
+
+.wms-ops-kkd-quick-link__action {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  padding: 0.5rem 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, hsl(var(--foreground)));
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.wms-ops-kkd-quick-link__action:hover {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 42%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent);
+}
+
+.wms-ops-kkd-step {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+  padding: 0.75rem;
+}
+
+.wms-ops-kkd-step__index {
+  display: inline-flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: color-mix(in oklab, var(--wms-ops-accent) 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-step__text {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, hsl(var(--foreground)) 72%, transparent);
+}
+
+.wms-ops-kkd-employee-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  padding: 1rem;
+}
+
+.wms-ops-kkd-result-panel {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 1rem;
+}
+
+.wms-ops-kkd-result-panel--success {
+  border-color: color-mix(in oklab, #34d399 35%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #34d399 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-kkd-result-panel--danger {
+  border-color: color-mix(in oklab, #f87171 35%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #f87171 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-kkd-result-panel--warn {
+  border-color: color-mix(in oklab, #fbbf24 35%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #fbbf24 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-kkd-form-banner {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 78%, transparent);
+}
+
+.wms-ops-kkd-form-banner--info {
+  border-color: color-mix(in oklab, #22d3ee 32%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #22d3ee 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-kkd-form-banner--warn {
+  border-color: color-mix(in oklab, #fbbf24 35%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #fbbf24 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-kkd-form-banner__title {
+  margin-bottom: 0.375rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-kkd-form-banner__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.wms-ops-list .wms-ops-kkd-status-badge,
+.wms-ops-kkd-page .wms-ops-kkd-status-badge {
+  max-width: 100%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  min-height: 1.35rem;
+  border-radius: 0;
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 18%, transparent);
+}
+
+.wms-ops-kkd-report-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 0.75rem 1rem;
+}
+
+.wms-ops-kkd-report-fact {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.1875rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+}
+
+.wms-ops-kkd-report-fact__meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.wms-ops-kkd-report-fact:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wms-ops-kkd-report-fact:first-child {
+  padding-top: 0;
+}
+
+.wms-ops-kkd-report-fact__label {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 48%, transparent);
+}
+
+.wms-ops-kkd-report-fact__sep {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+  color: color-mix(in oklab, var(--wms-ops-accent) 42%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-report-fact__value {
+  min-width: 0;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: color-mix(in oklab, hsl(var(--foreground)) 88%, transparent);
+}
+
+.wms-ops-kkd-report-fact__value--success {
+  color: color-mix(in oklab, #22c55e 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-report-fact__value--info {
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-report-fact__value--warn {
+  color: color-mix(in oklab, #f59e0b 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-report-fact__value--danger {
+  color: color-mix(in oklab, #ef4444 78%, hsl(var(--foreground)));
+}
+
+.wms-ops-kkd-flag-chip {
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, #0f172a);
+}
+
+.wms-ops-kkd-flag-chip--info {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 42%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, transparent);
+}
+
+.wms-ops-kkd-page details.wms-ops-kkd-form-banner {
+  padding: 0.75rem 1rem;
+}
+
+.wms-ops-kkd-page details.wms-ops-kkd-form-banner summary {
+  list-style: none;
+}
+
+.wms-ops-kkd-page details.wms-ops-kkd-form-banner summary::-webkit-details-marker {
+  display: none;
+}
+
+/* KKD entitlement matrix: horizontal headers, full labels, horizontal scroll. */
+.wms-ops-list .wms-ops-kkd-matrix-grid.wms-ops-table-fixed {
+  width: max-content;
+  min-width: 100%;
+}
+
+.wms-ops-list .wms-ops-kkd-matrix-grid .wms-ops-kkd-matrix-head {
+  vertical-align: bottom;
+  height: auto;
+  overflow: visible;
+}
+
+.wms-ops-list .wms-ops-kkd-matrix-grid .wms-ops-kkd-matrix-head .wms-ops-table-head__layout {
+  overflow: visible;
+}
+
+.wms-ops-list .wms-ops-kkd-matrix-grid .wms-ops-kkd-matrix-head .wms-ops-table-head__layout > .min-w-0 {
+  overflow: visible;
+}
+
+.wms-ops-list .wms-ops-kkd-matrix-grid .wms-ops-kkd-matrix-head button {
+  height: auto !important;
+  min-height: 2.25rem !important;
+  padding-block: 0.35rem !important;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.wms-ops-list .wms-ops-kkd-matrix-grid .wms-ops-kkd-matrix-head button > span.truncate {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.wms-ops-sac-mal-page .wms-ops-kkd-quick-link {
+  min-height: auto;
+}
+
+.wms-ops-sac-mal-page input[type='checkbox'] {
+  accent-color: var(--wms-ops-accent);
+}
+
+.wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-overview-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-overview-grid--metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-overview-grid--links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .wms-ops-list.wms-ops-kkd-page .wms-ops-kkd-overview-grid--metrics {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* ERP master-data: restyle legacy shadcn blocks inside ops shells */
+.wms-ops-form.wms-ops-erp-skin {
+  color: color-mix(in oklab, white 88%, var(--wms-ops-accent));
+}
+
+.wms-ops-erp-skin [data-slot='card'] {
+  gap: 0 !important;
+  border-radius: 0 !important;
+  border-color: var(--wms-ops-card-border) !important;
+  background: var(--wms-ops-card-bg) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 10%, transparent),
+    0 0 24px color-mix(in oklab, var(--wms-ops-accent) 4%, transparent) !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+}
+
+.wms-ops-erp-skin [data-slot='card-header'] {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-card-bg));
+  padding: 0.75rem 1rem !important;
+}
+
+.wms-ops-erp-skin [data-slot='card-title'] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-erp-skin [data-slot='card-description'],
+.wms-ops-erp-skin [data-slot='card-content'] > p.text-muted-foreground,
+.wms-ops-erp-skin [data-slot='card-content'] > p.text-slate-500 {
+  color: color-mix(in oklab, var(--wms-ops-accent) 42%, #94a3b8) !important;
+}
+
+.wms-ops-erp-skin [data-slot='card-content'],
+.wms-ops-erp-skin [data-slot='card-footer'] {
+  padding: 1rem 1.25rem !important;
+}
+
+.wms-ops-erp-skin label,
+.wms-ops-erp-skin [data-slot='label'] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 68%, #94a3b8);
+}
+
+.wms-ops-erp-skin input:not([type='checkbox']):not([type='radio']):not([type='range']),
+.wms-ops-erp-skin textarea,
+.wms-ops-erp-skin [data-slot='select-trigger'] {
+  border-radius: 0 !important;
+  border-color: var(--wms-ops-field-border) !important;
+  background: var(--wms-ops-field-bg) !important;
+  color: color-mix(in oklab, white 92%, var(--wms-ops-accent)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-field-idle-line) 55%, transparent);
+}
+
+.wms-ops-erp-skin input:focus-visible,
+.wms-ops-erp-skin textarea:focus-visible,
+.wms-ops-erp-skin [data-slot='select-trigger']:focus-visible {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 55%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 35%, transparent),
+    0 0 18px color-mix(in oklab, var(--wms-ops-accent-glow) 28%, transparent);
+}
+
+.wms-ops-erp-skin button:not(.wms-ops-action-btn):not([role='tab']):not([data-slot='tabs-trigger']) {
+  border-radius: 0 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wms-ops-erp-skin button.border-slate-200,
+.wms-ops-erp-skin button[class*='border-slate-200'],
+.wms-ops-erp-skin button[class*='border-white/10'] {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 38%, transparent) !important;
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent) !important;
+  color: var(--wms-ops-accent) !important;
+}
+
+.wms-ops-erp-skin button.border-slate-200:hover,
+.wms-ops-erp-skin button[class*='border-slate-200']:hover,
+.wms-ops-erp-skin button[class*='border-white/10']:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 14%, transparent) !important;
+  color: color-mix(in oklab, white 90%, var(--wms-ops-accent)) !important;
+}
+
+.wms-ops-erp-skin button.bg-slate-900,
+.wms-ops-erp-skin button[class*='bg-sky-'],
+.wms-ops-erp-skin button[class*='bg-primary'] {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 45%, transparent) !important;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--wms-ops-accent) 82%, #0369a1) 0%,
+    color-mix(in oklab, var(--wms-ops-warm) 88%, #ea580c) 100%
+  ) !important;
+  color: #050a0f !important;
+}
+
+.wms-ops-erp-skin [data-slot='badge'],
+.wms-ops-erp-skin .rounded-full.border {
+  border-radius: 999px !important;
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 32%, transparent) !important;
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, transparent) !important;
+  color: var(--wms-ops-accent) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wms-ops-erp-skin .rounded-2xl.border,
+.wms-ops-erp-skin .rounded-xl.border {
+  border-radius: 0 !important;
+  border-color: var(--wms-ops-card-border) !important;
+  background: color-mix(in oklab, var(--wms-ops-card-bg) 92%, transparent) !important;
+}
+
+.wms-ops-erp-skin .border-sky-400,
+.wms-ops-erp-skin [class*='border-sky-400'],
+.wms-ops-erp-skin [class*='bg-sky-50'],
+.wms-ops-erp-skin [class*='bg-sky-500/10'] {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 55%, transparent) !important;
+  background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-bg)) !important;
+}
+
+.wms-ops-erp-skin .text-slate-900,
+.wms-ops-erp-skin .text-slate-950,
+.wms-ops-erp-skin .font-medium.text-slate-900,
+.wms-ops-erp-skin .font-semibold.text-slate-900 {
+  color: color-mix(in oklab, white 92%, var(--wms-ops-accent)) !important;
+}
+
+.wms-ops-erp-skin .text-slate-500,
+.wms-ops-erp-skin .text-slate-600,
+.wms-ops-erp-skin .text-slate-300,
+.wms-ops-erp-skin .text-slate-400 {
+  color: color-mix(in oklab, var(--wms-ops-accent) 38%, #94a3b8) !important;
+}
+
+.wms-ops-erp-skin [data-slot='tabs-list'] {
+  border-radius: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-card-bg) 88%, transparent);
+}
+
+.wms-ops-erp-skin [data-slot='tabs-trigger'][data-state='active'] {
+  border-radius: 0;
+  background: color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-erp-skin .rounded-2xl.bg-sky-500\/10 {
+  border-radius: 0 !important;
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, transparent) !important;
+  color: var(--wms-ops-accent) !important;
+}
+
+.wms-ops-erp-skin .border-dashed {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 28%, transparent) !important;
+}
+
+.wms-ops-erp-skin h1.text-3xl {
+  display: none;
+}
+
+html:not(.dark) .wms-ops-erp-skin [data-slot='card'] {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 12%, transparent),
+    0 1px 2px rgba(15, 23, 42, 0.06) !important;
+}
+
+html:not(.dark) .wms-ops-erp-skin .text-slate-900,
+html:not(.dark) .wms-ops-erp-skin .text-slate-950 {
+  color: color-mix(in oklab, #0f172a 88%, var(--wms-ops-accent)) !important;
+}
+
+html:not(.dark) .wms-ops-erp-skin button.bg-slate-900,
+html:not(.dark) .wms-ops-erp-skin button[class*='bg-sky-'] {
+  color: #050a0f !important;
+}
+
+/* Legacy shadcn Table inside ERP ops panels */
+.wms-ops-erp-skin .wms-ops-data-grid [data-slot='table-header'] {
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-card-bg));
+}
+
+.wms-ops-erp-skin .wms-ops-data-grid [data-slot='table-head'] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wms-ops-accent);
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
+}
+
+.wms-ops-erp-skin .wms-ops-data-grid [data-slot='table-row']:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+}
+
+.wms-ops-erp-skin .wms-ops-data-grid [data-slot='table-cell'] {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+  font-size: 0.8125rem;
+}
+
+.wms-ops-barcode-canvas__toolbar .wms-ops-action-btn {
+  min-height: 1.75rem;
+}
+
+.wms-ops-production-page .wms-ops-stat-grid {
+  gap: 0.75rem;
+}
+
+.wms-ops-production-page input[type='checkbox'] {
+  accent-color: var(--wms-ops-accent);
+}
+
