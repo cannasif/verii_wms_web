@@ -469,6 +469,11 @@
     "goodsReceiptPreLabels": "Goods Receipt Pre-Labels",
     "goodsReceiptPreLabelReceiving": "Receipt From Label"
   },
+  "serviceOps": {
+    "breadcrumb": {
+      "parent": "SERVICE_OPS"
+    }
+  },
   "erpReference": {
     "badge": "ERP Mirror",
     "columns": {
@@ -926,6 +931,9 @@
   },
   "vehicleCheckIn": {
     "badge": "Vehicle Entry 1",
+    "breadcrumb": {
+      "module": "VEHICLE_CHECKIN"
+    },
     "pageTitle": "Vehicle Entry Step",
     "title": "Vehicle Entry Form",
     "description": "Create the first record for an arriving vehicle. If the same plate returns on the same day, the current record is updated.",
@@ -994,6 +1002,9 @@
   },
   "ocrGoodsReceiptMatch": {
     "badge": "OCR Match 1",
+    "breadcrumb": {
+      "module": "OCR_MATCH"
+    },
     "pageTitle": "OCR Customer Stock Match",
     "title": "OCR Customer Stock Match Form",
     "description": "Match the stock code used by the customer on the dispatch note with our stock card. OCR lines will be converted through this definition later.",
@@ -1059,6 +1070,10 @@
   },
   "qualityControl": {
     "badge": "Quality 1",
+    "breadcrumb": {
+      "parent": "OPERATIONS_OP",
+      "module": "QUALITY_CTRL"
+    },
     "messages": {
       "settingsSaved": "Quality parameters saved.",
       "settingsQuarantineWarehouseRequired": "Select a default quarantine warehouse when quarantine warehouse usage is enabled.",
@@ -2971,8 +2986,13 @@
     }
   },
   "production": {
+    "breadcrumb": {
+      "parent": "PRODUCTION_OP",
+      "module": "PRODUCTION"
+    },
     "approval": {
       "title": "Production Plans Awaiting Approval",
+      "subtitle": "Review and process production plans awaiting approval",
       "approveSuccess": "Production plan approved successfully",
       "approveError": "Production plan could not be approved",
       "rejectSuccess": "Production plan rejected successfully",
@@ -3482,6 +3502,7 @@
     },
     "list": {
       "title": "Production Plans",
+      "subtitle": "View, filter and manage records",
       "completedQuantity": "Actual",
       "error": "Production plans could not be loaded.",
       "noData": "No production plan found.",
@@ -3498,15 +3519,21 @@
       "editDisabledPermission": "You need production update permission to edit this plan."
     },
     "assigned": {
-      "title": "Atanmis Uretim Emirleri",
+      "title": "Assigned Production Orders",
+      "subtitle": "View and manage production orders assigned to you",
       "error": "Atanmis uretim emirleri yuklenemedi",
       "noData": "Size atanmis bekleyen uretim emri bulunamadi",
       "searchPlaceholder": "Belge no veya ana stok ara"
     }
   },
   "productionTransfer": {
+    "breadcrumb": {
+      "parent": "PRODUCTION_OP",
+      "module": "PROD_TRANSFER"
+    },
     "approval": {
       "title": "Production Transfer Orders Awaiting Approval",
+      "subtitle": "Review and process transfers awaiting approval",
       "approveSuccess": "Production transfer order approved successfully",
       "approveError": "Production transfer order could not be approved",
       "rejectSuccess": "Production transfer order rejected successfully",
@@ -3527,6 +3554,7 @@
     },
     "list": {
       "title": "Production Transfer Orders",
+      "subtitle": "View, filter, and manage records",
       "productionLink": "Production Link",
       "error": "Production transfers could not be loaded.",
       "noData": "No production transfer order found.",
@@ -4847,6 +4875,9 @@
   },
   "steelGoodReceiptAcceptance": {
     "badge": "Steel plate acceptance",
+    "breadcrumb": {
+      "module": "STEEL_RECEIPT"
+    },
     "placement": {
       "pageTitle": "Steel plate placement",
       "title": "Yard / cell placement",

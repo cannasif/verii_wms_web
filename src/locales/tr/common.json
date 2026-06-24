@@ -469,6 +469,11 @@
     "goodsReceiptPreLabels": "Mal Kabul Ön Barkod Etiketleri",
     "goodsReceiptPreLabelReceiving": "Etiketten Mal Kabul"
   },
+  "serviceOps": {
+    "breadcrumb": {
+      "parent": "SERVİS_OP"
+    }
+  },
   "erpReference": {
     "badge": "ERP Mirror",
     "columns": {
@@ -926,6 +931,9 @@
   },
   "vehicleCheckIn": {
     "badge": "Araç Giriş 1",
+    "breadcrumb": {
+      "module": "ARAC_GIRIS"
+    },
     "pageTitle": "Araç Giriş İşlemi",
     "title": "Araç Giriş Formu",
     "description": "Sahaya gelen araç için ilk kaydı oluşturun. Aynı plaka aynı gün tekrar gelirse mevcut kayıt güncellenir.",
@@ -994,6 +1002,9 @@
   },
   "ocrGoodsReceiptMatch": {
     "badge": "OCR Eşleme 1",
+    "breadcrumb": {
+      "module": "OCR_ESLESTIRME"
+    },
     "pageTitle": "OCR Müşteri Stok Eşleme",
     "title": "OCR Müşteri Stok Eşleme Formu",
     "description": "Müşterinin irsaliyede kullandığı stok kodunu bizim stok kartımızla eşleyin. OCR sonrası satırlar bu tanım üzerinden çevrilecektir.",
@@ -1059,6 +1070,10 @@
   },
   "qualityControl": {
     "badge": "Kalite 1",
+    "breadcrumb": {
+      "parent": "OPERASYON_OP",
+      "module": "KALITE_KONTROL"
+    },
     "messages": {
       "settingsSaved": "Kalite parametreleri kaydedildi.",
       "settingsQuarantineWarehouseRequired": "Karantina deposu kullanılıyorsa varsayılan karantina deposu seçmelisiniz.",
@@ -2971,8 +2986,13 @@
     }
   },
   "production": {
+    "breadcrumb": {
+      "parent": "ÜRETİM_OP",
+      "module": "ÜRETİM"
+    },
     "approval": {
       "title": "Onay Bekleyen Üretim Planları",
+      "subtitle": "Onay bekleyen üretim planlarını görüntüleyin ve işleyin",
       "approveSuccess": "Üretim planı başarıyla onaylandı",
       "approveError": "Üretim planı onaylanamadı",
       "rejectSuccess": "Üretim planı başarıyla reddedildi",
@@ -3482,6 +3502,7 @@
     },
     "list": {
       "title": "Üretim Planları",
+      "subtitle": "Kayıtları görüntüle, filtrele ve yönet",
       "completedQuantity": "Gerçekleşen",
       "error": "Üretim planları yüklenemedi.",
       "noData": "Üretim planı bulunamadı.",
@@ -3499,12 +3520,17 @@
     },
     "assigned": {
       "title": "Atanmis Uretim Emirleri",
+      "subtitle": "Size atanan üretim emirlerini görüntüleyin ve yönetin",
       "error": "Atanmis uretim emirleri yuklenemedi",
       "noData": "Size atanmis bekleyen uretim emri bulunamadi",
       "searchPlaceholder": "Belge no veya ana stok ara"
     }
   },
   "productionTransfer": {
+    "breadcrumb": {
+      "parent": "ÜRETİM_OP",
+      "module": "PROD_TRANSFER"
+    },
     "approval": {
       "title": "Onay Bekleyen Üretim Transferleri",
       "approveSuccess": "Üretim transfer emri başarıyla onaylandı",
@@ -3523,10 +3549,12 @@
       "viewDetails": "Detay",
       "approve": "Onayla",
       "reject": "Reddet",
-      "noData": "Onay bekleyen üretim transfer emri bulunamadı"
+      "noData": "Onay bekleyen üretim transfer emri bulunamadı",
+      "subtitle": "Onay bekleyen üretim transferlerini görüntüleyin ve işleyin"
     },
     "list": {
       "title": "Üretim Transfer Emirleri",
+      "subtitle": "Kayıtları görüntüle, filtrele ve yönet",
       "productionLink": "Üretim Bağlantısı",
       "error": "Üretim transferleri yüklenemedi.",
       "noData": "Üretim transfer emri bulunamadı.",
@@ -4847,6 +4875,9 @@
   },
   "steelGoodReceiptAcceptance": {
     "badge": "Sac Mal Kabul",
+    "breadcrumb": {
+      "module": "SAC_MAL_KABUL"
+    },
     "placement": {
       "pageTitle": "Sac Mal Kabul Yerleştirme",
       "title": "Saha / Hücre Yerleştirme",
