@@ -142,6 +142,7 @@ export function OcrGoodsReceiptMatchPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('ocrGoodsReceiptMatch.breadcrumb.module')} />}
       title={t('ocrGoodsReceiptMatch.title')}
       description={t('ocrGoodsReceiptMatch.description')}

@@ -362,6 +362,7 @@ export function AssignedTransferListPage(): ReactElement {
           headerId={selectedHeaderId}
           isOpen={selectedHeaderId != null}
           onClose={() => setSelectedHeaderId(null)}
+          variant="ops"
         />
       )}
       <DeleteConfirmDialog

@@ -1,12 +1,14 @@
 import type { ReactElement } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { OpsActionButton, OpsInput, OpsTextarea } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { SelectItem } from '@/components/ui/select';
+import {
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+  MasterDataOpsSelect,
+} from '@/features/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { CustomerLookup, StockLookup } from '@/features/shared/api/lookup-types';
 import type { CreateOcrGoodsReceiptCustomerStockMatchDto } from '../../types/ocr-goods-receipt-match.types';
@@ -49,11 +51,11 @@ export function OcrGoodsReceiptMatchFormSection({
   const { t } = useTranslation('common');
 
   return (
-    <>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="space-y-2">
-          <Label>{t('ocrGoodsReceiptMatch.fields.customer')} *</Label>
+    <MasterDataOpsSection title={t('ocrGoodsReceiptMatch.title')}>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <MasterDataOpsFormField label={`${t('ocrGoodsReceiptMatch.fields.customer')} *`}>
           <PagedLookupDialog<CustomerLookup>
+            variant="ops"
             open={customerDialogOpen}
             onOpenChange={onCustomerDialogOpenChange}
             title={t('ocrGoodsReceiptMatch.customerLookup.title')}
@@ -71,11 +73,11 @@ export function OcrGoodsReceiptMatchFormSection({
               onSelectCustomerLabel(`${item.cariKod} - ${item.cariIsim}`);
             }}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label>{t('ocrGoodsReceiptMatch.fields.ourStock')} *</Label>
+        <MasterDataOpsFormField label={`${t('ocrGoodsReceiptMatch.fields.ourStock')} *`}>
           <PagedLookupDialog<StockLookup>
+            variant="ops"
             open={stockDialogOpen}
             onOpenChange={onStockDialogOpenChange}
             title={t('ocrGoodsReceiptMatch.stockLookup.title')}
@@ -93,85 +95,74 @@ export function OcrGoodsReceiptMatchFormSection({
               onSelectStockLabel(`${item.stokKodu} - ${item.stokAdi}`);
             }}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="customerStockCode">{t('ocrGoodsReceiptMatch.fields.customerStockCode')} *</Label>
-          <Input
+        <MasterDataOpsFormField label={`${t('ocrGoodsReceiptMatch.fields.customerStockCode')} *`} htmlFor="customerStockCode">
+          <OpsInput
             id="customerStockCode"
             value={formState.customerStockCode}
             onChange={(event) => onFormStateChange((prev) => ({ ...prev, customerStockCode: event.target.value }))}
             placeholder={t('ocrGoodsReceiptMatch.fields.customerStockCodePlaceholder')}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="customerStockName">{t('ocrGoodsReceiptMatch.fields.customerStockName')}</Label>
-          <Input
+        <MasterDataOpsFormField label={t('ocrGoodsReceiptMatch.fields.customerStockName')} htmlFor="customerStockName">
+          <OpsInput
             id="customerStockName"
             value={formState.customerStockName || ''}
             onChange={(event) => onFormStateChange((prev) => ({ ...prev, customerStockName: event.target.value }))}
             placeholder={t('ocrGoodsReceiptMatch.fields.customerStockNamePlaceholder')}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="customerBarcode">{t('ocrGoodsReceiptMatch.fields.customerBarcode')}</Label>
-          <Input
+        <MasterDataOpsFormField label={t('ocrGoodsReceiptMatch.fields.customerBarcode')} htmlFor="customerBarcode">
+          <OpsInput
             id="customerBarcode"
             value={formState.customerBarcode || ''}
             onChange={(event) => onFormStateChange((prev) => ({ ...prev, customerBarcode: event.target.value }))}
             placeholder={t('ocrGoodsReceiptMatch.fields.customerBarcodePlaceholder')}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="unit">{t('ocrGoodsReceiptMatch.fields.unit')}</Label>
-          <Input
+        <MasterDataOpsFormField label={t('ocrGoodsReceiptMatch.fields.unit')} htmlFor="unit">
+          <OpsInput
             id="unit"
             value={formState.unit || ''}
             onChange={(event) => onFormStateChange((prev) => ({ ...prev, unit: event.target.value }))}
             placeholder={t('ocrGoodsReceiptMatch.fields.unitPlaceholder')}
           />
-        </div>
+        </MasterDataOpsFormField>
 
-        <div className="space-y-2">
-          <Label>{t('ocrGoodsReceiptMatch.fields.isActive')}</Label>
-          <Select
+        <MasterDataOpsFormField label={t('ocrGoodsReceiptMatch.fields.isActive')}>
+          <MasterDataOpsSelect
             value={formState.isActive ? 'true' : 'false'}
             onValueChange={(value) => onFormStateChange((prev) => ({ ...prev, isActive: value === 'true' }))}
           >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="true">{t('ocrGoodsReceiptMatch.options.active')}</SelectItem>
-              <SelectItem value="false">{t('ocrGoodsReceiptMatch.options.passive')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            <SelectItem value="true">{t('ocrGoodsReceiptMatch.options.active')}</SelectItem>
+            <SelectItem value="false">{t('ocrGoodsReceiptMatch.options.passive')}</SelectItem>
+          </MasterDataOpsSelect>
+        </MasterDataOpsFormField>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">{t('ocrGoodsReceiptMatch.fields.description')}</Label>
-        <Textarea
+      <MasterDataOpsFormField label={t('ocrGoodsReceiptMatch.fields.description')} htmlFor="description" className="mt-5">
+        <OpsTextarea
           id="description"
           value={formState.description || ''}
           onChange={(event) => onFormStateChange((prev) => ({ ...prev, description: event.target.value }))}
           placeholder={t('ocrGoodsReceiptMatch.fields.descriptionPlaceholder')}
           rows={4}
         />
-      </div>
+      </MasterDataOpsFormField>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="button" onClick={onSave} disabled={savePending || loadingRecord}>
-          {(savePending || loadingRecord) ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+      <div className="wms-ops-actions mt-5 flex flex-wrap gap-3">
+        <OpsActionButton type="button" variant="primary" onClick={onSave} disabled={savePending || loadingRecord}>
+          {(savePending || loadingRecord) ? <Loader2 className="size-4 animate-spin" /> : null}
           {isEdit ? t('common.update') : t('common.save')}
-        </Button>
-        <Button type="button" variant="outline" onClick={onReset}>
+        </OpsActionButton>
+        <OpsActionButton type="button" variant="secondary" onClick={onReset}>
           {t('common.clear')}
-        </Button>
+        </OpsActionButton>
       </div>
-    </>
+    </MasterDataOpsSection>
   );
 }

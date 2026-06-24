@@ -141,9 +141,6 @@ export function TransferProcessPage(): ReactElement {
         }
         title={t('transfer.process.title')}
         description={t('transfer.process.subtitle')}
-        actions={
-          <span className="wms-ops-code-badge">{t('transfer.create.mode.free')}</span>
-        }
       >
         {!permission.canCreate ? <PermissionNotice /> : null}
 

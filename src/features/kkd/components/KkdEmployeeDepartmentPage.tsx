@@ -1,11 +1,10 @@
 import { type ReactElement, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import type { PagedDataGridColumn } from '@/components/shared';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeDepartmentDto, KkdEmployeeDepartmentDto, UpdateKkdEmployeeDepartmentDto } from '../types/kkd.types';
-import type { PagedDataGridColumn } from '@/components/shared';
-import { DefinitionExcelActions } from '@/features/definition-excel';
 
 type ColumnKey = 'departmentCode' | 'departmentName' | 'updatedDate' | 'isActive';
 
@@ -40,13 +39,11 @@ export function KkdEmployeeDepartmentPage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateDepartment(id, dto as UpdateKkdEmployeeDepartmentDto)}
       deleteItem={kkdApi.deleteDepartment}
       queryKey={['kkd', 'departments']}
-      headerActions={(
-        <DefinitionExcelActions
-          definitionKey="kkd-employee-department"
-          fileNamePrefix="kkd-bolum-tanimlari"
-          onImportCompleted={() => queryClient.invalidateQueries({ queryKey: ['kkd', 'departments'] })}
-        />
-      )}
+      definitionExcel={{
+        definitionKey: 'kkd-employee-department',
+        fileNamePrefix: 'kkd-bolum-tanimlari',
+        onImportCompleted: () => queryClient.invalidateQueries({ queryKey: ['kkd', 'departments'] }),
+      }}
       mapSortBy={(value) => value === 'departmentName' ? 'DepartmentName' : value === 'updatedDate' ? 'UpdatedDate' : value === 'isActive' ? 'IsActive' : 'DepartmentCode'}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
     />

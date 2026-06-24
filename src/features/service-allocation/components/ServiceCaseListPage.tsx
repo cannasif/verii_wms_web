@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
-import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -134,6 +134,14 @@ export function ServiceCaseListPage(): ReactElement {
         eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
         title={t('serviceAllocation.caseList.title')}
         description={t('serviceAllocation.caseList.subtitle')}
+        actions={
+          permission.canCreate ? (
+            <OpsActionButton type="button" variant="primary" onClick={() => navigate('/service-allocation/cases/new')}>
+              <Plus className="size-3.5" aria-hidden />
+              {t('serviceAllocation.createCase')}
+            </OpsActionButton>
+          ) : null
+        }
       >
         <PagedDataGrid<ServiceCaseRow, ColumnKey>
           variant="ops"
@@ -252,12 +260,6 @@ export function ServiceCaseListPage(): ReactElement {
             ...pagedGrid.searchConfig,
             placeholder: t('serviceAllocation.caseList.search'),
           }}
-          leftSlot={permission.canCreate ? (
-            <Button type="button" className="wms-ops-primary-btn" onClick={() => navigate('/service-allocation/cases/new')}>
-              <Plus className="mr-2 size-4" />
-              {t('serviceAllocation.createCase')}
-            </Button>
-          ) : undefined}
           refresh={{
             onRefresh: () => {
               void refetch();

@@ -110,6 +110,7 @@ export function Step2WarehouseOrderSelection({
                   selectedOrderId={activeSiparisNo}
                   onSelectOrder={handleSelectOrder}
                   isLoading={ordersLoading}
+                  variant={variant}
                 />
               </TabsContent>
               <TabsContent value="items" className="m-0 mt-0 flex-1 overflow-hidden">
@@ -120,6 +121,7 @@ export function Step2WarehouseOrderSelection({
                   onUpdateItem={onUpdateItem}
                   onToggleItem={onToggleItem}
                   onRemoveItem={onRemoveItem}
+                  variant={variant}
                 />
               </TabsContent>
             </Tabs>
@@ -138,6 +140,7 @@ export function Step2WarehouseOrderSelection({
                 selectedOrderId={activeSiparisNo}
                 onSelectOrder={handleSelectOrder}
                 isLoading={ordersLoading}
+                variant={variant}
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -148,6 +151,7 @@ export function Step2WarehouseOrderSelection({
                 onUpdateItem={onUpdateItem}
                 onToggleItem={onToggleItem}
                 onRemoveItem={onRemoveItem}
+                variant={variant}
               />
             </div>
           </div>

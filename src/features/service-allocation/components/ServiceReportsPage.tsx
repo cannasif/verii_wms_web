@@ -1,26 +1,30 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Boxes, ClipboardList, Link2, Wrench } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
+import { Boxes, ClipboardList, Link2, Wrench } from 'lucide-react';
+import { OpsListPageShell, OpsServiceEyebrow, PageState } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useAllocationQueueQuery } from '../hooks/useAllocationQueueQuery';
 import { useDocumentLinksQuery } from '../hooks/useDocumentLinksQuery';
 import { useServiceCasesQuery } from '../hooks/useServiceCasesQuery';
+import type { AllocationQueueRow, BusinessDocumentLinkRow, ServiceCaseRow } from '../types/service-allocation.types';
 import { renderDocumentLinkPurpose, renderDocumentModule, renderServiceCaseStatus } from '../utils/service-allocation-display';
+import {
+  ServiceReportDistributionPanel,
+  ServiceReportFooterStat,
+  ServiceReportKpiCard,
+  ServiceReportPanel,
+  ServiceReportPanelLink,
+  ServiceReportTable,
+} from './service-reports-ops-ui';
 
 function formatDate(value?: string): string {
   if (!value) return '-';
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString();
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('tr-TR');
 }
 
 export function ServiceReportsPage(): ReactElement {
-  const { t } = useTranslation(["service-allocation", "common"]);
+  const { t } = useTranslation(['service-allocation', 'common']);
   const { setPageTitle } = useUIStore();
   const serviceCasesQuery = useServiceCasesQuery({ pageNumber: 1, pageSize: 100, sortBy: 'ReceivedAt', sortDirection: 'desc' });
   const allocationQuery = useAllocationQueueQuery({ pageNumber: 1, pageSize: 100, sortBy: 'PriorityNo', sortDirection: 'asc' });
@@ -30,6 +34,9 @@ export function ServiceReportsPage(): ReactElement {
     setPageTitle(t('serviceAllocation.reports.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  const isLoading = serviceCasesQuery.isLoading || allocationQuery.isLoading || linksQuery.isLoading;
+  const isError = Boolean(serviceCasesQuery.error || allocationQuery.error || linksQuery.error);
 
   const cases = serviceCasesQuery.data?.data ?? [];
   const allocations = allocationQuery.data?.data ?? [];
@@ -66,7 +73,7 @@ export function ServiceReportsPage(): ReactElement {
 
   const criticalWaitingCases = waitingCases.slice(0, 8);
   const criticalAllocations = partialAllocations.slice(0, 8);
-  const recentMovements = links.slice(0, 8);
+  const recentMovements = links.slice(0, 10);
 
   return (
     <OpsListPageShell
@@ -74,295 +81,179 @@ export function ServiceReportsPage(): ReactElement {
       title={t('serviceAllocation.reports.title')}
       description={t('serviceAllocation.reports.subtitle')}
     >
-      <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                {t('serviceAllocation.reports.totalCases')}
-              </CardTitle>
-              <Wrench className="size-4 text-slate-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-slate-900">{cases.length}</div>
-            <Button asChild variant="link" className="mt-3 h-auto px-0 text-slate-700">
-              <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.openCases')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-amber-800">
-                {t('serviceAllocation.reports.waitingParts')}
-              </CardTitle>
-              <Boxes className="size-4 text-amber-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-amber-900">{waitingCases.length}</div>
-            <Button asChild variant="link" className="mt-3 h-auto px-0 text-amber-800">
-              <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.reviewWaitingCases')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-blue-800">
-                {t('serviceAllocation.reports.partialAllocations')}
-              </CardTitle>
-              <ClipboardList className="size-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-blue-900">{partialAllocations.length}</div>
-            <Button asChild variant="link" className="mt-3 h-auto px-0 text-blue-800">
-              <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openPartialAllocations')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-emerald-800">
-                {t('serviceAllocation.reports.documentLinks')}
-              </CardTitle>
-              <Link2 className="size-4 text-emerald-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-emerald-900">{links.length}</div>
-            <Button asChild variant="link" className="mt-3 h-auto px-0 text-emerald-800">
-              <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openDocumentLinks')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('serviceAllocation.reports.criticalQueue')}</CardTitle>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openQueue')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-slate-700">
-                  {t('serviceAllocation.reports.waitingCasesTable')}
-                </h3>
-                <Badge variant="secondary">{criticalWaitingCases.length}</Badge>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('serviceAllocation.caseNo')}</TableHead>
-                    <TableHead>{t('serviceAllocation.customerCode')}</TableHead>
-                    <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
-                    <TableHead>{t('serviceAllocation.receivedAt')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {criticalWaitingCases.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-slate-500">
-                        {t('serviceAllocation.reports.noWaitingCases')}
-                      </TableCell>
-                    </TableRow>
-                  ) : criticalWaitingCases.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.caseNo}</TableCell>
-                      <TableCell>{item.customerCode}</TableCell>
-                      <TableCell>{item.incomingStockCode || '-'}</TableCell>
-                      <TableCell>{formatDate(item.receivedAt)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-slate-700">
-                  {t('serviceAllocation.reports.partialAllocationTable')}
-                </h3>
-                <Badge variant="secondary">{criticalAllocations.length}</Badge>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('serviceAllocation.stockCode')}</TableHead>
-                    <TableHead>{t('serviceAllocation.erpOrderNo')}</TableHead>
-                    <TableHead>{t('serviceAllocation.quantity')}</TableHead>
-                    <TableHead>{t('serviceAllocation.allocatedQuantity')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {criticalAllocations.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-slate-500">
-                        {t('serviceAllocation.reports.noPartialAllocations')}
-                      </TableCell>
-                    </TableRow>
-                  ) : criticalAllocations.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.stockCode}</TableCell>
-                      <TableCell>{item.erpOrderNo}</TableCell>
-                      <TableCell>{item.requestedQuantity}</TableCell>
-                      <TableCell>{item.allocatedQuantity}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-6">
-          <Card className="wms-ops-panel rounded-2xl border shadow-none">
-            <CardHeader>
-              <CardTitle>{t('serviceAllocation.reports.caseDistribution')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {caseStatusDistribution.length === 0 ? (
-                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution')}</p>
-              ) : caseStatusDistribution.map((item) => (
-                <div key={item.status} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3">
-                  <span>{renderServiceCaseStatus(item.status)}</span>
-                  <Badge variant="secondary">{item.count}</Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card className="wms-ops-panel rounded-2xl border shadow-none">
-            <CardHeader>
-              <CardTitle>{t('serviceAllocation.reports.linkDistribution')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {linkPurposeDistribution.length === 0 ? (
-                <p className="text-sm text-slate-500">{t('serviceAllocation.reports.noDistribution')}</p>
-              ) : linkPurposeDistribution.map((item) => (
-                <div key={item.purpose} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3">
-                  <span>{renderDocumentLinkPurpose(item.purpose)}</span>
-                  <Badge variant="secondary">{item.count}</Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>{t('serviceAllocation.reports.recentMovements')}</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{shipmentLinks.length} {t('serviceAllocation.reports.shipmentLinks')}</Badge>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openLinks')}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
+      {isLoading ? (
+        <PageState tone="loading" title={t('common.loading')} />
+      ) : isError ? (
+        <PageState tone="error" title={t('serviceAllocation.reports.loadError')} />
+      ) : (
+        <div className="wms-ops-service-reports space-y-6">
+          <div className="wms-ops-service-reports__kpi-grid">
+            <ServiceReportKpiCard
+              label={t('serviceAllocation.reports.totalCases')}
+              value={cases.length}
+              href="/service-allocation/cases"
+              actionLabel={t('serviceAllocation.reports.openCases')}
+              icon={Wrench}
+              tone="default"
+            />
+            <ServiceReportKpiCard
+              label={t('serviceAllocation.reports.waitingParts')}
+              value={waitingCases.length}
+              href="/service-allocation/cases"
+              actionLabel={t('serviceAllocation.reports.reviewWaitingCases')}
+              icon={Boxes}
+              tone="warn"
+            />
+            <ServiceReportKpiCard
+              label={t('serviceAllocation.reports.partialAllocations')}
+              value={partialAllocations.length}
+              href="/service-allocation/allocation-queue"
+              actionLabel={t('serviceAllocation.reports.openPartialAllocations')}
+              icon={ClipboardList}
+              tone="info"
+            />
+            <ServiceReportKpiCard
+              label={t('serviceAllocation.reports.documentLinks')}
+              value={links.length}
+              href="/service-allocation/document-links"
+              actionLabel={t('serviceAllocation.reports.openDocumentLinks')}
+              icon={Link2}
+              tone="success"
+            />
           </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('serviceAllocation.documentModule')}</TableHead>
-                <TableHead>{t('serviceAllocation.documentHeaderId')}</TableHead>
-                <TableHead>{t('serviceAllocation.linkPurpose')}</TableHead>
-                <TableHead>{t('serviceAllocation.serviceCaseId')}</TableHead>
-                <TableHead>{t('serviceAllocation.linkedAt')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentMovements.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-slate-500">
-                    {t('serviceAllocation.reports.noRecentMovements')}
-                  </TableCell>
-                </TableRow>
-              ) : recentMovements.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{renderDocumentModule(item.documentModule)}</TableCell>
-                  <TableCell>{item.documentHeaderId}</TableCell>
-                  <TableCell>{renderDocumentLinkPurpose(item.linkPurpose)}</TableCell>
-                  <TableCell>{item.serviceCaseId ?? '-'}</TableCell>
-                  <TableCell>{formatDate(item.linkedAt)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.allocationRows')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{allocations.length}</div>
-            <Button asChild variant="link" className="mt-2 h-auto px-0">
-              <Link to="/service-allocation/allocation-queue">
-                {t('serviceAllocation.reports.openQueue')}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.activeRepairCases')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{activeRepairCases.length}</div>
-            <Button asChild variant="link" className="mt-2 h-auto px-0">
-              <Link to="/service-allocation/cases">
-                {t('serviceAllocation.reports.openCases')}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader>
-            <CardTitle>{t('serviceAllocation.reports.shipmentLinksCount')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{shipmentLinks.length}</div>
-            <Button asChild variant="link" className="mt-2 h-auto px-0">
-              <Link to="/service-allocation/document-links">
-                {t('serviceAllocation.reports.openLinks')}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-      </div>
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+            <ServiceReportPanel
+              title={t('serviceAllocation.reports.criticalQueue')}
+              actions={<ServiceReportPanelLink to="/service-allocation/allocation-queue" label={t('serviceAllocation.reports.openQueue')} />}
+            >
+              <div className="space-y-5">
+                <ServiceReportTable<ServiceCaseRow>
+                  title={t('serviceAllocation.reports.waitingCasesTable')}
+                  badge={<span className="wms-ops-status-badge wms-ops-status-badge--pending">{criticalWaitingCases.length}</span>}
+                  columns={[
+                    { key: 'caseNo', label: t('serviceAllocation.caseNo') },
+                    { key: 'customerCode', label: t('serviceAllocation.customerCode') },
+                    { key: 'stockCode', label: t('serviceAllocation.stockCode') },
+                    { key: 'receivedAt', label: t('serviceAllocation.receivedAt') },
+                  ]}
+                  rows={criticalWaitingCases}
+                  emptyText={t('serviceAllocation.reports.noWaitingCases')}
+                  rowKey={(row) => row.id}
+                  renderRow={(row) => (
+                    <>
+                      <td className="font-semibold">{row.caseNo}</td>
+                      <td>{row.customerCode}</td>
+                      <td>{row.incomingStockCode || '-'}</td>
+                      <td>{formatDate(row.receivedAt)}</td>
+                    </>
+                  )}
+                />
+
+                <ServiceReportTable<AllocationQueueRow>
+                  title={t('serviceAllocation.reports.partialAllocationTable')}
+                  badge={<span className="wms-ops-status-badge wms-ops-status-badge--active">{criticalAllocations.length}</span>}
+                  columns={[
+                    { key: 'stockCode', label: t('serviceAllocation.stockCode') },
+                    { key: 'erpOrderNo', label: t('serviceAllocation.erpOrderNo') },
+                    { key: 'quantity', label: t('serviceAllocation.quantity') },
+                    { key: 'allocatedQuantity', label: t('serviceAllocation.allocatedQuantity') },
+                  ]}
+                  rows={criticalAllocations}
+                  emptyText={t('serviceAllocation.reports.noPartialAllocations')}
+                  rowKey={(row) => row.id}
+                  renderRow={(row) => (
+                    <>
+                      <td className="font-semibold">{row.stockCode}</td>
+                      <td>{row.erpOrderNo}</td>
+                      <td>{row.requestedQuantity}</td>
+                      <td>{row.allocatedQuantity}</td>
+                    </>
+                  )}
+                />
+              </div>
+            </ServiceReportPanel>
+
+            <div className="space-y-6">
+              <ServiceReportDistributionPanel
+                title={t('serviceAllocation.reports.caseDistribution')}
+                emptyText={t('serviceAllocation.reports.noDistribution')}
+                badgeTone="pending"
+                items={caseStatusDistribution.map((item) => ({
+                  key: item.status,
+                  label: renderServiceCaseStatus(item.status),
+                  count: item.count,
+                }))}
+              />
+              <ServiceReportDistributionPanel
+                title={t('serviceAllocation.reports.linkDistribution')}
+                emptyText={t('serviceAllocation.reports.noDistribution')}
+                badgeTone="active"
+                items={linkPurposeDistribution.map((item) => ({
+                  key: item.purpose,
+                  label: renderDocumentLinkPurpose(item.purpose),
+                  count: item.count,
+                }))}
+              />
+            </div>
+          </div>
+
+          <ServiceReportPanel
+            title={t('serviceAllocation.reports.recentMovements')}
+            actions={(
+              <>
+                <span className="wms-ops-status-badge wms-ops-status-badge--done">
+                  {shipmentLinks.length} {t('serviceAllocation.reports.shipmentLinks')}
+                </span>
+                <ServiceReportPanelLink to="/service-allocation/document-links" label={t('serviceAllocation.reports.openLinks')} />
+              </>
+            )}
+          >
+            <ServiceReportTable<BusinessDocumentLinkRow>
+              columns={[
+                { key: 'documentModule', label: t('serviceAllocation.documentModule') },
+                { key: 'documentHeaderId', label: t('serviceAllocation.documentHeaderId') },
+                { key: 'linkPurpose', label: t('serviceAllocation.linkPurpose') },
+                { key: 'serviceCaseId', label: t('serviceAllocation.serviceCaseId') },
+                { key: 'linkedAt', label: t('serviceAllocation.linkedAt') },
+              ]}
+              rows={recentMovements}
+              emptyText={t('serviceAllocation.reports.noRecentMovements')}
+              rowKey={(row) => row.id}
+              renderRow={(row) => (
+                <>
+                  <td className="font-semibold">{renderDocumentModule(row.documentModule)}</td>
+                  <td>{row.documentHeaderId}</td>
+                  <td>{renderDocumentLinkPurpose(row.linkPurpose)}</td>
+                  <td>{row.serviceCaseId ?? '-'}</td>
+                  <td>{formatDate(row.linkedAt)}</td>
+                </>
+              )}
+            />
+          </ServiceReportPanel>
+
+          <div className="wms-ops-service-reports__footer-grid">
+            <ServiceReportFooterStat
+              label={t('serviceAllocation.reports.allocationRows')}
+              value={allocations.length}
+              href="/service-allocation/allocation-queue"
+              actionLabel={t('serviceAllocation.reports.openQueue')}
+            />
+            <ServiceReportFooterStat
+              label={t('serviceAllocation.reports.activeRepairCases')}
+              value={activeRepairCases.length}
+              href="/service-allocation/cases"
+              actionLabel={t('serviceAllocation.reports.openCases')}
+            />
+            <ServiceReportFooterStat
+              label={t('serviceAllocation.reports.shipmentLinksCount')}
+              value={shipmentLinks.length}
+              href="/service-allocation/document-links"
+              actionLabel={t('serviceAllocation.reports.openLinks')}
+            />
+          </div>
+        </div>
+      )}
     </OpsListPageShell>
   );
 }

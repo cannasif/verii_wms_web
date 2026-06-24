@@ -1,15 +1,14 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { OpsInput } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { DefinitionExcelActions } from '@/features/definition-excel';
+import type { PagedDataGridColumn } from '@/components/shared';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
+import { KkdOpsFormField } from './kkd-ops-ui';
 import { kkdApi } from '../api/kkd.api';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { CreateKkdEmployeeDto, KkdEmployeeDepartmentDto, KkdEmployeeDto, KkdEmployeeRoleDto, UpdateKkdEmployeeDto } from '../types/kkd.types';
-import type { PagedDataGridColumn } from '@/components/shared';
 import type { CustomerLookup } from '@/features/shared/api/lookup-types';
 import { userApi } from '@/features/user-management/api/user-api';
 import type { UserDto } from '@/features/user-management/types/user-types';
@@ -42,16 +41,19 @@ function EmployeeForm({
 
   const labelWithHelp = (label: string, helpKey: string): ReactElement => (
     <div className="flex items-center">
-      <Label>{label}</Label>
+      {label}
       <FieldHelpTooltip text={t(helpKey)} />
     </div>
   );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <div className="space-y-2 md:col-span-2">
-        {labelWithHelp(t('kkd.employeeForm.systemUser'), 'help.kkd.employee.user')}
+      <KkdOpsFormField
+        label={labelWithHelp(t('kkd.employeeForm.systemUser'), 'help.kkd.employee.user')}
+        className="md:col-span-2"
+      >
         <PagedLookupDialog<UserDto>
+          variant="ops"
           open={userDialogOpen}
           onOpenChange={setUserDialogOpen}
           title={t('kkd.employeeForm.selectUser')}
@@ -75,11 +77,11 @@ function EmployeeForm({
             lastName: item.lastName ?? '',
           }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        {labelWithHelp(t('kkd.employeeForm.customer'), 'help.kkd.employee.customer')}
+      <KkdOpsFormField label={labelWithHelp(t('kkd.employeeForm.customer'), 'help.kkd.employee.customer')}>
         <PagedLookupDialog<CustomerLookup>
+          variant="ops"
           open={customerDialogOpen}
           onOpenChange={setCustomerDialogOpen}
           title={t('kkd.employeeForm.selectCustomer')}
@@ -97,41 +99,38 @@ function EmployeeForm({
             customerCode: item.cariKod,
           }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <div className="flex items-center">
-        <Label htmlFor="employeeCode">{t('kkd.employeeForm.employeeCode')}</Label>
-          <FieldHelpTooltip text={t('help.kkd.employee.employeeCode')} />
-        </div>
-        <Input
+      <KkdOpsFormField
+        label={labelWithHelp(t('kkd.employeeForm.employeeCode'), 'help.kkd.employee.employeeCode')}
+        htmlFor="employeeCode"
+      >
+        <OpsInput
           id="employeeCode"
           value={formState.employeeCode}
           onChange={(event) => setFormState((prev) => ({ ...prev, employeeCode: event.target.value }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="firstName">{t('kkd.employeeForm.firstName')}</Label>
-        <Input
+      <KkdOpsFormField label={t('kkd.employeeForm.firstName')} htmlFor="firstName">
+        <OpsInput
           id="firstName"
           value={formState.firstName}
           readOnly
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="lastName">{t('kkd.employeeForm.lastName')}</Label>
-        <Input
+      <KkdOpsFormField label={t('kkd.employeeForm.lastName')} htmlFor="lastName">
+        <OpsInput
           id="lastName"
           value={formState.lastName}
           readOnly
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        {labelWithHelp(t('kkd.employeeForm.department'), 'help.kkd.employee.department')}
+      <KkdOpsFormField label={labelWithHelp(t('kkd.employeeForm.department'), 'help.kkd.employee.department')}>
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
+          variant="ops"
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
           title={t('kkd.employeeForm.selectDepartment')}
@@ -153,11 +152,11 @@ function EmployeeForm({
             roleName: '',
           }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        {labelWithHelp(t('kkd.employeeForm.role'), 'help.kkd.employee.role')}
+      <KkdOpsFormField label={labelWithHelp(t('kkd.employeeForm.role'), 'help.kkd.employee.role')}>
         <PagedLookupDialog<KkdEmployeeRoleDto>
+          variant="ops"
           open={roleDialogOpen}
           onOpenChange={(open) => {
             if (!formState.departmentId) {
@@ -190,33 +189,33 @@ function EmployeeForm({
             roleName: item.roleName,
           }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2 md:col-span-2">
-        <div className="flex items-center">
-          <Label htmlFor="employmentStartDate">{t('kkd.employeeForm.employmentStartDate')}</Label>
-          <FieldHelpTooltip text={t('help.kkd.employee.employmentStartDate')} />
-        </div>
-        <Input
+      <KkdOpsFormField
+        label={labelWithHelp(t('kkd.employeeForm.employmentStartDate'), 'help.kkd.employee.employmentStartDate')}
+        htmlFor="employmentStartDate"
+        className="md:col-span-2"
+      >
+        <OpsInput
           id="employmentStartDate"
           type="date"
           value={formState.employmentStartDate}
           onChange={(event) => setFormState((prev) => ({ ...prev, employmentStartDate: event.target.value }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2 md:col-span-2">
-        <div className="flex items-center">
-          <Label htmlFor="qrCode">{t('kkd.employeeForm.qrCode')}</Label>
-          <FieldHelpTooltip text={t('help.kkd.employee.qrCode')} />
-        </div>
-        <Input
+      <KkdOpsFormField
+        label={labelWithHelp(t('kkd.employeeForm.qrCode'), 'help.kkd.employee.qrCode')}
+        htmlFor="qrCode"
+        className="md:col-span-2"
+      >
+        <OpsInput
           id="qrCode"
           value={formState.qrCode}
           onChange={(event) => setFormState((prev) => ({ ...prev, qrCode: event.target.value }))}
           placeholder={t('kkd.employeeForm.qrPlaceholder')}
         />
-      </div>
+      </KkdOpsFormField>
     </div>
   );
 }
@@ -285,13 +284,11 @@ export function KkdEmployeePage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateEmployee(id, dto as UpdateKkdEmployeeDto)}
       deleteItem={kkdApi.deleteEmployee}
       queryKey={['kkd', 'employees']}
-      headerActions={(
-        <DefinitionExcelActions
-          definitionKey="kkd-employee"
-          fileNamePrefix="kkd-calisan-kartlari"
-          onImportCompleted={() => queryClient.invalidateQueries({ queryKey: ['kkd', 'employees'] })}
-        />
-      )}
+      definitionExcel={{
+        definitionKey: 'kkd-employee',
+        fileNamePrefix: 'kkd-calisan-kartlari',
+        onImportCompleted: () => queryClient.invalidateQueries({ queryKey: ['kkd', 'employees'] }),
+      }}
       mapSortBy={(value) => ({
         employeeCode: 'EmployeeCode',
         firstName: 'FirstName',

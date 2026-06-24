@@ -154,7 +154,7 @@ export function WarehouseOutboundProcessPage(): ReactElement {
         <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1WarehouseBasicInfo type="outbound" showOperationUsers={false} variant="ops" />
+              <Step1WarehouseBasicInfo type="outbound" variant="ops" />
             ) : (
               <Step2WarehouseStockSelection
                 variant="ops"

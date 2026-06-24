@@ -321,7 +321,7 @@ export function TransferApprovalPage(): ReactElement {
       </OpsListPageShell>
 
       {selectedHeaderId && (
-        <TransferDetailDialog headerId={selectedHeaderId} isOpen onClose={() => setSelectedHeaderId(null)} />
+        <TransferDetailDialog headerId={selectedHeaderId} isOpen onClose={() => setSelectedHeaderId(null)} variant="ops" />
       )}
     </>
   );

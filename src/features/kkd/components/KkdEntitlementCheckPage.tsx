@@ -1,11 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Badge } from '@/components/ui/badge';
-import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { SearchableSelect } from '@/features/shared';
 import { toast } from 'sonner';
@@ -14,6 +10,14 @@ import { getLocaleForFormatting } from '@/lib/i18n';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdEmployeeDto, KkdEntitlementCheckResultDto, KkdStockGroupOption } from '../types/kkd.types';
+import {
+  KkdFlagChip,
+  KkdOpsFormField,
+  KkdOpsSection,
+  KkdResultPanel,
+  KkdSummaryMetric,
+  kkdOpsStatusBadge,
+} from './kkd-ops-ui';
 
 export function KkdEntitlementCheckPage(): ReactElement {
   const { t, i18n } = useTranslation(['kkd', 'common']);
@@ -67,19 +71,17 @@ export function KkdEntitlementCheckPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.entitlementCheck.pageTitle')}
       description={t('kkd.operational.entitlementCheck.breadcrumb')}
     >
       <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.entitlementCheck.cardInputs')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label>{t('kkd.operational.entitlementCheck.employeeLabel')}</Label>
+        <KkdOpsSection title={t('kkd.operational.entitlementCheck.cardInputs')}>
+          <div className="space-y-5">
+            <KkdOpsFormField label={t('kkd.operational.entitlementCheck.employeeLabel')}>
               <PagedLookupDialog<KkdEmployeeDto>
+                variant="ops"
                 open={employeeDialogOpen}
                 onOpenChange={setEmployeeDialogOpen}
                 title={t('kkd.dialogs.selectEmployee')}
@@ -94,11 +96,11 @@ export function KkdEntitlementCheckPage(): ReactElement {
                   setResult(null);
                 }}
               />
-            </div>
+            </KkdOpsFormField>
 
-            <div className="space-y-2">
-              <Label>{t('kkd.operational.entitlementCheck.groupLabel')}</Label>
+            <KkdOpsFormField label={t('kkd.operational.entitlementCheck.groupLabel')}>
               <SearchableSelect<KkdStockGroupOption>
+                variant="ops"
                 value={groupCode}
                 onValueChange={(value) => {
                   setGroupCode(value);
@@ -112,12 +114,11 @@ export function KkdEntitlementCheckPage(): ReactElement {
                 emptyText={t('kkd.operational.entitlementCheck.groupEmpty')}
                 isLoading={stockGroupsQuery.isLoading}
               />
-            </div>
+            </KkdOpsFormField>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="kkd-check-qty">{t('common.quantity')}</Label>
-                <Input
+              <KkdOpsFormField label={t('common.quantity')} htmlFor="kkd-check-qty">
+                <OpsInput
                   id="kkd-check-qty"
                   type="number"
                   min="1"
@@ -128,11 +129,10 @@ export function KkdEntitlementCheckPage(): ReactElement {
                     setResult(null);
                   }}
                 />
-              </div>
+              </KkdOpsFormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="kkd-check-date">{t('kkd.operational.entitlementCheck.txnDate')}</Label>
-                <Input
+              <KkdOpsFormField label={t('kkd.operational.entitlementCheck.txnDate')} htmlFor="kkd-check-date">
+                <OpsInput
                   id="kkd-check-date"
                   type="date"
                   value={transactionDate}
@@ -141,76 +141,76 @@ export function KkdEntitlementCheckPage(): ReactElement {
                     setResult(null);
                   }}
                 />
-              </div>
+              </KkdOpsFormField>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300">
-              {t('kkd.operational.entitlementCheck.infoBox')}
-            </div>
+            <KkdResultPanel tone="warn">
+              <p className="text-sm leading-6">{t('kkd.operational.entitlementCheck.infoBox')}</p>
+            </KkdResultPanel>
 
-            <Button type="button" onClick={() => checkMutation.mutate()} disabled={!selectedEmployee || !groupCode || checkMutation.isPending}>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              onClick={() => checkMutation.mutate()}
+              disabled={!selectedEmployee || !groupCode || checkMutation.isPending}
+            >
+              {checkMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
               {t('kkd.operational.entitlementCheck.checkButton')}
-            </Button>
-          </CardContent>
-        </Card>
+            </OpsActionButton>
+          </div>
+        </KkdOpsSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.entitlementCheck.cardResult')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <KkdOpsSection title={t('kkd.operational.entitlementCheck.cardResult')}>
+          <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              {selectedEmployee ? <Badge>{selectedEmployee.employeeCode}</Badge> : null}
-              {selectedEmployee?.customerCode ? <Badge variant="secondary">{selectedEmployee.customerCode}</Badge> : null}
-              {selectedGroup?.groupCode ? <Badge variant="outline">{selectedGroup.groupCode}</Badge> : null}
-              {selectedGroup?.groupName ? <Badge variant="outline">{selectedGroup.groupName}</Badge> : null}
+              {selectedEmployee ? <KkdFlagChip tone="info">{selectedEmployee.employeeCode}</KkdFlagChip> : null}
+              {selectedEmployee?.customerCode ? <KkdFlagChip>{selectedEmployee.customerCode}</KkdFlagChip> : null}
+              {selectedGroup?.groupCode ? <KkdFlagChip tone="info">{selectedGroup.groupCode}</KkdFlagChip> : null}
+              {selectedGroup?.groupName ? <KkdFlagChip>{selectedGroup.groupName}</KkdFlagChip> : null}
             </div>
 
             {result ? (
               <>
-                <div className={`rounded-2xl border p-4 ${result.allowed ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-800/40 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/60 dark:border-rose-800/40 dark:bg-rose-950/20'}`}>
+                <KkdResultPanel tone={result.allowed ? 'success' : 'danger'}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={result.allowed ? 'default' : 'destructive'}>
-                      {result.allowed ? t('kkd.operational.entitlementCheck.resultAllowed') : t('kkd.operational.entitlementCheck.resultBlocked')}
-                    </Badge>
-                    <Badge variant="outline">
+                    {kkdOpsStatusBadge(
+                      result.allowed ? t('kkd.operational.entitlementCheck.resultAllowed') : t('kkd.operational.entitlementCheck.resultBlocked'),
+                      result.allowed ? 'active' : 'danger',
+                    )}
+                    <KkdFlagChip>
                       {t('kkd.operational.entitlementCheck.mainEntitlement')}: {result.remainingMainQuantity}
-                    </Badge>
-                    <Badge variant="outline">
+                    </KkdFlagChip>
+                    <KkdFlagChip>
                       {t('kkd.operational.entitlementCheck.extraEntitlement')}: {result.remainingAdditionalQuantity}
-                    </Badge>
-                    <Badge variant="secondary">
+                    </KkdFlagChip>
+                    <KkdFlagChip tone="info">
                       {t('kkd.operational.entitlementCheck.total')}: {result.totalRemainingQuantity}
-                    </Badge>
+                    </KkdFlagChip>
                   </div>
 
                   {result.message ? <p className="mt-3 text-sm leading-6">{result.message}</p> : null}
-                </div>
+                </KkdResultPanel>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.entitlementCheck.suggestedSource')}
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">{result.suggestedEntitlementType || '-'}</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.entitlementCheck.nextDate')}
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">
-                      {result.nextEligibleDate ? new Date(result.nextEligibleDate).toLocaleDateString(dateLocale) : '-'}
-                    </p>
-                  </div>
+                  <KkdSummaryMetric
+                    icon={<span className="text-xs font-bold">SRC</span>}
+                    label={t('kkd.operational.entitlementCheck.suggestedSource')}
+                    value={result.suggestedEntitlementType || '-'}
+                  />
+                  <KkdSummaryMetric
+                    icon={<span className="text-xs font-bold">DT</span>}
+                    label={t('kkd.operational.entitlementCheck.nextDate')}
+                    value={result.nextEligibleDate ? new Date(result.nextEligibleDate).toLocaleDateString(dateLocale) : '-'}
+                  />
                 </div>
               </>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('kkd.operational.entitlementCheck.emptyState')}
-              </div>
+              <KkdResultPanel>
+                <p className="text-center text-sm">{t('kkd.operational.entitlementCheck.emptyState')}</p>
+              </KkdResultPanel>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </KkdOpsSection>
       </div>
     </OpsFormPageShell>
   );

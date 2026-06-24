@@ -442,18 +442,32 @@ export interface AvailableHeaderDto {
 export type AvailableHeadersResponse = ApiResponse<AvailableHeaderDto[]>;
 export type AvailableHeadersPagedResponse = ApiResponse<PagedResponse<AvailableHeaderDto>>;
 
+const packageSourceTypeSchema = z
+  .enum(['GR', 'WT', 'PR', 'PT', 'SIT', 'SRT', 'WI', 'WO', 'SH'])
+  .or(z.literal(''))
+  .optional()
+  .transform((value) => (value === '' ? undefined : value));
+
+const optionalFormNumberSchema = z
+  .union([z.number(), z.literal(''), z.null()])
+  .optional()
+  .transform((value) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    return value;
+  });
+
 export const pHeaderFormSchema = (t: TFunction) => {
   void t;
   return z.object({
     warehouseCode: z.string().optional(),
     packingNo: z.string().min(1, t('package.form.packingNoRequired')),
     packingDate: z.string().optional(),
-    sourceType: z.enum(['GR', 'WT', 'PR', 'PT', 'SIT', 'SRT', 'WI', 'WO', 'SH']).optional(),
-    sourceHeaderId: z.number().optional(),
+    sourceType: packageSourceTypeSchema,
+    sourceHeaderId: optionalFormNumberSchema,
     customerCode: z.string().optional(),
     customerAddress: z.string().optional(),
     status: z.enum(['Draft', 'Open', 'Packing', 'Packed', 'Closed', 'Released', 'Staged', 'Shipped', 'Transferred', 'Cancelled', 'Completed']).optional(),
-    carrierId: z.number().optional(),
+    carrierId: optionalFormNumberSchema,
     carrierServiceType: z.string().optional(),
     trackingNo: z.string().optional(),
   });
@@ -483,7 +497,8 @@ export const CargoCompany = {
 
 export type CargoCompany = (typeof CargoCompany)[keyof typeof CargoCompany];
 
-export type PHeaderFormData = z.infer<ReturnType<typeof pHeaderFormSchema>>;
+export type PHeaderFormData = z.output<ReturnType<typeof pHeaderFormSchema>>;
+export type PHeaderFormInput = z.input<ReturnType<typeof pHeaderFormSchema>>;
 
 export const pPackageFormSchema = (t: TFunction) => {
   void t;

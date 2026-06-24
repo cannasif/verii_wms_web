@@ -1,9 +1,12 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { OpsActionButton, OpsInput } from '@/components/shared';
+import {
+  MasterDataOpsEmptyState,
+  MasterDataOpsFlagChip,
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+} from '@/features/shared';
 import type { InspectionBatch } from './shared';
 
 interface InspectionBatchSearchCardProps {
@@ -30,48 +33,47 @@ export function InspectionBatchSearchCard({
   const { t } = useTranslation('common');
 
   return (
-    <Card className="border-white/10 bg-white/5">
-      <CardHeader>
-        <CardTitle>{t('steelGoodReceiptAcceptance.inspection.findBatch')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-3">
-          <Input
-            value={uniqueValueInput}
-            onChange={(event) => onUniqueValueInputChange(event.target.value)}
-            placeholder={t('steelGoodReceiptAcceptance.inspection.batchSearchPh')}
-          />
-          <Button type="button" variant="outline" onClick={onSearch}>
-            {t('steelGoodReceiptAcceptance.inspection.findBatchBtn')}
-          </Button>
-        </div>
-
-        {batches?.length ? (
-          <div className="grid gap-3 lg:grid-cols-2">
-            {batches.map((batch) => (
-              <button
-                key={batch.headerId}
-                type="button"
-                onClick={() => onSelectBatch(batch)}
-                className={`rounded-2xl border p-4 text-left transition ${
-                  selectedBatch?.headerId === batch.headerId ? 'border-sky-400 bg-sky-500/10' : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className="flex flex-wrap gap-2 text-sm">
-                  <Badge variant="secondary">{batch.excelRecordNo}</Badge>
-                  {batch.exportRefNo ? <Badge variant="secondary">{batch.exportRefNo}</Badge> : null}
-                  <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.seriesCount', { n: batch.totalSeriesCount })}</Badge>
-                  <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.pendingCount', { n: batch.pendingSeriesCount })}</Badge>
-                </div>
-                <div className="mt-3 font-medium">{batch.supplierCode} - {batch.supplierName}</div>
-                <div className="text-sm text-slate-400">{batch.headerDocumentNo ?? t('steelGoodReceiptAcceptance.inspection.noHeaderDoc')}</div>
-              </button>
-            ))}
+    <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.inspection.findBatch')}>
+      <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.batchSearchPh')}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <OpsInput
+              value={uniqueValueInput}
+              onChange={(event) => onUniqueValueInputChange(event.target.value)}
+              placeholder={t('steelGoodReceiptAcceptance.inspection.batchSearchPh')}
+            />
           </div>
-        ) : hasSearched && !isLoading ? (
-          <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.inspection.noHit')}</div>
-        ) : null}
-      </CardContent>
-    </Card>
+          <OpsActionButton type="button" variant="secondary" onClick={onSearch}>
+            {t('steelGoodReceiptAcceptance.inspection.findBatchBtn')}
+          </OpsActionButton>
+        </div>
+      </MasterDataOpsFormField>
+
+      {batches?.length ? (
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          {batches.map((batch) => (
+            <button
+              key={batch.headerId}
+              type="button"
+              onClick={() => onSelectBatch(batch)}
+              className={`wms-ops-kkd-quick-link text-left transition ${
+                selectedBatch?.headerId === batch.headerId ? 'ring-1 ring-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]' : ''
+              }`}
+            >
+              <div className="flex flex-wrap gap-2 text-sm">
+                <MasterDataOpsFlagChip>{batch.excelRecordNo}</MasterDataOpsFlagChip>
+                {batch.exportRefNo ? <MasterDataOpsFlagChip tone="info">{batch.exportRefNo}</MasterDataOpsFlagChip> : null}
+                <MasterDataOpsFlagChip>{t('steelGoodReceiptAcceptance.inspection.seriesCount', { n: batch.totalSeriesCount })}</MasterDataOpsFlagChip>
+                <MasterDataOpsFlagChip tone="warn">{t('steelGoodReceiptAcceptance.inspection.pendingCount', { n: batch.pendingSeriesCount })}</MasterDataOpsFlagChip>
+              </div>
+              <div className="mt-3 font-medium">{batch.supplierCode} - {batch.supplierName}</div>
+              <div className="text-sm opacity-70">{batch.headerDocumentNo ?? t('steelGoodReceiptAcceptance.inspection.noHeaderDoc')}</div>
+            </button>
+          ))}
+        </div>
+      ) : hasSearched && !isLoading ? (
+        <MasterDataOpsEmptyState className="mt-4">{t('steelGoodReceiptAcceptance.inspection.noHit')}</MasterDataOpsEmptyState>
+      ) : null}
+    </MasterDataOpsSection>
   );
 }

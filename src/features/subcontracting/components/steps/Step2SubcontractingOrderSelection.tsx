@@ -95,6 +95,7 @@ export function Step2SubcontractingOrderSelection({
                 selectedOrderId={activeSiparisNo}
                 onSelectOrder={handleSelectOrder}
                 isLoading={ordersLoading}
+                variant={variant}
               />
             </TabsContent>
             <TabsContent value="items" className="flex-1 overflow-hidden m-0 mt-0">
@@ -105,6 +106,7 @@ export function Step2SubcontractingOrderSelection({
                 onUpdateItem={onUpdateItem}
                 onToggleItem={onToggleItem}
                 onRemoveItem={onRemoveItem}
+                variant={variant}
               />
             </TabsContent>
           </Tabs>
@@ -116,6 +118,7 @@ export function Step2SubcontractingOrderSelection({
               selectedOrderId={activeSiparisNo}
               onSelectOrder={handleSelectOrder}
               isLoading={ordersLoading}
+              variant={variant}
             />
           </div>
           <div className="flex-1 overflow-hidden min-w-0 flex flex-col">
@@ -126,6 +129,7 @@ export function Step2SubcontractingOrderSelection({
               onUpdateItem={onUpdateItem}
               onToggleItem={onToggleItem}
               onRemoveItem={onRemoveItem}
+              variant={variant}
             />
           </div>
         </div>

@@ -1,17 +1,25 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Edit3, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Badge } from '@/components/ui/badge';
+import {
+  OpsActionButton,
+  OpsInput,
+  OpsListPageShell,
+  OpsTextarea,
+  OpsToggleField,
+  PagedDataGrid,
+  type PagedDataGridColumn,
+} from '@/components/shared';
+import type { DataTableDefinitionExcelConfig } from '@/components/shared/DataTableActionBar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { getPagedRange } from '@/lib/paged';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -20,6 +28,13 @@ import { toast } from 'sonner';
 import i18n, { getLocaleForFormatting } from '@/lib/i18n';
 import type { PagedParams, PagedResponse } from '@/types/api';
 import { inferFilterColumnType, type FilterColumnConfig } from '@/lib/advanced-filter-types';
+import {
+  KKD_CRUD_DEFAULT_COLUMN_WIDTHS,
+  KkdMetricGrid,
+  KkdOpsDialogContent,
+  KkdOpsFormField,
+  KkdSummaryMetric,
+} from './kkd-ops-ui';
 
 type CrudFieldType = 'text' | 'number' | 'date' | 'textarea' | 'boolean';
 
@@ -55,21 +70,16 @@ interface KkdCrudPageProps<TItem extends { id: number }, TForm extends object, T
   mapSortBy: (value: TColumnKey) => string;
   renderCell: (row: TItem, columnKey: TColumnKey) => ReactElement | string | number | null;
   renderForm?: (props: KkdCrudFormRenderProps<TForm, TItem>) => ReactElement;
-  headerActions?: ReactElement;
+  definitionExcel?: DataTableDefinitionExcelConfig;
+  defaultColumnWidths?: Record<string, number>;
+  gridMinWidthClassName?: string;
+  gridHeaderLayout?: 'default' | 'slant';
 }
 
 function formatDateInput(value: unknown): string {
   if (!value) return '';
   if (typeof value === 'string') return value.slice(0, 10);
   return '';
-}
-
-function formatCellValue(value: unknown): string {
-  if (value == null || value === '') return '-';
-  if (typeof value === 'boolean') {
-    return value ? i18n.t('common.yes', { ns: 'common' }) : i18n.t('common.no', { ns: 'common' });
-  }
-  return String(value);
 }
 
 function resolveRowId<TItem extends { id: number }>(item: TItem): number {
@@ -114,7 +124,10 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   mapSortBy,
   renderCell,
   renderForm,
-  headerActions,
+  definitionExcel,
+  defaultColumnWidths = KKD_CRUD_DEFAULT_COLUMN_WIDTHS,
+  gridMinWidthClassName,
+  gridHeaderLayout,
 }: KkdCrudPageProps<TItem, TForm, TColumnKey>): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
@@ -228,13 +241,6 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
     });
   }, [columns, query.data?.data, t]);
 
-  const renderSortIcon = (columnKey: TColumnKey): ReactElement | null => {
-    if (columnKey !== pagedGrid.sortBy) return null;
-    return pagedGrid.sortDirection === 'asc'
-      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
-      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
-  };
-
   const openCreate = (): void => {
     setEditingItem(null);
     setFormState(initialForm);
@@ -265,49 +271,33 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: breadcrumbGroup }, { label: breadcrumbCurrent, isActive: true }]} />
+    <>
+      <OpsListPageShell
+        className="wms-ops-kkd-page"
+        eyebrow={(
+          <>
+            <span>{breadcrumbGroup}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{breadcrumbCurrent}</span>
+          </>
+        )}
+        title={title}
+        description={description}
+        actions={(
+          <OpsActionButton type="button" variant="primary" onClick={openCreate}>
+            <Plus className="size-4" />
+            {t('common.add')}
+          </OpsActionButton>
+        )}
+      >
+        <div className="wms-ops-kkd-page__body space-y-5">
+          <KkdMetricGrid>
+            <KkdSummaryMetric label={t('common.records')} value={totalCount} icon={<span className="text-xs font-bold">#</span>} />
+            <KkdSummaryMetric label={t('common.active')} value={activeCount} icon={<span className="text-xs font-bold">OK</span>} />
+          </KkdMetricGrid>
 
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-emerald-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Badge variant="outline">{breadcrumbGroup}</Badge>
-              {breadcrumbCurrent}
-            </div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{title}</h1>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{description}</p>
-          </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {headerActions}
-            <Button
-              onClick={openCreate}
-              className="h-11 rounded-2xl border-0 bg-linear-to-r from-cyan-600 to-emerald-600 px-6 text-white shadow-lg shadow-cyan-500/20 hover:text-white"
-            >
-              <Plus size={18} className="mr-2" />
-              {t('common.add')}
-            </Button>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('common.records')}</p>
-            <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('common.active')}</p>
-            <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
-          </div>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
           <PagedDataGrid<TItem, TColumnKey>
+            variant="ops"
             pageKey={pageKey}
             columns={columns}
             rows={query.data?.data ?? []}
@@ -316,34 +306,36 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             sortBy={pagedGrid.sortBy}
             sortDirection={pagedGrid.sortDirection}
             onSort={pagedGrid.handleSort}
-            renderSortIcon={renderSortIcon}
             isLoading={query.isLoading || query.isFetching}
             isError={Boolean(query.error)}
             errorText={t('common.generalError')}
             emptyText={t('common.noData')}
             showActionsColumn
             actionsHeaderLabel={t('common.actions')}
+            iconOnlyActions
+            actionsCellClassName="wms-ops-table-actions-col"
+            defaultColumnWidths={defaultColumnWidths}
+            enableColumnResize
             renderActionsCell={(row) => (
-              <div className="flex items-center justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => openEdit(row)}>
-                  <Pencil className="mr-2 size-4" />
-                  {t('common.edit')}
+              <div className="wms-ops-row-actions">
+                <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => openEdit(row)} aria-label={t('common.edit')}>
+                  <Edit3 className="size-3" />
                 </Button>
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
                   onClick={() => {
                     setItemToDelete(row);
                     setDeleteDialogOpen(true);
                   }}
+                  aria-label={t('common.delete')}
                 >
-                  <Trash2 className="mr-2 size-4" />
-                  {t('common.delete')}
+                  <Trash2 className="size-3" />
                 </Button>
               </div>
             )}
-            actionsCellClassName="min-w-[156px]"
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -371,7 +363,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             onApplyFilters={pagedGrid.applyAdvancedFilters}
             onClearFilters={pagedGrid.clearAdvancedFilters}
             appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
-            leftSlot={<VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" />}
+            leftSlot={<VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />}
             refresh={{
               onRefresh: () => {
                 void query.refetch();
@@ -382,16 +374,24 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
             exportFileName={pageKey}
             exportColumns={exportColumns}
             exportRows={exportRows}
+            definitionExcel={definitionExcel}
+            minTableWidthClassName={gridMinWidthClassName}
+            headerLayout={gridHeaderLayout}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </OpsListPageShell>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="w-[calc(100vw-1rem)] max-h-[90vh] max-w-3xl gap-0 overflow-hidden p-0">
-          <DialogHeader>
-            <DialogTitle className="px-4 pt-4 sm:px-6 sm:pt-6">{editingItem ? t('common.edit') : t('common.add')}</DialogTitle>
+        <KkdOpsDialogContent className="max-w-3xl">
+          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
+            <DialogTitle className="wms-ops-detail-dialog__title">
+              {editingItem ? t('common.edit') : t('common.add')}
+            </DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
+              {description}
+            </DialogDescription>
           </DialogHeader>
-          <div className="max-h-[calc(90vh-9rem)] overflow-y-auto px-4 py-4 sm:px-6">
+          <div className="wms-ops-form max-h-[calc(90dvh-9rem)] overflow-y-auto px-4 py-4 sm:px-6">
             {renderForm ? (
               renderForm({ formState, setFormState, editingItem })
             ) : (
@@ -399,27 +399,32 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
                 {fields.map((field) => {
                   const rawValue = formState[field.key];
                   return (
-                    <div key={field.key} className={field.type === 'textarea' ? 'md:col-span-2 space-y-2' : 'space-y-2'}>
-                      <Label htmlFor={field.key}>
-                        {field.label}
-                        {field.required ? ' *' : ''}
-                      </Label>
+                    <KkdOpsFormField
+                      key={field.key}
+                      label={(
+                        <>
+                          {field.label}
+                          {field.required ? <span className="ml-1 text-destructive" aria-hidden>*</span> : null}
+                        </>
+                      )}
+                      htmlFor={field.key}
+                      className={field.type === 'textarea' ? 'md:col-span-2' : undefined}
+                    >
                       {field.type === 'textarea' ? (
-                        <Textarea
+                        <OpsTextarea
                           id={field.key}
                           value={typeof rawValue === 'string' ? rawValue : ''}
                           placeholder={field.placeholder}
                           onChange={(event) => setFormState((prev) => ({ ...prev, [field.key]: event.target.value }))}
                         />
                       ) : field.type === 'boolean' ? (
-                        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
-                          <Switch
-                            checked={Boolean(rawValue)}
-                            onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field.key]: checked }))}
-                          />
-                        </div>
+                        <OpsToggleField
+                          checked={Boolean(rawValue)}
+                          onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field.key]: checked }))}
+                          title={field.label}
+                        />
                       ) : (
-                        <Input
+                        <OpsInput
                           id={field.key}
                           type={field.type}
                           step={field.step}
@@ -439,39 +444,41 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
                           }}
                         />
                       )}
-                    </div>
+                    </KkdOpsFormField>
                   );
                 })}
               </div>
             )}
           </div>
-          <DialogFooter className="border-t px-4 py-3 sm:px-6">
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+          <DialogFooter className="wms-ops-detail-dialog__footer shrink-0 gap-2 border-t px-4 py-4 sm:px-6">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDialogOpen(false)}>
               {t('common.cancel')}
-            </Button>
-            <Button
+            </OpsActionButton>
+            <OpsActionButton
               type="button"
+              variant="primary"
               onClick={handleSubmit}
               disabled={createMutation.isPending || updateMutation.isPending}
             >
+              {createMutation.isPending || updateMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
               {editingItem ? t('common.update') : t('common.save')}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
-        </DialogContent>
+        </KkdOpsDialogContent>
       </Dialog>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('common.delete')}</DialogTitle>
+        <KkdOpsDialogContent className="max-w-md">
+          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('common.delete')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
+              {itemToDelete ? t('kkd.operational.deleteConfirm', { name: breadcrumbCurrent }) : t('common.delete')}
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            {itemToDelete ? t('kkd.operational.deleteConfirm', { name: breadcrumbCurrent }) : t('common.delete')}
-          </p>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+          <DialogFooter className="wms-ops-detail-dialog__footer shrink-0 gap-2 border-t px-4 py-4 sm:px-6">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
               {t('common.cancel')}
-            </Button>
+            </OpsActionButton>
             <Button
               type="button"
               variant="destructive"
@@ -486,25 +493,14 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
               }}
               disabled={deleteMutation.isPending}
             >
+              {deleteMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
               {t('common.delete')}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </KkdOpsDialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
 
-export function renderKkdGenericCell(value: unknown): ReactElement | string | number | null {
-  if (typeof value === 'boolean') {
-    return (
-      <Badge variant={value ? 'default' : 'secondary'}>
-        {value ? i18n.t('common.active', { ns: 'common' }) : i18n.t('common.passive', { ns: 'common' })}
-      </Badge>
-    );
-  }
-  if (typeof value === 'string' && value.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    return new Date(value).toLocaleDateString(getLocaleForFormatting(i18n.language));
-  }
-  return formatCellValue(value);
-}
+export { renderKkdGenericCell } from './kkd-ops-ui';

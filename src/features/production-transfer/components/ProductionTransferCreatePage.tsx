@@ -3,17 +3,19 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, Info } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-import { OpsActionButton, OpsFormPageShell, PageState } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsFieldShell,
+  OpsFormPageShell,
+  OpsInput,
+  OpsTextarea,
+  PageState,
+} from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { StockLookup } from '@/features/shared/api/lookup-types';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
@@ -27,24 +29,20 @@ import {
   type ProductionTransferDraft,
 } from '../types/production-transfer';
 import { ProductionTransferSuggestPanel } from './ProductionTransferSuggestPanel';
+import {
+  PtCollapsibleWorkflow,
+  PtFormField,
+  PtGuideItem,
+  PtInfoCallout,
+  PtLineCard,
+  PtSection,
+  PtStatGrid,
+  PtTerminalBlock,
+} from './production-transfer-ops-ui';
 import type { Warehouse } from '@/features/shared';
 
 const transferPurposes = ['MaterialSupply', 'SemiFinishedMove', 'FinishedGoodsPutaway', 'ScrapMove', 'ReturnToStock'] as const;
 const lineRoles = ['ConsumptionSupply', 'SemiFinishedMove', 'OutputMove'] as const;
-
-function InfoCallout({ title, body }: { title: string; body: string }): ReactElement {
-  return (
-    <div className="flex gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-      <div className="mt-0.5 rounded-full bg-slate-900/5 p-2 text-slate-600 dark:bg-white/10 dark:text-slate-200">
-        <Info className="h-4 w-4" />
-      </div>
-      <div>
-        <div className="font-medium text-slate-900 dark:text-slate-100">{title}</div>
-        <div className="mt-1 leading-6">{body}</div>
-      </div>
-    </div>
-  );
-}
 
 export function ProductionTransferCreatePage(): ReactElement {
   const { t } = useTranslation();
@@ -323,203 +321,211 @@ export function ProductionTransferCreatePage(): ReactElement {
       <div className="space-y-6">
         {!permission.canMutate ? <PermissionNotice /> : null}
         {!canSaveTransfer ? (
-          <InfoCallout
+          <PtInfoCallout
+            defaultOpen={false}
             title={t('productionTransfer.create.permissionInfoTitle')}
             body={isEditMode ? t('productionTransfer.create.permissionInfoUpdate') : t('productionTransfer.create.permissionInfoCreate')}
           />
         ) : null}
         {isEditMode ? (
-          <InfoCallout
+          <PtInfoCallout
+            defaultOpen={false}
             title={t('productionTransfer.create.editModeTitle', { defaultValue: 'Missing translation' })}
             body={t('productionTransfer.create.editModeBody', { defaultValue: 'Missing translation' })}
           />
         ) : null}
         {isCloneMode ? (
-          <InfoCallout
+          <PtInfoCallout
+            defaultOpen={false}
             title={t('productionTransfer.create.cloneModeTitle', { defaultValue: 'Missing translation' })}
             body={t('productionTransfer.create.cloneModeBody', { defaultValue: 'Missing translation' })}
           />
         ) : null}
-        <InfoCallout
+        <PtCollapsibleWorkflow
           title={t('productionTransfer.create.info.overviewTitle', { defaultValue: 'Missing translation' })}
           body={t('productionTransfer.create.info.overviewBody', { defaultValue: 'Missing translation' })}
+          steps={[
+            {
+              eyebrow: t('productionTransfer.create.steps.connect.eyebrow'),
+              title: t('productionTransfer.create.steps.connect.title'),
+              body: t('productionTransfer.create.steps.connect.body'),
+            },
+            {
+              eyebrow: t('productionTransfer.create.steps.purpose.eyebrow'),
+              title: t('productionTransfer.create.steps.purpose.title'),
+              body: t('productionTransfer.create.steps.purpose.body'),
+            },
+            {
+              eyebrow: t('productionTransfer.create.steps.lines.eyebrow'),
+              title: t('productionTransfer.create.steps.lines.title'),
+              body: t('productionTransfer.create.steps.lines.body'),
+            },
+          ]}
         />
-        <div className="grid gap-3 md:grid-cols-3">
-          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader className="gap-1">
-              <CardDescription>{t('productionTransfer.create.steps.connect.eyebrow')}</CardDescription>
-              <CardTitle className="text-lg">{t('productionTransfer.create.steps.connect.title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 text-sm text-slate-500 dark:text-slate-400">
-              {t('productionTransfer.create.steps.connect.body')}
-            </CardContent>
-          </Card>
-          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader className="gap-1">
-              <CardDescription>{t('productionTransfer.create.steps.purpose.eyebrow')}</CardDescription>
-              <CardTitle className="text-lg">{t('productionTransfer.create.steps.purpose.title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 text-sm text-slate-500 dark:text-slate-400">
-              {t('productionTransfer.create.steps.purpose.body')}
-            </CardContent>
-          </Card>
-          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader className="gap-1">
-              <CardDescription>{t('productionTransfer.create.steps.lines.eyebrow')}</CardDescription>
-              <CardTitle className="text-lg">{t('productionTransfer.create.steps.lines.title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 text-sm text-slate-500 dark:text-slate-400">
-              {t('productionTransfer.create.steps.lines.body')}
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.purpose', { defaultValue: 'Missing translation' })}</CardDescription>
-              <CardTitle className="text-2xl">{transferPurposeLabel(draft.transferPurpose)}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.lines', { defaultValue: 'Missing translation' })}</CardDescription>
-              <CardTitle className="text-2xl">{summary.lineCount}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="wms-ops-form-card gap-3 overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader>
-              <CardDescription>{t('productionTransfer.create.summary.quantity', { defaultValue: 'Missing translation' })}</CardDescription>
-              <CardTitle className="text-2xl">{summary.totalQuantity}</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+
+        <PtStatGrid
+          items={[
+            {
+              label: t('productionTransfer.create.summary.purpose', { defaultValue: 'Missing translation' }),
+              value: transferPurposeLabel(draft.transferPurpose),
+            },
+            {
+              label: t('productionTransfer.create.summary.lines', { defaultValue: 'Missing translation' }),
+              value: summary.lineCount,
+            },
+            {
+              label: t('productionTransfer.create.summary.quantity', { defaultValue: 'Missing translation' }),
+              value: summary.totalQuantity,
+            },
+          ]}
+        />
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader className="border-b px-4 py-4 sm:px-6">
-              <CardTitle>{t('productionTransfer.create.header.title', { defaultValue: 'Missing translation' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.create.header.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 px-4 py-6 md:grid-cols-3 sm:px-6">
+          <PtSection
+            variant="terminal"
+            title={t('productionTransfer.create.header.title', { defaultValue: 'Missing translation' })}
+            subtitle={t('productionTransfer.create.header.subtitle', { defaultValue: 'Missing translation' })}
+          >
+            <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-3">
-                <InfoCallout
+                <PtTerminalBlock
+                  defaultOpen={false}
                   title={t('productionTransfer.create.info.linkTitle', { defaultValue: 'Missing translation' })}
                   body={t('productionTransfer.create.info.linkBody', { defaultValue: 'Missing translation' })}
                 />
               </div>
-              <div className="space-y-2"><Label>{t('common.documentNo')}</Label><Input value={draft.documentNo} onChange={(e) => setDraft((prev) => ({ ...prev, documentNo: e.target.value }))} /></div>
-              <div className="space-y-2"><Label>{t('common.documentDate', { defaultValue: 'Missing translation' })}</Label><Input type="date" value={draft.documentDate} onChange={(e) => setDraft((prev) => ({ ...prev, documentDate: e.target.value }))} /></div>
-              <div className="space-y-2">
-                <Label>{t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}</Label>
-                <Select value={draft.transferPurpose} onValueChange={(value) => setDraft((prev) => ({ ...prev, transferPurpose: value as ProductionTransferDraft['transferPurpose'] }))}>
-                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                  <SelectContent>{transferPurposes.map((value) => <SelectItem key={value} value={value}>{transferPurposeLabel(value)}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2"><Label>{t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}</Label><Input value={draft.productionDocumentNo} onChange={(e) => setDraft((prev) => ({ ...prev, productionDocumentNo: e.target.value }))} /></div>
-              <div className="space-y-2">
-                <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</Label>
-                <PagedLookupDialog<ProductionOrderLookup>
-                  open={productionOrderLookupOpen}
-                  onOpenChange={setProductionOrderLookupOpen}
-                  title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
-                  description={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
-                  value={selectedProductionOrderLabel || draft.productionOrderNo}
-                  placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
-                  searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
-                  emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
-                  queryKey={['production-transfer', 'production-order-lookup']}
-                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                    productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
-                  }
-                  getKey={(item) => item.id.toString()}
-                  getLabel={getProductionOrderLabel}
-                  onSelect={(item) => {
-                    setDraft((prev) => ({ ...prev, productionOrderNo: item.orderNo }));
-                    setSelectedProductionOrderLabel(getProductionOrderLabel(item));
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}</Label>
-                <PagedLookupDialog<Warehouse>
-                  open={sourceWarehouseLookupOpen}
-                  onOpenChange={setSourceWarehouseLookupOpen}
-                  title={t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}
-                  description={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
-                  value={selectedSourceWarehouseLabel || draft.sourceWarehouseCode}
-                  placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
-                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
-                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
-                  queryKey={['production-transfer', 'source-warehouse']}
-                  fetchPage={({ pageNumber, pageSize, search, signal }: {
-                    pageNumber: number;
-                    pageSize: number;
-                    search: string;
-                    signal?: AbortSignal;
-                  }) =>
-                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
-                  }
-                  getKey={(warehouse: Warehouse) => warehouse.id.toString()}
-                  getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
-                  onSelect={(warehouse: Warehouse) => {
-                    setDraft((prev) => ({ ...prev, sourceWarehouseCode: String(warehouse.depoKodu) }));
-                    setSelectedSourceWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}</Label>
-                <PagedLookupDialog<Warehouse>
-                  open={targetWarehouseLookupOpen}
-                  onOpenChange={setTargetWarehouseLookupOpen}
-                  title={t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}
-                  description={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
-                  value={selectedTargetWarehouseLabel || draft.targetWarehouseCode}
-                  placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
-                  searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
-                  emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
-                  queryKey={['production-transfer', 'target-warehouse']}
-                  fetchPage={({ pageNumber, pageSize, search, signal }: {
-                    pageNumber: number;
-                    pageSize: number;
-                    search: string;
-                    signal?: AbortSignal;
-                  }) =>
-                    lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
-                  }
-                  getKey={(warehouse: Warehouse) => warehouse.id.toString()}
-                  getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
-                  onSelect={(warehouse: Warehouse) => {
-                    setDraft((prev) => ({ ...prev, targetWarehouseCode: String(warehouse.depoKodu) }));
-                    setSelectedTargetWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
-                  }}
-                />
-              </div>
-              <div className="space-y-2 md:col-span-3"><Label>{t('common.description')}</Label><Textarea rows={3} value={draft.description} onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))} /></div>
-            </CardContent>
-          </Card>
+              <PtFormField label={t('common.documentNo')}>
+                <OpsInput value={draft.documentNo} onChange={(e) => setDraft((prev) => ({ ...prev, documentNo: e.target.value }))} />
+              </PtFormField>
+              <PtFormField label={t('common.documentDate', { defaultValue: 'Missing translation' })}>
+                <OpsInput type="date" value={draft.documentDate} onChange={(e) => setDraft((prev) => ({ ...prev, documentDate: e.target.value }))} />
+              </PtFormField>
+              <PtFormField label={t('productionTransfer.create.purpose', { defaultValue: 'Missing translation' })}>
+                <OpsFieldShell>
+                  <Select value={draft.transferPurpose} onValueChange={(value) => setDraft((prev) => ({ ...prev, transferPurpose: value as ProductionTransferDraft['transferPurpose'] }))}>
+                    <SelectTrigger className={OPS_FIELD_CLASS}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                      {transferPurposes.map((value) => <SelectItem key={value} value={value}>{transferPurposeLabel(value)}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </OpsFieldShell>
+              </PtFormField>
+              <PtFormField label={t('productionTransfer.create.productionDocument', { defaultValue: 'Missing translation' })}>
+                <OpsInput value={draft.productionDocumentNo} onChange={(e) => setDraft((prev) => ({ ...prev, productionDocumentNo: e.target.value }))} />
+              </PtFormField>
+              <PtFormField label={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}>
+                <OpsFieldShell className={productionOrderLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                  <PagedLookupDialog<ProductionOrderLookup>
+                    variant="ops"
+                    open={productionOrderLookupOpen}
+                    onOpenChange={setProductionOrderLookupOpen}
+                    title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
+                    description={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
+                    value={selectedProductionOrderLabel || draft.productionOrderNo}
+                    placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
+                    searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
+                    emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
+                    queryKey={['production-transfer', 'production-order-lookup']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                      productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
+                    }
+                    getKey={(item) => item.id.toString()}
+                    getLabel={getProductionOrderLabel}
+                    onSelect={(item) => {
+                      setDraft((prev) => ({ ...prev, productionOrderNo: item.orderNo }));
+                      setSelectedProductionOrderLabel(getProductionOrderLabel(item));
+                    }}
+                  />
+                </OpsFieldShell>
+              </PtFormField>
+              <PtFormField label={t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}>
+                <OpsFieldShell className={sourceWarehouseLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                  <PagedLookupDialog<Warehouse>
+                    variant="ops"
+                    open={sourceWarehouseLookupOpen}
+                    onOpenChange={setSourceWarehouseLookupOpen}
+                    title={t('production.create.sourceWarehouse', { defaultValue: 'Missing translation' })}
+                    description={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
+                    value={selectedSourceWarehouseLabel || draft.sourceWarehouseCode}
+                    placeholder={t('production.create.sourceWarehouseSelect', { defaultValue: 'Missing translation' })}
+                    searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                    emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
+                    queryKey={['production-transfer', 'source-warehouse']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }: {
+                      pageNumber: number;
+                      pageSize: number;
+                      search: string;
+                      signal?: AbortSignal;
+                    }) =>
+                      lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                    }
+                    getKey={(warehouse: Warehouse) => warehouse.id.toString()}
+                    getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
+                    onSelect={(warehouse: Warehouse) => {
+                      setDraft((prev) => ({ ...prev, sourceWarehouseCode: String(warehouse.depoKodu) }));
+                      setSelectedSourceWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
+                    }}
+                  />
+                </OpsFieldShell>
+              </PtFormField>
+              <PtFormField label={t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}>
+                <OpsFieldShell className={targetWarehouseLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                  <PagedLookupDialog<Warehouse>
+                    variant="ops"
+                    open={targetWarehouseLookupOpen}
+                    onOpenChange={setTargetWarehouseLookupOpen}
+                    title={t('production.create.targetWarehouse', { defaultValue: 'Missing translation' })}
+                    description={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
+                    value={selectedTargetWarehouseLabel || draft.targetWarehouseCode}
+                    placeholder={t('production.create.targetWarehouseSelect', { defaultValue: 'Missing translation' })}
+                    searchPlaceholder={t('production.create.warehouseSearch', { defaultValue: 'Missing translation' })}
+                    emptyText={t('production.create.warehouseEmpty', { defaultValue: 'Missing translation' })}
+                    queryKey={['production-transfer', 'target-warehouse']}
+                    fetchPage={({ pageNumber, pageSize, search, signal }: {
+                      pageNumber: number;
+                      pageSize: number;
+                      search: string;
+                      signal?: AbortSignal;
+                    }) =>
+                      lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                    }
+                    getKey={(warehouse: Warehouse) => warehouse.id.toString()}
+                    getLabel={(warehouse: Warehouse) => `${warehouse.depoKodu} - ${warehouse.depoIsmi}`}
+                    onSelect={(warehouse: Warehouse) => {
+                      setDraft((prev) => ({ ...prev, targetWarehouseCode: String(warehouse.depoKodu) }));
+                      setSelectedTargetWarehouseLabel(`${warehouse.depoKodu} - ${warehouse.depoIsmi}`);
+                    }}
+                  />
+                </OpsFieldShell>
+              </PtFormField>
+              <PtFormField label={t('common.description')} className="md:col-span-3">
+                <OpsTextarea rows={3} value={draft.description} onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))} />
+              </PtFormField>
+            </div>
+          </PtSection>
 
-          <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-            <CardHeader className="border-b px-4 py-4 sm:px-6">
-              <CardTitle>{t('productionTransfer.create.guide.title', { defaultValue: 'Missing translation' })}</CardTitle>
-              <CardDescription>{t('productionTransfer.create.guide.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 px-4 py-6 text-sm sm:px-6">
-              <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.materialSupplyBody', { defaultValue: 'Missing translation' })}</div>
-              </div>
-              <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.semiFinishedMoveBody', { defaultValue: 'Missing translation' })}</div>
-              </div>
-              <div className="rounded-xl border border-slate-200/70 p-4 dark:border-white/10">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{t('productionTransfer.create.guide.outputMove', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-1">{t('productionTransfer.create.guide.outputMoveBody', { defaultValue: 'Missing translation' })}</div>
-              </div>
-            </CardContent>
-          </Card>
+          <PtSection
+            variant="terminal"
+            title={t('productionTransfer.create.guide.title', { defaultValue: 'Missing translation' })}
+            subtitle={t('productionTransfer.create.guide.subtitle', { defaultValue: 'Missing translation' })}
+          >
+            <div className="space-y-3">
+              <PtGuideItem
+                title={t('productionTransfer.create.guide.materialSupply', { defaultValue: 'Missing translation' })}
+                body={t('productionTransfer.create.guide.materialSupplyBody', { defaultValue: 'Missing translation' })}
+              />
+              <PtGuideItem
+                title={t('productionTransfer.create.guide.semiFinishedMove', { defaultValue: 'Missing translation' })}
+                body={t('productionTransfer.create.guide.semiFinishedMoveBody', { defaultValue: 'Missing translation' })}
+              />
+              <PtGuideItem
+                title={t('productionTransfer.create.guide.outputMove', { defaultValue: 'Missing translation' })}
+                body={t('productionTransfer.create.guide.outputMoveBody', { defaultValue: 'Missing translation' })}
+              />
+            </div>
+          </PtSection>
         </div>
 
         <ProductionTransferSuggestPanel
@@ -530,168 +536,177 @@ export function ProductionTransferCreatePage(): ReactElement {
           onApplySelected={applySuggestedLines}
         />
 
-        <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-          <CardHeader className="border-b px-4 py-4 sm:px-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <CardTitle>{t('productionTransfer.create.lines.title', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('productionTransfer.create.lines.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => suggestionMutation.mutate()}
-                  disabled={suggestionMutation.isPending || (!draft.productionDocumentNo && !draft.productionOrderNo)}
-                >
-                  {suggestionMutation.isPending
-                    ? t('common.loading', { defaultValue: 'Missing translation' })
-                    : t('productionTransfer.create.lines.fetchSuggestions', { defaultValue: 'Missing translation' })}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, lines: [...prev.lines, createEmptyProductionTransferLineDraft()] }))}>{t('common.add', { defaultValue: 'Missing translation' })}</Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="px-4 py-6 sm:px-6">
-            <div className="mb-4">
-              <InfoCallout
-                title={t('productionTransfer.create.info.linesTitle', { defaultValue: 'Missing translation' })}
-                body={t('productionTransfer.create.info.linesBody', { defaultValue: 'Missing translation' })}
-              />
-            </div>
-            <div className="space-y-4">
-              {draft.lines.map((line, index) => (
-                <Card key={line.localId} className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-                  <CardHeader className="pb-3">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <CardTitle className="text-lg">{t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}</CardTitle>
-                        <CardDescription>
-                          {line.productionOrderNo
-                            ? t('productionTransfer.create.lineCardHintLinked', { defaultValue: 'Missing translation', orderNo: line.productionOrderNo })
-                            : t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })}
-                        </CardDescription>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">{lineRoleLabel(line.lineRole)}</Badge>
-                        <Button type="button" variant="ghost" onClick={() => removeLine(line.localId)}>{t('common.delete')}</Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-4">
-                      <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}</Label>
-                        <PagedLookupDialog<ProductionOrderLookup>
-                          open={activeLineOrderLookupId === line.localId}
-                          onOpenChange={(open) => setActiveLineOrderLookupId(open ? line.localId : null)}
-                          title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
-                          description={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}
-                          value={lineOrderLabels[line.localId] || line.productionOrderNo}
-                          placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
-                          searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
-                          emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
-                          queryKey={['production-transfer', 'line-production-order-lookup', line.localId]}
-                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                            productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
+        <PtSection
+          title={t('productionTransfer.create.lines.title', { defaultValue: 'Missing translation' })}
+          subtitle={t('productionTransfer.create.lines.subtitle', { defaultValue: 'Missing translation' })}
+          actions={
+            <>
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => suggestionMutation.mutate()}
+                disabled={suggestionMutation.isPending || (!draft.productionDocumentNo && !draft.productionOrderNo)}
+              >
+                {suggestionMutation.isPending
+                  ? t('common.loading', { defaultValue: 'Missing translation' })
+                  : t('productionTransfer.create.lines.fetchSuggestions', { defaultValue: 'Missing translation' })}
+              </OpsActionButton>
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => setDraft((prev) => ({ ...prev, lines: [...prev.lines, createEmptyProductionTransferLineDraft()] }))}
+              >
+                {t('common.add', { defaultValue: 'Missing translation' })}
+              </OpsActionButton>
+            </>
+          }
+        >
+          <div className="mb-4">
+            <PtTerminalBlock
+              defaultOpen={false}
+              title={t('productionTransfer.create.info.linesTitle', { defaultValue: 'Missing translation' })}
+              body={t('productionTransfer.create.info.linesBody', { defaultValue: 'Missing translation' })}
+            />
+          </div>
+          <div className="space-y-4">
+            {draft.lines.map((line, index) => (
+              <PtLineCard
+                key={line.localId}
+                index={index + 1}
+                title={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}
+                hint={
+                  line.productionOrderNo
+                    ? t('productionTransfer.create.lineCardHintLinked', { defaultValue: 'Missing translation', orderNo: line.productionOrderNo })
+                    : t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })
+                }
+                removeLabel={t('common.delete')}
+                onRemove={() => removeLine(line.localId)}
+              >
+                <div className="grid gap-4 md:grid-cols-4">
+                  <PtFormField label={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}>
+                    <OpsFieldShell className={activeLineOrderLookupId === line.localId ? 'wms-ops-field-shell--active' : undefined}>
+                      <PagedLookupDialog<ProductionOrderLookup>
+                        variant="ops"
+                        open={activeLineOrderLookupId === line.localId}
+                        onOpenChange={(open) => setActiveLineOrderLookupId(open ? line.localId : null)}
+                        title={t('productionTransfer.create.productionOrder', { defaultValue: 'Missing translation' })}
+                        description={t('productionTransfer.create.lineCardTitle', { defaultValue: 'Missing translation', index: index + 1 })}
+                        value={lineOrderLabels[line.localId] || line.productionOrderNo}
+                        placeholder={t('productionTransfer.create.productionOrderSelect', { defaultValue: 'Missing translation' })}
+                        searchPlaceholder={t('productionTransfer.create.productionOrderSearch', { defaultValue: 'Missing translation' })}
+                        emptyText={t('productionTransfer.create.productionOrderEmpty', { defaultValue: 'Missing translation' })}
+                        queryKey={['production-transfer', 'line-production-order-lookup', line.localId]}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          productionTransferApi.getProductionOrderLookupPaged({ pageNumber, pageSize, search }, { signal })
+                        }
+                        getKey={(item) => item.id.toString()}
+                        getLabel={getProductionOrderLabel}
+                        onSelect={(item) => {
+                          setDraft((prev) => ({
+                            ...prev,
+                            lines: prev.lines.map((current) =>
+                              current.localId === line.localId
+                                ? {
+                                    ...current,
+                                    productionOrderNo: item.orderNo,
+                                    stockId: current.productionOrderNo === item.orderNo ? current.stockId : undefined,
+                                    stockCode: current.productionOrderNo === item.orderNo ? current.stockCode : '',
+                                  }
+                                : current),
+                          }));
+                          setLineOrderLabels((prev) => ({ ...prev, [line.localId]: getProductionOrderLabel(item) }));
+                          if (line.productionOrderNo !== item.orderNo) {
+                            setLineStockLabels((prev) => ({ ...prev, [line.localId]: '' }));
                           }
-                          getKey={(item) => item.id.toString()}
-                          getLabel={getProductionOrderLabel}
-                          onSelect={(item) => {
-                            setDraft((prev) => ({
-                              ...prev,
-                              lines: prev.lines.map((current) =>
-                                current.localId === line.localId
-                                  ? {
-                                      ...current,
-                                      productionOrderNo: item.orderNo,
-                                      stockId: current.productionOrderNo === item.orderNo ? current.stockId : undefined,
-                                      stockCode: current.productionOrderNo === item.orderNo ? current.stockCode : '',
-                                    }
-                                  : current),
-                            }));
-                            setLineOrderLabels((prev) => ({ ...prev, [line.localId]: getProductionOrderLabel(item) }));
-                            if (line.productionOrderNo !== item.orderNo) {
-                              setLineStockLabels((prev) => ({ ...prev, [line.localId]: '' }));
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}</Label>
-                        <Select value={line.lineRole} onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, lineRole: value as typeof lineRoles[number] } : current) }))}>
-                          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                          <SelectContent>{lineRoles.map((value) => <SelectItem key={value} value={value}>{lineRoleLabel(value)}</SelectItem>)}</SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}</Label>
-                        <PagedLookupDialog<StockLookup>
-                          open={activeLineStockLookupId === line.localId}
-                          onOpenChange={(open) => setActiveLineStockLookupId(open ? line.localId : null)}
-                          title={t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}
-                          description={line.productionOrderNo || t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })}
-                          value={lineStockLabels[line.localId] || line.stockCode}
-                          placeholder={t('productionTransfer.create.stockSelect', { defaultValue: 'Missing translation' })}
-                          searchPlaceholder={t('productionTransfer.create.stockSearch', { defaultValue: 'Missing translation' })}
-                          emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Missing translation' })}
-                          queryKey={['production-transfer', 'line-stock-lookup', line.localId, line.productionOrderNo || 'all']}
-                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                            lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
-                          }
-                          getKey={(item) => item.id.toString()}
-                          getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
-                          onSelect={(item) => {
-                            setDraft((prev) => ({
-                              ...prev,
-                              lines: prev.lines.map((current) =>
-                                current.localId === line.localId ? { ...current, stockId: item.id, stockCode: item.stokKodu } : current),
-                            }));
-                            setLineStockLabels((prev) => ({ ...prev, [line.localId]: `${item.stokKodu} - ${item.stokAdi}` }));
-                          }}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}</Label>
-                        <Input type="number" min="0" step="0.001" value={line.quantity} onChange={(e) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, quantity: Number(e.target.value) || 0 } : current) }))} />
-                      </div>
-                    </div>
+                        }}
+                      />
+                    </OpsFieldShell>
+                  </PtFormField>
+                  <PtFormField label={t('productionTransfer.create.lineRole', { defaultValue: 'Missing translation' })}>
+                    <OpsFieldShell>
+                      <Select value={line.lineRole} onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, lineRole: value as typeof lineRoles[number] } : current) }))}>
+                        <SelectTrigger className={OPS_FIELD_CLASS}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                          {lineRoles.map((value) => <SelectItem key={value} value={value}>{lineRoleLabel(value)}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </OpsFieldShell>
+                  </PtFormField>
+                  <PtFormField label={t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}>
+                    <OpsFieldShell className={activeLineStockLookupId === line.localId ? 'wms-ops-field-shell--active' : undefined}>
+                      <PagedLookupDialog<StockLookup>
+                        variant="ops"
+                        open={activeLineStockLookupId === line.localId}
+                        onOpenChange={(open) => setActiveLineStockLookupId(open ? line.localId : null)}
+                        title={t('production.create.producedStockCode', { defaultValue: 'Missing translation' })}
+                        description={line.productionOrderNo || t('productionTransfer.create.lineCardHint', { defaultValue: 'Missing translation' })}
+                        value={lineStockLabels[line.localId] || line.stockCode}
+                        placeholder={t('productionTransfer.create.stockSelect', { defaultValue: 'Missing translation' })}
+                        searchPlaceholder={t('productionTransfer.create.stockSearch', { defaultValue: 'Missing translation' })}
+                        emptyText={t('productionTransfer.create.stockEmpty', { defaultValue: 'Missing translation' })}
+                        queryKey={['production-transfer', 'line-stock-lookup', line.localId, line.productionOrderNo || 'all']}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                        }
+                        getKey={(item) => item.id.toString()}
+                        getLabel={(item) => `${item.stokKodu} - ${item.stokAdi}`}
+                        onSelect={(item) => {
+                          setDraft((prev) => ({
+                            ...prev,
+                            lines: prev.lines.map((current) =>
+                              current.localId === line.localId ? { ...current, stockId: item.id, stockCode: item.stokKodu } : current),
+                          }));
+                          setLineStockLabels((prev) => ({ ...prev, [line.localId]: `${item.stokKodu} - ${item.stokAdi}` }));
+                        }}
+                      />
+                    </OpsFieldShell>
+                  </PtFormField>
+                  <PtFormField label={t('production.create.plannedQuantity', { defaultValue: 'Missing translation' })}>
+                    <OpsInput
+                      type="number"
+                      min="0"
+                      step="0.001"
+                      value={line.quantity}
+                      onChange={(e) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, quantity: Number(e.target.value) || 0 } : current) }))}
+                    />
+                  </PtFormField>
+                </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}</Label>
-                        <ShelfLookupCombobox
-                          warehouseCode={draft.sourceWarehouseCode}
-                          value={line.sourceCellCode}
-                          onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, sourceCellCode: value } : current) }))}
-                          placeholder={t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}
-                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
-                          emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Missing translation' })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}</Label>
-                        <ShelfLookupCombobox
-                          warehouseCode={draft.targetWarehouseCode}
-                          value={line.targetCellCode}
-                          onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, targetCellCode: value } : current) }))}
-                          placeholder={t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}
-                          searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
-                          emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Missing translation' })}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <PtFormField label={t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}>
+                    <ShelfLookupCombobox
+                      variant="ops"
+                      warehouseCode={draft.sourceWarehouseCode}
+                      value={line.sourceCellCode}
+                      onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, sourceCellCode: value } : current) }))}
+                      placeholder={t('productionTransfer.create.sourceCell', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
+                      emptyText={t('productionTransfer.create.sourceCellEmpty', { defaultValue: 'Missing translation' })}
+                    />
+                  </PtFormField>
+                  <PtFormField label={t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}>
+                    <ShelfLookupCombobox
+                      variant="ops"
+                      warehouseCode={draft.targetWarehouseCode}
+                      value={line.targetCellCode}
+                      onValueChange={(value) => setDraft((prev) => ({ ...prev, lines: prev.lines.map((current) => current.localId === line.localId ? { ...current, targetCellCode: value } : current) }))}
+                      placeholder={t('productionTransfer.create.targetCell', { defaultValue: 'Missing translation' })}
+                      searchPlaceholder={t('productionTransfer.create.cellSearch', { defaultValue: 'Missing translation' })}
+                      emptyText={t('productionTransfer.create.targetCellEmpty', { defaultValue: 'Missing translation' })}
+                    />
+                  </PtFormField>
+                </div>
+              </PtLineCard>
+            ))}
+          </div>
+        </PtSection>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.header', { defaultValue: 'Missing translation' })}: {draft.productionDocumentNo || '-'}</Badge>
-          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.order', { defaultValue: 'Missing translation' })}: {draft.productionOrderNo || '-'}</Badge>
-          <Badge variant="outline" className="wms-ops-code-badge">{t('productionTransfer.create.review.purpose', { defaultValue: 'Missing translation' })}: {transferPurposeLabel(draft.transferPurpose)}</Badge>
+          <span className="wms-ops-code-badge">{t('productionTransfer.create.review.header', { defaultValue: 'Missing translation' })}: {draft.productionDocumentNo || '-'}</span>
+          <span className="wms-ops-code-badge">{t('productionTransfer.create.review.order', { defaultValue: 'Missing translation' })}: {draft.productionOrderNo || '-'}</span>
+          <span className="wms-ops-code-badge">{t('productionTransfer.create.review.purpose', { defaultValue: 'Missing translation' })}: {transferPurposeLabel(draft.transferPurpose)}</span>
         </div>
 
         <div className="wms-ops-actions flex flex-wrap justify-between gap-4 border-t pt-6">

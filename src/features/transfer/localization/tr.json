@@ -153,7 +153,9 @@
       "warehouseInfo": "Depo Bilgisi"
     },
     "orderDetails": {
-      "orderQuantity": "Sipariş Miktarı"
+      "orderQuantity": "Sipariş Miktarı",
+      "orderQuantityLine1": "Sipariş",
+      "orderQuantityLine2": "Miktarı"
     },
     "process": {
       "error": "Serbest transfer işlenemedi",

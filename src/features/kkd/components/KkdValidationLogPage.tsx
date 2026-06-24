@@ -2,9 +2,7 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
@@ -12,6 +10,13 @@ import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdValidationLogDto } from '../types/kkd.types';
+import {
+  KKD_VALIDATION_LOG_COLUMN_WIDTHS,
+  KkdFlagChip,
+  KkdOpsSection,
+  KkdResultPanel,
+  KkdSummaryMetric,
+} from './kkd-ops-ui';
 
 type ValidationColumnKey =
   | 'createdDate'
@@ -96,139 +101,127 @@ export function KkdValidationLogPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.validationLog.pageTitle')}
       description={t('kkd.operational.validationLog.breadcrumb')}
     >
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.validationLog.gridTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PagedDataGrid<KkdValidationLogDto, ValidationColumnKey>
-              variant="ops"
-              pageKey="kkd-validation-log"
-              columns={columns}
-              rows={rows}
-              rowKey={(row) => row.id}
-              renderCell={(row, columnKey) => {
-                switch (columnKey) {
-                  case 'createdDate':
-                    return formatDate(row.createdDate);
-                  case 'employee':
-                    return row.employeeCode
-                      ? `${row.employeeCode} - ${row.employeeName || ''}`.trim()
-                      : row.employeeName || '-';
-                  case 'customerCode':
-                    return row.customerCode || '-';
-                  case 'stock':
-                    return row.stockCode
-                      ? `${row.stockCode} - ${row.stockName || ''}`.trim()
-                      : row.stockName || '-';
-                  case 'groupCode':
-                    return row.groupCode || '-';
-                  case 'attemptedQuantity':
-                    return row.attemptedQuantity;
-                  case 'reasonCode':
-                    return row.reasonCode;
-                  case 'reasonMessage':
-                    return row.reasonMessage || '-';
-                  default:
-                    return '-';
-                }
-              }}
-              sortBy={pagedGrid.sortBy}
-              sortDirection={pagedGrid.sortDirection}
-              onSort={pagedGrid.handleSort}
-              actionsHeaderLabel={t('common.actions')}
-              renderActionsCell={(row) => (
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title={t('common.view')}
-                    aria-label={t('common.view')}
-                    onClick={() => setSelectedRow(row)}
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span>{t('common.view')}</span>
-                  </Button>
-                </div>
-              )}
-              pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
-              pageSizeOptions={pagedGrid.pageSizeOptions}
-              onPageSizeChange={pagedGrid.handlePageSizeChange}
-              pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
-              totalPages={query.data?.totalPages ?? 0}
-              hasPreviousPage={query.data?.hasPreviousPage ?? false}
-              hasNextPage={query.data?.hasNextPage ?? false}
-              onPreviousPage={pagedGrid.goToPreviousPage}
-              onNextPage={pagedGrid.goToNextPage}
-              previousLabel={t('common.previous')}
-              nextLabel={t('common.next')}
-              paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
-              isLoading={query.isLoading}
-              isError={query.isError}
-              errorText={t('kkd.operational.validationLog.errLoad')}
-              emptyText={t('kkd.operational.validationLog.empty')}
-              search={{
-                value: pagedGrid.searchInput,
-                onValueChange: pagedGrid.searchConfig.onValueChange,
-                onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: t('kkd.operational.validationLog.searchPh'),
-              }}
-            />
-          </CardContent>
-        </Card>
+        <KkdOpsSection title={t('kkd.operational.validationLog.gridTitle')}>
+          <PagedDataGrid<KkdValidationLogDto, ValidationColumnKey>
+            variant="ops"
+            pageKey="kkd-validation-log"
+            columns={columns}
+            rows={rows}
+            rowKey={(row) => row.id}
+            defaultColumnWidths={KKD_VALIDATION_LOG_COLUMN_WIDTHS}
+            enableColumnResize
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'createdDate':
+                  return formatDate(row.createdDate);
+                case 'employee':
+                  return row.employeeCode
+                    ? `${row.employeeCode} - ${row.employeeName || ''}`.trim()
+                    : row.employeeName || '-';
+                case 'customerCode':
+                  return row.customerCode || '-';
+                case 'stock':
+                  return row.stockCode
+                    ? `${row.stockCode} - ${row.stockName || ''}`.trim()
+                    : row.stockName || '-';
+                case 'groupCode':
+                  return row.groupCode || '-';
+                case 'attemptedQuantity':
+                  return row.attemptedQuantity;
+                case 'reasonCode':
+                  return row.reasonCode;
+                case 'reasonMessage':
+                  return row.reasonMessage || '-';
+                default:
+                  return '-';
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={pagedGrid.handleSort}
+            showActionsColumn
+            iconOnlyActions
+            actionsHeaderLabel={t('common.actions')}
+            actionsCellClassName="wms-ops-table-actions-col"
+            renderActionsCell={(row) => (
+              <div className="wms-ops-row-actions">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  title={t('common.view')}
+                  aria-label={t('common.view')}
+                  onClick={() => setSelectedRow(row)}
+                >
+                  <Eye className="size-3" />
+                </Button>
+              </div>
+            )}
+            pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+            totalPages={query.data?.totalPages ?? 0}
+            hasPreviousPage={query.data?.hasPreviousPage ?? false}
+            hasNextPage={query.data?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
+            isLoading={query.isLoading}
+            isError={query.isError}
+            errorText={t('kkd.operational.validationLog.errLoad')}
+            emptyText={t('kkd.operational.validationLog.empty')}
+            search={{
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('kkd.operational.validationLog.searchPh'),
+            }}
+          />
+        </KkdOpsSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.validationLog.detailTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {selectedRow ? (
-              <>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>{selectedRow.reasonCode}</Badge>
-                  {selectedRow.groupCode ? <Badge variant="secondary">{selectedRow.groupCode}</Badge> : null}
-                  <Badge variant="outline">{formatDate(selectedRow.createdDate)}</Badge>
-                </div>
+        <KkdOpsSection title={t('kkd.operational.validationLog.detailTitle')}>
+          {selectedRow ? (
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <KkdFlagChip tone="info">{selectedRow.reasonCode}</KkdFlagChip>
+                {selectedRow.groupCode ? <KkdFlagChip>{selectedRow.groupCode}</KkdFlagChip> : null}
+                <KkdFlagChip>{formatDate(selectedRow.createdDate)}</KkdFlagChip>
+              </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.validationLog.employeeCust')}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {(selectedRow.employeeCode || selectedRow.employeeName)
-                        ? `${selectedRow.employeeCode || ''} ${selectedRow.employeeName || ''}`.trim()
-                        : '-'}{' '}
-                      / {selectedRow.customerCode || '-'}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.validationLog.stockQty')}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {(selectedRow.stockCode || selectedRow.stockName)
-                        ? `${selectedRow.stockCode || ''} ${selectedRow.stockName || ''}`.trim()
-                        : '-'}{' '}
-                      / {selectedRow.attemptedQuantity}
-                    </p>
-                  </div>
-                </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <KkdSummaryMetric
+                  icon={<span className="text-xs font-bold">EC</span>}
+                  label={t('kkd.operational.validationLog.employeeCust')}
+                  value={`${(selectedRow.employeeCode || selectedRow.employeeName)
+                    ? `${selectedRow.employeeCode || ''} ${selectedRow.employeeName || ''}`.trim()
+                    : '-'} / ${selectedRow.customerCode || '-'}`}
+                />
+                <KkdSummaryMetric
+                  icon={<span className="text-xs font-bold">SQ</span>}
+                  label={t('kkd.operational.validationLog.stockQty')}
+                  value={`${(selectedRow.stockCode || selectedRow.stockName)
+                    ? `${selectedRow.stockCode || ''} ${selectedRow.stockName || ''}`.trim()
+                    : '-'} / ${selectedRow.attemptedQuantity}`}
+                />
+              </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                    {t('kkd.operational.validationLog.message')}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">{selectedRow.reasonMessage || '-'}</p>
-                </div>
+              <KkdResultPanel>
+                <p className="wms-ops-prelabel-form-label">{t('kkd.operational.validationLog.message')}</p>
+                <p className="mt-2 text-sm leading-6">{selectedRow.reasonMessage || '-'}</p>
+              </KkdResultPanel>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300">
+              <KkdResultPanel tone="warn">
+                <p className="text-sm leading-6">
                   {t('kkd.operational.validationLog.metaQr')}: {selectedRow.scannedQr || '-'}
                   <br />
                   {t('kkd.operational.validationLog.metaBarcode')}: {selectedRow.scannedBarcode || '-'}
@@ -236,15 +229,15 @@ export function KkdValidationLogPage(): ReactElement {
                   {t('kkd.operational.validationLog.metaWh')}: {selectedRow.warehouseId || '-'}
                   <br />
                   {t('kkd.operational.validationLog.metaDevice')}: {selectedRow.deviceInfo || '-'}
-                </div>
-              </>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('kkd.operational.validationLog.pickLog')}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </p>
+              </KkdResultPanel>
+            </div>
+          ) : (
+            <KkdResultPanel>
+              <p className="text-center text-sm">{t('kkd.operational.validationLog.pickLog')}</p>
+            </KkdResultPanel>
+          )}
+        </KkdOpsSection>
       </div>
     </OpsListPageShell>
   );

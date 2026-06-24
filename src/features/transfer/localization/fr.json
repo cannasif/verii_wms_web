@@ -146,7 +146,9 @@
       "warehouseInfo": "Warehouse Info"
     },
     "orderDetails": {
-      "orderQuantity": "Order Quantity"
+      "orderQuantity": "Order Quantity",
+      "orderQuantityLine1": "Order",
+      "orderQuantityLine2": "Quantity"
     },
     "process": {
       "error": "Error",

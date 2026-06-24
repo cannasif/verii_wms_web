@@ -61,7 +61,9 @@
       "subtitle": "Warehouse movements and linked documents.",
       "events": "Warehouse Timeline",
       "linkCount": "Linked Documents",
-      "lastMovement": "Last Movement"
+      "lastMovement": "Last Movement",
+      "loadError": "Service case timeline could not be loaded.",
+      "noEvents": "No warehouse movements found."
     },
     "recompute": {
       "missingStock": "Incoming stock is not defined for this case.",
@@ -87,7 +89,9 @@
       "customerLookupDescription": "Pick the customer record directly instead of typing an id; the system fills the customer code and identifier together.",
       "incomingStockLookupDescription": "Select the ERP stock record for the incoming item; stock code and stock identifier are filled together.",
       "initialLineStockLookupDescription": "Select the stock card used on the service line; the system carries stock code, identifier and unit together.",
-      "warehouseLookupDescription": "Select the warehouse directly instead of entering an id; the system binds the correct warehouse record in the background."
+      "warehouseLookupDescription": "Select the warehouse directly instead of entering an id; the system binds the correct warehouse record in the background.",
+      "headerSection": "Case Information",
+      "noExistingLines": "No service lines found."
     },
     "reports": {
       "title": "Service Reports",
@@ -115,7 +119,9 @@
       "noRecentMovements": "No recent warehouse movements found.",
       "allocationRows": "Allocation Rows",
       "activeRepairCases": "Active Repair Cases",
-      "shipmentLinksCount": "Shipment Link Count"
+      "shipmentLinksCount": "Shipment Link Count",
+      "loadError": "Service reports could not be loaded.",
+      "recentMovementsFeed": "Recent movement feed"
     },
     "enum": {
       "serviceCaseStatus": {

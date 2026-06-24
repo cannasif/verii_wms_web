@@ -9,7 +9,7 @@ import {
   OpsInput,
   OpsTextarea,
 } from '@/components/shared';
-import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,7 +19,7 @@ import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/shared';
 import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
-import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
+import { SearchableMultiSelect, getOperationUserDisplayName, getOperationUserSubtitle } from '@/features/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/shared';
 import type { UserDto } from '@/features/auth/types/auth';
@@ -73,23 +73,43 @@ export function Step1WarehouseBasicInfo({
                 {t('warehouse.step1.operationType')}
                 {requiredMark}
               </FormLabel>
-              <Select
-                onValueChange={(value) => field.onChange(value)}
-                value={field.value || undefined}
-              >
-                <FormControl>
-                  <SelectTrigger className={cn('w-full', isOps && OPS_FIELD_CLASS)}>
-                    <SelectValue placeholder={t('warehouse.step1.selectOperationType')} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {typeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                {isOps ? (
+                  <OpsFieldShell>
+                    <Select
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value || undefined}
+                    >
+                      <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                        <SelectValue placeholder={t('warehouse.step1.selectOperationType')} />
+                      </SelectTrigger>
+                      <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                        {typeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {t(option.labelKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </OpsFieldShell>
+                ) : (
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value || undefined}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t('warehouse.step1.selectOperationType')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {typeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(option.labelKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </FormControl>
               {fieldMessage}
             </FormItem>
           )}
@@ -414,16 +434,17 @@ export function Step1WarehouseBasicInfo({
                       onValueChange={(values) => field.onChange(values)}
                       options={activeUsers || []}
                       getOptionValue={(opt) => String(opt.id)}
-                      getOptionLabel={(opt) => {
-                        const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                        return opt.email ? `${name} (${opt.email})` : name;
-                      }}
+                      getOptionLabel={getOperationUserDisplayName}
+                      getOptionSubtitle={getOperationUserSubtitle}
+                      variant="ops"
+                      optionLayout="user"
                       placeholder={t('warehouse.step1.selectOperationUsers')}
                       searchPlaceholder={t('common.search')}
                       emptyText={t('common.notFound')}
                       isLoading={isLoadingUsers}
                       itemLimit={100}
                       className={OPS_FIELD_CLASS}
+                      popoverClassName="wms-ops-lookup-popover"
                     />
                   </OpsFieldShell>
                 ) : (
@@ -432,10 +453,9 @@ export function Step1WarehouseBasicInfo({
                     onValueChange={(values) => field.onChange(values)}
                     options={activeUsers || []}
                     getOptionValue={(opt) => String(opt.id)}
-                    getOptionLabel={(opt) => {
-                      const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                      return opt.email ? `${name} (${opt.email})` : name;
-                    }}
+                    getOptionLabel={getOperationUserDisplayName}
+                    getOptionSubtitle={getOperationUserSubtitle}
+                    optionLayout="user"
                     placeholder={t('warehouse.step1.selectOperationUsers')}
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}

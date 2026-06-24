@@ -370,13 +370,13 @@ export function GoodsReceiptPreLabelReceivingPage(): ReactElement {
   );
 
   const summary = useMemo(() => actionableBatches.reduce(
-    (acc, batch) => {
-      acc.total += 1;
-      acc.labels += batch.totalLabelCount;
-      acc.remaining += Math.max(0, batch.totalLabelCount - batch.consumedLabelCount - batch.voidLabelCount);
-      return acc;
-    },
-    { total: 0, labels: 0, remaining: 0 },
+      (acc, batch) => {
+        acc.total += 1;
+        acc.labels += batch.totalLabelCount;
+        acc.remaining += Math.max(0, batch.totalLabelCount - batch.consumedLabelCount - batch.voidLabelCount);
+        return acc;
+      },
+      { total: 0, labels: 0, remaining: 0 },
   ), [actionableBatches]);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
@@ -489,21 +489,21 @@ export function GoodsReceiptPreLabelReceivingPage(): ReactElement {
       {receivingMode === 'orders' ? (
         <OrderBasedReceivingPanel />
       ) : (
-      <PagedDataGrid<GrPreReceiptLabelBatch, ColumnKey>
+          <PagedDataGrid<GrPreReceiptLabelBatch, ColumnKey>
         variant="ops"
         pageKey={pageKey}
-        columns={columns}
+            columns={columns}
         visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[]}
         defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
         columnWidths={columnWidths}
         onResizeColumnPair={resizeColumnPair}
         getCellText={getCellText}
-        rows={actionableBatches}
-        rowKey={(batch) => batch.id}
-        renderCell={(batch, key) => ({
+            rows={actionableBatches}
+            rowKey={(batch) => batch.id}
+            renderCell={(batch, key) => ({
           batchNo: <span className="font-semibold font-mono text-xs">{batch.batchNo}</span>,
           siparisNo: <span className="font-mono text-xs">{batch.siparisNo}</span>,
-          customer: [batch.customerCodeSnapshot, batch.customerNameSnapshot].filter(Boolean).join(' - ') || '-',
+              customer: [batch.customerCodeSnapshot, batch.customerNameSnapshot].filter(Boolean).join(' - ') || '-',
           status: (
             <Badge variant="outline" className={getPreLabelStatusBadgeClass(batch.status)}>
               {t(`preLabels.statuses.${batch.status}`, batch.status)}
@@ -511,22 +511,22 @@ export function GoodsReceiptPreLabelReceivingPage(): ReactElement {
           ),
           progress: <span className="font-mono text-xs">{batch.consumedLabelCount}/{batch.totalLabelCount} {t('preLabelReceiving.consumedShort')}</span>,
           createdDate: <span className="font-mono text-xs">{formatDate(batch.createdDate)}</span>,
-        } as Record<Exclude<ColumnKey, 'actions'>, ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
-        sortBy={pagedGrid.sortBy}
-        sortDirection={pagedGrid.sortDirection}
-        onSort={(key) => {
+            } as Record<Exclude<ColumnKey, 'actions'>, ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={(key) => {
           if (key !== 'progress' && key !== 'actions') pagedGrid.handleSort(key);
-        }}
-        renderSortIcon={renderSortIcon}
-        isLoading={batchesQuery.isLoading}
-        isError={Boolean(batchesQuery.error)}
-        errorText={t('preLabelReceiving.loadError')}
-        emptyText={t('preLabelReceiving.empty')}
-        showActionsColumn
-        actionsHeaderLabel={t('preLabelReceiving.actions')}
+            }}
+            renderSortIcon={renderSortIcon}
+            isLoading={batchesQuery.isLoading}
+            isError={Boolean(batchesQuery.error)}
+            errorText={t('preLabelReceiving.loadError')}
+            emptyText={t('preLabelReceiving.empty')}
+            showActionsColumn
+            actionsHeaderLabel={t('preLabelReceiving.actions')}
         iconOnlyActions={false}
         actionsCellClassName="wms-ops-table-actions-col"
-        renderActionsCell={(batch) => (
+            renderActionsCell={(batch) => (
           <div className="wms-ops-row-actions">
             <Button
               type="button"
@@ -540,36 +540,36 @@ export function GoodsReceiptPreLabelReceivingPage(): ReactElement {
             >
               <ScanLine className="size-3" aria-hidden />
             </Button>
-            <Button
+                <Button
               type="button"
               variant="ghost"
               size="icon"
               className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--start"
               aria-label={t('preLabelReceiving.startAll')}
               title={t('preLabelReceiving.startAll')}
-              onClick={() => startGoodsReceiptMutation.mutate(batch)}
-              disabled={startGoodsReceiptMutation.isPending}
-            >
+                  onClick={() => startGoodsReceiptMutation.mutate(batch)}
+                  disabled={startGoodsReceiptMutation.isPending}
+                >
               <PackageCheck className="size-3" aria-hidden />
-            </Button>
-          </div>
-        )}
-        pageSize={pagedGrid.pageSize}
-        pageSizeOptions={pagedGrid.pageSizeOptions}
-        onPageSizeChange={pagedGrid.handlePageSizeChange}
-        pageNumber={pagedGrid.getDisplayPageNumber(page)}
-        totalPages={page?.totalPages ?? 1}
-        hasPreviousPage={page?.hasPreviousPage ?? false}
-        hasNextPage={page?.hasNextPage ?? false}
-        onPreviousPage={pagedGrid.goToPreviousPage}
-        onNextPage={pagedGrid.goToNextPage}
-        previousLabel={t('common.previous')}
-        nextLabel={t('common.next')}
-        paginationInfoText={t('preLabelReceiving.paginationInfo', {
-          current: range.from,
-          total: range.to,
-          totalCount: range.total,
-        })}
+                </Button>
+              </div>
+            )}
+            pageSize={pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(page)}
+            totalPages={page?.totalPages ?? 1}
+            hasPreviousPage={page?.hasPreviousPage ?? false}
+            hasNextPage={page?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={t('preLabelReceiving.paginationInfo', {
+              current: range.from,
+              total: range.to,
+              totalCount: range.total,
+            })}
         actionBar={{
           pageKey,
           userId,
@@ -601,10 +601,10 @@ export function GoodsReceiptPreLabelReceivingPage(): ReactElement {
             />
           ),
           refresh: {
-            onRefresh: () => void batchesQuery.refetch(),
-            isLoading: batchesQuery.isFetching,
-            label: t('common.refresh'),
-            disabled: batchesQuery.isFetching,
+              onRefresh: () => void batchesQuery.refetch(),
+              isLoading: batchesQuery.isFetching,
+              label: t('common.refresh'),
+              disabled: batchesQuery.isFetching,
           },
           variant: 'ops',
         }}
@@ -1075,7 +1075,7 @@ function OrderBasedReceivingPanel(): ReactElement {
             </div>
           </fieldset>
         </form>
-      </div>
+    </div>
     </Form>
   );
 }

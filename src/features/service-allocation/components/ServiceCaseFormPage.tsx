@@ -216,8 +216,7 @@ export function ServiceCaseFormPage(): ReactElement {
       eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
       title={isEdit ? t('serviceAllocation.form.editTitle') : t('serviceAllocation.form.createTitle')}
       description={isEdit ? t('serviceAllocation.form.editSubtitle') : t('serviceAllocation.form.createSubtitle')}
-    >
-      <div className="wms-ops-actions mb-4">
+      actions={
         <OpsActionButton
           type="button"
           variant="secondary"
@@ -225,14 +224,13 @@ export function ServiceCaseFormPage(): ReactElement {
         >
           {t('common.back')}
         </OpsActionButton>
-      </div>
-
+      }
+    >
       <Form {...form}>
-        <form className="space-y-6" onSubmit={onSubmit}>
+        <form className="wms-ops-form space-y-6" onSubmit={onSubmit}>
           <fieldset disabled={isReadOnly} className={`space-y-6 ${isReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
             <ServiceCaseHeaderSection
               form={form}
-              isEdit={isEdit}
               customerLookupOpen={customerLookupOpen}
               onCustomerLookupOpenChange={setCustomerLookupOpen}
               incomingStockLookupOpen={incomingStockLookupOpen}

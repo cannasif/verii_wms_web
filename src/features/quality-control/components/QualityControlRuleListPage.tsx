@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
-import { DefinitionExcelActions } from '@/features/definition-excel';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -139,6 +138,29 @@ export function QualityControlRuleListPage(): ReactElement {
       : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
   };
 
+  const handleImportCompleted = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
+
+  const definitionExcel = useMemo(() => ({
+    definitionKey: 'quality-control-rule',
+    fileNamePrefix: 'kalite-kontrol-kurallari',
+    onImportCompleted: handleImportCompleted,
+  }), [handleImportCompleted]);
+
+  const gridSearch = useMemo(() => ({
+    value: pagedGrid.searchInput,
+    onValueChange: pagedGrid.searchConfig.onValueChange,
+    onSearchChange: pagedGrid.searchConfig.onSearchChange,
+    placeholder: t('qualityControl.rules.list.searchPlaceholder'),
+  }), [pagedGrid.searchConfig.onSearchChange, pagedGrid.searchConfig.onValueChange, pagedGrid.searchInput, t]);
+
+  const gridRefresh = useMemo(() => ({
+    onRefresh: () => { void query.refetch(); },
+    isLoading: query.isLoading,
+    label: t('common.refresh'),
+  }), [query.isLoading, query.refetch, t]);
+
   return (
     <OpsListPageShell
       eyebrow={
@@ -150,19 +172,10 @@ export function QualityControlRuleListPage(): ReactElement {
       }
       title={t('qualityControl.rules.list.pageTitle')}
       actions={
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <DefinitionExcelActions
-            definitionKey="quality-control-rule"
-            fileNamePrefix="kalite-kontrol-kurallari"
-            onImportCompleted={async () => {
-              await query.refetch();
-            }}
-          />
-          <OpsActionButton type="button" variant="primary" onClick={() => navigate('/quality-control/rules')}>
-            <Plus className="size-3.5" aria-hidden />
-            {t('common.add')}
-          </OpsActionButton>
-        </div>
+        <OpsActionButton type="button" variant="primary" onClick={() => navigate('/quality-control/rules')}>
+          <Plus className="size-3.5" aria-hidden />
+          {t('common.add')}
+        </OpsActionButton>
       }
     >
       <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>
@@ -257,17 +270,9 @@ export function QualityControlRuleListPage(): ReactElement {
           onClearFilters={pagedGrid.clearAdvancedFilters}
           appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
           translationNamespace="common"
-          search={{
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('qualityControl.rules.list.searchPlaceholder'),
-          }}
-          refresh={{
-            onRefresh: () => { void query.refetch(); },
-            isLoading: query.isLoading,
-            label: t('common.refresh'),
-          }}
+          search={gridSearch}
+          refresh={gridRefresh}
+          definitionExcel={definitionExcel}
           idColumnKey="scopeType"
         />
     </OpsListPageShell>

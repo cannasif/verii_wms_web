@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -142,13 +142,14 @@ export function OcrGoodsReceiptMatchListPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('ocrGoodsReceiptMatch.breadcrumb.module')} />}
       title={t('ocrGoodsReceiptMatch.list.pageTitle')}
       description={t('ocrGoodsReceiptMatch.description')}
       actions={
-        <Button type="button" className="wms-ops-primary-btn" onClick={() => navigate('/ocr-goods-receipt-match')}>
+        <OpsActionButton type="button" variant="primary" onClick={() => navigate('/ocr-goods-receipt-match')}>
           {t('common.add')}
-        </Button>
+        </OpsActionButton>
       }
     >
       <PagedDataGrid<OcrGoodsReceiptCustomerStockMatchPagedRowDto, ColumnKey>

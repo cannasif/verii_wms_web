@@ -308,6 +308,7 @@ export function KkdDistributionPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t(`${dist}.pageTitle`)}
       description={t(`${dist}.breadcrumb`)}

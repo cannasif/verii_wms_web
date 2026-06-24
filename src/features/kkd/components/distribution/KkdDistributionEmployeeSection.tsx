@@ -1,15 +1,18 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { kkdApi } from '../../api/kkd.api';
+import { OpsActionButton, OpsInput, PagedLookupDialog } from '@/components/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
+import { kkdApi } from '../../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdEmployeeDto, KkdResolvedEmployeeDto } from '../../types/kkd.types';
+import {
+  KkdEmployeeSummaryPanel,
+  KkdFlagChip,
+  KkdOpsFormField,
+  KkdOpsSection,
+  KkdResultPanel,
+  kkdOpsStatusBadge,
+} from '../kkd-ops-ui';
 
 interface KkdDistributionEmployeeSectionProps {
   employeeQr: string;
@@ -49,82 +52,83 @@ export function KkdDistributionEmployeeSection({
   const { t } = useTranslation(['kkd', 'common']);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t(`${dist}.titleEmployeeWarehouse`)}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="kkd-qr">{t(`${dist}.qrLabel`)}</Label>
-            <div className="flex gap-2">
-              <Input id="kkd-qr" value={employeeQr} onChange={(e) => onEmployeeQrChange(e.target.value)} placeholder={t(`${dist}.qrPh`)} />
-              <Button type="button" onClick={onResolveQr} disabled={!employeeQr.trim() || isResolvingQr}>
-                {t(`${dist}.resolveQr`)}
-              </Button>
+    <KkdOpsSection title={t(`${dist}.titleEmployeeWarehouse`)}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <KkdOpsFormField label={t(`${dist}.qrLabel`)} htmlFor="kkd-qr">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+            <div className="min-w-0 flex-1">
+              <OpsInput
+                id="kkd-qr"
+                value={employeeQr}
+                onChange={(e) => onEmployeeQrChange(e.target.value)}
+                placeholder={t(`${dist}.qrPh`)}
+              />
             </div>
+            <OpsActionButton type="button" variant="primary" onClick={onResolveQr} disabled={!employeeQr.trim() || isResolvingQr}>
+              {t(`${dist}.resolveQr`)}
+            </OpsActionButton>
           </div>
+        </KkdOpsFormField>
 
-          <div className="space-y-2">
-            <Label>{t(`${dist}.warehouse`)}</Label>
-            <PagedLookupDialog<WarehouseLookup>
-              open={warehouseDialogOpen}
-              onOpenChange={onWarehouseDialogOpenChange}
-              title={t(`${dist}.whDialogTitle`)}
-              value={selectedWarehouse ? `${selectedWarehouse.depoKodu} - ${selectedWarehouse.depoIsmi}` : null}
-              placeholder={t(`${dist}.whPh`)}
-              queryKey={['kkd', 'warehouses']}
-              fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
-              getKey={(item) => String(item.id)}
-              getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
-              onSelect={onWarehouseSelect}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>{t(`${dist}.altEmployee`)}</Label>
-          <PagedLookupDialog<KkdEmployeeDto>
-            open={employeeDialogOpen}
-            onOpenChange={onEmployeeDialogOpenChange}
-            title={t(`${dist}.empDialogTitle`)}
-            value={resolvedEmployee ? `${resolvedEmployee.employeeCode} - ${resolvedEmployee.fullName}` : null}
-            placeholder={t(`${dist}.empPh`)}
-            queryKey={['kkd', 'distribution', 'employees']}
+        <KkdOpsFormField label={t(`${dist}.warehouse`)}>
+          <PagedLookupDialog<WarehouseLookup>
+            variant="ops"
+            open={warehouseDialogOpen}
+            onOpenChange={onWarehouseDialogOpenChange}
+            title={t(`${dist}.whDialogTitle`)}
+            value={selectedWarehouse ? `${selectedWarehouse.depoKodu} - ${selectedWarehouse.depoIsmi}` : null}
+            placeholder={t(`${dist}.whPh`)}
+            queryKey={['kkd', 'warehouses']}
             fetchPage={({ pageNumber, pageSize, search, signal }) =>
-              kkdApi.getEmployees({ pageNumber, pageSize, search }, { signal })}
+              lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })}
             getKey={(item) => String(item.id)}
-            getLabel={(item) => `${item.employeeCode} - ${item.firstName} ${item.lastName}`}
-            onSelect={onEmployeeSelect}
+            getLabel={(item) => `${item.depoKodu} - ${item.depoIsmi}`}
+            onSelect={onWarehouseSelect}
           />
-        </div>
+        </KkdOpsFormField>
+      </div>
 
-        {resolvedEmployee ? (
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge>{resolvedEmployee.employeeCode}</Badge>
-              <Badge variant="secondary">{resolvedEmployee.customerCode}</Badge>
-              {resolvedEmployee.departmentName ? <Badge variant="outline">{resolvedEmployee.departmentName}</Badge> : null}
-              {resolvedEmployee.roleName ? <Badge variant="outline">{resolvedEmployee.roleName}</Badge> : null}
-            </div>
-            <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{resolvedEmployee.fullName}</p>
-          </div>
-        ) : null}
+      <KkdOpsFormField label={t(`${dist}.altEmployee`)} className="mt-4">
+        <PagedLookupDialog<KkdEmployeeDto>
+          variant="ops"
+          open={employeeDialogOpen}
+          onOpenChange={onEmployeeDialogOpenChange}
+          title={t(`${dist}.empDialogTitle`)}
+          value={resolvedEmployee ? `${resolvedEmployee.employeeCode} - ${resolvedEmployee.fullName}` : null}
+          placeholder={t(`${dist}.empPh`)}
+          queryKey={['kkd', 'distribution', 'employees']}
+          fetchPage={({ pageNumber, pageSize, search, signal }) =>
+            kkdApi.getEmployees({ pageNumber, pageSize, search }, { signal })}
+          getKey={(item) => String(item.id)}
+          getLabel={(item) => `${item.employeeCode} - ${item.firstName} ${item.lastName}`}
+          onSelect={onEmployeeSelect}
+        />
+      </KkdOpsFormField>
 
-        {submittedHeader ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/20">
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge variant="outline">{t(`${dist}.headerIdBadge`, { id: submittedHeader.id })}</Badge>
-              <Badge>{localizeStatusLabel(submittedHeader.status)}</Badge>
-              <Badge variant="secondary">{t(`${dist}.warehouseIdBadge`, { id: submittedHeader.warehouseId })}</Badge>
-            </div>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              {t(`${dist}.docNo`)}: {submittedHeader.documentNo || '-'}
-            </p>
+      {resolvedEmployee ? (
+        <KkdEmployeeSummaryPanel>
+          <div className="flex flex-wrap items-center gap-2">
+            <KkdFlagChip>{resolvedEmployee.employeeCode}</KkdFlagChip>
+            <KkdFlagChip tone="info">{resolvedEmployee.customerCode}</KkdFlagChip>
+            {resolvedEmployee.departmentName ? <KkdFlagChip>{resolvedEmployee.departmentName}</KkdFlagChip> : null}
+            {resolvedEmployee.roleName ? <KkdFlagChip>{resolvedEmployee.roleName}</KkdFlagChip> : null}
           </div>
-        ) : null}
-      </CardContent>
-    </Card>
+          <p className="mt-3 text-lg font-semibold">{resolvedEmployee.fullName}</p>
+        </KkdEmployeeSummaryPanel>
+      ) : null}
+
+      {submittedHeader ? (
+        <KkdResultPanel tone="success">
+          <div className="flex flex-wrap items-center gap-3">
+            <KkdFlagChip>{t(`${dist}.headerIdBadge`, { id: submittedHeader.id })}</KkdFlagChip>
+            {kkdOpsStatusBadge(localizeStatusLabel(submittedHeader.status), 'done')}
+            <KkdFlagChip tone="info">{t(`${dist}.warehouseIdBadge`, { id: submittedHeader.warehouseId })}</KkdFlagChip>
+          </div>
+          <p className="mt-2 text-sm opacity-80">
+            {t(`${dist}.docNo`)}: {submittedHeader.documentNo || '-'}
+          </p>
+        </KkdResultPanel>
+      ) : null}
+    </KkdOpsSection>
   );
 }

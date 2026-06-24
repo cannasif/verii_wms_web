@@ -2,7 +2,9 @@ import { type ReactElement, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, Inbox } from 'lucide-react';
+import { OpsActionButton, OpsFieldShell, OpsInput } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -169,6 +171,7 @@ export function Step2WarehouseStockSelection({
             <TabsContent value="stocks" className="m-0 min-h-0 flex-1 overflow-hidden">
               <StockListPane
                 t={t}
+                isOps={isOps}
                 listRef={(element) => {
                   stockListRefs.current[0] = element;
                 }}
@@ -185,6 +188,7 @@ export function Step2WarehouseStockSelection({
             <TabsContent value="selected" className="m-0 min-h-0 flex-1 overflow-hidden">
 	              <SelectedListPane
 	                t={t}
+	                isOps={isOps}
 	                searchSelectedQuery={searchSelectedQuery}
 	                setSearchSelectedQuery={setSearchSelectedQuery}
 	                filteredSelectedItems={filteredSelectedItems}
@@ -207,6 +211,7 @@ export function Step2WarehouseStockSelection({
           <div className={cn('flex min-h-0 flex-col', !isOps && 'border-r')}>
             <StockListPane
               t={t}
+              isOps={isOps}
               listRef={(element) => {
                 stockListRefs.current[1] = element;
               }}
@@ -223,6 +228,7 @@ export function Step2WarehouseStockSelection({
           <div className="flex min-h-0 flex-col">
 	            <SelectedListPane
 	              t={t}
+	              isOps={isOps}
 	              searchSelectedQuery={searchSelectedQuery}
 	              setSearchSelectedQuery={setSearchSelectedQuery}
 	              filteredSelectedItems={filteredSelectedItems}
@@ -244,6 +250,7 @@ type TranslationFn = ReturnType<typeof useTranslation>['t'];
 
 function StockListPane({
   t,
+  isOps,
   listRef,
   onScroll,
   searchQuery,
@@ -255,6 +262,7 @@ function StockListPane({
   onToggleItem,
 }: {
   t: TranslationFn;
+  isOps: boolean;
   listRef: (element: HTMLDivElement | null) => void;
   onScroll: () => void;
   searchQuery: string;
@@ -266,60 +274,105 @@ function StockListPane({
   onToggleItem: (item: WarehouseStockItem) => void;
 }): ReactElement {
   return (
-    <div className="overflow-hidden min-w-0 flex h-full flex-col">
-      <div className="p-4 border-b shrink-0">
-        <div className="relative flex items-center">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('warehouse.step2.searchStocks')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 pr-10"
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <VoiceSearchButton onResult={(text) => setSearchQuery(text)} size="sm" variant="ghost" />
+    <div className={cn('flex h-full min-w-0 flex-col overflow-hidden', isOps && 'wms-ops-order-panel')}>
+      <div className={cn('shrink-0 border-b p-4', isOps && 'wms-ops-order-panel__search')}>
+        {isOps ? (
+          <OpsFieldShell className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 z-[1] size-4 -translate-y-1/2" aria-hidden />
+            <OpsInput
+              placeholder={t('warehouse.step2.searchStocks')}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className={cn(OPS_FIELD_CLASS, 'pl-9 pr-10')}
+            />
+            <div className="absolute top-1/2 right-2 -translate-y-1/2">
+              <VoiceSearchButton onResult={setSearchQuery} size="sm" variant="ghost" className="wms-ops-voice-btn" />
+            </div>
+          </OpsFieldShell>
+        ) : (
+          <div className="relative flex items-center">
+            <Search className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t('warehouse.step2.searchStocks')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-10"
+            />
+            <div className="absolute top-1/2 right-2 -translate-y-1/2">
+              <VoiceSearchButton onResult={(text) => setSearchQuery(text)} size="sm" variant="ghost" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
-      <div ref={listRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div
+        ref={listRef}
+        onScroll={onScroll}
+        className={cn('flex-1 space-y-1 overflow-y-auto p-2', isOps && 'wms-ops-order-panel__list')}
+      >
         {productsLoading ? (
-          <div className="text-center py-8 text-sm text-muted-foreground">
-            <span className="inline-flex items-center">
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              {t('common.loading')}
-            </span>
-          </div>
+          isOps ? (
+            <div className="wms-ops-panel-empty">
+              <Loader2 className="size-6 animate-spin" aria-hidden />
+              <p>{t('common.loading')}</p>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              <span className="inline-flex items-center">
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                {t('common.loading')}
+              </span>
+            </div>
+          )
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-8 text-sm text-muted-foreground">{t('common.notFound')}</div>
+          isOps ? (
+            <div className="wms-ops-panel-empty">
+              <Inbox className="size-6" aria-hidden />
+              <p>{t('common.notFound')}</p>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-sm text-muted-foreground">{t('common.notFound')}</div>
+          )
         ) : (
           filteredProducts.map((product) => {
             const selectedCount = selectedCountsByStockCode.get(product.stockCode) || 0;
             return (
               <div
                 key={product.id}
-                className={`p-3 rounded-md border transition-colors ${
-                  selectedCount > 0 ? 'bg-primary/10 border-primary' : 'hover:bg-accent'
-                }`}
+                className={cn(
+                  'rounded-md border p-3 transition-colors',
+                  isOps && 'wms-ops-order-card',
+                  selectedCount > 0
+                    ? isOps
+                      ? 'wms-ops-order-card--active'
+                      : 'border-primary bg-primary/10'
+                    : !isOps && 'hover:bg-accent',
+                )}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-xs">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <Badge variant="outline" className={cn('text-xs', isOps && 'wms-ops-code-badge rounded-none')}>
                         {product.stockCode}
                       </Badge>
                       <span className="text-xs text-muted-foreground">{product.unit}</span>
                     </div>
-                    <p className="text-sm font-medium truncate">{product.stockName}</p>
+                    <p className="truncate text-sm font-medium">{product.stockName}</p>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {selectedCount > 0 && (
-                      <Badge variant="default" className="shrink-0">
+                  <div className="flex shrink-0 items-center gap-2">
+                    {selectedCount > 0 ? (
+                      <Badge variant="default" className={cn('shrink-0', isOps && 'wms-ops-order-badge wms-ops-order-badge--pending')}>
                         {selectedCount}
                       </Badge>
+                    ) : null}
+                    {isOps ? (
+                      <OpsActionButton type="button" variant="secondary" onClick={() => onToggleItem(product)}>
+                        {t('common.add')}
+                      </OpsActionButton>
+                    ) : (
+                      <Button type="button" size="sm" onClick={() => onToggleItem(product)}>
+                        {t('common.add')}
+                      </Button>
                     )}
-                    <Button type="button" size="sm" onClick={() => onToggleItem(product)}>
-                      {t('common.add')}
-                    </Button>
                   </div>
                 </div>
               </div>
@@ -339,6 +392,7 @@ function StockListPane({
 
 function SelectedListPane({
   t,
+  isOps,
   searchSelectedQuery,
   setSearchSelectedQuery,
   filteredSelectedItems,
@@ -349,6 +403,7 @@ function SelectedListPane({
   onRemoveItem,
 }: {
   t: TranslationFn;
+  isOps: boolean;
   searchSelectedQuery: string;
   setSearchSelectedQuery: (value: string) => void;
   filteredSelectedItems: SelectedWarehouseStockItem[];
@@ -359,37 +414,54 @@ function SelectedListPane({
   onRemoveItem: (itemId: string) => void;
 }): ReactElement {
   return (
-    <div className="flex min-h-0 flex-col h-full">
-      <div className="pb-2 space-y-2 border-b px-2 shrink-0">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className={cn('shrink-0 space-y-2 border-b px-2 pb-2', isOps && 'wms-ops-order-panel__search')}>
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h3 className="font-semibold text-sm">{t('warehouse.step2.selectedItems')}</h3>
+            <h3 className={cn('text-sm font-semibold', isOps && 'font-mono text-[0.68rem] tracking-[0.1em] uppercase')}>
+              {t('warehouse.step2.selectedItems')}
+            </h3>
             <p className="text-xs text-muted-foreground">
               {t('warehouse.step2.selectedItemsCount', { count: filteredSelectedItems.length })}
             </p>
           </div>
         </div>
-        <div className="relative flex items-center">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input
-            placeholder={t('warehouse.step2.searchItems')}
-            value={searchSelectedQuery}
-            onChange={(e) => setSearchSelectedQuery(e.target.value)}
-            className="pl-7 pr-9 h-7 text-xs"
-          />
-          <div className="absolute right-1 top-1/2 -translate-y-1/2">
-            <VoiceSearchButton
-              onResult={(text) => setSearchSelectedQuery(text)}
-              size="sm"
-              variant="ghost"
-              className="h-5 w-5"
+        {isOps ? (
+          <OpsFieldShell className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 z-[1] size-3.5 -translate-y-1/2" aria-hidden />
+            <OpsInput
+              placeholder={t('warehouse.step2.searchItems')}
+              value={searchSelectedQuery}
+              onChange={(event) => setSearchSelectedQuery(event.target.value)}
+              className={cn(OPS_FIELD_CLASS, 'h-9 pl-8 pr-10 text-xs')}
             />
+            <div className="absolute top-1/2 right-1 -translate-y-1/2">
+              <VoiceSearchButton onResult={setSearchSelectedQuery} size="sm" variant="ghost" className="wms-ops-voice-btn" />
+            </div>
+          </OpsFieldShell>
+        ) : (
+          <div className="relative flex items-center">
+            <Search className="absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t('warehouse.step2.searchItems')}
+              value={searchSelectedQuery}
+              onChange={(e) => setSearchSelectedQuery(e.target.value)}
+              className="h-7 pr-9 pl-7 text-xs"
+            />
+            <div className="absolute top-1/2 right-1 -translate-y-1/2">
+              <VoiceSearchButton
+                onResult={(text) => setSearchSelectedQuery(text)}
+                size="sm"
+                variant="ghost"
+                className="h-5 w-5"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
-      <div className="overflow-y-auto space-y-1.5 p-2 flex-1">
+      <div className={cn('flex-1 space-y-1.5 overflow-y-auto p-2', isOps && 'wms-ops-order-panel__list')}>
         {filteredSelectedItems.length === 0 ? (
-          <div className="text-center py-12">
+          <div className={cn('py-12 text-center', isOps && 'wms-ops-panel-empty')}>
             <p className="text-sm text-muted-foreground">{t('warehouse.step2.noSelectedItems')}</p>
           </div>
         ) : (
@@ -403,6 +475,7 @@ function SelectedListPane({
               onUpdateItem={onUpdateItem}
               onToggleItem={onToggleItem}
               onRemoveItem={onRemoveItem}
+              variant={isOps ? 'ops' : 'default'}
             />
           ))
         )}

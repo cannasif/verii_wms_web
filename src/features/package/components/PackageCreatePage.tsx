@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import type { PHeaderFormData } from '../types/package';
+import type { PHeaderFormData, CreatePHeaderDto } from '../types/package';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function PackageCreatePage(): ReactElement {
@@ -78,22 +78,33 @@ export function PackageCreatePage(): ReactElement {
     [t]
   );
 
+  const buildHeaderPayload = (data: PHeaderFormData): CreatePHeaderDto => ({
+    packingNo: data.packingNo,
+    packingDate: data.packingDate || undefined,
+    warehouseCode: data.warehouseCode || undefined,
+    sourceType: data.sourceType,
+    sourceHeaderId: data.sourceHeaderId,
+    customerCode: data.customerCode || undefined,
+    customerAddress: data.customerAddress || undefined,
+    status: data.status || 'Draft',
+    carrierId: data.carrierId,
+    carrierServiceType: data.carrierServiceType || undefined,
+    trackingNo: data.trackingNo || undefined,
+  });
+
   const handleStep1Submit = async (data: PHeaderFormData): Promise<void> => {
     try {
-      const id = await createHeaderMutation.mutateAsync({
-        packingNo: data.packingNo,
-        packingDate: data.packingDate || undefined,
-        warehouseCode: data.warehouseCode || undefined,
-        sourceType: data.sourceType,
-        sourceHeaderId: data.sourceHeaderId,
-        customerCode: data.customerCode || undefined,
-        customerAddress: data.customerAddress || undefined,
-        status: data.status || 'Draft',
-        carrierId: data.carrierId,
-        carrierServiceType: data.carrierServiceType || undefined,
-        trackingNo: data.trackingNo || undefined,
-      });
-      
+      const payload = buildHeaderPayload(data);
+
+      if (headerId) {
+        await updateHeaderMutation.mutateAsync({ id: headerId, data: payload });
+        setCurrentStep(2);
+        toast.success(t('package.wizard.headerUpdated'));
+        return;
+      }
+
+      const id = await createHeaderMutation.mutateAsync(payload);
+
       if (id) {
         setHeaderId(id);
         navigate(`/package/create/${id}`, { replace: true });
@@ -212,7 +223,7 @@ export function PackageCreatePage(): ReactElement {
             initialData={headerData}
             onSubmit={handleStep1Submit}
             onCancel={handleStep1Cancel}
-            isLoading={createHeaderMutation.isPending}
+            isLoading={createHeaderMutation.isPending || updateHeaderMutation.isPending}
           />
         );
       case 2:
@@ -319,6 +330,7 @@ export function PackageCreatePage(): ReactElement {
 
       {headerData && currentStep > 1 && (
         <HeaderSummaryCard
+          variant="ops"
           headerData={headerData}
           currentStep={currentStep}
           totalSteps={steps.length}

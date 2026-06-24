@@ -1,13 +1,14 @@
 import type { ReactElement } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { OpsActionButton, OpsInput, PagedLookupDialog } from '@/components/shared';
 import type { TFunction } from 'i18next';
 import type { PagedResponse } from '@/types/api';
 import type { KkdEmployeeDto, KkdResolvedEmployeeDto } from '../../types/kkd.types';
+import {
+  KkdEmployeeSummaryPanel,
+  KkdFlagChip,
+  KkdOpsFormField,
+  KkdOpsSection,
+} from '../kkd-ops-ui';
 
 interface KkdInitialOrderEmployeeSectionProps {
   t: TFunction<'common'>;
@@ -50,34 +51,37 @@ export function KkdInitialOrderEmployeeSection({
   onSelectEmployee,
 }: KkdInitialOrderEmployeeSectionProps): ReactElement {
   return (
-    <Card>
-      <CardHeader><CardTitle>{t('kkd.operational.initialOrder.cardEmployee')}</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-[1fr_auto_auto]">
-          <div className="space-y-2">
-            <Label htmlFor="kkd-order-qr">{t('kkd.operational.initialOrder.qrLabel')}</Label>
-            <Input
+    <KkdOpsSection title={t('kkd.operational.initialOrder.cardEmployee')}>
+      <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto_auto] md:gap-5">
+          <KkdOpsFormField label={t('kkd.operational.initialOrder.qrLabel')} htmlFor="kkd-order-qr">
+            <OpsInput
               id="kkd-order-qr"
               value={employeeQr}
               onChange={(e) => onEmployeeQrChange(e.target.value)}
               placeholder={t('kkd.operational.initialOrder.qrPlaceholder')}
             />
-          </div>
-          <div className="flex items-end">
-            <Button type="button" onClick={onResolveQr} disabled={resolveQrDisabled}>
+          </KkdOpsFormField>
+          <div className="flex items-end pb-0.5">
+            <OpsActionButton type="button" onClick={onResolveQr} disabled={resolveQrDisabled}>
               {t('kkd.operational.initialOrder.resolveQr')}
-            </Button>
+            </OpsActionButton>
           </div>
-          <div className="flex items-end">
-            <Button type="button" variant="outline" onClick={onSelectMe} disabled={!authUserId || currentEmployeeLoading}>
+          <div className="flex items-end pb-0.5">
+            <OpsActionButton
+              type="button"
+              variant="secondary"
+              onClick={onSelectMe}
+              disabled={!authUserId || currentEmployeeLoading}
+            >
               {t('kkd.operational.initialOrder.selectMe')}
-            </Button>
+            </OpsActionButton>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>{t('kkd.operational.initialOrder.altEmployee')}</Label>
+        <KkdOpsFormField label={t('kkd.operational.initialOrder.altEmployee')}>
           <PagedLookupDialog<KkdEmployeeDto>
+            variant="ops"
             open={employeeDialogOpen}
             onOpenChange={onEmployeeDialogOpenChange}
             title={t('kkd.operational.initialOrder.selectEmployeeDialog')}
@@ -89,23 +93,23 @@ export function KkdInitialOrderEmployeeSection({
             getLabel={(item) => `${item.employeeCode} - ${item.firstName} ${item.lastName}`}
             onSelect={onSelectEmployee}
           />
-        </div>
+        </KkdOpsFormField>
 
         {resolvedEmployee ? (
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+          <KkdEmployeeSummaryPanel>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge>{resolvedEmployee.employeeCode}</Badge>
-              <Badge variant="secondary">{resolvedEmployee.customerCode}</Badge>
-              {resolvedEmployee.departmentName ? <Badge variant="outline">{resolvedEmployee.departmentName}</Badge> : null}
-              {resolvedEmployee.roleName ? <Badge variant="outline">{resolvedEmployee.roleName}</Badge> : null}
+              <KkdFlagChip>{resolvedEmployee.employeeCode}</KkdFlagChip>
+              <KkdFlagChip tone="info">{resolvedEmployee.customerCode}</KkdFlagChip>
+              {resolvedEmployee.departmentName ? <KkdFlagChip tone="default">{resolvedEmployee.departmentName}</KkdFlagChip> : null}
+              {resolvedEmployee.roleName ? <KkdFlagChip tone="default">{resolvedEmployee.roleName}</KkdFlagChip> : null}
             </div>
-            <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{resolvedEmployee.fullName}</p>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-3 text-lg font-semibold">{resolvedEmployee.fullName}</p>
+            <p className="mt-1 text-sm opacity-80">
               {t('kkd.operational.initialOrder.employmentStart')}: {employmentStartDate ? new Date(employmentStartDate).toLocaleDateString(dateLocale) : '-'}
             </p>
-          </div>
+          </KkdEmployeeSummaryPanel>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </KkdOpsSection>
   );
 }

@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { cn } from '@/lib/utils';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -53,22 +54,23 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'trackingNo', type: 'string', labelKey: 'package.list.trackingNo' },
 ];
 
-const getStatusBadgeColor = (status: string): string => {
-  switch (status) {
-    case 'Draft':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
-    case 'Packing':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-500/25 dark:text-blue-200';
-    case 'Packed':
-      return 'bg-green-100 text-green-800 dark:bg-green-500/25 dark:text-green-200';
-    case 'Shipped':
-      return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/25 dark:text-indigo-200';
-    case 'Cancelled':
-      return 'bg-red-100 text-red-800 dark:bg-red-500/25 dark:text-red-200';
-    default:
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200';
-  }
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  id: 7,
+  packingNo: 12,
+  packingDate: 10,
+  warehouseCode: 9,
+  sourceType: 9,
+  matchedSource: 9,
+  customerCode: 10,
+  customerName: 12,
+  status: 9,
+  totalPackageCount: 8,
+  totalQuantity: 8,
+  totalGrossWeight: 9,
+  trackingNo: 10,
 };
+
+const ACTIONS_COLUMN_WEIGHT = 8;
 
 function mapSortBy(value: PackageColumnKey): string {
   switch (value) {
@@ -105,11 +107,13 @@ export function PackageListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.package');
   const canUpdate = permission.canUpdate;
+  const pageKey = 'package-list';
+  const showActionsColumn = permission.canView || canUpdate || permission.canDelete;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PHeaderDto | null>(null);
 
   const pagedGrid = usePagedDataGrid<PackageColumnKey>({
-    pageKey: 'package-list',
+    pageKey,
     defaultSortBy: 'id',
     defaultSortDirection: 'desc',
     defaultPageNumber: 1,
@@ -126,28 +130,36 @@ export function PackageListPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<PackageColumnKey>[]>(
     () => [
-      { key: 'id', label: t('package.list.id') },
+      {
+        key: 'id',
+        label: t('package.list.id'),
+        headClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+        cellClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+      },
       { key: 'packingNo', label: t('package.list.packingNo') },
-      { key: 'packingDate', label: t('package.list.packingDate') },
-      { key: 'warehouseCode', label: t('package.list.warehouseCode') },
-      { key: 'sourceType', label: t('package.list.sourceType'), sortable: false },
-      { key: 'matchedSource', label: t('package.list.matchedSource'), sortable: false },
+      { key: 'packingDate', label: t('package.list.packingDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'warehouseCode', label: t('package.list.warehouseCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'sourceType', label: t('package.list.sourceType'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'matchedSource', label: t('package.list.matchedSource'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
       { key: 'customerCode', label: t('package.list.customerCode') },
       { key: 'customerName', label: t('package.list.customerName') },
-      { key: 'status', label: t('package.list.status') },
-      { key: 'totalPackageCount', label: t('package.list.totalPackageCount') },
-      { key: 'totalQuantity', label: t('package.list.totalQuantity') },
-      { key: 'totalGrossWeight', label: t('package.list.totalGrossWeight') },
+      { key: 'status', label: t('package.list.status'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'totalPackageCount', label: t('package.list.totalPackageCount'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'totalQuantity', label: t('package.list.totalQuantity'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'totalGrossWeight', label: t('package.list.totalGrossWeight'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
       { key: 'trackingNo', label: t('package.list.trackingNo') },
       { key: 'actions', label: t('package.list.actions'), sortable: false },
     ],
     [t],
   );
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey: 'package-list',
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, columnWidths, setColumnOrder, setVisibleColumns, resizeColumnPair } = useColumnPreferences({
+    pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    actionsColumnWeight: ACTIONS_COLUMN_WEIGHT,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, isFetching, error } = usePHeaders(pagedGrid.queryParams);
@@ -175,6 +187,39 @@ export function PackageListPage(): ReactElement {
     () => orderedVisibleColumns.filter((key) => key !== 'actions') as PackageColumnKey[],
     [orderedVisibleColumns],
   );
+
+  const getCellText = (row: PHeaderDto, key: PackageColumnKey): string | undefined => {
+    switch (key) {
+      case 'id':
+        return String(row.id);
+      case 'packingNo':
+        return row.packingNo || '-';
+      case 'packingDate':
+        return formatDate(row.packingDate);
+      case 'warehouseCode':
+        return row.warehouseCode || '-';
+      case 'sourceType':
+        return row.sourceType ? t(`package.sourceType.${row.sourceType.toUpperCase()}`, row.sourceType) : '-';
+      case 'matchedSource':
+        return row.sourceHeaderId != null ? `#${row.sourceHeaderId}` : '-';
+      case 'customerCode':
+        return row.customerCode || '-';
+      case 'customerName':
+        return row.customerName || '-';
+      case 'status':
+        return row.status ? t(`package.status.${row.status.toLowerCase()}`, row.status) : '-';
+      case 'totalPackageCount':
+        return String(row.totalPackageCount ?? 0);
+      case 'totalQuantity':
+        return String(row.totalQuantity ?? 0);
+      case 'totalGrossWeight':
+        return String(row.totalGrossWeight ?? 0);
+      case 'trackingNo':
+        return row.trackingNo || '-';
+      default:
+        return undefined;
+    }
+  };
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => {
     if (!data?.data) return [];
@@ -234,28 +279,40 @@ export function PackageListPage(): ReactElement {
         }
         title={t('package.list.title')}
         description={t('package.list.subtitle')}
+        actions={
+          permission.canCreate ? (
+            <OpsActionButton type="button" variant="primary" onClick={() => navigate('/package/create')}>
+              <Plus className="size-3.5" aria-hidden />
+              {t('package.list.createNew')}
+            </OpsActionButton>
+          ) : null
+        }
       >
         {!permission.canMutate ? <PermissionNotice /> : null}
 
         <PagedDataGrid<PHeaderDto, PackageColumnKey>
           variant="ops"
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={data?.data ?? []}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
+          rows={data?.data ?? []}
             rowKey={(row) => row.id}
             renderCell={(row, columnKey) => {
               switch (columnKey) {
                 case 'id':
-                  return <span className="font-medium">#{row.id}</span>;
+                  return <span className="wms-ops-table-id-value">#{row.id}</span>;
                 case 'packingNo':
-                  return <span className="font-medium">{row.packingNo || '-'}</span>;
+                  return <span className="font-medium font-mono text-xs">{row.packingNo || '-'}</span>;
                 case 'packingDate':
-                  return formatDate(row.packingDate);
+                  return <span className="font-mono text-xs">{formatDate(row.packingDate)}</span>;
                 case 'warehouseCode':
                   return row.warehouseCode || '-';
                 case 'sourceType':
                   return row.sourceType
-                    ? <Badge variant="outline">{t(`package.sourceType.${row.sourceType.toUpperCase()}`, row.sourceType)}</Badge>
+                    ? <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t(`package.sourceType.${row.sourceType.toUpperCase()}`, row.sourceType)}</Badge>
                     : '-';
                 case 'matchedSource':
                   return row.sourceHeaderId != null ? <span className="font-medium">#{row.sourceHeaderId}</span> : '-';
@@ -263,12 +320,22 @@ export function PackageListPage(): ReactElement {
                   return row.customerCode || '-';
                 case 'customerName':
                   return row.customerName || '-';
-                case 'status':
+                case 'status': {
+                  const statusKey = row.status?.toLowerCase() ?? '';
+                  const statusClass =
+                    statusKey === 'packed' || statusKey === 'shipped'
+                      ? 'wms-ops-status-badge--done'
+                      : statusKey === 'packing' || statusKey === 'open'
+                        ? 'wms-ops-status-badge--active'
+                        : statusKey === 'cancelled'
+                          ? 'wms-ops-status-badge--danger'
+                          : 'wms-ops-status-badge--pending';
                   return (
-                    <Badge className={getStatusBadgeColor(row.status)}>
-                      {t(`package.status.${row.status.toLowerCase()}`, row.status)}
+                    <Badge variant="outline" className={cn('wms-ops-status-badge mx-auto', statusClass)}>
+                      {t(`package.status.${statusKey}`, row.status)}
                     </Badge>
                   );
+                }
                 case 'totalPackageCount':
                   return row.totalPackageCount || 0;
                 case 'totalQuantity':
@@ -293,8 +360,10 @@ export function PackageListPage(): ReactElement {
             isError={Boolean(error)}
             errorText={t('package.list.error')}
             emptyText={t('package.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || canUpdate || permission.canDelete)}
-            actionsHeaderLabel={t('package.list.actions')}
+            showActionsColumn={showActionsColumn && orderedVisibleColumns.includes('actions')}
+            actionsHeaderLabel={t('common.actions')}
+            iconOnlyActions={false}
+            actionsCellClassName="wms-ops-table-actions-col"
             renderActionsCell={(row) => (
               <div className="wms-ops-row-actions">
                 <Button
@@ -352,7 +421,7 @@ export function PackageListPage(): ReactElement {
             nextLabel={t('common.next')}
             paginationInfoText={paginationInfoText}
             actionBar={{
-              pageKey: 'package-list',
+              pageKey,
               userId,
               columns: columns.map(({ key, label }) => ({ key, label })),
               visibleColumns,
@@ -375,23 +444,14 @@ export function PackageListPage(): ReactElement {
               search: {
                 ...pagedGrid.searchConfig,
                 placeholder: t('package.list.searchPlaceholder'),
-                className: 'h-9 w-full md:w-64',
               },
               leftSlot: (
-                <div className="flex items-center gap-2">
-                  <VoiceSearchButton
-                    onResult={pagedGrid.handleVoiceSearch}
-                    size="icon"
-                    variant="ghost"
-                    className="wms-ops-voice-btn"
-                  />
-                  {permission.canCreate ? (
-                    <OpsActionButton type="button" variant="primary" onClick={() => navigate('/package/create')}>
-                      <Plus className="size-3.5" aria-hidden />
-                      {t('package.list.createNew')}
-                    </OpsActionButton>
-                  ) : null}
-                </div>
+                <VoiceSearchButton
+                  onResult={pagedGrid.handleVoiceSearch}
+                  size="icon"
+                  variant="ghost"
+                  className="wms-ops-voice-btn"
+                />
               ),
               variant: 'ops',
             }}

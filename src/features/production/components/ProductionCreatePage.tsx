@@ -1,18 +1,15 @@
-import { type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, GripVertical, Info } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-import { OpsFormPageShell, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +42,14 @@ import {
   type ProductionPlanDraft,
   type ProductionHeaderDetail,
   } from '../types/production';
+import {
+  ProductionOpsCallout as InfoCallout,
+  ProductionOpsField as Field,
+  ProductionOpsHintCard as PlannerHintCard,
+  ProductionRequiredMark as RequiredMark,
+  ProductionOpsSectionHeader as SectionHeader,
+  ProductionOpsSummaryStat as SummaryStat,
+} from './production-ops-ui';
 
 function rebuildDependenciesForDraft(draft: ProductionPlanDraft): ProductionDependencyDraft[] {
   const sortedOrders = [...draft.orders].sort(
@@ -116,71 +121,6 @@ interface ErpTemplateInput {
   stockCode: string;
   quantity: number;
   yapKod: string;
-}
-
-function SectionHeader({ title, description, action }: { title: string; description: string; action?: ReactElement }): ReactElement {
-  return (
-    <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-4">
-      <div className="min-w-0 space-y-1">
-        <h3 className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-50">{title}</h3>
-        <p className="text-xs leading-snug text-slate-500 dark:text-slate-400">{description}</p>
-      </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: ReactNode; children: ReactElement }): ReactElement {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-      {children}
-    </div>
-  );
-}
-
-function SummaryStat({ label, value, tone }: { label: string; value: string | number; tone: string }): ReactElement {
-  return (
-    <Card className={cn('gap-1.5 border border-slate-200/60 py-3 shadow-sm dark:border-white/10', tone)}>
-      <CardHeader className="gap-1 space-y-0 py-0">
-        <CardDescription className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</CardDescription>
-        <CardTitle className="text-xl font-semibold tabular-nums tracking-tight">{value}</CardTitle>
-      </CardHeader>
-    </Card>
-  );
-}
-
-function PlannerHintCard({ title, body, tone = 'emerald' }: { title: string; body: string; tone?: 'emerald' | 'sky' | 'amber' }): ReactElement {
-  const toneClassMap: Record<string, string> = {
-    emerald: 'border-emerald-200/70 bg-emerald-50/70 text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100',
-    sky: 'border-sky-200/70 bg-sky-50/70 text-sky-900 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100',
-    amber: 'border-amber-200/70 bg-amber-50/80 text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100',
-  };
-
-  return (
-    <div className={cn('rounded-xl border p-3 text-xs leading-relaxed', toneClassMap[tone])}>
-      <div className="font-semibold">{title}</div>
-      <div className="mt-1 whitespace-pre-line text-[13px] leading-snug opacity-95">{body}</div>
-    </div>
-  );
-}
-
-function InfoCallout({ title, body }: { title: string; body: string }): ReactElement {
-  return (
-    <div className="flex gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/80 p-3 text-xs text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-      <div className="mt-0.5 shrink-0 rounded-full bg-slate-900/5 p-1.5 text-slate-600 dark:bg-white/10 dark:text-slate-200">
-        <Info className="h-3.5 w-3.5" />
-      </div>
-      <div className="min-w-0">
-        <div className="font-semibold text-slate-900 dark:text-slate-100">{title}</div>
-        <div className="mt-1 leading-snug text-[13px] text-slate-600 dark:text-slate-300">{body}</div>
-      </div>
-    </div>
-  );
-}
-
-function RequiredMark(): ReactElement {
-  return <span className="ml-1 text-rose-500">*</span>;
 }
 
 function mapDetailToDraft(detail: ProductionHeaderDetail): ProductionPlanDraft {
@@ -829,7 +769,7 @@ export function ProductionCreatePage(): ReactElement {
           />
           <div className="grid gap-3 md:grid-cols-[1.3fr_0.7fr]">
             <Field label={t('production.create.mainOrderNo', { defaultValue: 'Missing translation' })}>
-              <Input
+              <OpsInput
                 value={erpInput.orderNo}
                 onChange={(e) => setErpInput((prev) => ({ ...prev, orderNo: e.target.value }))}
                 placeholder={t('production.create.mainOrderNoPlaceholder', { defaultValue: 'Missing translation' })}
@@ -860,6 +800,7 @@ export function ProductionCreatePage(): ReactElement {
           <div className="grid gap-3 md:grid-cols-4">
             <Field label={t('production.create.mainStockCode')}>
               <PagedLookupDialog<StockLookup>
+                variant="ops"
                 open={erpStockLookupOpen}
                 onOpenChange={setErpStockLookupOpen}
                 title={t('production.create.mainStockCode')}
@@ -890,6 +831,7 @@ export function ProductionCreatePage(): ReactElement {
             </Field>
             <Field label={t('production.create.mainYapKod')}>
               <PagedLookupDialog<YapKodLookup>
+                variant="ops"
                 open={erpYapKodLookupOpen}
                 onOpenChange={setErpYapKodLookupOpen}
                 title={t('production.create.mainYapKod')}
@@ -912,7 +854,7 @@ export function ProductionCreatePage(): ReactElement {
               />
             </Field>
             <Field label={t('production.create.plannedQuantity')}>
-              <Input type="number" min="0" step="0.001" value={erpInput.quantity} onChange={(e) => setErpInput((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} />
+              <OpsInput type="number" min="0" step="0.001" value={erpInput.quantity} onChange={(e) => setErpInput((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} />
             </Field>
             <div className="flex items-end">
               <Button
@@ -935,6 +877,7 @@ export function ProductionCreatePage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-erp-skin wms-ops-production-page"
       eyebrow={
         <>
           <span>{t('production.breadcrumb.parent')}</span>
@@ -951,16 +894,16 @@ export function ProductionCreatePage(): ReactElement {
       title={isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title')}
       description={isEditMode ? t('production.create.editSubtitle', { defaultValue: 'Missing translation' }) : t('production.create.subtitle')}
       actions={(
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={() => navigate('/production/list')}>
+        <div className="wms-ops-actions flex flex-wrap gap-2">
+          <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/production/list')}>
             {t('common.cancel')}
-          </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => setDraft(isEditMode && editDetailQuery.data ? mapDetailToDraft(editDetailQuery.data) : createEmptyProductionPlanDraft())}>
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="secondary" onClick={() => setDraft(isEditMode && editDetailQuery.data ? mapDetailToDraft(editDetailQuery.data) : createEmptyProductionPlanDraft())}>
             {t('common.clear')}
-          </Button>
-          <Button type="button" size="sm" onClick={() => createMutation.mutate()} disabled={!canSaveProduction || createMutation.isPending || draft.orders.length === 0}>
+          </OpsActionButton>
+          <OpsActionButton type="button" onClick={() => createMutation.mutate()} disabled={!canSaveProduction || createMutation.isPending || draft.orders.length === 0}>
             {createMutation.isPending ? t('common.saving') : isEditMode ? t('common.update', { defaultValue: 'Missing translation' }) : t('common.save')}
-          </Button>
+          </OpsActionButton>
         </div>
       )}
     >
@@ -992,13 +935,13 @@ export function ProductionCreatePage(): ReactElement {
               body={t('production.create.editModeBody', { defaultValue: 'Missing translation' })}
             />
           ) : null}
-          <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
-            <SummaryStat label={t('production.create.summary.orders')} value={summary.orderCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]" />
-            <SummaryStat label={t('production.create.summary.outputs')} value={summary.outputCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]" />
-            <SummaryStat label={t('production.create.summary.consumptions')} value={summary.consumptionCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(202,138,4,0.12),_transparent_55%)]" />
-            <SummaryStat label={t('production.create.summary.dependencies')} value={summary.dependencyCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.12),_transparent_55%)]" />
-            <SummaryStat label={t('production.create.summary.totalOutput')} value={summary.totalPlannedOutput} tone="bg-[radial-gradient(circle_at_top_left,_rgba(225,29,72,0.10),_transparent_55%)]" />
-            <SummaryStat label={t('production.create.summary.totalConsumption')} value={summary.totalPlannedConsumption} tone="bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]" />
+          <div className="wms-ops-stat-grid grid gap-2 md:grid-cols-3 xl:grid-cols-6">
+            <SummaryStat label={t('production.create.summary.orders')} value={summary.orderCount} />
+            <SummaryStat label={t('production.create.summary.outputs')} value={summary.outputCount} />
+            <SummaryStat label={t('production.create.summary.consumptions')} value={summary.consumptionCount} />
+            <SummaryStat label={t('production.create.summary.dependencies')} value={summary.dependencyCount} />
+            <SummaryStat label={t('production.create.summary.totalOutput')} value={summary.totalPlannedOutput} />
+            <SummaryStat label={t('production.create.summary.totalConsumption')} value={summary.totalPlannedConsumption} />
           </div>
           <Tabs value={editorMode} onValueChange={(value) => setEditorMode(value as 'planner' | 'advanced')} className="gap-3 space-y-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1080,11 +1023,12 @@ export function ProductionCreatePage(): ReactElement {
                       </Tabs>
 
                       <div className="grid gap-3 md:grid-cols-3">
-                        <Field label={<>{t('common.documentNo')}<RequiredMark /></>}><Input value={draft.header.documentNo} onChange={(e) => updateHeader('documentNo', e.target.value)} /></Field>
-                        <Field label={t('common.documentDate')}><Input type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
-                        <Field label={t('common.projectCode')}><Input value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
+                        <Field label={<>{t('common.documentNo')}<RequiredMark /></>}><OpsInput value={draft.header.documentNo} onChange={(e) => updateHeader('documentNo', e.target.value)} /></Field>
+                        <Field label={t('common.documentDate')}><OpsInput type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
+                        <Field label={t('common.projectCode')}><OpsInput value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
                         <Field label={<>{t('production.create.mainStockCode')}<RequiredMark /></>}>
                           <PagedLookupDialog<StockLookup>
+                            variant="ops"
                             open={mainStockLookupOpen}
                             onOpenChange={setMainStockLookupOpen}
                             title={t('production.create.mainStockCode')}
@@ -1112,6 +1056,7 @@ export function ProductionCreatePage(): ReactElement {
                         </Field>
                         <Field label={t('production.create.mainYapKod')}>
                           <PagedLookupDialog<YapKodLookup>
+                            variant="ops"
                             open={mainYapKodLookupOpen}
                             onOpenChange={setMainYapKodLookupOpen}
                             title={t('production.create.mainYapKod')}
@@ -1133,7 +1078,7 @@ export function ProductionCreatePage(): ReactElement {
                             }}
                           />
                         </Field>
-                        <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}><Input type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
+                        <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}><OpsInput type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
                         <Field label={t('production.create.planType')}>
                           <Select value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
                             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -1335,15 +1280,16 @@ export function ProductionCreatePage(): ReactElement {
                                 </div>
                               </Field>
                               <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}>
-                                <Input type="number" min="0" step="0.001" value={order.plannedQuantity} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                                <OpsInput type="number" min="0" step="0.001" value={order.plannedQuantity} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
                               </Field>
                             </div>
                             <div className="grid gap-3 md:grid-cols-4">
                               <Field label={<>{t('production.create.planner.stageName', { defaultValue: 'Missing translation' })}<RequiredMark /></>}>
-                                <Input value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} placeholder={t('production.create.planner.stageNamePlaceholder', { defaultValue: 'Missing translation' })} />
+                                <OpsInput value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} placeholder={t('production.create.planner.stageNamePlaceholder', { defaultValue: 'Missing translation' })} />
                               </Field>
                               <Field label={<>{t('production.create.producedStockCode')}<RequiredMark /></>}>
                                 <PagedLookupDialog<StockLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-order-stock-${order.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-stock-${order.localId}` : null)}
                                   title={t('production.create.producedStockCode')}
@@ -1374,6 +1320,7 @@ export function ProductionCreatePage(): ReactElement {
                               </Field>
                               <Field label={t('production.create.producedYapKod')}>
                                 <PagedLookupDialog<YapKodLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-order-yapkod-${order.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-yapkod-${order.localId}` : null)}
                                   title={t('production.create.producedYapKod')}
@@ -1404,6 +1351,7 @@ export function ProductionCreatePage(): ReactElement {
                             </div>
                             <Field label={t('production.create.sourceWarehouse')}>
                               <PagedLookupDialog<WarehouseLookup>
+                                variant="ops"
                                 open={activeLookupKey === `planner-order-source-warehouse-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-source-warehouse-${order.localId}` : null)}
                                 title={t('production.create.sourceWarehouse')}
@@ -1426,6 +1374,7 @@ export function ProductionCreatePage(): ReactElement {
                             </Field>
                             <Field label={t('production.create.targetWarehouse')}>
                               <PagedLookupDialog<WarehouseLookup>
+                                variant="ops"
                                 open={activeLookupKey === `planner-order-target-warehouse-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `planner-order-target-warehouse-${order.localId}` : null)}
                                 title={t('production.create.targetWarehouse')}
@@ -1510,6 +1459,7 @@ export function ProductionCreatePage(): ReactElement {
                             {rows.map((row) => (
                               <div key={row.localId} className="grid gap-2 md:grid-cols-5">
                                 <PagedLookupDialog<StockLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-output-stock-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-output-stock-${row.localId}` : null)}
                                   title={t('production.create.columns.stock')}
@@ -1538,6 +1488,7 @@ export function ProductionCreatePage(): ReactElement {
                                   }}
                                 />
                                 <PagedLookupDialog<YapKodLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-output-yapkod-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-output-yapkod-${row.localId}` : null)}
                                   title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
@@ -1558,7 +1509,7 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-output-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                   }}
                                 />
-                                <Input type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                                <OpsInput type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
                                 <Select value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
                                   <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                                   <SelectContent>{trackingModes.map((value) => <SelectItem key={value} value={value}>{trackingModeLabel(value)}</SelectItem>)}</SelectContent>
@@ -1602,6 +1553,7 @@ export function ProductionCreatePage(): ReactElement {
                             {rows.map((row) => (
                               <div key={row.localId} className="grid gap-2 md:grid-cols-6">
                                 <PagedLookupDialog<StockLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-consumption-stock-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-consumption-stock-${row.localId}` : null)}
                                   title={t('production.create.sourceStock')}
@@ -1630,6 +1582,7 @@ export function ProductionCreatePage(): ReactElement {
                                   }}
                                 />
                                 <PagedLookupDialog<YapKodLookup>
+                                  variant="ops"
                                   open={activeLookupKey === `planner-consumption-yapkod-${row.localId}`}
                                   onOpenChange={(open) => setActiveLookupKey(open ? `planner-consumption-yapkod-${row.localId}` : null)}
                                   title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
@@ -1650,7 +1603,7 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-consumption-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                   }}
                                 />
-                                <Input type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                                <OpsInput type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
                                 <Select value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
                                   <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                                   <SelectContent>{serialModes.map((value) => <SelectItem key={value} value={value}>{serialModeLabel(value)}</SelectItem>)}</SelectContent>
@@ -1693,9 +1646,9 @@ export function ProductionCreatePage(): ReactElement {
                         />
                       ) : null}
                       <div className="grid gap-3 md:grid-cols-3">
-                        <SummaryStat label={t('production.create.planner.summary.stages', { defaultValue: 'Missing translation' })} value={plannerSummary.stageCount} tone="bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.12),_transparent_55%)]" />
-                        <SummaryStat label={t('production.create.planner.summary.ordered', { defaultValue: 'Missing translation' })} value={plannerSummary.serialStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(217,119,6,0.10),_transparent_55%)]" />
-                        <SummaryStat label={t('production.create.planner.summary.assigned', { defaultValue: 'Missing translation' })} value={plannerSummary.assignedStages} tone="bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_55%)]" />
+                        <SummaryStat label={t('production.create.planner.summary.stages', { defaultValue: 'Missing translation' })} value={plannerSummary.stageCount} />
+                        <SummaryStat label={t('production.create.planner.summary.ordered', { defaultValue: 'Missing translation' })} value={plannerSummary.serialStages} />
+                        <SummaryStat label={t('production.create.planner.summary.assigned', { defaultValue: 'Missing translation' })} value={plannerSummary.assignedStages} />
                       </div>
                       {draft.dependencies.length === 0 ? (
                         <PlannerHintCard title={t('production.create.dependencies.empty')} body={t('production.create.planner.flowEmpty', { defaultValue: 'Missing translation' })} tone="amber" />
@@ -1788,7 +1741,7 @@ export function ProductionCreatePage(): ReactElement {
                                     searchPlaceholder={t('production.create.userSearch', { defaultValue: 'Missing translation' })}
                                     emptyText={t('production.create.userEmpty', { defaultValue: 'Missing translation' })}
                                   />
-                                  <Input placeholder={t('production.create.assignmentNote')} value={assignment.note} onChange={(e) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, note: e.target.value }))} />
+                                  <OpsInput placeholder={t('production.create.assignmentNote')} value={assignment.note} onChange={(e) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, note: e.target.value }))} />
                                   <Button type="button" size="sm" variant="ghost" onClick={() => removeOrderAssignment(order.localId, assignment.localId)}>{t('common.delete')}</Button>
                                 </div>
                               ))}
@@ -1865,9 +1818,9 @@ export function ProductionCreatePage(): ReactElement {
                   <CardDescription>{t('production.create.header.subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-3">
-                  <Field label={t('common.documentNo')}><Input value={draft.header.documentNo} onChange={(e) => updateHeader('documentNo', e.target.value)} /></Field>
-                  <Field label={t('common.documentDate')}><Input type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
-                  <Field label={t('common.projectCode')}><Input value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
+                  <Field label={t('common.documentNo')}><OpsInput value={draft.header.documentNo} onChange={(e) => updateHeader('documentNo', e.target.value)} /></Field>
+                  <Field label={t('common.documentDate')}><OpsInput type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
+                  <Field label={t('common.projectCode')}><OpsInput value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
                   <Field label={t('production.create.planType')}>
                     <Select value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -1888,6 +1841,7 @@ export function ProductionCreatePage(): ReactElement {
                   </Field>
                   <Field label={t('production.create.mainStockCode')}>
                     <PagedLookupDialog<StockLookup>
+                      variant="ops"
                       open={mainStockLookupOpen}
                       onOpenChange={setMainStockLookupOpen}
                       title={t('production.create.mainStockCode')}
@@ -1915,6 +1869,7 @@ export function ProductionCreatePage(): ReactElement {
                   </Field>
                   <Field label={t('production.create.mainYapKod')}>
                     <PagedLookupDialog<YapKodLookup>
+                      variant="ops"
                       open={mainYapKodLookupOpen}
                       onOpenChange={setMainYapKodLookupOpen}
                       title={t('production.create.mainYapKod')}
@@ -1936,13 +1891,12 @@ export function ProductionCreatePage(): ReactElement {
                       }}
                     />
                   </Field>
-                  <Field label={t('production.create.plannedQuantity')}><Input type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
-                  <Field label={t('production.create.plannedStartDate')}><Input type="date" value={draft.header.plannedStartDate} onChange={(e) => updateHeader('plannedStartDate', e.target.value)} /></Field>
-                  <Field label={t('production.create.plannedEndDate')}><Input type="date" value={draft.header.plannedEndDate} onChange={(e) => updateHeader('plannedEndDate', e.target.value)} /></Field>
-                  <div className="space-y-1.5 md:col-span-3">
-                    <Label className="text-xs font-medium text-muted-foreground">{t('common.description')}</Label>
-                    <Textarea className="min-h-17 text-sm" value={draft.header.description} onChange={(e) => updateHeader('description', e.target.value)} rows={2} />
-                  </div>
+                  <Field label={t('production.create.plannedQuantity')}><OpsInput type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
+                  <Field label={t('production.create.plannedStartDate')}><OpsInput type="date" value={draft.header.plannedStartDate} onChange={(e) => updateHeader('plannedStartDate', e.target.value)} /></Field>
+                  <Field label={t('production.create.plannedEndDate')}><OpsInput type="date" value={draft.header.plannedEndDate} onChange={(e) => updateHeader('plannedEndDate', e.target.value)} /></Field>
+                  <Field label={t('common.description')} className="md:col-span-3">
+                    <OpsTextarea className="min-h-17 text-sm" value={draft.header.description} onChange={(e) => updateHeader('description', e.target.value)} rows={3} />
+                  </Field>
                 </CardContent>
               </Card>
 
@@ -1968,16 +1922,17 @@ export function ProductionCreatePage(): ReactElement {
                         </AccordionTrigger>
                         <AccordionContent className="space-y-3 pb-3">
                           <div className="grid gap-3 md:grid-cols-4">
-                            <Field label={t('production.create.orderNo')}><Input value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} /></Field>
+                            <Field label={t('production.create.orderNo')}><OpsInput value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} /></Field>
                             <Field label={t('production.create.orderType')}>
                               <Select value={order.orderType} onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, orderType: value as ProductionOrderDraft['orderType'] }))}>
                                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                                 <SelectContent>{orderTypes.map((value) => <SelectItem key={value} value={value}>{orderTypeLabel(value)}</SelectItem>)}</SelectContent>
                               </Select>
                             </Field>
-                            <Field label={t('production.create.producedStockCode')}><Input value={order.producedStockCode} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, producedStockCode: e.target.value }))} /></Field>
+                            <Field label={t('production.create.producedStockCode')}><OpsInput value={order.producedStockCode} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, producedStockCode: e.target.value }))} /></Field>
                             <Field label={t('production.create.producedStockCode')}>
                               <PagedLookupDialog<StockLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-order-stock-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-stock-${order.localId}` : null)}
                                 title={t('production.create.producedStockCode')}
@@ -2008,6 +1963,7 @@ export function ProductionCreatePage(): ReactElement {
                             </Field>
                             <Field label={t('production.create.producedYapKod')}>
                               <PagedLookupDialog<YapKodLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-order-yapkod-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-yapkod-${order.localId}` : null)}
                                 title={t('production.create.producedYapKod')}
@@ -2029,9 +1985,10 @@ export function ProductionCreatePage(): ReactElement {
                                 }}
                               />
                             </Field>
-                            <Field label={t('production.create.plannedQuantity')}><Input type="number" min="0" step="0.001" value={order.plannedQuantity} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></Field>
+                            <Field label={t('production.create.plannedQuantity')}><OpsInput type="number" min="0" step="0.001" value={order.plannedQuantity} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></Field>
                             <Field label={t('production.create.sourceWarehouse')}>
                               <PagedLookupDialog<WarehouseLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-order-source-warehouse-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-source-warehouse-${order.localId}` : null)}
                                 title={t('production.create.sourceWarehouse')}
@@ -2054,6 +2011,7 @@ export function ProductionCreatePage(): ReactElement {
                             </Field>
                             <Field label={t('production.create.targetWarehouse')}>
                               <PagedLookupDialog<WarehouseLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-order-target-warehouse-${order.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-order-target-warehouse-${order.localId}` : null)}
                                 title={t('production.create.targetWarehouse')}
@@ -2074,7 +2032,7 @@ export function ProductionCreatePage(): ReactElement {
                                 }}
                               />
                             </Field>
-                            <Field label={t('production.create.sequenceNo')}><Input type="number" value={order.sequenceNo ?? ''} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, sequenceNo: e.target.value === '' ? undefined : Number(e.target.value) }))} /></Field>
+                            <Field label={t('production.create.sequenceNo')}><OpsInput type="number" value={order.sequenceNo ?? ''} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, sequenceNo: e.target.value === '' ? undefined : Number(e.target.value) }))} /></Field>
                           </div>
                           <div className="grid gap-3 md:grid-cols-3">
                             <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200/70 p-2.5 dark:border-white/10">
@@ -2131,6 +2089,7 @@ export function ProductionCreatePage(): ReactElement {
                             </TableCell>
                             <TableCell>
                               <PagedLookupDialog<StockLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-output-stock-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-output-stock-${row.localId}` : null)}
                                 title={t('production.create.columns.stock')}
@@ -2161,6 +2120,7 @@ export function ProductionCreatePage(): ReactElement {
                             </TableCell>
                             <TableCell>
                               <PagedLookupDialog<YapKodLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-output-yapkod-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-output-yapkod-${row.localId}` : null)}
                                 title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
@@ -2182,7 +2142,7 @@ export function ProductionCreatePage(): ReactElement {
                                 }}
                               />
                             </TableCell>
-                            <TableCell><Input type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
+                            <TableCell><OpsInput type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
                             <TableCell>
                               <Select value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
                                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -2225,6 +2185,7 @@ export function ProductionCreatePage(): ReactElement {
                             </TableCell>
                             <TableCell>
                               <PagedLookupDialog<StockLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-consumption-stock-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-consumption-stock-${row.localId}` : null)}
                                 title={t('production.create.sourceStock')}
@@ -2255,6 +2216,7 @@ export function ProductionCreatePage(): ReactElement {
                             </TableCell>
                             <TableCell>
                               <PagedLookupDialog<YapKodLookup>
+                                variant="ops"
                                 open={activeLookupKey === `advanced-consumption-yapkod-${row.localId}`}
                                 onOpenChange={(open) => setActiveLookupKey(open ? `advanced-consumption-yapkod-${row.localId}` : null)}
                                 title={t('production.create.yapKodSelect', { defaultValue: 'Missing translation' })}
@@ -2276,7 +2238,7 @@ export function ProductionCreatePage(): ReactElement {
                                 }}
                               />
                             </TableCell>
-                            <TableCell><Input type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
+                            <TableCell><OpsInput type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
                             <TableCell>
                               <Select value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
                                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -2313,7 +2275,7 @@ export function ProductionCreatePage(): ReactElement {
                         <SelectContent>{dependencyTypes.map((value) => <SelectItem key={value} value={value}>{dependencyTypeLabel(value)}</SelectItem>)}</SelectContent>
                       </Select>
                       <Combobox options={orderComboboxOptions} value={dependency.successorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, successorOrderLocalId: value }))} placeholder={t('production.create.successor')} />
-                      <Input type="number" value={dependency.lagMinutes} onChange={(e) => updateDependency(dependency.localId, (current) => ({ ...current, lagMinutes: Number(e.target.value) || 0 }))} placeholder={t('production.create.lagMinutes')} />
+                      <OpsInput type="number" value={dependency.lagMinutes} onChange={(e) => updateDependency(dependency.localId, (current) => ({ ...current, lagMinutes: Number(e.target.value) || 0 }))} placeholder={t('production.create.lagMinutes')} />
                       <Button type="button" size="sm" variant="ghost" onClick={() => removeDependency(dependency.localId)}>{t('common.delete')}</Button>
                     </div>
                   ))}

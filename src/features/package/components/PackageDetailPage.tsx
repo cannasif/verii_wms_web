@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Suspense, lazy, type ReactElement, type ReactNode, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -12,12 +12,11 @@ import { useCreatePLine } from '../hooks/useCreatePLine';
 import { useMatchPlines } from '../hooks/useMatchPlines';
 import { useYapKodlar } from '../hooks/useYapKodlar';
 import { useStokBarcode } from '../hooks/useStokBarcode';
-import { DetailPageShell, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsFormMessage, OpsFormPageShell, OpsInput, PageActionBar, PageState } from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
+import { cn } from '@/lib/utils';
 import { pPackageFormSchema, pLineFormSchema, type PPackageFormData, type PLineFormData, type StokBarcodeDto } from '../types/package';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -27,10 +26,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Eye, ArrowLeft, Edit, Barcode, Camera, Loader2, Package, Printer } from 'lucide-react';
+import { Plus, Eye, ArrowLeft, Edit, Camera, Loader2, Package, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   createDefaultScannerConfig,
@@ -47,30 +45,36 @@ const PackageLabelPrintDialog = lazy(async () => {
   return { default: module.PackageLabelPrintDialog };
 });
 
-const getStatusBadgeColor = (status: string): string => {
-  switch (status) {
-    case 'Draft':
-      return 'bg-slate-100 text-slate-800';
-    case 'Packing':
-      return 'bg-blue-100 text-blue-800';
-    case 'Open':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'Packed':
-      return 'bg-emerald-100 text-emerald-800';
-    case 'Sealed':
-      return 'bg-cyan-100 text-cyan-800';
-    case 'Loaded':
-      return 'bg-blue-100 text-blue-800';
-    case 'Transferred':
-      return 'bg-amber-100 text-amber-800';
-    case 'Shipped':
-      return 'bg-violet-100 text-violet-800';
-    case 'Cancelled':
-      return 'bg-rose-100 text-rose-800';
-    case 'Closed':
-    default:
-      return 'bg-gray-100 text-gray-800';
+function getOpsStatusBadgeClass(status: string | undefined): string {
+  const key = status?.toLowerCase() ?? '';
+  if (key === 'packed' || key === 'shipped' || key === 'closed' || key === 'sealed' || key === 'loaded') {
+    return 'wms-ops-status-badge--done';
   }
+  if (key === 'packing' || key === 'open') {
+    return 'wms-ops-status-badge--active';
+  }
+  if (key === 'cancelled') {
+    return 'wms-ops-status-badge--danger';
+  }
+  return 'wms-ops-status-badge--pending';
+}
+
+interface OpsDetailRowProps {
+  label: string;
+  children: ReactNode;
+}
+
+function OpsDetailRow({ label, children }: OpsDetailRowProps): ReactElement {
+  return (
+    <div className="wms-ops-detail-row">
+      <span className="wms-ops-detail-row__label">{label}</span>
+      <span className="wms-ops-detail-row__value">{children}</span>
+    </div>
+  );
+}
+
+const preventNumberInputWheel = (event: React.WheelEvent<HTMLInputElement>): void => {
+  event.currentTarget.blur();
 };
 
 export function PackageDetailPage(): ReactElement {
@@ -97,6 +101,7 @@ export function PackageDetailPage(): ReactElement {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [initialPrintPackageIds, setInitialPrintPackageIds] = useState<number[]>([]);
+  const [activeTab, setActiveTab] = useState('packages');
   const screenReadyReportedRef = useRef(false);
   const qrCodeScannerRef = useRef<Html5QrcodeInstance | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -234,12 +239,6 @@ export function PackageDetailPage(): ReactElement {
     setEnableSearch(true);
   }, [barcodeInput, t]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleBarcodeSearch();
-    }
-  };
-
   const handleOpenCamera = () => {
     setIsCameraOpen(true);
   };
@@ -372,24 +371,35 @@ export function PackageDetailPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <DetailPageShell
-        title={t('package.detail.title')}
-        description={!isLoadingHeader && header ? header.packingNo : undefined}
-        isLoading={isLoadingHeader}
-        isEmpty={!isLoadingHeader && !header}
-        loadingTitle={t('common.loading')}
-        emptyTitle={t('package.detail.notFound')}
+    <>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('package.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('package.create.breadcrumb.module')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('package.detail.title')}</span>
+          </>
+        }
+        title={
+          <span className="wms-ops-detail-dialog__title text-xl">
+            {t('package.detail.title')}
+            {header ? <span className="wms-ops-detail-dialog__id"> {header.packingNo}</span> : null}
+          </span>
+        }
+        description={header ? t('package.list.detailDescription') : t('package.list.detailDescription')}
         actions={
           header ? (
-            <>
-              <Button variant="outline" onClick={() => navigate('/package/list')}>
-                <ArrowLeft className="size-4 mr-2" />
+            <div className="flex flex-wrap items-center gap-2">
+              <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/package/list')}>
+                <ArrowLeft className="size-3.5" aria-hidden />
                 {t('common.back')}
-              </Button>
+              </OpsActionButton>
               {header.sourceType && header.sourceHeaderId ? (
-                <Button
-                  variant={header.isMatched ? 'destructive' : 'default'}
+                <OpsActionButton
+                  type="button"
+                  variant={header.isMatched ? 'secondary' : 'primary'}
                   onClick={async () => {
                     if (!headerId) return;
                     try {
@@ -417,393 +427,345 @@ export function PackageDetailPage(): ReactElement {
                     : header.isMatched
                       ? t('package.detail.unmatch')
                       : t('package.detail.match')}
-                </Button>
+                </OpsActionButton>
               ) : null}
-              <Button
-                variant="outline"
+              <OpsActionButton
+                type="button"
+                variant="secondary"
                 onClick={() => {
                   setInitialPrintPackageIds([]);
                   setPrintDialogOpen(true);
                 }}
                 disabled={!permission.canCreate && !permission.canUpdate}
               >
-                <Printer className="size-4 mr-2" />
+                <Printer className="size-3.5" aria-hidden />
                 {t('package:print.printFromTree')}
-              </Button>
-              <Button variant="outline" onClick={() => navigate(`/package/edit/${headerId}`)} disabled={!permission.canUpdate}>
-                <Edit className="size-4 mr-2" />
+              </OpsActionButton>
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => navigate(`/package/edit/${headerId}`)}
+                disabled={!permission.canUpdate}
+              >
+                <Edit className="size-3.5" aria-hidden />
                 {t('common.edit')}
-              </Button>
-            </>
-          ) : undefined
+              </OpsActionButton>
+            </div>
+          ) : null
         }
       >
+        {isLoadingHeader ? (
+          <PageState tone="loading" title={t('common.loading')} compact />
+        ) : null}
+
+        {!isLoadingHeader && !header ? (
+          <PageState tone="empty" title={t('package.detail.notFound')} compact />
+        ) : null}
+
         {header ? (
-          <>
-          <div className="space-y-6 mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.status')}
-                </p>
-                <Badge className={getStatusBadgeColor(header.status)}>
-                  {t(`package.status.${header.status.toLowerCase()}`, header.status)}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.packingDate')}
-                </p>
-                <p className="text-sm font-medium">{formatDate(header.packingDate)}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.warehouseCode')}
-                </p>
-                <p className="text-sm font-medium">{header.warehouseCode || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.customerCode')}
-                </p>
-                <p className="text-sm font-medium">{header.customerCode || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.trackingNo')}
-                </p>
-                <p className="text-sm font-medium">{header.trackingNo || '-'}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.customerName')}
-                </p>
-                <p className="text-sm font-medium">{header.customerName || '-'}</p>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.list.sourceType')}
-                  </p>
-                  {header.sourceType ? (
-                    <Badge variant="outline" className="text-xs">
-                      {t(`package.sourceType.${header.sourceType.toUpperCase()}`, header.sourceType.toUpperCase())}
-                    </Badge>
-                  ) : (
-                    <p className="text-sm font-medium">-</p>
+          <div className="wms-ops-detail-dialog wms-ops-package-detail-page -mx-4 flex flex-col gap-5 px-4 py-5 sm:-mx-6 sm:px-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge variant="outline" className={cn('wms-ops-status-badge', getOpsStatusBadgeClass(header.status))}>
+                {t(`package.status.${header.status.toLowerCase()}`, header.status)}
+              </Badge>
+              {header.sourceType && header.sourceHeaderId ? (
+                <span
+                  className={cn(
+                    'wms-ops-flag-badge',
+                    header.isMatched ? 'wms-ops-flag-badge--on' : 'wms-ops-flag-badge--warn',
                   )}
+                >
+                  {header.isMatched ? t('package.detail.matchedStatus') : t('package.detail.unmatchedStatus')}
+                </span>
+              ) : null}
+              {header.sourceType ? (
+                <span className="wms-ops-code-badge">
+                  {t(`package.sourceType.${header.sourceType}`, header.sourceType)}
+                  {header.sourceHeaderId ? ` #${header.sourceHeaderId}` : ''}
+                </span>
+              ) : null}
+            </div>
+
+            <div className="grid shrink-0 grid-cols-1 items-stretch gap-3 sm:gap-5 md:grid-cols-3">
+              <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+                <h3 className="wms-ops-detail-section-title">{t('package.detail.basicInfo')}</h3>
+                <div className="wms-ops-detail-panel--rows flex-1">
+                  <OpsDetailRow label={t('package.form.packingNo')}>
+                    <span className="wms-ops-transfer-detail__stock-code">{header.packingNo}</span>
+                  </OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.status')}>
+                    <Badge variant="outline" className={cn('wms-ops-status-badge', getOpsStatusBadgeClass(header.status))}>
+                      {t(`package.status.${header.status.toLowerCase()}`, header.status)}
+                    </Badge>
+                  </OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.packingDate')}>{formatDate(header.packingDate)}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.warehouseCode')}>{header.warehouseCode || '-'}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.customerCode')}>
+                    {header.customerCode || '-'}
+                    {header.customerName ? ` (${header.customerName})` : ''}
+                  </OpsDetailRow>
                 </div>
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {t('package.list.matchedSource')}
-                  </p>
-                  <p className="text-sm font-medium">
+              </div>
+
+              <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+                <h3 className="wms-ops-detail-section-title">{t('package.detail.summary')}</h3>
+                <div className="wms-ops-detail-panel--rows flex-1">
+                  <OpsDetailRow label={t('package.detail.totalPackageCount')}>{header.totalPackageCount || 0}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.totalQuantity')}>{header.totalQuantity || 0}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.totalGrossWeight')}>{header.totalGrossWeight || 0}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.detail.totalVolume')}>{header.totalVolume || 0}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.list.matchedSource')}>
                     {header.sourceHeaderId ? `#${header.sourceHeaderId}` : '-'}
-                  </p>
+                  </OpsDetailRow>
+                </div>
+              </div>
+
+              <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+                <h3 className="wms-ops-detail-section-title">{t('package.detail.shippingInfo')}</h3>
+                <div className="wms-ops-detail-panel--rows flex-1">
+                  <OpsDetailRow label={t('package.detail.trackingNo')}>{header.trackingNo || '-'}</OpsDetailRow>
+                  <OpsDetailRow label={t('package.form.carrierServiceType')}>{header.carrierServiceType || '-'}</OpsDetailRow>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalPackageCount')}
-                </p>
-                <p className="text-lg font-semibold">{header.totalPackageCount || 0}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalQuantity')}
-                </p>
-                <p className="text-lg font-semibold">{header.totalQuantity || 0}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  {t('package.detail.totalGrossWeight')}
-                </p>
-                <p className="text-lg font-semibold">{header.totalGrossWeight || 0}</p>
-              </div>
-            </div>
-          </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex min-h-0 flex-1 flex-col">
+              <TabsList
+                className={cn(
+                  'wms-ops-tabs wms-ops-step-tabs grid w-full shrink-0 grid-cols-2 sm:w-auto',
+                  activeTab === 'packages' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock',
+                )}
+              >
+                <span className="wms-ops-tab-indicator" aria-hidden />
+                <TabsTrigger value="packages" className="wms-ops-tab">
+                  {t('package.detail.packages')} ({packages?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="lines" className="wms-ops-tab">
+                  {t('package.detail.lines')} ({lines?.length || 0})
+                </TabsTrigger>
+              </TabsList>
 
-          <Tabs defaultValue="packages" className="w-full">
-            <TabsList>
-              <TabsTrigger value="packages">
-                {t('package.detail.packages')} ({packages?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="lines">
-                {t('package.detail.lines')} ({lines?.length || 0})
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="packages" className="mt-4">
-              <div className="flex justify-end mb-4">
-                <Button onClick={() => permission.canUpdate && setPackageDialogOpen(true)} disabled={!permission.canUpdate}>
-                  <Plus className="size-4 mr-2" />
-                  {t('package.detail.addPackage')}
-                </Button>
-              </div>
-              {isLoadingPackages ? (
-                <PageState tone="loading" title={t('common.loading')} compact />
-              ) : packages && packages.length > 0 ? (
-                <>
-                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('package.detail.packageNo')}</TableHead>
-                          <TableHead>{t('package.detail.packageType')}</TableHead>
-                          <TableHead>{t('package.detail.status')}</TableHead>
-                          <TableHead>{t('package.detail.netWeight')}</TableHead>
-                          <TableHead>{t('package.detail.grossWeight')}</TableHead>
-                          <TableHead>{t('package.detail.volume')}</TableHead>
-                          <TableHead>{t('package.detail.isMixed')}</TableHead>
-                          <TableHead>{t('package.detail.actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {packages.map((pkg: PPackageDto) => (
-                          <TableRow key={pkg.id}>
-                            <TableCell className="font-medium">
-                              <Button
-                                variant="link"
-                                className="p-0 h-auto"
+              <TabsContent
+                value="packages"
+                className="wms-ops-detail-panel wms-ops-detail-lines-panel mt-3 flex min-h-0 flex-col overflow-hidden"
+              >
+                <PageActionBar
+                  className="mb-3 shrink-0 px-1"
+                  title={<span className="wms-ops-detail-section-title !border-0 !p-0">{t('package.detail.packages')}</span>}
+                  actions={
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      onClick={() => permission.canUpdate && setPackageDialogOpen(true)}
+                      disabled={!permission.canUpdate}
+                    >
+                      <Plus className="size-3.5" aria-hidden />
+                      {t('package.detail.addPackage')}
+                    </OpsActionButton>
+                  }
+                />
+                {isLoadingPackages ? (
+                  <PageState tone="loading" title={t('common.loading')} compact className="wms-ops-detail-empty" />
+                ) : packages && packages.length > 0 ? (
+                  <>
+                    <div className="hidden min-h-0 flex-1 md:block">
+                      <div className="wms-ops-transfer-detail__table-wrap h-full rounded-none border-0">
+                        <table className="wms-ops-transfer-detail__table">
+                          <thead>
+                            <tr>
+                              <th>{t('package.detail.packageNo')}</th>
+                              <th>{t('package.detail.packageType')}</th>
+                              <th>{t('package.detail.status')}</th>
+                              <th>{t('package.detail.netWeight')}</th>
+                              <th>{t('package.detail.grossWeight')}</th>
+                              <th>{t('package.detail.volume')}</th>
+                              <th>{t('package.detail.isMixed')}</th>
+                              <th className="wms-ops-table-actions-col">{t('package.detail.actions')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {packages.map((pkg: PPackageDto) => (
+                              <tr key={pkg.id}>
+                                <td>
+                                  <button
+                                    type="button"
+                                    className="wms-ops-transfer-detail__stock-code cursor-pointer border-0 bg-transparent p-0 text-left underline-offset-2 hover:underline"
+                                    onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
+                                  >
+                                    {pkg.packageNo}
+                                  </button>
+                                </td>
+                                <td><span className="wms-ops-code-badge">{pkg.packageType}</span></td>
+                                <td>
+                                  <Badge variant="outline" className={cn('wms-ops-status-badge', getOpsStatusBadgeClass(pkg.status))}>
+                                    {t(`package.packageStatus.${pkg.status.toLowerCase()}`, pkg.status)}
+                                  </Badge>
+                                </td>
+                                <td>{pkg.netWeight ?? '-'}</td>
+                                <td>{pkg.grossWeight ?? '-'}</td>
+                                <td>{pkg.volume ?? '-'}</td>
+                                <td>{pkg.isMixed ? t('common.yes') : t('common.no')}</td>
+                                <td className="wms-ops-table-actions-col">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <OpsActionButton
+                                      type="button"
+                                      variant="secondary"
+                                      className="h-8 px-2"
+                                      onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
+                                    >
+                                      <Eye className="size-3.5" aria-hidden />
+                                    </OpsActionButton>
+                                    <OpsActionButton
+                                      type="button"
+                                      variant="secondary"
+                                      className="h-8 px-2"
+                                      onClick={() => {
+                                        setInitialPrintPackageIds([pkg.id]);
+                                        setPrintDialogOpen(true);
+                                      }}
+                                      disabled={!permission.canCreate && !permission.canUpdate}
+                                    >
+                                      <Printer className="size-3.5" aria-hidden />
+                                    </OpsActionButton>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div className="space-y-3 pb-1 md:hidden">
+                      {packages.map((pkg: PPackageDto) => (
+                        <div key={pkg.id} className="wms-ops-detail-panel">
+                          <div className="wms-ops-detail-panel--rows p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <button
+                                type="button"
+                                className="wms-ops-transfer-detail__stock-code border-0 bg-transparent p-0 text-left"
                                 onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
                               >
                                 {pkg.packageNo}
-                              </Button>
-                            </TableCell>
-                            <TableCell>{pkg.packageType}</TableCell>
-                            <TableCell>
-                              <Badge className={getStatusBadgeColor(pkg.status)}>
-                                {t(`package.packageStatus.${pkg.status.toLowerCase()}`, pkg.status)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{pkg.netWeight || '-'}</TableCell>
-                            <TableCell>{pkg.grossWeight || '-'}</TableCell>
-                            <TableCell>{pkg.volume || '-'}</TableCell>
-                            <TableCell>{pkg.isMixed ? t('common.yes') : t('common.no')}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
-                                >
-                                  <Eye className="size-4" />
-                                  <span className="ml-2">{t('package.detail.viewDetails')}</span>
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    setInitialPrintPackageIds([pkg.id]);
-                                    setPrintDialogOpen(true);
-                                  }}
-                                  disabled={!permission.canCreate && !permission.canUpdate}
-                                >
-                                  <Printer className="size-4" />
-                                  <span className="ml-2">{t('package.detail.printLabel')}</span>
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <div className="md:hidden space-y-4 pb-1">
-                    {packages.map((pkg: PPackageDto) => (
-                      <Card key={pkg.id}>
-                        <CardContent className="pt-6">
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.packageNo')}
-                                </p>
-                                <Button
-                                  variant="link"
-                                  className="p-0 h-auto font-semibold"
-                                  onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
-                                >
-                                  {pkg.packageNo}
-                                </Button>
-                              </div>
-                              <Badge className={getStatusBadgeColor(pkg.status)}>
+                              </button>
+                              <Badge variant="outline" className={cn('wms-ops-status-badge shrink-0', getOpsStatusBadgeClass(pkg.status))}>
                                 {t(`package.packageStatus.${pkg.status.toLowerCase()}`, pkg.status)}
                               </Badge>
                             </div>
-                            <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.packageType')}
-                                </p>
-                                <p className="text-sm font-medium">{pkg.packageType}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.isMixed')}
-                                </p>
-                                <p className="text-sm font-medium">{pkg.isMixed ? t('common.yes') : t('common.no')}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.netWeight')}
-                                </p>
-                                <p className="text-sm font-medium">{pkg.netWeight || '-'}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.grossWeight')}
-                                </p>
-                                <p className="text-sm font-medium">{pkg.grossWeight || '-'}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.volume')}
-                                </p>
-                                <p className="text-sm font-medium">{pkg.volume || '-'}</p>
-                              </div>
-                            </div>
-                            <div className="pt-3 border-t">
-                              <Button
-                                variant="outline"
-                                className="w-full"
-                                onClick={() => navigate(`/package/package-detail/${pkg.id}`)}
-                              >
-                                <Eye className="size-4 mr-2" />
+                            <OpsDetailRow label={t('package.detail.packageType')}>
+                              <span className="wms-ops-code-badge">{pkg.packageType}</span>
+                            </OpsDetailRow>
+                            <OpsDetailRow label={t('package.detail.netWeight')}>{pkg.netWeight ?? '-'}</OpsDetailRow>
+                            <OpsDetailRow label={t('package.detail.grossWeight')}>{pkg.grossWeight ?? '-'}</OpsDetailRow>
+                            <div className="flex gap-2 pt-2">
+                              <OpsActionButton type="button" variant="secondary" className="flex-1" onClick={() => navigate(`/package/package-detail/${pkg.id}`)}>
+                                <Eye className="size-3.5" aria-hidden />
                                 {t('package.detail.viewDetails')}
-                              </Button>
+                              </OpsActionButton>
+                              <OpsActionButton
+                                type="button"
+                                variant="secondary"
+                                className="flex-1"
+                                onClick={() => {
+                                  setInitialPrintPackageIds([pkg.id]);
+                                  setPrintDialogOpen(true);
+                                }}
+                                disabled={!permission.canCreate && !permission.canUpdate}
+                              >
+                                <Printer className="size-3.5" aria-hidden />
+                                {t('package.detail.printLabel')}
+                              </OpsActionButton>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <PageState tone="empty" title={t('package.detail.noPackages')} compact />
-              )}
-            </TabsContent>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <PageState tone="empty" title={t('package.detail.noPackages')} compact className="wms-ops-detail-empty" />
+                )}
+              </TabsContent>
 
-            <TabsContent value="lines" className="mt-4">
-              <div className="flex justify-end mb-4">
-                <Button onClick={() => permission.canUpdate && setLineDialogOpen(true)} disabled={!permission.canUpdate}>
-                  <Plus className="size-4 mr-2" />
-                  {t('package.detail.addLine')}
-                </Button>
-              </div>
-              {isLoadingLines ? (
-                <PageState tone="loading" title={t('common.loading')} compact />
-              ) : lines && lines.length > 0 ? (
-                <>
-                  <div className="hidden md:block rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('package.detail.barcode')}</TableHead>
-                          <TableHead>{t('package.detail.stockCode')}</TableHead>
-                          <TableHead>{t('package.detail.stockName')}</TableHead>
-                          <TableHead>{t('package.detail.yapKod')}</TableHead>
-                          <TableHead>{t('package.detail.yapAcik')}</TableHead>
-                          <TableHead>{t('package.detail.quantity')}</TableHead>
-                          <TableHead>{t('package.detail.serialNo')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {lines.map((line: PLineDto) => {
-                          return (
-                            <TableRow key={line.id}>
-                              <TableCell>{line.barcode || '-'}</TableCell>
-                              <TableCell>{line.stockCode}</TableCell>
-                              <TableCell>{line.stockName || '-'}</TableCell>
-                              <TableCell>{line.yapKod}</TableCell>
-                              <TableCell>{line.yapAcik || '-'}</TableCell>
-                              <TableCell>{line.quantity}</TableCell>
-                              <TableCell>
-                                {line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4 || '-'}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <div className="md:hidden space-y-4 pb-1">
-                    {lines.map((line: PLineDto) => (
-                      <Card key={line.id}>
-                        <CardContent className="pt-6">
-                          <div className="space-y-3">
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.barcode')}
-                                </p>
-                                <p className="text-sm font-medium">{line.barcode || '-'}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.stockCode')}
-                                </p>
-                                <p className="text-sm font-medium">{line.stockCode}</p>
-                              </div>
-                            </div>
-                            <div className="pt-3 border-t">
-                              <p className="text-xs font-medium text-muted-foreground mb-1">
-                                {t('package.detail.stockName')}
-                              </p>
-                              <p className="text-sm font-medium">{line.stockName || '-'}</p>
-                            </div>
-                            <div className="grid grid-cols-1 gap-3 pt-3 border-t sm:grid-cols-2">
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.yapKod')}
-                                </p>
-                                <p className="text-sm font-medium">{line.yapKod}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.quantity')}
-                                </p>
-                                <p className="text-sm font-medium">{line.quantity}</p>
-                              </div>
-                            </div>
-                            {line.yapAcik && (
-                              <div className="pt-3 border-t">
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.yapAcik')}
-                                </p>
-                                <p className="text-sm font-medium">{line.yapAcik}</p>
-                              </div>
-                            )}
-                            {(line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4) && (
-                              <div className="pt-3 border-t">
-                                <p className="text-xs font-medium text-muted-foreground mb-1">
-                                  {t('package.detail.serialNo')}
-                                </p>
-                                <p className="text-sm font-medium">
-                                  {line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4}
-                                </p>
-                              </div>
-                            )}
+              <TabsContent
+                value="lines"
+                className="wms-ops-detail-panel wms-ops-detail-lines-panel mt-3 flex min-h-0 flex-col overflow-hidden"
+              >
+                <PageActionBar
+                  className="mb-3 shrink-0 px-1"
+                  title={<span className="wms-ops-detail-section-title !border-0 !p-0">{t('package.detail.lines')}</span>}
+                  actions={
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      onClick={() => permission.canUpdate && setLineDialogOpen(true)}
+                      disabled={!permission.canUpdate}
+                    >
+                      <Plus className="size-3.5" aria-hidden />
+                      {t('package.detail.addLine')}
+                    </OpsActionButton>
+                  }
+                />
+                {isLoadingLines ? (
+                  <PageState tone="loading" title={t('common.loading')} compact className="wms-ops-detail-empty" />
+                ) : lines && lines.length > 0 ? (
+                  <>
+                    <div className="hidden min-h-0 flex-1 md:block">
+                      <div className="wms-ops-transfer-detail__table-wrap h-full rounded-none border-0">
+                        <table className="wms-ops-transfer-detail__table">
+                          <thead>
+                            <tr>
+                              <th>{t('package.detail.barcode')}</th>
+                              <th>{t('package.detail.stockCode')}</th>
+                              <th>{t('package.detail.stockName')}</th>
+                              <th>{t('package.detail.yapKod')}</th>
+                              <th>{t('package.detail.yapAcik')}</th>
+                              <th>{t('package.detail.quantity')}</th>
+                              <th>{t('package.detail.serialNo')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {lines.map((line: PLineDto) => (
+                              <tr key={line.id}>
+                                <td>{line.barcode || '-'}</td>
+                                <td><span className="wms-ops-transfer-detail__stock-code">{line.stockCode}</span></td>
+                                <td><span className="wms-ops-transfer-detail__stock-name">{line.stockName || '-'}</span></td>
+                                <td>{line.yapKod}</td>
+                                <td>{line.yapAcik || '-'}</td>
+                                <td className="wms-ops-transfer-detail__col--qty">{line.quantity}</td>
+                                <td>{line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4 || '-'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div className="space-y-3 pb-1 md:hidden">
+                      {lines.map((line: PLineDto) => (
+                        <div key={line.id} className="wms-ops-detail-panel">
+                          <div className="wms-ops-detail-panel--rows p-4">
+                            <OpsDetailRow label={t('package.detail.stockCode')}>
+                              <span className="wms-ops-transfer-detail__stock-code">{line.stockCode}</span>
+                            </OpsDetailRow>
+                            <OpsDetailRow label={t('package.detail.stockName')}>{line.stockName || '-'}</OpsDetailRow>
+                            <OpsDetailRow label={t('package.detail.barcode')}>{line.barcode || '-'}</OpsDetailRow>
+                            <OpsDetailRow label={t('package.detail.quantity')}>{line.quantity}</OpsDetailRow>
+                            {(line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4) ? (
+                              <OpsDetailRow label={t('package.detail.serialNo')}>
+                                {line.serialNo || line.serialNo2 || line.serialNo3 || line.serialNo4}
+                              </OpsDetailRow>
+                            ) : null}
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <PageState tone="empty" title={t('package.detail.noLines')} compact />
-              )}
-            </TabsContent>
-          </Tabs>
-          </>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <PageState tone="empty" title={t('package.detail.noLines')} compact className="wms-ops-detail-empty" />
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
         ) : null}
-      </DetailPageShell>
+      </OpsFormPageShell>
 
       {headerId ? (
         <Suspense fallback={null}>
@@ -817,27 +779,32 @@ export function PackageDetailPage(): ReactElement {
       ) : null}
 
       <Dialog open={permission.canUpdate && packageDialogOpen} onOpenChange={setPackageDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
-          <DialogHeader>
-            <DialogTitle>{t('package.detail.addPackage')}</DialogTitle>
-            <DialogDescription>
+        <DialogContent
+          className={cn(
+            'max-h-[90vh] max-w-2xl overflow-y-auto',
+            'wms-ops-form wms-ops-detail-dialog gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-2xl',
+          )}
+        >
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('package.detail.addPackage')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
               {t('package.detail.addPackageDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...packageForm}>
-            <form onSubmit={packageForm.handleSubmit(handlePackageSubmit)} className="space-y-6 crm-page">
+            <form onSubmit={packageForm.handleSubmit(handlePackageSubmit)} className="px-6 py-5">
               <fieldset disabled={!permission.canUpdate} className={!permission.canUpdate ? 'pointer-events-none opacity-75' : undefined}>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={packageForm.control}
                   name="packageNo"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="wms-ops-form-item md:col-span-2">
                       <FormLabel>
-                        {t('package.form.packageNo')} <span className="text-destructive">*</span>
+                        {t('package.form.packageNo')} <span className="wms-ops-required">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <OpsInput
                           {...field}
                           onChange={(e) => {
                             const value = e.target.value;
@@ -846,49 +813,51 @@ export function PackageDetailPage(): ReactElement {
                           }}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <OpsFormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={packageForm.control}
-                    name="packageType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('package.form.packageType')}</FormLabel>
+                <FormField
+                  control={packageForm.control}
+                  name="packageType"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.packageType')}</FormLabel>
+                      <OpsFieldShell>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                             <SelectItem value="Box">{t('package.packageType.box')}</SelectItem>
                             <SelectItem value="Pallet">{t('package.packageType.pallet')}</SelectItem>
                             <SelectItem value="Bag">{t('package.packageType.bag')}</SelectItem>
                             <SelectItem value="Custom">{t('package.packageType.custom')}</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      </OpsFieldShell>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={packageForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('package.form.status')}</FormLabel>
+                <FormField
+                  control={packageForm.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.status')}</FormLabel>
+                      <OpsFieldShell>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
                             <SelectItem value="Draft">{t('package.packageStatus.draft')}</SelectItem>
                             <SelectItem value="Open">{t('package.packageStatus.open')}</SelectItem>
                             <SelectItem value="Packing">{t('package.packageStatus.packing')}</SelectItem>
@@ -900,177 +869,181 @@ export function PackageDetailPage(): ReactElement {
                             <SelectItem value="Shipped">{t('package.packageStatus.shipped')}</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      </OpsFieldShell>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="pt-2 border-t">
-                  <p className="text-sm font-medium text-muted-foreground mb-3">
-                    {t('package.form.dimensions')}
-                  </p>
-                  <div className="grid grid-cols-3 gap-3">
-                    <FormField
-                      control={packageForm.control}
-                      name="length"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.length')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <FormField
+                  control={packageForm.control}
+                  name="length"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.length')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={packageForm.control}
-                      name="width"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.width')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <FormField
+                  control={packageForm.control}
+                  name="width"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.width')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={packageForm.control}
-                      name="height"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.height')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+                <FormField
+                  control={packageForm.control}
+                  name="height"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.height')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="pt-2 border-t">
-                  <p className="text-sm font-medium text-muted-foreground mb-3">
-                    {t('package.form.weights')}
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <FormField
-                      control={packageForm.control}
-                      name="netWeight"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.netWeight')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <FormField
+                  control={packageForm.control}
+                  name="volume"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.volume')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={packageForm.control}
-                      name="tareWeight"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.tareWeight')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <FormField
+                  control={packageForm.control}
+                  name="netWeight"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.netWeight')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={packageForm.control}
-                      name="grossWeight"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">{t('package.form.grossWeight')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+                <FormField
+                  control={packageForm.control}
+                  name="tareWeight"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.tareWeight')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="pt-2 border-t">
-                  <FormField
-                    control={packageForm.control}
-                    name="volume"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('package.form.volume')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            value={field.value || ''}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={packageForm.control}
+                  name="grossWeight"
+                  render={({ field }) => (
+                    <FormItem className="wms-ops-form-item">
+                      <FormLabel>{t('package.form.grossWeight')}</FormLabel>
+                      <FormControl>
+                        <OpsInput
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          onWheel={preventNumberInputWheel}
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <OpsFormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
-                <Button
+              <DialogFooter className="wms-ops-actions mt-6 border-t px-0 py-4">
+                <OpsActionButton
                   type="button"
-                  variant="outline"
-                  className="w-full sm:w-auto"
+                  variant="secondary"
                   onClick={() => {
                     setPackageDialogOpen(false);
                     packageForm.reset();
                   }}
                 >
                   {t('common.cancel')}
-                </Button>
-                <Button type="submit" disabled={!permission.canUpdate || createPackageMutation.isPending} className="w-full sm:w-auto">
+                </OpsActionButton>
+                <OpsActionButton type="submit" variant="primary" disabled={!permission.canUpdate || createPackageMutation.isPending}>
                   {createPackageMutation.isPending ? t('common.saving') : t('common.save')}
-                </Button>
+                </OpsActionButton>
               </DialogFooter>
               </fieldset>
             </form>
@@ -1089,174 +1062,164 @@ export function PackageDetailPage(): ReactElement {
           setSearchBarcode('');
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
-          <DialogHeader>
-            <DialogTitle>{t('package.detail.addLine')}</DialogTitle>
-            <DialogDescription>
+        <DialogContent
+          className={cn(
+            'max-h-[90vh] max-w-2xl overflow-y-auto',
+            'wms-ops-form wms-ops-detail-dialog gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-2xl',
+          )}
+        >
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('package.detail.addLine')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
               {t('package.detail.addLineDescription')}
             </DialogDescription>
           </DialogHeader>
           <Form {...lineForm}>
-            <div className="space-y-4">
+            <div className="space-y-4 px-6 py-5">
               <FormField
                 control={lineForm.control}
                 name="packageId"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="wms-ops-form-item">
                     <FormLabel>
-                      {t('package.form.package')} <span className="text-destructive">*</span>
+                      {t('package.form.package')} <span className="wms-ops-required">*</span>
                     </FormLabel>
-                    <Select
-                      value={field.value ? field.value.toString() : ''}
-                      onValueChange={(value) => field.onChange(parseInt(value, 10))}
-                      disabled={!permission.canUpdate}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('package.form.selectPackage')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {packages?.map((pkg) => (
-                          <SelectItem key={pkg.id} value={pkg.id.toString()}>
-                            {pkg.barcode || pkg.packageNo}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
+                    <OpsFieldShell>
+                      <Select
+                        value={field.value ? field.value.toString() : ''}
+                        onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                        disabled={!permission.canUpdate}
+                      >
+                        <FormControl>
+                          <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                            <SelectValue placeholder={t('package.form.selectPackage')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                          {packages?.map((pkg) => (
+                            <SelectItem key={pkg.id} value={pkg.id.toString()}>
+                              {pkg.barcode || pkg.packageNo}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </OpsFieldShell>
+                    <OpsFormMessage />
                   </FormItem>
                 )}
               />
 
-            <Card className="py-0">
-              <CardContent className="p-3 space-y-3">
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Barcode className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4 hidden md:block" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute left-1 top-1/2 transform -translate-y-1/2 md:hidden h-8 w-8"
-                      onClick={handleOpenCamera}
-                      disabled={!permission.canUpdate}
-                    >
-                      <Camera className="size-4 text-muted-foreground" />
-                    </Button>
-                    <Input
-                      placeholder={t('package.detail.barcodePlaceholder')}
-                      value={barcodeInput}
-                      onChange={(e) => setBarcodeInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="pl-10 md:pl-9 h-10"
-                      disabled={!permission.canUpdate}
-                    />
+              <div className="wms-ops-detail-panel">
+                <div className="wms-ops-station__scan p-4">
+                  <div className="wms-ops-station__scan-grid">
+                    <label className="wms-ops-station__scan-label wms-ops-station__scan-label--barcode md:col-span-2">
+                      {t('package.detail.barcode')}
+                    </label>
+                    <OpsFieldShell className="md:col-span-2">
+                      <div className="flex gap-2">
+                        <OpsInput
+                          placeholder={t('package.detail.barcodePlaceholder')}
+                          value={barcodeInput}
+                          onChange={(e) => setBarcodeInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleBarcodeSearch();
+                            }
+                          }}
+                          disabled={!permission.canUpdate}
+                          className="flex-1"
+                        />
+                        <OpsActionButton type="button" variant="secondary" className="shrink-0 px-3" onClick={handleOpenCamera} disabled={!permission.canUpdate}>
+                          <Camera className="size-4" aria-hidden />
+                        </OpsActionButton>
+                        <OpsActionButton type="button" variant="primary" className="shrink-0" onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching}>
+                          {isSearching ? <Loader2 className="size-4 animate-spin" aria-hidden /> : t('common.search')}
+                        </OpsActionButton>
+                      </div>
+                    </OpsFieldShell>
                   </div>
-                  <Button onClick={handleBarcodeSearch} disabled={!permission.canUpdate || isSearching} size="default">
-                    {isSearching ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      t('common.search')
-                    )}
-                  </Button>
-                </div>
 
-                {selectedStock && (
-                  <div className="border rounded-lg p-3 space-y-3 bg-muted/50">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <Badge variant="outline" className="mb-1 text-xs">
-                          {selectedStock.stokKodu}
-                        </Badge>
-                        <p className="text-sm font-medium line-clamp-1">{selectedStock.stokAdi}</p>
-                        {selectedStock.yapKod && (
-                          <div className="mt-2 space-y-1">
-                            <p className="text-xs text-muted-foreground">
-                              <span className="font-medium">{t('package.form.yapKod')}:</span> {selectedStock.yapKod}
+                  {selectedStock ? (
+                    <div className="mt-4 space-y-3 border-t border-[color-mix(in_oklab,var(--wms-ops-accent)_16%,var(--wms-ops-card-border))] pt-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <span className="wms-ops-code-badge">{selectedStock.stokKodu}</span>
+                          <p className="mt-2 text-sm font-medium">{selectedStock.stokAdi}</p>
+                          {selectedStock.yapKod ? (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {t('package.form.yapKod')}: {selectedStock.yapKod}
+                              {selectedStock.yapAcik ? ` · ${selectedStock.yapAcik}` : ''}
                             </p>
-                            {selectedStock.yapAcik && (
-                              <p className="text-xs text-muted-foreground">
-                                <span className="font-medium">{t('package.form.yapAcik')}:</span> {selectedStock.yapAcik}
-                              </p>
-                            )}
-                          </div>
-                        )}
+                          ) : null}
+                        </div>
+                        <span className="wms-ops-flag-badge wms-ops-flag-badge--on shrink-0">
+                          <Package className="mr-1 inline size-3" aria-hidden />
+                          {selectedStock.olcuAdi}
+                        </span>
                       </div>
-                      <Badge variant="secondary" className="shrink-0">
-                        <Package className="size-3 mr-1" />
-                        {selectedStock.olcuAdi}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.detail.quantity')} <span className="text-destructive">*</span>
-                        </label>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={quantity}
-                          onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                          className="h-9"
-                          placeholder={t('package.detail.quantity')}
-                          disabled={!permission.canUpdate}
-                        />
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className="wms-ops-form-item">
+                          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            {t('package.detail.quantity')} <span className="wms-ops-required">*</span>
+                          </label>
+                          <OpsInput
+                            type="number"
+                            min={1}
+                            onWheel={preventNumberInputWheel}
+                            value={quantity}
+                            onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
+                            disabled={!permission.canUpdate}
+                          />
+                        </div>
+                        <div className="wms-ops-form-item">
+                          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            {t('package.form.serialNo')}
+                          </label>
+                          <OpsInput
+                            value={serialNo}
+                            onChange={(e) => setSerialNo(e.target.value)}
+                            disabled={!permission.canUpdate}
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          {t('package.form.serialNo')}
-                        </label>
-                        <Input
-                          value={serialNo}
-                          onChange={(e) => setSerialNo(e.target.value)}
-                          className="h-9"
-                          placeholder={t('package.form.serialNo')}
-                          disabled={!permission.canUpdate}
-                        />
-                      </div>
-                    </div>
-                    <div className="pt-2">
-                      <Button
+                      <OpsActionButton
+                        type="button"
+                        variant="primary"
+                        className="w-full"
                         onClick={handleLineSubmit}
                         disabled={!permission.canUpdate || createLineMutation.isPending}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white h-9 w-full"
                       >
-                        {createLineMutation.isPending ? (
-                          <Loader2 className="size-4 animate-spin mr-1" />
-                        ) : null}
+                        {createLineMutation.isPending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
                         {t('package.detail.add')}
-                      </Button>
+                      </OpsActionButton>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {isCameraOpen && (
-              <Dialog open={isCameraOpen} onOpenChange={handleCloseCamera}>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>{t('package.detail.scanBarcode')}</DialogTitle>
-                    <DialogDescription>
-                      {t('package.detail.scanBarcodeDescription')}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div ref={scannerContainerRef} className="w-full">
-                    <div id="barcode-scanner" className="w-full" />
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={handleCloseCamera}>
-                      {t('common.cancel')}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
+                  ) : null}
+                </div>
+              </div>
             </div>
           </Form>
         </DialogContent>
       </Dialog>
-    </div>
+
+      <Dialog open={isCameraOpen} onOpenChange={(open) => { if (!open) handleCloseCamera(); }}>
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-[95vw] gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-lg">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('package.detail.scanBarcode')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
+              {t('package.detail.scanBarcodeDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div ref={scannerContainerRef} className="w-full p-4" style={{ minHeight: '300px' }}>
+            <div id="barcode-scanner" className="w-full" style={{ minHeight: '280px' }} />
+          </div>
+          <DialogFooter className="wms-ops-actions border-t px-6 py-4">
+            <OpsActionButton type="button" variant="secondary" onClick={handleCloseCamera}>
+              {t('common.cancel')}
+            </OpsActionButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

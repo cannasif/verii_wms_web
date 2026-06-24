@@ -132,15 +132,6 @@ export function QualityControlSettingsPage(): ReactElement {
       }
       title={t('qualityControl.settings.title')}
       description={t('qualityControl.settings.description')}
-      actions={(
-        <DefinitionExcelActions
-          definitionKey="quality-control-parameter"
-          fileNamePrefix="kalite-kontrol-ayarlari"
-          onImportCompleted={async () => {
-            await query.refetch();
-          }}
-        />
-      )}
     >
       {query.isLoading ? (
         <PageState tone="loading" title={t('common.loading')} compact />
@@ -296,22 +287,33 @@ export function QualityControlSettingsPage(): ReactElement {
             ))}
           </div>
 
-          <div className="wms-ops-actions flex flex-wrap gap-3 border-t pt-6">
-            <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending || query.isLoading}>
-              {t('common.save')}
-            </OpsActionButton>
-            <OpsActionButton
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                setFormState(createDefaultSettings());
-                setWarehouseLabel('');
-                setApprovedWarehouseLabel('');
-                setRejectWarehouseLabel('');
+          <div className="wms-ops-actions flex flex-wrap items-center justify-between gap-3 border-t pt-6">
+            <DefinitionExcelActions
+              variant="ops-toolbar"
+              showLastJobSummary={false}
+              definitionKey="quality-control-parameter"
+              fileNamePrefix="kalite-kontrol-ayarlari"
+              onImportCompleted={async () => {
+                await query.refetch();
               }}
-            >
-              {t('common.clear')}
-            </OpsActionButton>
+            />
+            <div className="flex flex-wrap gap-3">
+              <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending || query.isLoading}>
+                {t('common.save')}
+              </OpsActionButton>
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setFormState(createDefaultSettings());
+                  setWarehouseLabel('');
+                  setApprovedWarehouseLabel('');
+                  setRejectWarehouseLabel('');
+                }}
+              >
+                {t('common.clear')}
+              </OpsActionButton>
+            </div>
           </div>
         </div>
       ) : null}

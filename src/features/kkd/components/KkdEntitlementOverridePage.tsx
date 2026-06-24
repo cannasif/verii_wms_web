@@ -1,15 +1,21 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { OpsInput, OpsTextarea, OpsToggleField } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { SearchableSelect } from '@/features/shared';
 import { userApi } from '@/features/user-management/api/user-api';
 import type { UserDto } from '@/features/user-management/types/user-types';
-import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
+import { KkdCrudPage, type KkdCrudField } from './KkdCrudPage';
+import {
+  KKD_OVERRIDE_COLUMN_WIDTHS,
+  KkdOpsFormBanner,
+  KkdOpsFormField,
+  KkdOpsSection,
+  renderKkdActiveCell,
+  renderKkdGenericCell,
+  renderKkdTextChip,
+} from './kkd-ops-ui';
 import { kkdApi } from '../api/kkd.api';
 import type {
   CreateKkdEntitlementOverrideDto,
@@ -41,14 +47,23 @@ function KkdEntitlementOverrideForm({
   const stockGroups = stockGroupsQuery.data ?? [];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm leading-6 text-slate-700">
+    <div className="space-y-4">
+      <KkdOpsFormBanner tone="warn">
         {t('kkd.messages.manualOverrideNotice')}
-      </div>
+      </KkdOpsFormBanner>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.employee')} *</Label>
+      <KkdOpsSection title={t('kkd.operational.override.sectionEmployee')}>
+        <div className="grid gap-4 md:grid-cols-2">
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.employee')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+      >
         <PagedLookupDialog<KkdEmployeeDto>
+          variant="ops"
           open={employeeDialogOpen}
           onOpenChange={setEmployeeDialogOpen}
           title={t('kkd.dialogs.selectEmployee')}
@@ -62,10 +77,16 @@ function KkdEntitlementOverrideForm({
           getLabel={(item) => `${item.employeeCode} - ${item.firstName} ${item.lastName}`}
           onSelect={(item) => setFormState((prev) => ({ ...prev, employeeId: item.id }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.groupCode')} *</Label>
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.groupCode')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+      >
         <SearchableSelect<KkdStockGroupOption>
           value={formState.groupCode}
           onValueChange={(value) => {
@@ -79,28 +100,44 @@ function KkdEntitlementOverrideForm({
           searchPlaceholder={t('kkd.placeholders.searchGroup')}
           emptyText={t('kkd.messages.groupNotFound')}
           isLoading={stockGroupsQuery.isLoading}
+          variant="ops"
           modal
         />
-      </div>
+      </KkdOpsFormField>
+        </div>
+      </KkdOpsSection>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.extraEntitlement')} *</Label>
-        <Input type="number" step="0.01" value={formState.extraQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, extraQuantity: Number(event.target.value) || 0 }))} />
-      </div>
+      <KkdOpsSection title={t('kkd.operational.override.sectionEntitlement')}>
+        <div className="grid gap-4 md:grid-cols-2">
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.extraEntitlement')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+      >
+        <OpsInput type="number" step="0.01" value={formState.extraQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, extraQuantity: Number(event.target.value) || 0 }))} />
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.startDate')} *</Label>
-        <Input type="date" value={formState.validFrom?.slice(0, 10) ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, validFrom: event.target.value }))} />
-      </div>
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.startDate')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+      >
+        <OpsInput type="date" value={formState.validFrom?.slice(0, 10) ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, validFrom: event.target.value }))} />
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.endDate')}</Label>
-        <Input type="date" value={formState.validTo?.slice(0, 10) ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, validTo: event.target.value || null }))} />
-      </div>
+      <KkdOpsFormField label={t('kkd.columns.endDate')}>
+        <OpsInput type="date" value={formState.validTo?.slice(0, 10) ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, validTo: event.target.value || null }))} />
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label>{t('kkd.columns.approver')}</Label>
+      <KkdOpsFormField label={t('kkd.columns.approver')}>
         <PagedLookupDialog<UserDto>
+          variant="ops"
           open={approverDialogOpen}
           onOpenChange={setApproverDialogOpen}
           title={t('kkd.dialogs.selectApprover')}
@@ -112,21 +149,37 @@ function KkdEntitlementOverrideForm({
           getLabel={(item) => item.fullName || item.username}
           onSelect={(item) => setFormState((prev) => ({ ...prev, approvedByUserId: item.id }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2 md:col-span-2">
-        <Label>{t('common.description')}</Label>
-        <Textarea value={formState.reason ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, reason: event.target.value }))} />
-      </div>
+      <KkdOpsFormField label={t('common.description')} className="md:col-span-2">
+        <OpsTextarea value={formState.reason ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, reason: event.target.value }))} />
+      </KkdOpsFormField>
 
-      <div className="space-y-3">
-        <Label>{t('common.active')}</Label>
-        <div className="flex h-10 items-center rounded-xl border border-slate-200 px-3">
-          <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
+      <OpsToggleField
+        checked={formState.isActive}
+        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
+        title={t('common.active')}
+      />
         </div>
-      </div>
+      </KkdOpsSection>
     </div>
   );
+}
+
+function renderOverrideCell(row: KkdEntitlementOverrideDto, columnKey: ColumnKey): ReactElement | string | number | null {
+  const value = row[columnKey];
+
+  if (columnKey === 'employeeCode' || columnKey === 'groupCode') {
+    return renderKkdTextChip(value);
+  }
+  if (columnKey === 'employeeName' || columnKey === 'groupName') {
+    return renderKkdTextChip(value, 'info');
+  }
+  if (columnKey === 'isActive') {
+    return renderKkdActiveCell(value);
+  }
+
+  return renderKkdGenericCell(value);
 }
 
 export function KkdEntitlementOverridePage(): ReactElement {
@@ -186,7 +239,8 @@ export function KkdEntitlementOverridePage(): ReactElement {
         reason: 'Reason',
         isActive: 'IsActive',
       }[value] ?? 'UpdatedDate')}
-      renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
+      renderCell={(row, columnKey) => renderOverrideCell(row, columnKey)}
+      defaultColumnWidths={KKD_OVERRIDE_COLUMN_WIDTHS}
       renderForm={({ formState, setFormState }) => (
         <KkdEntitlementOverrideForm formState={formState} setFormState={setFormState} />
       )}

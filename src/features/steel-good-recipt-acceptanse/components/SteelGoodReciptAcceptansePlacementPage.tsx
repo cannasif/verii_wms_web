@@ -157,6 +157,7 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
       title={t('steelGoodReceiptAcceptance.placement.title')}
       description={t('steelGoodReceiptAcceptance.placement.description')}

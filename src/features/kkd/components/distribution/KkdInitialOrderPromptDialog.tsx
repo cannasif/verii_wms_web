@@ -1,7 +1,8 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { OpsActionButton } from '@/components/shared';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { KkdOpsDialogContent } from '../kkd-ops-ui';
 
 interface KkdInitialOrderPromptDialogProps {
   open: boolean;
@@ -20,20 +21,20 @@ export function KkdInitialOrderPromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t(`${dist}.initialPromptTitle`)}</DialogTitle>
-          <DialogDescription>{t(`${dist}.initialPromptDesc`)}</DialogDescription>
+      <KkdOpsDialogContent className="max-w-md">
+        <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
+          <DialogTitle className="wms-ops-detail-dialog__title">{t(`${dist}.initialPromptTitle`)}</DialogTitle>
+          <DialogDescription className="wms-ops-detail-dialog__description">{t(`${dist}.initialPromptDesc`)}</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onAnswer(false)}>
+        <DialogFooter className="wms-ops-detail-dialog__footer shrink-0 gap-2 border-t px-4 py-4 sm:px-6">
+          <OpsActionButton type="button" variant="secondary" onClick={() => onAnswer(false)}>
             {t(`${dist}.initialPromptNo`)}
-          </Button>
-          <Button type="button" onClick={() => onAnswer(true)}>
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="primary" onClick={() => onAnswer(true)}>
             {t(`${dist}.initialPromptYes`)}
-          </Button>
+          </OpsActionButton>
         </DialogFooter>
-      </DialogContent>
+      </KkdOpsDialogContent>
     </Dialog>
   );
 }

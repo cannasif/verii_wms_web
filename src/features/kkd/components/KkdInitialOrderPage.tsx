@@ -174,6 +174,7 @@ export function KkdInitialOrderPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.initialOrder.pageTitle')}
       description={t('kkd.operational.initialOrder.breadcrumb')}

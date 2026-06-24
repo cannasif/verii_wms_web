@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { vehicleCheckInApi } from '../api/vehicle-check-in.api';
@@ -44,30 +45,18 @@ function mapSortBy(value: VehicleCheckInColumnKey): string {
   }
 }
 
-function formatDateTime(value?: string | null): string {
-  if (!value) {
-    return '-';
-  }
-
+function formatDateTime(value: string | undefined | null, locale: string): string {
+  if (!value) return '-';
   const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-
-  return parsed.toLocaleString('tr-TR');
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleString(locale);
 }
 
-function formatDate(value?: string | null): string {
-  if (!value) {
-    return '-';
-  }
-
+function formatDate(value: string | undefined | null, locale: string): string {
+  if (!value) return '-';
   const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-
-  return parsed.toLocaleDateString('tr-TR');
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString(locale);
 }
 
 function buildCustomerLabel(row: VehicleCheckInPagedRowDto): string {
@@ -75,7 +64,7 @@ function buildCustomerLabel(row: VehicleCheckInPagedRowDto): string {
 }
 
 export function VehicleCheckInListPage(): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const navigate = useNavigate();
   const pageKey = 'vehicle-check-in-list';
@@ -95,10 +84,12 @@ export function VehicleCheckInListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const dateLocale = getLocaleForFormatting(i18n.language);
+
   const columns = useMemo<PagedDataGridColumn<VehicleCheckInColumnKey>[]>(() => [
     { key: 'plateNo', label: t('vehicleCheckIn.list.columns.plate') },
     { key: 'entryDate', label: t('vehicleCheckIn.list.columns.entryDate') },
-    { key: 'entryDay', label: t('vehicleCheckIn.fields.entryDate') },
+    { key: 'entryDay', label: t('vehicleCheckIn.list.columns.entryDay', { defaultValue: t('vehicleCheckIn.fields.entryDate') }) },
     { key: 'firstName', label: t('vehicleCheckIn.list.columns.firstName') },
     { key: 'lastName', label: t('vehicleCheckIn.list.columns.lastName') },
     { key: 'customer', label: t('vehicleCheckIn.list.columns.customer') },
@@ -133,14 +124,14 @@ export function VehicleCheckInListPage(): ReactElement {
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
     (query.data?.data ?? []).map((row) => ({
       plateNo: row.plateNo,
-      entryDate: formatDateTime(row.entryDate),
-      entryDay: formatDate(row.entryDay),
+      entryDate: formatDateTime(row.entryDate, dateLocale),
+      entryDay: formatDate(row.entryDay, dateLocale),
       firstName: row.firstName || '-',
       lastName: row.lastName || '-',
       customer: buildCustomerLabel(row),
       imageCount: row.imageCount,
     }))
-  ), [query.data?.data]);
+  ), [dateLocale, query.data?.data]);
 
   const range = getPagedRange(query.data, 1);
   const paginationInfoText = t('common.paginationInfo', {
@@ -162,9 +153,15 @@ export function VehicleCheckInListPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('vehicleCheckIn.breadcrumb.module')} />}
       title={t('vehicleCheckIn.list.title')}
       description={t('vehicleCheckIn.list.description')}
+      actions={
+        <OpsActionButton type="button" variant="primary" onClick={() => navigate('/vehicle-check-in')}>
+          {t('vehicleCheckIn.actions.newEntry', { defaultValue: t('common.add') })}
+        </OpsActionButton>
+      }
     >
       <PagedDataGrid<VehicleCheckInPagedRowDto, VehicleCheckInColumnKey>
         variant="ops"
@@ -178,9 +175,9 @@ export function VehicleCheckInListPage(): ReactElement {
             case 'plateNo':
               return <span className="font-medium">{row.plateNo}</span>;
             case 'entryDate':
-              return formatDateTime(row.entryDate);
+              return formatDateTime(row.entryDate, dateLocale);
             case 'entryDay':
-              return formatDate(row.entryDay);
+              return formatDate(row.entryDay, dateLocale);
             case 'firstName':
               return row.firstName || '-';
             case 'lastName':

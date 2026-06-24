@@ -2,8 +2,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
+import { MasterDataOpsEmptyState, MasterDataOpsSection } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 import type {
@@ -130,6 +130,7 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
       title={t('steelGoodReceiptAcceptance.inspection.title')}
       description={t('steelGoodReceiptAcceptance.inspection.description')}
@@ -195,16 +196,9 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
                   />
                 </div>
               ) : (
-                <Card className="border-white/10 bg-white/5 xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:overflow-hidden">
-                  <CardHeader className="shrink-0">
-                    <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="xl:min-h-0 xl:flex-1 xl:overflow-y-auto custom-scrollbar">
-                    <div className="rounded-xl border border-dashed border-white/10 p-6 text-sm text-slate-400">
-                      {t('steelGoodReceiptAcceptance.inspection.pickFlowHelp')}
-                    </div>
-                  </CardContent>
-                </Card>
+                <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.inspection.formTitle')} className="xl:flex xl:h-full xl:min-h-0 xl:flex-col">
+                  <MasterDataOpsEmptyState>{t('steelGoodReceiptAcceptance.inspection.pickFlowHelp')}</MasterDataOpsEmptyState>
+                </MasterDataOpsSection>
               )}
             </div>
           ) : null}

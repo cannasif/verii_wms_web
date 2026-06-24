@@ -1,19 +1,21 @@
 import { type ReactElement, useMemo, useState } from 'react';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AlertTriangle, Barcode, CheckCircle2, PackageOpen, Printer, ShieldCheck } from 'lucide-react';
-import { OpsActionButton, OpsFieldShell, OpsFormPageShell } from '@/components/shared';
-import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import {
+  OpsActionButton,
+  OpsFieldShell,
+  OpsFormPageShell,
+  OpsInput,
+  PageState,
+} from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { cn } from '@/lib/utils';
 import { packageApi } from '../api/package-api';
 import { PACKAGE_QUERY_KEYS } from '../utils/query-keys';
 import type { PackagingMaterialDto, PLineDto, PPackageDto } from '../types/package';
@@ -24,15 +26,17 @@ interface QualityWarning {
   detail: string;
 }
 
-const STATION_SEARCH_PANEL_CLASS =
-  'grid gap-3 rounded-xl border border-[color-mix(in_oklab,var(--wms-ops-accent)_18%,var(--wms-ops-card-border))] bg-[color-mix(in_oklab,var(--wms-ops-card)_92%,transparent)] p-4 md:grid-cols-[1fr_auto]';
-
 function getPackageMaterial(pkg: PPackageDto | undefined, materials: PackagingMaterialDto[]): PackagingMaterialDto | undefined {
   if (!pkg?.packagingMaterialId) return undefined;
   return materials.find((item) => item.id === pkg.packagingMaterialId);
 }
 
-function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], material: PackagingMaterialDto | undefined, translate: (key: string, options?: Record<string, unknown>) => string): QualityWarning[] {
+function buildQualityWarnings(
+  pkg: PPackageDto | undefined,
+  lines: PLineDto[],
+  material: PackagingMaterialDto | undefined,
+  translate: (key: string, options?: Record<string, unknown>) => string,
+): QualityWarning[] {
   if (!pkg) return [];
   const warnings: QualityWarning[] = [];
   const packageLines = lines.filter((line) => line.packageId === pkg.id);
@@ -109,6 +113,21 @@ function buildQualityWarnings(pkg: PPackageDto | undefined, lines: PLineDto[], m
   return warnings;
 }
 
+function renderStationStatusToken(status: string | undefined, t: TFunction): ReactElement {
+  const key = status?.toLowerCase() ?? '';
+  const tokenClass =
+    key === 'packed' || key === 'closed' || key === 'shipped'
+      ? 'wms-ops-station__token--done'
+      : key === 'packing' || key === 'open'
+        ? 'wms-ops-station__token--active'
+        : key === 'cancelled'
+          ? 'wms-ops-station__token--danger'
+          : 'wms-ops-station__token--idle';
+  const label = status ? t(`package.packageStatus.${key}`, { defaultValue: status }) : '---';
+
+  return <span className={cn('wms-ops-station__token', tokenClass)}>{label}</span>;
+}
+
 export function PackagePackingStationPage(): ReactElement {
   const { t } = useTranslation(['package', 'common']);
   const queryClient = useQueryClient();
@@ -149,6 +168,8 @@ export function PackagePackingStationPage(): ReactElement {
   const selectedPackage = packages.find((item) => item.id === selectedPackageId) ?? packages[0];
   const selectedMaterial = getPackageMaterial(selectedPackage, materials);
   const selectedLines = selectedPackage ? lines.filter((line) => line.packageId === selectedPackage.id) : [];
+  const totalLineQty = selectedLines.reduce((sum, line) => sum + line.quantity, 0);
+  const headerLabel = headerQuery.data?.packingNo ?? (activeHeaderId ? `#${activeHeaderId}` : '---');
 
   const qualityQuery = useQuery({
     queryKey: [PACKAGE_QUERY_KEYS.PACKAGE, 'quality', selectedPackage?.id],
@@ -259,136 +280,239 @@ export function PackagePackingStationPage(): ReactElement {
       actions={<PackageOpen className="size-5 opacity-80" aria-hidden />}
     >
       {!permission.canMutate ? <PermissionNotice /> : null}
-      <div className="wms-ops-form space-y-6">
-          <div className={STATION_SEARCH_PANEL_CLASS}>
-              <div className="space-y-1">
-              <Label>{t('package.station.headerId')}</Label>
-              <OpsFieldShell>
-              <Input
+      <div className="wms-ops-form wms-ops-station space-y-6">
+        <div className="wms-ops-station__lookup">
+          <div className="space-y-1">
+            <span className="wms-ops-station__field-label">{t('package.station.headerId')}</span>
+            <OpsFieldShell>
+              <OpsInput
                 value={packingHeaderIdText}
                 onChange={(event) => setPackingHeaderIdText(event.target.value)}
                 onKeyDown={(event) => { if (event.key === 'Enter') loadHeader(); }}
                 placeholder={t('package.station.headerIdPlaceholder')}
-                className={OPS_FIELD_CLASS}
               />
-              </OpsFieldShell>
-            </div>
-            <OpsActionButton type="button" variant="primary" className="self-end" onClick={loadHeader}>{t('common.search')}</OpsActionButton>
+            </OpsFieldShell>
           </div>
+          <OpsActionButton type="button" variant="primary" onClick={loadHeader}>
+            {t('common.search')}
+          </OpsActionButton>
+        </div>
 
-          {activeHeaderId ? (
-            <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{headerQuery.data?.packingNo ?? `#${activeHeaderId}`}</CardTitle>
-                  <CardDescription>{headerQuery.data?.customerName ?? headerQuery.data?.customerCode ?? '-'}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-1">
-                    <Label>{t('package.station.package')}</Label>
-                    <Select value={selectedPackage ? String(selectedPackage.id) : ''} onValueChange={(value) => setSelectedPackageId(Number(value))}>
-                      <SelectTrigger><SelectValue placeholder={t('package.station.selectPackage')} /></SelectTrigger>
-                      <SelectContent>
-                        {packages.map((pkg) => <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.packageNo} - {pkg.packageType}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+        {activeHeaderId ? (
+          <div className="wms-ops-station__layout">
+            <aside className="wms-ops-station__sidebar">
+              <div className="wms-ops-station__hero">
+                <span className="wms-ops-station__header-id">{headerLabel}</span>
+                <p className="wms-ops-station__header-meta">
+                  {headerQuery.data?.customerName ?? headerQuery.data?.customerCode ?? '---'}
+                </p>
+              </div>
+
+              <div className="wms-ops-station__block">
+                <span className="wms-ops-station__field-label">{t('package.station.package')}</span>
+                <OpsFieldShell>
+                  <Select
+                    value={selectedPackage ? String(selectedPackage.id) : ''}
+                    onValueChange={(value) => setSelectedPackageId(Number(value))}
+                  >
+                    <SelectTrigger className={OPS_FIELD_CLASS}>
+                      <SelectValue placeholder={t('package.station.selectPackage')} />
+                    </SelectTrigger>
+                    <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                      {packages.map((pkg) => (
+                        <SelectItem key={pkg.id} value={String(pkg.id)}>
+                          {pkg.packageNo} - {pkg.packageType}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </OpsFieldShell>
+              </div>
+
+              <div className="wms-ops-station__block">
+                <div className="wms-ops-station__metrics">
+                  <div className="wms-ops-station__metric">
+                    <span className="wms-ops-station__metric-label">{t('package.station.status')}</span>
+                    {renderStationStatusToken(selectedPackage?.status, t)}
                   </div>
-
-                  <div className="grid gap-2 rounded-lg border p-3 text-sm">
-                    <div className="flex justify-between"><span>{t('package.station.status')}</span><Badge>{selectedPackage?.status ?? '-'}</Badge></div>
-                    <div className="flex justify-between"><span>{t('package.station.material')}</span><span>{selectedMaterial?.materialCode ?? '-'}</span></div>
-                    <div className="flex justify-between"><span>{t('package.station.lines')}</span><span>{selectedLines.length}</span></div>
-                    <div className="flex justify-between"><span>{t('package.station.qty')}</span><span>{selectedLines.reduce((sum, line) => sum + line.quantity, 0)}</span></div>
+                  <div className="wms-ops-station__metric">
+                    <span className="wms-ops-station__metric-label">{t('package.station.material')}</span>
+                    <span className="wms-ops-station__metric-value">{selectedMaterial?.materialCode ?? '---'}</span>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>{t('package.station.scanBarcode')}</Label>
-                    <div className="flex gap-2">
-                      <Input value={barcode} disabled={!canOperate} onChange={(event) => setBarcode(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && barcode.trim()) addLineMutation.mutate(); }} />
-                      <Input className="w-24" type="number" value={quantity} disabled={!canOperate} onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))} />
-                    </div>
-                    <Button className="w-full" disabled={!canOperate || !barcode.trim() || addLineMutation.isPending} onClick={() => addLineMutation.mutate()}>
-                      <Barcode className="mr-2 size-4" />
-                      {t('package.station.addToPackage')}
-                    </Button>
+                  <div className="wms-ops-station__metric">
+                    <span className="wms-ops-station__metric-label">{t('package.station.lines')}</span>
+                    <span className="wms-ops-station__metric-value">{selectedLines.length}</span>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" disabled={!canOperate || !selectedPackage} onClick={() => closePackageMutation.mutate()}>
-                      <CheckCircle2 className="mr-2 size-4" />
-                      {t('package.station.closePackage')}
-                    </Button>
-                    <Button variant="outline" disabled={!selectedPackage}>
-                      <Printer className="mr-2 size-4" />
-                      {t('package.station.printPrepared')}
-                    </Button>
+                  <div className="wms-ops-station__metric">
+                    <span className="wms-ops-station__metric-label">{t('package.station.qty')}</span>
+                    <span className="wms-ops-station__metric-value">{totalLineQty}</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><ShieldCheck className="size-5" />{t('package.station.qualityTitle')}</CardTitle>
-                    <CardDescription>{t('package.station.qualityDescription')}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="grid gap-2">
+              <div className="wms-ops-station__scan">
+                <div className="wms-ops-station__scan-grid">
+                  <span className="wms-ops-station__field-label wms-ops-station__scan-label--barcode">
+                    {t('package.station.scanBarcode')}
+                  </span>
+                  <span className="wms-ops-station__field-label wms-ops-station__scan-label--qty">
+                    {t('package.station.qty')}
+                  </span>
+                  <OpsFieldShell className="wms-ops-station__barcode-field">
+                    <Barcode className="wms-ops-station__barcode-icon" aria-hidden />
+                    <OpsInput
+                      value={barcode}
+                      disabled={!canOperate}
+                      placeholder={t('package.station.scanBarcode')}
+                      onChange={(event) => setBarcode(event.target.value)}
+                      onKeyDown={(event) => { if (event.key === 'Enter' && barcode.trim()) addLineMutation.mutate(); }}
+                      className="wms-ops-station__barcode-input"
+                    />
+                  </OpsFieldShell>
+                  <OpsFieldShell className="wms-ops-station__qty-field">
+                    <OpsInput
+                      type="number"
+                      min={1}
+                      value={quantity}
+                      disabled={!canOperate}
+                      onChange={(event) => setQuantity(Math.max(1, Number(event.target.value) || 1))}
+                      className="wms-ops-station__qty-input"
+                      aria-label={t('package.station.qty')}
+                    />
+                  </OpsFieldShell>
+                </div>
+                <OpsActionButton
+                  type="button"
+                  variant="primary"
+                  className="wms-ops-station__scan-submit"
+                  disabled={!canOperate || !barcode.trim() || addLineMutation.isPending}
+                  onClick={() => addLineMutation.mutate()}
+                >
+                  <Barcode className="size-3.5" aria-hidden />
+                  {t('package.station.addToPackage')}
+                </OpsActionButton>
+              </div>
+
+              <div className="wms-ops-station__actions">
+                <OpsActionButton
+                  type="button"
+                  variant="secondary"
+                  disabled={!canOperate || !selectedPackage}
+                  onClick={() => closePackageMutation.mutate()}
+                >
+                  <CheckCircle2 className="size-3.5" aria-hidden />
+                  {t('package.station.closePackage')}
+                </OpsActionButton>
+                <OpsActionButton type="button" variant="secondary" disabled={!selectedPackage}>
+                  <Printer className="size-3.5" aria-hidden />
+                  {t('package.station.printPrepared')}
+                </OpsActionButton>
+              </div>
+            </aside>
+
+            <div className="wms-ops-station__main">
+              <section className="wms-ops-station__panel" aria-labelledby="station-quality-title">
+                <div className="wms-ops-station__panel-head">
+                  <ShieldCheck className="size-4 shrink-0" aria-hidden />
+                  <h3 id="station-quality-title" className="wms-ops-station__panel-title">
+                    {t('package.station.qualityTitle')}
+                  </h3>
+                </div>
+                <p className="wms-ops-station__panel-desc">{t('package.station.qualityDescription')}</p>
+                <div className="wms-ops-station__panel-body">
+                  <div className="wms-ops-station__alerts">
                     {warnings.map((warning, index) => (
-                      <div key={`${warning.title}-${index}`} className="flex gap-3 rounded-lg border p-3">
-                        <AlertTriangle className={warning.severity === 'danger' ? 'size-5 text-red-600' : warning.severity === 'warning' ? 'size-5 text-amber-600' : 'size-5 text-sky-600'} />
-                        <div><div className="font-medium">{warning.title}</div><div className="text-sm text-muted-foreground">{warning.detail}</div></div>
+                      <div
+                        key={`${warning.title}-${index}`}
+                        className={cn(
+                          'wms-ops-station__alert',
+                          warning.severity === 'danger' && 'wms-ops-station__alert--danger',
+                          warning.severity === 'warning' && 'wms-ops-station__alert--warning',
+                          warning.severity === 'info' && 'wms-ops-station__alert--info',
+                        )}
+                      >
+                        <AlertTriangle
+                          className={cn(
+                            'size-4 shrink-0 self-start',
+                            warning.severity === 'danger' ? 'text-red-400' : warning.severity === 'warning' ? 'text-amber-400' : 'text-cyan-400',
+                          )}
+                          aria-hidden
+                        />
+                        <div>
+                          <div className="wms-ops-station__alert-title">{warning.title}</div>
+                          <div className="wms-ops-station__alert-detail">{warning.detail}</div>
+                        </div>
                       </div>
                     ))}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
+              </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('package.station.cartonizationTitle')}</CardTitle>
-                    <CardDescription>{t('package.station.cartonizationDescription')}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {suggestion ? (
-                      <div className="rounded-lg border bg-cyan-50 p-4 text-sm text-cyan-950">
-                        <div className="font-semibold">{suggestion.stock} / {suggestion.quantity}</div>
-                        <div>{suggestion.message}</div>
+              <section className="wms-ops-station__panel" aria-labelledby="station-cartonization-title">
+                <div className="wms-ops-station__panel-head">
+                  <PackageOpen className="size-4 shrink-0" aria-hidden />
+                  <h3 id="station-cartonization-title" className="wms-ops-station__panel-title">
+                    {t('package.station.cartonizationTitle')}
+                  </h3>
+                </div>
+                <p className="wms-ops-station__panel-desc">{t('package.station.cartonizationDescription')}</p>
+                <div className="wms-ops-station__panel-body">
+                  {suggestion ? (
+                    <div className="wms-ops-station__feed">
+                      <div className="wms-ops-station__feed-head">
+                        <span className="wms-ops-station__feed-stock">{suggestion.stock}</span>
+                        <span className="wms-ops-station__feed-qty">×{suggestion.quantity}</span>
                       </div>
+                      <p className="wms-ops-station__feed-message">{suggestion.message}</p>
+                    </div>
+                  ) : (
+                    <PageState tone="empty" title={t('package.station.noCartonization')} compact className="wms-ops-panel-empty wms-ops-panel-empty--inline" />
+                  )}
+                </div>
+              </section>
+
+              <section className="wms-ops-station__panel wms-ops-station__lines-panel" aria-labelledby="station-lines-title">
+                <div className="wms-ops-station__panel-head">
+                  <Barcode className="size-4 shrink-0" aria-hidden />
+                  <h3 id="station-lines-title" className="wms-ops-station__panel-title">
+                    {t('package.station.lines')}
+                  </h3>
+                </div>
+                <div className="wms-ops-station__panel-body">
+                  <div className="wms-ops-transfer-detail__table-wrap">
+                    {selectedLines.length === 0 ? (
+                      <PageState tone="empty" title={t('package.detail.noLines')} compact className="wms-ops-panel-empty wms-ops-panel-empty--inline" />
                     ) : (
-                      <div className="rounded-lg border p-4 text-sm text-muted-foreground">
-                        {t('package.station.noCartonization')}
-                      </div>
+                      <table className="wms-ops-transfer-detail__table">
+                        <thead>
+                          <tr>
+                            <th>{t('package.station.stockCode')}</th>
+                            <th>{t('package.station.barcode')}</th>
+                            <th>{t('package.station.serialNo')}</th>
+                            <th className="wms-ops-transfer-detail__col--qty">{t('package.station.qty')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedLines.map((line) => (
+                            <tr key={line.id}>
+                              <td>
+                                <div className="wms-ops-transfer-detail__stock-code">{line.stockCode}</div>
+                                <div className="mt-0.5 text-[0.625rem] opacity-70">{line.stockName ?? '-'}</div>
+                              </td>
+                              <td>{line.barcode ?? '-'}</td>
+                              <td>{line.serialNo ?? '-'}</td>
+                              <td className="wms-ops-transfer-detail__col--qty">{line.quantity}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader><CardTitle>{t('package.station.lines')}</CardTitle></CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('package.station.stockCode')}</TableHead>
-                          <TableHead>{t('package.station.barcode')}</TableHead>
-                          <TableHead>{t('package.station.serialNo')}</TableHead>
-                          <TableHead className="text-right">{t('package.station.qty')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selectedLines.map((line) => (
-                          <TableRow key={line.id}>
-                            <TableCell><div className="font-medium">{line.stockCode}</div><div className="text-xs text-muted-foreground">{line.stockName ?? '-'}</div></TableCell>
-                            <TableCell>{line.barcode ?? '-'}</TableCell>
-                            <TableCell>{line.serialNo ?? '-'}</TableCell>
-                            <TableCell className="text-right">{line.quantity}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </div>
+              </section>
             </div>
-          ) : null}
+          </div>
+        ) : null}
       </div>
     </OpsFormPageShell>
   );

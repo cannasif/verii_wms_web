@@ -236,11 +236,11 @@ export function ShipmentListPage(): ReactElement {
                 return <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{row.documentType || '-'}</Badge>;
               case 'status':
                 return row.isCompleted ? (
-                  <Badge variant="default" className="wms-ops-status-badge w-fit">{t('shipment.list.completed')}</Badge>
+                  <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{t('shipment.list.completed')}</Badge>
                 ) : row.isPendingApproval ? (
-                  <Badge variant="secondary" className="wms-ops-status-badge w-fit">{t('shipment.list.pendingApproval')}</Badge>
+                  <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{t('shipment.list.pendingApproval')}</Badge>
                 ) : (
-                  <Badge variant="outline" className="wms-ops-status-badge w-fit">{t('shipment.list.inProgress')}</Badge>
+                  <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active mx-auto">{t('shipment.list.inProgress')}</Badge>
                 );
               case 'createdDate':
                 return <span className="font-mono text-xs">{formatDateTime(row.createdDate)}</span>;

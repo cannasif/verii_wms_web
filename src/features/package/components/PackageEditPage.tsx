@@ -3,22 +3,31 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronLeft } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import {
+  OpsActionButton,
+  OpsFieldShell,
+  OpsFormMessage,
+  OpsFormPageShell,
+  OpsInput,
+  OpsTextarea,
+  PageState,
+} from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { packageApi } from '../api/package-api';
 import { usePHeader } from '../hooks/usePHeader';
 import { useUpdatePHeader } from '../hooks/useUpdatePHeader';
 import { useMatchPlines } from '../hooks/useMatchPlines';
 import { SearchableSelect } from '@/features/shared';
-import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type AvailableHeaderDto } from '../types/package';
-import { FormPageShell } from '@/components/shared';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { pHeaderFormSchema, CargoCompany, type PHeaderFormData, type PHeaderFormInput, type AvailableHeaderDto } from '../types/package';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import type { Customer, Warehouse } from '@/features/shared';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
@@ -38,6 +47,11 @@ export function PackageEditPage(): ReactElement {
   const { data: header, isLoading } = usePHeader(headerId);
   const updateMutation = useUpdatePHeader();
   const matchPlinesMutation = useMatchPlines();
+
+  const formItemClass = 'wms-ops-form-item';
+  const fieldMessage = <OpsFormMessage />;
+  const requiredMark = <span className="wms-ops-required"> *</span>;
+
   const cargoCompanyOptions = useMemo(() => {
     return Object.entries(CargoCompany)
       .filter(([key]) => isNaN(Number(key)))
@@ -49,21 +63,21 @@ export function PackageEditPage(): ReactElement {
 
   const schema = useMemo(() => pHeaderFormSchema(t), [t]);
 
-  const form = useForm<PHeaderFormData>({
+  const form = useForm<PHeaderFormInput, unknown, PHeaderFormData>({
     resolver: zodResolver(schema),
-      defaultValues: {
-        packingNo: '',
-        packingDate: new Date().toISOString().split('T')[0],
-        warehouseCode: '',
-        sourceType: undefined,
-        sourceHeaderId: undefined,
-        customerCode: '',
-        customerAddress: '',
-        status: 'Draft' as const,
-        carrierId: undefined,
-        carrierServiceType: '',
-        trackingNo: '',
-      },
+    defaultValues: {
+      packingNo: '',
+      packingDate: new Date().toISOString().split('T')[0],
+      warehouseCode: '',
+      sourceType: undefined,
+      sourceHeaderId: undefined,
+      customerCode: '',
+      customerAddress: '',
+      status: 'Draft' as const,
+      carrierId: undefined,
+      carrierServiceType: '',
+      trackingNo: '',
+    },
   });
 
   const sourceType = form.watch('sourceType');
@@ -91,13 +105,13 @@ export function PackageEditPage(): ReactElement {
     [t]
   );
 
-  const getHeaderDisplayLabel = (header: AvailableHeaderDto): string => {
-    const parts = [`#${header.id}`];
-    if (header.documentNo) {
-      parts.push(header.documentNo);
+  const getHeaderDisplayLabel = (headerItem: AvailableHeaderDto): string => {
+    const parts = [`#${headerItem.id}`];
+    if (headerItem.documentNo) {
+      parts.push(headerItem.documentNo);
     }
-    if (header.customerName) {
-      parts.push(header.customerName);
+    if (headerItem.customerName) {
+      parts.push(headerItem.customerName);
     }
     return parts.join(' - ');
   };
@@ -119,7 +133,7 @@ export function PackageEditPage(): ReactElement {
       });
       setSelectedSourceHeaderLabel(
         header.sourceHeaderId
-          ? [ `#${header.sourceHeaderId}`, header.customerCode ].filter(Boolean).join(' - ')
+          ? [`#${header.sourceHeaderId}`, header.customerCode].filter(Boolean).join(' - ')
           : '',
       );
     }
@@ -163,40 +177,50 @@ export function PackageEditPage(): ReactElement {
     }
   };
 
+  const handleMatchToggle = async (): Promise<void> => {
+    if (!permission.canUpdate || !headerId || !header) return;
+
+    try {
+      await matchPlinesMutation.mutateAsync({
+        pHeaderId: headerId,
+        isMatched: !header.isMatched,
+      });
+      toast.success(
+        header.isMatched
+          ? t('package.edit.unmatchSuccess')
+          : t('package.edit.matchSuccess')
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('package.edit.matchError')
+      );
+    }
+  };
+
+  const isFormDisabled = isReadOnly || updateMutation.isPending;
+
   return (
-    <div className="space-y-6 crm-page">
-      <FormPageShell
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('package.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('package.create.breadcrumb.module')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('common.edit')}</span>
+          </>
+        }
         title={t('package.edit.title')}
         description={t('package.edit.description')}
-        isLoading={isLoading}
-        isError={!isLoading && !header}
-        loadingTitle={t('common.loading')}
-        errorTitle={t('package.edit.notFound')}
         actions={
           header?.sourceType && header?.sourceHeaderId ? (
-            <Button
-              variant={header.isMatched ? 'destructive' : 'default'}
-              onClick={async () => {
-                if (!permission.canUpdate) return;
-                if (!headerId) return;
-                try {
-                  await matchPlinesMutation.mutateAsync({
-                    pHeaderId: headerId,
-                    isMatched: !header.isMatched,
-                  });
-                  toast.success(
-                    header.isMatched
-                      ? t('package.edit.unmatchSuccess')
-                      : t('package.edit.matchSuccess')
-                  );
-                } catch (error) {
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : t('package.edit.matchError')
-                  );
-                }
-              }}
+            <OpsActionButton
+              type="button"
+              variant={header.isMatched ? 'secondary' : 'primary'}
+              onClick={handleMatchToggle}
               disabled={!permission.canUpdate || matchPlinesMutation.isPending}
             >
               {matchPlinesMutation.isPending
@@ -204,27 +228,42 @@ export function PackageEditPage(): ReactElement {
                 : header.isMatched
                   ? t('package.edit.unmatch')
                   : t('package.edit.match')}
-            </Button>
-          ) : undefined
+            </OpsActionButton>
+          ) : headerId ? (
+            <span className="wms-ops-code-badge">#{headerId}</span>
+          ) : null
         }
       >
+        {!permission.canUpdate ? <PermissionNotice /> : null}
+
+        {isLoading ? (
+          <PageState tone="loading" title={t('common.loading')} compact />
+        ) : null}
+
+        {!isLoading && !header ? (
+          <PageState tone="error" title={t('package.edit.notFound')} compact />
+        ) : null}
+
         {header ? (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 crm-page">
-              <fieldset disabled={isReadOnly} className={isReadOnly ? 'pointer-events-none opacity-75' : undefined}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 wms-ops-form">
+            <fieldset
+              disabled={isFormDisabled}
+              className={cn(isFormDisabled && 'pointer-events-none opacity-75')}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="packingNo"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>
-                        {t('package.form.packingNo')} <span className="text-destructive">*</span>
+                        {t('package.form.packingNo')}
+                        {requiredMark}
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <OpsInput {...field} />
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -233,12 +272,12 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="packingDate"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.packingDate')}</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <OpsInput type="date" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -247,25 +286,29 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="sourceType"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.sourceType')}</FormLabel>
                       <FormControl>
-                        <SearchableSelect<{ value: string; label: string }>
-                          value={field.value || ''}
-                          onValueChange={(value) => {
-                            field.onChange(value || undefined);
-                            form.setValue('sourceHeaderId', undefined);
-                          }}
-                          options={sourceTypeOptions}
-                          getOptionValue={(opt) => opt.value}
-                          getOptionLabel={(opt) => opt.label}
-                          placeholder={t('package.form.selectSourceType')}
-                          searchPlaceholder={t('common.search')}
-                          emptyText={t('package.form.noSourceType')}
-                          itemLimit={100}
-                        />
+                        <OpsFieldShell>
+                          <SearchableSelect<{ value: string; label: string }>
+                            value={field.value || ''}
+                            onValueChange={(value) => {
+                              field.onChange(value || undefined);
+                              form.setValue('sourceHeaderId', undefined);
+                            }}
+                            options={sourceTypeOptions}
+                            getOptionValue={(opt) => opt.value}
+                            getOptionLabel={(opt) => opt.label}
+                            placeholder={t('package.form.selectSourceType')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={t('package.form.noSourceType')}
+                            itemLimit={100}
+                            className={OPS_FIELD_CLASS}
+                            popoverClassName="wms-ops-lookup-popover"
+                          />
+                        </OpsFieldShell>
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -274,36 +317,40 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="sourceHeaderId"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.sourceHeaderId')}</FormLabel>
                       <FormControl>
-                        <PagedLookupDialog<AvailableHeaderDto>
-                          open={sourceHeaderLookupOpen}
-                          onOpenChange={setSourceHeaderLookupOpen}
-                          title={t('package.form.sourceHeaderId')}
-                          description={sourceType ? t(`package.sourceType.${sourceType}`) : t('package.form.selectSourceTypeFirst')}
-                          value={selectedSourceHeaderLabel || (field.value ? `#${field.value}` : '')}
-                          placeholder={t('package.form.selectSourceHeader')}
-                          searchPlaceholder={t('common.search')}
-                          emptyText={
-                            sourceType
-                              ? t('package.form.noAvailableHeaders')
-                              : t('package.form.selectSourceTypeFirst')
-                          }
-                          disabled={!sourceType}
-                          queryKey={['package-edit', 'available-headers', sourceType || 'none']}
-                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                            packageApi.getAvailableHeadersForMappingPaged(sourceType!, { pageNumber, pageSize, search }, { signal })
-                          }
-                          getKey={(headerItem) => headerItem.id.toString()}
-                          getLabel={getHeaderDisplayLabel}
-                          onSelect={(headerItem) => {
-                            field.onChange(headerItem.id);
-                            setSelectedSourceHeaderLabel(getHeaderDisplayLabel(headerItem));
-                          }}
-                        />
+                        <OpsFieldShell className={sourceHeaderLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                          <PagedLookupDialog<AvailableHeaderDto>
+                            variant="ops"
+                            open={sourceHeaderLookupOpen}
+                            onOpenChange={setSourceHeaderLookupOpen}
+                            title={t('package.form.sourceHeaderId')}
+                            value={selectedSourceHeaderLabel || (field.value ? `#${field.value}` : '')}
+                            placeholder={t('package.form.selectSourceHeader')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={
+                              sourceType
+                                ? t('package.form.noAvailableHeaders')
+                                : t('package.form.selectSourceTypeFirst')
+                            }
+                            disabled={!sourceType}
+                            triggerClassName={OPS_FIELD_CLASS}
+                            queryKey={['package-edit', 'available-headers', sourceType || 'none']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              packageApi.getAvailableHeadersForMappingPaged(sourceType!, { pageNumber, pageSize, search }, { signal })
+                            }
+                            getKey={(headerItem) => headerItem.id.toString()}
+                            getLabel={getHeaderDisplayLabel}
+                            onSelect={(headerItem) => {
+                              field.onChange(headerItem.id);
+                              form.clearErrors('sourceHeaderId');
+                              setSelectedSourceHeaderLabel(getHeaderDisplayLabel(headerItem));
+                            }}
+                          />
+                        </OpsFieldShell>
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -312,31 +359,35 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="warehouseCode"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.warehouseCode')}</FormLabel>
                       <FormControl>
-                        <PagedLookupDialog<Warehouse>
-                          open={warehouseLookupOpen}
-                          onOpenChange={setWarehouseLookupOpen}
-                          title={t('package.form.selectWarehouse')}
-                          description={t('package.form.warehouseCode')}
-                          value={selectedWarehouseLabel || field.value}
-                          placeholder={t('package.form.selectWarehouse')}
-                          searchPlaceholder={t('common.search')}
-                          emptyText={t('common.notFound')}
-                          queryKey={['package-edit', 'warehouse']}
-                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                            lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
-                          }
-                          getKey={(warehouse) => warehouse.id.toString()}
-                          getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
-                          onSelect={(warehouse) => {
-                            field.onChange(warehouse.depoKodu.toString());
-                            setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
-                          }}
-                        />
+                        <OpsFieldShell className={warehouseLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                          <PagedLookupDialog<Warehouse>
+                            variant="ops"
+                            open={warehouseLookupOpen}
+                            onOpenChange={setWarehouseLookupOpen}
+                            title={t('package.form.selectWarehouse')}
+                            value={selectedWarehouseLabel || field.value}
+                            placeholder={t('package.form.selectWarehouse')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={t('common.notFound')}
+                            triggerClassName={OPS_FIELD_CLASS}
+                            queryKey={['package-edit', 'warehouse']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              lookupApi.getWarehousesPaged({ pageNumber, pageSize, search }, undefined, { signal })
+                            }
+                            getKey={(warehouse) => warehouse.id.toString()}
+                            getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                            onSelect={(warehouse) => {
+                              field.onChange(warehouse.depoKodu.toString());
+                              form.clearErrors('warehouseCode');
+                              setSelectedWarehouseLabel(`${warehouse.depoIsmi} (${warehouse.depoKodu})`);
+                            }}
+                          />
+                        </OpsFieldShell>
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -345,31 +396,35 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="customerCode"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.customerCode')}</FormLabel>
                       <FormControl>
-                        <PagedLookupDialog<Customer>
-                          open={customerLookupOpen}
-                          onOpenChange={setCustomerLookupOpen}
-                          title={t('package.form.selectCustomer')}
-                          description={t('package.form.customerCode')}
-                          value={selectedCustomerLabel || field.value}
-                          placeholder={t('package.form.selectCustomer')}
-                          searchPlaceholder={t('common.search')}
-                          emptyText={t('common.notFound')}
-                          queryKey={['package-edit', 'customer']}
-                          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                            lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
-                          }
-                          getKey={(customer) => customer.id.toString()}
-                          getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
-                          onSelect={(customer) => {
-                            field.onChange(customer.cariKod);
-                            setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
-                          }}
-                        />
+                        <OpsFieldShell className={customerLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                          <PagedLookupDialog<Customer>
+                            variant="ops"
+                            open={customerLookupOpen}
+                            onOpenChange={setCustomerLookupOpen}
+                            title={t('package.form.selectCustomer')}
+                            value={selectedCustomerLabel || field.value}
+                            placeholder={t('package.form.selectCustomer')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={t('common.notFound')}
+                            triggerClassName={OPS_FIELD_CLASS}
+                            queryKey={['package-edit', 'customer']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              lookupApi.getCustomersPaged({ pageNumber, pageSize, search }, { signal })
+                            }
+                            getKey={(customer) => customer.id.toString()}
+                            getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                            onSelect={(customer) => {
+                              field.onChange(customer.cariKod);
+                              form.clearErrors('customerCode');
+                              setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                            }}
+                          />
+                        </OpsFieldShell>
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -378,23 +433,25 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="status"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.status')}</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Draft">{t('package.status.draft')}</SelectItem>
-                          <SelectItem value="Packing">{t('package.status.packing')}</SelectItem>
-                          <SelectItem value="Packed">{t('package.status.packed')}</SelectItem>
-                          <SelectItem value="Shipped">{t('package.status.shipped')}</SelectItem>
-                          <SelectItem value="Cancelled">{t('package.status.cancelled')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
+                      <OpsFieldShell>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                            <SelectItem value="Draft">{t('package.status.draft')}</SelectItem>
+                            <SelectItem value="Packing">{t('package.status.packing')}</SelectItem>
+                            <SelectItem value="Packed">{t('package.status.packed')}</SelectItem>
+                            <SelectItem value="Shipped">{t('package.status.shipped')}</SelectItem>
+                            <SelectItem value="Cancelled">{t('package.status.cancelled')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </OpsFieldShell>
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -403,22 +460,26 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="carrierId"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.carrierId')}</FormLabel>
                       <FormControl>
-                        <SearchableSelect<{ value: number; label: string }>
-                          value={field.value?.toString() || ''}
-                          onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : undefined)}
-                          options={cargoCompanyOptions}
-                          getOptionValue={(opt) => opt.value.toString()}
-                          getOptionLabel={(opt) => opt.label}
-                          placeholder={t('package.form.selectCarrier')}
-                          searchPlaceholder={t('common.search')}
-                          emptyText={t('package.form.noCarrier')}
-                          itemLimit={100}
-                        />
+                        <OpsFieldShell>
+                          <SearchableSelect<{ value: number; label: string }>
+                            value={field.value?.toString() || ''}
+                            onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : undefined)}
+                            options={cargoCompanyOptions}
+                            getOptionValue={(opt) => opt.value.toString()}
+                            getOptionLabel={(opt) => opt.label}
+                            placeholder={t('package.form.selectCarrier')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={t('package.form.noCarrier')}
+                            itemLimit={100}
+                            className={OPS_FIELD_CLASS}
+                            popoverClassName="wms-ops-lookup-popover"
+                          />
+                        </OpsFieldShell>
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -427,12 +488,12 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="carrierServiceType"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.carrierServiceType')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <OpsInput {...field} />
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -441,12 +502,12 @@ export function PackageEditPage(): ReactElement {
                   control={form.control}
                   name="trackingNo"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={formItemClass}>
                       <FormLabel>{t('package.form.trackingNo')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <OpsInput {...field} />
                       </FormControl>
-                      <FormMessage />
+                      {fieldMessage}
                     </FormItem>
                   )}
                 />
@@ -456,29 +517,39 @@ export function PackageEditPage(): ReactElement {
                 control={form.control}
                 name="customerAddress"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('package.form.customerAddress')}</FormLabel>
+                  <FormItem className={formItemClass}>
+                    <FormLabel className="wms-ops-notes-label">
+                      {t('package.form.customerAddress')}
+                    </FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={3} />
+                      <OpsTextarea {...field} rows={3} />
                     </FormControl>
-                    <FormMessage />
+                    {fieldMessage}
                   </FormItem>
                 )}
               />
+            </fieldset>
 
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => navigate(`/package/detail/${headerId}`)}>
-                  {t('common.cancel')}
-                </Button>
-                <Button type="submit" disabled={isReadOnly || updateMutation.isPending}>
-                  {updateMutation.isPending ? t('common.saving') : t('common.save')}
-                </Button>
-              </div>
-              </fieldset>
-            </form>
-          </Form>
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => navigate(`/package/detail/${headerId}`)}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.cancel')}
+              </OpsActionButton>
+              <OpsActionButton
+                type="submit"
+                variant="primary"
+                disabled={isFormDisabled}
+              >
+                {updateMutation.isPending ? t('common.saving') : t('common.save')}
+              </OpsActionButton>
+            </div>
+          </form>
         ) : null}
-      </FormPageShell>
-    </div>
+      </OpsFormPageShell>
+    </Form>
   );
 }

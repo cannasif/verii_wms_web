@@ -1,8 +1,11 @@
 import type { ReactElement } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { OpsActionButton, OpsInput } from '@/components/shared';
+import {
+  MasterDataOpsEmptyState,
+  MasterDataOpsFlagChip,
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+} from '@/features/shared';
 import type { TFunction } from 'i18next';
 import { localizeStatus } from '@/lib/localize-status';
 import type { SteelGoodReciptAcceptanseLineListItemDto } from '../../types/steel-good-recipt-acceptanse.types';
@@ -29,36 +32,40 @@ export function PlacementCandidatesCard({
   isLoading,
 }: PlacementCandidatesCardProps): ReactElement {
   return (
-    <Card className="border-white/10 bg-white/5">
-      <CardHeader className="space-y-4">
-        <CardTitle>{t('steelGoodReceiptAcceptance.placement.title')}</CardTitle>
-        <div className="flex gap-3">
-          <Input value={searchInput} onChange={(event) => onSearchInputChange(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.placement.searchPh')} />
-          <Button type="button" variant="outline" onClick={onSearch}>{t('common.search')}</Button>
+    <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.placement.title')}>
+      <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.placement.searchPh')}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <OpsInput value={searchInput} onChange={(event) => onSearchInputChange(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.placement.searchPh')} />
+          </div>
+          <OpsActionButton type="button" variant="secondary" onClick={onSearch}>{t('common.search')}</OpsActionButton>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
+      </MasterDataOpsFormField>
+
+      <div className="mt-4 space-y-3">
         {candidates.map((row) => (
           <button
             key={row.id}
             type="button"
             onClick={() => onSelectLine(row)}
-            className={`w-full rounded-2xl border p-4 text-left ${selectedLine?.id === row.id ? 'border-sky-400 bg-sky-500/10' : 'border-white/10 bg-white/5'}`}
+            className={`wms-ops-kkd-quick-link w-full text-left ${
+              selectedLine?.id === row.id ? 'ring-1 ring-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]' : ''
+            }`}
           >
             <div className="flex flex-wrap gap-2 text-sm">
-              <Badge variant="secondary">{row.dCode}</Badge>
-              <Badge variant="secondary">{row.stockCode}</Badge>
-              <Badge variant="secondary">{localizeStatus(row.status, t)}</Badge>
+              <MasterDataOpsFlagChip>{row.dCode}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip tone="info">{row.stockCode}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip>{localizeStatus(row.status, t)}</MasterDataOpsFlagChip>
             </div>
             <div className="mt-2 font-medium">{row.serialNo}</div>
-            <div className="text-sm text-slate-400">{row.supplierCode} - {row.supplierName}</div>
+            <div className="text-sm opacity-70">{row.supplierCode} - {row.supplierName}</div>
             <div className="mt-1 text-sm">{t('steelGoodReceiptAcceptance.placement.approvedQty')}: <span className="font-medium">{row.approvedQuantity}</span></div>
           </button>
         ))}
         {!isLoading && candidates.length === 0 ? (
-          <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.placement.noPending')}</div>
+          <MasterDataOpsEmptyState>{t('steelGoodReceiptAcceptance.placement.noPending')}</MasterDataOpsEmptyState>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </MasterDataOpsSection>
   );
 }

@@ -61,7 +61,9 @@
       "subtitle": "Depo hareketleri ve bağlı belgeler.",
       "events": "Depo Zaman Çizelgesi",
       "linkCount": "Bağlı Belgeler",
-      "lastMovement": "Son Hareket"
+      "lastMovement": "Son Hareket",
+      "loadError": "Servis kaydı zaman çizelgesi yüklenemedi.",
+      "noEvents": "Depo hareketi bulunamadı."
     },
     "recompute": {
       "missingStock": "Bu kayıt için gelen stok tanımlı değil.",
@@ -87,7 +89,9 @@
       "customerLookupDescription": "Cari kaydını listeden seçin; sistem cari kodu ve tanımlayıcıyı birlikte doldurur.",
       "incomingStockLookupDescription": "Gelen ürün için ERP stok kartını seçin; stok kodu ve tanımlayıcı birlikte doldurulur.",
       "initialLineStockLookupDescription": "Servis satırında kullanılacak stok kartını seçin; kod, tanımlayıcı ve birim birlikte taşınır.",
-      "warehouseLookupDescription": "Depoyu listeden seçin; sistem arka planda doğru depo kaydını bağlar."
+      "warehouseLookupDescription": "Depoyu listeden seçin; sistem arka planda doğru depo kaydını bağlar.",
+      "headerSection": "Kayıt Bilgileri",
+      "noExistingLines": "Servis satırı bulunamadı."
     },
     "reports": {
       "title": "Servis Raporları",
@@ -115,7 +119,9 @@
       "noRecentMovements": "Son depo hareketi bulunamadı.",
       "allocationRows": "Atama Satırları",
       "activeRepairCases": "Aktif Onarım Kayıtları",
-      "shipmentLinksCount": "Sevkiyat Bağlantı Sayısı"
+      "shipmentLinksCount": "Sevkiyat Bağlantı Sayısı",
+      "loadError": "Servis raporları yüklenemedi.",
+      "recentMovementsFeed": "Son hareket akışı"
     },
     "enum": {
       "serviceCaseStatus": {

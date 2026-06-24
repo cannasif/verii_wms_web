@@ -9,7 +9,15 @@ import { useDeletePLine } from '../../hooks/useDeletePLine';
 import { useYapKodlar } from '../../hooks/useYapKodlar';
 import { useStokBarcode } from '../../hooks/useStokBarcode';
 import { pLineFormSchema, type PLineFormData, type StokBarcodeDto } from '../../types/package';
-import { PageActionBar, PageState } from '@/components/shared';
+import {
+  OPS_FIELD_CLASS,
+  OPS_SELECT_CONTENT_CLASS,
+  OpsActionButton,
+  OpsFieldShell,
+  OpsInput,
+  PageActionBar,
+  PageState,
+} from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -306,10 +314,22 @@ export function Step3LineForm({
             title={<CardTitle>{t('package.wizard.step3.title')}</CardTitle>}
             description={<CardDescription>{t('package.wizard.step3.description')}</CardDescription>}
             actions={
-              <Button onClick={handleOpenDialog} disabled={!canManageLines || packages.length === 0}>
-                <Plus className="size-4 mr-2" />
-                {t('package.wizard.step3.addLine')}
-              </Button>
+              isOps ? (
+                <OpsActionButton
+                  type="button"
+                  variant="primary"
+                  onClick={handleOpenDialog}
+                  disabled={!canManageLines || packages.length === 0}
+                >
+                  <Plus className="size-4 mr-2" />
+                  {t('package.wizard.step3.addLine')}
+                </OpsActionButton>
+              ) : (
+                <Button onClick={handleOpenDialog} disabled={!canManageLines || packages.length === 0}>
+                  <Plus className="size-4 mr-2" />
+                  {t('package.wizard.step3.addLine')}
+                </Button>
+              )
             }
           />
         </CardHeader>
@@ -319,49 +339,96 @@ export function Step3LineForm({
           ) : isLoadingLines ? (
             <PageState tone="loading" title={t('common.loading')} compact />
           ) : lines.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('package.detail.barcode')}</TableHead>
-                  <TableHead>{t('package.detail.stockCode')}</TableHead>
-                  <TableHead>{t('package.detail.stockName')}</TableHead>
-                  <TableHead>{t('package.detail.yapKod')}</TableHead>
-                  <TableHead>{t('package.detail.yapAcik')}</TableHead>
-                  <TableHead>{t('package.detail.quantity')}</TableHead>
-                  <TableHead>{t('package.detail.serialNo')}</TableHead>
-                  <TableHead>{t('package.detail.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lines.map((line) => (
-                  <TableRow key={line.id}>
-                    <TableCell>{getPackageBarcode(line.packageId)}</TableCell>
-                    <TableCell>{line.stockCode}</TableCell>
-                    <TableCell>{line.stockName || '-'}</TableCell>
-                    <TableCell>{line.yapKod}</TableCell>
-                    <TableCell>{line.yapAcik || '-'}</TableCell>
-                    <TableCell>{line.quantity}</TableCell>
-                    <TableCell>
-                      {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
-                        .filter(Boolean)
-                        .join(', ') || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(line.id)}
-                          disabled={!canDeleteLines || deleteMutation.isPending}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+            isOps ? (
+              <div className="wms-ops-transfer-detail__table-wrap rounded-none border-0">
+                <table className="wms-ops-transfer-detail__table">
+                  <thead>
+                    <tr>
+                      <th>{t('package.detail.barcode')}</th>
+                      <th>{t('package.detail.stockCode')}</th>
+                      <th>{t('package.detail.stockName')}</th>
+                      <th>{t('package.detail.yapKod')}</th>
+                      <th>{t('package.detail.yapAcik')}</th>
+                      <th>{t('package.detail.quantity')}</th>
+                      <th>{t('package.detail.serialNo')}</th>
+                      <th>{t('package.detail.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lines.map((line) => (
+                      <tr key={line.id}>
+                        <td>{getPackageBarcode(line.packageId)}</td>
+                        <td>{line.stockCode}</td>
+                        <td>{line.stockName || '-'}</td>
+                        <td>{line.yapKod}</td>
+                        <td>{line.yapAcik || '-'}</td>
+                        <td>{line.quantity}</td>
+                        <td>
+                          {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
+                            .filter(Boolean)
+                            .join(', ') || '-'}
+                        </td>
+                        <td>
+                          <OpsActionButton
+                            type="button"
+                            variant="secondary"
+                            className="h-8 px-2"
+                            onClick={() => handleDelete(line.id)}
+                            disabled={!canDeleteLines || deleteMutation.isPending}
+                          >
+                            <Trash2 className="size-4" />
+                          </OpsActionButton>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('package.detail.barcode')}</TableHead>
+                    <TableHead>{t('package.detail.stockCode')}</TableHead>
+                    <TableHead>{t('package.detail.stockName')}</TableHead>
+                    <TableHead>{t('package.detail.yapKod')}</TableHead>
+                    <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                    <TableHead>{t('package.detail.quantity')}</TableHead>
+                    <TableHead>{t('package.detail.serialNo')}</TableHead>
+                    <TableHead>{t('package.detail.actions')}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {lines.map((line) => (
+                    <TableRow key={line.id}>
+                      <TableCell>{getPackageBarcode(line.packageId)}</TableCell>
+                      <TableCell>{line.stockCode}</TableCell>
+                      <TableCell>{line.stockName || '-'}</TableCell>
+                      <TableCell>{line.yapKod}</TableCell>
+                      <TableCell>{line.yapAcik || '-'}</TableCell>
+                      <TableCell>{line.quantity}</TableCell>
+                      <TableCell>
+                        {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
+                          .filter(Boolean)
+                          .join(', ') || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(line.id)}
+                            disabled={!canDeleteLines || deleteMutation.isPending}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )
           ) : (
             <PageState tone="empty" title={t('package.wizard.step3.noLines')} compact />
           )}
@@ -397,7 +464,7 @@ export function Step3LineForm({
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      className="pl-10 md:pl-9 h-10"
+                      className={cn('pl-10 md:pl-9 h-10', isOps && OPS_FIELD_CLASS)}
                       disabled={!canManageLines}
                     />
                   </div>
@@ -436,28 +503,55 @@ export function Step3LineForm({
                         <FormLabel>
                           {t('package.form.package')} <span className="text-destructive">*</span>
                         </FormLabel>
-                        <Select
-                          value={field.value?.toString() || ''}
-                          onValueChange={(value) => {
-                            const packageId = parseInt(value, 10);
-                            field.onChange(packageId);
-                            setSelectedPackageId(packageId);
-                          }}
-                          disabled={!canManageLines}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('package.form.selectPackage')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {packages.map((pkg) => (
-                              <SelectItem key={pkg.id} value={pkg.id.toString()}>
-                                {pkg.barcode || pkg.packageNo} ({pkg.packageType})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        {isOps ? (
+                          <OpsFieldShell>
+                            <Select
+                              value={field.value?.toString() || ''}
+                              onValueChange={(value) => {
+                                const packageId = parseInt(value, 10);
+                                field.onChange(packageId);
+                                setSelectedPackageId(packageId);
+                              }}
+                              disabled={!canManageLines}
+                            >
+                              <FormControl>
+                                <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                                  <SelectValue placeholder={t('package.form.selectPackage')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                                {packages.map((pkg) => (
+                                  <SelectItem key={pkg.id} value={pkg.id.toString()}>
+                                    {pkg.barcode || pkg.packageNo} ({pkg.packageType})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </OpsFieldShell>
+                        ) : (
+                          <Select
+                            value={field.value?.toString() || ''}
+                            onValueChange={(value) => {
+                              const packageId = parseInt(value, 10);
+                              field.onChange(packageId);
+                              setSelectedPackageId(packageId);
+                            }}
+                            disabled={!canManageLines}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('package.form.selectPackage')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {packages.map((pkg) => (
+                                <SelectItem key={pkg.id} value={pkg.id.toString()}>
+                                  {pkg.barcode || pkg.packageNo} ({pkg.packageType})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -470,7 +564,7 @@ export function Step3LineForm({
                       <FormItem>
                         <FormLabel>{t('package.form.barcode')}</FormLabel>
                         <FormControl>
-                          <Input {...field} readOnly />
+                          {isOps ? <OpsInput {...field} readOnly /> : <Input {...field} readOnly />}
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -486,7 +580,11 @@ export function Step3LineForm({
                         {t('package.form.stockCode')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={!canManageLines} />
+                        {isOps ? (
+                          <OpsInput {...field} disabled={!canManageLines} />
+                        ) : (
+                          <Input {...field} disabled={!canManageLines} />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -499,28 +597,55 @@ export function Step3LineForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('package.form.yapKod')}</FormLabel>
-                      <Select
-                        value={field.value ? String(field.value) : ''}
-                        onValueChange={(value) => {
-                          const selected = yapKodlar.find((item) => item.id === Number(value));
-                          field.onChange(value ? Number(value) : undefined);
-                          form.setValue('yapAcik', selected?.yapAcik || '');
-                        }}
-                        disabled={!canManageLines}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('package.form.yapKod')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {yapKodlar.map((item) => (
-                            <SelectItem key={item.id} value={String(item.id)}>
-                              {item.yapKod} - {item.yapAcik}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {isOps ? (
+                        <OpsFieldShell>
+                          <Select
+                            value={field.value ? String(field.value) : ''}
+                            onValueChange={(value) => {
+                              const selected = yapKodlar.find((item) => item.id === Number(value));
+                              field.onChange(value ? Number(value) : undefined);
+                              form.setValue('yapAcik', selected?.yapAcik || '');
+                            }}
+                            disabled={!canManageLines}
+                          >
+                            <FormControl>
+                              <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                                <SelectValue placeholder={t('package.form.yapKod')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                              {yapKodlar.map((item) => (
+                                <SelectItem key={item.id} value={String(item.id)}>
+                                  {item.yapKod} - {item.yapAcik}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </OpsFieldShell>
+                      ) : (
+                        <Select
+                          value={field.value ? String(field.value) : ''}
+                          onValueChange={(value) => {
+                            const selected = yapKodlar.find((item) => item.id === Number(value));
+                            field.onChange(value ? Number(value) : undefined);
+                            form.setValue('yapAcik', selected?.yapAcik || '');
+                          }}
+                          disabled={!canManageLines}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('package.form.yapKod')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {yapKodlar.map((item) => (
+                              <SelectItem key={item.id} value={String(item.id)}>
+                                {item.yapKod} - {item.yapAcik}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -533,7 +658,11 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.yapAcik')}</FormLabel>
                       <FormControl>
-                        <Input {...field} value={selectedYapKod?.yapAcik || field.value || ''} readOnly />
+                        {isOps ? (
+                          <OpsInput {...field} value={selectedYapKod?.yapAcik || field.value || ''} readOnly />
+                        ) : (
+                          <Input {...field} value={selectedYapKod?.yapAcik || field.value || ''} readOnly />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -549,14 +678,25 @@ export function Step3LineForm({
                         {t('package.form.quantity')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
-                          disabled={!canManageLines}
-                        />
+                        {isOps ? (
+                          <OpsInput
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                            disabled={!canManageLines}
+                          />
+                        ) : (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                            disabled={!canManageLines}
+                          />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -570,13 +710,23 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.sourceRouteId')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
-                          disabled={!canManageLines}
-                        />
+                        {isOps ? (
+                          <OpsInput
+                            type="number"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                            disabled={!canManageLines}
+                          />
+                        ) : (
+                          <Input
+                            type="number"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                            disabled={!canManageLines}
+                          />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -590,7 +740,11 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo')}</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={!canManageLines} />
+                        {isOps ? (
+                          <OpsInput {...field} disabled={!canManageLines} />
+                        ) : (
+                          <Input {...field} disabled={!canManageLines} />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -604,7 +758,11 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo2')}</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={!canManageLines} />
+                        {isOps ? (
+                          <OpsInput {...field} disabled={!canManageLines} />
+                        ) : (
+                          <Input {...field} disabled={!canManageLines} />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -618,7 +776,11 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo3')}</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={!canManageLines} />
+                        {isOps ? (
+                          <OpsInput {...field} disabled={!canManageLines} />
+                        ) : (
+                          <Input {...field} disabled={!canManageLines} />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -632,7 +794,11 @@ export function Step3LineForm({
                     <FormItem>
                       <FormLabel>{t('package.form.serialNo4')}</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={!canManageLines} />
+                        {isOps ? (
+                          <OpsInput {...field} disabled={!canManageLines} />
+                        ) : (
+                          <Input {...field} disabled={!canManageLines} />
+                        )}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -677,18 +843,36 @@ export function Step3LineForm({
         </DialogContent>
       </Dialog>
 
-      <div className="flex justify-between gap-2">
-        <Button variant="outline" onClick={onPrevious}>
-          {t('package.wizard.previousStep')}
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onSaveAndExit}>
-            {t('package.wizard.saveAndExit')}
-          </Button>
-          <Button onClick={onNext} disabled={!canManageLines}>
-            {t('package.wizard.nextStep')}
-          </Button>
-        </div>
+      <div className={cn('flex justify-between gap-2', isOps && 'wms-ops-actions border-t pt-6')}>
+        {isOps ? (
+          <>
+            <OpsActionButton type="button" variant="secondary" onClick={onPrevious}>
+              {t('package.wizard.previousStep')}
+            </OpsActionButton>
+            <div className="flex gap-3">
+              <OpsActionButton type="button" variant="secondary" onClick={onSaveAndExit}>
+                {t('package.wizard.saveAndExit')}
+              </OpsActionButton>
+              <OpsActionButton type="button" variant="primary" onClick={onNext} disabled={!canManageLines}>
+                {t('package.wizard.nextStep')}
+              </OpsActionButton>
+            </div>
+          </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={onPrevious}>
+              {t('package.wizard.previousStep')}
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onSaveAndExit}>
+                {t('package.wizard.saveAndExit')}
+              </Button>
+              <Button onClick={onNext} disabled={!canManageLines}>
+                {t('package.wizard.nextStep')}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

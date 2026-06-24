@@ -8,12 +8,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
@@ -95,28 +96,34 @@ function formatDate(value?: string | null, locale = 'tr-TR'): string {
 
 function statusBadge(status: string, label: string): ReactElement {
   if (status === TRANSFER_CHAIN_STATUSES.completed) {
-    return <Badge className="rounded-xl border-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">{label}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{label}</Badge>;
   }
   if (status === TRANSFER_CHAIN_STATUSES.cancelled) {
-    return <Badge className="rounded-xl border-0 bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300">{label}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--danger mx-auto">{label}</Badge>;
   }
   if (status === TRANSFER_CHAIN_STATUSES.active) {
-    return <Badge className="rounded-xl border-0 bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">{label}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active mx-auto">{label}</Badge>;
   }
-  return <Badge variant="secondary">{label}</Badge>;
+  if (status === TRANSFER_CHAIN_STATUSES.draft) {
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{label}</Badge>;
+  }
+  return <Badge variant="outline" className="wms-ops-status-badge mx-auto">{label}</Badge>;
 }
 
 function stepStatusBadge(status: string, label: string): ReactElement {
   if (status === TRANSFER_CHAIN_STEP_STATUSES.completed) {
-    return <Badge className="rounded-xl border-0 bg-emerald-100 text-emerald-700">{label}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done">{label}</Badge>;
   }
-  if (status === TRANSFER_CHAIN_STEP_STATUSES.ready) {
-    return <Badge className="rounded-xl border-0 bg-blue-100 text-blue-700">{label}</Badge>;
+  if (status === TRANSFER_CHAIN_STEP_STATUSES.ready || status === TRANSFER_CHAIN_STEP_STATUSES.inProgress) {
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active">{label}</Badge>;
   }
   if (status === TRANSFER_CHAIN_STEP_STATUSES.blocked) {
-    return <Badge className="rounded-xl border-0 bg-amber-100 text-amber-700">{label}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending">{label}</Badge>;
   }
-  return <Badge variant="secondary">{label}</Badge>;
+  if (status === TRANSFER_CHAIN_STEP_STATUSES.cancelled) {
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--danger">{label}</Badge>;
+  }
+  return <Badge variant="outline" className="wms-ops-status-badge">{label}</Badge>;
 }
 
 export function TransferChainListPage(): ReactElement {
@@ -331,14 +338,14 @@ export function TransferChainListPage(): ReactElement {
         description={t('hero.description')}
         actions={
           permission.canCreate ? (
-            <Button
+            <OpsActionButton
               type="button"
+              variant="primary"
               onClick={() => { setEditingItem(null); setFormOpen(true); }}
-              className="wms-ops-list-toolbar-btn"
             >
-              <Plus className="mr-2 size-4" />
+              <Plus className="size-3.5" aria-hidden />
               {t('hero.create')}
-            </Button>
+            </OpsActionButton>
           ) : null
         }
       >
@@ -483,34 +490,71 @@ export function TransferChainListPage(): ReactElement {
       </OpsListPageShell>
 
       <Dialog open={formOpen} onOpenChange={(next) => { setFormOpen(next); if (!next) setEditingItem(null); }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? t('form.editTitle') : t('form.createTitle')}</DialogTitle>
-            <DialogDescription>{t('form.description')}</DialogDescription>
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog flex max-h-[90dvh] w-[95vw] max-w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-[95vw] lg:max-w-2xl">
+          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
+            <DialogTitle className="wms-ops-detail-dialog__title">
+              {editingItem ? t('form.editTitle') : t('form.createTitle')}
+            </DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
+              {t('form.description')}
+            </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t('form.code')}><Input value={chainForm.code} disabled={!!editingItem} onChange={(event) => setChainForm((prev) => ({ ...prev, code: event.target.value }))} /></Field>
-            <Field label={t('form.name')}><Input value={chainForm.name} onChange={(event) => setChainForm((prev) => ({ ...prev, name: event.target.value }))} /></Field>
-            <Field label={t('form.status')}>
-              <Select value={chainForm.status ?? TRANSFER_CHAIN_STATUSES.active} onValueChange={(value) => setChainForm((prev) => ({ ...prev, status: value }))}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.values(TRANSFER_CHAIN_STATUSES).map((status) => <SelectItem key={status} value={status}>{labelStatus(status)}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label={t('form.chainType')}><Input value={chainForm.chainType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, chainType: event.target.value }))} /></Field>
-            <Field label={t('form.sourceDocumentType')}><Input value={chainForm.sourceDocumentType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentType: event.target.value }))} placeholder={t('form.sourceDocumentTypePlaceholder')} /></Field>
-            <Field label={t('form.sourceDocumentId')}><Input type="number" value={chainForm.sourceDocumentId ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentId: Number(event.target.value) || undefined }))} /></Field>
+          <div className="grid flex-1 gap-4 overflow-y-auto px-4 py-4 sm:grid-cols-2 sm:px-6 sm:py-5">
+            <OpsField label={t('form.code')}>
+              <OpsInput value={chainForm.code} disabled={!!editingItem} onChange={(event) => setChainForm((prev) => ({ ...prev, code: event.target.value }))} />
+            </OpsField>
+            <OpsField label={t('form.name')}>
+              <OpsInput value={chainForm.name} onChange={(event) => setChainForm((prev) => ({ ...prev, name: event.target.value }))} />
+            </OpsField>
+            <OpsField label={t('form.status')}>
+              <OpsFieldShell>
+                <Select value={chainForm.status ?? TRANSFER_CHAIN_STATUSES.active} onValueChange={(value) => setChainForm((prev) => ({ ...prev, status: value }))}>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                    {Object.values(TRANSFER_CHAIN_STATUSES).map((status) => (
+                      <SelectItem key={status} value={status}>{labelStatus(status)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </OpsFieldShell>
+            </OpsField>
+            <OpsField label={t('form.chainType')}>
+              <OpsInput value={chainForm.chainType ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, chainType: event.target.value }))} />
+            </OpsField>
+            <OpsField label={t('form.sourceDocumentType')}>
+              <OpsInput
+                value={chainForm.sourceDocumentType ?? ''}
+                onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentType: event.target.value }))}
+                placeholder={t('form.sourceDocumentTypePlaceholder')}
+              />
+            </OpsField>
+            <OpsField label={t('form.sourceDocumentId')}>
+              <OpsInput
+                type="number"
+                value={chainForm.sourceDocumentId ?? ''}
+                onChange={(event) => setChainForm((prev) => ({ ...prev, sourceDocumentId: Number(event.target.value) || undefined }))}
+              />
+            </OpsField>
             <div className="sm:col-span-2">
-              <Field label={t('form.descriptionLabel')}><Textarea value={chainForm.description ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, description: event.target.value }))} /></Field>
+              <OpsField label={t('form.descriptionLabel')}>
+                <OpsTextarea value={chainForm.description ?? ''} onChange={(event) => setChainForm((prev) => ({ ...prev, description: event.target.value }))} rows={4} />
+              </OpsField>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>{t('common:cancel')}</Button>
-            <Button disabled={!chainForm.code.trim() || !chainForm.name.trim() || createMutation.isPending || updateMutation.isPending} onClick={handleSubmitChain}>
+          <DialogFooter className="shrink-0 gap-2 border-t px-4 py-4 sm:px-6 sm:gap-2">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setFormOpen(false)}>
+              {t('common:cancel')}
+            </OpsActionButton>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              disabled={!chainForm.code.trim() || !chainForm.name.trim() || createMutation.isPending || updateMutation.isPending}
+              onClick={handleSubmitChain}
+            >
               {createMutation.isPending || updateMutation.isPending ? t('common:processing') : t('common:save')}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -571,7 +615,7 @@ export function TransferChainListPage(): ReactElement {
                 <div className="rounded-2xl border border-cyan-200 bg-cyan-50/70 p-4 dark:border-cyan-800/40 dark:bg-cyan-950/20">
                   <h3 className="font-black text-slate-900 dark:text-white">{t('stepForm.title')}</h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-5">
-                    <Field label={t('stepForm.source')}>
+                    <OpsField label={t('stepForm.source')}>
                       <Select value={stepForm.sourceType} onValueChange={(value) => setStepForm((prev) => ({ ...prev, sourceType: value }))}>
                         <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -579,10 +623,10 @@ export function TransferChainListPage(): ReactElement {
                           <SelectItem value={TRANSFER_CHAIN_SOURCE_TYPES.productionTransfer}>{labelSourceType(TRANSFER_CHAIN_SOURCE_TYPES.productionTransfer)}</SelectItem>
                         </SelectContent>
                       </Select>
-                    </Field>
-                    <Field label={t('stepForm.headerId')}><Input type="number" value={stepForm.sourceHeaderId || ''} onChange={(event) => setStepForm((prev) => ({ ...prev, sourceHeaderId: Number(event.target.value) || 0 }))} /></Field>
-                    <Field label={t('stepForm.sequenceNo')}><Input type="number" value={stepForm.sequenceNo} onChange={(event) => setStepForm((prev) => ({ ...prev, sequenceNo: Number(event.target.value) || 1 }))} /></Field>
-                    <Field label={t('stepForm.note')}><Input value={stepForm.note ?? ''} onChange={(event) => setStepForm((prev) => ({ ...prev, note: event.target.value }))} /></Field>
+                    </OpsField>
+                    <OpsField label={t('stepForm.headerId')}><Input type="number" value={stepForm.sourceHeaderId || ''} onChange={(event) => setStepForm((prev) => ({ ...prev, sourceHeaderId: Number(event.target.value) || 0 }))} /></OpsField>
+                    <OpsField label={t('stepForm.sequenceNo')}><Input type="number" value={stepForm.sequenceNo} onChange={(event) => setStepForm((prev) => ({ ...prev, sequenceNo: Number(event.target.value) || 1 }))} /></OpsField>
+                    <OpsField label={t('stepForm.note')}><Input value={stepForm.note ?? ''} onChange={(event) => setStepForm((prev) => ({ ...prev, note: event.target.value }))} /></OpsField>
                     <div className="flex items-end gap-2">
                       <Button type="button" variant="outline" disabled={readinessLoading || !stepForm.sourceHeaderId} onClick={handleReadinessCheck}>{t('stepForm.check')}</Button>
                       <Button type="button" disabled={addStepMutation.isPending || !stepForm.sourceHeaderId} onClick={handleAddStep}>{t('stepForm.add')}</Button>
@@ -604,15 +648,21 @@ export function TransferChainListPage(): ReactElement {
       </Dialog>
 
       <Dialog open={!!deleteItem} onOpenChange={(next) => !next && setDeleteItem(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('delete.title')}</DialogTitle>
-            <DialogDescription>{t('delete.description', { name: deleteItem?.name ?? deleteItem?.code ?? '' })}</DialogDescription>
+        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-md gap-0 overflow-hidden border-0 p-0 shadow-none">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('delete.title')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
+              {t('delete.description', { name: deleteItem?.name ?? deleteItem?.code ?? '' })}
+            </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteItem(null)}>{t('common:cancel')}</Button>
-            <Button
-              variant="destructive"
+          <DialogFooter className="gap-2 border-t px-6 py-4 sm:gap-2">
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteItem(null)}>
+              {t('common:cancel')}
+            </OpsActionButton>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              className="!border-destructive/40 !bg-destructive hover:!bg-destructive/90"
               disabled={deleteMutation.isPending}
               onClick={async () => {
                 if (!deleteItem) return;
@@ -621,7 +671,7 @@ export function TransferChainListPage(): ReactElement {
               }}
             >
               {deleteMutation.isPending ? t('common:processing') : t('common:delete')}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -629,10 +679,10 @@ export function TransferChainListPage(): ReactElement {
   );
 }
 
-function Field({ label, children }: { label: string; children: ReactElement }): ReactElement {
+function OpsField({ label, children }: { label: string; children: ReactElement }): ReactElement {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-black uppercase tracking-wider text-slate-500">{label}</Label>
+    <div className="space-y-2">
+      <Label className="wms-ops-detail-field__label">{label}</Label>
       {children}
     </div>
   );

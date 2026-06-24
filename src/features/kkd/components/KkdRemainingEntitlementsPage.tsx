@@ -1,11 +1,7 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Badge } from '@/components/ui/badge';
-import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { useTranslation } from 'react-i18next';
 import { getLocaleForFormatting } from '@/lib/i18n';
@@ -13,6 +9,13 @@ import { useUIStore } from '@/stores/ui-store';
 import { toast } from 'sonner';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdEmployeeDto, KkdRemainingEntitlementDto, KkdResolvedEmployeeDto } from '../types/kkd.types';
+import {
+  KkdFlagChip,
+  KkdOpsFormField,
+  KkdOpsSection,
+  KkdResultPanel,
+  kkdOpsStatusBadge,
+} from './kkd-ops-ui';
 
 export function KkdRemainingEntitlementsPage(): ReactElement {
   const { t, i18n } = useTranslation(['kkd', 'common']);
@@ -65,34 +68,39 @@ export function KkdRemainingEntitlementsPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.remaining.pageTitle')}
       description={t('kkd.operational.remaining.breadcrumb')}
     >
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.remaining.cardInput')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="kkd-remaining-qr">{t('kkd.operational.remaining.qrLabel')}</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="kkd-remaining-qr"
-                  value={qrCode}
-                  onChange={(event) => setQrCode(event.target.value)}
-                  placeholder={t('kkd.operational.remaining.qrPlaceholder')}
-                />
-                <Button type="button" onClick={() => resolveQrMutation.mutate({ qrCode })} disabled={!qrCode.trim() || resolveQrMutation.isPending}>
+        <KkdOpsSection title={t('kkd.operational.remaining.cardInput')}>
+          <div className="space-y-5">
+            <KkdOpsFormField label={t('kkd.operational.remaining.qrLabel')} htmlFor="kkd-remaining-qr">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+                <div className="min-w-0 flex-1">
+                  <OpsInput
+                    id="kkd-remaining-qr"
+                    value={qrCode}
+                    onChange={(event) => setQrCode(event.target.value)}
+                    placeholder={t('kkd.operational.remaining.qrPlaceholder')}
+                  />
+                </div>
+                <OpsActionButton
+                  type="button"
+                  variant="secondary"
+                  onClick={() => resolveQrMutation.mutate({ qrCode })}
+                  disabled={!qrCode.trim() || resolveQrMutation.isPending}
+                >
+                  {resolveQrMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
                   {t('kkd.operational.remaining.resolve')}
-                </Button>
+                </OpsActionButton>
               </div>
-            </div>
+            </KkdOpsFormField>
 
-            <div className="space-y-2">
-              <Label>{t('kkd.operational.remaining.altEmployee')}</Label>
+            <KkdOpsFormField label={t('kkd.operational.remaining.altEmployee')}>
               <PagedLookupDialog<KkdEmployeeDto>
+                variant="ops"
                 open={employeeDialogOpen}
                 onOpenChange={setEmployeeDialogOpen}
                 title={t('kkd.dialogs.selectEmployee')}
@@ -109,56 +117,63 @@ export function KkdRemainingEntitlementsPage(): ReactElement {
                   setItems([]);
                 }}
               />
-            </div>
+            </KkdOpsFormField>
 
-            <div className="space-y-2">
-              <Label htmlFor="kkd-remaining-date">{t('kkd.operational.remaining.dateLabel')}</Label>
-              <Input id="kkd-remaining-date" type="date" value={transactionDate} onChange={(event) => setTransactionDate(event.target.value)} />
-            </div>
+            <KkdOpsFormField label={t('kkd.operational.remaining.dateLabel')} htmlFor="kkd-remaining-date">
+              <OpsInput
+                id="kkd-remaining-date"
+                type="date"
+                value={transactionDate}
+                onChange={(event) => setTransactionDate(event.target.value)}
+              />
+            </KkdOpsFormField>
 
-            <Button type="button" onClick={() => remainingMutation.mutate()} disabled={!(resolvedEmployee || selectedEmployee) || remainingMutation.isPending}>
+            <OpsActionButton
+              type="button"
+              variant="primary"
+              onClick={() => remainingMutation.mutate()}
+              disabled={!(resolvedEmployee || selectedEmployee) || remainingMutation.isPending}
+            >
+              {remainingMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
               {t('kkd.operational.remaining.fetch')}
-            </Button>
-          </CardContent>
-        </Card>
+            </OpsActionButton>
+          </div>
+        </KkdOpsSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.remaining.listTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <KkdOpsSection title={t('kkd.operational.remaining.listTitle')}>
+          <div className="space-y-4">
             {items.length ? (
               items.map((item) => (
-                <div key={item.groupCode} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
+                <KkdResultPanel key={item.groupCode}>
                   <div className="flex flex-wrap gap-2">
-                    <Badge>{item.groupCode}</Badge>
-                    {item.groupName ? <Badge variant="secondary">{item.groupName}</Badge> : null}
-                    {item.periodType ? <Badge variant="outline">{item.periodType}</Badge> : null}
-                    <Badge variant="outline">
+                    <KkdFlagChip tone="info">{item.groupCode}</KkdFlagChip>
+                    {item.groupName ? <KkdFlagChip>{item.groupName}</KkdFlagChip> : null}
+                    {item.periodType ? kkdOpsStatusBadge(item.periodType, 'pending') : null}
+                    <KkdFlagChip>
                       {t('kkd.operational.remaining.mainShort')}: {item.remainingMainQuantity}
-                    </Badge>
-                    <Badge variant="outline">
+                    </KkdFlagChip>
+                    <KkdFlagChip>
                       {t('kkd.operational.remaining.addShort')}: {item.remainingAdditionalQuantity}
-                    </Badge>
-                    <Badge variant="secondary">
+                    </KkdFlagChip>
+                    <KkdFlagChip tone="success">
                       {t('kkd.operational.remaining.totalShort')}: {item.totalRemainingQuantity}
-                    </Badge>
+                    </KkdFlagChip>
                   </div>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                  <p className="mt-3 text-sm">
                     {t('kkd.operational.remaining.lastUse')}:{' '}
                     {item.lastUsageDate ? new Date(item.lastUsageDate).toLocaleString(dateLocale) : '-'} | {t('kkd.operational.remaining.nextOk')}:{' '}
                     {item.nextEligibleDate ? new Date(item.nextEligibleDate).toLocaleDateString(dateLocale) : '-'}
                   </p>
-                  {item.message ? <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{item.message}</p> : null}
-                </div>
+                  {item.message ? <p className="mt-2 text-sm opacity-80">{item.message}</p> : null}
+                </KkdResultPanel>
               ))
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('kkd.operational.remaining.listEmpty')}
-              </div>
+              <KkdResultPanel>
+                <p className="text-center text-sm">{t('kkd.operational.remaining.listEmpty')}</p>
+              </KkdResultPanel>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </KkdOpsSection>
       </div>
     </OpsFormPageShell>
   );

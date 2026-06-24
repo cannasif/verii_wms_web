@@ -2,22 +2,26 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Eye, FileText } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { getLocaleForFormatting } from '@/lib/i18n';
-import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
+import {
+  KKD_DISTRIBUTION_LIST_COLUMN_WIDTHS,
+  KkdFlagChip,
+  KkdOpsDialogContent,
+  KkdOpsSection,
+  KkdResultPanel,
+  KkdSummaryMetric,
+  kkdDistributionStatusBadge,
+} from './kkd-ops-ui';
 
 type DistributionColumnKey =
-  | 'rowActions'
   | 'documentNo'
   | 'documentDate'
   | 'customerCode'
@@ -31,8 +35,6 @@ type DistributionColumnKey =
 
 function mapSortBy(value: DistributionColumnKey): string {
   switch (value) {
-    case 'rowActions':
-      return 'DocumentDate';
     case 'documentNo':
       return 'DocumentNo';
     case 'documentDate':
@@ -169,13 +171,6 @@ export function KkdDistributionListPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<DistributionColumnKey>[]>(
     () => [
-      {
-        key: 'rowActions',
-        label: t('common.actions'),
-        sortable: false,
-        headClassName: 'sticky left-0 z-20 w-[176px] min-w-[176px] shadow-[8px_0_16px_-14px_rgba(15,23,42,0.6)]',
-        cellClassName: 'sticky left-0 z-10 w-[176px] min-w-[176px] bg-white dark:bg-[#130822] shadow-[8px_0_16px_-14px_rgba(15,23,42,0.6)]',
-      },
       { key: 'documentNo', label: t('kkd.operational.distributionList.colDocNo') },
       { key: 'documentDate', label: t('kkd.operational.distributionList.colDocDate') },
       { key: 'customerCode', label: t('kkd.operational.distributionList.colCustomer') },
@@ -718,53 +713,24 @@ export function KkdDistributionListPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.distributionList.pageTitle')}
       description={t('kkd.operational.distributionList.breadcrumb')}
     >
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.distributionList.gridTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PagedDataGrid<KkdDistributionListItemDto, DistributionColumnKey>
-              variant="ops"
-              pageKey="kkd-distribution-list"
-              columns={columns}
-              rows={rows}
-              rowKey={(row) => row.id}
-              renderCell={(row, columnKey) => {
-                switch (columnKey) {
-                  case 'rowActions':
-                    return (
-                      <div className="flex items-center gap-2" data-no-drag-scroll="true">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          title={t('common.view')}
-                          aria-label={t('common.view')}
-                          onClick={() => openDetail(row)}
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span>{t('common.view')}</span>
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          title={t('kkd.operational.distributionList.pdfAction')}
-                          aria-label={t('kkd.operational.distributionList.pdfAction')}
-                          disabled={pdfLoadingId === row.id}
-                          onClick={() => void openPdf(row)}
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span>{pdfLoadingId === row.id ? t('kkd.operational.distributionList.pdfPreparing') : t('kkd.operational.distributionList.pdfAction')}</span>
-                        </Button>
-                      </div>
-                    );
-                  case 'documentNo':
+      <div className="wms-ops-kkd-page__body space-y-5">
+        <KkdOpsSection title={t('kkd.operational.distributionList.gridTitle')}>
+          <PagedDataGrid<KkdDistributionListItemDto, DistributionColumnKey>
+            variant="ops"
+            pageKey="kkd-distribution-list"
+            columns={columns}
+            rows={rows}
+            rowKey={(row) => row.id}
+            defaultColumnWidths={KKD_DISTRIBUTION_LIST_COLUMN_WIDTHS}
+            enableColumnResize
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'documentNo':
                     return row.documentNo || '-';
                   case 'documentDate':
                     return formatDate(row.documentDate, dateLocale);
@@ -775,7 +741,7 @@ export function KkdDistributionListPage(): ReactElement {
                   case 'warehouseId':
                     return resolveWarehouseText(row);
                   case 'status':
-                    return localizeStatus(row.status, t);
+                    return kkdDistributionStatusBadge(row.status, t);
                   case 'sourceChannel':
                     return row.sourceChannel;
                   case 'lineCount':
@@ -791,6 +757,37 @@ export function KkdDistributionListPage(): ReactElement {
               sortBy={pagedGrid.sortBy}
               sortDirection={pagedGrid.sortDirection}
               onSort={pagedGrid.handleSort}
+              showActionsColumn
+              iconOnlyActions
+              actionsHeaderLabel={t('common.actions')}
+              actionsCellClassName="wms-ops-table-actions-col"
+              renderActionsCell={(row) => (
+                <div className="wms-ops-row-actions" data-no-drag-scroll="true">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="wms-ops-grid-icon-btn"
+                    title={t('common.view')}
+                    aria-label={t('common.view')}
+                    onClick={() => openDetail(row)}
+                  >
+                    <Eye className="size-3" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="wms-ops-grid-icon-btn"
+                    title={t('kkd.operational.distributionList.pdfAction')}
+                    aria-label={t('kkd.operational.distributionList.pdfAction')}
+                    disabled={pdfLoadingId === row.id}
+                    onClick={() => void openPdf(row)}
+                  >
+                    <FileText className="size-3" />
+                  </Button>
+                </div>
+              )}
               pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
               pageSizeOptions={pagedGrid.pageSizeOptions}
               onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -814,104 +811,98 @@ export function KkdDistributionListPage(): ReactElement {
                 placeholder: t('kkd.operational.distributionList.searchPh'),
               }}
             />
-          </CardContent>
-        </Card>
+        </KkdOpsSection>
       </div>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="max-h-[88vh] max-w-5xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('kkd.operational.distributionList.detailTitle')}</DialogTitle>
-            <DialogDescription>
+        <KkdOpsDialogContent className="max-w-5xl">
+          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
+            <DialogTitle className="wms-ops-detail-dialog__title">{t('kkd.operational.distributionList.detailTitle')}</DialogTitle>
+            <DialogDescription className="wms-ops-detail-dialog__description">
               {detail?.documentNo || (detail ? t('kkd.operational.distributionList.headerBadge', { id: detail.id }) : t('kkd.operational.distributionList.linesLoading'))}
             </DialogDescription>
           </DialogHeader>
 
-          {detail ? (
-            <div className="space-y-5">
-              <div className="flex flex-wrap gap-2">
-                <Badge>{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</Badge>
-                <Badge variant="secondary">{localizeStatus(detail.status, t)}</Badge>
-                <Badge variant="outline">{detail.sourceChannel}</Badge>
-                <Badge variant="outline">{t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}</Badge>
-              </div>
+          <div className="wms-ops-form max-h-[calc(90dvh-9rem)] overflow-y-auto px-4 py-4 sm:px-6">
+            {detail ? (
+              <div className="space-y-5">
+                <div className="flex flex-wrap gap-2">
+                  <KkdFlagChip tone="info">{detail.documentNo || t('kkd.operational.distributionList.headerBadge', { id: detail.id })}</KkdFlagChip>
+                  {kkdDistributionStatusBadge(detail.status, t)}
+                  <KkdFlagChip>{detail.sourceChannel}</KkdFlagChip>
+                  <KkdFlagChip>
+                    {t('kkd.operational.distributionList.erpPrefix')}: {detail.erpIntegrationStatus || '-'}
+                  </KkdFlagChip>
+                </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.customerEmployee')}</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {resolveCustomerText(detail)} / {resolveEmployeeText(detail, selectedHeader)}
-                  </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <KkdSummaryMetric
+                    icon={<span className="text-xs font-bold">CE</span>}
+                    label={t('kkd.operational.distributionList.customerEmployee')}
+                    value={`${resolveCustomerText(detail)} / ${resolveEmployeeText(detail, selectedHeader)}`}
+                  />
+                  <KkdSummaryMetric
+                    icon={<span className="text-xs font-bold">WH</span>}
+                    label={t('kkd.operational.distributionList.pdfWarehouse')}
+                    value={resolveWarehouseText(detail)}
+                  />
+                  <KkdSummaryMetric
+                    icon={<span className="text-xs font-bold">DT</span>}
+                    label={t('kkd.operational.distributionList.documentCompletion')}
+                    value={`${formatDate(detail.documentDate, dateLocale)} / ${formatDate(detail.completionDate, dateLocale)}`}
+                  />
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.pdfWarehouse')}</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {resolveWarehouseText(detail)}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.documentCompletion')}</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {formatDate(detail.documentDate, dateLocale)} / {formatDate(detail.completionDate, dateLocale)}
-                  </p>
-                </div>
-              </div>
 
-              <div className="space-y-3">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('kkd.operational.distributionList.linesTitle')}</h2>
-                {detailQuery.isLoading ? (
-                  <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                    {t('kkd.operational.distributionList.linesLoading')}
-                  </div>
-                ) : detail.lines.length ? (
-                  <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
-                    <div className="hidden grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400 md:grid">
-                      <span>{t('kkd.operational.distributionList.stockCode')}</span>
-                      <span>{t('kkd.operational.distributionList.stockName')}</span>
-                      <span>{t('kkd.operational.distributionList.quantity')}</span>
-                      <span>{t('kkd.operational.distributionList.group')}</span>
-                      <span>{t('kkd.operational.distributionList.barcodeSerial')}</span>
-                    </div>
-                    <div className="divide-y divide-slate-200 dark:divide-white/10">
+                <KkdOpsSection title={t('kkd.operational.distributionList.linesTitle')} className="border-0 shadow-none">
+                  {detailQuery.isLoading ? (
+                    <KkdResultPanel>
+                      <p className="text-center text-sm">{t('kkd.operational.distributionList.linesLoading')}</p>
+                    </KkdResultPanel>
+                  ) : detail.lines.length ? (
+                    <div className="space-y-3">
                       {detail.lines.map((line) => (
-                        <div key={line.id} className="grid gap-3 px-4 py-4 text-sm md:grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] md:items-center">
-                          <div>
-                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockCode')}</p>
-                            <Badge>{resolveLineStockCode(line)}</Badge>
+                        <KkdResultPanel key={line.id}>
+                          <div className="grid gap-3 text-sm md:grid-cols-[1.5fr_2fr_0.7fr_1fr_1.2fr] md:items-center">
+                            <div>
+                              <p className="md:hidden wms-ops-prelabel-form-label">{t('kkd.operational.distributionList.stockCode')}</p>
+                              <KkdFlagChip tone="info">{resolveLineStockCode(line)}</KkdFlagChip>
+                            </div>
+                            <div>
+                              <p className="md:hidden wms-ops-prelabel-form-label">{t('kkd.operational.distributionList.stockName')}</p>
+                              {resolveLineStockName(line)}
+                            </div>
+                            <div>
+                              <p className="md:hidden wms-ops-prelabel-form-label">{t('kkd.operational.distributionList.quantity')}</p>
+                              {line.quantity}
+                            </div>
+                            <div>
+                              <p className="md:hidden wms-ops-prelabel-form-label">{t('kkd.operational.distributionList.group')}</p>
+                              {line.groupCode ? (
+                                <KkdFlagChip>{line.groupName ? `${line.groupCode} - ${line.groupName}` : line.groupCode}</KkdFlagChip>
+                              ) : '-'}
+                            </div>
+                            <div>
+                              <p className="md:hidden wms-ops-prelabel-form-label">{t('kkd.operational.distributionList.barcodeSerial')}</p>
+                              {t('kkd.operational.distributionList.lineMeta', { b: line.barcode || '-', s: line.serialNo || '-', r: line.shelfId || '-' })}
+                            </div>
                           </div>
-                          <div className="font-medium text-slate-900 dark:text-white">
-                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.stockName')}</p>
-                            {resolveLineStockName(line)}
-                          </div>
-                          <div>
-                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.quantity')}</p>
-                            {line.quantity}
-                          </div>
-                          <div>
-                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.group')}</p>
-                            {line.groupCode ? <Badge variant="secondary">{line.groupName ? `${line.groupCode} - ${line.groupName}` : line.groupCode}</Badge> : '-'}
-                          </div>
-                          <div className="text-slate-600 dark:text-slate-300">
-                            <p className="md:hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t('kkd.operational.distributionList.barcodeSerial')}</p>
-                            {t('kkd.operational.distributionList.lineMeta', { b: line.barcode || '-', s: line.serialNo || '-', r: line.shelfId || '-' })}
-                          </div>
-                        </div>
+                        </KkdResultPanel>
                       ))}
                     </div>
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                    {t('kkd.operational.distributionList.pickDocument')}
-                  </div>
-                )}
+                  ) : (
+                    <KkdResultPanel>
+                      <p className="text-center text-sm">{t('kkd.operational.distributionList.pickDocument')}</p>
+                    </KkdResultPanel>
+                  )}
+                </KkdOpsSection>
               </div>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-              {t('kkd.operational.distributionList.linesLoading')}
-            </div>
-          )}
-        </DialogContent>
+            ) : (
+              <KkdResultPanel>
+                <p className="text-center text-sm">{t('kkd.operational.distributionList.linesLoading')}</p>
+              </KkdResultPanel>
+            )}
+          </div>
+        </KkdOpsDialogContent>
       </Dialog>
     </OpsListPageShell>
   );

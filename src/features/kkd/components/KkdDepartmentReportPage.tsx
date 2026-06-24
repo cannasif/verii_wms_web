@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
@@ -11,6 +10,7 @@ import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDepartmentUsageReportDto } from '../types/kkd.types';
+import { KKD_REPORT_COLUMN_WIDTHS, KkdOpsSection, KkdReportDetailFacts, KkdResultPanel } from './kkd-ops-ui';
 
 type ColumnKey = 'departmentCode' | 'departmentName' | 'employeeCount' | 'distributionCount' | 'totalQuantity' | 'lastUsageDate';
 
@@ -83,127 +83,118 @@ export function KkdDepartmentReportPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-kkd-page"
       eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
       title={t('kkd.operational.departmentReport.pageTitle')}
       description={t('kkd.operational.departmentReport.breadcrumb')}
     >
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="wms-ops-panel rounded-2xl border shadow-none">
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.reports.summaryDept')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PagedDataGrid<KkdDepartmentUsageReportDto, ColumnKey>
-              variant="ops"
-              pageKey="kkd-department-report"
-              columns={columns}
-              rows={rows}
-              rowKey={(row) => `${row.departmentId ?? 0}-${row.departmentCode ?? 'unknown'}`}
-              renderCell={(row, columnKey) => {
-                switch (columnKey) {
-                  case 'departmentCode':
-                    return row.departmentCode || '-';
-                  case 'departmentName':
-                    return row.departmentName || undefinedName;
-                  case 'employeeCount':
-                    return row.employeeCount;
-                  case 'distributionCount':
-                    return row.distributionCount;
-                  case 'totalQuantity':
-                    return row.totalQuantity;
-                  case 'lastUsageDate':
-                    return formatDate(row.lastUsageDate);
-                  default:
-                    return '-';
-                }
-              }}
-              sortBy={pagedGrid.sortBy}
-              sortDirection={pagedGrid.sortDirection}
-              onSort={pagedGrid.handleSort}
-              actionsHeaderLabel={t('common.actions')}
-              renderActionsCell={(row) => (
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title={t('common.view')}
-                    aria-label={t('common.view')}
-                    onClick={() => setSelectedRow(row)}
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span>{t('common.view')}</span>
-                  </Button>
-                </div>
-              )}
-              pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
-              pageSizeOptions={pagedGrid.pageSizeOptions}
-              onPageSizeChange={pagedGrid.handlePageSizeChange}
-              pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
-              totalPages={query.data?.totalPages ?? 0}
-              hasPreviousPage={query.data?.hasPreviousPage ?? false}
-              hasNextPage={query.data?.hasNextPage ?? false}
-              onPreviousPage={pagedGrid.goToPreviousPage}
-              onNextPage={pagedGrid.goToNextPage}
-              previousLabel={t('common.previous')}
-              nextLabel={t('common.next')}
-              paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
-              isLoading={query.isLoading}
-              isError={query.isError}
-              errorText={t('kkd.operational.reports.errDept')}
-              emptyText={t('kkd.operational.reports.emptyDept')}
-              search={{
-                value: pagedGrid.searchInput,
-                onValueChange: pagedGrid.searchConfig.onValueChange,
-                onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: t('kkd.operational.reports.deptSearchPh'),
-              }}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('kkd.operational.reports.summaryD')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {selectedRow ? (
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                    {t('kkd.operational.reports.deptLabel')}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                    {selectedRow.departmentCode || '-'} - {selectedRow.departmentName || undefinedName}
-                  </p>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.reports.labelQty')}
-                    </p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">{selectedRow.totalQuantity}</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-white/10 dark:bg-white/3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                      {t('kkd.operational.reports.labelDocEmp')}
-                    </p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">
-                      {selectedRow.distributionCount} / {selectedRow.employeeCount}
-                    </p>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/3">
-                  {t('kkd.operational.reports.lastMove')}: {formatDate(selectedRow.lastUsageDate)}
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('kkd.operational.reports.pickRowDept')}
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <KkdOpsSection title={t('kkd.operational.reports.summaryDept')}>
+          <PagedDataGrid<KkdDepartmentUsageReportDto, ColumnKey>
+            variant="ops"
+            pageKey="kkd-department-report"
+            columns={columns}
+            rows={rows}
+            rowKey={(row) => `${row.departmentId ?? 0}-${row.departmentCode ?? 'unknown'}`}
+            defaultColumnWidths={KKD_REPORT_COLUMN_WIDTHS}
+            enableColumnResize
+            renderCell={(row, columnKey) => {
+              switch (columnKey) {
+                case 'departmentCode':
+                  return row.departmentCode || '-';
+                case 'departmentName':
+                  return row.departmentName || undefinedName;
+                case 'employeeCount':
+                  return row.employeeCount;
+                case 'distributionCount':
+                  return row.distributionCount;
+                case 'totalQuantity':
+                  return row.totalQuantity;
+                case 'lastUsageDate':
+                  return formatDate(row.lastUsageDate);
+                default:
+                  return '-';
+              }
+            }}
+            sortBy={pagedGrid.sortBy}
+            sortDirection={pagedGrid.sortDirection}
+            onSort={pagedGrid.handleSort}
+            showActionsColumn
+            iconOnlyActions
+            actionsHeaderLabel={t('common.actions')}
+            actionsCellClassName="wms-ops-table-actions-col"
+            renderActionsCell={(row) => (
+              <div className="wms-ops-row-actions">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  title={t('common.view')}
+                  aria-label={t('common.view')}
+                  onClick={() => setSelectedRow(row)}
+                >
+                  <Eye className="size-3" />
+                </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
+            pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+            pageSizeOptions={pagedGrid.pageSizeOptions}
+            onPageSizeChange={pagedGrid.handlePageSizeChange}
+            pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+            totalPages={query.data?.totalPages ?? 0}
+            hasPreviousPage={query.data?.hasPreviousPage ?? false}
+            hasNextPage={query.data?.hasNextPage ?? false}
+            onPreviousPage={pagedGrid.goToPreviousPage}
+            onNextPage={pagedGrid.goToNextPage}
+            previousLabel={t('common.previous')}
+            nextLabel={t('common.next')}
+            paginationInfoText={`${range.from}-${range.to} / ${range.total}`}
+            isLoading={query.isLoading}
+            isError={query.isError}
+            errorText={t('kkd.operational.reports.errDept')}
+            emptyText={t('kkd.operational.reports.emptyDept')}
+            search={{
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('kkd.operational.reports.deptSearchPh'),
+            }}
+          />
+        </KkdOpsSection>
+
+        <KkdOpsSection title={t('kkd.operational.reports.summaryD')} className="min-w-0">
+          {selectedRow ? (
+            <div className="space-y-4">
+              <KkdReportDetailFacts
+                items={[
+                  {
+                    label: t('kkd.operational.reports.deptLabel'),
+                    value: `${selectedRow.departmentCode || '-'} - ${selectedRow.departmentName || undefinedName}`,
+                    tone: 'info',
+                  },
+                  {
+                    label: t('kkd.operational.reports.labelQty'),
+                    value: String(selectedRow.totalQuantity),
+                    tone: 'success',
+                  },
+                  {
+                    label: t('kkd.operational.reports.labelDocEmp'),
+                    value: `${selectedRow.distributionCount} / ${selectedRow.employeeCount}`,
+                  },
+                  {
+                    label: t('kkd.operational.reports.lastMove'),
+                    value: formatDate(selectedRow.lastUsageDate),
+                  },
+                ]}
+              />
+            </div>
+          ) : (
+            <KkdResultPanel>
+              <p className="text-center text-sm">{t('kkd.operational.reports.pickRowDept')}</p>
+            </KkdResultPanel>
+          )}
+        </KkdOpsSection>
       </div>
     </OpsListPageShell>
   );

@@ -1,11 +1,12 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { PageActionBar, PageState } from '@/components/shared';
+import { OpsFieldShell, PageState } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { useWarehouseInboundHeaders, useWarehouseOutboundHeaders } from '../hooks/useWarehouseHeaders';
 import { useWarehouseLines } from '../hooks/useWarehouseLines';
-import type { WarehouseLine } from '../types/warehouse';
+import type { WarehouseHeader, WarehouseLine } from '../types/warehouse';
 import { useWarehouseLineSerials } from '../hooks/useWarehouseLineSerials';
 import {
   Dialog,
@@ -20,12 +21,48 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 import { DocumentType } from '@/types/document-type';
+import { cn } from '@/lib/utils';
 
 interface WarehouseDetailDialogProps {
   headerId: number;
   documentType: string;
   isOpen: boolean;
   onClose: () => void;
+  variant?: 'default' | 'ops';
+}
+
+interface OpsDetailRowProps {
+  label: string;
+  children: ReactNode;
+}
+
+function OpsDetailRow({ label, children }: OpsDetailRowProps): ReactElement {
+  return (
+    <div className="wms-ops-detail-row">
+      <span className="wms-ops-detail-row__label">{label}</span>
+      <span className="wms-ops-detail-row__value">{children}</span>
+    </div>
+  );
+}
+
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+function formatDateTime(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleString('tr-TR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 export function WarehouseDetailDialog({
@@ -33,215 +70,322 @@ export function WarehouseDetailDialog({
   documentType,
   isOpen,
   onClose,
+  variant = 'ops',
 }: WarehouseDetailDialogProps): ReactElement {
   const { t } = useTranslation(['warehouse', 'common']);
   const { data: inboundHeadersData } = useWarehouseInboundHeaders();
   const { data: outboundHeadersData } = useWarehouseOutboundHeaders();
   const { data: linesData, isLoading: isLoadingLines } = useWarehouseLines(headerId, documentType);
   const [searchQuery, setSearchQuery] = useState('');
+  const isOps = variant === 'ops';
+  const isInbound = documentType === DocumentType.WI;
 
-  const headersData = documentType === DocumentType.WI ? inboundHeadersData : outboundHeadersData;
-  const header = headersData?.data?.find((h) => h.id === headerId);
-
-  const formatDate = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
-
-  const formatDateTime = (dateString: string | null): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const headersData = isInbound ? inboundHeadersData : outboundHeadersData;
+  const header = headersData?.data?.find((item) => item.id === headerId);
 
   const filteredLines = useMemo(() => {
     if (!linesData?.data) return [];
     if (!searchQuery.trim()) return linesData.data;
     const query = searchQuery.toLowerCase();
-    return linesData.data.filter((line) => {
-      return (
-        line.stockCode?.toLowerCase().includes(query) ||
-        line.stockName?.toLowerCase().includes(query) ||
-        line.yapKod?.toLowerCase().includes(query) ||
-        line.description?.toLowerCase().includes(query)
-      );
-    });
+    return linesData.data.filter((line) => (
+      line.stockCode?.toLowerCase().includes(query)
+      || line.stockName?.toLowerCase().includes(query)
+      || line.yapKod?.toLowerCase().includes(query)
+      || line.description?.toLowerCase().includes(query)
+    ));
   }, [linesData?.data, searchQuery]);
+
+  const renderStatusBadge = (item: WarehouseHeader): ReactElement => {
+    if (item.isCompleted) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done">{t('warehouse.list.completed')}</Badge>;
+    }
+    if (item.isPendingApproval) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending">{t('warehouse.list.pendingApproval')}</Badge>;
+    }
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active">{t('warehouse.list.inProgress')}</Badge>;
+  };
+
+  const renderInfoPanels = (): ReactElement => {
+    if (!header) return <></>;
+
+    if (isOps) {
+      return (
+        <div className="mb-6 grid shrink-0 grid-cols-1 items-stretch gap-3 sm:gap-5 md:grid-cols-3">
+          <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+            <h3 className="wms-ops-detail-section-title">{t('warehouse.list.documentInfo')}</h3>
+            <div className="wms-ops-detail-panel--rows flex-1">
+              <OpsDetailRow label={t('warehouse.list.documentNo')}>{header.documentNo || '-'}</OpsDetailRow>
+              <OpsDetailRow label={t('warehouse.list.documentDate')}>{formatDate(header.documentDate)}</OpsDetailRow>
+              <OpsDetailRow label={t('warehouse.list.documentType')}>
+                <span className="wms-ops-code-badge">{header.documentType || '-'}</span>
+              </OpsDetailRow>
+              <OpsDetailRow label={t('warehouse.list.createdDate')}>{formatDateTime(header.createdDate)}</OpsDetailRow>
+            </div>
+          </div>
+
+          <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+            <h3 className="wms-ops-detail-section-title">{t('warehouse.list.customerInfo')}</h3>
+            <div className="wms-ops-detail-panel--rows">
+              <OpsDetailRow label={t('warehouse.list.customerCode')}>{header.customerCode || '-'}</OpsDetailRow>
+              <OpsDetailRow label={t('warehouse.list.customerName')}>{header.customerName || '-'}</OpsDetailRow>
+              <OpsDetailRow label={t('warehouse.list.status')}>{renderStatusBadge(header)}</OpsDetailRow>
+            </div>
+            {header.description1 ? (
+              <div className="wms-ops-detail-panel__body">
+                <div className="wms-ops-detail-row__label mb-2">{t('warehouse.step1.notes')}</div>
+                <p className="text-sm leading-6 break-words opacity-90">{header.description1}</p>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="wms-ops-detail-panel flex h-full min-w-0 flex-col overflow-hidden">
+            <h3 className="wms-ops-detail-section-title">{t('warehouse.list.warehouseInfo')}</h3>
+            <div className="wms-ops-detail-panel--rows flex-1">
+              {isInbound ? (
+                <OpsDetailRow label={t('warehouse.list.targetWarehouse')}>{header.targetWarehouse || '-'}</OpsDetailRow>
+              ) : (
+                <OpsDetailRow label={t('warehouse.list.sourceWarehouse')}>{header.sourceWarehouse || '-'}</OpsDetailRow>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mb-4 grid shrink-0 grid-cols-1 gap-4 md:grid-cols-3">
+        <Card>
+          <CardContent className="pt-4 pb-4">
+            <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              {t('warehouse.list.documentInfo')}
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.documentNo')}</span>
+                <span className="text-sm font-medium">{header.documentNo || '-'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.documentDate')}</span>
+                <span className="text-sm">{formatDate(header.documentDate)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.documentType')}</span>
+                <Badge variant="outline" className="text-xs">{header.documentType || '-'}</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.createdDate')}</span>
+                <span className="text-xs">{formatDateTime(header.createdDate)}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-4 pb-4">
+            <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              {t('warehouse.list.customerInfo')}
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.customerCode')}</span>
+                <span className="text-sm font-medium">{header.customerCode || '-'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.customerName')}</span>
+                <span className="max-w-[150px] truncate text-right text-sm">{header.customerName || '-'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{t('warehouse.list.status')}</span>
+                {header.isCompleted ? (
+                  <Badge variant="default" className="text-xs">{t('warehouse.list.completed')}</Badge>
+                ) : header.isPendingApproval ? (
+                  <Badge variant="secondary" className="text-xs">{t('warehouse.list.pendingApproval')}</Badge>
+                ) : (
+                  <Badge variant="outline" className="text-xs">{t('warehouse.list.inProgress')}</Badge>
+                )}
+              </div>
+            </div>
+            {header.description1 ? (
+              <>
+                <Separator className="my-3" />
+                <div>
+                  <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    {t('warehouse.step1.notes')}
+                  </p>
+                  <p className="line-clamp-3 text-xs text-muted-foreground">{header.description1}</p>
+                </div>
+              </>
+            ) : null}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-4 pb-4">
+            <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              {t('warehouse.list.warehouseInfo')}
+            </p>
+            <div className="space-y-2">
+              {isInbound ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">{t('warehouse.list.targetWarehouse')}</span>
+                  <span className="text-sm font-medium">{header.targetWarehouse || '-'}</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">{t('warehouse.list.sourceWarehouse')}</span>
+                  <span className="text-sm font-medium">{header.sourceWarehouse || '-'}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderLinesSection = (): ReactElement => (
+    <div className={cn(
+      'flex flex-col',
+      'md:min-h-0 md:flex-1',
+      isOps && 'wms-ops-detail-panel wms-ops-detail-lines-panel',
+    )}>
+      <div className={cn('shrink-0 space-y-3', !isOps && 'mb-2 space-y-2 border-b pb-2')}>
+        <h3 className={cn('text-sm font-semibold', isOps && 'wms-ops-detail-section-title m-0 border-0 p-0')}>
+          {t('warehouse.list.lines')}
+        </h3>
+        {isOps ? (
+          <OpsFieldShell className="wms-ops-detail-search">
+            <Search className="wms-ops-detail-search__icon size-4" aria-hidden />
+            <Input
+              placeholder={t('warehouse.step2.searchItems')}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className={cn(OPS_FIELD_CLASS, 'pl-9 pr-10')}
+            />
+            <div className="wms-ops-detail-search__voice">
+              <VoiceSearchButton
+                onResult={setSearchQuery}
+                size="sm"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            </div>
+          </OpsFieldShell>
+        ) : (
+          <div className="relative flex items-center">
+            <Search className="absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t('warehouse.step2.searchItems')}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className="h-7 pr-9 pl-7 text-xs"
+            />
+            <div className="absolute top-1/2 right-1 -translate-y-1/2">
+              <VoiceSearchButton onResult={setSearchQuery} size="sm" variant="ghost" className="h-5 w-5" />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className={cn(
+        'max-md:shrink-0 max-md:overflow-x-auto rounded-md border',
+        'md:min-h-0 md:flex-1 md:overflow-y-auto',
+        isOps && 'wms-ops-transfer-detail__table-wrap rounded-none border-0',
+      )}>
+        {isLoadingLines ? (
+          <PageState tone="loading" title={t('common.loading')} compact className={isOps ? 'wms-ops-detail-empty' : 'm-3'} />
+        ) : filteredLines.length === 0 ? (
+          <PageState tone="empty" title={t('warehouse.list.noData')} compact className={isOps ? 'wms-ops-detail-empty' : 'm-3'} />
+        ) : isOps ? (
+          <table className="wms-ops-transfer-detail__table">
+            <colgroup>
+              <col style={{ width: '7.5rem' }} />
+              <col style={{ width: '16rem' }} />
+              <col style={{ width: '5.5rem' }} />
+              <col style={{ width: '8rem' }} />
+              <col style={{ width: '8rem' }} />
+              <col style={{ width: '7rem' }} />
+              <col style={{ width: '7rem' }} />
+              <col style={{ width: '10rem' }} />
+              <col style={{ width: '10rem' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>{t('warehouse.list.stockCode')}</th>
+                <th>{t('warehouse.list.stockName')}</th>
+                <th className="wms-ops-transfer-detail__col--qty">
+                  <span className="wms-ops-transfer-detail__th-stack">
+                    <span>{t('warehouse.list.orderQuantityLine1', { defaultValue: 'Sipariş' })}</span>
+                    <span>{t('warehouse.list.orderQuantityLine2', { defaultValue: 'Miktarı' })}</span>
+                  </span>
+                </th>
+                <th>{t('warehouse.details.configCode')}</th>
+                <th>{t('warehouse.list.serialNo')}</th>
+                <th>{t('warehouse.details.lotNo')}</th>
+                <th>{t('warehouse.details.batchNo')}</th>
+                <th>{t('warehouse.list.sourceWarehouse')}</th>
+                <th>{t('warehouse.list.targetWarehouse')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLines.map((line) => (
+                <WarehouseLineRow key={line.id} line={line} documentType={documentType} variant={variant} />
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">{t('warehouse.list.stockCode')}</TableHead>
+                <TableHead>{t('warehouse.list.stockName')}</TableHead>
+                <TableHead className="w-[120px]">{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
+                <TableHead className="w-[100px]">{t('warehouse.details.configCode')}</TableHead>
+                <TableHead className="w-[120px]">{t('warehouse.list.serialNo')}</TableHead>
+                <TableHead className="w-[120px]">{t('warehouse.details.lotNo')}</TableHead>
+                <TableHead className="w-[120px]">{t('warehouse.details.batchNo')}</TableHead>
+                <TableHead className="w-[120px]">{t('warehouse.list.sourceWarehouse')}</TableHead>
+                <TableHead className="w-[120px]">{t('warehouse.list.targetWarehouse')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredLines.map((line) => (
+                <WarehouseLineRow key={line.id} line={line} documentType={documentType} variant={variant} />
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
-          <DialogTitle className="text-xl">
-            {t('warehouse.list.detailTitle')} - #{headerId}
+      <DialogContent className={cn(
+        'flex h-[90vh] max-h-[90dvh] w-[95vw] max-w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0',
+        'sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl',
+        isOps && 'wms-ops-form wms-ops-detail-dialog border-0 shadow-none',
+      )}>
+        <DialogHeader className={cn(
+          'shrink-0 border-b px-4 pb-4 pt-5 pr-12 sm:px-6 sm:pt-6 sm:pr-14',
+          isOps && 'wms-ops-detail-dialog__header',
+        )}>
+          <DialogTitle className={isOps ? 'wms-ops-detail-dialog__title' : 'text-xl'}>
+            {t('warehouse.list.detailTitle')}
+            {isOps ? <span className="wms-ops-detail-dialog__id"> #{headerId}</span> : ` - #${headerId}`}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className={isOps ? 'wms-ops-detail-dialog__description' : undefined}>
             {t('warehouse.list.detailDescription')}
           </DialogDescription>
         </DialogHeader>
 
-        {header && (
-          <div className="flex-1 overflow-hidden flex flex-col px-6 py-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 shrink-0">
-              <Card>
-                <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('warehouse.list.documentInfo')}
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.documentNo')}</span>
-                      <span className="text-sm font-medium">{header.documentNo || '-'}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.documentDate')}</span>
-                      <span className="text-sm">{formatDate(header.documentDate)}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.documentType')}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {header.documentType || '-'}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.createdDate')}</span>
-                      <span className="text-xs">{formatDateTime(header.createdDate)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('warehouse.list.customerInfo')}
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.customerCode')}</span>
-                      <span className="text-sm font-medium">{header.customerCode || '-'}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.customerName')}</span>
-                      <span className="text-sm truncate max-w-[150px] text-right">{header.customerName || '-'}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t('warehouse.list.status')}</span>
-                      <div>
-                        {header.isCompleted ? (
-                          <Badge variant="default" className="text-xs">
-                            {t('warehouse.list.completed')}
-                          </Badge>
-                        ) : header.isPendingApproval ? (
-                          <Badge variant="secondary" className="text-xs">
-                            {t('warehouse.list.pendingApproval')}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-xs">
-                            {t('warehouse.list.inProgress')}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {header.description1 && (
-                    <>
-                      <Separator className="my-3" />
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                          {t('warehouse.step1.notes')}
-                        </p>
-                        <p className="text-xs text-muted-foreground line-clamp-3">{header.description1}</p>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                    {t('warehouse.list.warehouseInfo')}
-                  </p>
-                  <div className="space-y-2">
-                    {documentType === DocumentType.WI ? (
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{t('warehouse.list.targetWarehouse')}</span>
-                        <span className="text-sm font-medium">{header.targetWarehouse || '-'}</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{t('warehouse.list.sourceWarehouse')}</span>
-                        <span className="text-sm font-medium">{header.sourceWarehouse || '-'}</span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="flex flex-col flex-1 min-h-0">
-              <div className="pb-2 space-y-2 border-b shrink-0 mb-2">
-                <PageActionBar
-                  title={<span className="text-sm">{t('warehouse.list.lines')}</span>}
-                  contentClassName="space-y-0"
-                />
-                <div className="relative flex items-center">
-                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input
-                    placeholder={t('warehouse.step2.searchItems')}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-7 pr-9 h-7 text-xs"
-                  />
-                  <div className="absolute right-1 top-1/2 transform -translate-y-1/2">
-                    <VoiceSearchButton
-                      onResult={(text) => setSearchQuery(text)}
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 overflow-y-auto rounded-md border">
-                {isLoadingLines ? (
-                  <PageState tone="loading" title={t('common.loading')} compact className="m-3" />
-                ) : filteredLines.length === 0 ? (
-                  <PageState tone="empty" title={t('warehouse.list.noData')} compact className="m-3" />
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">{t('warehouse.list.stockCode')}</TableHead>
-                        <TableHead>{t('warehouse.list.stockName')}</TableHead>
-                        <TableHead className="w-[120px]">{t('goodsReceipt.orderDetails.orderQuantity')}</TableHead>
-                        <TableHead className="w-[100px]">{t('warehouse.details.configCode')}</TableHead>
-                        <TableHead className="w-[120px]">{t('warehouse.list.serialNo')}</TableHead>
-                        <TableHead className="w-[120px]">{t('warehouse.details.lotNo')}</TableHead>
-                        <TableHead className="w-[120px]">{t('warehouse.details.batchNo')}</TableHead>
-                        <TableHead className="w-[120px]">{t('warehouse.list.sourceWarehouse')}</TableHead>
-                        <TableHead className="w-[120px]">{t('warehouse.list.targetWarehouse')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredLines.map((line: WarehouseLine) => (
-                        <WarehouseLineRow key={line.id} line={line} documentType={documentType} />
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </div>
-            </div>
+        {header ? (
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:gap-5 sm:px-6 sm:py-5 md:overflow-hidden">
+            {renderInfoPanels()}
+            {renderLinesSection()}
+          </div>
+        ) : (
+          <div className={cn('flex-1 p-6', isOps && 'wms-ops-detail-state')}>
+            <PageState tone="empty" title={t('warehouse.list.noData')} compact />
           </div>
         )}
       </DialogContent>
@@ -252,10 +396,12 @@ export function WarehouseDetailDialog({
 interface WarehouseLineRowProps {
   line: WarehouseLine;
   documentType: string;
+  variant: 'default' | 'ops';
 }
 
-function WarehouseLineRow({ line, documentType }: WarehouseLineRowProps): ReactElement {
+function WarehouseLineRow({ line, documentType, variant }: WarehouseLineRowProps): ReactElement {
   const { data: lineSerialsData } = useWarehouseLineSerials(line.id, documentType);
+  const isOps = variant === 'ops';
 
   const firstSerial = lineSerialsData?.data && lineSerialsData.data.length > 0 ? lineSerialsData.data[0] : null;
   const serialNo = firstSerial?.serialNo || '-';
@@ -264,12 +410,30 @@ function WarehouseLineRow({ line, documentType }: WarehouseLineRowProps): ReactE
   const sourceWarehouse = firstSerial?.sourceWarehouseName || firstSerial?.sourceWarehouseId?.toString() || '-';
   const targetWarehouse = firstSerial?.targetWarehouseName || firstSerial?.targetWarehouseId?.toString() || '-';
 
+  if (isOps) {
+    return (
+      <tr>
+        <td>
+          <span className="wms-ops-transfer-detail__stock-code">{line.stockCode}</span>
+        </td>
+        <td>
+          <span className="wms-ops-transfer-detail__stock-name">{line.stockName || line.description || '-'}</span>
+        </td>
+        <td className="wms-ops-transfer-detail__col--qty">{line.siparisMiktar ?? line.quantity}</td>
+        <td>{line.yapKod || '-'}</td>
+        <td>{serialNo}</td>
+        <td>{lotNo}</td>
+        <td>{batchNo}</td>
+        <td>{sourceWarehouse}</td>
+        <td>{targetWarehouse}</td>
+      </tr>
+    );
+  }
+
   return (
     <TableRow>
       <TableCell>
-        <Badge variant="outline" className="font-mono text-xs">
-          {line.stockCode}
-        </Badge>
+        <Badge variant="outline" className="font-mono text-xs">{line.stockCode}</Badge>
       </TableCell>
       <TableCell>
         <span className="text-sm font-medium">{line.stockName || line.description || '-'}</span>

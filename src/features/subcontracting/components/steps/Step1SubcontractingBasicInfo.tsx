@@ -15,8 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
-import { SearchableSelect } from '@/features/shared';
-import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
+import { SearchableSelect, SearchableMultiSelect, getOperationUserDisplayName, getOperationUserSubtitle } from '@/features/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/shared';
 import type { UserDto } from '@/features/auth/types/auth';
@@ -349,16 +348,17 @@ export function Step1SubcontractingBasicInfo({
                       onValueChange={(values) => field.onChange(values)}
                       options={activeUsers || []}
                       getOptionValue={(opt) => String(opt.id)}
-                      getOptionLabel={(opt) => {
-                        const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                        return opt.email ? `${name} (${opt.email})` : name;
-                      }}
+                      getOptionLabel={getOperationUserDisplayName}
+                      getOptionSubtitle={getOperationUserSubtitle}
+                      variant="ops"
+                      optionLayout="user"
                       placeholder={t('subcontracting.step1.selectOperationUsers')}
                       searchPlaceholder={t('common.search')}
                       emptyText={t('common.notFound')}
                       isLoading={isLoadingUsers}
                       itemLimit={100}
                       className={OPS_FIELD_CLASS}
+                      popoverClassName="wms-ops-lookup-popover"
                     />
                   </OpsFieldShell>
                 ) : (
@@ -367,10 +367,9 @@ export function Step1SubcontractingBasicInfo({
                     onValueChange={(values) => field.onChange(values)}
                     options={activeUsers || []}
                     getOptionValue={(opt) => String(opt.id)}
-                    getOptionLabel={(opt) => {
-                      const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                      return opt.email ? `${name} (${opt.email})` : name;
-                    }}
+                    getOptionLabel={getOperationUserDisplayName}
+                    getOptionSubtitle={getOperationUserSubtitle}
+                    optionLayout="user"
                     placeholder={t('subcontracting.step1.selectOperationUsers')}
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}

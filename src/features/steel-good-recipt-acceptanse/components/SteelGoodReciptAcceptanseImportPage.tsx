@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import {
+  MasterDataOpsFlagChip,
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+} from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { CustomerLookup } from '@/features/shared/api/lookup-types';
@@ -166,15 +168,17 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
       title={t('steelGoodReceiptAcceptance.import.title')}
       description={t('steelGoodReceiptAcceptance.import.description')}
     >
-        <div className="space-y-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.supplier')}</label>
+      <div className="space-y-6">
+        <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.import.title')}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.import.supplier')}>
               <PagedLookupDialog<CustomerLookup>
+                variant="ops"
                 open={supplierLookupOpen}
                 onOpenChange={setSupplierLookupOpen}
                 title={t('steelGoodReceiptAcceptance.import.dialogTitle')}
@@ -188,52 +192,55 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
                 getLabel={(item) => `${item.cariKod} - ${item.cariIsim}`}
                 onSelect={(item) => setSupplier(item)}
               />
-            </div>
+            </MasterDataOpsFormField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.recNo')}</label>
-              <Input value={excelRecordNo} onChange={(event) => setExcelRecordNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.recNoPh')} />
-            </div>
+            <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.import.recNo')}>
+              <OpsInput value={excelRecordNo} onChange={(event) => setExcelRecordNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.recNoPh')} />
+            </MasterDataOpsFormField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.expRef')}</label>
-              <Input value={exportRefNo} onChange={(event) => setExportRefNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.expRefPh')} />
-            </div>
+            <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.import.expRef')}>
+              <OpsInput value={exportRefNo} onChange={(event) => setExportRefNo(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.import.expRefPh')} />
+            </MasterDataOpsFormField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('steelGoodReceiptAcceptance.import.file')}</label>
-              <Input type="file" accept=".xlsx,.xls" onChange={(event) => void handleFileChange(event)} />
-            </div>
+            <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.import.file')}>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={(event) => void handleFileChange(event)}
+                className="wms-ops-list-field-trigger w-full min-w-0 text-sm file:mr-3 file:border-0 file:bg-transparent file:font-semibold file:uppercase file:tracking-wide"
+              />
+            </MasterDataOpsFormField>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={() => void previewMutation.mutateAsync()} disabled={!requestPayload || previewMutation.isPending}>
+          <div className="wms-ops-actions mt-5 flex flex-wrap gap-3">
+            <OpsActionButton type="button" variant="secondary" onClick={() => void previewMutation.mutateAsync()} disabled={!requestPayload || previewMutation.isPending}>
               {previewMutation.isPending ? t('steelGoodReceiptAcceptance.import.previewP') : t('steelGoodReceiptAcceptance.import.previewBtn')}
-            </Button>
-            <Button
+            </OpsActionButton>
+            <OpsActionButton
               type="button"
-              variant="outline"
+              variant="primary"
               onClick={() => void commitMutation.mutateAsync()}
               disabled={!requestPayload || !preview || preview.errorRowCount > 0 || commitMutation.isPending}
             >
               {commitMutation.isPending ? t('steelGoodReceiptAcceptance.import.commitP') : t('steelGoodReceiptAcceptance.import.commitBtn')}
-            </Button>
+            </OpsActionButton>
           </div>
+        </MasterDataOpsSection>
 
-          {preview ? (
-            <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex flex-wrap gap-2 text-sm">
-                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeTotal', { n: preview.totalRows })}</Badge>
-                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeNew', { n: preview.newRowCount })}</Badge>
-                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeUp', { n: preview.updateRowCount })}</Badge>
-                <Badge variant={preview.errorRowCount > 0 ? 'destructive' : 'secondary'}>{t('steelGoodReceiptAcceptance.import.badgeErr', { n: preview.errorRowCount })}</Badge>
-                <Badge variant="secondary">{t('steelGoodReceiptAcceptance.import.badgeExp', { n: preview.totalExpectedQuantity })}</Badge>
-              </div>
+        {preview ? (
+          <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.import.previewBtn')}>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <MasterDataOpsFlagChip>{t('steelGoodReceiptAcceptance.import.badgeTotal', { n: preview.totalRows })}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip tone="info">{t('steelGoodReceiptAcceptance.import.badgeNew', { n: preview.newRowCount })}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip tone="info">{t('steelGoodReceiptAcceptance.import.badgeUp', { n: preview.updateRowCount })}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip tone={preview.errorRowCount > 0 ? 'warn' : 'success'}>{t('steelGoodReceiptAcceptance.import.badgeErr', { n: preview.errorRowCount })}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip>{t('steelGoodReceiptAcceptance.import.badgeExp', { n: preview.totalExpectedQuantity })}</MasterDataOpsFlagChip>
+            </div>
 
-              <div className="overflow-x-auto rounded-xl border border-white/10">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-white/5 text-left">
-                    <tr>
+            <div className="wms-ops-table-wrap mt-4 overflow-x-auto border">
+              <table className="wms-ops-table min-w-[120rem] text-sm">
+                <thead>
+                  <tr>
                       <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.import.tableRow')}</th>
                       <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colOrd')}</th>
                       <th className="px-3 py-2">{t('steelGoodReceiptAcceptance.list.colLineSeq')}</th>
@@ -258,7 +265,7 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
                     {rows.map((sourceRow) => {
                       const previewRow = previewByRowNumber.get(sourceRow.rowNumber);
                       return (
-                        <tr key={sourceRow.rowNumber} className="border-t border-white/5">
+                        <tr key={sourceRow.rowNumber}>
                           <td className="px-3 py-2">{sourceRow.rowNumber}</td>
                           <td className="px-3 py-2">{sourceRow.netsisOrderNo || '-'}</td>
                           <td className="px-3 py-2">{sourceRow.netsisLineSequenceNo || '-'}</td>
@@ -276,16 +283,16 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
                           <td className="px-3 py-2">{previewRow?.actionType ?? '-'}</td>
                           <td className="px-3 py-2">{previewRow?.existingDCode ?? '-'}</td>
                           <td className="px-3 py-2">{previewRow?.existingStatus ?? '-'}</td>
-                          <td className="px-3 py-2 text-rose-300">{previewRow?.errors.join(', ') || '-'}</td>
+                          <td className="px-3 py-2 text-rose-400">{previewRow?.errors.join(', ') || '-'}</td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
               </div>
-            </div>
-          ) : null}
-        </div>
+          </MasterDataOpsSection>
+        ) : null}
+      </div>
     </OpsFormPageShell>
   );
 }

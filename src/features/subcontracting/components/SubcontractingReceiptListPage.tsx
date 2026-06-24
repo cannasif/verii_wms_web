@@ -178,7 +178,7 @@ export function SubcontractingReceiptListPage(): ReactElement {
         />
       </OpsListPageShell>
       {selectedHeaderId && selectedDocumentType && <SubcontractingDetailDialog variant="ops" headerId={selectedHeaderId} documentType={selectedDocumentType} isOpen onClose={() => { setSelectedHeaderId(null); setSelectedDocumentType(null); }} />}
-      <DeleteConfirmDialog open={Boolean(headerToDelete)} itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`} isPending={deleteMutation.isPending} onOpenChange={(open) => { if (!open) setHeaderToDelete(null); }} onConfirm={() => { if (headerToDelete) deleteMutation.mutate(headerToDelete.id); }} />
+      <DeleteConfirmDialog open={Boolean(headerToDelete)} itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`} isPending={deleteMutation.isPending} onOpenChange={(open) => { if (!open) setHeaderToDelete(null); }} onConfirm={() => { if (headerToDelete) deleteMutation.mutate(headerToDelete.id); }} variant="ops" />
     </>
   );
 }

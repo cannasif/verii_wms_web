@@ -227,7 +227,7 @@ export function AssignedSrtListPage(): ReactElement {
         />
       </OpsListPageShell>
       {selectedHeaderId && <SubcontractingDetailDialog variant="ops" headerId={selectedHeaderId} documentType={selectedDocumentType ?? ''} isOpen onClose={() => { setSelectedHeaderId(null); setSelectedDocumentType(null); }} />}
-      <DeleteConfirmDialog open={headerToDelete != null} onOpenChange={(open) => { if (!open) setHeaderToDelete(null); }} itemLabel={headerToDelete?.documentNo || (headerToDelete ? `#${headerToDelete.id}` : undefined)} isPending={deleteMutation.isPending} onConfirm={() => { if (headerToDelete) deleteMutation.mutate(headerToDelete.id); }} />
+      <DeleteConfirmDialog open={headerToDelete != null} onOpenChange={(open) => { if (!open) setHeaderToDelete(null); }} itemLabel={headerToDelete?.documentNo || (headerToDelete ? `#${headerToDelete.id}` : undefined)} isPending={deleteMutation.isPending} onConfirm={() => { if (headerToDelete) deleteMutation.mutate(headerToDelete.id); }} variant="ops" />
     </>
   );
 }

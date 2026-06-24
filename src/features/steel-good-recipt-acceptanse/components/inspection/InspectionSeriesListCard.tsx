@@ -1,10 +1,12 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { OpsActionButton, OpsInput } from '@/components/shared';
+import {
+  MasterDataOpsEmptyState,
+  MasterDataOpsFlagChip,
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+} from '@/features/shared';
 import {
   localizeStatus,
   STATUS_CATEGORY_ORDER,
@@ -12,7 +14,6 @@ import {
   type StatusCategoryKey,
 } from '@/lib/localize-status';
 import type { InspectionBatch, InspectionLine, SeriesStatusFilter } from './shared';
-import { getStatusTone } from './shared';
 
 interface InspectionSeriesListCardProps {
   batch: InspectionBatch;
@@ -45,117 +46,97 @@ export function InspectionSeriesListCard({
   const { t } = useTranslation('common');
 
   return (
-    <Card className="border-white/10 bg-white/5 xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:overflow-hidden">
-      <CardHeader className="shrink-0 space-y-4 border-b border-white/5 pb-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-400/90">
-              {t('steelGoodReceiptAcceptance.inspection.seriesStepKicker')}
-            </p>
-            <CardTitle className="text-xl font-semibold leading-tight tracking-tight">
-              {t('steelGoodReceiptAcceptance.inspection.pickSeries')}
-            </CardTitle>
-            <p className="max-w-xl text-sm text-slate-400">
-              {t('steelGoodReceiptAcceptance.inspection.pickSeriesSubtitle')}
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="font-normal">{batch.excelRecordNo}</Badge>
-            {batch.exportRefNo ? <Badge variant="secondary" className="font-normal">{batch.exportRefNo}</Badge> : null}
-            <Badge variant="secondary" className="font-normal">{batch.supplierCode}</Badge>
-          </div>
+    <MasterDataOpsSection
+      className="xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:overflow-hidden"
+      title={t('steelGoodReceiptAcceptance.inspection.pickSeries')}
+      subtitle={t('steelGoodReceiptAcceptance.inspection.pickSeriesSubtitle')}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <MasterDataOpsFlagChip>{batch.excelRecordNo}</MasterDataOpsFlagChip>
+          {batch.exportRefNo ? <MasterDataOpsFlagChip tone="info">{batch.exportRefNo}</MasterDataOpsFlagChip> : null}
+          <MasterDataOpsFlagChip>{batch.supplierCode}</MasterDataOpsFlagChip>
         </div>
-        <div className="space-y-3">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <Label className="text-slate-300">{t('steelGoodReceiptAcceptance.inspection.seriesFilterLabel')}</Label>
-            <span className="text-xs tabular-nums text-slate-500">
-              {t('steelGoodReceiptAcceptance.inspection.seriesVisibleCount', {
-                n: displayLines.length,
-                total: textFilteredLines.length,
-              })}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant={seriesStatusFilter === 'all' ? 'secondary' : 'outline'}
-              className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
-              onClick={() => onSeriesStatusFilterChange('all')}
-            >
-              {t('steelGoodReceiptAcceptance.inspection.seriesFilterAll')}
-              <span className="ml-1.5 tabular-nums text-muted-foreground">({textFilteredLines.length})</span>
-            </Button>
-            {STATUS_CATEGORY_ORDER.map((key) => {
-              const count = statusSummary.counts.get(key) ?? 0;
-              if (count === 0) {
-                return null;
-              }
-              return (
-                <Button
-                  key={key}
-                  type="button"
-                  size="sm"
-                  variant={seriesStatusFilter === key ? 'secondary' : 'outline'}
-                  className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
-                  onClick={() => onSeriesStatusFilterChange(key)}
-                >
-                  {statusCategoryLabel(key, t)}
-                  <span className="ml-1.5 tabular-nums text-muted-foreground">({count})</span>
-                </Button>
-              );
+      }
+    >
+      <div className="space-y-3 border-b border-[color-mix(in_oklab,var(--wms-ops-accent)_12%,var(--wms-ops-card-border))] pb-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <span className="wms-ops-prelabel-form-label">{t('steelGoodReceiptAcceptance.inspection.seriesFilterLabel')}</span>
+          <span className="text-xs tabular-nums opacity-60">
+            {t('steelGoodReceiptAcceptance.inspection.seriesVisibleCount', {
+              n: displayLines.length,
+              total: textFilteredLines.length,
             })}
-            {statusSummary.unknown > 0 ? (
-              <Button
-                type="button"
-                size="sm"
-                variant={seriesStatusFilter === 'unknown' ? 'secondary' : 'outline'}
-                className="h-8 rounded-full border-white/15 px-3.5 text-xs font-medium"
-                onClick={() => onSeriesStatusFilterChange('unknown')}
-              >
-                {t('steelGoodReceiptAcceptance.inspection.seriesFilterOther')}
-                <span className="ml-1.5 tabular-nums text-muted-foreground">({statusSummary.unknown})</span>
-              </Button>
-            ) : null}
-          </div>
+          </span>
         </div>
-        <Input
-          value={serialFilter}
-          onChange={(event) => onSerialFilterChange(event.target.value)}
-          placeholder={t('steelGoodReceiptAcceptance.inspection.searchPh')}
-          className="h-11"
-        />
-      </CardHeader>
-      <CardContent className="custom-scrollbar space-y-3 pt-5 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-y-contain xl:pr-1">
+        <div className="flex flex-wrap gap-2">
+          <OpsActionButton
+            type="button"
+            variant={seriesStatusFilter === 'all' ? 'primary' : 'secondary'}
+            onClick={() => onSeriesStatusFilterChange('all')}
+          >
+            {t('steelGoodReceiptAcceptance.inspection.seriesFilterAll')} ({textFilteredLines.length})
+          </OpsActionButton>
+          {STATUS_CATEGORY_ORDER.map((key) => {
+            const count = statusSummary.counts.get(key) ?? 0;
+            if (count === 0) return null;
+            return (
+              <OpsActionButton
+                key={key}
+                type="button"
+                variant={seriesStatusFilter === key ? 'primary' : 'secondary'}
+                onClick={() => onSeriesStatusFilterChange(key)}
+              >
+                {statusCategoryLabel(key, t)} ({count})
+              </OpsActionButton>
+            );
+          })}
+          {statusSummary.unknown > 0 ? (
+            <OpsActionButton
+              type="button"
+              variant={seriesStatusFilter === 'unknown' ? 'primary' : 'secondary'}
+              onClick={() => onSeriesStatusFilterChange('unknown')}
+            >
+              {t('steelGoodReceiptAcceptance.inspection.seriesFilterOther')} ({statusSummary.unknown})
+            </OpsActionButton>
+          ) : null}
+        </div>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.searchPh')}>
+          <OpsInput
+            value={serialFilter}
+            onChange={(event) => onSerialFilterChange(event.target.value)}
+            placeholder={t('steelGoodReceiptAcceptance.inspection.searchPh')}
+          />
+        </MasterDataOpsFormField>
+      </div>
+
+      <div className="custom-scrollbar mt-4 space-y-3 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-y-contain xl:pr-1">
         {displayLines.length === 0 && textFilteredLines.length > 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-white/2 px-6 py-10 text-center text-sm text-slate-400">
-            {t('steelGoodReceiptAcceptance.inspection.seriesEmptyFilter')}
-          </div>
+          <MasterDataOpsEmptyState>{t('steelGoodReceiptAcceptance.inspection.seriesEmptyFilter')}</MasterDataOpsEmptyState>
         ) : null}
         {displayLines.map((row) => (
           <button
             key={row.id}
             type="button"
             onClick={() => onSelectLine(row)}
-            className={`w-full rounded-2xl border p-4 text-left transition ${
-              selectedLine?.id === row.id ? 'border-sky-400 bg-sky-500/10' : 'border-white/10 bg-white/5 hover:border-white/20'
+            className={`wms-ops-kkd-quick-link w-full text-left transition ${
+              selectedLine?.id === row.id ? 'ring-1 ring-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]' : ''
             }`}
           >
             <div className="flex flex-wrap gap-2 text-sm">
-              <Badge variant="secondary">{row.dCode}</Badge>
-              <Badge variant="secondary">{row.stockCode}</Badge>
-              <Badge className={getStatusTone(row.status)}>{localizeStatus(row.status, t)}</Badge>
+              <MasterDataOpsFlagChip>{row.dCode}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip tone="info">{row.stockCode}</MasterDataOpsFlagChip>
+              <MasterDataOpsFlagChip>{localizeStatus(row.status, t)}</MasterDataOpsFlagChip>
             </div>
             <div className="mt-2 font-medium">{row.serialNo}</div>
-            <div className="text-sm text-slate-400">{row.description}</div>
-            <div className="mt-2 text-sm text-slate-300">
+            <div className="text-sm opacity-70">{row.description}</div>
+            <div className="mt-2 text-sm">
               {t('steelGoodReceiptAcceptance.inspection.expQty')}: <span className="font-medium">{row.expectedQuantity}</span>
               {' · '}{t('steelGoodReceiptAcceptance.inspection.approvedQty')}: <span className="font-medium">{row.approvedQuantity}</span>
               {' · '}{t('steelGoodReceiptAcceptance.inspection.rejectedQty')}: <span className="font-medium">{row.rejectedQuantity}</span>
             </div>
           </button>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </MasterDataOpsSection>
   );
 }

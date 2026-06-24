@@ -1,11 +1,10 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { OpsInput } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { DefinitionExcelActions } from '@/features/definition-excel';
 import { KkdCrudPage, renderKkdGenericCell, type KkdCrudField } from './KkdCrudPage';
+import { KkdOpsFormField } from './kkd-ops-ui';
 import { kkdApi } from '../api/kkd.api';
 import type { CreateKkdEmployeeRoleDto, KkdEmployeeDepartmentDto, KkdEmployeeRoleDto, UpdateKkdEmployeeRoleDto } from '../types/kkd.types';
 import type { PagedDataGridColumn } from '@/components/shared';
@@ -24,9 +23,17 @@ function RoleForm({
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <div className="space-y-2 md:col-span-2">
-        <Label>{t('kkd.columns.department')} *</Label>
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.department')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+        className="md:col-span-2"
+      >
         <PagedLookupDialog<KkdEmployeeDepartmentDto>
+          variant="ops"
           open={departmentDialogOpen}
           onOpenChange={setDepartmentDialogOpen}
           title={t('kkd.dialogs.selectDepartment')}
@@ -40,27 +47,41 @@ function RoleForm({
           getLabel={(item) => `${item.departmentCode} - ${item.departmentName}`}
           onSelect={(item) => setFormState((prev) => ({ ...prev, departmentId: item.id }))}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="roleCode">{t('kkd.columns.roleCode')} *</Label>
-        <Input
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.roleCode')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+        htmlFor="roleCode"
+      >
+        <OpsInput
           id="roleCode"
           value={formState.roleCode}
           onChange={(event) => setFormState((prev) => ({ ...prev, roleCode: event.target.value }))}
           placeholder={t('kkd.placeholders.enterRoleCode')}
         />
-      </div>
+      </KkdOpsFormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="roleName">{t('kkd.columns.roleName')} *</Label>
-        <Input
+      <KkdOpsFormField
+        label={(
+          <>
+            {t('kkd.columns.roleName')}
+            <span className="ml-1 text-destructive" aria-hidden>*</span>
+          </>
+        )}
+        htmlFor="roleName"
+      >
+        <OpsInput
           id="roleName"
           value={formState.roleName}
           onChange={(event) => setFormState((prev) => ({ ...prev, roleName: event.target.value }))}
           placeholder={t('kkd.placeholders.enterRoleName')}
         />
-      </div>
+      </KkdOpsFormField>
     </div>
   );
 }
@@ -99,13 +120,11 @@ export function KkdEmployeeRolePage(): ReactElement {
       updateItem={(id, dto) => kkdApi.updateRole(id, dto as UpdateKkdEmployeeRoleDto)}
       deleteItem={kkdApi.deleteRole}
       queryKey={['kkd', 'roles']}
-      headerActions={(
-        <DefinitionExcelActions
-          definitionKey="kkd-employee-role"
-          fileNamePrefix="kkd-gorev-tanimlari"
-          onImportCompleted={() => queryClient.invalidateQueries({ queryKey: ['kkd', 'roles'] })}
-        />
-      )}
+      definitionExcel={{
+        definitionKey: 'kkd-employee-role',
+        fileNamePrefix: 'kkd-gorev-tanimlari',
+        onImportCompleted: () => queryClient.invalidateQueries({ queryKey: ['kkd', 'roles'] }),
+      }}
       mapSortBy={(value) => value === 'departmentCode' ? 'DepartmentCode' : value === 'departmentName' ? 'DepartmentName' : value === 'roleName' ? 'RoleName' : value === 'updatedDate' ? 'UpdatedDate' : value === 'isActive' ? 'IsActive' : 'RoleCode'}
       renderCell={(row, columnKey) => renderKkdGenericCell(row[columnKey])}
       renderForm={({ formState, setFormState }) => (

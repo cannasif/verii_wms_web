@@ -2,6 +2,7 @@ import { type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePPackagesByHeader } from '../../hooks/usePPackagesByHeader';
 import { usePLinesByHeader } from '../../hooks/usePLinesByHeader';
+import { OpsActionButton } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -94,10 +95,17 @@ export function Step4Summary({
         <CardHeader>
           <div className="crm-toolbar flex items-center justify-between">
             <CardTitle>{t('package.wizard.step4.title')}</CardTitle>
-            <Button variant="outline" size="sm" onClick={onEditHeader}>
-              <Edit className="size-4 mr-2" />
-              {t('package.wizard.step4.editHeader')}
-            </Button>
+            {isOps ? (
+              <OpsActionButton type="button" variant="secondary" className="h-8 px-3 text-xs" onClick={onEditHeader}>
+                <Edit className="size-4 mr-2" />
+                {t('package.wizard.step4.editHeader')}
+              </OpsActionButton>
+            ) : (
+              <Button variant="outline" size="sm" onClick={onEditHeader}>
+                <Edit className="size-4 mr-2" />
+                {t('package.wizard.step4.editHeader')}
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className={cn('space-y-6', isOps && 'wms-ops-form')}>
@@ -171,44 +179,84 @@ export function Step4Summary({
               <h4 className="font-semibold">
                 {t('package.wizard.step4.packages')} ({packages.length})
               </h4>
-              <Button variant="outline" size="sm" onClick={onEditPackages}>
-                <Edit className="size-4 mr-2" />
-                {t('package.wizard.step4.editPackages')}
-              </Button>
+              {isOps ? (
+                <OpsActionButton type="button" variant="secondary" className="h-8 px-3 text-xs" onClick={onEditPackages}>
+                  <Edit className="size-4 mr-2" />
+                  {t('package.wizard.step4.editPackages')}
+                </OpsActionButton>
+              ) : (
+                <Button variant="outline" size="sm" onClick={onEditPackages}>
+                  <Edit className="size-4 mr-2" />
+                  {t('package.wizard.step4.editPackages')}
+                </Button>
+              )}
             </div>
             {isLoadingPackages ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : packages.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('package.detail.packageNo')}</TableHead>
-                      <TableHead>{t('package.detail.packageType')}</TableHead>
-                      <TableHead>{t('package.detail.status')}</TableHead>
-                      <TableHead>{t('package.detail.netWeight')}</TableHead>
-                      <TableHead>{t('package.detail.grossWeight')}</TableHead>
-                      <TableHead>{t('package.detail.volume')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {packages.map((pkg) => (
-                      <TableRow key={pkg.id}>
-                        <TableCell className="font-medium">{pkg.packageNo}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{pkg.packageType}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{pkg.status}</Badge>
-                        </TableCell>
-                        <TableCell>{pkg.netWeight || '-'}</TableCell>
-                        <TableCell>{pkg.grossWeight || '-'}</TableCell>
-                        <TableCell>{pkg.volume || '-'}</TableCell>
+              isOps ? (
+                <div className="wms-ops-transfer-detail__table-wrap rounded-none border-0">
+                  <table className="wms-ops-transfer-detail__table">
+                    <thead>
+                      <tr>
+                        <th>{t('package.detail.packageNo')}</th>
+                        <th>{t('package.detail.packageType')}</th>
+                        <th>{t('package.detail.status')}</th>
+                        <th>{t('package.detail.netWeight')}</th>
+                        <th>{t('package.detail.grossWeight')}</th>
+                        <th>{t('package.detail.volume')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {packages.map((pkg) => (
+                        <tr key={pkg.id}>
+                          <td className="font-medium">{pkg.packageNo}</td>
+                          <td>
+                            <Badge variant="outline">{pkg.packageType}</Badge>
+                          </td>
+                          <td>
+                            <Badge variant="outline">{pkg.status}</Badge>
+                          </td>
+                          <td>{pkg.netWeight || '-'}</td>
+                          <td>{pkg.grossWeight || '-'}</td>
+                          <td>{pkg.volume || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('package.detail.packageNo')}</TableHead>
+                        <TableHead>{t('package.detail.packageType')}</TableHead>
+                        <TableHead>{t('package.detail.status')}</TableHead>
+                        <TableHead>{t('package.detail.netWeight')}</TableHead>
+                        <TableHead>{t('package.detail.grossWeight')}</TableHead>
+                        <TableHead>{t('package.detail.volume')}</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {packages.map((pkg) => (
+                        <TableRow key={pkg.id}>
+                          <TableCell className="font-medium">{pkg.packageNo}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{pkg.packageType}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{pkg.status}</Badge>
+                          </TableCell>
+                          <TableCell>{pkg.netWeight || '-'}</TableCell>
+                          <TableCell>{pkg.grossWeight || '-'}</TableCell>
+                          <TableCell>{pkg.volume || '-'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
             ) : (
               <p className="text-muted-foreground text-center py-4">
                 {t('package.wizard.step4.noPackages')}
@@ -221,46 +269,88 @@ export function Step4Summary({
               <h4 className="font-semibold">
                 {t('package.wizard.step4.lines')} ({lines.length})
               </h4>
-              <Button variant="outline" size="sm" onClick={onEditLines}>
-                <Edit className="size-4 mr-2" />
-                {t('package.wizard.step4.editLines')}
-              </Button>
+              {isOps ? (
+                <OpsActionButton type="button" variant="secondary" className="h-8 px-3 text-xs" onClick={onEditLines}>
+                  <Edit className="size-4 mr-2" />
+                  {t('package.wizard.step4.editLines')}
+                </OpsActionButton>
+              ) : (
+                <Button variant="outline" size="sm" onClick={onEditLines}>
+                  <Edit className="size-4 mr-2" />
+                  {t('package.wizard.step4.editLines')}
+                </Button>
+              )}
             </div>
             {isLoadingLines ? (
               <p className="text-muted-foreground text-center py-4">{t('common.loading')}</p>
             ) : lines.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('package.detail.barcode')}</TableHead>
-                      <TableHead>{t('package.detail.stockCode')}</TableHead>
-                      <TableHead>{t('package.detail.stockName')}</TableHead>
-                      <TableHead>{t('package.detail.yapKod')}</TableHead>
-                      <TableHead>{t('package.detail.yapAcik')}</TableHead>
-                      <TableHead>{t('package.detail.quantity')}</TableHead>
-                      <TableHead>{t('package.detail.serialNo')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lines.map((line) => (
-                      <TableRow key={line.id}>
-                        <TableCell>{getPackageBarcode(line.packageId)}</TableCell>
-                        <TableCell>{line.stockCode}</TableCell>
-                        <TableCell>{line.stockName || '-'}</TableCell>
-                        <TableCell>{line.yapKod}</TableCell>
-                        <TableCell>{line.yapAcik || '-'}</TableCell>
-                        <TableCell>{line.quantity}</TableCell>
-                        <TableCell>
-                          {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
-                            .filter(Boolean)
-                            .join(', ') || '-'}
-                        </TableCell>
+              isOps ? (
+                <div className="wms-ops-transfer-detail__table-wrap rounded-none border-0">
+                  <table className="wms-ops-transfer-detail__table">
+                    <thead>
+                      <tr>
+                        <th>{t('package.detail.barcode')}</th>
+                        <th>{t('package.detail.stockCode')}</th>
+                        <th>{t('package.detail.stockName')}</th>
+                        <th>{t('package.detail.yapKod')}</th>
+                        <th>{t('package.detail.yapAcik')}</th>
+                        <th>{t('package.detail.quantity')}</th>
+                        <th>{t('package.detail.serialNo')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lines.map((line) => (
+                        <tr key={line.id}>
+                          <td>{getPackageBarcode(line.packageId)}</td>
+                          <td>{line.stockCode}</td>
+                          <td>{line.stockName || '-'}</td>
+                          <td>{line.yapKod}</td>
+                          <td>{line.yapAcik || '-'}</td>
+                          <td>{line.quantity}</td>
+                          <td>
+                            {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
+                              .filter(Boolean)
+                              .join(', ') || '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-1 dark:border-white/10 dark:bg-white/3">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('package.detail.barcode')}</TableHead>
+                        <TableHead>{t('package.detail.stockCode')}</TableHead>
+                        <TableHead>{t('package.detail.stockName')}</TableHead>
+                        <TableHead>{t('package.detail.yapKod')}</TableHead>
+                        <TableHead>{t('package.detail.yapAcik')}</TableHead>
+                        <TableHead>{t('package.detail.quantity')}</TableHead>
+                        <TableHead>{t('package.detail.serialNo')}</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {lines.map((line) => (
+                        <TableRow key={line.id}>
+                          <TableCell>{getPackageBarcode(line.packageId)}</TableCell>
+                          <TableCell>{line.stockCode}</TableCell>
+                          <TableCell>{line.stockName || '-'}</TableCell>
+                          <TableCell>{line.yapKod}</TableCell>
+                          <TableCell>{line.yapAcik || '-'}</TableCell>
+                          <TableCell>{line.quantity}</TableCell>
+                          <TableCell>
+                            {[line.serialNo, line.serialNo2, line.serialNo3, line.serialNo4]
+                              .filter(Boolean)
+                              .join(', ') || '-'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
             ) : (
               <p className="text-muted-foreground text-center py-4">
                 {t('package.wizard.step4.noLines')}
@@ -270,20 +360,36 @@ export function Step4Summary({
         </CardContent>
       </Card>
 
-      <div className="flex justify-between gap-2">
-        <Button variant="outline" onClick={onPrevious}>
-          {t('package.wizard.previousStep')}
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onCancel}>
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={onComplete} disabled={isLoading}>
-            {isLoading
-              ? t('common.saving')
-              : t('package.wizard.step4.complete')}
-          </Button>
-        </div>
+      <div className={cn('flex justify-between gap-2', isOps && 'wms-ops-actions border-t pt-6')}>
+        {isOps ? (
+          <>
+            <OpsActionButton type="button" variant="secondary" onClick={onPrevious}>
+              {t('package.wizard.previousStep')}
+            </OpsActionButton>
+            <div className="flex gap-3">
+              <OpsActionButton type="button" variant="secondary" onClick={onCancel}>
+                {t('common.cancel')}
+              </OpsActionButton>
+              <OpsActionButton type="button" variant="primary" onClick={onComplete} disabled={isLoading}>
+                {isLoading ? t('common.saving') : t('package.wizard.step4.complete')}
+              </OpsActionButton>
+            </div>
+          </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={onPrevious}>
+              {t('package.wizard.previousStep')}
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onCancel}>
+                {t('common.cancel')}
+              </Button>
+              <Button onClick={onComplete} disabled={isLoading}>
+                {isLoading ? t('common.saving') : t('package.wizard.step4.complete')}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

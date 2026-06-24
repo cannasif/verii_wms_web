@@ -196,11 +196,13 @@ export function VehicleCheckInPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-sac-mal-page"
       eyebrow={<OpsServiceEyebrow module={t('vehicleCheckIn.breadcrumb.module')} />}
       title={t('vehicleCheckIn.title')}
       description={t('vehicleCheckIn.description')}
     >
-      <VehicleCheckInFormSection
+      <div className="space-y-6">
+        <VehicleCheckInFormSection
         entryDateText={entryDateText}
         formState={formState}
         onFormStateChange={(updater) => setFormState(updater)}
@@ -225,6 +227,7 @@ export function VehicleCheckInPage(): ReactElement {
         onDeleteImage={(imageId) => deleteImageMutation.mutate(imageId)}
         deletePending={deleteImageMutation.isPending}
       />
+      </div>
     </OpsFormPageShell>
   );
 }

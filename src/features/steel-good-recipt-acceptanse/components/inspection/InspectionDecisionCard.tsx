@@ -1,11 +1,14 @@
 import { type ReactElement } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { OpsActionButton, OpsInput } from '@/components/shared';
+import { SelectItem } from '@/components/ui/select';
+import {
+  MasterDataOpsFlagChip,
+  MasterDataOpsFormField,
+  MasterDataOpsSection,
+  MasterDataOpsSelect,
+} from '@/features/shared';
 import { localizeStatus } from '@/lib/localize-status';
 import type { InspectionFormState } from './shared';
 
@@ -40,75 +43,77 @@ export function InspectionDecisionCard({
   const { t } = useTranslation('common');
 
   return (
-    <Card className="shrink-0 border-white/10 bg-white/5">
-      <CardHeader>
-        <CardTitle>{t('steelGoodReceiptAcceptance.inspection.formTitle')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.dcode')}</Label><Input value={detail.dCode} readOnly /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.stock')}</Label><Input value={detail.stockCode} readOnly /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.plate')}</Label><Input value={detail.serialNo} readOnly /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.expQty')}</Label><Input value={String(expectedQuantity)} readOnly /></div>
-        </div>
+    <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.inspection.formTitle')}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.dcode')}>
+          <OpsInput value={detail.dCode} readOnly />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.stock')}>
+          <OpsInput value={detail.stockCode} readOnly />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.plate')}>
+          <OpsInput value={detail.serialNo} readOnly />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.expQty')}>
+          <OpsInput value={String(expectedQuantity)} readOnly />
+        </MasterDataOpsFormField>
+      </div>
 
-        <div className="grid gap-3 md:grid-cols-3">
-          <Button type="button" variant="outline" onClick={() => onQuickDecision('approved')}>
-            {t('steelGoodReceiptAcceptance.inspection.quickApprove')}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => onQuickDecision('missing')}>
-            {t('steelGoodReceiptAcceptance.inspection.quickMissing')}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => onQuickDecision('rejected')}>
-            {t('steelGoodReceiptAcceptance.inspection.quickReject')}
-          </Button>
-        </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <OpsActionButton type="button" variant="secondary" onClick={() => onQuickDecision('approved')}>
+          {t('steelGoodReceiptAcceptance.inspection.quickApprove')}
+        </OpsActionButton>
+        <OpsActionButton type="button" variant="secondary" onClick={() => onQuickDecision('missing')}>
+          {t('steelGoodReceiptAcceptance.inspection.quickMissing')}
+        </OpsActionButton>
+        <OpsActionButton type="button" variant="secondary" onClick={() => onQuickDecision('rejected')}>
+          {t('steelGoodReceiptAcceptance.inspection.quickReject')}
+        </OpsActionButton>
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label>{t('steelGoodReceiptAcceptance.inspection.arrQ')}</Label>
-            <Select value={form.isArrived ? 'yes' : 'no'} onValueChange={(value) => onUpdateForm('isArrived', value === 'yes')}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.y')}</SelectItem>
-                <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.n')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>{t('steelGoodReceiptAcceptance.inspection.apprQ')}</Label>
-            <Select value={form.isApproved ? 'yes' : 'no'} onValueChange={(value) => onUpdateForm('isApproved', value === 'yes')}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.yAp')}</SelectItem>
-                <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.nAp')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.arrivedQty')}</Label><Input type="number" value={String(form.arrivedQuantity)} onChange={(event) => onUpdateForm('arrivedQuantity', Number(event.target.value) || 0)} /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.approvedQty')}</Label><Input type="number" value={String(form.approvedQuantity)} onChange={(event) => onUpdateForm('approvedQuantity', Number(event.target.value) || 0)} /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.rejectedQty')}</Label><Input type="number" value={String(form.rejectedQuantity)} onChange={(event) => onUpdateForm('rejectedQuantity', Number(event.target.value) || 0)} /></div>
-          <div><Label>{t('steelGoodReceiptAcceptance.inspection.statusNote')}</Label><Input value={form.note ?? ''} onChange={(event) => onUpdateForm('note', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.statusNotePh')} /></div>
-        </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.arrQ')}>
+          <MasterDataOpsSelect value={form.isArrived ? 'yes' : 'no'} onValueChange={(value) => onUpdateForm('isArrived', value === 'yes')}>
+            <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.y')}</SelectItem>
+            <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.n')}</SelectItem>
+          </MasterDataOpsSelect>
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.apprQ')}>
+          <MasterDataOpsSelect value={form.isApproved ? 'yes' : 'no'} onValueChange={(value) => onUpdateForm('isApproved', value === 'yes')}>
+            <SelectItem value="yes">{t('steelGoodReceiptAcceptance.inspection.yAp')}</SelectItem>
+            <SelectItem value="no">{t('steelGoodReceiptAcceptance.inspection.nAp')}</SelectItem>
+          </MasterDataOpsSelect>
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.arrivedQty')}>
+          <OpsInput type="number" value={String(form.arrivedQuantity)} onChange={(event) => onUpdateForm('arrivedQuantity', Number(event.target.value) || 0)} />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.approvedQty')}>
+          <OpsInput type="number" value={String(form.approvedQuantity)} onChange={(event) => onUpdateForm('approvedQuantity', Number(event.target.value) || 0)} />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.rejectedQty')}>
+          <OpsInput type="number" value={String(form.rejectedQuantity)} onChange={(event) => onUpdateForm('rejectedQuantity', Number(event.target.value) || 0)} />
+        </MasterDataOpsFormField>
+        <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.statusNote')}>
+          <OpsInput value={form.note ?? ''} onChange={(event) => onUpdateForm('note', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.statusNotePh')} />
+        </MasterDataOpsFormField>
+      </div>
 
-        <div><Label>{t('steelGoodReceiptAcceptance.inspection.rejectReasonLabel')}</Label><Input value={form.rejectReason ?? ''} onChange={(event) => onUpdateForm('rejectReason', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.rejectPh')} /></div>
+      <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.inspection.rejectReasonLabel')} className="mt-4">
+        <OpsInput value={form.rejectReason ?? ''} onChange={(event) => onUpdateForm('rejectReason', event.target.value)} placeholder={t('steelGoodReceiptAcceptance.inspection.rejectPh')} />
+      </MasterDataOpsFormField>
 
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.expQty')}: {expectedQuantity}</Badge>
-          <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.openGap')}: {remainingGap}</Badge>
-          <Badge variant="secondary">{t('steelGoodReceiptAcceptance.inspection.status')}: {localizeStatus(detail.status, t)}</Badge>
-        </div>
+      <div className="mt-4 flex flex-wrap gap-2 text-sm">
+        <MasterDataOpsFlagChip>{t('steelGoodReceiptAcceptance.inspection.expQty')}: {expectedQuantity}</MasterDataOpsFlagChip>
+        <MasterDataOpsFlagChip tone="warn">{t('steelGoodReceiptAcceptance.inspection.openGap')}: {remainingGap}</MasterDataOpsFlagChip>
+        <MasterDataOpsFlagChip tone="info">{t('steelGoodReceiptAcceptance.inspection.status')}: {localizeStatus(detail.status, t)}</MasterDataOpsFlagChip>
+      </div>
 
-        <div className="flex justify-end">
-          <Button type="button" onClick={onSave} disabled={isSaving}>
-            {isSaving ? t('steelGoodReceiptAcceptance.inspection.saveP') : t('steelGoodReceiptAcceptance.inspection.save')}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="wms-ops-actions mt-5 flex justify-end">
+        <OpsActionButton type="button" variant="primary" onClick={onSave} disabled={isSaving}>
+          {isSaving ? <Loader2 className="size-4 animate-spin" /> : null}
+          {isSaving ? t('steelGoodReceiptAcceptance.inspection.saveP') : t('steelGoodReceiptAcceptance.inspection.save')}
+        </OpsActionButton>
+      </div>
+    </MasterDataOpsSection>
   );
 }

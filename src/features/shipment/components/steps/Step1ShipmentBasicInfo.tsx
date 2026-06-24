@@ -19,7 +19,7 @@ import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect } from '@/features/shared';
 import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
-import { SearchableMultiSelect } from '@/features/transfer/components/steps/components/SearchableMultiSelect';
+import { SearchableMultiSelect, getOperationUserDisplayName, getOperationUserSubtitle } from '@/features/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { cn } from '@/lib/utils';
 import type { Customer, Project, Warehouse } from '@/features/shared';
@@ -105,6 +105,7 @@ export function Step1ShipmentBasicInfo({
               operationType="SH"
               warehouseId={watch('sourceWarehouseId')}
               customerId={watch('customerRefId')}
+              variant={isOps ? 'ops' : 'default'}
             />
           </div>
         ) : null}
@@ -331,16 +332,17 @@ export function Step1ShipmentBasicInfo({
                       onValueChange={(values) => field.onChange(values)}
                       options={activeUsers || []}
                       getOptionValue={(opt) => String(opt.id)}
-                      getOptionLabel={(opt) => {
-                        const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                        return opt.email ? `${name} (${opt.email})` : name;
-                      }}
+                      getOptionLabel={getOperationUserDisplayName}
+                      getOptionSubtitle={getOperationUserSubtitle}
+                      variant="ops"
+                      optionLayout="user"
                       placeholder={t('shipment.step1.selectOperationUsers')}
                       searchPlaceholder={t('common.search')}
                       emptyText={t('common.notFound')}
                       isLoading={isLoadingUsers}
                       itemLimit={100}
                       className={OPS_FIELD_CLASS}
+                      popoverClassName="wms-ops-lookup-popover"
                     />
                   </OpsFieldShell>
                 ) : (
@@ -349,10 +351,9 @@ export function Step1ShipmentBasicInfo({
                     onValueChange={(values) => field.onChange(values)}
                     options={activeUsers || []}
                     getOptionValue={(opt) => String(opt.id)}
-                    getOptionLabel={(opt) => {
-                      const name = opt.fullName || `${opt.firstName || ''} ${opt.lastName || ''}`.trim() || opt.username;
-                      return opt.email ? `${name} (${opt.email})` : name;
-                    }}
+                    getOptionLabel={getOperationUserDisplayName}
+                    getOptionSubtitle={getOperationUserSubtitle}
+                    optionLayout="user"
                     placeholder={t('shipment.step1.selectOperationUsers')}
                     searchPlaceholder={t('common.search')}
                     emptyText={t('common.notFound')}

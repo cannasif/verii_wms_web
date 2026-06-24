@@ -1,10 +1,13 @@
 import type { ReactElement } from 'react';
 import { CarFront, Loader2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { OpsActionButton, OpsInput } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+  MasterDataOpsFormField,
+  MasterDataOpsGuidance,
+  MasterDataOpsSection,
+} from '@/features/shared';
 import type { CustomerLookup } from '@/features/shared/api/lookup-types';
 import type { CreateOrUpdateVehicleCheckInDto } from '../../types/vehicle-check-in.types';
 import { buildCustomerLabel } from './shared';
@@ -42,58 +45,56 @@ export function VehicleCheckInFormSection({
 
   return (
     <div className="space-y-6">
-      <div className="wms-ops-panel rounded-2xl border p-4 font-mono text-sm">
-        <div className="font-semibold">{t('vehicleCheckIn.guidance.title')}</div>
-        <div className="mt-1">{t('vehicleCheckIn.guidance.sameDayRule')}</div>
-        <div>{t('vehicleCheckIn.guidance.nextDayRule')}</div>
-      </div>
+      <MasterDataOpsGuidance
+        title={t('vehicleCheckIn.guidance.title')}
+        lines={[t('vehicleCheckIn.guidance.sameDayRule'), t('vehicleCheckIn.guidance.nextDayRule')]}
+      />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="vehicle-plate">{t('vehicleCheckIn.fields.plate')} *</Label>
-            <div className="flex gap-2">
-              <Input
-                id="vehicle-plate"
-                value={formState.plateNo}
-                onChange={(event) => onFormStateChange((prev) => ({ ...prev, plateNo: event.target.value.toUpperCase() }))}
-                onBlur={onPlateBlur}
-                placeholder={t('vehicleCheckIn.fields.platePh')}
-              />
-              <Button type="button" variant="outline" onClick={onFindToday} disabled={findTodayPending}>
-                {findTodayPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Search className="mr-2 size-4" />}
+      <MasterDataOpsSection title={t('vehicleCheckIn.title')}>
+        <div className="grid gap-5 lg:grid-cols-2">
+          <MasterDataOpsFormField label={`${t('vehicleCheckIn.fields.plate')} *`} htmlFor="vehicle-plate">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+              <div className="min-w-0 flex-1">
+                <OpsInput
+                  id="vehicle-plate"
+                  value={formState.plateNo}
+                  onChange={(event) => onFormStateChange((prev) => ({ ...prev, plateNo: event.target.value.toUpperCase() }))}
+                  onBlur={onPlateBlur}
+                  placeholder={t('vehicleCheckIn.fields.platePh')}
+                />
+              </div>
+              <OpsActionButton type="button" variant="secondary" onClick={onFindToday} disabled={findTodayPending}>
+                {findTodayPending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
                 {t('vehicleCheckIn.actions.findToday')}
-              </Button>
+              </OpsActionButton>
             </div>
-          </div>
+          </MasterDataOpsFormField>
 
-          <div className="space-y-2">
-            <Label>{t('vehicleCheckIn.fields.entryDate')}</Label>
-            <Input value={entryDateText} readOnly />
-          </div>
+          <MasterDataOpsFormField label={t('vehicleCheckIn.fields.entryDate')}>
+            <OpsInput value={entryDateText} readOnly />
+          </MasterDataOpsFormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="vehicle-first-name">{t('vehicleCheckIn.fields.firstName')}</Label>
-            <Input
+          <MasterDataOpsFormField label={t('vehicleCheckIn.fields.firstName')} htmlFor="vehicle-first-name">
+            <OpsInput
               id="vehicle-first-name"
               value={formState.firstName || ''}
               onChange={(event) => onFormStateChange((prev) => ({ ...prev, firstName: event.target.value }))}
               placeholder={t('vehicleCheckIn.fields.firstNamePh')}
             />
-          </div>
+          </MasterDataOpsFormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="vehicle-last-name">{t('vehicleCheckIn.fields.lastName')}</Label>
-            <Input
+          <MasterDataOpsFormField label={t('vehicleCheckIn.fields.lastName')} htmlFor="vehicle-last-name">
+            <OpsInput
               id="vehicle-last-name"
               value={formState.lastName || ''}
               onChange={(event) => onFormStateChange((prev) => ({ ...prev, lastName: event.target.value }))}
               placeholder={t('vehicleCheckIn.fields.lastNamePh')}
             />
-          </div>
+          </MasterDataOpsFormField>
 
-          <div className="space-y-2 lg:col-span-2">
-            <Label>{t('vehicleCheckIn.fields.customer')}</Label>
+          <MasterDataOpsFormField label={t('vehicleCheckIn.fields.customer')} className="lg:col-span-2">
             <PagedLookupDialog<CustomerLookup>
+              variant="ops"
               open={customerDialogOpen}
               onOpenChange={onCustomerDialogOpenChange}
               title={t('vehicleCheckIn.customerLookup.title')}
@@ -111,18 +112,19 @@ export function VehicleCheckInFormSection({
                 customerName: item.cariIsim,
               }))}
             />
-          </div>
-      </div>
+          </MasterDataOpsFormField>
+        </div>
 
-      <div className="wms-ops-actions flex flex-wrap gap-3">
-        <Button type="button" className="wms-ops-primary-btn" onClick={onSave} disabled={savePending}>
-          {savePending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <CarFront className="mr-2 size-4" />}
-          {t('vehicleCheckIn.actions.save')}
-        </Button>
-        <Button type="button" variant="ghost" onClick={onOpenList}>
-          {t('vehicleCheckIn.actions.openList')}
-        </Button>
-      </div>
+        <div className="wms-ops-actions mt-5 flex flex-wrap gap-3">
+          <OpsActionButton type="button" variant="primary" onClick={onSave} disabled={savePending}>
+            {savePending ? <Loader2 className="size-4 animate-spin" /> : <CarFront className="size-4" />}
+            {t('vehicleCheckIn.actions.save')}
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="secondary" onClick={onOpenList}>
+            {t('vehicleCheckIn.actions.openList')}
+          </OpsActionButton>
+        </div>
+      </MasterDataOpsSection>
     </div>
   );
 }

@@ -1,12 +1,11 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
+import { OpsActionButton, OpsFieldShell } from '@/components/shared';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { ProductionTransferSuggestedLine } from '../types/production-transfer';
+import { PtFormField, PtSection, PtTerminalBlock } from './production-transfer-ops-ui';
 
 interface Props {
   lines: ProductionTransferSuggestedLine[];
@@ -46,21 +45,23 @@ export function ProductionTransferSuggestPanel({ lines, onApplySelected, applyMo
   };
 
   return (
-    <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
-      <CardHeader className="border-b px-4 py-4 sm:px-6">
-        <CardTitle className="text-base">{t('productionTransfer.create.suggestPanel.title')}</CardTitle>
-        <CardDescription>{t('productionTransfer.create.suggestPanel.description')}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4 px-4 py-6 sm:px-6">
-        <div className="wms-ops-panel-empty wms-ops-panel-empty--inline rounded-xl border p-4 text-sm">
-          {t('productionTransfer.create.suggestPanel.hint')}
-        </div>
+    <PtSection
+      variant="terminal"
+      title={t('productionTransfer.create.suggestPanel.title')}
+      subtitle={t('productionTransfer.create.suggestPanel.description')}
+    >
+      <div className="space-y-4">
+        <PtTerminalBlock
+          defaultOpen={false}
+          title={t('productionTransfer.create.suggestPanel.hintTitle', { defaultValue: 'Kullanım' })}
+          body={t('productionTransfer.create.suggestPanel.hint')}
+        />
         {lines.length === 0 ? (
-          <div className="wms-ops-panel-empty rounded-xl border border-dashed p-4 text-sm">
+          <div className="wms-ops-panel-empty rounded-none border border-dashed p-4 text-sm">
             {t('productionTransfer.create.suggestPanel.noSuggestions')}
           </div>
         ) : (
-          <div className="wms-ops-table-wrap overflow-hidden rounded-xl border">
+          <div className="wms-ops-table-wrap overflow-hidden border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -74,58 +75,69 @@ export function ProductionTransferSuggestPanel({ lines, onApplySelected, applyMo
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {lines.map((line, index) => (
-                  <TableRow key={`${line.productionOrderNo}-${line.stockCode}-${index}`}>
-                    <TableCell className="wms-ops-table-center-col">
-                      <Button
-                        type="button"
-                        variant={selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`) ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => toggleLine(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)}
-                      >
-                        {selectedKeys.includes(`${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`)
-                          ? t('productionTransfer.create.suggestPanel.actions.selected')
-                          : t('productionTransfer.create.suggestPanel.actions.select')}
-                      </Button>
-                    </TableCell>
-                    <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.productionOrderNo}</TableCell>
-                    <TableCell className="wms-ops-table-center-col"><Badge variant="secondary">{lineRoleLabel(line.lineRole)}</Badge></TableCell>
-                    <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.stockCode}</TableCell>
-                    <TableCell className="wms-ops-table-center-col">{line.quantity}</TableCell>
-                    <TableCell className="wms-ops-table-center-col">{line.sourceWarehouseCode || line.sourceCellCode || '-'}</TableCell>
-                    <TableCell className="wms-ops-table-center-col">{line.targetWarehouseCode || line.targetCellCode || '-'}</TableCell>
-                  </TableRow>
-                ))}
+                {lines.map((line, index) => {
+                  const key = `${line.productionOrderNo}-${line.stockCode}-${line.lineRole}-${index}`;
+                  const isSelected = selectedKeys.includes(key);
+                  return (
+                    <TableRow key={key}>
+                      <TableCell className="wms-ops-table-center-col">
+                        <OpsActionButton
+                          type="button"
+                          variant={isSelected ? 'primary' : 'secondary'}
+                          onClick={() => toggleLine(key)}
+                        >
+                          {isSelected
+                            ? t('productionTransfer.create.suggestPanel.actions.selected')
+                            : t('productionTransfer.create.suggestPanel.actions.select')}
+                        </OpsActionButton>
+                      </TableCell>
+                      <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.productionOrderNo}</TableCell>
+                      <TableCell className="wms-ops-table-center-col">
+                        <span className="wms-ops-status-badge wms-ops-status-badge--active">{lineRoleLabel(line.lineRole)}</span>
+                      </TableCell>
+                      <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.stockCode}</TableCell>
+                      <TableCell className="wms-ops-table-center-col">{line.quantity}</TableCell>
+                      <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.sourceWarehouseCode || line.sourceCellCode || '-'}</TableCell>
+                      <TableCell className="wms-ops-table-center-col font-mono text-xs">{line.targetWarehouseCode || line.targetCellCode || '-'}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
         )}
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-44 space-y-2">
-              <Label>{t('productionTransfer.create.suggestPanel.applyModeLabel')}</Label>
-              <Select value={applyMode} onValueChange={(value) => onApplyModeChange(value as 'append' | 'replace')}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="append">{t('productionTransfer.create.suggestPanel.applyMode.append')}</SelectItem>
-                  <SelectItem value="replace">{t('productionTransfer.create.suggestPanel.applyMode.replace')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="button" variant="ghost" onClick={selectAll} disabled={isLoading || lines.length === 0}>
+            <PtFormField label={t('productionTransfer.create.suggestPanel.applyModeLabel')} className="min-w-44">
+              <OpsFieldShell>
+                <Select value={applyMode} onValueChange={(value) => onApplyModeChange(value as 'append' | 'replace')}>
+                  <SelectTrigger className={OPS_FIELD_CLASS}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                    <SelectItem value="append">{t('productionTransfer.create.suggestPanel.applyMode.append')}</SelectItem>
+                    <SelectItem value="replace">{t('productionTransfer.create.suggestPanel.applyMode.replace')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </OpsFieldShell>
+            </PtFormField>
+            <OpsActionButton type="button" variant="secondary" onClick={selectAll} disabled={isLoading || lines.length === 0}>
               {t('productionTransfer.create.suggestPanel.actions.selectAll')}
-            </Button>
-            <Button type="button" variant="ghost" onClick={clearSelection} disabled={isLoading || selectedKeys.length === 0}>
+            </OpsActionButton>
+            <OpsActionButton type="button" variant="secondary" onClick={clearSelection} disabled={isLoading || selectedKeys.length === 0}>
               {t('productionTransfer.create.suggestPanel.actions.clearSelection')}
-            </Button>
+            </OpsActionButton>
           </div>
-          <Button type="button" variant="outline" onClick={() => onApplySelected(selectedLines)} disabled={isLoading || selectedLines.length === 0}>
+          <OpsActionButton
+            type="button"
+            variant="primary"
+            onClick={() => onApplySelected(selectedLines)}
+            disabled={isLoading || selectedLines.length === 0}
+          >
             {t('productionTransfer.create.suggestPanel.actions.applySelected')}
-          </Button>
+          </OpsActionButton>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </PtSection>
   );
 }

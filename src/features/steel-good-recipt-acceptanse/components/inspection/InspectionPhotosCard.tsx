@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { OpsActionButton } from '@/components/shared';
+import { MasterDataOpsEmptyState, MasterDataOpsSection } from '@/features/shared';
 import type { SteelGoodReciptAcceptansePhotoDto } from '../../types/steel-good-recipt-acceptanse.types';
 import { SteelGoodReciptAcceptansePhotoUpload } from '../SteelGoodReciptAcceptansePhotoUpload';
 
@@ -21,31 +21,26 @@ export function InspectionPhotosCard({
   const { t } = useTranslation('common');
 
   return (
-    <Card className="shrink-0 border-white/10 bg-white/5">
-      <CardHeader>
-        <CardTitle>{t('steelGoodReceiptAcceptance.inspection.photosTitle')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <SteelGoodReciptAcceptansePhotoUpload lineId={lineId} onUploaded={onUploaded} />
+    <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.inspection.photosTitle')}>
+      <SteelGoodReciptAcceptansePhotoUpload lineId={lineId} onUploaded={onUploaded} />
 
-        <div className="space-y-3">
-          {photos.map((photo) => (
-            <div key={photo.id} className="flex items-start gap-3 rounded-xl border border-white/10 p-3">
-              <img src={photo.imageUrl} alt={photo.caption ?? photo.id.toString()} className="h-20 w-20 rounded-lg object-cover" />
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium">{photo.caption || t('steelGoodReceiptAcceptance.inspection.photo')}</div>
-                <div className="text-xs text-slate-400">{photo.createdDate ?? '-'}</div>
-              </div>
-              <Button type="button" variant="ghost" onClick={() => onDeletePhoto(photo.id)}>
-                {t('common.delete')}
-              </Button>
+      <div className="mt-4 space-y-3">
+        {photos.map((photo) => (
+          <div key={photo.id} className="flex items-start gap-3 border border-[color-mix(in_oklab,var(--wms-ops-accent)_14%,var(--wms-ops-card-border))] p-3">
+            <img src={photo.imageUrl} alt={photo.caption ?? photo.id.toString()} className="h-20 w-20 object-cover" />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium">{photo.caption || t('steelGoodReceiptAcceptance.inspection.photo')}</div>
+              <div className="text-xs opacity-70">{photo.createdDate ?? '-'}</div>
             </div>
-          ))}
-          {photos.length === 0 ? (
-            <div className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{t('steelGoodReceiptAcceptance.inspection.noPhotos')}</div>
-          ) : null}
-        </div>
-      </CardContent>
-    </Card>
+            <OpsActionButton type="button" variant="secondary" onClick={() => onDeletePhoto(photo.id)}>
+              {t('common.delete')}
+            </OpsActionButton>
+          </div>
+        ))}
+        {photos.length === 0 ? (
+          <MasterDataOpsEmptyState>{t('steelGoodReceiptAcceptance.inspection.noPhotos')}</MasterDataOpsEmptyState>
+        ) : null}
+      </div>
+    </MasterDataOpsSection>
   );
 }

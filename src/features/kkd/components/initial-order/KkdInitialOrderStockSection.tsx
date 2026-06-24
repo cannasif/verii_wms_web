@@ -1,14 +1,10 @@
 import type { ReactElement } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { OpsActionButton, OpsInput, PagedLookupDialog } from '@/components/shared';
+import { SelectItem } from '@/components/ui/select';
 import type { TFunction } from 'i18next';
 import type { PagedResponse } from '@/types/api';
 import type { KkdOrderContextDto, KkdOrderStockOptionDto } from '../../types/kkd.types';
+import { KkdFlagChip, KkdOpsFormField, KkdOpsSection, KkdOpsSelect } from '../kkd-ops-ui';
 
 interface KkdInitialOrderStockSectionProps {
   t: TFunction<'common'>;
@@ -51,43 +47,40 @@ export function KkdInitialOrderStockSection({
   fetchStocks,
 }: KkdInitialOrderStockSectionProps): ReactElement {
   return (
-    <Card>
-      <CardHeader><CardTitle>{t('kkd.operational.initialOrder.cardStock')}</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label>{t('kkd.operational.initialOrder.entitlementGroup')}</Label>
-          <Select value={selectedGroupCode} onValueChange={onSelectedGroupCodeChange}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('kkd.operational.initialOrder.groupPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {eligibleGroups.map((group) => (
-                <SelectItem key={group.groupCode} value={group.groupCode}>
-                  {group.groupCode} {group.groupName ? `- ${group.groupName}` : ''} ({group.remainingInitialQuantity})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <KkdOpsSection title={t('kkd.operational.initialOrder.cardStock')}>
+      <div className="space-y-4">
+        <KkdOpsFormField label={t('kkd.operational.initialOrder.entitlementGroup')}>
+          <KkdOpsSelect
+            value={selectedGroupCode}
+            onValueChange={onSelectedGroupCodeChange}
+            placeholder={t('kkd.operational.initialOrder.groupPlaceholder')}
+          >
+            {eligibleGroups.map((group) => (
+              <SelectItem key={group.groupCode} value={group.groupCode}>
+                {group.groupCode} {group.groupName ? `- ${group.groupName}` : ''} ({group.remainingInitialQuantity})
+              </SelectItem>
+            ))}
+          </KkdOpsSelect>
+        </KkdOpsFormField>
 
         {selectedGroup ? (
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-white/5">
+          <div className="text-sm">
             <div className="flex flex-wrap gap-2">
-              <Badge>{selectedGroup.groupCode}</Badge>
-              <Badge variant="secondary">
+              <KkdFlagChip>{selectedGroup.groupCode}</KkdFlagChip>
+              <KkdFlagChip tone="info">
                 {t('kkd.operational.initialOrder.initialEntitlement')}: {selectedGroup.remainingInitialQuantity}
-              </Badge>
-              <Badge variant="outline">
+              </KkdFlagChip>
+              <KkdFlagChip tone="warn">
                 {t('kkd.operational.initialOrder.remainingInCart')}: {remainingAfterCart}
-              </Badge>
+              </KkdFlagChip>
             </div>
           </div>
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-[1.2fr_0.5fr_auto]">
-          <div className="space-y-2">
-            <Label>{t('kkd.operational.initialOrder.stockLabel')}</Label>
+        <div className="grid gap-4 md:grid-cols-[1.2fr_0.5fr_auto] md:gap-5">
+          <KkdOpsFormField label={t('kkd.operational.initialOrder.stockLabel')}>
             <PagedLookupDialog<KkdOrderStockOptionDto>
+              variant="ops"
               open={stockDialogOpen}
               onOpenChange={onStockDialogOpenChange}
               title={t('kkd.operational.initialOrder.selectStock')}
@@ -101,18 +94,17 @@ export function KkdInitialOrderStockSection({
               getLabel={(item) => `${item.stockCode} - ${item.stockName}`}
               onSelect={onSelectStock}
             />
-          </div>
-          <div className="space-y-2">
-            <Label>{t('common.quantity')}</Label>
-            <Input type="number" min="1" step="1" value={quantity} onChange={(e) => onQuantityChange(e.target.value)} />
-          </div>
-          <div className="flex items-end">
-            <Button type="button" onClick={onAddLine} disabled={!canAddLine}>
+          </KkdOpsFormField>
+          <KkdOpsFormField label={t('common.quantity')}>
+            <OpsInput type="number" min="1" step="1" value={quantity} onChange={(e) => onQuantityChange(e.target.value)} />
+          </KkdOpsFormField>
+          <div className="flex items-end pb-0.5">
+            <OpsActionButton type="button" onClick={onAddLine} disabled={!canAddLine}>
               {t('kkd.operational.initialOrder.add')}
-            </Button>
+            </OpsActionButton>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </KkdOpsSection>
   );
 }
