@@ -1,10 +1,10 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, PlayCircle, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,18 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'documentType', type: 'string', labelKey: 'subcontracting.sit.assignedList.documentType' },
 ];
 
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  id: 8,
+  documentNo: 14,
+  documentDate: 12,
+  customerCode: 12,
+  customerName: 14,
+  sourceWarehouse: 12,
+  targetWarehouse: 12,
+  documentType: 10,
+  createdDate: 14,
+};
+
 function mapSortBy(value: AssignedSitColumnKey): string {
   switch (value) {
     case 'documentNo': return 'DocumentNo';
@@ -68,44 +80,66 @@ function formatDateTime(value: string | null): string {
 }
 
 export function AssignedSitListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.subcontracting.issue');
   const pageKey = 'subcontracting-sit-assigned-list';
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<SubcontractingHeader | null>(null);
 
   const pagedGrid = usePagedDataGrid<AssignedSitColumnKey>({ pageKey, defaultSortBy: 'createdDate', defaultSortDirection: 'desc', defaultPageSize: 20, mapSortBy });
   const columns = useMemo<PagedDataGridColumn<AssignedSitColumnKey>[]>(() => [
-    { key: 'id', label: t('subcontracting.sit.assignedList.id') },
-    { key: 'documentNo', label: t('subcontracting.sit.assignedList.documentNo') },
-    { key: 'documentDate', label: t('subcontracting.sit.assignedList.documentDate') },
-    { key: 'customerCode', label: t('subcontracting.sit.assignedList.customerCode') },
-    { key: 'customerName', label: t('subcontracting.sit.assignedList.customerName') },
-    { key: 'sourceWarehouse', label: t('subcontracting.sit.assignedList.sourceWarehouse') },
-    { key: 'targetWarehouse', label: t('subcontracting.sit.assignedList.targetWarehouse') },
-    { key: 'documentType', label: t('subcontracting.sit.assignedList.documentType') },
-    { key: 'createdDate', label: t('subcontracting.sit.assignedList.createdDate') },
+    {
+      key: 'id',
+      label: t('subcontracting.sit.assignedList.id'),
+      headClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+      cellClassName: 'wms-ops-table-id-col wms-ops-table-center-col',
+    },
+    { key: 'documentNo', label: t('subcontracting.sit.assignedList.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentDate', label: t('subcontracting.sit.assignedList.documentDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerCode', label: t('subcontracting.sit.assignedList.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerName', label: t('subcontracting.sit.assignedList.customerName'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'sourceWarehouse', label: t('subcontracting.sit.assignedList.sourceWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'targetWarehouse', label: t('subcontracting.sit.assignedList.targetWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentType', label: t('subcontracting.sit.assignedList.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('subcontracting.sit.assignedList.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({ pageKey, columns: columns.map(({ key, label }) => ({ key, label })), idColumnKey: 'id' });
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
+    pageKey,
+    columns: columns.map(({ key, label }) => ({ key, label })),
+    idColumnKey: 'id',
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
+  });
+
   const { data, isLoading, error, refetch } = useAssignedSitHeadersPaged(pagedGrid.queryParams);
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => subcontractingApi.deleteIssueHeader(id),
     onSuccess: async (response) => {
       if (!response.success) {
-        throw new Error(response.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+        throw new Error(response.message || t('common.errors.deleteFailed'));
       }
-      toast.success(t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+      toast.error(error.message || t('common.errors.deleteFailed'));
     },
   });
 
@@ -113,6 +147,21 @@ export function AssignedSitListPage(): ReactElement {
     setPageTitle(t('subcontracting.sit.assignedList.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  const getCellText = (row: SubcontractingHeader, key: AssignedSitColumnKey): string | undefined => {
+    switch (key) {
+      case 'id': return String(row.id);
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'customerCode': return row.customerCode || '-';
+      case 'customerName': return row.customerName || '-';
+      case 'sourceWarehouse': return row.sourceWarehouse || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
+  };
 
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
@@ -130,33 +179,46 @@ export function AssignedSitListPage(): ReactElement {
   ), [data?.data]);
 
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
   const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedSitColumnKey[], [orderedVisibleColumns]);
   const renderSortIcon = (columnKey: AssignedSitColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 
   return (
-    <div className="space-y-6 crm-page">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('subcontracting.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('subcontracting.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('subcontracting.sit.assignedList.title')}
+        description={t('subcontracting.sit.assignedList.subtitle')}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
         <PagedDataGrid<SubcontractingHeader, AssignedSitColumnKey>
+          variant="ops"
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(item, columnKey) => {
-            switch (columnKey) {
-              case 'id': return item.id;
-              case 'documentNo': return <span className="font-medium">{item.documentNo || '-'}</span>;
-              case 'documentDate': return formatDate(item.documentDate);
-              case 'customerCode': return item.customerCode || '-';
-              case 'customerName': return item.customerName || '-';
-              case 'sourceWarehouse': return item.sourceWarehouse || '-';
-              case 'targetWarehouse': return item.targetWarehouse || '-';
-              case 'documentType': return <Badge variant="outline">{item.documentType || '-'}</Badge>;
-              case 'createdDate': return formatDateTime(item.createdDate);
-              default: return null;
-            }
-          }}
+          renderCell={(item, columnKey) => ({
+            id: <span className="wms-ops-table-id-value">{item.id}</span>,
+            documentNo: <span className="font-medium font-mono text-xs">{item.documentNo || '-'}</span>,
+            documentDate: <span className="font-mono text-xs">{formatDate(item.documentDate)}</span>,
+            customerCode: item.customerCode || '-',
+            customerName: item.customerName || '-',
+            sourceWarehouse: item.sourceWarehouse || '-',
+            targetWarehouse: item.targetWarehouse || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
+            createdDate: <span className="font-mono text-xs">{formatDateTime(item.createdDate)}</span>,
+          } as Record<Exclude<AssignedSitColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<AssignedSitColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(columnKey) => {
@@ -168,22 +230,50 @@ export function AssignedSitListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('subcontracting.sit.assignedList.error')}
           emptyText={t('subcontracting.sit.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
+          showActionsColumn={showActionsColumn}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => {
-                setSelectedHeaderId(item.id);
-                setSelectedDocumentType(item.documentType);
-              }} disabled={!permission.canView}>
-                {t('subcontracting.sit.assignedList.viewDetails')}
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('subcontracting.sit.assignedList.viewDetails')}
+                title={t('subcontracting.sit.assignedList.viewDetails')}
+                onClick={() => {
+                  setSelectedHeaderId(item.id);
+                  setSelectedDocumentType(item.documentType);
+                }}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
               </Button>
-              <Button variant="default" size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => navigate(`/subcontracting/issue/collection/${item.id}`)} disabled={!permission.canUpdate}>
-                {t('common.start')}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--start"
+                aria-label={t('common.start')}
+                title={t('common.start')}
+                onClick={() => navigate(`/subcontracting/issue/collection/${item.id}`)}
+                disabled={!permission.canUpdate}
+              >
+                <PlayCircle className="size-3" aria-hidden />
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => setHeaderToDelete(item)} disabled={!permission.canDelete || deleteMutation.isPending}>
-                <Trash2 className="mr-1 h-3.5 w-3.5" />
-                {t('common.delete')}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+                onClick={() => setHeaderToDelete(item)}
+                disabled={!permission.canDelete || deleteMutation.isPending}
+              >
+                <Trash2 className="size-3" aria-hidden />
               </Button>
             </div>
           )}
@@ -220,18 +310,25 @@ export function AssignedSitListPage(): ReactElement {
             onClearFilters: pagedGrid.clearAdvancedFilters,
             appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
             search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              ...pagedGrid.searchConfig,
               placeholder: t('subcontracting.sit.assignedList.searchPlaceholder'),
             },
-            leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
           }}
         />
-      </div>
+      </OpsListPageShell>
 
       {selectedHeaderId && (
         <SubcontractingDetailDialog
+          variant="ops"
           headerId={selectedHeaderId}
           documentType={selectedDocumentType ?? ''}
           isOpen={selectedHeaderId != null}
@@ -253,6 +350,6 @@ export function AssignedSitListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

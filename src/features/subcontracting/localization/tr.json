@@ -1,0 +1,66 @@
+{
+  "subcontracting": {
+    "create": {
+      "breadcrumb": {
+        "parent": "GİRİŞ_OP",
+        "module": "FASON"
+      },
+      "subtitle": "Sistem kaydı başlatılıyor..."
+    },
+    "sit": {
+      "assignedList": {
+        "subtitle": "Atanmış fason çıkış emirlerini görüntüleyin ve toplamaya başlayın"
+      },
+      "collection": {
+        "subtitle": "Barkod okutarak fason çıkış toplama işlemini gerçekleştirin",
+        "collected": "Toplanan"
+      }
+    },
+    "srt": {
+      "assignedList": {
+        "subtitle": "Atanmış fason giriş emirlerini görüntüleyin ve toplamaya başlayın"
+      },
+      "collection": {
+        "subtitle": "Barkod okutarak fason giriş toplama işlemini gerçekleştirin",
+        "collected": "Toplanan"
+      }
+    },
+    "issue": {
+      "list": {
+        "subtitle": "Fason çıkış emirlerini görüntüleyin, filtreleyin ve yönetin"
+      },
+      "approval": {
+        "subtitle": "Onay bekleyen fason çıkış emirlerini görüntüleyin ve işleyin"
+      },
+      "create": {
+        "subtitle": "Yeni fason çıkış emri oluşturun"
+      },
+      "edit": {
+        "subtitle": "Fason çıkış başlık bilgilerini satır/toplama akışını bozmadan güncelleyin"
+      },
+      "process": {
+        "subtitle": "Header + ImportLine + Route mantığında fason çıkış işlemi oluşturun"
+      }
+    },
+    "receipt": {
+      "list": {
+        "subtitle": "Fason giriş emirlerini görüntüleyin, filtreleyin ve yönetin"
+      },
+      "approval": {
+        "subtitle": "Onay bekleyen fason giriş emirlerini görüntüleyin ve işleyin"
+      },
+      "create": {
+        "subtitle": "Yeni fason giriş emri oluşturun"
+      },
+      "edit": {
+        "subtitle": "Fason giriş başlık bilgilerini satır/toplama akışını bozmadan güncelleyin"
+      },
+      "process": {
+        "subtitle": "Header + ImportLine + Route mantığında fason giriş işlemi oluşturun"
+      }
+    },
+    "process": {
+      "badge": "Direkt işlem"
+    }
+  }
+}

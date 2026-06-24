@@ -1,0 +1,66 @@
+{
+  "subcontracting": {
+    "create": {
+      "breadcrumb": {
+        "parent": "INBOUND_OP",
+        "module": "SUBCONTRACTING"
+      },
+      "subtitle": "Initializing system record..."
+    },
+    "sit": {
+      "assignedList": {
+        "subtitle": "View assigned subcontracting issue orders and start collection"
+      },
+      "collection": {
+        "subtitle": "Scan barcodes to perform subcontracting issue collection",
+        "collected": "Collected"
+      }
+    },
+    "srt": {
+      "assignedList": {
+        "subtitle": "View assigned subcontracting receipt orders and start collection"
+      },
+      "collection": {
+        "subtitle": "Scan barcodes to perform subcontracting receipt collection",
+        "collected": "Collected"
+      }
+    },
+    "issue": {
+      "list": {
+        "subtitle": "View, filter and manage subcontracting issue orders"
+      },
+      "approval": {
+        "subtitle": "Review and process subcontracting issue orders awaiting approval"
+      },
+      "create": {
+        "subtitle": "Create a new subcontracting issue order"
+      },
+      "edit": {
+        "subtitle": "Update subcontracting issue header without changing line or collection flow"
+      },
+      "process": {
+        "subtitle": "Create a direct subcontracting issue using Header + ImportLine + Route logic"
+      }
+    },
+    "receipt": {
+      "list": {
+        "subtitle": "View, filter and manage subcontracting receipt orders"
+      },
+      "approval": {
+        "subtitle": "Review and process subcontracting receipt orders awaiting approval"
+      },
+      "create": {
+        "subtitle": "Create a new subcontracting receipt order"
+      },
+      "edit": {
+        "subtitle": "Update subcontracting receipt header without changing line or collection flow"
+      },
+      "process": {
+        "subtitle": "Create a direct subcontracting receipt using Header + ImportLine + Route logic"
+      }
+    },
+    "process": {
+      "badge": "Direct process"
+    }
+  }
+}

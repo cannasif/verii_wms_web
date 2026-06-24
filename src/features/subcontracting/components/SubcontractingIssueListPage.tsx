@@ -6,12 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { getPagedRange } from '@/lib/paged';
@@ -36,6 +35,18 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'isCompleted', type: 'boolean', labelKey: 'subcontracting.issue.list.status' },
 ];
 
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  documentNo: 14,
+  documentDate: 12,
+  customerCode: 12,
+  customerName: 14,
+  sourceWarehouse: 12,
+  targetWarehouse: 12,
+  documentType: 10,
+  status: 12,
+  createdDate: 14,
+};
+
 const mapSortBy = (value: ColumnKey): string => {
   switch (value) {
     case 'documentNo': return 'DocumentNo';
@@ -54,207 +65,128 @@ const formatDate = (value: string | null): string => value ? new Date(value).toL
 const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
 
 export function SubcontractingIssueListPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.subcontracting.issue');
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<SubcontractingHeader | null>(null);
 
-  const pagedGrid = usePagedDataGrid<ColumnKey>({
-    pageKey,
-    defaultSortBy: 'createdDate',
-    defaultSortDirection: 'desc',
-    mapSortBy,
-  });
-
+  const pagedGrid = usePagedDataGrid<ColumnKey>({ pageKey, defaultSortBy: 'createdDate', defaultSortDirection: 'desc', mapSortBy });
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
-    { key: 'documentNo', label: t('subcontracting.issue.list.documentNo') },
-    { key: 'documentDate', label: t('subcontracting.issue.list.documentDate') },
-    { key: 'customerCode', label: t('subcontracting.issue.list.customerCode') },
-    { key: 'customerName', label: t('subcontracting.issue.list.customerName') },
-    { key: 'sourceWarehouse', label: t('subcontracting.issue.list.sourceWarehouse') },
-    { key: 'targetWarehouse', label: t('subcontracting.issue.list.targetWarehouse') },
-    { key: 'documentType', label: t('subcontracting.issue.list.documentType') },
-    { key: 'status', label: t('subcontracting.issue.list.status') },
-    { key: 'createdDate', label: t('subcontracting.issue.list.createdDate') },
-    { key: 'actions', label: t('subcontracting.issue.list.actions'), sortable: false },
+    { key: 'documentNo', label: t('subcontracting.issue.list.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentDate', label: t('subcontracting.issue.list.documentDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerCode', label: t('subcontracting.issue.list.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerName', label: t('subcontracting.issue.list.customerName'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'sourceWarehouse', label: t('subcontracting.issue.list.sourceWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'targetWarehouse', label: t('subcontracting.issue.list.targetWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentType', label: t('subcontracting.issue.list.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'status', label: t('subcontracting.issue.list.status'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('subcontracting.issue.list.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, columnWidths, setColumnOrder, setVisibleColumns, resizeColumnPair } = useColumnPreferences({
+    pageKey, columns: columns.map(({ key, label }) => ({ key, label })), defaultWidths: DEFAULT_COLUMN_WIDTHS, includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useSubcontractingIssueHeadersPaged(pagedGrid.queryParams);
-
   const deleteMutation = useMutation({
     mutationFn: (id: number) => subcontractingApi.deleteIssueHeader(id),
     onSuccess: async (response) => {
       if (!response.success) throw new Error(response.message || t('common.errors.deleteFailed'));
-      toast.success(response.message || t('common.deleteSuccess', { defaultValue: 'Kayıt silindi.' }));
+      toast.success(response.message || t('common.deleteSuccess'));
       setHeaderToDelete(null);
       await refetch();
     },
     onError: (err: Error) => toast.error(err.message || t('common.errors.deleteFailed')),
   });
 
-  useEffect(() => {
-    setPageTitle(t('subcontracting.issue.list.title'));
-    return () => setPageTitle(null);
-  }, [setPageTitle, t]);
+  useEffect(() => { setPageTitle(t('subcontracting.issue.list.title')); return () => setPageTitle(null); }, [setPageTitle, t]);
 
-  const getStatus = (item: SubcontractingHeader): ReactElement =>
-    item.isCompleted
-      ? <Badge variant="default" className="w-fit">{t('subcontracting.issue.list.completed')}</Badge>
-      : item.isPendingApproval
-        ? <Badge variant="secondary" className="w-fit">{t('subcontracting.issue.list.pendingApproval')}</Badge>
-        : <Badge variant="outline" className="w-fit">{t('subcontracting.issue.list.inProgress')}</Badge>;
+  const statusLabel = (item: SubcontractingHeader): string => {
+    if (item.isCompleted) return t('subcontracting.issue.list.completed');
+    if (item.isPendingApproval) return t('subcontracting.issue.list.pendingApproval');
+    return t('subcontracting.issue.list.inProgress');
+  };
 
-  const exportColumns = useMemo(() =>
-    orderedVisibleColumns
-      .filter((key) => key !== 'actions')
-      .map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })),
-    [columns, orderedVisibleColumns]
-  );
+  const statusBadge = (item: SubcontractingHeader): ReactElement => {
+    if (item.isCompleted) return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{t('subcontracting.issue.list.completed')}</Badge>;
+    if (item.isPendingApproval) return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{t('subcontracting.issue.list.pendingApproval')}</Badge>;
+    return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--active mx-auto">{t('subcontracting.issue.list.inProgress')}</Badge>;
+  };
 
-  const exportRows = useMemo<Record<string, unknown>[]>(() =>
-    (data?.data ?? []).map((item) => ({
-      documentNo: item.documentNo || '-',
-      documentDate: formatDate(item.documentDate),
-      customerCode: item.customerCode || '-',
-      customerName: item.customerName || '-',
-      sourceWarehouse: item.sourceWarehouse || '-',
-      targetWarehouse: item.targetWarehouse || '-',
-      documentType: item.documentType || '-',
-      status: item.isCompleted
-        ? t('subcontracting.issue.list.completed')
-        : item.isPendingApproval
-          ? t('subcontracting.issue.list.pendingApproval')
-          : t('subcontracting.issue.list.inProgress'),
-      createdDate: formatDateTime(item.createdDate)
-    })),
-    [data?.data, t]
-  );
+  const getCellText = (row: SubcontractingHeader, key: ColumnKey): string | undefined => {
+    switch (key) {
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'customerCode': return row.customerCode || '-';
+      case 'customerName': return row.customerName || '-';
+      case 'sourceWarehouse': return row.sourceWarehouse || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'status': return statusLabel(row);
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
+  };
+
+  const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
+    documentNo: item.documentNo || '-', documentDate: formatDate(item.documentDate), customerCode: item.customerCode || '-', customerName: item.customerName || '-',
+    sourceWarehouse: item.sourceWarehouse || '-', targetWarehouse: item.targetWarehouse || '-', documentType: item.documentType || '-',
+    status: statusLabel(item), createdDate: formatDateTime(item.createdDate),
+  })), [data?.data, t]);
 
   const range = getPagedRange(data);
-  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total, defaultValue: `${range.from}-${range.to} / ${range.total}` });
+  const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
   const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as ColumnKey[], [orderedVisibleColumns]);
-  const renderSortIcon = (columnKey: ColumnKey): ReactElement | null =>
-    columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  const renderSortIcon = (columnKey: ColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
 
   return (
-    <div className="space-y-6">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('subcontracting.issue.list.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<SubcontractingHeader, ColumnKey>
-            columns={columns}
-            visibleColumnKeys={visibleColumnKeys}
-            rows={data?.data ?? []}
-            rowKey={(row) => row.id}
-            renderCell={(item, columnKey) => {
-              switch (columnKey) {
-                case 'documentNo': return <span className="font-medium">{item.documentNo || '-'}</span>;
-                case 'documentDate': return formatDate(item.documentDate);
-                case 'customerCode': return item.customerCode || '-';
-                case 'customerName': return item.customerName || '-';
-                case 'sourceWarehouse': return item.sourceWarehouse || '-';
-                case 'targetWarehouse': return item.targetWarehouse || '-';
-                case 'documentType': return <Badge variant="outline">{item.documentType || '-'}</Badge>;
-                case 'status': return getStatus(item);
-                case 'createdDate': return formatDateTime(item.createdDate);
-                default: return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={(columnKey) => {
-              if (columnKey === 'status' || columnKey === 'actions') return;
-              pagedGrid.handleSort(columnKey);
-            }}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('subcontracting.issue.list.error')}
-            emptyText={t('subcontracting.issue.list.noData')}
-            showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canUpdate || permission.canDelete)}
-            actionsHeaderLabel={t('subcontracting.issue.list.actions')}
-            renderActionsCell={(row) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button variant="ghost" size="sm" disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}>
-                  <Eye className="size-4" />
-                  <span className="ml-2">{t('subcontracting.issue.list.viewDetails')}</span>
-                </Button>
-                <Button variant="secondary" size="sm" disabled={!permission.canUpdate || row.isCompleted} onClick={() => navigate(`/subcontracting/issue/edit/${row.id}`)}>
-                  <Pencil className="size-4" />
-                  <span className="ml-2">{t('common.edit')}</span>
-                </Button>
-                <Button variant="destructive" size="sm" disabled={!permission.canDelete || deleteMutation.isPending} onClick={() => setHeaderToDelete(row)}>
-                  <Trash2 className="size-4" />
-                  <span className="ml-2">{t('common.delete')}</span>
-                </Button>
-              </div>
-            )}
-            pageSize={data?.pageSize ?? pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={Math.max(data?.totalPages ?? 1, 1)}
-            hasPreviousPage={Boolean(data?.hasPreviousPage)}
-            hasNextPage={Boolean(data?.hasNextPage)}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            actionBar={{
-              pageKey,
-              userId,
-              columns: columns.map(({ key, label }) => ({ key, label })),
-              visibleColumns,
-              columnOrder,
-              onVisibleColumnsChange: setVisibleColumns,
-              onColumnOrderChange: setColumnOrder,
-              exportFileName: pageKey,
-              exportColumns,
-              exportRows,
-              filterColumns: advancedFilterColumns,
-              defaultFilterColumn: 'documentNo',
-              draftFilterRows: pagedGrid.draftFilterRows,
-              onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-              filterLogic: pagedGrid.filterLogic,
-              onFilterLogicChange: pagedGrid.setFilterLogic,
-              onApplyFilters: pagedGrid.applyAdvancedFilters,
-              onClearFilters: pagedGrid.clearAdvancedFilters,
-              appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-              search: {
-                value: pagedGrid.searchInput,
-                onValueChange: pagedGrid.searchConfig.onValueChange,
-                onSearchChange: pagedGrid.searchConfig.onSearchChange,
-                placeholder: t('subcontracting.issue.list.searchPlaceholder'),
-              },
-              leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
-            }}
-          />
-        </CardContent>
-      </Card>
-      {selectedHeaderId && selectedDocumentType && <SubcontractingDetailDialog headerId={selectedHeaderId} documentType={selectedDocumentType} isOpen onClose={() => { setSelectedHeaderId(null); setSelectedDocumentType(null); }} />}
-      <DeleteConfirmDialog
-        open={Boolean(headerToDelete)}
-        itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`}
-        isPending={deleteMutation.isPending}
-        onOpenChange={(open) => {
-          if (!open) setHeaderToDelete(null);
-        }}
-        onConfirm={() => {
-          if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
-        }}
-      />
-    </div>
+    <>
+      <OpsListPageShell eyebrow={<><span>{t('subcontracting.create.breadcrumb.parent')}</span><span className="mx-2 opacity-60">/</span><span>{t('subcontracting.create.breadcrumb.module')}</span></>} title={t('subcontracting.issue.list.title')} description={t('subcontracting.issue.list.subtitle')}>
+        {!permission.canMutate ? <PermissionNotice /> : null}
+        <PagedDataGrid<SubcontractingHeader, ColumnKey>
+          variant="ops" columns={columns} visibleColumnKeys={visibleColumnKeys} defaultColumnWidths={DEFAULT_COLUMN_WIDTHS} columnWidths={columnWidths} onResizeColumnPair={resizeColumnPair} getCellText={getCellText}
+          rows={data?.data ?? []} rowKey={(row) => row.id}
+          renderCell={(item, columnKey) => ({
+            documentNo: <span className="font-medium font-mono text-xs">{item.documentNo || '-'}</span>,
+            documentDate: <span className="font-mono text-xs">{formatDate(item.documentDate)}</span>,
+            customerCode: item.customerCode || '-', customerName: item.customerName || '-',
+            sourceWarehouse: item.sourceWarehouse || '-', targetWarehouse: item.targetWarehouse || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
+            status: statusBadge(item),
+            createdDate: <span className="font-mono text-xs">{formatDateTime(item.createdDate)}</span>,
+          } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<ColumnKey, 'actions'>] ?? null}
+          sortBy={pagedGrid.sortBy} sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => { if (columnKey !== 'status' && columnKey !== 'actions') pagedGrid.handleSort(columnKey); }}
+          renderSortIcon={renderSortIcon} isLoading={isLoading} isError={Boolean(error)} errorText={t('subcontracting.issue.list.error')} emptyText={t('subcontracting.issue.list.noData')}
+          showActionsColumn={showActionsColumn} actionsHeaderLabel={t('common.actions')} iconOnlyActions={false} actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(row) => (
+            <div className="wms-ops-row-actions">
+              <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" aria-label={t('subcontracting.issue.list.viewDetails')} title={t('subcontracting.issue.list.viewDetails')} disabled={!permission.canView} onClick={() => { setSelectedHeaderId(row.id); setSelectedDocumentType(row.documentType); }}><Eye className="size-3" aria-hidden /></Button>
+              <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" aria-label={t('common.edit')} title={t('common.edit')} disabled={!permission.canUpdate || row.isCompleted} onClick={() => navigate(`/subcontracting/issue/edit/${row.id}`)}><Pencil className="size-3" aria-hidden /></Button>
+              <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger" aria-label={t('common.delete')} title={t('common.delete')} disabled={!permission.canDelete || deleteMutation.isPending} onClick={() => setHeaderToDelete(row)}><Trash2 className="size-3" aria-hidden /></Button>
+            </div>
+          )}
+          pageSize={data?.pageSize ?? pagedGrid.pageSize} pageSizeOptions={pagedGrid.pageSizeOptions} onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)} totalPages={Math.max(data?.totalPages ?? 1, 1)} hasPreviousPage={Boolean(data?.hasPreviousPage)} hasNextPage={Boolean(data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage} onNextPage={pagedGrid.goToNextPage} previousLabel={t('common.previous')} nextLabel={t('common.next')} paginationInfoText={paginationInfoText}
+          actionBar={{
+            pageKey, userId, columns: columns.map(({ key, label }) => ({ key, label })), visibleColumns, columnOrder, onVisibleColumnsChange: setVisibleColumns, onColumnOrderChange: setColumnOrder,
+            exportFileName: pageKey, exportColumns, exportRows, filterColumns: advancedFilterColumns, defaultFilterColumn: 'documentNo',
+            draftFilterRows: pagedGrid.draftFilterRows, onDraftFilterRowsChange: pagedGrid.setDraftFilterRows, filterLogic: pagedGrid.filterLogic, onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters, onClearFilters: pagedGrid.clearAdvancedFilters, appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: { ...pagedGrid.searchConfig, placeholder: t('subcontracting.issue.list.searchPlaceholder') },
+            leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />, variant: 'ops',
+          }}
+        />
+      </OpsListPageShell>
+      {selectedHeaderId && selectedDocumentType && <SubcontractingDetailDialog variant="ops" headerId={selectedHeaderId} documentType={selectedDocumentType} isOpen onClose={() => { setSelectedHeaderId(null); setSelectedDocumentType(null); }} />}
+      <DeleteConfirmDialog open={Boolean(headerToDelete)} itemLabel={headerToDelete?.documentNo || `#${headerToDelete?.id ?? ''}`} isPending={deleteMutation.isPending} onOpenChange={(open) => { if (!open) setHeaderToDelete(null); }} onConfirm={() => { if (headerToDelete) deleteMutation.mutate(headerToDelete.id); }} />
+    </>
   );
 }

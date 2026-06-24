@@ -19,11 +19,14 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 
+import { cn } from '@/lib/utils';
+
 interface SubcontractingDetailDialogProps {
   headerId: number;
   documentType: string;
   isOpen: boolean;
   onClose: () => void;
+  variant?: 'default' | 'ops';
 }
 
 export function SubcontractingDetailDialog({
@@ -31,8 +34,9 @@ export function SubcontractingDetailDialog({
   documentType,
   isOpen,
   onClose,
+  variant = 'ops',
 }: SubcontractingDetailDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const { data: receiptHeadersData } = useSubcontractingReceiptHeaders();
   const { data: issueHeadersData } = useSubcontractingIssueHeaders();
   const { data: linesData, isLoading: isLoadingLines } = useSubcontractingLines(headerId, documentType);
@@ -75,14 +79,19 @@ export function SubcontractingDetailDialog({
     });
   }, [linesData?.data, searchQuery]);
 
+  const isOps = variant === 'ops';
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
-          <DialogTitle className="text-xl">
+      <DialogContent className={cn(
+        'max-w-[95vw] sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl w-[95vw] h-[90vh] overflow-hidden flex flex-col p-0 gap-0',
+        isOps && 'wms-ops-form wms-ops-detail-dialog border-0 shadow-none',
+      )}>
+        <DialogHeader className={cn('px-6 pt-6 pb-4 border-b shrink-0', isOps && 'wms-ops-detail-dialog__header')}>
+          <DialogTitle className={isOps ? 'wms-ops-detail-dialog__title' : 'text-xl'}>
             {t('subcontracting.list.detailTitle')} - #{headerId}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className={isOps ? 'wms-ops-detail-dialog__description' : undefined}>
             {t('subcontracting.list.detailDescription')}
           </DialogDescription>
         </DialogHeader>
@@ -189,11 +198,11 @@ export function SubcontractingDetailDialog({
             </div>
 
             <div className="flex flex-col flex-1 min-h-0">
-              <div className="pb-2 space-y-2 border-b shrink-0 mb-2">
-                <h3 className="text-sm font-semibold">
+              <div className={cn('pb-2 space-y-2 border-b shrink-0 mb-2', isOps && 'wms-ops-detail-panel')}>
+                <h3 className={cn('text-sm font-semibold', isOps && 'wms-ops-detail-section-title')}>
                   {t('subcontracting.list.lines')}
                 </h3>
-                <div className="relative flex items-center">
+                <div className={cn('relative flex items-center', isOps && 'wms-ops-detail-search')}>
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
                     placeholder={t('subcontracting.step2.searchItems')}
@@ -211,7 +220,7 @@ export function SubcontractingDetailDialog({
                   </div>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto rounded-md border">
+              <div className={cn('flex-1 overflow-y-auto rounded-md border', isOps && 'wms-ops-detail-table-wrap')}>
                 {isLoadingLines ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">{t('common.loading')}</p>

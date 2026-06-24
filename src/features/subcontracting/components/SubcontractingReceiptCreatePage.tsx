@@ -4,32 +4,34 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, FileText, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { cn } from '@/lib/utils';
 import {
   createSubcontractingFormSchema,
   type SelectedSubcontractingOrderItem,
   type SubcontractingOrderItem,
   type SubcontractingFormData,
+  type SelectedSubcontractingStockItem,
 } from '../types/subcontracting';
 import { subcontractingApi } from '../api/subcontracting-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1SubcontractingBasicInfo } from './steps/Step1SubcontractingBasicInfo';
 import { Step2SubcontractingOrderSelection } from './steps/Step2SubcontractingOrderSelection';
 import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
 import type { Product } from '@/features/shared';
-import type { SelectedSubcontractingStockItem } from '../types/subcontracting';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
 export function SubcontractingReceiptCreatePage(): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission('wms.subcontracting.receipt');
   const [currentStep, setCurrentStep] = useState(1);
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedSubcontractingOrderItem[]>([]);
@@ -37,15 +39,14 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
 
   useEffect(() => {
     setPageTitle(t('subcontracting.receipt.create.title'));
-    return () => {
-      setPageTitle(null);
-    };
+    return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
   const schema = useMemo(() => createSubcontractingFormSchema(t), [t]);
 
   const form = useForm({
     resolver: zodResolver(schema),
+    shouldFocusError: false,
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
@@ -62,11 +63,10 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (formData: SubcontractingFormData) => {
-      return createMode === 'order'
+    mutationFn: async (formData: SubcontractingFormData) =>
+      createMode === 'order'
         ? subcontractingApi.createSubcontractingReceipt(formData, selectedItems)
-        : subcontractingApi.createStockBasedSubcontractingReceipt(formData, selectedStockItems);
-    },
+        : subcontractingApi.createStockBasedSubcontractingReceipt(formData, selectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-orders'] });
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-order-items'] });
@@ -75,9 +75,7 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
       navigate('/subcontracting/receipt/list');
     },
     onError: (error: Error) => {
-      toast.error(
-        error.message || t('subcontracting.receipt.create.error')
-      );
+      toast.error(error.message || t('subcontracting.receipt.create.error'));
     },
   });
 
@@ -94,48 +92,25 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-
     setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   };
 
-  const handlePrevious = (): void => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-  };
+  const handlePrevious = (): void => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const handleToggleItem = (item: SubcontractingOrderItem): void => {
     setSelectedItems((prev) => {
       const existingIndex = prev.findIndex((si) => si.id === item.id);
-      if (existingIndex >= 0) {
-        return prev.filter((_, idx) => idx !== existingIndex);
-      }
-      const orderItem = item;
-      return [
-        ...prev,
-        {
-          ...orderItem,
-          transferQuantity: orderItem.remainingForImport || 0,
-          isSelected: true,
-        } as SelectedSubcontractingOrderItem,
-      ];
+      if (existingIndex >= 0) return prev.filter((_, idx) => idx !== existingIndex);
+      return [...prev, { ...item, transferQuantity: item.remainingForImport || 0, isSelected: true } as SelectedSubcontractingOrderItem];
     });
   };
 
-  const handleUpdateItem = (
-    itemId: string,
-    updates: Partial<SelectedSubcontractingOrderItem>
-  ): void => {
-    setSelectedItems((prev) =>
-      prev.map((item) => {
-        const itemIdMatch = item.id === itemId;
-        return itemIdMatch ? { ...item, ...updates } : item;
-      })
-    );
+  const handleUpdateItem = (itemId: string, updates: Partial<SelectedSubcontractingOrderItem>): void => {
+    setSelectedItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updates } : item)));
   };
 
   const handleRemoveItem = (itemId: string): void => {
-    setSelectedItems((prev) =>
-      prev.filter((item) => item.id !== itemId)
-    );
+    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleToggleStockItem = (item: Product): void => {
@@ -151,25 +126,22 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   };
 
   const handleSave = async (): Promise<void> => {
-    const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    await createMutation.mutateAsync(form.getValues());
   };
 
   const steps = [
     { label: t('subcontracting.create.steps.basicInfo') },
-    {
-      label: createMode === 'order' ? t('subcontracting.create.steps.orderSelection') : t('subcontracting.process.steps.stockSelection', { defaultValue: 'Missing translation' }),
-    },
+    { label: createMode === 'order' ? t('subcontracting.create.steps.orderSelection') : t('subcontracting.process.steps.stockSelection') },
   ];
 
   const stockLabels = {
-    stocks: t('subcontracting.process.stocks', { defaultValue: 'Missing translation' }),
-    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Missing translation' }),
-    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
-    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Missing translation' }),
-    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Missing translation' }),
-    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Missing translation' }),
-    unit: t('common.unit', { defaultValue: 'Missing translation' }),
+    stocks: t('subcontracting.process.stocks'),
+    selectedItems: t('subcontracting.process.selectedItems'),
+    selectedItemsCount: t('subcontracting.process.selectedItemsCount'),
+    searchStocks: t('subcontracting.process.searchStocks'),
+    searchItems: t('subcontracting.process.searchItems'),
+    noSelectedItems: t('subcontracting.process.noSelectedItems'),
+    unit: t('common.unit'),
     serialNo: t('subcontracting.details.serialNo'),
     serialNoPlaceholder: t('subcontracting.details.serialNoPlaceholder'),
     serialNo2: t('subcontracting.details.serialNo2'),
@@ -182,89 +154,53 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
     configCodePlaceholder: t('subcontracting.details.configCodePlaceholder'),
   };
 
-  const renderStepContent = (): ReactElement => {
-    switch (currentStep) {
-      case 1:
-        return <Step1SubcontractingBasicInfo permissionCode="wms.subcontracting.receipt.quantity-policy" />;
-      case 2:
-        return (
-          <Step2SubcontractingOrderSelection
-            type="receipt"
-            selectedItems={selectedItems}
-            onToggleItem={handleToggleItem}
-            onUpdateItem={handleUpdateItem}
-            onRemoveItem={handleRemoveItem}
-          />
-        );
-      default:
-        return <div>{t('subcontracting.create.unknownStep')}</div>;
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('subcontracting.create.mode.order', { defaultValue: 'Missing translation' }) : t('subcontracting.create.mode.stock', { defaultValue: 'Missing translation' })}
-        </Badge>
-        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
-          <TabsList>
-            <TabsTrigger value="order">{t('subcontracting.create.mode.order', { defaultValue: 'Missing translation' })}</TabsTrigger>
-            <TabsTrigger value="stock">{t('subcontracting.create.mode.stock', { defaultValue: 'Missing translation' })}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
-
-      <Card>
-        <CardContent>
-          <Form {...form}>
-            <form className="space-y-6">
-              {currentStep === 1 ? renderStepContent() : createMode === 'order' ? renderStepContent() : (
-                <ProcessStockSelection
-                  selectedItems={selectedStockItems}
-                  onToggleItem={handleToggleStockItem}
-                  onUpdateItem={handleUpdateStockItem}
-                  onRemoveItem={handleRemoveStockItem}
-                  labels={stockLabels}
-                />
-              )}
-
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
-                    >
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={<><span>{t('subcontracting.create.breadcrumb.parent')}</span><span className="mx-2 opacity-60">/</span><span>{t('subcontracting.create.breadcrumb.module')}</span></>}
+        title={t('subcontracting.receipt.create.title')}
+        description={t('subcontracting.receipt.create.subtitle')}
+        actions={
+          <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')} className="w-full sm:w-auto">
+            <TabsList className={cn('wms-ops-tabs w-full sm:w-auto', createMode === 'order' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock')}>
+              <span className="wms-ops-tab-indicator" aria-hidden />
+              <TabsTrigger value="order" className="wms-ops-tab gap-1.5"><FileText className="size-3.5" />{t('subcontracting.create.mode.order')}</TabsTrigger>
+              <TabsTrigger value="stock" className="wms-ops-tab gap-1.5"><Package className="size-3.5" />{t('subcontracting.create.mode.stock')}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+      >
+        <Breadcrumb items={steps.map((step, index) => ({ label: step.label, isActive: index + 1 === currentStep }))} className="wms-ops-steps mb-6" />
+        <form className="space-y-6">
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+            {currentStep === 1 ? (
+              <Step1SubcontractingBasicInfo permissionCode="wms.subcontracting.receipt.quantity-policy" variant="ops" />
+            ) : createMode === 'order' ? (
+              <Step2SubcontractingOrderSelection type="receipt" variant="ops" selectedItems={selectedItems} onToggleItem={handleToggleItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} />
+            ) : (
+              <div className="wms-ops-form wms-ops-list">
+                <ProcessStockSelection selectedItems={selectedStockItems} onToggleItem={handleToggleStockItem} onUpdateItem={handleUpdateStockItem} onRemoveItem={handleRemoveStockItem} labels={stockLabels} />
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+            )}
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton type="button" variant="secondary" onClick={handlePrevious} disabled={currentStep === 1}>
+                <ChevronLeft className="size-3.5" aria-hidden />{t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
+                {currentStep < steps.length ? (
+                  <OpsActionButton type="button" variant="primary" onClick={handleNext} disabled={!permission.canCreate}>
+                    {t('common.next')}<ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                ) : (
+                  <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}<ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                )}
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

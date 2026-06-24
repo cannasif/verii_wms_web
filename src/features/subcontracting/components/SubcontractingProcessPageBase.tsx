@@ -4,14 +4,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import { ProcessStockSelection } from '@/features/shared/components/ProcessStockSelection';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/features/shared';
 import {
   createSubcontractingFormSchema,
@@ -20,23 +19,25 @@ import {
 } from '../types/subcontracting';
 import { subcontractingApi } from '../api/subcontracting-api';
 import { Step1SubcontractingBasicInfo } from './steps/Step1SubcontractingBasicInfo';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 
 interface SubcontractingProcessPageBaseProps {
   mode: 'issue' | 'receipt';
 }
 
 export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPageBaseProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const permission = useCrudPermission(mode === 'issue' ? 'wms.subcontracting.issue' : 'wms.subcontracting.receipt');
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedItems, setSelectedItems] = useState<SelectedSubcontractingStockItem[]>([]);
 
   const isIssue = mode === 'issue';
-  const title = isIssue
-    ? t('subcontracting.issue.process.title', { defaultValue: 'Missing translation' })
-    : t('subcontracting.receipt.process.title', { defaultValue: 'Missing translation' });
+  const title = isIssue ? t('subcontracting.issue.process.title') : t('subcontracting.receipt.process.title');
+  const subtitle = isIssue ? t('subcontracting.issue.process.subtitle') : t('subcontracting.receipt.process.subtitle');
 
   useEffect(() => {
     setPageTitle(title);
@@ -74,20 +75,11 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
         : subcontractingApi.processSubcontractingReceipt(formData, validSelectedItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [isIssue ? 'subcontractingIssueHeaders' : 'subcontractingReceiptHeaders'] });
-      toast.success(
-        isIssue
-          ? t('subcontracting.issue.process.success', { defaultValue: 'Missing translation' })
-          : t('subcontracting.receipt.process.success', { defaultValue: 'Missing translation' }),
-      );
+      toast.success(isIssue ? t('subcontracting.issue.process.success') : t('subcontracting.receipt.process.success'));
       navigate(isIssue ? '/subcontracting/issue/list' : '/subcontracting/receipt/list');
     },
     onError: (error: Error) => {
-      toast.error(
-        error.message ||
-          (isIssue
-            ? t('subcontracting.issue.process.error', { defaultValue: 'Missing translation' })
-            : t('subcontracting.receipt.process.error', { defaultValue: 'Missing translation' })),
-      );
+      toast.error(error.message || (isIssue ? t('subcontracting.issue.process.error') : t('subcontracting.receipt.process.error')));
     },
   });
 
@@ -96,33 +88,26 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-
     if (currentStep === 2 && validSelectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-
     setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   };
 
-  const handlePrevious = (): void => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-  };
+  const handlePrevious = (): void => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const handleToggleItem = (item: Product): void => {
-    setSelectedItems((prev) => [
-      ...prev,
-      {
-        id: `stock-${item.stokKodu}-${crypto.randomUUID()}`,
-        stockId: item.id,
-        yapKodId: undefined,
-        stockCode: item.stokKodu,
-        stockName: item.stokAdi,
-        unit: item.olcuBr1,
-        transferQuantity: 0,
-        isSelected: true,
-      },
-    ]);
+    setSelectedItems((prev) => [...prev, {
+      id: `stock-${item.stokKodu}-${crypto.randomUUID()}`,
+      stockId: item.id,
+      yapKodId: undefined,
+      stockCode: item.stokKodu,
+      stockName: item.stokAdi,
+      unit: item.olcuBr1,
+      transferQuantity: 0,
+      isSelected: true,
+    }]);
   };
 
   const handleUpdateItem = (itemId: string, updates: Partial<SelectedSubcontractingStockItem>): void => {
@@ -138,23 +123,22 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-
     await createMutation.mutateAsync(form.getValues());
   };
 
   const steps = [
     { label: t('subcontracting.create.steps.basicInfo') },
-    { label: t('subcontracting.process.steps.stockSelection', { defaultValue: 'Missing translation' }) },
+    { label: t('subcontracting.process.steps.stockSelection') },
   ];
 
   const labels = {
-    stocks: t('subcontracting.process.stocks', { defaultValue: 'Missing translation' }),
-    selectedItems: t('subcontracting.process.selectedItems', { defaultValue: 'Missing translation' }),
-    selectedItemsCount: t('subcontracting.process.selectedItemsCount', { defaultValue: 'Missing translation' }),
-    searchStocks: t('subcontracting.process.searchStocks', { defaultValue: 'Missing translation' }),
-    searchItems: t('subcontracting.process.searchItems', { defaultValue: 'Missing translation' }),
-    noSelectedItems: t('subcontracting.process.noSelectedItems', { defaultValue: 'Missing translation' }),
-    unit: t('common.unit', { defaultValue: 'Missing translation' }),
+    stocks: t('subcontracting.process.stocks'),
+    selectedItems: t('subcontracting.process.selectedItems'),
+    selectedItemsCount: t('subcontracting.process.selectedItemsCount'),
+    searchStocks: t('subcontracting.process.searchStocks'),
+    searchItems: t('subcontracting.process.searchItems'),
+    noSelectedItems: t('subcontracting.process.noSelectedItems'),
+    unit: t('common.unit'),
     serialNo: t('subcontracting.details.serialNo'),
     serialNoPlaceholder: t('subcontracting.details.serialNoPlaceholder'),
     serialNo2: t('subcontracting.details.serialNo2'),
@@ -168,55 +152,43 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Badge variant="secondary" className="mb-4">
-        {t('subcontracting.process.badge', { defaultValue: 'Missing translation' })}
-      </Badge>
-
-      <Breadcrumb
-        items={steps.map((step, index) => ({ label: step.label, isActive: index + 1 === currentStep }))}
-        className="mb-4"
-      />
-
-      <FormPageShell
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={<><span>{t('subcontracting.create.breadcrumb.parent')}</span><span className="mx-2 opacity-60">/</span><span>{t('subcontracting.create.breadcrumb.module')}</span></>}
         title={title}
-        description={
-          isIssue
-            ? t('subcontracting.issue.process.subtitle', { defaultValue: 'Missing translation' })
-            : t('subcontracting.receipt.process.subtitle', { defaultValue: 'Missing translation' })
-        }
+        description={subtitle}
+        actions={<span className="wms-ops-code-badge">{t('subcontracting.process.badge')}</span>}
       >
-        <Form {...form}>
-          <form className="crm-page space-y-6">
+        {!permission.canCreate ? <PermissionNotice /> : null}
+        <Breadcrumb items={steps.map((step, index) => ({ label: step.label, isActive: index + 1 === currentStep }))} className="wms-ops-steps mb-6" />
+        <form className="space-y-6">
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1SubcontractingBasicInfo permissionCode={`wms.subcontracting.${mode}.quantity-policy`} />
+              <Step1SubcontractingBasicInfo permissionCode={`wms.subcontracting.${mode}.quantity-policy`} variant="ops" />
             ) : (
-              <ProcessStockSelection
-                selectedItems={selectedItems}
-                onToggleItem={handleToggleItem}
-                onUpdateItem={handleUpdateItem}
-                onRemoveItem={handleRemoveItem}
-                labels={labels}
-              />
+              <div className="wms-ops-form wms-ops-list">
+                <ProcessStockSelection selectedItems={selectedItems} onToggleItem={handleToggleItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} labels={labels} />
+              </div>
             )}
-
-            <div className="flex justify-between border-t pt-6">
-              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                {t('common.previous')}
-              </Button>
-              <div className="flex gap-2">
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton type="button" variant="secondary" onClick={handlePrevious} disabled={currentStep === 1}>
+                <ChevronLeft className="size-3.5" aria-hidden />{t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
                 {currentStep < steps.length ? (
-                  <Button type="button" onClick={handleNext}>{t('common.next')}</Button>
+                  <OpsActionButton type="button" variant="primary" onClick={handleNext} disabled={!permission.canCreate}>
+                    {t('common.next')}<ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 ) : (
-                  <Button type="button" onClick={handleSave} disabled={createMutation.isPending || validSelectedItems.length === 0}>
-                    {createMutation.isPending ? t('common.saving') : t('common.save')}
-                  </Button>
+                  <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}>
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}<ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 )}
               </div>
             </div>
-          </form>
-        </Form>
-      </FormPageShell>
-    </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

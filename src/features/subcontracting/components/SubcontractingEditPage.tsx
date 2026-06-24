@@ -4,11 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { FormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { useUIStore } from '@/stores/ui-store';
@@ -75,7 +74,7 @@ function toFormValues(header: SubcontractingHeader): SubcontractingFormData {
 }
 
 function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['subcontracting', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
@@ -121,18 +120,13 @@ function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }):
   const updateMutation = useMutation({
     mutationFn: async (formData: SubcontractingFormData) => config.updateHeader(headerId, formData),
     onSuccess: async (response) => {
-      if (!response.success) {
-        throw new Error(response.message || t(config.errorKey));
-      }
-
+      if (!response.success) throw new Error(response.message || t(config.errorKey));
       toast.success(response.message || t(config.successKey));
       await queryClient.invalidateQueries({ queryKey: [config.headersQueryKey] });
       await queryClient.invalidateQueries({ queryKey: [config.queryKey, headerId] });
       navigate(config.listPath);
     },
-    onError: (error: Error) => {
-      toast.error(error.message || t(config.errorKey));
-    },
+    onError: (error: Error) => toast.error(error.message || t(config.errorKey)),
   });
 
   const handleSave = async (): Promise<void> => {
@@ -142,34 +136,32 @@ function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }):
   };
 
   const isBusy = headerQuery.isLoading || updateMutation.isPending;
+  const isFormDisabled = !permission.canUpdate || isBusy || headerQuery.isError;
 
   return (
-    <div className="space-y-6 crm-page">
-      {!permission.canUpdate ? <PermissionNotice /> : null}
-      <div className="flex items-center gap-3">
-        <Badge variant="secondary">{t('common.edit')}</Badge>
-        {headerQuery.data?.isCompleted ? <Badge variant="outline">{t(config.completedKey)}</Badge> : null}
-      </div>
-
-      <FormPageShell title={t(config.titleKey)} description={t(config.subtitleKey)}>
-        <Form {...form}>
-          <form className="space-y-6 crm-page">
-            <fieldset disabled={!permission.canUpdate || isBusy} className={!permission.canUpdate || isBusy ? 'pointer-events-none opacity-75' : undefined}>
-              <Step1SubcontractingBasicInfo showOperationUsers={false} permissionCode={`${config.permission}.quantity-policy`} />
-            </fieldset>
-
-            <div className="flex justify-between border-t pt-6">
-              <Button type="button" variant="outline" onClick={() => navigate(config.listPath)}>
-                {t('common.cancel')}
-              </Button>
-              <Button type="button" onClick={handleSave} disabled={!permission.canUpdate || isBusy || headerQuery.isError}>
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={<><span>{t('subcontracting.create.breadcrumb.parent')}</span><span className="mx-2 opacity-60">/</span><span>{t('subcontracting.create.breadcrumb.module')}</span></>}
+        title={t(config.titleKey)}
+        description={t(config.subtitleKey)}
+        actions={headerQuery.data?.isCompleted ? <span className="wms-ops-code-badge">{t(config.completedKey)}</span> : undefined}
+      >
+        {!permission.canUpdate ? <PermissionNotice /> : null}
+        <form className="space-y-6">
+          <fieldset disabled={isFormDisabled} className={isFormDisabled ? 'pointer-events-none opacity-75' : undefined}>
+            <Step1SubcontractingBasicInfo showOperationUsers={false} permissionCode={`${config.permission}.quantity-policy`} variant="ops" />
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton type="button" variant="secondary" onClick={() => navigate(config.listPath)}>
+                <ChevronLeft className="size-3.5" aria-hidden />{t('common.cancel')}
+              </OpsActionButton>
+              <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={isFormDisabled}>
                 {updateMutation.isPending ? t('common.saving') : t('common.update')}
-              </Button>
+              </OpsActionButton>
             </div>
-          </form>
-        </Form>
-      </FormPageShell>
-    </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }
 
