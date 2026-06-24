@@ -31,6 +31,7 @@
     "inbound": {
       "approval": {
         "actions": "Actions",
+        "subtitle": "Review and process warehouse inbound orders awaiting approval",
         "approve": "Approve",
         "approveError": "Approve Error",
         "approveSuccess": "Approve Success",
@@ -54,16 +55,22 @@
         "error": "Error",
         "noData": "No Data",
         "searchPlaceholder": "Search Placeholder",
+        "subtitle": "View, filter and manage assigned inbound records",
         "title": "Title"
       },
       "create": {
+        "breadcrumb": {
+          "module": "WI",
+          "parent": "INBOUND_OP"
+        },
         "error": "Error",
+        "subtitle": "Initializing system record...",
         "success": "Success",
         "title": "Title"
       },
       "edit": {
         "error": "Error",
-        "subtitle": "Subtitle",
+        "subtitle": "Update warehouse inbound header information",
         "success": "Success",
         "title": "Title"
       },
@@ -82,12 +89,14 @@
         "pendingApproval": "Pending Approval",
         "searchPlaceholder": "Search Placeholder",
         "status": "Status",
+        "subtitle": "View, filter and manage warehouse inbound records",
         "targetWarehouse": "Target Warehouse",
         "title": "Title",
         "viewDetails": "View Details"
       },
       "process": {
         "error": "Error",
+        "subtitle": "Initializing system record...",
         "success": "Success",
         "title": "Title"
       }
@@ -119,6 +128,7 @@
     "outbound": {
       "approval": {
         "actions": "Actions",
+        "subtitle": "Review and process warehouse outbound orders awaiting approval",
         "approve": "Approve",
         "approveError": "Approve Error",
         "approveSuccess": "Approve Success",
@@ -142,16 +152,22 @@
         "error": "Error",
         "noData": "No Data",
         "searchPlaceholder": "Search Placeholder",
+        "subtitle": "View, filter and manage assigned outbound records",
         "title": "Title"
       },
       "create": {
+        "breadcrumb": {
+          "module": "WO",
+          "parent": "OUTBOUND_OP"
+        },
         "error": "Error",
+        "subtitle": "Initializing system record...",
         "success": "Success",
         "title": "Title"
       },
       "edit": {
         "error": "Error",
-        "subtitle": "Subtitle",
+        "subtitle": "Update warehouse outbound header information",
         "success": "Success",
         "title": "Title"
       },
@@ -171,11 +187,13 @@
         "searchPlaceholder": "Search Placeholder",
         "sourceWarehouse": "Source Warehouse",
         "status": "Status",
+        "subtitle": "View, filter and manage warehouse outbound records",
         "title": "Title",
         "viewDetails": "View Details"
       },
       "process": {
         "error": "Error",
+        "subtitle": "Initializing system record...",
         "success": "Success",
         "title": "Title"
       }

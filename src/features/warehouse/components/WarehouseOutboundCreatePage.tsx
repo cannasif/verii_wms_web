@@ -4,8 +4,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, FileText, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { cn } from '@/lib/utils';
 import {
   createWarehouseFormSchema,
   type SelectedWarehouseOrderItem,
@@ -14,10 +17,7 @@ import {
 } from '../types/warehouse';
 import { warehouseApi } from '../api/warehouse-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1WarehouseBasicInfo } from './steps/Step1WarehouseBasicInfo';
 import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelection';
@@ -66,11 +66,10 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (formData: WarehouseFormData) => {
-      return createMode === 'order'
+    mutationFn: async (formData: WarehouseFormData) =>
+      createMode === 'order'
         ? warehouseApi.createWarehouseOutbound(formData, selectedItems)
-        : warehouseApi.createStockBasedWarehouseOutbound(formData, selectedStockItems);
-    },
+        : warehouseApi.createStockBasedWarehouseOutbound(formData, selectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-orders'] });
       queryClient.invalidateQueries({ queryKey: ['warehouse-outbound-order-items'] });
@@ -130,7 +129,10 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   };
 
   const handleToggleStockItem = (item: WarehouseStockItem): void => {
-    setSelectedStockItems((prev) => [...prev, { ...item, id: `${item.stockCode}-${crypto.randomUUID()}`, stockId: item.stockId, transferQuantity: 0, isSelected: true }]);
+    setSelectedStockItems((prev) => [
+      ...prev,
+      { ...item, id: `${item.stockCode}-${crypto.randomUUID()}`, stockId: item.stockId, transferQuantity: 0, isSelected: true },
+    ]);
   };
 
   const handleUpdateStockItem = (itemId: string, updates: Partial<SelectedWarehouseStockItem>): void => {
@@ -142,8 +144,7 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   };
 
   const handleSave = async (): Promise<void> => {
-    const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    await createMutation.mutateAsync(form.getValues());
   };
 
   const steps = [
@@ -152,75 +153,114 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   ];
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center gap-3">
-        <Badge variant={createMode === 'order' ? 'default' : 'secondary'}>
-          {createMode === 'order' ? t('warehouse.create.mode.order') : t('warehouse.create.mode.stock')}
-        </Badge>
-        <Tabs value={createMode} onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}>
-          <TabsList>
-            <TabsTrigger value="order">{t('warehouse.create.mode.order')}</TabsTrigger>
-            <TabsTrigger value="stock">{t('warehouse.create.mode.stock')}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
-
-      <Card>
-        <CardContent>
-          <Form {...form}>
-            <form className="space-y-6 crm-page">
-              <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
-              {currentStep === 1 ? (
-                <Step1WarehouseBasicInfo type="outbound" />
-              ) : createMode === 'order' ? (
-                <Step2WarehouseOrderSelection
-                  type="outbound"
-                  selectedItems={selectedItems}
-                  onToggleItem={handleToggleItem}
-                  onUpdateItem={handleUpdateItem}
-                  onRemoveItem={handleRemoveItem}
-                />
-              ) : (
-                <Step2WarehouseStockSelection
-                  selectedItems={selectedStockItems}
-                  onToggleItem={handleToggleStockItem}
-                  onUpdateItem={handleUpdateStockItem}
-                  onRemoveItem={handleRemoveStockItem}
-                />
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('warehouse.outbound.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('warehouse.outbound.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('warehouse.outbound.create.title')}
+        description={t('warehouse.outbound.create.subtitle')}
+        actions={
+          <Tabs
+            value={createMode}
+            onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}
+            className="w-full sm:w-auto"
+          >
+            <TabsList
+              className={cn(
+                'wms-ops-tabs w-full sm:w-auto',
+                createMode === 'order' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock',
               )}
+            >
+              <span className="wms-ops-tab-indicator" aria-hidden />
+              <TabsTrigger value="order" className="wms-ops-tab gap-1.5">
+                <FileText className="size-3.5" />
+                {t('warehouse.create.mode.order')}
+              </TabsTrigger>
+              <TabsTrigger value="stock" className="wms-ops-tab gap-1.5">
+                <Package className="size-3.5" />
+                {t('warehouse.create.mode.stock')}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+      >
+        <Breadcrumb
+          items={steps.map((step, index) => ({
+            label: step.label,
+            isActive: index + 1 === currentStep,
+          }))}
+          className="wms-ops-steps mb-6"
+        />
 
-              <div className="flex justify-between pt-6 border-t">
-                <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                  {t('common.previous')}
-                </Button>
-                <div className="flex gap-2">
-                  {currentStep < steps.length ? (
-                    <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
-                      {t('common.next')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}
-                    >
-                      {createMutation.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
-                  )}
-                </div>
+        <form className="space-y-6">
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+            {currentStep === 1 ? (
+              <Step1WarehouseBasicInfo type="outbound" variant="ops" />
+            ) : createMode === 'order' ? (
+              <Step2WarehouseOrderSelection
+                type="outbound"
+                variant="ops"
+                selectedItems={selectedItems}
+                onToggleItem={handleToggleItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
+              />
+            ) : (
+              <Step2WarehouseStockSelection
+                variant="ops"
+                selectedItems={selectedStockItems}
+                onToggleItem={handleToggleStockItem}
+                onUpdateItem={handleUpdateStockItem}
+                onRemoveItem={handleRemoveStockItem}
+              />
+            )}
+
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
+                {currentStep < steps.length ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!permission.canCreate}
+                  >
+                    {t('common.next')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                ) : (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={
+                      !permission.canCreate
+                      || createMutation.isPending
+                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                    }
+                  >
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
+                )}
               </div>
-              </fieldset>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

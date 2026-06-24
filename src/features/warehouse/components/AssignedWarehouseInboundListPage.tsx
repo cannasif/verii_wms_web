@@ -1,9 +1,9 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Trash2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,17 @@ const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'isCompleted', type: 'boolean', labelKey: 'warehouse.inbound.list.status' },
 ];
 
+const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
+  documentNo: 14,
+  documentDate: 12,
+  customerCode: 12,
+  customerName: 14,
+  targetWarehouse: 12,
+  documentType: 10,
+  status: 10,
+  createdDate: 14,
+};
+
 function mapSortBy(value: AssignedWarehouseInboundColumnKey): string {
   switch (value) {
     case 'documentNo': return 'DocumentNo';
@@ -68,6 +79,7 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.inbound');
   const pageKey = 'warehouse-inbound-assigned-list';
+  const showActionsColumn = permission.canView || permission.canDelete;
   const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | null>(null);
   const [headerToDelete, setHeaderToDelete] = useState<WarehouseHeader | null>(null);
@@ -81,20 +93,31 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
   });
 
   const columns = useMemo<PagedDataGridColumn<AssignedWarehouseInboundColumnKey>[]>(() => [
-    { key: 'documentNo', label: t('warehouse.inbound.list.documentNo') },
-    { key: 'documentDate', label: t('warehouse.inbound.list.documentDate') },
-    { key: 'customerCode', label: t('warehouse.inbound.list.customerCode') },
-    { key: 'customerName', label: t('warehouse.inbound.list.customerName') },
-    { key: 'targetWarehouse', label: t('warehouse.inbound.list.targetWarehouse') },
-    { key: 'documentType', label: t('warehouse.inbound.list.documentType') },
-    { key: 'status', label: t('warehouse.inbound.list.status'), sortable: false },
-    { key: 'createdDate', label: t('warehouse.inbound.list.createdDate') },
+    { key: 'documentNo', label: t('warehouse.inbound.list.documentNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentDate', label: t('warehouse.inbound.list.documentDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerCode', label: t('warehouse.inbound.list.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'customerName', label: t('warehouse.inbound.list.customerName'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'targetWarehouse', label: t('warehouse.inbound.list.targetWarehouse'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'documentType', label: t('warehouse.inbound.list.documentType'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'status', label: t('warehouse.inbound.list.status'), sortable: false, headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+    { key: 'createdDate', label: t('warehouse.inbound.list.createdDate'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+  const {
+    userId,
+    columnOrder,
+    visibleColumns,
+    orderedVisibleColumns,
+    columnWidths,
+    setColumnOrder,
+    setVisibleColumns,
+    resizeColumnPair,
+  } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    includeActionsColumn: showActionsColumn,
   });
 
   const { data, isLoading, error, refetch } = useAssignedWarehouseInboundHeadersPaged(pagedGrid.queryParams);
@@ -119,6 +142,28 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const getStatusLabel = (item: WarehouseHeader): string => (
+    item.isCompleted
+      ? t('warehouse.inbound.list.completed')
+      : item.isPendingApproval
+        ? t('warehouse.inbound.list.pendingApproval')
+        : t('warehouse.inbound.list.inProgress')
+  );
+
+  const getCellText = (row: WarehouseHeader, key: AssignedWarehouseInboundColumnKey): string | undefined => {
+    switch (key) {
+      case 'documentNo': return row.documentNo || '-';
+      case 'documentDate': return formatDate(row.documentDate);
+      case 'customerCode': return row.customerCode || '-';
+      case 'customerName': return row.customerName || '-';
+      case 'targetWarehouse': return row.targetWarehouse || '-';
+      case 'documentType': return row.documentType || '-';
+      case 'status': return getStatusLabel(row);
+      case 'createdDate': return formatDateTime(row.createdDate);
+      default: return undefined;
+    }
+  };
+
   const exportColumns = useMemo(
     () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
       key,
@@ -135,38 +180,66 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
       customerName: item.customerName || '-',
       targetWarehouse: item.targetWarehouse || '-',
       documentType: item.documentType || '-',
-      status: item.isCompleted ? t('warehouse.inbound.list.completed') : item.isPendingApproval ? t('warehouse.inbound.list.pendingApproval') : t('warehouse.inbound.list.inProgress'),
+      status: getStatusLabel(item),
       createdDate: formatDateTime(item.createdDate),
     }))
   ), [data?.data, t]);
 
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
-  const visibleColumnKeys = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedWarehouseInboundColumnKey[], [orderedVisibleColumns]);
-  const renderSortIcon = (columnKey: AssignedWarehouseInboundColumnKey): ReactElement | null => columnKey !== pagedGrid.sortBy ? null : pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+
+  const renderSortIcon = (columnKey: AssignedWarehouseInboundColumnKey): ReactElement | null => {
+    if (columnKey !== pagedGrid.sortBy) return null;
+    return pagedGrid.sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
+      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
+  };
+
+  const renderStatusBadge = (item: WarehouseHeader): ReactElement => {
+    if (item.isCompleted) {
+      return <Badge variant="default" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t('warehouse.inbound.list.completed')}</Badge>;
+    }
+    if (item.isPendingApproval) {
+      return <Badge variant="secondary" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t('warehouse.inbound.list.pendingApproval')}</Badge>;
+    }
+    return <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{t('warehouse.inbound.list.inProgress')}</Badge>;
+  };
 
   return (
-    <div className="space-y-6 crm-page">
-      {!permission.canMutate ? <PermissionNotice /> : null}
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+    <>
+      <OpsListPageShell
+        eyebrow={
+          <>
+            <span>{t('warehouse.inbound.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('warehouse.inbound.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('warehouse.inbound.assignedList.title')}
+        description={t('warehouse.inbound.assignedList.subtitle')}
+      >
+        {!permission.canMutate ? <PermissionNotice /> : null}
+
         <PagedDataGrid<WarehouseHeader, AssignedWarehouseInboundColumnKey>
+          variant="ops"
           columns={columns}
-          visibleColumnKeys={visibleColumnKeys}
+          visibleColumnKeys={orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedWarehouseInboundColumnKey[]}
+          defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
+          columnWidths={columnWidths}
+          onResizeColumnPair={resizeColumnPair}
+          getCellText={getCellText}
           rows={data?.data ?? []}
           rowKey={(row) => row.id}
-          renderCell={(item, columnKey) => {
-            switch (columnKey) {
-              case 'documentNo': return <span className="font-medium">{item.documentNo || '-'}</span>;
-              case 'documentDate': return formatDate(item.documentDate);
-              case 'customerCode': return item.customerCode || '-';
-              case 'customerName': return item.customerName || '-';
-              case 'targetWarehouse': return item.targetWarehouse || '-';
-              case 'documentType': return <Badge variant="outline">{item.documentType || '-'}</Badge>;
-              case 'status': return item.isCompleted ? <Badge variant="default" className="w-fit">{t('warehouse.inbound.list.completed')}</Badge> : item.isPendingApproval ? <Badge variant="secondary" className="w-fit">{t('warehouse.inbound.list.pendingApproval')}</Badge> : <Badge variant="outline" className="w-fit">{t('warehouse.inbound.list.inProgress')}</Badge>;
-              case 'createdDate': return formatDateTime(item.createdDate);
-              default: return null;
-            }
-          }}
+          renderCell={(item, columnKey) => ({
+            documentNo: <span className="font-medium font-mono text-xs">{item.documentNo || '-'}</span>,
+            documentDate: <span className="font-mono text-xs">{formatDate(item.documentDate)}</span>,
+            customerCode: item.customerCode || '-',
+            customerName: item.customerName || '-',
+            targetWarehouse: item.targetWarehouse || '-',
+            documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
+            status: renderStatusBadge(item),
+            createdDate: <span className="font-mono text-xs">{formatDateTime(item.createdDate)}</span>,
+          } as Record<Exclude<AssignedWarehouseInboundColumnKey, 'actions'>, React.ReactNode>)[columnKey as Exclude<AssignedWarehouseInboundColumnKey, 'actions'>] ?? null}
           sortBy={pagedGrid.sortBy}
           sortDirection={pagedGrid.sortDirection}
           onSort={(columnKey) => {
@@ -178,29 +251,38 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('warehouse.inbound.assignedList.error')}
           emptyText={t('warehouse.inbound.assignedList.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canView || permission.canDelete)}
+          showActionsColumn={showActionsColumn}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions={false}
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
-            <div className="flex items-center justify-end gap-2">
+            <div className="wms-ops-row-actions">
               <Button
+                type="button"
                 variant="ghost"
-                size="sm"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('warehouse.inbound.list.viewDetails')}
+                title={t('warehouse.inbound.list.viewDetails')}
                 onClick={() => {
                   setSelectedHeaderId(item.id);
                   setSelectedDocumentType(item.documentType);
                 }}
                 disabled={!permission.canView}
               >
-                {t('warehouse.inbound.list.viewDetails')}
+                <Eye className="size-3" aria-hidden />
               </Button>
               <Button
-                variant="destructive"
-                size="sm"
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
                 onClick={() => setHeaderToDelete(item)}
                 disabled={!permission.canDelete || deleteMutation.isPending}
               >
-                <Trash2 className="mr-1 h-3.5 w-3.5" />
-                {t('common.delete')}
+                <Trash2 className="size-3" aria-hidden />
               </Button>
             </div>
           )}
@@ -237,15 +319,21 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
             onClearFilters: pagedGrid.clearAdvancedFilters,
             appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
             search: {
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              ...pagedGrid.searchConfig,
               placeholder: t('warehouse.inbound.assignedList.searchPlaceholder'),
             },
-            leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+            leftSlot: (
+              <VoiceSearchButton
+                onResult={pagedGrid.handleVoiceSearch}
+                size="icon"
+                variant="ghost"
+                className="wms-ops-voice-btn"
+              />
+            ),
+            variant: 'ops',
           }}
         />
-      </div>
+      </OpsListPageShell>
 
       {selectedHeaderId && (
         <WarehouseDetailDialog
@@ -270,6 +358,6 @@ export function AssignedWarehouseInboundListPage(): ReactElement {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import {
   createWarehouseFormSchema,
   type SelectedWarehouseStockItem,
@@ -14,8 +16,6 @@ import {
 } from '../types/warehouse';
 import { warehouseApi } from '../api/warehouse-api';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
@@ -63,9 +63,7 @@ export function WarehouseInboundProcessPage(): ReactElement {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (formData: WarehouseFormData) => {
-      return warehouseApi.processWarehouseInbound(formData, validSelectedItems);
-    },
+    mutationFn: async (formData: WarehouseFormData) => warehouseApi.processWarehouseInbound(formData, validSelectedItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse.inboundHeaders'] });
       queryClient.invalidateQueries({ queryKey: ['warehouse.inboundHeadersPaged'] });
@@ -122,8 +120,7 @@ export function WarehouseInboundProcessPage(): ReactElement {
       return;
     }
 
-    const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    await createMutation.mutateAsync(form.getValues());
   };
 
   const steps = [
@@ -132,59 +129,79 @@ export function WarehouseInboundProcessPage(): ReactElement {
   ];
 
   return (
-    <div className="space-y-6 crm-page">
-      <Breadcrumb
-        items={steps.map((step, index) => ({
-          label: step.label,
-          isActive: index + 1 === currentStep,
-        }))}
-        className="mb-4"
-      />
+    <Form {...form}>
+      <OpsFormPageShell
+        eyebrow={
+          <>
+            <span>{t('warehouse.inbound.create.breadcrumb.parent')}</span>
+            <span className="mx-2 opacity-60">/</span>
+            <span>{t('warehouse.inbound.create.breadcrumb.module')}</span>
+          </>
+        }
+        title={t('warehouse.inbound.process.title')}
+        description={t('warehouse.inbound.process.subtitle')}
+      >
+        {!permission.canCreate ? <PermissionNotice /> : null}
 
-      <Card>
-        <CardContent>
-          {!permission.canCreate ? (
-            <PermissionNotice />
-          ) : null}
-          <Form {...form}>
-            <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
-              <form className="space-y-6 crm-page">
-                {currentStep === 1 ? (
-                  <Step1WarehouseBasicInfo type="inbound" showOperationUsers={false} />
+        <Breadcrumb
+          items={steps.map((step, index) => ({
+            label: step.label,
+            isActive: index + 1 === currentStep,
+          }))}
+          className="wms-ops-steps mb-6"
+        />
+
+        <form className="space-y-6">
+          <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
+            {currentStep === 1 ? (
+              <Step1WarehouseBasicInfo type="inbound" showOperationUsers={false} variant="ops" />
+            ) : (
+              <Step2WarehouseStockSelection
+                variant="ops"
+                selectedItems={selectedItems}
+                onToggleItem={handleToggleItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
+              />
+            )}
+
+            <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+                {t('common.previous')}
+              </OpsActionButton>
+              <div className="flex gap-3">
+                {currentStep < steps.length ? (
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!permission.canCreate}
+                  >
+                    {t('common.next')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 ) : (
-                  <Step2WarehouseStockSelection
-                    selectedItems={selectedItems}
-                    onToggleItem={handleToggleItem}
-                    onUpdateItem={handleUpdateItem}
-                    onRemoveItem={handleRemoveItem}
-                  />
+                  <OpsActionButton
+                    type="button"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}
+                  >
+                    {createMutation.isPending ? t('common.saving') : t('common.save')}
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  </OpsActionButton>
                 )}
-
-                <div className="flex justify-between pt-6 border-t">
-                  <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-                    {t('common.previous')}
-                  </Button>
-                  <div className="flex gap-2">
-                    {currentStep < steps.length ? (
-                      <Button type="button" onClick={handleNext} disabled={!permission.canCreate}>
-                        {t('common.next')}
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={!permission.canCreate || createMutation.isPending || validSelectedItems.length === 0}
-                      >
-                        {createMutation.isPending ? t('common.saving') : t('common.save')}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </form>
-            </fieldset>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </OpsFormPageShell>
+    </Form>
   );
 }

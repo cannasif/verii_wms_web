@@ -9,6 +9,7 @@ import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseFormData, SelectedWarehouseStockItem, WarehouseStockItem } from '../../types/warehouse';
 import { WarehouseBulkItemRow } from './components/WarehouseBulkItemRow';
@@ -18,6 +19,7 @@ interface Step2WarehouseStockSelectionProps {
   onToggleItem: (item: WarehouseStockItem) => void;
   onUpdateItem: (itemId: string, updates: Partial<SelectedWarehouseStockItem>) => void;
   onRemoveItem: (itemId: string) => void;
+  variant?: 'default' | 'ops';
 }
 
 export function Step2WarehouseStockSelection({
@@ -25,8 +27,10 @@ export function Step2WarehouseStockSelection({
   onToggleItem,
   onUpdateItem,
   onRemoveItem,
+  variant = 'default',
 }: Step2WarehouseStockSelectionProps): ReactElement {
   const { t } = useTranslation(['warehouse', 'common']);
+  const isOps = variant === 'ops';
   const { watch } = useFormContext<WarehouseFormData>();
   const customerCode = watch('customerId');
   const sourceWarehouseCode = watch('sourceWarehouse');
@@ -108,37 +112,56 @@ export function Step2WarehouseStockSelection({
 
   if (!customerCode) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <div className="text-center space-y-4 max-w-sm">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-              <span className="text-2xl font-semibold">1</span>
+      <div className={cn(isOps && 'wms-ops-form wms-ops-list')}>
+        <Card className={cn(isOps && 'wms-ops-order-step')}>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="max-w-sm space-y-4 text-center">
+              <div
+                className={cn(
+                  'mx-auto flex h-16 w-16 items-center justify-center rounded-full',
+                  isOps ? 'wms-ops-panel-empty__icon' : 'bg-muted',
+                )}
+              >
+                <span className="text-2xl font-semibold">1</span>
+              </div>
+              <div className="space-y-2">
+                <CardTitle className={cn(isOps && 'wms-ops-panel-empty__title')}>
+                  {t('warehouse.step2.selectCustomerFirst')}
+                </CardTitle>
+                <CardDescription className={cn(isOps && 'wms-ops-panel-empty__hint')}>
+                  {t('warehouse.step2.customerPrompt')}
+                </CardDescription>
+              </div>
             </div>
-            <div className="space-y-2">
-              <CardTitle>{t('warehouse.step2.selectCustomerFirst')}</CardTitle>
-              <CardDescription>{t('warehouse.step2.customerPrompt')}</CardDescription>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="flex flex-col">
+    <div className={cn(isOps && 'wms-ops-form wms-ops-list')}>
+    <Card className={cn('flex flex-col', isOps && 'wms-ops-order-step')}>
       <CardContent className="flex-1 overflow-hidden p-0">
         <div className="lg:hidden">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as 'stocks' | 'selected')}
-            className="h-full flex flex-col"
+            className="flex h-full flex-col"
           >
-            <div className="px-4 border-b">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="stocks" className="w-full">
+            <div className={cn('border-b px-4 py-2', isOps && 'wms-ops-order-step__mobile-tabs')}>
+              <TabsList
+                className={cn(
+                  'grid w-full grid-cols-2',
+                  isOps && 'wms-ops-tabs wms-ops-step-tabs',
+                  isOps && (activeTab === 'stocks' ? 'wms-ops-tabs--order' : 'wms-ops-tabs--stock'),
+                )}
+              >
+                {isOps ? <span className="wms-ops-tab-indicator wms-ops-step-tab-indicator" aria-hidden /> : null}
+                <TabsTrigger value="stocks" className={cn('w-full', isOps && 'wms-ops-tab')}>
                   {t('warehouse.step2.stocks')}
                 </TabsTrigger>
-                <TabsTrigger value="selected" className="w-full">
+                <TabsTrigger value="selected" className={cn('w-full', isOps && 'wms-ops-tab')}>
                   {t('warehouse.step2.selectedItems')}
                 </TabsTrigger>
               </TabsList>
@@ -175,8 +198,13 @@ export function Step2WarehouseStockSelection({
           </Tabs>
         </div>
 
-        <div className="hidden h-full lg:flex lg:flex-row lg:divide-x lg:divide-border">
-          <div className="lg:w-[32%] xl:w-[30%] overflow-hidden min-w-0 flex h-full flex-col border-r">
+        <div
+          className={cn(
+            'hidden min-h-[560px] lg:grid lg:grid-cols-[32%_1fr]',
+            isOps && 'lg:divide-x lg:divide-[color-mix(in_oklab,var(--wms-ops-accent)_18%,var(--wms-ops-card-border))]',
+          )}
+        >
+          <div className={cn('flex min-h-0 flex-col', !isOps && 'border-r')}>
             <StockListPane
               t={t}
               listRef={(element) => {
@@ -192,7 +220,7 @@ export function Step2WarehouseStockSelection({
               onToggleItem={onToggleItem}
             />
           </div>
-          <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex min-h-0 flex-col">
 	            <SelectedListPane
 	              t={t}
 	              searchSelectedQuery={searchSelectedQuery}
@@ -208,6 +236,7 @@ export function Step2WarehouseStockSelection({
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
 
