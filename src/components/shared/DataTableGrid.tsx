@@ -307,11 +307,30 @@ export function DataTableGrid<TRow, TKey extends string>({
     container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
   };
 
-  const handleScrollDragEnd = (): void => {
+  const handleScrollDragEnd = (event: ReactPointerEvent<HTMLDivElement>): void => {
+    const container = tableScrollRef.current;
+    const pointerId = event.pointerId;
+    if (container && pointerId >= 0 && container.hasPointerCapture(pointerId)) {
+      container.releasePointerCapture(pointerId);
+    }
     dragStateRef.current.isDragging = false;
     dragStateRef.current.pointerId = -1;
+    dragStateRef.current.moved = false;
     setIsDragging(false);
   };
+
+  useEffect(() => {
+    return () => {
+      const container = tableScrollRef.current;
+      const pointerId = dragStateRef.current.pointerId;
+      if (container && pointerId >= 0 && container.hasPointerCapture(pointerId)) {
+        container.releasePointerCapture(pointerId);
+      }
+      dragStateRef.current.isDragging = false;
+      dragStateRef.current.pointerId = -1;
+      dragStateRef.current.moved = false;
+    };
+  }, []);
 
   const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>): void => {
     if (!dragStateRef.current.moved) return;
