@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, ClipboardList, FileSearch, FolderTree, ShieldCheck, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -122,28 +122,24 @@ export function KkdOverviewPage(): ReactElement {
   ] as const;
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.kkdOperationsGroup') }, { label: t('sidebar.kkdOverview'), isActive: true }]} />
-
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/80 to-emerald-50/80 p-6 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-3">
-            <Badge variant="outline">{t('kkd.operational.overview.moduleBadge')}</Badge>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{t('kkd.operational.overview.pageTitle')}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">{t('kkd.operational.overview.subtitle')}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button asChild>
-              <Link to="/kkd/distribution">{t('kkd.operational.overview.startDistribution')}</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/kkd/entitlement-check">{t('kkd.operational.overview.checkEntitlement')}</Link>
-            </Button>
-          </div>
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t('kkd.operational.overview.pageTitle')}
+      description={t('kkd.operational.overview.subtitle')}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link to="/kkd/distribution">{t('kkd.operational.overview.startDistribution')}</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/kkd/entitlement-check">{t('kkd.operational.overview.checkEntitlement')}</Link>
+          </Button>
         </div>
+      }
+    >
+      <div className="space-y-6">
+      <div className="wms-ops-panel overflow-hidden rounded-2xl border p-6">
+        <Badge variant="outline">{t('kkd.operational.overview.moduleBadge')}</Badge>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -248,6 +244,7 @@ export function KkdOverviewPage(): ReactElement {
           })}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </OpsListPageShell>
   );
 }

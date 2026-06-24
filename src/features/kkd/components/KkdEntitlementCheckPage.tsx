@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -66,14 +66,11 @@ export function KkdEntitlementCheckPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.operationsGroup') },
-          { label: t('kkd.operational.entitlementCheck.breadcrumb'), isActive: true },
-        ]}
-      />
-
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t('kkd.operational.entitlementCheck.pageTitle')}
+      description={t('kkd.operational.entitlementCheck.breadcrumb')}
+    >
       <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
         <Card>
           <CardHeader>
@@ -215,6 +212,6 @@ export function KkdEntitlementCheckPage(): ReactElement {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

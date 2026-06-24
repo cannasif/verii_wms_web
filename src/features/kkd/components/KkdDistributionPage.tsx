@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -307,7 +307,11 @@ export function KkdDistributionPage(): ReactElement {
   }
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t(`${dist}.pageTitle`)}
+      description={t(`${dist}.breadcrumb`)}
+    >
       <KkdInitialOrderPromptDialog
         open={initialOrderPromptOpen}
         onOpenChange={(open) => {
@@ -317,13 +321,6 @@ export function KkdDistributionPage(): ReactElement {
           setInitialOrderPromptOpen(open);
         }}
         onAnswer={handleInitialOrderAnswer}
-      />
-
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.kkdOperationsGroup') },
-          { label: t(`${dist}.breadcrumb`), isActive: true },
-        ]}
       />
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -418,6 +415,6 @@ export function KkdDistributionPage(): ReactElement {
           />
         </div>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

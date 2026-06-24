@@ -72,6 +72,9 @@
       "manualOverrideNotice": "This screen is used for manual extra entitlement assignments for exceptional employee needs; it does not replace the base entitlement rule."
     },
     "operational": {
+      "breadcrumb": {
+        "module": "KKD"
+      },
       "common": {
         "undefinedName": "Undefined Name"
       },

@@ -2,10 +2,9 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Eye } from 'lucide-react';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
@@ -81,21 +80,19 @@ export function KkdGroupReportPage(): ReactElement {
   );
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.operationsGroup') },
-          { label: t('kkd.operational.groupReport.breadcrumb'), isActive: true },
-        ]}
-      />
-
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t('kkd.operational.groupReport.pageTitle')}
+      description={t('kkd.operational.groupReport.breadcrumb')}
+    >
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card>
+        <Card className="wms-ops-panel rounded-2xl border shadow-none">
           <CardHeader>
             <CardTitle>{t('kkd.operational.reports.summaryGroup')}</CardTitle>
           </CardHeader>
           <CardContent>
             <PagedDataGrid<KkdGroupUsageReportDto, ColumnKey>
+              variant="ops"
               pageKey="kkd-group-report"
               columns={columns}
               rows={rows}
@@ -206,6 +203,6 @@ export function KkdGroupReportPage(): ReactElement {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </OpsListPageShell>
   );
 }

@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTranslation } from 'react-i18next';
@@ -173,13 +173,11 @@ export function KkdInitialOrderPage(): ReactElement {
   }
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('sidebar.operationsGroup') },
-          { label: t('kkd.operational.initialOrder.breadcrumb'), isActive: true },
-        ]}
-      />
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t('kkd.operational.initialOrder.pageTitle')}
+      description={t('kkd.operational.initialOrder.breadcrumb')}
+    >
       <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="space-y-6">
           <KkdInitialOrderEmployeeSection
@@ -244,6 +242,6 @@ export function KkdInitialOrderPage(): ReactElement {
           />
         </div>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

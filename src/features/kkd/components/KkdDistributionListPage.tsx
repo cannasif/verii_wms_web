@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Eye, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -717,9 +717,11 @@ export function KkdDistributionListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb items={[{ label: t('sidebar.kkdOperationsGroup') }, { label: t('kkd.operational.distributionList.breadcrumb'), isActive: true }]} />
-
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('kkd.operational.breadcrumb.module')} />}
+      title={t('kkd.operational.distributionList.pageTitle')}
+      description={t('kkd.operational.distributionList.breadcrumb')}
+    >
       <div className="grid gap-6">
         <Card>
           <CardHeader>
@@ -727,6 +729,7 @@ export function KkdDistributionListPage(): ReactElement {
           </CardHeader>
           <CardContent>
             <PagedDataGrid<KkdDistributionListItemDto, DistributionColumnKey>
+              variant="ops"
               pageKey="kkd-distribution-list"
               columns={columns}
               rows={rows}
@@ -910,6 +913,6 @@ export function KkdDistributionListPage(): ReactElement {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </OpsListPageShell>
   );
 }
