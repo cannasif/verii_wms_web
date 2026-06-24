@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -62,14 +61,15 @@ function formatDate(value?: string): string {
 }
 
 export function ServiceCaseListPage(): ReactElement {
-  const { t } = useTranslation(["service-allocation", "common"]);
+  const { t } = useTranslation(['service-allocation', 'common']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
+  const pageKey = 'service-allocation-case-list';
   const [itemToDelete, setItemToDelete] = useState<ServiceCaseRow | null>(null);
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
-    pageKey: 'service-allocation-case-list',
+    pageKey,
     defaultSortBy: 'receivedAt',
     defaultSortDirection: 'desc',
     defaultPageNumber: 1,
@@ -84,19 +84,20 @@ export function ServiceCaseListPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'caseNo', label: t('serviceAllocation.caseNo') },
-      { key: 'customerCode', label: t('serviceAllocation.customerCode') },
-      { key: 'incomingStockCode', label: t('serviceAllocation.stockCode') },
-      { key: 'incomingSerialNo', label: t('serviceAllocation.serialNo') },
-      { key: 'status', label: t('serviceAllocation.status') },
-      { key: 'receivedAt', label: t('serviceAllocation.receivedAt') },
-      { key: 'actions', label: t('common.actions'), sortable: false },
+      { key: 'caseNo', label: t('serviceAllocation.caseNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'customerCode', label: t('serviceAllocation.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'incomingStockCode', label: t('serviceAllocation.stockCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'incomingSerialNo', label: t('serviceAllocation.serialNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'status', label: t('serviceAllocation.status'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'receivedAt', label: t('serviceAllocation.receivedAt'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'actions', label: t('common.actions'), sortable: false, headClassName: 'wms-ops-table-actions-col', cellClassName: 'wms-ops-table-actions-col' },
     ],
     [t],
   );
 
   const { data, isLoading, isFetching, error, refetch } = useServiceCasesQuery(pagedGrid.queryParams);
   const rows = data?.data ?? [];
+  const showActionsColumn = permission.canView || permission.canUpdate || permission.canDelete;
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => serviceAllocationApi.deleteServiceCase(id),
@@ -128,118 +129,144 @@ export function ServiceCaseListPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('serviceAllocation.caseList.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<ServiceCaseRow, ColumnKey>
-            pageKey="service-allocation-case-list"
-            columns={columns}
-            rows={rows}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'caseNo':
-                  return <span className="font-medium">{row.caseNo}</span>;
-                case 'customerCode':
-                  return row.customerCode;
-                case 'incomingStockCode':
-                  return row.incomingStockCode || '-';
-                case 'incomingSerialNo':
-                  return row.incomingSerialNo || '-';
-                case 'status':
-                  return renderServiceCaseStatus(row.status);
-                case 'receivedAt':
-                  return formatDate(row.receivedAt);
-                case 'actions':
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={(columnKey) => {
-              if (columnKey === 'actions') return;
-              pagedGrid.handleSort(columnKey);
-            }}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('serviceAllocation.caseList.error')}
-            emptyText={t('serviceAllocation.caseList.empty')}
-            showActionsColumn={permission.canView || permission.canUpdate || permission.canDelete}
-            actionsHeaderLabel={t('common.actions')}
-            renderActionsCell={(row) => (
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={(event) => {
+    <>
+      <OpsListPageShell
+        eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+        title={t('serviceAllocation.caseList.title')}
+        description={t('serviceAllocation.caseList.subtitle')}
+      >
+        <PagedDataGrid<ServiceCaseRow, ColumnKey>
+          variant="ops"
+          pageKey={pageKey}
+          columns={columns}
+          rows={rows}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => {
+            switch (columnKey) {
+              case 'caseNo':
+                return <span className="font-medium font-mono text-xs">{row.caseNo}</span>;
+              case 'customerCode':
+                return row.customerCode;
+              case 'incomingStockCode':
+                return row.incomingStockCode || '-';
+              case 'incomingSerialNo':
+                return row.incomingSerialNo || '-';
+              case 'status':
+                return renderServiceCaseStatus(row.status);
+              case 'receivedAt':
+                return <span className="font-mono text-xs">{formatDate(row.receivedAt)}</span>;
+              case 'actions':
+              default:
+                return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={(columnKey) => {
+            if (columnKey === 'actions') return;
+            pagedGrid.handleSort(columnKey);
+          }}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={Boolean(error)}
+          errorText={t('serviceAllocation.caseList.error')}
+          emptyText={t('serviceAllocation.caseList.empty')}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions
+          actionsCellClassName="wms-ops-table-actions-col"
+          renderActionsCell={(row) => (
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                aria-label={t('common.view')}
+                title={t('common.view')}
+                onClick={(event) => {
                   event.stopPropagation();
                   navigate(`/service-allocation/cases/${row.id}`);
-                }} disabled={!permission.canView}>
-                  <Eye className="size-4" />
-                </Button>
-                {permission.canUpdate ? (
-                  <Button variant="ghost" size="sm" onClick={(event) => {
+                }}
+                disabled={!permission.canView}
+              >
+                <Eye className="size-3" aria-hidden />
+              </Button>
+              {permission.canUpdate ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn"
+                  aria-label={t('common.edit')}
+                  title={t('common.edit')}
+                  onClick={(event) => {
                     event.stopPropagation();
                     navigate(`/service-allocation/cases/${row.id}/edit`);
-                  }}>
-                    <Edit className="size-4" />
-                  </Button>
-                ) : null}
-                {permission.canDelete ? (
-                  <Button variant="destructive" size="sm" onClick={(event) => {
+                  }}
+                >
+                  <Edit className="size-3" aria-hidden />
+                </Button>
+              ) : null}
+              {permission.canDelete ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                  aria-label={t('common.delete')}
+                  title={t('common.delete')}
+                  onClick={(event) => {
                     event.stopPropagation();
                     setItemToDelete(row);
-                  }} disabled={deleteMutation.isPending}>
-                    <Trash2 className="size-4" />
-                  </Button>
-                ) : null}
-              </div>
-            )}
-            pageSize={pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={data?.totalPages ?? 1}
-            hasPreviousPage={data?.hasPreviousPage ?? false}
-            hasNextPage={data?.hasNextPage ?? false}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            filterColumns={advancedFilterColumns}
-            defaultFilterColumn="caseNo"
-            draftFilterRows={pagedGrid.draftFilterRows}
-            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
-            filterLogic={pagedGrid.filterLogic}
-            onFilterLogicChange={pagedGrid.setFilterLogic}
-            onApplyFilters={pagedGrid.applyAdvancedFilters}
-            onClearFilters={pagedGrid.clearAdvancedFilters}
-            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
-            search={{
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.caseList.search'),
-            }}
-            leftSlot={permission.canCreate ? (
-              <Button onClick={() => navigate('/service-allocation/cases/new')}>
-                <Plus className="mr-2 size-4" />
-                {t('serviceAllocation.createCase')}
-              </Button>
-            ) : undefined}
-            refresh={{
-              onRefresh: () => {
-                void refetch();
-              },
-              isLoading: isFetching,
-              label: t('common.refresh'),
-            }}
-          />
-        </CardContent>
-      </Card>
+                  }}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Trash2 className="size-3" aria-hidden />
+                </Button>
+              ) : null}
+            </div>
+          )}
+          pageSize={pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(data)}
+          totalPages={data?.totalPages ?? 1}
+          hasPreviousPage={data?.hasPreviousPage ?? false}
+          hasNextPage={data?.hasNextPage ?? false}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={paginationInfoText}
+          filterColumns={advancedFilterColumns}
+          defaultFilterColumn="caseNo"
+          draftFilterRows={pagedGrid.draftFilterRows}
+          onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+          filterLogic={pagedGrid.filterLogic}
+          onFilterLogicChange={pagedGrid.setFilterLogic}
+          onApplyFilters={pagedGrid.applyAdvancedFilters}
+          onClearFilters={pagedGrid.clearAdvancedFilters}
+          appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+          search={{
+            ...pagedGrid.searchConfig,
+            placeholder: t('serviceAllocation.caseList.search'),
+          }}
+          leftSlot={permission.canCreate ? (
+            <Button type="button" className="wms-ops-primary-btn" onClick={() => navigate('/service-allocation/cases/new')}>
+              <Plus className="mr-2 size-4" />
+              {t('serviceAllocation.createCase')}
+            </Button>
+          ) : undefined}
+          refresh={{
+            onRefresh: () => {
+              void refetch();
+            },
+            isLoading: isFetching,
+            label: t('common.refresh'),
+          }}
+        />
+      </OpsListPageShell>
 
       <DeleteConfirmDialog
         open={itemToDelete != null}
@@ -252,6 +279,6 @@ export function ServiceCaseListPage(): ReactElement {
           if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
         }}
       />
-    </div>
+    </>
   );
 }

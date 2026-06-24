@@ -1,8 +1,7 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -54,11 +53,12 @@ function mapSortBy(value: ColumnKey): string {
 }
 
 export function AllocationQueuePage(): ReactElement {
-  const { t } = useTranslation(["service-allocation", "common"]);
+  const { t } = useTranslation(['service-allocation', 'common']);
   const { setPageTitle } = useUIStore();
+  const pageKey = 'service-allocation-queue';
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
-    pageKey: 'service-allocation-queue',
+    pageKey,
     defaultSortBy: 'priorityNo',
     defaultSortDirection: 'asc',
     defaultPageNumber: 1,
@@ -73,14 +73,14 @@ export function AllocationQueuePage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'stockCode', label: t('serviceAllocation.stockCode') },
-      { key: 'erpOrderNo', label: t('serviceAllocation.erpOrderNo') },
-      { key: 'erpOrderId', label: t('serviceAllocation.erpOrderId') },
-      { key: 'customerCode', label: t('serviceAllocation.customerCode') },
-      { key: 'requestedQuantity', label: t('serviceAllocation.quantity') },
-      { key: 'allocatedQuantity', label: t('serviceAllocation.allocatedQuantity') },
-      { key: 'priorityNo', label: t('serviceAllocation.priority') },
-      { key: 'status', label: t('serviceAllocation.status') },
+      { key: 'stockCode', label: t('serviceAllocation.stockCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'erpOrderNo', label: t('serviceAllocation.erpOrderNo'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'erpOrderId', label: t('serviceAllocation.erpOrderId'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'customerCode', label: t('serviceAllocation.customerCode'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'requestedQuantity', label: t('serviceAllocation.quantity'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'allocatedQuantity', label: t('serviceAllocation.allocatedQuantity'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'priorityNo', label: t('serviceAllocation.priority'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'status', label: t('serviceAllocation.status'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     ],
     [t],
   );
@@ -103,84 +103,80 @@ export function AllocationQueuePage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('serviceAllocation.allocationQueue.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<AllocationQueueRow, ColumnKey>
-            pageKey="service-allocation-queue"
-            columns={columns}
-            rows={rows}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'stockCode':
-                  return <span className="font-medium">{row.stockCode}</span>;
-                case 'erpOrderNo':
-                  return row.erpOrderNo;
-                case 'erpOrderId':
-                  return row.erpOrderId;
-                case 'customerCode':
-                  return row.customerCode;
-                case 'requestedQuantity':
-                  return row.requestedQuantity;
-                case 'allocatedQuantity':
-                  return row.allocatedQuantity;
-                case 'priorityNo':
-                  return row.priorityNo;
-                case 'status':
-                  return renderAllocationStatus(row.status);
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={pagedGrid.handleSort}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('serviceAllocation.allocationQueue.error')}
-            emptyText={t('serviceAllocation.allocationQueue.empty')}
-            pageSize={pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={data?.totalPages ?? 1}
-            hasPreviousPage={data?.hasPreviousPage ?? false}
-            hasNextPage={data?.hasNextPage ?? false}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            filterColumns={advancedFilterColumns}
-            defaultFilterColumn="stockCode"
-            draftFilterRows={pagedGrid.draftFilterRows}
-            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
-            filterLogic={pagedGrid.filterLogic}
-            onFilterLogicChange={pagedGrid.setFilterLogic}
-            onApplyFilters={pagedGrid.applyAdvancedFilters}
-            onClearFilters={pagedGrid.clearAdvancedFilters}
-            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
-            search={{
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.allocationQueue.search'),
-            }}
-            refresh={{
-              onRefresh: () => {
-                void refetch();
-              },
-              isLoading: isFetching,
-              label: t('common.refresh'),
-            }}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+      title={t('serviceAllocation.allocationQueue.title')}
+      description={t('serviceAllocation.allocationQueue.subtitle')}
+    >
+      <PagedDataGrid<AllocationQueueRow, ColumnKey>
+        variant="ops"
+        pageKey={pageKey}
+        columns={columns}
+        rows={rows}
+        rowKey={(row) => row.id}
+        renderCell={(row, columnKey) => {
+          switch (columnKey) {
+            case 'stockCode':
+              return <span className="font-medium font-mono text-xs">{row.stockCode}</span>;
+            case 'erpOrderNo':
+              return row.erpOrderNo;
+            case 'erpOrderId':
+              return row.erpOrderId;
+            case 'customerCode':
+              return row.customerCode;
+            case 'requestedQuantity':
+              return row.requestedQuantity;
+            case 'allocatedQuantity':
+              return row.allocatedQuantity;
+            case 'priorityNo':
+              return row.priorityNo;
+            case 'status':
+              return renderAllocationStatus(row.status);
+            default:
+              return null;
+          }
+        }}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={pagedGrid.handleSort}
+        renderSortIcon={renderSortIcon}
+        isLoading={isLoading}
+        isError={Boolean(error)}
+        errorText={t('serviceAllocation.allocationQueue.error')}
+        emptyText={t('serviceAllocation.allocationQueue.empty')}
+        pageSize={pagedGrid.pageSize}
+        pageSizeOptions={pagedGrid.pageSizeOptions}
+        onPageSizeChange={pagedGrid.handlePageSizeChange}
+        pageNumber={pagedGrid.getDisplayPageNumber(data)}
+        totalPages={data?.totalPages ?? 1}
+        hasPreviousPage={data?.hasPreviousPage ?? false}
+        hasNextPage={data?.hasNextPage ?? false}
+        onPreviousPage={pagedGrid.goToPreviousPage}
+        onNextPage={pagedGrid.goToNextPage}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
+        paginationInfoText={paginationInfoText}
+        filterColumns={advancedFilterColumns}
+        defaultFilterColumn="stockCode"
+        draftFilterRows={pagedGrid.draftFilterRows}
+        onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+        filterLogic={pagedGrid.filterLogic}
+        onFilterLogicChange={pagedGrid.setFilterLogic}
+        onApplyFilters={pagedGrid.applyAdvancedFilters}
+        onClearFilters={pagedGrid.clearAdvancedFilters}
+        appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+        search={{
+          ...pagedGrid.searchConfig,
+          placeholder: t('serviceAllocation.allocationQueue.search'),
+        }}
+        refresh={{
+          onRefresh: () => {
+            void refetch();
+          },
+          isLoading: isFetching,
+          label: t('common.refresh'),
+        }}
+      />
+    </OpsListPageShell>
   );
 }

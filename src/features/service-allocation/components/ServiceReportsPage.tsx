@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useAllocationQueueQuery } from '../hooks/useAllocationQueueQuery';
 import { useDocumentLinksQuery } from '../hooks/useDocumentLinksQuery';
@@ -68,9 +69,14 @@ export function ServiceReportsPage(): ReactElement {
   const recentMovements = links.slice(0, 8);
 
   return (
-    <div className="crm-page space-y-6">
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+      title={t('serviceAllocation.reports.title')}
+      description={t('serviceAllocation.reports.subtitle')}
+    >
+      <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="overflow-hidden border-slate-200/80 bg-gradient-to-br from-white to-slate-50">
+        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-slate-600">
@@ -90,7 +96,7 @@ export function ServiceReportsPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-amber-200/80 bg-gradient-to-br from-amber-50 to-white">
+        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-amber-800">
@@ -110,7 +116,7 @@ export function ServiceReportsPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-blue-200/80 bg-gradient-to-br from-blue-50 to-white">
+        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-blue-800">
@@ -130,7 +136,7 @@ export function ServiceReportsPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white">
+        <Card className="wms-ops-panel overflow-hidden rounded-2xl border shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-emerald-800">
@@ -152,7 +158,7 @@ export function ServiceReportsPage(): ReactElement {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card>
+        <Card className="wms-ops-panel rounded-2xl border shadow-none">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t('serviceAllocation.reports.criticalQueue')}</CardTitle>
             <Button asChild variant="outline" size="sm">
@@ -236,7 +242,7 @@ export function ServiceReportsPage(): ReactElement {
         </Card>
 
         <div className="space-y-6">
-          <Card>
+          <Card className="wms-ops-panel rounded-2xl border shadow-none">
             <CardHeader>
               <CardTitle>{t('serviceAllocation.reports.caseDistribution')}</CardTitle>
             </CardHeader>
@@ -252,7 +258,7 @@ export function ServiceReportsPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="wms-ops-panel rounded-2xl border shadow-none">
             <CardHeader>
               <CardTitle>{t('serviceAllocation.reports.linkDistribution')}</CardTitle>
             </CardHeader>
@@ -316,7 +322,7 @@ export function ServiceReportsPage(): ReactElement {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="wms-ops-panel rounded-2xl border shadow-none">
           <CardHeader>
             <CardTitle>{t('serviceAllocation.reports.allocationRows')}</CardTitle>
           </CardHeader>
@@ -329,7 +335,7 @@ export function ServiceReportsPage(): ReactElement {
             </Button>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="wms-ops-panel rounded-2xl border shadow-none">
           <CardHeader>
             <CardTitle>{t('serviceAllocation.reports.activeRepairCases')}</CardTitle>
           </CardHeader>
@@ -342,7 +348,7 @@ export function ServiceReportsPage(): ReactElement {
             </Button>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="wms-ops-panel rounded-2xl border shadow-none">
           <CardHeader>
             <CardTitle>{t('serviceAllocation.reports.shipmentLinksCount')}</CardTitle>
           </CardHeader>
@@ -356,6 +362,7 @@ export function ServiceReportsPage(): ReactElement {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </OpsListPageShell>
   );
 }

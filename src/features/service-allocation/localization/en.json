@@ -32,26 +32,33 @@
     "fromWarehouse": "From Wh",
     "toWarehouse": "To Wh",
     "createCase": "Create Service Case",
+    "breadcrumb": {
+      "module": "SERVICE_ALLOC"
+    },
     "caseList": {
       "title": "Service Cases",
+      "subtitle": "Browse and manage service case records.",
       "error": "Service cases could not be loaded.",
       "empty": "No service cases found.",
       "search": "Search service cases..."
     },
     "allocationQueue": {
       "title": "Allocation Queue",
+      "subtitle": "Monitor stock allocation priority queue.",
       "error": "Allocation queue could not be loaded.",
       "empty": "No allocation rows found.",
       "search": "Search allocation queue..."
     },
     "documentLinks": {
       "title": "Document Links",
+      "subtitle": "Cross-module document link registry.",
       "error": "Document links could not be loaded.",
       "empty": "No document links found.",
       "search": "Search document links..."
     },
     "timeline": {
       "title": "Service Case Timeline",
+      "subtitle": "Warehouse movements and linked documents.",
       "events": "Warehouse Timeline",
       "linkCount": "Linked Documents",
       "lastMovement": "Last Movement"
@@ -65,6 +72,8 @@
     "form": {
       "createTitle": "Create Service Case",
       "editTitle": "Edit Service Case",
+      "createSubtitle": "Register a new service case intake.",
+      "editSubtitle": "Update service case header and lines.",
       "createSuccess": "Service case created.",
       "updateSuccess": "Service case updated.",
       "saveError": "Service case could not be saved.",
@@ -82,6 +91,7 @@
     },
     "reports": {
       "title": "Service Reports",
+      "subtitle": "Operational KPIs and distribution summaries.",
       "totalCases": "Total Service Cases",
       "openCases": "Open cases",
       "waitingParts": "Waiting For Parts",

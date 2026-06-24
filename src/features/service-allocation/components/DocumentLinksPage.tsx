@@ -1,8 +1,7 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -57,11 +56,12 @@ function formatDate(value?: string): string {
 }
 
 export function DocumentLinksPage(): ReactElement {
-  const { t } = useTranslation(["service-allocation", "common"]);
+  const { t } = useTranslation(['service-allocation', 'common']);
   const { setPageTitle } = useUIStore();
+  const pageKey = 'service-allocation-document-links';
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
-    pageKey: 'service-allocation-document-links',
+    pageKey,
     defaultSortBy: 'linkedAt',
     defaultSortDirection: 'desc',
     defaultPageNumber: 1,
@@ -76,13 +76,13 @@ export function DocumentLinksPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
     () => [
-      { key: 'documentModule', label: t('serviceAllocation.documentModule') },
-      { key: 'documentHeaderId', label: t('serviceAllocation.documentHeaderId') },
-      { key: 'linkPurpose', label: t('serviceAllocation.linkPurpose') },
-      { key: 'sequenceNo', label: t('serviceAllocation.sequence') },
-      { key: 'serviceCaseId', label: t('serviceAllocation.serviceCaseId') },
-      { key: 'orderAllocationLineId', label: t('serviceAllocation.orderAllocationLineId') },
-      { key: 'linkedAt', label: t('serviceAllocation.linkedAt') },
+      { key: 'documentModule', label: t('serviceAllocation.documentModule'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'documentHeaderId', label: t('serviceAllocation.documentHeaderId'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'linkPurpose', label: t('serviceAllocation.linkPurpose'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'sequenceNo', label: t('serviceAllocation.sequence'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'serviceCaseId', label: t('serviceAllocation.serviceCaseId'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'orderAllocationLineId', label: t('serviceAllocation.orderAllocationLineId'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
+      { key: 'linkedAt', label: t('serviceAllocation.linkedAt'), headClassName: 'wms-ops-table-center-col', cellClassName: 'wms-ops-table-center-col' },
     ],
     [t],
   );
@@ -105,82 +105,78 @@ export function DocumentLinksPage(): ReactElement {
   });
 
   return (
-    <div className="crm-page space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('serviceAllocation.documentLinks.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PagedDataGrid<BusinessDocumentLinkRow, ColumnKey>
-            pageKey="service-allocation-document-links"
-            columns={columns}
-            rows={rows}
-            rowKey={(row) => row.id}
-            renderCell={(row, columnKey) => {
-              switch (columnKey) {
-                case 'documentModule':
-                  return renderDocumentModule(row.documentModule);
-                case 'documentHeaderId':
-                  return row.documentHeaderId;
-                case 'linkPurpose':
-                  return renderDocumentLinkPurpose(row.linkPurpose);
-                case 'sequenceNo':
-                  return row.sequenceNo;
-                case 'serviceCaseId':
-                  return row.serviceCaseId ?? '-';
-                case 'orderAllocationLineId':
-                  return row.orderAllocationLineId ?? '-';
-                case 'linkedAt':
-                  return formatDate(row.linkedAt);
-                default:
-                  return null;
-              }
-            }}
-            sortBy={pagedGrid.sortBy}
-            sortDirection={pagedGrid.sortDirection}
-            onSort={pagedGrid.handleSort}
-            renderSortIcon={renderSortIcon}
-            isLoading={isLoading}
-            isError={Boolean(error)}
-            errorText={t('serviceAllocation.documentLinks.error')}
-            emptyText={t('serviceAllocation.documentLinks.empty')}
-            pageSize={pagedGrid.pageSize}
-            pageSizeOptions={pagedGrid.pageSizeOptions}
-            onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={pagedGrid.getDisplayPageNumber(data)}
-            totalPages={data?.totalPages ?? 1}
-            hasPreviousPage={data?.hasPreviousPage ?? false}
-            hasNextPage={data?.hasNextPage ?? false}
-            onPreviousPage={pagedGrid.goToPreviousPage}
-            onNextPage={pagedGrid.goToNextPage}
-            previousLabel={t('common.previous')}
-            nextLabel={t('common.next')}
-            paginationInfoText={paginationInfoText}
-            filterColumns={advancedFilterColumns}
-            defaultFilterColumn="documentModule"
-            draftFilterRows={pagedGrid.draftFilterRows}
-            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
-            filterLogic={pagedGrid.filterLogic}
-            onFilterLogicChange={pagedGrid.setFilterLogic}
-            onApplyFilters={pagedGrid.applyAdvancedFilters}
-            onClearFilters={pagedGrid.clearAdvancedFilters}
-            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
-            search={{
-              value: pagedGrid.searchInput,
-              onValueChange: pagedGrid.searchConfig.onValueChange,
-              onSearchChange: pagedGrid.searchConfig.onSearchChange,
-              placeholder: t('serviceAllocation.documentLinks.search'),
-            }}
-            refresh={{
-              onRefresh: () => {
-                void refetch();
-              },
-              isLoading: isFetching,
-              label: t('common.refresh'),
-            }}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+      title={t('serviceAllocation.documentLinks.title')}
+      description={t('serviceAllocation.documentLinks.subtitle')}
+    >
+      <PagedDataGrid<BusinessDocumentLinkRow, ColumnKey>
+        variant="ops"
+        pageKey={pageKey}
+        columns={columns}
+        rows={rows}
+        rowKey={(row) => row.id}
+        renderCell={(row, columnKey) => {
+          switch (columnKey) {
+            case 'documentModule':
+              return renderDocumentModule(row.documentModule);
+            case 'documentHeaderId':
+              return row.documentHeaderId;
+            case 'linkPurpose':
+              return renderDocumentLinkPurpose(row.linkPurpose);
+            case 'sequenceNo':
+              return row.sequenceNo;
+            case 'serviceCaseId':
+              return row.serviceCaseId ?? '-';
+            case 'orderAllocationLineId':
+              return row.orderAllocationLineId ?? '-';
+            case 'linkedAt':
+              return <span className="font-mono text-xs">{formatDate(row.linkedAt)}</span>;
+            default:
+              return null;
+          }
+        }}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={pagedGrid.handleSort}
+        renderSortIcon={renderSortIcon}
+        isLoading={isLoading}
+        isError={Boolean(error)}
+        errorText={t('serviceAllocation.documentLinks.error')}
+        emptyText={t('serviceAllocation.documentLinks.empty')}
+        pageSize={pagedGrid.pageSize}
+        pageSizeOptions={pagedGrid.pageSizeOptions}
+        onPageSizeChange={pagedGrid.handlePageSizeChange}
+        pageNumber={pagedGrid.getDisplayPageNumber(data)}
+        totalPages={data?.totalPages ?? 1}
+        hasPreviousPage={data?.hasPreviousPage ?? false}
+        hasNextPage={data?.hasNextPage ?? false}
+        onPreviousPage={pagedGrid.goToPreviousPage}
+        onNextPage={pagedGrid.goToNextPage}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
+        paginationInfoText={paginationInfoText}
+        filterColumns={advancedFilterColumns}
+        defaultFilterColumn="documentModule"
+        draftFilterRows={pagedGrid.draftFilterRows}
+        onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+        filterLogic={pagedGrid.filterLogic}
+        onFilterLogicChange={pagedGrid.setFilterLogic}
+        onApplyFilters={pagedGrid.applyAdvancedFilters}
+        onClearFilters={pagedGrid.clearAdvancedFilters}
+        appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+        search={{
+          ...pagedGrid.searchConfig,
+          placeholder: t('serviceAllocation.documentLinks.search'),
+        }}
+        refresh={{
+          onRefresh: () => {
+            void refetch();
+          },
+          isLoading: isFetching,
+          label: t('common.refresh'),
+        }}
+      />
+    </OpsListPageShell>
   );
 }

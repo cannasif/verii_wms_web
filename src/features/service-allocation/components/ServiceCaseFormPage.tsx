@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { OpsActionButton, OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { lookupApi } from '@/features/shared/api/lookup-api';
@@ -212,11 +212,19 @@ export function ServiceCaseFormPage(): ReactElement {
   const existingLines = timelineQuery.data?.lines ?? [];
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={() => navigate(isEdit ? `/service-allocation/cases/${parsedId}` : '/service-allocation/cases')}>
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+      title={isEdit ? t('serviceAllocation.form.editTitle') : t('serviceAllocation.form.createTitle')}
+      description={isEdit ? t('serviceAllocation.form.editSubtitle') : t('serviceAllocation.form.createSubtitle')}
+    >
+      <div className="wms-ops-actions mb-4">
+        <OpsActionButton
+          type="button"
+          variant="secondary"
+          onClick={() => navigate(isEdit ? `/service-allocation/cases/${parsedId}` : '/service-allocation/cases')}
+        >
           {t('common.back')}
-        </Button>
+        </OpsActionButton>
       </div>
 
       <Form {...form}>
@@ -255,16 +263,14 @@ export function ServiceCaseFormPage(): ReactElement {
               <ServiceCaseExistingLinesSection lines={existingLines} />
             ) : null}
 
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
-                {saveMutation.isPending
-                  ? t('common.loading')
-                  : t('common.save')}
-              </Button>
+            <div className="wms-ops-actions flex justify-end">
+              <OpsActionButton type="submit" variant="primary" disabled={isReadOnly || saveMutation.isPending || timelineQuery.isLoading}>
+                {saveMutation.isPending ? t('common.loading') : t('common.save')}
+              </OpsActionButton>
             </div>
           </fieldset>
         </form>
       </Form>
-    </div>
+    </OpsFormPageShell>
   );
 }

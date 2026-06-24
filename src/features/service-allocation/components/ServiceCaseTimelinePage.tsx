@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { OpsActionButton, OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { serviceAllocationApi } from '../api/service-allocation.api';
@@ -60,37 +60,43 @@ export function ServiceCaseTimelinePage(): ReactElement {
   }, [setPageTitle, t]);
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={() => navigate('/service-allocation/cases')}>
-          {t('common.back')}
-        </Button>
-        <div className="flex items-center gap-2">
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('serviceAllocation.breadcrumb.module')} />}
+      title={timeline?.serviceCase.caseNo ?? t('serviceAllocation.timeline.title')}
+      description={t('serviceAllocation.timeline.subtitle')}
+      actions={
+        <div className="flex flex-wrap items-center gap-2">
           {permission.canUpdate ? (
-            <Button variant="outline" onClick={() => navigate(`/service-allocation/cases/${parsedId}/edit`)}>
+            <OpsActionButton type="button" variant="secondary" onClick={() => navigate(`/service-allocation/cases/${parsedId}/edit`)}>
               {t('common.edit')}
-            </Button>
+            </OpsActionButton>
           ) : null}
-          <Button
+          <OpsActionButton
+            type="button"
+            variant="primary"
             onClick={() => recomputeMutation.mutate()}
             disabled={!permission.canUpdate || !timeline?.serviceCase.incomingStockId || recomputeMutation.isPending}
           >
-            {recomputeMutation.isPending
-              ? t('common.loading')
-              : t('serviceAllocation.recompute.action')}
-          </Button>
+            {recomputeMutation.isPending ? t('common.loading') : t('serviceAllocation.recompute.action')}
+          </OpsActionButton>
         </div>
+      }
+    >
+      <div className="wms-ops-actions mb-4">
+        <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/service-allocation/cases')}>
+          {t('common.back')}
+        </OpsActionButton>
       </div>
 
       {query.isLoading ? (
-        <p>{t('common.loading')}</p>
+        <p className="font-mono text-sm">{t('common.loading')}</p>
       ) : timeline ? (
-        <>
-          <Card>
+        <div className="space-y-6">
+          <Card className="wms-ops-panel rounded-2xl border shadow-none">
             <CardHeader>
-              <CardTitle>{timeline.serviceCase.caseNo}</CardTitle>
+              <CardTitle className="font-mono text-sm uppercase tracking-wide">{timeline.serviceCase.caseNo}</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-3 md:grid-cols-3">
+            <CardContent className="grid gap-3 md:grid-cols-3 font-mono text-sm">
               <div><span className="font-medium">{t('serviceAllocation.customerCode')}:</span> {timeline.serviceCase.customerCode}</div>
               <div><span className="font-medium">{t('serviceAllocation.stockCode')}:</span> {timeline.serviceCase.incomingStockCode || '-'}</div>
               <div><span className="font-medium">{t('serviceAllocation.serialNo')}:</span> {timeline.serviceCase.incomingSerialNo || '-'}</div>
@@ -102,7 +108,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="wms-ops-panel rounded-2xl border shadow-none">
             <CardHeader>
               <CardTitle>{t('serviceAllocation.lines')}</CardTitle>
             </CardHeader>
@@ -132,7 +138,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="wms-ops-panel rounded-2xl border shadow-none">
             <CardHeader>
               <CardTitle>{t('serviceAllocation.timeline.events')}</CardTitle>
             </CardHeader>
@@ -165,8 +171,8 @@ export function ServiceCaseTimelinePage(): ReactElement {
               </Table>
             </CardContent>
           </Card>
-        </>
+        </div>
       ) : null}
-    </div>
+    </OpsFormPageShell>
   );
 }
