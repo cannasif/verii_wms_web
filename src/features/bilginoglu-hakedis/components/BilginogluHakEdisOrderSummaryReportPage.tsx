@@ -1,8 +1,8 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { BarChart3, RefreshCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
@@ -143,35 +143,23 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
   const renderStatus = (status: string): string => t(`status.${status}`, { defaultValue: status });
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('breadcrumb.operations') },
-          { label: t('breadcrumb.serviceOperations') },
-          { label: t('reports.orderSummary.title'), isActive: true },
-        ]}
-      />
-
-      <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/5">
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
+      title={t('reports.orderSummary.title')}
+      description={t('reports.orderSummary.description')}
+      actions={
+        <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
+          <RefreshCcw className="mr-2 size-4" />
+          {t('actions.refresh')}
+        </Button>
+      }
+    >
+      <section className="wms-ops-panel overflow-hidden rounded-3xl border shadow-none">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="p-5 md:p-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-200">
-                  <BarChart3 className="size-3.5" />
-                  {t('reports.orderSummary.eyebrow')}
-                </div>
-                <h1 className="mt-4 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-                  {t('reports.orderSummary.title')}
-                </h1>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  {t('reports.orderSummary.description')}
-                </p>
-              </div>
-              <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
-                <RefreshCcw className="mr-2 size-4" />
-                {t('actions.refresh')}
-              </Button>
+            <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.18em]">
+              <BarChart3 className="size-3.5" />
+              {t('reports.orderSummary.eyebrow')}
             </div>
           </div>
           <div className="border-t border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-black/15 lg:border-l lg:border-t-0">
@@ -190,6 +178,7 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
       <Card className="border-slate-200/80 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/5">
         <CardContent className="p-4 md:p-5">
           <PagedDataGrid<BilginogluHakEdisOrderSummaryReport, ReportColumnKey>
+            variant="ops"
             pageKey="bilginoglu-hakedis-order-summary-report"
             columns={columns}
             rows={rows}
@@ -317,6 +306,6 @@ export function BilginogluHakEdisOrderSummaryReportPage(): ReactElement {
           />
         </CardContent>
       </Card>
-    </div>
+    </OpsListPageShell>
   );
 }

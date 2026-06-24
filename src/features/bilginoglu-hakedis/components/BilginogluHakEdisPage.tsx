@@ -2,8 +2,8 @@ import { Fragment, type ReactElement, type ReactNode, useEffect, useMemo, useSta
 import { Boxes, ChevronDown, ChevronRight, Eye, FileClock, GitBranch, Loader2, PackageCheck, Play, RefreshCw, Truck, Wand2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -107,6 +107,7 @@ export function BilginogluHakEdisPage(): ReactElement {
   const view = location.pathname.includes('/completed') ? 'completed' : 'open';
   const isCompletedView = view === 'completed';
   const pageTitle = view === 'completed' ? t('views.completed.title') : t('views.open.title');
+  const pageDescription = view === 'completed' ? t('views.completed.description') : t('views.open.description');
   const permission = useCrudPermission('wms.service-allocation');
   const [selectedOrder, setSelectedOrder] = useState<BilginogluHakEdisOrderHeader | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<BilginogluHakEdisPlan | null>(null);
@@ -315,9 +316,11 @@ export function BilginogluHakEdisPage(): ReactElement {
   );
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('breadcrumb.serviceOperations') }, { label: pageTitle }]} />
-
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
+      title={pageTitle}
+      description={pageDescription}
+    >
       {isCompletedView ? (
         <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-sm dark:border-white/10 dark:bg-white/3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -656,6 +659,7 @@ export function BilginogluHakEdisPage(): ReactElement {
       <Card className="rounded-3xl border-slate-200 shadow-sm">
         <CardContent className="p-5">
           <PagedDataGrid<BilginogluHakEdisOrderHeader, OrderColumnKey>
+            variant="ops"
             pageKey={pageKey}
             columns={orderColumns}
             rows={visibleOrders}
@@ -1032,7 +1036,7 @@ export function BilginogluHakEdisPage(): ReactElement {
           ) : null}
         </DialogContent>
       </Dialog>
-    </div>
+    </OpsListPageShell>
   );
 }
 

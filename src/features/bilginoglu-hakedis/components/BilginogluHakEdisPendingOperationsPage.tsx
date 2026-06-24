@@ -1,11 +1,11 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowRightLeft, MoveRight, RefreshCcw, Truck } from 'lucide-react';
+import { MoveRight, RefreshCcw } from 'lucide-react';
 import type { TFunction } from 'i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { OpsListPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -78,7 +78,6 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
   const pageDescription = queueType === 'transfer'
     ? t('pendingOperations.transfer.description')
     : t('pendingOperations.shipment.description');
-  const Icon = queueType === 'transfer' ? ArrowRightLeft : Truck;
 
   const pagedGrid = usePagedDataGrid<PendingColumnKey>({
     pageKey,
@@ -171,36 +170,21 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
   const renderAction = (value: string): string => t(`pendingOperations.actions.${value}`, { defaultValue: value });
 
   return (
-    <div className="crm-page space-y-6">
-      <Breadcrumb
-        items={[
-          { label: t('breadcrumb.operations') },
-          { label: t('breadcrumb.serviceOperations') },
-          { label: pageTitle, isActive: true },
-        ]}
-      />
-
-      <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-sm dark:border-white/10 dark:bg-white/3">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-teal-500/25 bg-teal-500/10 text-teal-700 dark:text-teal-200">
-              <Icon className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white md:text-2xl">{pageTitle}</h1>
-              <p className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">{pageDescription}</p>
-            </div>
-          </div>
-          <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
-            <RefreshCcw className="mr-2 size-4" />
-            {t('actions.refresh')}
-          </Button>
-        </div>
-      </section>
-
-      <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
+      title={pageTitle}
+      description={pageDescription}
+      actions={
+        <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={() => void query.refetch()}>
+          <RefreshCcw className="mr-2 size-4" />
+          {t('actions.refresh')}
+        </Button>
+      }
+    >
+      <Card className="wms-ops-panel border shadow-none">
         <CardContent className="p-5">
           <PagedDataGrid<BilginogluHakEdisPendingOperation, PendingColumnKey>
+            variant="ops"
             pageKey={pageKey}
             columns={columns}
             rows={rows}
@@ -433,7 +417,7 @@ function PendingOperationsPage({ queueType }: { queueType: QueueType }): ReactEl
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </OpsListPageShell>
   );
 }
 

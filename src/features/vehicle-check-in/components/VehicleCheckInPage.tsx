@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
 import { vehicleCheckInApi } from '../api/vehicle-check-in.api';
@@ -195,9 +195,11 @@ export function VehicleCheckInPage(): ReactElement {
   }
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary">{t('vehicleCheckIn.badge')}</Badge>
-
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('vehicleCheckIn.breadcrumb.module')} />}
+      title={t('vehicleCheckIn.title')}
+      description={t('vehicleCheckIn.description')}
+    >
       <VehicleCheckInFormSection
         entryDateText={entryDateText}
         formState={formState}
@@ -223,6 +225,6 @@ export function VehicleCheckInPage(): ReactElement {
         onDeleteImage={(imageId) => deleteImageMutation.mutate(imageId)}
         deletePending={deleteImageMutation.isPending}
       />
-    </div>
+    </OpsFormPageShell>
   );
 }

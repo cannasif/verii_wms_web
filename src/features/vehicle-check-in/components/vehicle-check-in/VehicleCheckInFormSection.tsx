@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react';
 import { CarFront, Loader2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { FormPageShell } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,15 +41,14 @@ export function VehicleCheckInFormSection({
   const { t } = useTranslation('common');
 
   return (
-    <FormPageShell title={t('vehicleCheckIn.title')} description={t('vehicleCheckIn.description')}>
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-sky-200/70 bg-sky-50/80 p-4 text-sm text-sky-900 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100">
-          <div className="font-semibold">{t('vehicleCheckIn.guidance.title')}</div>
-          <div className="mt-1">{t('vehicleCheckIn.guidance.sameDayRule')}</div>
-          <div>{t('vehicleCheckIn.guidance.nextDayRule')}</div>
-        </div>
+    <div className="space-y-6">
+      <div className="wms-ops-panel rounded-2xl border p-4 font-mono text-sm">
+        <div className="font-semibold">{t('vehicleCheckIn.guidance.title')}</div>
+        <div className="mt-1">{t('vehicleCheckIn.guidance.sameDayRule')}</div>
+        <div>{t('vehicleCheckIn.guidance.nextDayRule')}</div>
+      </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="vehicle-plate">{t('vehicleCheckIn.fields.plate')} *</Label>
             <div className="flex gap-2">
@@ -114,18 +112,17 @@ export function VehicleCheckInFormSection({
               }))}
             />
           </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Button type="button" onClick={onSave} disabled={savePending}>
-            {savePending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <CarFront className="mr-2 size-4" />}
-            {t('vehicleCheckIn.actions.save')}
-          </Button>
-          <Button type="button" variant="ghost" onClick={onOpenList}>
-            {t('vehicleCheckIn.actions.openList')}
-          </Button>
-        </div>
       </div>
-    </FormPageShell>
+
+      <div className="wms-ops-actions flex flex-wrap gap-3">
+        <Button type="button" className="wms-ops-primary-btn" onClick={onSave} disabled={savePending}>
+          {savePending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <CarFront className="mr-2 size-4" />}
+          {t('vehicleCheckIn.actions.save')}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onOpenList}>
+          {t('vehicleCheckIn.actions.openList')}
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
@@ -71,12 +71,11 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
   }
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
-      <FormPageShell
-        title={t('steelGoodReceiptAcceptance.receipt.title')}
-        description={t('steelGoodReceiptAcceptance.receipt.description')}
-      >
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
+      title={t('steelGoodReceiptAcceptance.receipt.title')}
+      description={t('steelGoodReceiptAcceptance.receipt.description')}
+    >
         <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
           <Card className="border-white/10 bg-white/5">
             <CardHeader className="space-y-4">
@@ -161,7 +160,6 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
             </Card>
           </div>
         </div>
-      </FormPageShell>
-    </div>
+    </OpsFormPageShell>
   );
 }

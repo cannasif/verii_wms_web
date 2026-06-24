@@ -2,7 +2,8 @@
   "title": "Bilginoglu Entitlement",
   "breadcrumb": {
     "operations": "Operations",
-    "serviceOperations": "Service Operations"
+    "serviceOperations": "Service Operations",
+    "module": "HAKEDIS"
   },
   "views": {
     "open": {

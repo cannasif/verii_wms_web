@@ -3,8 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { FormPageShell } from '@/components/shared';
-import { Badge } from '@/components/ui/badge';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { ocrGoodsReceiptMatchApi } from '../api/ocr-goods-receipt-match.api';
 import type {
@@ -142,14 +141,15 @@ export function OcrGoodsReceiptMatchPage(): ReactElement {
   );
 
   return (
-    <div className="crm-page space-y-6">
-      <Badge variant="secondary">{t('ocrGoodsReceiptMatch.badge')}</Badge>
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('ocrGoodsReceiptMatch.breadcrumb.module')} />}
+      title={t('ocrGoodsReceiptMatch.title')}
+      description={t('ocrGoodsReceiptMatch.description')}
+    >
+      <div className="space-y-6">
+        <OcrGoodsReceiptMatchGuidanceCard />
 
-      <FormPageShell title={t('ocrGoodsReceiptMatch.title')} description={t('ocrGoodsReceiptMatch.description')}>
-        <div className="space-y-6">
-          <OcrGoodsReceiptMatchGuidanceCard />
-
-          <OcrGoodsReceiptMatchFormSection
+        <OcrGoodsReceiptMatchFormSection
             formState={formState}
             onFormStateChange={(updater) => setFormState(updater)}
             customerDialogOpen={customerDialogOpen}
@@ -165,9 +165,8 @@ export function OcrGoodsReceiptMatchPage(): ReactElement {
             onReset={handleReset}
             onSelectCustomerLabel={setSelectedCustomerLabel}
             onSelectStockLabel={setSelectedStockLabel}
-          />
-        </div>
-      </FormPageShell>
-    </div>
+        />
+      </div>
+    </OpsFormPageShell>
   );
 }

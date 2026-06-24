@@ -11,7 +11,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { OpsFieldShell, OpsFormMessage, PagedLookupDialog } from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
+import { cn } from '@/lib/utils';
 import { documentSeriesManagementApi } from '../api/document-series-management.api';
 import type {
   WmsDocumentSeriesDefinitionPagedRowDto,
@@ -29,6 +31,7 @@ interface OperationDocumentSeriesSelectorProps {
   warehouseId?: number;
   customerId?: number;
   disabled?: boolean;
+  variant?: 'default' | 'ops';
 }
 
 function buildDefinitionPreview(definition: WmsDocumentSeriesDefinitionPagedRowDto): string {
@@ -65,9 +68,13 @@ export function OperationDocumentSeriesSelector({
   warehouseId,
   customerId,
   disabled = false,
+  variant = 'default',
 }: OperationDocumentSeriesSelectorProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<OperationDocumentSeriesFormValues>();
+  const isOps = variant === 'ops';
+  const formItemClass = isOps ? 'wms-ops-form-item' : undefined;
+  const fieldMessage = isOps ? <OpsFormMessage /> : <FormMessage />;
   const [lookupOpen, setLookupOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [lastAutoDocumentNo, setLastAutoDocumentNo] = useState('');
@@ -139,68 +146,85 @@ export function OperationDocumentSeriesSelector({
       ? t('documentSeries.messages.resolveFallback')
       : t('documentSeries.messages.resolvePending');
 
+  const lookupDialog = (
+    <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
+      variant={isOps ? 'ops' : 'default'}
+      open={lookupOpen}
+      onOpenChange={setLookupOpen}
+      title={t('documentSeries.fields.selection')}
+      description={isOps ? undefined : t('documentSeries.messages.selectorHelp')}
+      value={selectedLabel}
+      placeholder={t('documentSeries.placeholders.definition')}
+      searchPlaceholder={t('documentSeries.searchPlaceholder')}
+      emptyText={t('documentSeries.definitions.empty')}
+      disabled={disabled}
+      triggerClassName={isOps ? OPS_FIELD_CLASS : undefined}
+      queryKey={['document-series', 'definitions', operationType]}
+      fetchPage={async ({ search }) => {
+        const response = await documentSeriesManagementApi.getDefinitionsPaged({
+          pageNumber: 1,
+          pageSize: 200,
+          search,
+        });
+
+        const filtered = (response.data ?? []).filter(
+          (item) => item.operationType === operationType && item.isActive,
+        );
+
+        return {
+          ...response,
+          data: filtered,
+          totalCount: filtered.length,
+          pageNumber: 1,
+          totalPages: 1,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        };
+      }}
+      getKey={(item) => item.id.toString()}
+      getLabel={buildDefinitionLabel}
+      onSelect={(definition) => {
+        const preview = buildDefinitionPreview(definition);
+        setManualSelection(true);
+        setSelectedLabel(buildDefinitionLabel(definition));
+        form.setValue('documentSeriesDefinitionId', definition.id, { shouldDirty: true, shouldValidate: true });
+        form.setValue('requiresEDispatch', definition.isEDispatchSeries, { shouldDirty: true });
+        form.setValue('documentNo', preview, { shouldDirty: true, shouldValidate: true });
+        setLastAutoDocumentNo(preview);
+      }}
+    />
+  );
+
   return (
     <FormField
       control={form.control}
       name="documentSeriesDefinitionId"
       render={() => (
-        <FormItem>
+        <FormItem className={formItemClass}>
           <div className="flex items-center gap-2">
             <FormLabel>{t('documentSeries.fields.selection')}</FormLabel>
             {resolutionMeta ? (
-              <Badge variant="outline" className="text-[11px]">
+              <Badge
+                variant="outline"
+                className={cn('text-[11px]', isOps && 'border-cyan-500/30 bg-cyan-500/10 text-cyan-200')}
+              >
                 {buildMatchLabel(t, resolutionMeta.matchedBy)}
               </Badge>
             ) : null}
           </div>
           <FormControl>
-            <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
-              open={lookupOpen}
-              onOpenChange={setLookupOpen}
-              title={t('documentSeries.fields.selection')}
-              description={t('documentSeries.messages.selectorHelp')}
-              value={selectedLabel}
-              placeholder={t('documentSeries.placeholders.definition')}
-              searchPlaceholder={t('documentSeries.searchPlaceholder')}
-              emptyText={t('documentSeries.definitions.empty')}
-              disabled={disabled}
-              queryKey={['document-series', 'definitions', operationType]}
-              fetchPage={async ({ search }) => {
-                const response = await documentSeriesManagementApi.getDefinitionsPaged({
-                  pageNumber: 1,
-                  pageSize: 200,
-                  search,
-                });
-
-                const filtered = (response.data ?? []).filter(
-                  (item) => item.operationType === operationType && item.isActive,
-                );
-
-                return {
-                  ...response,
-                  data: filtered,
-                  totalCount: filtered.length,
-                  pageNumber: 1,
-                  totalPages: 1,
-                  hasPreviousPage: false,
-                  hasNextPage: false,
-                };
-              }}
-              getKey={(item) => item.id.toString()}
-              getLabel={buildDefinitionLabel}
-              onSelect={(definition) => {
-                const preview = buildDefinitionPreview(definition);
-                setManualSelection(true);
-                setSelectedLabel(buildDefinitionLabel(definition));
-                form.setValue('documentSeriesDefinitionId', definition.id, { shouldDirty: true, shouldValidate: true });
-                form.setValue('requiresEDispatch', definition.isEDispatchSeries, { shouldDirty: true });
-                form.setValue('documentNo', preview, { shouldDirty: true, shouldValidate: true });
-                setLastAutoDocumentNo(preview);
-              }}
-            />
+            {isOps ? (
+              <OpsFieldShell className={lookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+                {lookupDialog}
+              </OpsFieldShell>
+            ) : (
+              lookupDialog
+            )}
           </FormControl>
-          <FormDescription>{resolutionText}</FormDescription>
-          <FormMessage />
+          <FormDescription className={isOps ? 'wms-ops-notes-hint' : undefined}>
+            {resolutionText}
+          </FormDescription>
+          {fieldMessage}
         </FormItem>
       )}
     />

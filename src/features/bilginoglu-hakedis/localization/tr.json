@@ -2,7 +2,8 @@
   "title": "Bilginoglu Hakedis",
   "breadcrumb": {
     "operations": "Operasyonlar",
-    "serviceOperations": "Servis Operasyonlari"
+    "serviceOperations": "Servis Operasyonlari",
+    "module": "HAKEDIS"
   },
   "views": {
     "open": {

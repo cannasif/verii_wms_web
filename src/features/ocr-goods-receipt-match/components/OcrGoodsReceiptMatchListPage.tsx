@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -142,15 +141,18 @@ export function OcrGoodsReceiptMatchListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <Badge variant="secondary">{t('ocrGoodsReceiptMatch.badge')}</Badge>
-        <Button type="button" onClick={() => navigate('/ocr-goods-receipt-match')}>
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('ocrGoodsReceiptMatch.breadcrumb.module')} />}
+      title={t('ocrGoodsReceiptMatch.list.pageTitle')}
+      description={t('ocrGoodsReceiptMatch.description')}
+      actions={
+        <Button type="button" className="wms-ops-primary-btn" onClick={() => navigate('/ocr-goods-receipt-match')}>
           {t('common.add')}
         </Button>
-      </div>
-
+      }
+    >
       <PagedDataGrid<OcrGoodsReceiptCustomerStockMatchPagedRowDto, ColumnKey>
+        variant="ops"
         pageKey={pageKey}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -192,11 +194,20 @@ export function OcrGoodsReceiptMatchListPage(): ReactElement {
         emptyText={t('ocrGoodsReceiptMatch.list.empty')}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
         actionsHeaderLabel={t('common.actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
         renderActionsCell={(row) => (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/ocr-goods-receipt-match?id=${row.id}`)}>
-              <Pencil className="size-4" />
-              <span className="ml-2">{t('common.update')}</span>
+          <div className="wms-ops-row-actions">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn"
+              aria-label={t('common.update')}
+              title={t('common.update')}
+              onClick={() => navigate(`/ocr-goods-receipt-match?id=${row.id}`)}
+            >
+              <Pencil className="size-3" aria-hidden />
             </Button>
           </div>
         )}
@@ -244,9 +255,10 @@ export function OcrGoodsReceiptMatchListPage(): ReactElement {
             },
             isLoading: query.isLoading,
             label: t('common.refresh'),
-          }
+          },
+          variant: 'ops',
         }}
       />
-    </div>
+    </OpsListPageShell>
   );
 }

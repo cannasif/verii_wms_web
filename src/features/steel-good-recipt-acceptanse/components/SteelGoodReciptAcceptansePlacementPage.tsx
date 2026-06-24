@@ -3,8 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpReference.types';
 import { shelfManagementApi } from '@/features/shelf-management/api/shelf-management.api';
@@ -157,12 +156,11 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
   }
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
-      <FormPageShell
-        title={t('steelGoodReceiptAcceptance.placement.title')}
-        description={t('steelGoodReceiptAcceptance.placement.description')}
-      >
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
+      title={t('steelGoodReceiptAcceptance.placement.title')}
+      description={t('steelGoodReceiptAcceptance.placement.description')}
+    >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <PlacementCandidatesCard
             t={t}
@@ -224,7 +222,6 @@ export function SteelGoodReciptAcceptansePlacementPage(): ReactElement {
             />
           </div>
         </div>
-      </FormPageShell>
-    </div>
+    </OpsFormPageShell>
   );
 }

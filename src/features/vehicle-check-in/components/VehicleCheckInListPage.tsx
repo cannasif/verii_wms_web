@@ -3,10 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -162,10 +161,13 @@ export function VehicleCheckInListPage(): ReactElement {
   };
 
   return (
-    <div className="crm-page space-y-6">
-      <Badge variant="secondary">{t('vehicleCheckIn.badge')}</Badge>
-
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('vehicleCheckIn.breadcrumb.module')} />}
+      title={t('vehicleCheckIn.list.title')}
+      description={t('vehicleCheckIn.list.description')}
+    >
       <PagedDataGrid<VehicleCheckInPagedRowDto, VehicleCheckInColumnKey>
+        variant="ops"
         pageKey={pageKey}
         columns={columns}
         visibleColumnKeys={visibleColumnKeys}
@@ -205,11 +207,20 @@ export function VehicleCheckInListPage(): ReactElement {
         emptyText={t('vehicleCheckIn.list.empty')}
         showActionsColumn={orderedVisibleColumns.includes('actions')}
         actionsHeaderLabel={t('common.actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
         renderActionsCell={(row) => (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => navigate(`/vehicle-check-in?id=${row.id}`)}>
-              <Eye className="size-4" />
-              <span className="ml-2">{t('vehicleCheckIn.list.actions.open')}</span>
+          <div className="wms-ops-row-actions">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn"
+              aria-label={t('vehicleCheckIn.list.actions.open')}
+              title={t('vehicleCheckIn.list.actions.open')}
+              onClick={() => navigate(`/vehicle-check-in?id=${row.id}`)}
+            >
+              <Eye className="size-3" aria-hidden />
             </Button>
           </div>
         )}
@@ -251,7 +262,7 @@ export function VehicleCheckInListPage(): ReactElement {
             onSearchChange: pagedGrid.searchConfig.onSearchChange,
             placeholder: t('vehicleCheckIn.list.searchPh'),
           },
-          leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+          leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />,
           refresh: {
             onRefresh: () => {
               void query.refetch();
@@ -259,8 +270,9 @@ export function VehicleCheckInListPage(): ReactElement {
             isLoading: query.isLoading,
             label: t('common.refresh'),
           },
+          variant: 'ops',
         }}
       />
-    </div>
+    </OpsListPageShell>
   );
 }

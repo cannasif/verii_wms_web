@@ -2,9 +2,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 import type {
@@ -130,12 +129,11 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
   }
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
-      <FormPageShell
-        title={t('steelGoodReceiptAcceptance.inspection.title')}
-        description={t('steelGoodReceiptAcceptance.inspection.description')}
-      >
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
+      title={t('steelGoodReceiptAcceptance.inspection.title')}
+      description={t('steelGoodReceiptAcceptance.inspection.description')}
+    >
         <div className="space-y-6">
           <InspectionGuideCard />
 
@@ -211,7 +209,6 @@ export function SteelGoodReciptAcceptanseInspectionPage(): ReactElement {
             </div>
           ) : null}
         </div>
-      </FormPageShell>
-    </div>
+    </OpsFormPageShell>
   );
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { FormPageShell } from '@/components/shared';
+import { OpsFormPageShell, OpsServiceEyebrow } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -165,12 +165,11 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <Badge variant="secondary">{t('steelGoodReceiptAcceptance.badge')}</Badge>
-      <FormPageShell
-        title={t('steelGoodReceiptAcceptance.import.title')}
-        description={t('steelGoodReceiptAcceptance.import.description')}
-      >
+    <OpsFormPageShell
+      eyebrow={<OpsServiceEyebrow module={t('steelGoodReceiptAcceptance.breadcrumb.module')} />}
+      title={t('steelGoodReceiptAcceptance.import.title')}
+      description={t('steelGoodReceiptAcceptance.import.description')}
+    >
         <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -287,7 +286,6 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
             </div>
           ) : null}
         </div>
-      </FormPageShell>
-    </div>
+    </OpsFormPageShell>
   );
 }

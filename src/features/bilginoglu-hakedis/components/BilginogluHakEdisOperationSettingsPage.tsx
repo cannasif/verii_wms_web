@@ -1,9 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Edit3, Loader2, Plus, Route, Trash2 } from 'lucide-react';
+import { Edit3, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
+import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn, PagedLookupDialog } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -172,26 +171,17 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb items={[{ label: t('breadcrumb.operations') }, { label: t('breadcrumb.serviceOperations') }, { label: t('operationSettings.title') }]} />
-
-      <section className="overflow-hidden rounded-[2rem] border border-cyan-200 bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-900 p-6 text-white shadow-xl">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-100">
-              <Route className="size-4" />
-              {t('operationSettings.hero.eyebrow')}
-            </div>
-            <h1 className="text-3xl font-black tracking-tight md:text-4xl">{t('operationSettings.title')}</h1>
-            <p className="text-sm leading-6 text-slate-200 md:text-base">{t('operationSettings.hero.description')}</p>
-          </div>
-          <Button type="button" variant="secondary" className="rounded-2xl" onClick={openCreateDialog} disabled={!permission.canCreate}>
-            <Plus className="mr-2 size-4" />
-            {t('operationSettings.actions.new')}
-          </Button>
-        </div>
-      </section>
-
+    <OpsListPageShell
+      eyebrow={<OpsServiceEyebrow module={t('breadcrumb.module')} />}
+      title={t('operationSettings.title')}
+      description={t('operationSettings.hero.description')}
+      actions={
+        <Button type="button" variant="secondary" className="rounded-2xl" onClick={openCreateDialog} disabled={!permission.canCreate}>
+          <Plus className="mr-2 size-4" />
+          {t('operationSettings.actions.new')}
+        </Button>
+      }
+    >
       <Dialog open={dialogOpen} onOpenChange={(open) => {
         setDialogOpen(open);
         if (!open) resetForm();
@@ -394,7 +384,7 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
           />
         </CardContent>
       </Card>
-    </div>
+    </OpsListPageShell>
   );
 }
 
