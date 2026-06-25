@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useCreatePHeader } from '../hooks/useCreatePHeader';
 import { useUpdatePHeader } from '../hooks/useUpdatePHeader';
+import { useDeletePHeader } from '../hooks/useDeletePHeader';
 import { usePHeader } from '../hooks/usePHeader';
 import { usePPackagesByHeader } from '../hooks/usePPackagesByHeader';
 import { usePLinesByHeader } from '../hooks/usePLinesByHeader';
@@ -47,6 +48,7 @@ export function PackageCreatePage(): ReactElement {
 
   const createHeaderMutation = useCreatePHeader();
   const updateHeaderMutation = useUpdatePHeader();
+  const deleteHeaderMutation = useDeletePHeader();
   const { data: headerData } = usePHeader(headerId);
   const { data: packagesData } = usePPackagesByHeader(headerId);
   const { data: linesData } = usePLinesByHeader(headerId);
@@ -202,12 +204,21 @@ export function PackageCreatePage(): ReactElement {
     setCurrentStep(3);
   };
 
-  const handleConfirmCancel = (): void => {
+  const handleConfirmCancel = async (): Promise<void> => {
     if (currentStep === 1) {
       navigate('/package/list');
     } else {
       if (headerId) {
-        // TODO: Delete header and all related data
+        try {
+          await deleteHeaderMutation.mutateAsync(headerId);
+        } catch (error) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : t('common.error')
+          );
+          return;
+        }
       }
       navigate('/package/list');
     }
@@ -356,7 +367,7 @@ export function PackageCreatePage(): ReactElement {
             <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleConfirmCancel}>
+            <Button variant="destructive" onClick={handleConfirmCancel} disabled={deleteHeaderMutation.isPending}>
               {t('common.confirm')}
             </Button>
           </DialogFooter>
