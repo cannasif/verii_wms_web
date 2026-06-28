@@ -2739,6 +2739,8 @@
     "settingsProfileHint": "Müşteri bilgilerini güncelleyin",
     "settingsLanguage": "Dil Seçeneği",
     "settingsAppearance": "Görünüm Modu",
+    "settingsBrandTheme": "Kurumsal Tema",
+    "settingsBrandThemeHint": "WMS genel görünümünü operasyon kimliğine göre değiştirin",
     "organizationBadge": "V3RII.CO",
     "profileSettings": "Profil Ayarları",
     "branchLabel": "Şube",

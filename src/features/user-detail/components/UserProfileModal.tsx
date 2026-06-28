@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ShieldCheck, X } from 'lucide-react';
+import { Check, ChevronRight, Palette, ShieldCheck, X } from 'lucide-react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Building03Icon,
@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/components/theme-provider';
+import { brandThemes } from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { getFullProfileImageUrl } from '../utils/profile-image';
@@ -71,7 +72,7 @@ export function UserProfileModal({
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme, brandTheme, setTheme, setBrandTheme } = useTheme();
   const { user, logout } = useAuthStore();
   const { data: userDetail } = useUserDetail();
 
@@ -143,7 +144,7 @@ export function UserProfileModal({
                   {imageUrl ? (
                     <img src={imageUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
+                    <div className="flex h-full w-full items-center justify-center bg-[image:var(--wms-brand-gradient)]">
                       <span className="text-3xl font-bold tracking-tight text-white md:text-6xl">{displayInitial}</span>
                     </div>
                   )}
@@ -159,7 +160,7 @@ export function UserProfileModal({
             <p className="max-w-full px-1 text-lg font-bold tracking-tight text-slate-900 md:text-2xl lg:text-3xl dark:text-white">
               {displayName}
             </p>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-linear-to-r from-sky-500 to-orange-500 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_0_12px_rgba(14,165,233,0.22)]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[image:var(--wms-brand-gradient)] px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_0_12px_var(--wms-brand-shadow)]">
               <HugeiconsIcon icon={Building03Icon} size={13} strokeWidth={2} aria-hidden />
               {t('profile.organizationBadge')}
             </span>
@@ -170,7 +171,7 @@ export function UserProfileModal({
               icon={Mail02Icon}
               size={20}
               strokeWidth={1.75}
-              className="shrink-0 text-cyan-600 dark:text-cyan-400"
+              className="shrink-0 text-[var(--wms-brand-primary)]"
               aria-hidden
             />
             <span className="min-w-0 truncate text-xs font-semibold text-slate-600 opacity-70 md:text-sm dark:text-slate-300">
@@ -182,7 +183,7 @@ export function UserProfileModal({
         <div className="flex h-full min-h-0 min-w-0 flex-col bg-slate-50/80 md:overflow-hidden dark:bg-[#07070c]">
           <header className="flex shrink-0 items-center gap-3 border-b border-dashed border-slate-200/70 px-6 pb-4 pt-14 sm:px-8 md:px-10 md:pt-8 dark:border-white/[0.08]">
             <span
-              className="h-8 w-0.5 shrink-0 rounded-full bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.4)]"
+              className="h-8 w-0.5 shrink-0 rounded-full bg-[var(--wms-brand-primary)] shadow-[0_0_10px_var(--wms-brand-shadow)]"
               aria-hidden
             />
             <h2 className="text-xl font-bold uppercase tracking-[0.12em] text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">
@@ -294,6 +295,73 @@ export function UserProfileModal({
                 )}
               />
             </div>
+
+            <div
+              className={cn(
+                'rounded-[1.5rem] border px-4 py-4 sm:px-5 md:rounded-[2rem]',
+                'border-slate-200/70 bg-white/90 dark:border-white/[0.06] dark:bg-white/[0.03]',
+              )}
+            >
+              <div className="mb-3 flex items-start gap-3 sm:gap-4">
+                <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]')}>
+                  <Palette className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
+                    {t('profile.settingsBrandTheme')}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-snug text-slate-500 sm:text-sm dark:text-slate-400">
+                    {t('profile.settingsBrandThemeHint')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {brandThemes.map((item) => {
+                  const isSelected = item.id === brandTheme;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setBrandTheme(item.id)}
+                      aria-pressed={isSelected}
+                      className={cn(
+                        'group flex min-h-16 items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wms-brand-ring)]',
+                        isSelected
+                          ? 'border-[var(--wms-brand-primary)] bg-[var(--wms-brand-soft)] shadow-[0_12px_30px_-22px_var(--wms-brand-shadow)]'
+                          : 'border-slate-200 bg-white/70 hover:border-[var(--wms-brand-ring)] hover:bg-white dark:border-white/10 dark:bg-black/10 dark:hover:bg-white/5',
+                      )}
+                    >
+                      <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/50 shadow-sm dark:border-white/10">
+                        {item.swatches.map((color) => (
+                          <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
+                        ))}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs font-bold text-slate-900 sm:text-sm dark:text-white">
+                          {item.label}
+                        </span>
+                        <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--wms-app-text-muted)] sm:text-[11px]">
+                          {item.description}
+                        </span>
+                      </span>
+                      <span
+                        className={cn(
+                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all',
+                          isSelected
+                            ? 'border-[var(--wms-brand-primary)] bg-[var(--wms-brand-primary)] text-[var(--wms-brand-on-primary)]'
+                            : 'border-slate-200 text-transparent dark:border-white/10',
+                        )}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="shrink-0 border-t border-dashed border-slate-200/70 bg-white/80 px-6 py-4 dark:border-white/[0.06] dark:bg-[#07070c] sm:px-8 sm:py-5 md:px-10">
@@ -301,12 +369,11 @@ export function UserProfileModal({
               type="button"
               onClick={handleLogout}
               className={cn(
-                'flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-[1.25rem] bg-linear-to-r from-sky-600 via-sky-500 to-orange-500 px-6 md:h-14',
+                'flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-[1.25rem] bg-[image:var(--wms-brand-gradient)] px-6 md:h-14',
                 'text-sm font-bold uppercase tracking-[0.08em] text-white transition-all duration-300 sm:text-base',
-                'shadow-[0_8px_24px_rgba(14,165,233,0.22)] dark:shadow-[0_8px_28px_rgba(14,165,233,0.28)]',
-                'hover:scale-[1.01] hover:brightness-[1.05] hover:shadow-[0_10px_32px_rgba(14,165,233,0.38),0_0_28px_rgba(251,146,60,0.22),0_0_48px_rgba(34,211,238,0.12)]',
+                'shadow-[0_8px_24px_var(--wms-brand-shadow)]',
+                'hover:scale-[1.01] hover:brightness-[1.05] hover:shadow-[0_10px_32px_var(--wms-brand-shadow)]',
                 'active:scale-[0.98]',
-                'dark:hover:shadow-[0_10px_36px_rgba(14,165,233,0.42),0_0_32px_rgba(251,146,60,0.26),0_0_52px_rgba(34,211,238,0.14)]',
               )}
             >
               <HugeiconsIcon icon={Logout02Icon} size={20} strokeWidth={1.75} className="shrink-0 text-white" aria-hidden />

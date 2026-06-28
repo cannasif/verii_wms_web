@@ -87,6 +87,37 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --wms-brand-primary: #00b8d4;
+  --wms-brand-secondary: #0ea5e9;
+  --wms-brand-accent: #ff8f5c;
+  --wms-brand-on-primary: #ffffff;
+  --wms-brand-muted: #ecfeff;
+  --wms-brand-soft: rgb(14 165 233 / 10%);
+  --wms-brand-ring: rgb(14 165 233 / 24%);
+  --wms-brand-shadow: rgb(14 165 233 / 22%);
+  --wms-brand-gradient: linear-gradient(90deg, #00b8d4 0%, #0ea5e9 52%, #ff8f5c 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(34 211 238 / 18%) 0%, rgb(14 165 233 / 12%) 52%, rgb(255 143 92 / 14%) 100%);
+  --wms-app-background: #f8fafc;
+  --wms-app-panel: rgb(255 255 255 / 92%);
+  --wms-app-panel-muted: rgb(248 250 252 / 88%);
+  --wms-app-panel-strong: #ffffff;
+  --wms-app-border: rgb(203 213 225 / 70%);
+  --wms-app-text-muted: #64748b;
+  --wms-app-aura-start: rgb(34 211 238 / 24%);
+  --wms-app-aura-end: rgb(255 143 92 / 22%);
+  --primary: var(--wms-brand-primary);
+  --primary-foreground: var(--wms-brand-on-primary);
+  --accent: var(--wms-brand-soft);
+  --accent-foreground: var(--wms-brand-primary);
+  --ring: var(--wms-brand-primary);
+  --sidebar-primary: var(--wms-brand-primary);
+  --sidebar-primary-foreground: var(--wms-brand-on-primary);
+  --sidebar-accent: var(--wms-brand-soft);
+  --sidebar-accent-foreground: var(--wms-brand-primary);
+  --sidebar-ring: var(--wms-brand-primary);
+  --chart-1: var(--wms-brand-primary);
+  --chart-2: var(--wms-brand-secondary);
+  --chart-3: var(--wms-brand-accent);
 }
 
 .dark {
@@ -122,6 +153,200 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --wms-brand-primary: #22d3ee;
+  --wms-brand-secondary: #38bdf8;
+  --wms-brand-accent: #fb923c;
+  --wms-brand-on-primary: #061018;
+  --wms-brand-muted: #08111e;
+  --wms-brand-soft: rgb(34 211 238 / 12%);
+  --wms-brand-ring: rgb(34 211 238 / 28%);
+  --wms-brand-shadow: rgb(34 211 238 / 18%);
+  --wms-brand-gradient: linear-gradient(90deg, #22d3ee 0%, #38bdf8 52%, #fb923c 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(34 211 238 / 10%) 0%, rgb(56 189 248 / 8%) 52%, rgb(251 146 60 / 9%) 100%);
+  --wms-app-background: #090114;
+  --wms-app-panel: rgb(9 9 15 / 92%);
+  --wms-app-panel-muted: rgb(7 7 12 / 82%);
+  --wms-app-panel-strong: #0c0c14;
+  --wms-app-border: rgb(255 255 255 / 8%);
+  --wms-app-text-muted: #94a3b8;
+  --wms-app-aura-start: rgb(34 211 238 / 6%);
+  --wms-app-aura-end: rgb(251 146 60 / 6%);
+  --primary: var(--wms-brand-primary);
+  --primary-foreground: var(--wms-brand-on-primary);
+  --accent: var(--wms-brand-soft);
+  --accent-foreground: var(--wms-brand-primary);
+  --ring: var(--wms-brand-primary);
+  --sidebar-primary: var(--wms-brand-primary);
+  --sidebar-primary-foreground: var(--wms-brand-on-primary);
+  --sidebar-accent: var(--wms-brand-soft);
+  --sidebar-accent-foreground: var(--wms-brand-primary);
+  --sidebar-ring: var(--wms-brand-primary);
+  --chart-1: var(--wms-brand-primary);
+  --chart-2: var(--wms-brand-secondary);
+  --chart-3: var(--wms-brand-accent);
+}
+
+html.theme-warehouse-blue {
+  --wms-brand-primary: #2563eb;
+  --wms-brand-secondary: #1e40af;
+  --wms-brand-accent: #06b6d4;
+  --wms-brand-muted: #eff6ff;
+  --wms-brand-soft: rgb(37 99 235 / 11%);
+  --wms-brand-ring: rgb(37 99 235 / 24%);
+  --wms-brand-shadow: rgb(37 99 235 / 22%);
+  --wms-brand-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 52%, #06b6d4 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(30 64 175 / 16%) 0%, rgb(37 99 235 / 12%) 52%, rgb(6 182 212 / 12%) 100%);
+}
+
+html.theme-industrial-steel {
+  --wms-brand-primary: #475569;
+  --wms-brand-secondary: #0f172a;
+  --wms-brand-accent: #38bdf8;
+  --wms-brand-muted: #f1f5f9;
+  --wms-brand-soft: rgb(71 85 105 / 13%);
+  --wms-brand-ring: rgb(56 189 248 / 25%);
+  --wms-brand-shadow: rgb(15 23 42 / 24%);
+  --wms-brand-gradient: linear-gradient(90deg, #0f172a 0%, #475569 56%, #38bdf8 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(15 23 42 / 16%) 0%, rgb(71 85 105 / 13%) 56%, rgb(56 189 248 / 12%) 100%);
+}
+
+html.theme-safety-green {
+  --wms-brand-primary: #059669;
+  --wms-brand-secondary: #047857;
+  --wms-brand-accent: #2dd4bf;
+  --wms-brand-muted: #ecfdf5;
+  --wms-brand-soft: rgb(16 185 129 / 12%);
+  --wms-brand-ring: rgb(16 185 129 / 25%);
+  --wms-brand-shadow: rgb(16 185 129 / 22%);
+  --wms-brand-gradient: linear-gradient(90deg, #065f46 0%, #10b981 55%, #2dd4bf 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(6 95 70 / 16%) 0%, rgb(16 185 129 / 12%) 55%, rgb(45 212 191 / 12%) 100%);
+}
+
+html.theme-forklift-amber {
+  --wms-brand-primary: #d97706;
+  --wms-brand-secondary: #92400e;
+  --wms-brand-accent: #f97316;
+  --wms-brand-muted: #fffbeb;
+  --wms-brand-soft: rgb(245 158 11 / 13%);
+  --wms-brand-ring: rgb(245 158 11 / 28%);
+  --wms-brand-shadow: rgb(217 119 6 / 24%);
+  --wms-brand-gradient: linear-gradient(90deg, #92400e 0%, #f59e0b 56%, #f97316 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(146 64 14 / 15%) 0%, rgb(245 158 11 / 12%) 56%, rgb(249 115 22 / 12%) 100%);
+}
+
+html.theme-graphite {
+  --wms-brand-primary: #334155;
+  --wms-brand-secondary: #64748b;
+  --wms-brand-accent: #94a3b8;
+  --wms-brand-muted: #f1f5f9;
+  --wms-brand-soft: rgb(71 85 105 / 12%);
+  --wms-brand-ring: rgb(71 85 105 / 24%);
+  --wms-brand-shadow: rgb(15 23 42 / 22%);
+  --wms-brand-gradient: linear-gradient(90deg, #111827 0%, #475569 56%, #94a3b8 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(15 23 42 / 15%) 0%, rgb(71 85 105 / 12%) 56%, rgb(148 163 184 / 12%) 100%);
+}
+
+html.theme-executive {
+  --wms-brand-primary: #6d28d9;
+  --wms-brand-secondary: #4338ca;
+  --wms-brand-accent: #d97706;
+  --wms-brand-muted: #f5f3ff;
+  --wms-brand-soft: rgb(109 40 217 / 12%);
+  --wms-brand-ring: rgb(109 40 217 / 25%);
+  --wms-brand-shadow: rgb(109 40 217 / 24%);
+  --wms-brand-gradient: linear-gradient(90deg, #111827 0%, #6d28d9 58%, #f59e0b 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(17 24 39 / 18%) 0%, rgb(109 40 217 / 13%) 58%, rgb(245 158 11 / 13%) 100%);
+}
+
+html.theme-burgundy {
+  --wms-brand-primary: #b91c1c;
+  --wms-brand-secondary: #991b1b;
+  --wms-brand-accent: #f97316;
+  --wms-brand-muted: #fef2f2;
+  --wms-brand-soft: rgb(185 28 28 / 12%);
+  --wms-brand-ring: rgb(185 28 28 / 25%);
+  --wms-brand-shadow: rgb(153 27 27 / 24%);
+  --wms-brand-gradient: linear-gradient(90deg, #7f1d1d 0%, #b91c1c 58%, #f97316 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(127 29 29 / 16%) 0%, rgb(185 28 28 / 12%) 58%, rgb(249 115 22 / 12%) 100%);
+}
+
+html.theme-clean-light {
+  --wms-brand-primary: #2563eb;
+  --wms-brand-secondary: #14b8a6;
+  --wms-brand-accent: #0ea5e9;
+  --wms-brand-muted: #eff6ff;
+  --wms-brand-soft: rgb(37 99 235 / 9%);
+  --wms-brand-ring: rgb(37 99 235 / 22%);
+  --wms-brand-shadow: rgb(37 99 235 / 18%);
+  --wms-brand-gradient: linear-gradient(90deg, #2563eb 0%, #0ea5e9 52%, #14b8a6 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(248 250 252 / 92%) 0%, rgb(37 99 235 / 10%) 52%, rgb(20 184 166 / 10%) 100%);
+  --wms-app-background: #f8fafc;
+  --wms-app-panel: rgb(255 255 255 / 96%);
+  --wms-app-panel-muted: rgb(248 250 252 / 92%);
+  --wms-app-panel-strong: #ffffff;
+}
+
+html.theme-high-contrast {
+  --wms-brand-primary: #facc15;
+  --wms-brand-secondary: #ffffff;
+  --wms-brand-accent: #38bdf8;
+  --wms-brand-on-primary: #020617;
+  --wms-brand-muted: #020617;
+  --wms-brand-soft: rgb(250 204 21 / 18%);
+  --wms-brand-ring: rgb(250 204 21 / 52%);
+  --wms-brand-shadow: rgb(250 204 21 / 24%);
+  --wms-brand-gradient: linear-gradient(90deg, #020617 0%, #1e293b 52%, #facc15 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(2 6 23 / 24%) 0%, rgb(56 189 248 / 13%) 52%, rgb(250 204 21 / 18%) 100%);
+}
+
+html.theme-flat-navy {
+  --wms-brand-primary: #1e3a8a;
+  --wms-brand-secondary: #1e3a8a;
+  --wms-brand-accent: #1e3a8a;
+  --wms-brand-muted: #eff6ff;
+  --wms-brand-soft: rgb(30 58 138 / 10%);
+  --wms-brand-ring: rgb(30 58 138 / 24%);
+  --wms-brand-shadow: rgb(30 58 138 / 20%);
+  --wms-brand-gradient: linear-gradient(90deg, #1e3a8a 0%, #1e3a8a 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(30 58 138 / 10%) 0%, rgb(30 58 138 / 10%) 100%);
+}
+
+html.theme-flat-slate {
+  --wms-brand-primary: #334155;
+  --wms-brand-secondary: #334155;
+  --wms-brand-accent: #334155;
+  --wms-brand-muted: #f1f5f9;
+  --wms-brand-soft: rgb(51 65 85 / 10%);
+  --wms-brand-ring: rgb(51 65 85 / 24%);
+  --wms-brand-shadow: rgb(15 23 42 / 18%);
+  --wms-brand-gradient: linear-gradient(90deg, #334155 0%, #334155 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(51 65 85 / 9%) 0%, rgb(51 65 85 / 9%) 100%);
+}
+
+html.theme-flat-white {
+  --wms-brand-primary: #2563eb;
+  --wms-brand-secondary: #2563eb;
+  --wms-brand-accent: #2563eb;
+  --wms-brand-muted: #f8fafc;
+  --wms-brand-soft: rgb(37 99 235 / 8%);
+  --wms-brand-ring: rgb(37 99 235 / 22%);
+  --wms-brand-shadow: rgb(15 23 42 / 12%);
+  --wms-brand-gradient: linear-gradient(90deg, #2563eb 0%, #2563eb 100%);
+  --wms-brand-gradient-soft: linear-gradient(135deg, rgb(248 250 252 / 92%) 0%, rgb(248 250 252 / 92%) 100%);
+  --wms-app-background: #ffffff;
+  --wms-app-panel: rgb(255 255 255 / 98%);
+  --wms-app-panel-muted: rgb(248 250 252 / 95%);
+  --wms-app-panel-strong: #ffffff;
+  --wms-app-aura-start: rgb(37 99 235 / 8%);
+  --wms-app-aura-end: rgb(226 232 240 / 80%);
+}
+
+html.dark.theme-flat-white,
+html.dark.theme-clean-light {
+  --wms-app-background: #0f172a;
+  --wms-app-panel: rgb(15 23 42 / 92%);
+  --wms-app-panel-muted: rgb(15 23 42 / 84%);
+  --wms-app-panel-strong: #111827;
 }
 
 @layer base {
@@ -8320,4 +8545,3 @@ html:not(.dark) .wms-ops-erp-skin button[class*='bg-sky-'] {
 .wms-ops-production-page input[type='checkbox'] {
   accent-color: var(--wms-ops-accent);
 }
-

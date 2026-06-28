@@ -22,10 +22,10 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
   }, [location.key]);
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-[#f8f9fc] transition-colors duration-300 dark:bg-[#090114]">
+    <div className="relative flex h-screen flex-col overflow-hidden bg-[var(--wms-app-background)] transition-colors duration-300">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-[5%] -top-[1%] h-[720px] w-[720px] rounded-full bg-cyan-300/25 blur-[120px] dark:bg-cyan-600/5" />
-        <div className="absolute -bottom-[7%] -right-[7%] h-[620px] w-[620px] rounded-full bg-orange-300/25 blur-[100px] dark:bg-orange-600/5" />
+        <div className="absolute -left-[5%] -top-[1%] h-[720px] w-[720px] rounded-full bg-[var(--wms-app-aura-start)] blur-[120px]" />
+        <div className="absolute -bottom-[7%] -right-[7%] h-[620px] w-[620px] rounded-full bg-[var(--wms-app-aura-end)] blur-[100px]" />
       </div>
 
       <div className="relative z-10 flex h-full overflow-hidden">

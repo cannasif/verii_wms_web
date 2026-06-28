@@ -2006,7 +2006,20 @@
     "admin": "Administrateur"
   },
   "profile": {
-    "title": "Profil"
+    "title": "Profil",
+    "settingsProfileInfo": "Profile information",
+    "settingsProfileHint": "Update customer information",
+    "settingsLanguage": "Language option",
+    "settingsAppearance": "Appearance mode",
+    "settingsBrandTheme": "Corporate theme",
+    "settingsBrandThemeHint": "Adjust the WMS appearance for the operation identity",
+    "organizationBadge": "V3RII.CO",
+    "profileSettings": "Profile settings",
+    "branchLabel": "Branch",
+    "changePhoto": "Choose or change profile photo",
+    "settingsModalSubtitle": "Manage your profile information and security settings here.",
+    "tabPersonal": "Personal information",
+    "tabSecurity": "Security"
   },
   "language_choice": "Langue",
   "appearance": "Apparence",

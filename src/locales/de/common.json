@@ -2705,6 +2705,8 @@
     "settingsProfileHint": "Profilinformationen bearbeiten",
     "settingsLanguage": "Sprache",
     "settingsAppearance": "Erscheinungsbild",
+    "settingsBrandTheme": "Unternehmensthema",
+    "settingsBrandThemeHint": "Passen Sie das WMS-Erscheinungsbild an die Betriebsidentität an",
     "organizationBadge": "V3RII.CO",
     "profileSettings": "Profileinstellungen",
     "branchLabel": "Filiale",

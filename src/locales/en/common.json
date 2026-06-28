@@ -2739,6 +2739,8 @@
     "settingsProfileHint": "Update customer information",
     "settingsLanguage": "Language option",
     "settingsAppearance": "Appearance mode",
+    "settingsBrandTheme": "Corporate theme",
+    "settingsBrandThemeHint": "Adjust the WMS appearance for the operation identity",
     "organizationBadge": "V3RII.CO",
     "profileSettings": "Profile settings",
     "branchLabel": "Branch",
