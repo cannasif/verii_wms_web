@@ -157,7 +157,7 @@ export function SidebarNavItem({
             getLevelItemClassName(level, hasChildren),
             !isSectionHeader && sidebarItemHoverClassName,
             !isSectionHeader && (isParentActive ? sidebarActiveParentClassName : 'text-slate-600 dark:text-slate-300'),
-            isSectionHeader && (isParentActive ? 'text-cyan-700 dark:text-cyan-400' : ''),
+            isSectionHeader && (isParentActive ? 'text-[var(--wms-brand-primary)]' : ''),
             !isSidebarOpen && 'justify-center',
           )}
         >

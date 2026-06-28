@@ -72,10 +72,10 @@ const searchInputClassName = (isFocused: boolean): string =>
     'w-full rounded-2xl border py-2.5 pl-11 pr-20 text-sm font-medium outline-none transition-all duration-300',
     'border-slate-200 bg-slate-100/60 text-slate-900 placeholder:text-slate-500',
     isFocused
-      ? 'border-cyan-400/40 bg-white ring-4 ring-cyan-400/15 shadow-[0_4px_24px_rgba(34,211,238,0.08)]'
+      ? 'border-[var(--wms-brand-ring)] bg-white ring-4 ring-[var(--wms-brand-ring)] shadow-[0_4px_24px_var(--wms-brand-shadow)]'
       : '',
     'dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500',
-    isFocused ? 'dark:border-cyan-500/35 dark:bg-[#150a25] dark:ring-cyan-500/10' : '',
+    isFocused ? 'dark:border-[var(--wms-brand-ring)] dark:bg-[var(--wms-app-panel-strong)] dark:ring-[var(--wms-brand-ring)]' : '',
   );
 
 export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
@@ -182,7 +182,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/75 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-[#0c0516]/80 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-[var(--wms-app-border)] bg-[color-mix(in_srgb,var(--wms-app-panel)_82%,transparent)] px-3 pt-[max(0.5rem,env(safe-area-inset-top))] shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:px-6">
         <NavbarIconGradientDefs />
         <div className="flex h-20 items-center justify-between gap-3 sm:gap-4">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -199,7 +199,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
               {isSearchFocus && (
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute -inset-1 -z-10 rounded-[1.25rem] bg-gradient-to-r from-cyan-400/25 via-sky-400/20 to-teal-400/25 opacity-80 blur-2xl transition-opacity duration-300"
+                  className="pointer-events-none absolute -inset-1 -z-10 rounded-[1.25rem] bg-[image:var(--wms-brand-gradient-soft)] opacity-80 blur-2xl transition-opacity duration-300"
                 />
               )}
               <HugeiconsIcon
@@ -208,7 +208,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 strokeWidth={1.75}
                 className={cn(
                   'pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300',
-                  isSearchFocus ? 'text-cyan-500' : 'text-slate-400',
+                  isSearchFocus ? 'text-[var(--wms-brand-primary)]' : 'text-slate-400',
                 )}
               />
               <input
@@ -234,8 +234,8 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                     className={cn(
                       'rounded-xl p-1.5 transition-all duration-300',
                       isListening
-                        ? 'animate-pulse bg-cyan-500/10 text-cyan-500'
-                        : 'text-slate-400 hover:bg-slate-200/80 hover:text-cyan-500 dark:hover:bg-white/10',
+                        ? 'animate-pulse bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]'
+                        : 'text-slate-400 hover:bg-[var(--wms-brand-soft)] hover:text-[var(--wms-brand-primary)]',
                     )}
                     title={t('voiceSearch.start')}
                   >
@@ -263,7 +263,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 className={cn(
                   navbarIconButtonClassName,
                   'md:hidden',
-                  isListening && 'shadow-[0_0_12px_rgba(14,165,233,0.28),0_0_22px_rgba(251,146,60,0.16)]',
+                  isListening && 'shadow-[0_0_18px_var(--wms-brand-shadow)]',
                 )}
                 title={t('voiceSearch.start')}
                 aria-label={t('voiceSearch.start')}
@@ -295,15 +295,13 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 </div>
                 <div
                   className={cn(
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-b from-sky-300 via-sky-400 to-orange-400 p-[2px]',
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[image:var(--wms-brand-gradient)] p-[2px]',
                     'transition-[box-shadow,filter] duration-300 ease-out',
-                    'group-hover:shadow-[0_0_12px_rgba(14,165,233,0.28),0_0_26px_rgba(251,146,60,0.18),0_0_40px_rgba(56,189,248,0.1)]',
+                    'group-hover:shadow-[0_0_24px_var(--wms-brand-shadow)]',
                     'group-hover:brightness-[1.03]',
-                    'dark:from-sky-400 dark:via-sky-500 dark:to-orange-400',
-                    'dark:group-hover:shadow-[0_0_14px_rgba(56,189,248,0.22),0_0_28px_rgba(251,146,60,0.15),0_0_42px_rgba(34,211,238,0.08)]',
                   )}
                 >
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white text-xs font-bold text-orange-600 dark:bg-[#0c0516] dark:text-orange-400">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[var(--wms-app-panel-strong)] text-xs font-bold text-[var(--wms-brand-primary)]">
                     {displayInitial}
                   </div>
                 </div>

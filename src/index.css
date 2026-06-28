@@ -947,23 +947,23 @@ input:-webkit-autofill:active {
 .wms-ops-list-dropdown,
 .wms-ops-list-select-content,
 .wms-ops-barcode-print {
-  --wms-ops-accent: #00b8d4;
-  --wms-ops-accent-electric: #22d3ee;
-  --wms-ops-accent-glow: rgba(0, 184, 212, 0.62);
-  --wms-ops-accent-soft: rgba(34, 211, 238, 0.38);
-  --wms-ops-warm: #ff8f5c;
-  --wms-ops-warm-soft: rgba(255, 120, 70, 0.42);
-  --wms-ops-tab-active-bg: #ff9a6c;
+  --wms-ops-accent: var(--wms-brand-primary);
+  --wms-ops-accent-electric: var(--wms-brand-secondary);
+  --wms-ops-accent-glow: var(--wms-brand-shadow);
+  --wms-ops-accent-soft: var(--wms-brand-ring);
+  --wms-ops-warm: var(--wms-brand-accent);
+  --wms-ops-warm-soft: var(--wms-brand-shadow);
+  --wms-ops-tab-active-bg: var(--wms-brand-accent);
   --wms-ops-tab-active-fg: #2d1a12;
   --wms-ops-card-bg: rgba(241, 245, 249, 0.97);
   --wms-ops-card-border: rgba(100, 116, 139, 0.44);
   --wms-ops-field-bg: rgba(248, 250, 252, 0.98);
   --wms-ops-field-border: rgba(100, 116, 139, 0.4);
-  --wms-ops-field-idle-line: rgba(8, 145, 178, 0.34);
+  --wms-ops-field-idle-line: var(--wms-brand-ring);
   --wms-ops-toggle-bg: rgba(241, 245, 249, 0.95);
   --wms-ops-toggle-border: rgba(100, 116, 139, 0.38);
-  --wms-ops-toggle-accent: #ff9a6c;
-  --wms-ops-switch-glow: rgba(255, 120, 70, 0.2);
+  --wms-ops-toggle-accent: var(--wms-brand-accent);
+  --wms-ops-switch-glow: var(--wms-brand-shadow);
 }
 
 .dark .wms-ops-form,
@@ -972,22 +972,24 @@ input:-webkit-autofill:active {
 .dark .wms-ops-detail-dialog,
 .dark .wms-ops-lookup-popover,
 .dark .wms-ops-list-popover,
-.dark .wms-ops-list-dropdown {
-  --wms-ops-accent: #00f2ff;
-  --wms-ops-accent-electric: #5ffbff;
-  --wms-ops-accent-glow: rgba(0, 242, 255, 0.65);
-  --wms-ops-accent-soft: rgba(0, 242, 255, 0.32);
-  --wms-ops-tab-active-bg: #00e5ff;
+.dark .wms-ops-list-dropdown,
+.dark .wms-ops-list-select-content,
+.dark .wms-ops-barcode-print {
+  --wms-ops-accent: var(--wms-brand-primary);
+  --wms-ops-accent-electric: var(--wms-brand-secondary);
+  --wms-ops-accent-glow: var(--wms-brand-shadow);
+  --wms-ops-accent-soft: var(--wms-brand-ring);
+  --wms-ops-tab-active-bg: var(--wms-brand-primary);
   --wms-ops-tab-active-fg: #050a0f;
   --wms-ops-card-bg: rgba(10, 18, 26, 0.88);
   --wms-ops-card-border: rgba(255, 255, 255, 0.08);
   --wms-ops-field-bg: rgba(5, 10, 15, 0.82);
   --wms-ops-field-border: rgba(255, 255, 255, 0.12);
-  --wms-ops-field-idle-line: rgba(0, 242, 255, 0.2);
+  --wms-ops-field-idle-line: var(--wms-brand-ring);
   --wms-ops-toggle-bg: rgba(8, 14, 22, 0.85);
   --wms-ops-toggle-border: rgba(255, 255, 255, 0.08);
-  --wms-ops-toggle-accent: #00e5ff;
-  --wms-ops-switch-glow: rgba(0, 242, 255, 0.22);
+  --wms-ops-toggle-accent: var(--wms-brand-primary);
+  --wms-ops-switch-glow: var(--wms-brand-shadow);
 }
 
 .wms-ops-form .wms-ops-eyebrow {

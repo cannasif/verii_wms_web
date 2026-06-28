@@ -7,8 +7,7 @@ export const sidebarMotionClassName = cn(
 );
 
 export const sidebarShellClassName = cn(
-  'border-slate-200/70 bg-white/75 backdrop-blur-xl',
-  'dark:border-white/5 dark:bg-[#0c0516]/80',
+  'border-[var(--wms-app-border)] bg-[color-mix(in_srgb,var(--wms-app-panel)_82%,transparent)] backdrop-blur-xl',
   'shadow-[1px_0_0_rgba(15,23,42,0.04)] dark:shadow-[1px_0_0_rgba(255,255,255,0.04)]',
 );
 
@@ -19,27 +18,27 @@ export const sidebarLabelClassName = (isOpen: boolean): string =>
   );
 
 export const sidebarItemHoverClassName =
-  'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/5 dark:hover:text-white';
+  'hover:bg-[var(--wms-brand-soft)] hover:text-[var(--wms-brand-primary)]';
 
 export const sidebarActiveParentClassName =
-  'bg-cyan-50 text-cyan-900 dark:bg-cyan-500/10 dark:text-white';
+  'bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]';
 
 export const sidebarActiveLeafClassName =
-  'bg-cyan-50 font-semibold text-cyan-800 dark:bg-cyan-500/10 dark:text-white';
+  'bg-[var(--wms-brand-soft)] font-semibold text-[var(--wms-brand-primary)]';
 
 export const sidebarIconBoxClassName = (isActive: boolean, idleToneClass: string): string =>
   cn(
     'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border shadow-xs transition-all duration-200',
     'border-slate-200 dark:border-slate-800',
     isActive
-      ? 'border-cyan-200 bg-cyan-100 text-cyan-700 dark:border-cyan-500/30 dark:bg-cyan-500/20 dark:text-cyan-400'
+      ? 'border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)] shadow-[0_0_12px_var(--wms-brand-shadow)]'
       : idleToneClass,
   );
 
 export const sidebarLeafAccentClassName = cn(
   'relative ps-4',
   'before:absolute before:start-0 before:top-1/2 before:h-6 before:w-1 before:-translate-y-1/2 before:rounded-e-full',
-  'before:bg-linear-to-b before:from-cyan-500 before:to-sky-400 before:content-[""]',
+  'before:bg-[image:var(--wms-brand-gradient)] before:content-[""]',
 );
 
-export const sidebarActiveDotClassName = 'size-2 shrink-0 rounded-full bg-cyan-500 dark:bg-cyan-400';
+export const sidebarActiveDotClassName = 'size-2 shrink-0 rounded-full bg-[var(--wms-brand-primary)] shadow-[0_0_8px_var(--wms-brand-shadow)]';

@@ -129,7 +129,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
               type="button"
               onClick={() => useUIStore.getState().setSidebarOpen(false)}
               className={cn(
-                'absolute right-3 rounded-xl p-2 text-slate-500 transition-colors duration-300 hover:text-cyan-600 lg:hidden',
+                'absolute right-3 rounded-xl p-2 text-slate-500 transition-colors duration-300 hover:bg-[var(--wms-brand-soft)] hover:text-[var(--wms-brand-primary)] lg:hidden',
                 'rtl:right-auto rtl:left-3',
                 !isSidebarOpen && 'pointer-events-none opacity-0',
               )}
@@ -143,7 +143,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
         <TooltipProvider delayDuration={400}>
           <nav className={cn('flex flex-1 flex-col gap-0.5 p-3', !isSidebarOpen && 'lg:overflow-hidden')}>
             {isSidebarOpen && searchQuery.trim().length > 0 ? (
-              <div className="mb-1 rounded-xl border border-cyan-200/50 bg-cyan-50/80 px-3 py-2 text-xs text-cyan-800 dark:border-cyan-500/25 dark:bg-cyan-500/10 dark:text-cyan-300">
+              <div className="mb-1 rounded-xl border border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] px-3 py-2 text-xs text-[var(--wms-brand-primary)]">
                 {t('sidebar.filterLabel')}: {searchQuery}
               </div>
             ) : null}

@@ -49,8 +49,7 @@ const settingsRowBaseClass = cn(
 const settingsProfileRowClass = cn(
   settingsRowBaseClass,
   'group cursor-pointer text-left transition-[border-color,box-shadow,transform] duration-300',
-  'hover:border-cyan-400/35 hover:bg-cyan-50/70 hover:shadow-[0_0_20px_rgba(34,211,238,0.12)]',
-  'dark:hover:border-cyan-500/30 dark:hover:bg-cyan-500/[0.07] dark:hover:shadow-[0_0_24px_rgba(34,211,238,0.1)]',
+  'hover:border-[var(--wms-brand-ring)] hover:bg-[var(--wms-brand-soft)] hover:shadow-[0_0_20px_var(--wms-brand-shadow)]',
 );
 
 const settingsIconClass =
@@ -120,7 +119,7 @@ export function UserProfileModal({
             'hover:border-red-300/50 hover:bg-red-50/90 hover:text-red-600 active:scale-90',
             'dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400',
             'dark:hover:border-red-500/30 dark:hover:bg-red-950/30 dark:hover:text-red-400',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/25 focus-visible:ring-offset-0',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wms-brand-ring)] focus-visible:ring-offset-0',
           )}
         >
           <X className="h-5 w-5" strokeWidth={2.25} aria-hidden />
@@ -220,12 +219,12 @@ export function UserProfileModal({
 
             <div className={settingsRowBaseClass}>
               <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-                <span className={cn(settingsIconClass, 'bg-cyan-600/90')}>
+                <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-primary)] text-[var(--wms-brand-on-primary)]')}>
                   <HugeiconsIcon
                     icon={LanguageCircleIcon}
                     size={settingsHugeiconSize}
                     strokeWidth={settingsHugeiconStroke}
-                    className="text-white"
+                    className="text-[var(--wms-brand-on-primary)]"
                     aria-hidden
                   />
                 </span>
@@ -237,18 +236,16 @@ export function UserProfileModal({
                 <SelectTrigger
                   className={cn(
                     'h-10 w-auto min-w-[5.75rem] shrink-0 gap-2 rounded-xl border px-3 text-sm font-semibold shadow-none transition-all duration-300 sm:h-11 sm:min-w-[6.5rem] sm:px-4 sm:text-base',
-                    'border-cyan-400/35 bg-cyan-500/10 text-cyan-800 hover:border-cyan-400/50 hover:bg-cyan-500/15',
-                    'dark:border-cyan-500/35 dark:bg-cyan-500/12 dark:text-cyan-100 dark:hover:bg-cyan-500/18',
+                    'border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)] hover:border-[var(--wms-brand-primary)]',
                     '[&_[data-slot=select-value]]:gap-1.5 [&_[data-slot=select-value]]:flex [&_[data-slot=select-value]]:items-center',
-                    '[&_svg]:text-cyan-600 dark:[&_svg]:text-cyan-300',
+                    '[&_svg]:text-[var(--wms-brand-primary)]',
                   )}
                 >
                   <SelectValue placeholder={currentLanguage.flagLabel} />
                 </SelectTrigger>
                 <SelectContent
                   className={cn(
-                    'rounded-2xl border border-cyan-400/25 bg-white text-slate-900 shadow-2xl',
-                    'dark:border-cyan-500/30 dark:bg-[#0f1419] dark:text-white',
+                    'rounded-2xl border border-[var(--wms-brand-ring)] bg-[var(--wms-app-panel-strong)] text-foreground shadow-2xl',
                   )}
                 >
                   {SUPPORTED_LANGUAGES.map((lang) => (
@@ -256,7 +253,7 @@ export function UserProfileModal({
                       key={lang.code}
                       value={lang.code}
                       textValue={lang.name}
-                      className="rounded-xl focus:bg-cyan-500/10 dark:focus:bg-cyan-500/15"
+                      className="rounded-xl focus:bg-[var(--wms-brand-soft)]"
                     >
                       <span className="flex items-center gap-2">
                         <span className="text-base leading-none" aria-hidden>
@@ -272,12 +269,12 @@ export function UserProfileModal({
 
             <div className={settingsRowBaseClass}>
               <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-                <span className={cn(settingsIconClass, 'bg-orange-700/90')}>
+                <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-accent)] text-[var(--wms-brand-on-primary)]')}>
                   <HugeiconsIcon
                     icon={isDark ? Moon02Icon : Sun02Icon}
                     size={settingsHugeiconSize}
                     strokeWidth={settingsHugeiconStroke}
-                    className="text-white"
+                    className="text-[var(--wms-brand-on-primary)]"
                     aria-hidden
                   />
                 </span>
@@ -290,8 +287,8 @@ export function UserProfileModal({
                 onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
                 className={cn(
                   'data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
-                  'data-[state=checked]:bg-cyan-400 dark:data-[state=checked]:bg-cyan-500',
-                  'data-[state=checked]:shadow-[0_0_12px_rgba(34,211,238,0.35)]',
+                  'data-[state=checked]:bg-[var(--wms-brand-primary)]',
+                  'data-[state=checked]:shadow-[0_0_12px_var(--wms-brand-shadow)]',
                 )}
               />
             </div>

@@ -43,12 +43,12 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
         className={cn(
           'h-10 w-[140px] border bg-background shadow-lg hover:bg-accent',
           variant === 'pill' &&
-            'h-11 w-11 justify-center rounded-full border-sky-400/20 bg-slate-900/80 p-0 text-cyan-300 shadow-[0_0_14px_rgba(56,132,246,0.20)] backdrop-blur-xl transition-all duration-300 hover:border-cyan-400/50 hover:bg-slate-900 hover:text-cyan-200 hover:shadow-[0_0_20px_rgba(56,132,246,0.40)] [&>svg]:hidden'
+            'h-11 w-11 justify-center rounded-full border-[var(--wms-brand-ring)] bg-[var(--wms-app-panel)] p-0 text-[var(--wms-brand-primary)] shadow-[0_0_14px_var(--wms-brand-shadow)] backdrop-blur-xl transition-all duration-300 hover:border-[var(--wms-brand-primary)] hover:bg-[var(--wms-brand-soft)] hover:shadow-[0_0_20px_var(--wms-brand-shadow)] [&>svg]:hidden'
         )}
       >
         {variant === 'pill' ? (
           <span className="flex items-center justify-center">
-            <Languages className="h-5 w-5 text-cyan-300" />
+            <Languages className="h-5 w-5 text-[var(--wms-brand-primary)]" />
           </span>
         ) : (
           <div className="flex items-center gap-2 flex-1">
@@ -64,7 +64,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
       </SelectTrigger>
       <SelectContent
         className={cn(
-          variant === 'pill' && 'border-sky-400/20 !bg-[#0b1733] text-white shadow-[0_0_24px_rgba(56,132,246,0.18)]'
+          variant === 'pill' && 'border-[var(--wms-brand-ring)] !bg-[var(--wms-app-panel-strong)] text-foreground shadow-[0_0_24px_var(--wms-brand-shadow)]'
         )}
       >
         {languages.map((language) => (
@@ -74,7 +74,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
             className={cn(
               'cursor-pointer',
               variant === 'pill' &&
-                'focus:!bg-sky-500/25 focus:!text-white data-[state=checked]:!text-sky-300'
+                'focus:!bg-[var(--wms-brand-soft)] focus:!text-[var(--wms-brand-primary)] data-[state=checked]:!text-[var(--wms-brand-primary)]'
             )}
           >
             <div className="flex items-center gap-2">

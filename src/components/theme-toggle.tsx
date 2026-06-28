@@ -47,9 +47,9 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
         aria-label={t('theme.toggle')}
         className={cn(
           'inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300',
-          'border-sky-400/20 bg-slate-900/80 text-cyan-300 shadow-[0_0_14px_rgba(56,132,246,0.20)] backdrop-blur-xl',
-          'hover:border-cyan-400/50 hover:bg-slate-900 hover:text-cyan-200 hover:shadow-[0_0_20px_rgba(56,132,246,0.40)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/35',
+          'border-[var(--wms-brand-ring)] bg-[var(--wms-app-panel)] text-[var(--wms-brand-primary)] shadow-[0_0_14px_var(--wms-brand-shadow)] backdrop-blur-xl',
+          'hover:border-[var(--wms-brand-primary)] hover:bg-[var(--wms-brand-soft)] hover:shadow-[0_0_20px_var(--wms-brand-shadow)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wms-brand-ring)]',
         )}
       >
         {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}

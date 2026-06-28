@@ -7,10 +7,8 @@ export const NAVBAR_ICON_GRADIENT_ID = 'navbar-icon-gradient';
 export const navbarIconButtonClassName = cn(
   'group shrink-0 rounded-xl border-0 bg-transparent p-2.5 outline-none',
   'transition-all duration-300',
-  'hover:bg-sky-400/[0.06] hover:shadow-[0_0_14px_rgba(56,189,248,0.2),0_0_22px_rgba(251,146,60,0.12)]',
-  'dark:hover:bg-cyan-400/[0.08]',
-  'dark:hover:shadow-[0_0_16px_rgba(56,189,248,0.18),0_0_26px_rgba(251,146,60,0.1)]',
-  'focus-visible:ring-2 focus-visible:ring-cyan-400/20 focus-visible:ring-offset-0',
+  'hover:bg-[var(--wms-brand-soft)] hover:shadow-[0_0_18px_var(--wms-brand-shadow)]',
+  'focus-visible:ring-2 focus-visible:ring-[var(--wms-brand-ring)] focus-visible:ring-offset-0',
 );
 
 const gradientStrokeClassName = 'navbar-icon-gradient';
@@ -27,9 +25,9 @@ export function NavbarIconGradientDefs(): ReactElement {
     <svg aria-hidden className="pointer-events-none absolute h-0 w-0 overflow-hidden" focusable="false">
       <defs>
         <linearGradient id={NAVBAR_ICON_GRADIENT_ID} x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="48%" stopColor="#0ea5e9" />
-          <stop offset="100%" stopColor="#fb923c" />
+          <stop offset="0%" stopColor="var(--wms-brand-primary)" />
+          <stop offset="52%" stopColor="var(--wms-brand-secondary)" />
+          <stop offset="100%" stopColor="var(--wms-brand-accent)" />
         </linearGradient>
       </defs>
     </svg>
