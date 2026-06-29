@@ -410,7 +410,7 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
                   value={userLabel}
                   queryKey={['document-series', 'rules', 'user']}
                   fetchPage={({ pageNumber, pageSize, search }: { pageNumber: number; pageSize: number; search: string; signal?: AbortSignal }) =>
-                    userApi.getList({ pageNumber: pageNumber - 1, pageSize, search })}
+                    userApi.getList({ pageNumber, pageSize, search })}
                   getKey={(item: UserDto) => String(item.id)}
                   getLabel={(item: UserDto) => item.fullName || item.username}
                   onSelect={(item: UserDto) => {
