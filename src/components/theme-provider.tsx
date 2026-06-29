@@ -20,6 +20,7 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme
+  resolvedTheme: Exclude<Theme, "system">
   brandTheme: BrandTheme
   setTheme: (theme: Theme) => void
   setBrandTheme: (theme: BrandTheme) => void
@@ -27,6 +28,7 @@ type ThemeProviderState = {
 
 const initialState: ThemeProviderState = {
   theme: "system",
+  resolvedTheme: "light",
   brandTheme: "v3rii",
   setTheme: () => null,
   setBrandTheme: () => null,
@@ -34,18 +36,20 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-function applyThemeClass(theme: Theme): void {
+function getResolvedTheme(theme: Theme): Exclude<Theme, "system"> {
+  if (theme !== "system") return theme
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyThemeClass(theme: Theme): Exclude<Theme, "system"> {
   const root = window.document.documentElement
+  const resolvedTheme = getResolvedTheme(theme)
 
   root.classList.remove('light', 'dark')
+  root.classList.add(resolvedTheme)
+  root.dataset.theme = resolvedTheme
 
-  if (theme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    root.classList.add(systemTheme)
-    return
-  }
-
-  root.classList.add(theme)
+  return resolvedTheme
 }
 
 export function ThemeProvider({
@@ -58,17 +62,20 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
+  const [resolvedTheme, setResolvedTheme] = useState<Exclude<Theme, "system">>(() => getResolvedTheme(
+    (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  ))
   const [brandTheme, setBrandTheme] = useState<BrandTheme>(() => {
     const stored = localStorage.getItem(brandThemeStorageKey)
     return isBrandTheme(stored) ? stored : "v3rii"
   })
 
   useEffect(() => {
-    applyThemeClass(theme)
+    setResolvedTheme(applyThemeClass(theme))
     if (theme !== 'system') return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => applyThemeClass('system')
+    const handleChange = () => setResolvedTheme(applyThemeClass('system'))
     mediaQuery.addEventListener('change', handleChange)
 
     return () => mediaQuery.removeEventListener('change', handleChange)
@@ -100,10 +107,11 @@ export function ThemeProvider({
 
   const value = useMemo(() => ({
     theme,
+    resolvedTheme,
     brandTheme,
     setTheme: setThemeAndStore,
     setBrandTheme: setBrandThemeAndStore,
-  }), [theme, brandTheme, setThemeAndStore, setBrandThemeAndStore])
+  }), [theme, resolvedTheme, brandTheme, setThemeAndStore, setBrandThemeAndStore])
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

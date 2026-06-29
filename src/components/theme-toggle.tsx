@@ -1,5 +1,4 @@
 import { Moon, Sun } from "lucide-react"
-import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useTheme } from "@/components/theme-provider"
 import { Switch } from "@/components/ui/switch"
@@ -10,30 +9,9 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const { t } = useTranslation()
-  const [isDark, setIsDark] = useState(false)
-
-  useEffect(() => {
-    const updateIsDark = () => {
-      if (theme === "dark") {
-        setIsDark(true)
-      } else if (theme === "light") {
-        setIsDark(false)
-      } else {
-        setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches)
-      }
-    }
-
-    updateIsDark()
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-      const handleChange = () => updateIsDark()
-      mediaQuery.addEventListener("change", handleChange)
-      return () => mediaQuery.removeEventListener("change", handleChange)
-    }
-  }, [theme])
+  const isDark = resolvedTheme === "dark"
 
   const handleToggle = (checked: boolean) => {
     setTheme(checked ? "dark" : "light")

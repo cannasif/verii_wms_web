@@ -70,14 +70,14 @@ export function UserProfileModal({
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { theme, brandTheme, setTheme, setBrandTheme } = useTheme();
+  const { resolvedTheme, brandTheme, setTheme, setBrandTheme } = useTheme();
   const { user, logout } = useAuthStore();
   const { data: userDetail } = useUserDetail();
 
   const displayName = user?.name || user?.email || t('dashboard.user');
   const displayInitial = displayName.charAt(0).toUpperCase();
   const imageUrl = getFullProfileImageUrl(userDetail?.profilePictureUrl);
-  const isDark = theme === 'dark';
+  const isDark = resolvedTheme === 'dark';
   const currentLanguage =
     SUPPORTED_LANGUAGES.find((lang) => lang.code === normalizeLanguage(i18n.resolvedLanguage ?? i18n.language))
     ?? SUPPORTED_LANGUAGES[0];
@@ -283,7 +283,7 @@ export function UserProfileModal({
               </div>
               <Switch
                 checked={isDark}
-                onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
+                onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
                 className={cn(
                   'data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
                   'data-[state=checked]:bg-[var(--wms-brand-primary)]',
