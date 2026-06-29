@@ -75,6 +75,14 @@ export const bilginogluHakEdisApi = {
     return extractData(response as ApiResponse<BilginogluHakEdisCompletedLocationSetting[]>);
   },
 
+  getCompletedLocationSettingsPaged: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisCompletedLocationSetting>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisCompletedLocationSetting>>>(
+      '/api/BilginogluHakEdis/completed-location-settings/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 10, sortBy: 'WarehouseCode', sortDirection: 'asc' }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisCompletedLocationSetting>>));
+  },
+
   createCompletedLocationSetting: async (
     input: UpsertBilginogluHakEdisCompletedLocationSetting,
   ): Promise<BilginogluHakEdisCompletedLocationSetting> => {
@@ -98,6 +106,14 @@ export const bilginogluHakEdisApi = {
   getOperationSettings: async (): Promise<BilginogluHakEdisOperationSetting[]> => {
     const response = await api.get<ApiResponse<BilginogluHakEdisOperationSetting[]>>('/api/BilginogluHakEdis/operation-settings');
     return extractData(response as ApiResponse<BilginogluHakEdisOperationSetting[]>);
+  },
+
+  getOperationSettingsPaged: async (params: PagedParams): Promise<PagedResponse<BilginogluHakEdisOperationSetting>> => {
+    const response = await api.post<ApiResponse<PagedResponse<BilginogluHakEdisOperationSetting>>>(
+      '/api/BilginogluHakEdis/operation-settings/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 10, sortBy: 'OperationCode', sortDirection: 'asc' }),
+    );
+    return normalizePaged(extractData(response as ApiResponse<PagedResponse<BilginogluHakEdisOperationSetting>>));
   },
 
   createOperationSetting: async (

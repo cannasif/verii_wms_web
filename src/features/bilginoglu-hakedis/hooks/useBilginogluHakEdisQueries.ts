@@ -20,7 +20,9 @@ export const bilginogluHakEdisQueryKeys = {
   pendingHakEdisTransfers: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-hakedis-transfers', params] as const,
   pendingShipmentOrders: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'pending-shipment-orders', params] as const,
   completedLocationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'completed-location-settings'] as const,
+  completedLocationSettingsPaged: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'completed-location-settings', 'paged', params] as const,
   operationSettings: () => [...bilginogluHakEdisQueryKeys.all, 'operation-settings'] as const,
+  operationSettingsPaged: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'operation-settings', 'paged', params] as const,
 };
 
 export function useBilginogluHakEdisOrdersQuery(params: PagedParams) {
@@ -208,6 +210,13 @@ export function useBilginogluHakEdisCompletedLocationSettingsQuery() {
   });
 }
 
+export function useBilginogluHakEdisCompletedLocationSettingsPagedQuery(params: PagedParams) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.completedLocationSettingsPaged(params),
+    queryFn: () => bilginogluHakEdisApi.getCompletedLocationSettingsPaged(params),
+  });
+}
+
 export function useBilginogluHakEdisCompletedLocationSettingMutation() {
   const queryClient = useQueryClient();
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
@@ -239,6 +248,13 @@ export function useBilginogluHakEdisOperationSettingsQuery() {
   return useQuery({
     queryKey: bilginogluHakEdisQueryKeys.operationSettings(),
     queryFn: () => bilginogluHakEdisApi.getOperationSettings(),
+  });
+}
+
+export function useBilginogluHakEdisOperationSettingsPagedQuery(params: PagedParams) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.operationSettingsPaged(params),
+    queryFn: () => bilginogluHakEdisApi.getOperationSettingsPaged(params),
   });
 }
 

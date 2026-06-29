@@ -17,12 +17,13 @@ import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { shelfManagementApi } from '@/features/shelf-management/api/shelf-management.api';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import type { BilginogluHakEdisCompletedLocationSetting } from '../types/bilginoglu-hakedis.types';
 import {
   useBilginogluHakEdisCompletedLocationSettingDeleteMutation,
   useBilginogluHakEdisCompletedLocationSettingMutation,
-  useBilginogluHakEdisCompletedLocationSettingsQuery,
+  useBilginogluHakEdisCompletedLocationSettingsPagedQuery,
 } from '../hooks/useBilginogluHakEdisQueries';
 
 interface FormState {
@@ -47,6 +48,20 @@ const emptyForm: FormState = {
   description: '',
 };
 
+function mapLocationSortBy(value: LocationColumnKey): string {
+  switch (value) {
+    case 'branch':
+      return 'BranchCode';
+    case 'shelf':
+      return 'ShelfCode';
+    case 'description':
+      return 'Description';
+    case 'warehouse':
+    default:
+      return 'WarehouseCode';
+  }
+}
+
 export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const { setPageTitle } = useUIStore();
@@ -62,8 +77,9 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     defaultPageSize: 10,
     defaultPageNumber: 1,
     pageNumberBase: 1,
+    mapSortBy: mapLocationSortBy,
   });
-  const settingsQuery = useBilginogluHakEdisCompletedLocationSettingsQuery();
+  const settingsQuery = useBilginogluHakEdisCompletedLocationSettingsPagedQuery(pagedGrid.queryParams);
   const saveMutation = useBilginogluHakEdisCompletedLocationSettingMutation();
   const deleteMutation = useBilginogluHakEdisCompletedLocationSettingDeleteMutation();
   const shelvesQuery = useQuery({
@@ -76,7 +92,9 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     setPageTitle(t('locationSettings.title'));
   }, [setPageTitle, t]);
 
-  const settings = settingsQuery.data ?? [];
+  const settingsPage = settingsQuery.data;
+  const pageRows = settingsPage?.data ?? [];
+  const range = getPagedRange(settingsPage);
   const shelfOptions = useMemo(() => shelvesQuery.data?.data ?? [], [shelvesQuery.data?.data]);
   const columns = useMemo<PagedDataGridColumn<LocationColumnKey>[]>(() => [
     { key: 'branch', label: t('locationSettings.table.branch') },
@@ -85,44 +103,6 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
     { key: 'status', label: t('locationSettings.table.status'), sortable: false },
     { key: 'description', label: t('locationSettings.table.description') },
   ], [t]);
-  const filteredSettings = useMemo(() => {
-    const search = pagedGrid.searchTerm.trim().toLocaleLowerCase('tr-TR');
-    if (!search) return settings;
-
-    return settings.filter((item) => [
-      item.branchCode,
-      item.warehouseCode,
-      item.warehouseName,
-      item.shelfCode,
-      item.shelfName,
-      item.description,
-    ].some((value) => String(value ?? '').toLocaleLowerCase('tr-TR').includes(search)));
-  }, [pagedGrid.searchTerm, settings]);
-  const sortedSettings = useMemo(() => {
-    const rows = [...filteredSettings];
-    const direction = pagedGrid.sortDirection === 'asc' ? 1 : -1;
-    const read = (item: BilginogluHakEdisCompletedLocationSetting): string => {
-      switch (pagedGrid.sortBy) {
-        case 'branch':
-          return item.branchCode ?? '';
-        case 'shelf':
-          return `${item.shelfCode ?? ''} ${item.shelfName ?? ''}`;
-        case 'description':
-          return item.description ?? '';
-        case 'warehouse':
-        default:
-          return `${item.warehouseCode ?? ''} ${item.warehouseName ?? ''}`;
-      }
-    };
-
-    return rows.sort((a, b) => read(a).localeCompare(read(b), 'tr') * direction);
-  }, [filteredSettings, pagedGrid.sortBy, pagedGrid.sortDirection]);
-  const totalPages = Math.max(1, Math.ceil(sortedSettings.length / pagedGrid.pageSize));
-  const safePageNumber = Math.min(pagedGrid.pageNumber, totalPages);
-  const pageRows = sortedSettings.slice((safePageNumber - 1) * pagedGrid.pageSize, safePageNumber * pagedGrid.pageSize);
-  const rangeFrom = sortedSettings.length === 0 ? 0 : (safePageNumber - 1) * pagedGrid.pageSize + 1;
-  const rangeTo = Math.min(safePageNumber * pagedGrid.pageSize, sortedSettings.length);
-
   const canSave = permission.canCreate || permission.canUpdate;
   const resolvedShelfId = form.shelfId;
 
@@ -329,15 +309,15 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={safePageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={safePageNumber > 1}
-            hasNextPage={safePageNumber < totalPages}
+            pageNumber={settingsPage?.pageNumber ?? pagedGrid.pageNumber}
+            totalPages={settingsPage?.totalPages ?? 1}
+            hasPreviousPage={settingsPage?.hasPreviousPage ?? false}
+            hasNextPage={settingsPage?.hasNextPage ?? false}
             onPreviousPage={pagedGrid.goToPreviousPage}
             onNextPage={pagedGrid.goToNextPage}
             previousLabel={t('common.previous')}
             nextLabel={t('common.next')}
-            paginationInfoText={t('common.paginationInfo', { current: rangeFrom, total: rangeTo, totalCount: sortedSettings.length })}
+            paginationInfoText={t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total })}
             showActionsColumn
             actionsHeaderLabel={t('locationSettings.table.actions')}
             actionsCellClassName="wms-ops-table-actions-col"
@@ -362,7 +342,7 @@ export function BilginogluHakEdisLocationSettingsPage(): ReactElement {
             }}
             exportFileName="bilginoglu-hakedis-location-settings"
             exportColumns={columns.map((column) => ({ key: column.key, label: column.label }))}
-            exportRows={sortedSettings.map((row) => ({
+            exportRows={pageRows.map((row) => ({
               branch: row.branchCode,
               warehouse: `${row.warehouseCode ?? '-'} · ${row.warehouseName ?? '-'}`,
               shelf: `${row.shelfCode ?? '-'} · ${row.shelfName ?? '-'}`,

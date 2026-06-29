@@ -18,12 +18,13 @@ import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermis
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { WarehouseLookup } from '@/features/shared/api/lookup-types';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import type { BilginogluHakEdisOperationSetting, BilginogluHakEdisOperationType } from '../types/bilginoglu-hakedis.types';
 import {
   useBilginogluHakEdisOperationSettingDeleteMutation,
   useBilginogluHakEdisOperationSettingMutation,
-  useBilginogluHakEdisOperationSettingsQuery,
+  useBilginogluHakEdisOperationSettingsPagedQuery,
 } from '../hooks/useBilginogluHakEdisQueries';
 
 interface WarehouseSelection {
@@ -61,6 +62,18 @@ function requiresWarehouseChain(type: BilginogluHakEdisOperationType): boolean {
   return type === 'DAT' || type === 'SEVK';
 }
 
+function mapOperationSortBy(value: OperationColumnKey): string {
+  switch (value) {
+    case 'branch':
+      return 'BranchCode';
+    case 'type':
+      return 'OperationType';
+    case 'operation':
+    default:
+      return 'OperationCode';
+  }
+}
+
 export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
   const { t } = useTranslation(['bilginoglu-hakedis', 'common']);
   const { setPageTitle } = useUIStore();
@@ -75,8 +88,9 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
     defaultPageSize: 10,
     defaultPageNumber: 1,
     pageNumberBase: 1,
+    mapSortBy: mapOperationSortBy,
   });
-  const settingsQuery = useBilginogluHakEdisOperationSettingsQuery();
+  const settingsQuery = useBilginogluHakEdisOperationSettingsPagedQuery(pagedGrid.queryParams);
   const saveMutation = useBilginogluHakEdisOperationSettingMutation();
   const deleteMutation = useBilginogluHakEdisOperationSettingDeleteMutation();
 
@@ -84,7 +98,9 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
     setPageTitle(t('operationSettings.title'));
   }, [setPageTitle, t]);
 
-  const settings = settingsQuery.data ?? [];
+  const settingsPage = settingsQuery.data;
+  const pageRows = settingsPage?.data ?? [];
+  const range = getPagedRange(settingsPage);
   const showWarehouseChain = requiresWarehouseChain(form.operationType);
   const canSave = permission.canCreate || permission.canUpdate;
   const isWarehouseChainValid = !showWarehouseChain || (form.mainWarehouse.id && form.intermediateWarehouse.id && form.finalWarehouse.id);
@@ -95,45 +111,6 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
     { key: 'warehouseChain', label: t('operationSettings.table.warehouseChain'), sortable: false },
     { key: 'status', label: t('operationSettings.table.status'), sortable: false },
   ], [t]);
-  const filteredSettings = useMemo(() => settings.filter((item) => {
-    const search = pagedGrid.searchTerm.trim().toLocaleLowerCase('tr-TR');
-    if (!search) return true;
-
-    return [
-      item.branchCode,
-      item.operationCode,
-      item.operationDescription,
-      item.operationType,
-      item.mainWarehouseCode,
-      item.mainWarehouseName,
-      item.intermediateWarehouseCode,
-      item.intermediateWarehouseName,
-      item.finalWarehouseCode,
-      item.finalWarehouseName,
-    ].some((value) => String(value ?? '').toLocaleLowerCase('tr-TR').includes(search));
-  }), [pagedGrid.searchTerm, settings]);
-  const sortedSettings = useMemo(() => [...filteredSettings].sort((a, b) => {
-    const direction = pagedGrid.sortDirection === 'asc' ? 1 : -1;
-    const read = (item: BilginogluHakEdisOperationSetting): string => {
-      switch (pagedGrid.sortBy) {
-        case 'branch':
-          return item.branchCode ?? '';
-        case 'type':
-          return item.operationType ?? '';
-        case 'operation':
-        default:
-          return `${item.operationCode ?? ''} ${item.operationDescription ?? ''}`;
-      }
-    };
-
-    return read(a).localeCompare(read(b), 'tr') * direction;
-  }), [filteredSettings, pagedGrid.sortBy, pagedGrid.sortDirection]);
-  const totalPages = Math.max(1, Math.ceil(sortedSettings.length / pagedGrid.pageSize));
-  const safePageNumber = Math.min(pagedGrid.pageNumber, totalPages);
-  const pageRows = sortedSettings.slice((safePageNumber - 1) * pagedGrid.pageSize, safePageNumber * pagedGrid.pageSize);
-  const rangeFrom = sortedSettings.length === 0 ? 0 : (safePageNumber - 1) * pagedGrid.pageSize + 1;
-  const rangeTo = Math.min(safePageNumber * pagedGrid.pageSize, sortedSettings.length);
-
   const resetForm = () => setForm(emptyForm);
   const openCreateDialog = () => {
     resetForm();
@@ -341,15 +318,15 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
             pageSize={pagedGrid.pageSize}
             pageSizeOptions={pagedGrid.pageSizeOptions}
             onPageSizeChange={pagedGrid.handlePageSizeChange}
-            pageNumber={safePageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={safePageNumber > 1}
-            hasNextPage={safePageNumber < totalPages}
+            pageNumber={settingsPage?.pageNumber ?? pagedGrid.pageNumber}
+            totalPages={settingsPage?.totalPages ?? 1}
+            hasPreviousPage={settingsPage?.hasPreviousPage ?? false}
+            hasNextPage={settingsPage?.hasNextPage ?? false}
             onPreviousPage={pagedGrid.goToPreviousPage}
             onNextPage={pagedGrid.goToNextPage}
             previousLabel={t('common.previous')}
             nextLabel={t('common.next')}
-            paginationInfoText={t('common.paginationInfo', { current: rangeFrom, total: rangeTo, totalCount: sortedSettings.length })}
+            paginationInfoText={t('common.paginationInfo', { current: range.from, total: range.to, totalCount: range.total })}
             showActionsColumn
             actionsHeaderLabel={t('operationSettings.table.actions')}
             actionsCellClassName="wms-ops-table-actions-col"
@@ -374,7 +351,7 @@ export function BilginogluHakEdisOperationSettingsPage(): ReactElement {
             }}
             exportFileName="bilginoglu-hakedis-operation-settings"
             exportColumns={columns.map((column) => ({ key: column.key, label: column.label }))}
-            exportRows={sortedSettings.map((row) => ({
+            exportRows={pageRows.map((row) => ({
               branch: row.branchCode,
               operation: `${row.operationCode} - ${row.operationDescription}`,
               type: t(`operationSettings.operationTypes.${row.operationType}`),
