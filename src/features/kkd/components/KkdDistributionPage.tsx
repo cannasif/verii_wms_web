@@ -104,20 +104,15 @@ export function KkdDistributionPage(): ReactElement {
         employeeId: resolvedEmployee.employeeId,
         warehouseId: selectedWarehouse.id,
         sourceChannel: 'WMS',
-        lines: cartLines.map(({
-          clientId: _clientId,
-          stockCode: _stockCode,
-          stockName: _stockName,
-          groupCode: _groupCode,
-          groupName: _groupName,
-          entitlement: _entitlement,
-          openOrderPendingQuantity: _openOrderPendingQuantity,
-          openOrderDocumentNos: _openOrderDocumentNos,
-          entitledQuantity: _entitledQuantity,
-          excessQuantity: _excessQuantity,
-          isExcessIssue: _isExcessIssue,
-          ...line
-        }) => line),
+        lines: cartLines.map((line) => ({
+          barcode: line.barcode,
+          stockId: line.stockId,
+          quantity: line.quantity,
+          shelfId: line.shelfId,
+          serialNo: line.serialNo,
+          serialNo2: line.serialNo2,
+          serialNo3: line.serialNo3,
+        })),
       });
     },
     onSuccess: (data) => {

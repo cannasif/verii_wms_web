@@ -58,7 +58,7 @@ const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   documentDate: 16,
 };
 
-function mapSortBy(_: HeaderSortKey): string {
+function mapSortBy(): string {
   return 'Id';
 }
 

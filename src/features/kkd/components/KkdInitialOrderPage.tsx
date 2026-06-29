@@ -93,7 +93,15 @@ export function KkdInitialOrderPage(): ReactElement {
       return kkdApi.submitOrder({
         employeeId: resolvedEmployee.employeeId,
         sourceChannel: 'WMS',
-        lines: cartLines.map(({ clientId: _clientId, ...line }) => line),
+        lines: cartLines.map((line) => ({
+          groupCode: line.groupCode,
+          groupName: line.groupName,
+          stockId: line.stockId,
+          stockCode: line.stockCode,
+          stockName: line.stockName,
+          unit: line.unit,
+          quantity: line.quantity,
+        })),
       });
     },
     onSuccess: (data) => {

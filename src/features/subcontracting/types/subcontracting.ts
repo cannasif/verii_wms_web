@@ -125,7 +125,7 @@ export interface SubcontractingLine extends BaseDocumentLineDto {
   yapAcik: string;
 }
 
-export interface SubcontractingLineSerial extends BaseDocumentLineSerialDto {}
+export type SubcontractingLineSerial = BaseDocumentLineSerialDto;
 
 export type SubcontractingHeadersResponse = ApiResponse<SubcontractingHeader[]>;
 export type SubcontractingLinesResponse = ApiResponse<SubcontractingLine[]>;

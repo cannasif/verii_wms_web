@@ -16,7 +16,7 @@ export interface CreateInventoryQualityRuleDto {
   description?: string | null;
 }
 
-export interface UpdateInventoryQualityRuleDto extends CreateInventoryQualityRuleDto {}
+export type UpdateInventoryQualityRuleDto = CreateInventoryQualityRuleDto;
 
 export interface InventoryQualityRuleDto {
   id: number;
@@ -165,7 +165,7 @@ export interface CreateInventoryQualityInspectionDto {
   lines: CreateInventoryQualityInspectionLineDto[];
 }
 
-export interface UpdateInventoryQualityInspectionDto extends CreateInventoryQualityInspectionDto {}
+export type UpdateInventoryQualityInspectionDto = CreateInventoryQualityInspectionDto;
 
 export interface InventoryQualityInspectionDto {
   id: number;

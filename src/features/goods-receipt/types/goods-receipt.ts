@@ -56,7 +56,7 @@ export type ProjectsResponse = ApiResponse<Project[]>;
 export type OrdersResponse = ApiResponse<Order[]>;
 export type OrderItemsResponse = ApiResponse<OrderItem[]>;
 
-export interface Order extends BaseWorkflowOrder {}
+export type Order = BaseWorkflowOrder;
 
 export interface OrderItem extends BaseWorkflowOrderItem {
   productCode?: string;

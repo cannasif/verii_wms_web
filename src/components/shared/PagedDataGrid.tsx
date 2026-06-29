@@ -93,7 +93,7 @@ interface PagedDataGridProps<TRow, TKey extends string> {
   headerLayout?: 'default' | 'slant';
 }
 
-function noopFilterRowsChange(_rows: FilterRow[]): void {
+function noopFilterRowsChange(): void {
   /* stable fallback */
 }
 

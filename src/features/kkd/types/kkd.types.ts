@@ -120,7 +120,7 @@ export interface CreateKkdEmployeeDto {
   branchCode?: string;
 }
 
-export interface UpdateKkdEmployeeDto extends Partial<CreateKkdEmployeeDto> {}
+export type UpdateKkdEmployeeDto = Partial<CreateKkdEmployeeDto>;
 
 export interface ResolveKkdEmployeeQrDto {
   qrCode: string;
@@ -177,7 +177,7 @@ export interface CreateKkdEntitlementPolicyDto {
   branchCode?: string;
 }
 
-export interface UpdateKkdEntitlementPolicyDto extends Partial<CreateKkdEntitlementPolicyDto> {}
+export type UpdateKkdEntitlementPolicyDto = Partial<CreateKkdEntitlementPolicyDto>;
 
 export type KkdEntitlementScopeType = 'Customer' | 'Department' | 'Role' | 'DepartmentRole' | 'Employee';
 
@@ -263,7 +263,7 @@ export interface CreateKkdEntitlementMatrixRowDto {
   branchCode?: string;
 }
 
-export interface UpdateKkdEntitlementMatrixRowDto extends Partial<CreateKkdEntitlementMatrixRowDto> {}
+export type UpdateKkdEntitlementMatrixRowDto = Partial<CreateKkdEntitlementMatrixRowDto>;
 
 export interface KkdEntitlementOverrideDto extends BaseEntityDto {
   employeeId: number;

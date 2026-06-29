@@ -133,7 +133,7 @@ export interface TransferLine extends BaseDocumentLineDto {
   yapKod: string;
 }
 
-export interface TransferLineSerial extends BaseDocumentLineSerialDto {}
+export type TransferLineSerial = BaseDocumentLineSerialDto;
 
 export type TransferHeadersResponse = ApiResponse<TransferHeader[]>;
 export type TransferLinesResponse = ApiResponse<TransferLine[]>;

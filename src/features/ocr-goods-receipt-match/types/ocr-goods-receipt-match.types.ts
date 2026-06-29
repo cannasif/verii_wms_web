@@ -10,7 +10,7 @@ export interface CreateOcrGoodsReceiptCustomerStockMatchDto {
   description?: string | null;
 }
 
-export interface UpdateOcrGoodsReceiptCustomerStockMatchDto extends CreateOcrGoodsReceiptCustomerStockMatchDto {}
+export type UpdateOcrGoodsReceiptCustomerStockMatchDto = CreateOcrGoodsReceiptCustomerStockMatchDto;
 
 export interface OcrGoodsReceiptCustomerStockMatchDto {
   id: number;

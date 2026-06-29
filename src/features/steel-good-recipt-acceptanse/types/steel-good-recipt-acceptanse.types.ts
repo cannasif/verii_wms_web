@@ -28,7 +28,7 @@ export interface SteelGoodReciptAcceptanseImportPreviewRequestDto {
   rows: SteelGoodReciptAcceptanseExcelRowDto[];
 }
 
-export interface SteelGoodReciptAcceptanseCommitImportDto extends SteelGoodReciptAcceptanseImportPreviewRequestDto {}
+export type SteelGoodReciptAcceptanseCommitImportDto = SteelGoodReciptAcceptanseImportPreviewRequestDto;
 
 export interface SteelGoodReciptAcceptanseImportPreviewRowDto {
   rowNumber: number;

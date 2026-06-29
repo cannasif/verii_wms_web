@@ -108,7 +108,7 @@ export function buildQuickDecisionForm(
   };
 }
 
-export interface InspectionFormState extends SaveSteelGoodReciptAcceptanseInspectionDto {}
+export type InspectionFormState = SaveSteelGoodReciptAcceptanseInspectionDto;
 
 export type InspectionBatch = SteelGoodReciptAcceptanseInspectionBatchSearchDto;
 export type InspectionLine = SteelGoodReciptAcceptanseLineListItemDto;
