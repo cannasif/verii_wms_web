@@ -301,6 +301,7 @@
     "goodsReceiptList": "Goods Receipt List",
     "goodsReceiptAssigned": "Assigned Goods Receipt Orders",
     "goodsReceiptApproval": "Goods Receipt Orders Awaiting Approval",
+    "incomingInvoiceArchive": "Incoming Invoice and Archive",
     "inventory": "Inventory",
     "warehouse3d": "3D Warehouse",
     "warehouse3dOutside": "3D Outside Warehouse",

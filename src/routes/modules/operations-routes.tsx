@@ -38,6 +38,10 @@ const GoodsReceiptPreLabelReceivingPage = lazyNamed(
   () => import('@/features/goods-receipt'),
   'GoodsReceiptPreLabelReceivingPage',
 );
+const IncomingInvoiceArchivePage = lazyNamed(
+  () => import('@/features/incoming-invoice-archive'),
+  'IncomingInvoiceArchivePage',
+);
 
 const TransferCreatePage = lazyNamed(
   () => import('@/features/transfer'),
@@ -311,6 +315,13 @@ export const operationsChildRoutes: RouteObject[] = [
       { path: 'pre-label-receiving', Component: withRoute(GoodsReceiptPreLabelReceivingPage, { routeName: 'goods-receipt-pre-label-receiving', namespaces: ['goods-receipt', 'common'] }) },
       { path: 'collection/:headerId', Component: withRoute(GoodsReceiptCollectionPage, { routeName: 'goods-receipt-collection', namespaces: ['goods-receipt', 'common'] }) },
     ],
+  },
+  {
+    path: 'incoming-invoice-archive',
+    Component: withRoute(IncomingInvoiceArchivePage, {
+      routeName: 'incoming-invoice-archive',
+      namespaces: ['incoming-invoice-archive', 'common'],
+    }),
   },
   {
     path: 'transfer',

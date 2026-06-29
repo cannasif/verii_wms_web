@@ -1,0 +1,53 @@
+{
+  "title": "Incoming Invoice and Archive",
+  "eyebrow": "Inbound Operations",
+  "description": "Validate an incoming e-Invoice or e-Archive UUID through eLogo and download the PDF document.",
+  "actions": {
+    "download": "Download PDF",
+    "downloading": "Preparing...",
+    "run": "Run"
+  },
+  "form": {
+    "title": "Invoice PDF Lookup",
+    "description": "Enter the UUID directly or paste UBL/XML content. The UUID is extracted automatically.",
+    "company": "Company",
+    "companyPlaceholder": "Select company",
+    "invoiceKind": "Document Type",
+    "uuidOrXml": "UUID or XML",
+    "uuidPlaceholder": "Example: 48EBBD13-F02D-4931-AEEB-BA94B05BD2AF or <cbc:UUID>...</cbc:UUID>",
+    "resolvedUuid": "Detected UUID"
+  },
+  "invoiceKind": {
+    "automatic": "Auto Detect",
+    "eInvoice": "e-Invoice",
+    "eArchive": "e-Archive"
+  },
+  "companies": {
+    "title": "eLogo Company Definitions",
+    "description": "Passwords are not stored in the repository; use environment settings or production config.",
+    "total": "Companies",
+    "configured": "Ready"
+  },
+  "status": {
+    "ready": "Ready",
+    "notConfigured": "Missing Config"
+  },
+  "guidance": {
+    "title": "Operational Note",
+    "description": "eLogo may return some e-Invoice PDFs inside a ZIP package; the API extracts the PDF before returning it.",
+    "secretNote": "For production use, define the company web service password in backend environment settings."
+  },
+  "result": {
+    "title": "Last Downloaded Document",
+    "description": "PDF details from the last successful lookup.",
+    "company": "Company",
+    "uuid": "UUID",
+    "file": "File"
+  },
+  "messages": {
+    "companyRequired": "Please select a company.",
+    "uuidRequired": "Enter a valid UUID or paste XML containing a UUID.",
+    "downloaded": "PDF was prepared and downloaded.",
+    "downloadFailed": "PDF could not be downloaded."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "title": "Gelen Fatura ve Arşiv",
+  "eyebrow": "Gelen Operasyonlar",
+  "description": "eLogo üzerinden gelen e-Fatura veya e-Arşiv UUID bilgisini doğrulayın ve PDF dokümanını indirin.",
+  "actions": {
+    "download": "PDF İndir",
+    "downloading": "Hazırlanıyor...",
+    "run": "Çalıştır"
+  },
+  "form": {
+    "title": "Fatura PDF Sorgulama",
+    "description": "UUID bilgisini doğrudan yazabilir veya UBL/XML içinden yapıştırabilirsiniz. Sistem UUID bilgisini otomatik ayıklar.",
+    "company": "Firma",
+    "companyPlaceholder": "Firma seçin",
+    "invoiceKind": "Belge Tipi",
+    "uuidOrXml": "UUID veya XML",
+    "uuidPlaceholder": "Örn: 48EBBD13-F02D-4931-AEEB-BA94B05BD2AF veya <cbc:UUID>...</cbc:UUID>",
+    "resolvedUuid": "Algılanan UUID"
+  },
+  "invoiceKind": {
+    "automatic": "Otomatik Bul",
+    "eInvoice": "e-Fatura",
+    "eArchive": "e-Arşiv"
+  },
+  "companies": {
+    "title": "eLogo Firma Tanımları",
+    "description": "Şifreler kod deposuna yazılmaz; ortam ayarı veya canlı config üzerinden verilir.",
+    "total": "Firma",
+    "configured": "Hazır"
+  },
+  "status": {
+    "ready": "Hazır",
+    "notConfigured": "Eksik Ayar"
+  },
+  "guidance": {
+    "title": "Operasyon Notu",
+    "description": "eLogo bazı e-Fatura PDF cevaplarını ZIP içinde döndürebilir; API bu paketi açıp içindeki PDF dosyasını kullanıcıya verir.",
+    "secretNote": "Canlı kullanım için ilgili firmanın web servis şifresi backend ortam ayarlarında tanımlanmalıdır."
+  },
+  "result": {
+    "title": "Son İndirilen Doküman",
+    "description": "Başarılı sorgu sonucu açılan ve indirilen PDF bilgileri.",
+    "company": "Firma",
+    "uuid": "UUID",
+    "file": "Dosya"
+  },
+  "messages": {
+    "companyRequired": "Firma seçmelisiniz.",
+    "uuidRequired": "Geçerli bir UUID girin veya XML içinden UUID yapıştırın.",
+    "downloaded": "PDF hazırlandı ve indirildi.",
+    "downloadFailed": "PDF indirilemedi."
+  }
+}

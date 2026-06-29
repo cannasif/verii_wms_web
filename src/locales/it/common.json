@@ -282,6 +282,7 @@
     "goodsReceiptCreate": "Goods Receipt Entry",
     "goodsReceiptList": "Goods Receipt List",
     "goodsReceiptAssigned": "Assigned Goods Receipt Orders",
+    "incomingInvoiceArchive": "Incoming Invoice and Archive",
     "inventory": "Inventory",
     "warehouse3d": "3D Warehouse",
     "warehouse3dOutside": "3D Outside Warehouse",
