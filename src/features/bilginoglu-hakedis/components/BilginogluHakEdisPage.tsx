@@ -32,7 +32,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/ui-store';
-import type { BilginogluHakEdisBatch, BilginogluHakEdisOrderActivity, BilginogluHakEdisOrderHeader, BilginogluHakEdisPlan } from '../types/bilginoglu-hakedis.types';
+import type { BilginogluHakEdisBatch, BilginogluHakEdisOrderActivity, BilginogluHakEdisOrderHeader, BilginogluHakEdisPlan, BilginogluHakEdisTransferPreviewLine } from '../types/bilginoglu-hakedis.types';
 import {
   useBilginogluHakEdisBatchesQuery,
   useBilginogluHakEdisOrderActivitiesQuery,
@@ -40,6 +40,7 @@ import {
   useBilginogluHakEdisOrdersQuery,
   useBilginogluHakEdisTransferPreviewQuery,
   useBilginogluHakEdisStepsQuery,
+  useBilginogluHakEdisBulkShipmentPreviewQuery,
   useBilginogluHakEdisBulkTransferPreviewQuery,
   useBilginogluHakEdisBulkShipmentOrdersMutation,
   useBilginogluHakEdisBulkTransferOrdersMutation,
@@ -53,6 +54,30 @@ function formatQty(value: number | null | undefined): string {
 function formatDate(value?: string | null): string {
   if (!value) return '-';
   return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
+}
+
+function buildPreviewLineSummary(
+  lines: BilginogluHakEdisTransferPreviewLine[] | null | undefined,
+  mode: 'transfer' | 'shipment',
+): { eligibleLineCount: number; totalLineCount: number; text: string } {
+  const safeLines = lines ?? [];
+  const eligibleLines = safeLines.filter((line) =>
+    mode === 'transfer' ? line.transferableQty > 0.0001 : line.shippableQty > 0.0001,
+  );
+  const summaryLines = eligibleLines.length > 0 ? eligibleLines : safeLines;
+  const text = summaryLines
+    .slice(0, 2)
+    .map((line) => {
+      const qty = mode === 'transfer' ? line.transferableQty : line.shippableQty;
+      return `${line.stockCode ?? '-'} / ${line.stockName ?? '-'} (${formatQty(qty)})`;
+    })
+    .join(' · ');
+
+  return {
+    eligibleLineCount: eligibleLines.length,
+    totalLineCount: safeLines.length,
+    text: text || '-',
+  };
 }
 
 function statusBadge(status: string, label: string, inline = false): ReactElement {
@@ -148,6 +173,7 @@ export function BilginogluHakEdisPage(): ReactElement {
   const activitiesQuery = useBilginogluHakEdisOrderActivitiesQuery(selectedOrder?.id ?? null);
   const transferPreviewQuery = useBilginogluHakEdisTransferPreviewQuery(selectedOrder?.id ?? null);
   const bulkTransferPreviewQuery = useBilginogluHakEdisBulkTransferPreviewQuery(bulkTransferPreviewOpen);
+  const bulkShipmentPreviewQuery = useBilginogluHakEdisBulkShipmentPreviewQuery(bulkShipmentPreviewOpen);
   const batchesQuery = useBilginogluHakEdisBatchesQuery(selectedPlan?.id ?? null);
   const stepsQuery = useBilginogluHakEdisStepsQuery(selectedBatch?.id ?? null);
   const evaluateMutation = useEvaluateBilginogluHakEdisMutation();
@@ -159,7 +185,6 @@ export function BilginogluHakEdisPage(): ReactElement {
   };
 
   const orders = ordersQuery.data?.data ?? [];
-  const openOrders = orders;
   const visibleOrders = orders;
   const range = getPagedRange(ordersQuery.data, 1);
   const orderColumns = useMemo<PagedDataGridColumn<OrderColumnKey>[]>(() => [
@@ -209,6 +234,7 @@ export function BilginogluHakEdisPage(): ReactElement {
         transferableQty,
         missingQty: Math.max(0, remainingQty - transferableQty),
         decision,
+        lineSummary: buildPreviewLineSummary(order.lines, 'transfer'),
       };
     });
   }, [bulkTransferPreviewQuery.data]);
@@ -234,9 +260,9 @@ export function BilginogluHakEdisPage(): ReactElement {
     );
   };
   const bulkShipmentPreviewOrders = useMemo(() => {
-    return openOrders.map((order) => {
-      const readyQty = Math.max(0, order.totalReadyForShipmentQty ?? 0);
-      const remainingToShipQty = Math.max(0, (order.totalRemainingQty ?? 0) - (order.totalShipmentCreatedQty ?? 0));
+    return (bulkShipmentPreviewQuery.data ?? []).map((order) => {
+      const readyQty = Math.max(0, order.totalShippableQty ?? 0);
+      const remainingToShipQty = Math.max(0, order.totalRemainingOrderQty ?? 0);
       const requiresFullShipment = order.transferAllFlag === 'E' || order.shipmentPolicy === 'AutoFullShipment';
       const shippableQty = requiresFullShipment && readyQty + 0.0001 < remainingToShipQty ? 0 : readyQty;
       const decision = shippableQty > 0.0001
@@ -252,9 +278,10 @@ export function BilginogluHakEdisPage(): ReactElement {
         shippableQty,
         missingQty: Math.max(0, remainingToShipQty - readyQty),
         decision,
+        lineSummary: buildPreviewLineSummary(order.lines, 'shipment'),
       };
     });
-  }, [openOrders]);
+  }, [bulkShipmentPreviewQuery.data]);
   const bulkShipmentPreviewTotals = useMemo(() => {
     return bulkShipmentPreviewOrders.reduce(
       (acc, preview) => {
@@ -520,6 +547,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   <TableHead className="w-12" />
                   <TableHead className="min-w-48">{t('table.order')}</TableHead>
                   <TableHead className="min-w-72">{t('table.customer')}</TableHead>
+                  <TableHead className="min-w-80">{t('bulkTransferPreview.table.eligibleLines')}</TableHead>
                   <TableHead className="text-right">{t('table.remaining')}</TableHead>
                   <TableHead className="text-right">{t('table.stock')}</TableHead>
                   <TableHead className="text-right">{t('table.canCreate')}</TableHead>
@@ -528,9 +556,11 @@ export function BilginogluHakEdisPage(): ReactElement {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bulkTransferPreviewOrders.map(({ order, availableQty, remainingQty, transferableQty, missingQty, decision }) => {
+                {bulkTransferPreviewOrders.map(({ order, availableQty, remainingQty, transferableQty, missingQty, decision, lineSummary }) => {
                   const orderHeaderId = order.orderHeaderId;
                   const expanded = expandedBulkTransferOrderIds.includes(orderHeaderId);
+                  const shouldAutoExpand = decision === 'eligible' && !expanded;
+                  const detailsVisible = expanded || shouldAutoExpand;
 
                   return (
                     <Fragment key={orderHeaderId}>
@@ -544,13 +574,22 @@ export function BilginogluHakEdisPage(): ReactElement {
                             onClick={() => toggleBulkTransferOrder(orderHeaderId)}
                             aria-label={t('bulkTransferPreview.table.details')}
                           >
-                            {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+                            {detailsVisible ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
                           </Button>
                         </TableCell>
                         <TableCell className="align-top font-semibold">{order.siparisNo}</TableCell>
                         <TableCell className="align-top">
                           <div className="font-semibold">{order.customerCode ?? '-'}</div>
                           <div className="mt-1 wms-ops-prelabel-panel__hint">{order.customerName ?? '-'}</div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="font-semibold">
+                            {t('bulkTransferPreview.table.lineCountSummary', {
+                              eligible: lineSummary.eligibleLineCount,
+                              total: lineSummary.totalLineCount,
+                            })}
+                          </div>
+                          <div className="mt-1 wms-ops-prelabel-panel__hint">{lineSummary.text}</div>
                         </TableCell>
                         <TableCell className="text-right align-top font-semibold">{formatQty(remainingQty)}</TableCell>
                         <TableCell className="text-right align-top font-semibold">{formatQty(availableQty)}</TableCell>
@@ -567,9 +606,9 @@ export function BilginogluHakEdisPage(): ReactElement {
                           </div>
                         </TableCell>
                       </TableRow>
-                      {expanded ? (
+                      {detailsVisible ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="p-3">
+                          <TableCell colSpan={9} className="p-3">
                             <BulkTransferOrderLines orderHeaderId={orderHeaderId} />
                           </TableCell>
                         </TableRow>
@@ -579,7 +618,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 })}
                 {bulkTransferPreviewOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="py-10 text-center text-muted-foreground">
                       {t('bulkTransferPreview.empty')}
                     </TableCell>
                   </TableRow>
@@ -631,6 +670,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                   <TableHead className="w-12" />
                   <TableHead className="min-w-48">{t('table.order')}</TableHead>
                   <TableHead className="min-w-72">{t('table.customer')}</TableHead>
+                  <TableHead className="min-w-80">{t('bulkShipmentPreview.table.eligibleLines')}</TableHead>
                   <TableHead className="text-right">{t('bulkShipmentPreview.table.remaining')}</TableHead>
                   <TableHead className="text-right">{t('bulkShipmentPreview.table.ready')}</TableHead>
                   <TableHead className="text-right">{t('bulkShipmentPreview.table.shippable')}</TableHead>
@@ -639,11 +679,14 @@ export function BilginogluHakEdisPage(): ReactElement {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bulkShipmentPreviewOrders.map(({ order, readyQty, remainingToShipQty, shippableQty, missingQty, decision }) => {
-                  const expanded = expandedBulkShipmentOrderIds.includes(order.id);
+                {bulkShipmentPreviewOrders.map(({ order, readyQty, remainingToShipQty, shippableQty, missingQty, decision, lineSummary }) => {
+                  const orderHeaderId = order.orderHeaderId;
+                  const expanded = expandedBulkShipmentOrderIds.includes(orderHeaderId);
+                  const shouldAutoExpand = decision === 'eligible' && !expanded;
+                  const detailsVisible = expanded || shouldAutoExpand;
 
                   return (
-                    <Fragment key={order.id}>
+                    <Fragment key={orderHeaderId}>
                       <TableRow>
                         <TableCell className="align-top">
                           <Button
@@ -651,16 +694,25 @@ export function BilginogluHakEdisPage(): ReactElement {
                             size="icon"
                             variant="ghost"
                             className="wms-ops-grid-icon-btn"
-                            onClick={() => toggleBulkShipmentOrder(order.id)}
+                            onClick={() => toggleBulkShipmentOrder(orderHeaderId)}
                             aria-label={t('bulkShipmentPreview.table.details')}
                           >
-                            {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+                            {detailsVisible ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
                           </Button>
                         </TableCell>
                         <TableCell className="align-top font-semibold">{order.siparisNo}</TableCell>
                         <TableCell className="align-top">
                           <div className="font-semibold">{order.customerCode ?? '-'}</div>
                           <div className="mt-1 wms-ops-prelabel-panel__hint">{order.customerName ?? '-'}</div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="font-semibold">
+                            {t('bulkShipmentPreview.table.lineCountSummary', {
+                              eligible: lineSummary.eligibleLineCount,
+                              total: lineSummary.totalLineCount,
+                            })}
+                          </div>
+                          <div className="mt-1 wms-ops-prelabel-panel__hint">{lineSummary.text}</div>
                         </TableCell>
                         <TableCell className="text-right align-top font-semibold">{formatQty(remainingToShipQty)}</TableCell>
                         <TableCell className="text-right align-top font-semibold">{formatQty(readyQty)}</TableCell>
@@ -679,10 +731,10 @@ export function BilginogluHakEdisPage(): ReactElement {
                           </div>
                         </TableCell>
                       </TableRow>
-                      {expanded ? (
+                      {detailsVisible ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="p-3">
-                            <BulkShipmentOrderLines orderHeaderId={order.id} />
+                          <TableCell colSpan={9} className="p-3">
+                            <BulkShipmentOrderLines orderHeaderId={orderHeaderId} />
                           </TableCell>
                         </TableRow>
                       ) : null}
@@ -691,7 +743,7 @@ export function BilginogluHakEdisPage(): ReactElement {
                 })}
                 {bulkShipmentPreviewOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="py-10 text-center text-muted-foreground">
                       {t('bulkShipmentPreview.empty')}
                     </TableCell>
                   </TableRow>

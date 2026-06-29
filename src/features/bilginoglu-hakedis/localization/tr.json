@@ -132,7 +132,9 @@
       "warehouse": "Depo Akışı",
       "details": "Kalem detaylarını aç/kapat",
       "willCreateLine": "{{stock}} için {{qty}} miktar hakediş transferi açılacak.",
-      "willSkipLine": "Bu kalem bu turda atlanacak."
+      "willSkipLine": "Bu kalem bu turda atlanacak.",
+      "eligibleLines": "Uygun Kalemler",
+      "lineCountSummary": "{{eligible}} / {{total}} kalem uygun"
     },
     "decisions": {
       "eligible": "Oluşturulabilir",
@@ -164,7 +166,9 @@
       "willSkip": "Bu sipariş bu turda atlanacak.",
       "fullShipmentWaiting": "Sipariş tam sevk bekliyor; tüm kalan miktar hazır olmadan sevk açılmaz.",
       "willCreateLine": "{{stock}} için {{qty}} miktar çıkış/yükleme emri açılacak.",
-      "willSkipLine": "Bu kalem sevke hazır değil."
+      "willSkipLine": "Bu kalem sevke hazır değil.",
+      "eligibleLines": "Sevke Açılacak Kalemler",
+      "lineCountSummary": "{{eligible}} / {{total}} kalem sevke hazır"
     },
     "decisions": {
       "eligible": "Oluşturulabilir",

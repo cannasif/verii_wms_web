@@ -132,7 +132,9 @@
       "warehouse": "Warehouse Flow",
       "details": "Expand or collapse line details",
       "willCreateLine": "An entitlement transfer will be opened for {{qty}} quantity of {{stock}}.",
-      "willSkipLine": "This line will be skipped in this run."
+      "willSkipLine": "This line will be skipped in this run.",
+      "eligibleLines": "Eligible Lines",
+      "lineCountSummary": "{{eligible}} / {{total}} lines eligible"
     },
     "decisions": {
       "eligible": "Can Create",
@@ -164,7 +166,9 @@
       "willSkip": "This order will be skipped in this run.",
       "fullShipmentWaiting": "This order waits for full shipment; shipment cannot be opened until the full remaining quantity is ready.",
       "willCreateLine": "A loading/shipment order will be opened for {{qty}} quantity of {{stock}}.",
-      "willSkipLine": "This line is not ready to ship."
+      "willSkipLine": "This line is not ready to ship.",
+      "eligibleLines": "Shippable Lines",
+      "lineCountSummary": "{{eligible}} / {{total}} lines ready to ship"
     },
     "decisions": {
       "eligible": "Can Create",

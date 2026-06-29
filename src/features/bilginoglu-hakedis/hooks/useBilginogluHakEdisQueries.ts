@@ -12,6 +12,7 @@ export const bilginogluHakEdisQueryKeys = {
   orderActivities: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'order-activities', orderHeaderId] as const,
   transferPreview: (orderHeaderId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'transfer-preview', orderHeaderId] as const,
   bulkTransferPreview: () => [...bilginogluHakEdisQueryKeys.all, 'bulk-transfer-preview'] as const,
+  bulkShipmentPreview: () => [...bilginogluHakEdisQueryKeys.all, 'bulk-shipment-preview'] as const,
   plans: (params: PagedParams) => [...bilginogluHakEdisQueryKeys.all, 'plans', params] as const,
   batches: (planId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'batches', planId] as const,
   steps: (batchId: number | null) => [...bilginogluHakEdisQueryKeys.all, 'steps', batchId] as const,
@@ -64,6 +65,14 @@ export function useBilginogluHakEdisBulkTransferPreviewQuery(enabled: boolean) {
   return useQuery({
     queryKey: bilginogluHakEdisQueryKeys.bulkTransferPreview(),
     queryFn: () => bilginogluHakEdisApi.getBulkTransferPreview(),
+    enabled,
+  });
+}
+
+export function useBilginogluHakEdisBulkShipmentPreviewQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: bilginogluHakEdisQueryKeys.bulkShipmentPreview(),
+    queryFn: () => bilginogluHakEdisApi.getBulkShipmentPreview(),
     enabled,
   });
 }
