@@ -122,7 +122,7 @@ export const goodsReceiptApi = {
   },
 
   getGrLines: async (headerId: number, options?: ApiRequestOptions): Promise<GrLine[]> => {
-    const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data?.data) {
       return response.data.data;
     }
@@ -140,7 +140,7 @@ export const goodsReceiptApi = {
   getAssignedHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<GrHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<GrHeader>>>(
       `/api/GrHeader/assigned/${userId}/paged`,
-      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
       options,
     );
     if (response.success && response.data) {
@@ -152,7 +152,7 @@ export const goodsReceiptApi = {
   getAwaitingApprovalHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<GrHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<GrHeader>>>(
       '/api/GrHeader/completed-awaiting-erp-approval',
-      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
       options,
     );
     if (response.success && response.data) {

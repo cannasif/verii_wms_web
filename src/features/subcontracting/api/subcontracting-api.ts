@@ -66,7 +66,7 @@ export const subcontractingApi = {
   getAssignedSitHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       `/api/SitHeader/assigned/${userId}/paged`,
-      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
       options,
     );
     if (response.success && response.data) {
@@ -78,7 +78,7 @@ export const subcontractingApi = {
   getAssignedSrtHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<SubcontractingHeader>>>(
       `/api/SrtHeader/assigned/${userId}/paged`,
-      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
       options,
     );
     if (response.success && response.data) {
@@ -264,7 +264,7 @@ export const subcontractingApi = {
   },
 
   getReceiptLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş satırları yüklendi');
     }
@@ -272,7 +272,7 @@ export const subcontractingApi = {
   },
 
   getIssueLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış satırları yüklendi');
     }
@@ -280,7 +280,7 @@ export const subcontractingApi = {
   },
 
   getReceiptLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş seri listesi yüklendi');
     }
@@ -288,7 +288,7 @@ export const subcontractingApi = {
   },
 
   getIssueLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış seri listesi yüklendi');
     }

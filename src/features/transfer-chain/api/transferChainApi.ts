@@ -35,7 +35,7 @@ export const transferChainApi = {
     const response = await api.post<ApiResponse<PagedResponse<TransferChainPagedRowDto>>>(
       '/api/TransferChain/paged',
       buildPagedRequest(params, {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 20,
         sortBy: 'Id',
         sortDirection: 'desc',

@@ -16,7 +16,7 @@ export const serviceAllocationApi = {
   async getServiceCases(params: PagedParams = {}): Promise<PagedResponse<ServiceCaseRow>> {
     const response = await api.post<ApiResponse<PagedResponse<ServiceCaseRow>>>(
       '/api/ServiceCase/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
     );
 
     return response.data ?? {
@@ -33,7 +33,7 @@ export const serviceAllocationApi = {
   async getAllocationQueue(params: PagedParams = {}): Promise<PagedResponse<AllocationQueueRow>> {
     const response = await api.post<ApiResponse<PagedResponse<AllocationQueueRow>>>(
       '/api/OrderAllocationLine/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
     );
 
     return response.data ?? {
@@ -50,7 +50,7 @@ export const serviceAllocationApi = {
   async getDocumentLinks(params: PagedParams = {}): Promise<PagedResponse<BusinessDocumentLinkRow>> {
     const response = await api.post<ApiResponse<PagedResponse<BusinessDocumentLinkRow>>>(
       '/api/BusinessDocumentLink/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
     );
 
     return response.data ?? {

@@ -269,12 +269,12 @@ export function ProductionCreatePage(): ReactElement {
 
   const usersQuery = useQuery({
     queryKey: ['production-create-users'],
-    queryFn: () => userApi.getList({ pageNumber: 0, pageSize: 200, sortBy: 'Username', sortDirection: 'asc' }),
+    queryFn: () => userApi.getList({ pageNumber: 1, pageSize: 200, sortBy: 'Username', sortDirection: 'asc' }),
     staleTime: 5 * 60 * 1000,
   });
   const rolesQuery = useQuery({
     queryKey: ['production-create-permission-groups'],
-    queryFn: () => permissionGroupApi.getList({ pageNumber: 0, pageSize: 200, sortBy: 'Name', sortDirection: 'asc' }),
+    queryFn: () => permissionGroupApi.getList({ pageNumber: 1, pageSize: 200, sortBy: 'Name', sortDirection: 'asc' }),
     staleTime: 5 * 60 * 1000,
   });
   const editDetailQuery = useQuery({

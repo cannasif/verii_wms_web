@@ -35,31 +35,31 @@ export function KkdOverviewPage(): ReactElement {
 
   const employeesQuery = useQuery({
     queryKey: ['kkd', 'overview', 'employees'],
-    queryFn: () => kkdApi.getEmployees({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getEmployees({ pageNumber: 1, pageSize: 1 }),
     retry: false,
   });
 
   const departmentsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'departments'],
-    queryFn: () => kkdApi.getDepartments({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getDepartments({ pageNumber: 1, pageSize: 1 }),
     retry: false,
   });
 
   const rolesQuery = useQuery({
     queryKey: ['kkd', 'overview', 'roles'],
-    queryFn: () => kkdApi.getRoles({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getRoles({ pageNumber: 1, pageSize: 1 }),
     retry: false,
   });
 
   const entitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'entitlements'],
-    queryFn: () => kkdApi.getEntitlementMatrixRows({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getEntitlementMatrixRows({ pageNumber: 1, pageSize: 1 }),
     retry: false,
   });
 
   const additionalEntitlementsQuery = useQuery({
     queryKey: ['kkd', 'overview', 'additional-entitlements'],
-    queryFn: () => kkdApi.getEntitlementOverrides({ pageNumber: 0, pageSize: 1 }),
+    queryFn: () => kkdApi.getEntitlementOverrides({ pageNumber: 1, pageSize: 1 }),
     retry: false,
   });
 

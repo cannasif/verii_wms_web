@@ -9,7 +9,7 @@ export const userApi = {
     const response = await api.post<ApiResponse<PagedResponse<UserDto>>>(
       '/api/User/paged',
       buildPagedRequest(params, {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 20,
         sortBy: 'Id',
         sortDirection: 'asc',

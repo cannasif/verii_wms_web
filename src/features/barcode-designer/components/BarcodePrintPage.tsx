@@ -110,7 +110,7 @@ export function BarcodePrintPage(): ReactElement {
     pageKey: `barcode-print-${sourceModule}`,
     defaultSortBy: 'id',
     defaultSortDirection: 'desc',
-    defaultPageNumber: 0,
+    defaultPageNumber: 1,
     defaultPageSize: 10,
     mapSortBy,
   });

@@ -221,7 +221,7 @@ export const barcodePrintSourceBrowserApi = {
   },
 
   async getHeaders(sourceModule: BarcodePrintSourceModule, search = ''): Promise<BarcodeSourceHeaderOption[]> {
-    const paged = await barcodePrintSourceBrowserApi.getHeadersPaged(sourceModule, { pageNumber: 0, pageSize: 50, search });
+    const paged = await barcodePrintSourceBrowserApi.getHeadersPaged(sourceModule, { pageNumber: 1, pageSize: 50, search });
     return paged.data;
   },
 

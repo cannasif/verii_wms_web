@@ -61,14 +61,14 @@ export function InventoryCountProcessPage(): ReactElement {
 
   const assignedHeadersQuery = useQuery({
     queryKey: ['inventory-count-process-assigned', authUserId],
-    queryFn: () => inventoryCountApi.getAssignedHeadersPaged(authUserId || 0, { pageNumber: 0, pageSize: 100 }),
+    queryFn: () => inventoryCountApi.getAssignedHeadersPaged(authUserId || 0, { pageNumber: 1, pageSize: 100 }),
     enabled: Boolean(authUserId),
   });
 
   const allHeadersQuery = useQuery({
     queryKey: ['inventory-count-process-all'],
     queryFn: () => inventoryCountApi.getHeadersPaged({
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 100,
       filters: [{ column: 'Status', operator: 'neq', value: 'Completed' }],
     }),

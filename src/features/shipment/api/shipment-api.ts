@@ -95,7 +95,7 @@ export const shipmentApi = {
   getAssignedHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<ShipmentHeader>> => {
     const response = await api.post<ApiResponse<PagedResponse<ShipmentHeader>>>(
       `/api/ShHeader/assigned/${userId}/paged`,
-      buildPagedRequest(params, { pageNumber: 0, sortBy: 'Id', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, sortBy: 'Id', sortDirection: 'desc' }),
       options,
     );
     if (response.success && response.data) {
@@ -109,7 +109,7 @@ export const shipmentApi = {
   },
 
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<ShipmentLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.linesLoaded'));
     }
@@ -117,7 +117,7 @@ export const shipmentApi = {
   },
 
   getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<ShipmentLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.serialsLoaded'));
     }

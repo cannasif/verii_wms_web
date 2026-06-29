@@ -49,7 +49,7 @@ export function KkdInitialOrderPage(): ReactElement {
     queryKey: ['kkd', 'order', 'current-employee', authUserId],
     queryFn: async () => {
       const result = await kkdApi.getEmployees({
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 1,
         filters: [{ column: 'UserId', operator: 'eq', value: String(authUserId) }],
       });

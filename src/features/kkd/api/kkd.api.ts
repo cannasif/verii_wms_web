@@ -83,7 +83,7 @@ export const kkdApi = {
   getDepartments: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeDepartmentDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployeeDepartment/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'DepartmentCode', sortDirection: 'asc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'DepartmentCode', sortDirection: 'asc' }),
       options,
     );
     return normalizePagedResponse(extractData(response), normalizeKkdEmployeeDepartment);
@@ -107,7 +107,7 @@ export const kkdApi = {
   getRoles: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeRoleDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployeeRole/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'RoleCode', sortDirection: 'asc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'RoleCode', sortDirection: 'asc' }),
       options,
     );
     return normalizePagedResponse(extractData(response), normalizeKkdEmployeeRole);
@@ -131,7 +131,7 @@ export const kkdApi = {
   getEmployees: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEmployeeDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>>>>(
       '/api/KkdEmployee/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'EmployeeCode', sortDirection: 'asc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'EmployeeCode', sortDirection: 'asc' }),
       options,
     );
     return normalizePagedResponse(extractData(response), normalizeKkdEmployee);
@@ -159,7 +159,7 @@ export const kkdApi = {
   getEntitlementMatrixRows: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementMatrixRowDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementMatrixRowDto>>>(
       '/api/KkdEntitlementMatrix/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -180,7 +180,7 @@ export const kkdApi = {
   getEntitlementOverrides: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementOverrideDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementOverrideDto>>>(
       '/api/KkdEntitlementOverride/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -210,7 +210,7 @@ export const kkdApi = {
   getEntitlementPolicies: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdEntitlementPolicyDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdEntitlementPolicyDto>>>(
       '/api/KkdEntitlementPolicy/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'UpdatedDate', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -281,7 +281,7 @@ export const kkdApi = {
   getDistributions: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDistributionListItemDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdDistributionListItemDto>>>(
       '/api/KkdDistribution/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'DocumentDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'DocumentDate', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -330,7 +330,7 @@ export const kkdApi = {
   getValidationLogs: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdValidationLogDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdValidationLogDto>>>(
       '/api/KkdReport/validation-logs/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'CreatedDate', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'CreatedDate', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -338,7 +338,7 @@ export const kkdApi = {
   getDepartmentUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdDepartmentUsageReportDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdDepartmentUsageReportDto>>>(
       '/api/KkdReport/department-usage/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -346,7 +346,7 @@ export const kkdApi = {
   getRoleUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdRoleUsageReportDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdRoleUsageReportDto>>>(
       '/api/KkdReport/role-usage/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);
@@ -354,7 +354,7 @@ export const kkdApi = {
   getGroupUsageReports: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<KkdGroupUsageReportDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<KkdGroupUsageReportDto>>>(
       '/api/KkdReport/group-usage/paged',
-      buildPagedRequest(params, { pageNumber: 0, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'TotalQuantity', sortDirection: 'desc' }),
       options,
     );
     return extractPaged(response);

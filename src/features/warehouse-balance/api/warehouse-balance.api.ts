@@ -17,7 +17,7 @@ export const warehouseBalanceApi = {
     return await api.post<WarehouseStockBalancePagedResponse>(
       '/api/WarehouseBalance/stock-paged',
       buildPagedRequest(params, {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 20,
         sortBy: 'StockCode',
         sortDirection: 'asc',
@@ -30,7 +30,7 @@ export const warehouseBalanceApi = {
     return await api.post<WarehouseStockSerialBalancePagedResponse>(
       '/api/WarehouseBalance/serial-paged',
       buildPagedRequest(params, {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 20,
         sortBy: 'LastTransactionDate',
         sortDirection: 'desc',
@@ -67,7 +67,7 @@ export const warehouseBalanceApi = {
     return await api.post<ApiResponse<PagedResponse<WarehouseBalanceConsistencyIssueDto>>>(
       '/api/WarehouseBalance/reconciliation/issues-paged',
       buildPagedRequest(params, {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 10,
         sortBy: 'WarehouseName',
         sortDirection: 'asc',

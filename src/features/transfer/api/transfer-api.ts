@@ -51,7 +51,7 @@ export const transferApi = {
 
   getAssignedHeaders: async (userId: number, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<TransferHeader>> => {
     const requestBody = buildPagedRequest(params, {
-      pageNumber: 0,
+      pageNumber: 1,
       sortBy: 'Id',
       sortDirection: 'desc',
     });
@@ -141,7 +141,7 @@ export const transferApi = {
   },
 
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<TransferLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<TransferLine>>>(`/api/WtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('transfer.api.linesLoaded'));
     }
@@ -149,7 +149,7 @@ export const transferApi = {
   },
 
   getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<TransferLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 0, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
+    const response = await api.post<ApiResponse<PagedResponse<TransferLineSerial>>>(`/api/WtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
     if (response.success && response.data) {
       return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('transfer.api.serialsLoaded'));
     }

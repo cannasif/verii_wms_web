@@ -7,7 +7,7 @@ export const userAuthorityApi = {
   getList: async (): Promise<UserAuthorityDto[]> => {
     const response = await api.get<ApiResponse<PagedResponse<UserAuthorityDto>>>('/api/UserAuthority', {
       params: {
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 100,
         sortBy: 'Id',
         sortDirection: 'asc',

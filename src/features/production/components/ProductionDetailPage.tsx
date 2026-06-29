@@ -50,7 +50,7 @@ export function ProductionDetailPage(): ReactElement {
     queryKey: ['productionTransferLinks', headerId],
     queryFn: () =>
       productionTransferApi.getHeadersPaged({
-        pageNumber: 0,
+        pageNumber: 1,
         pageSize: 50,
         sortBy: 'Id',
         sortDirection: 'desc',
