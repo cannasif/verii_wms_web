@@ -1,6 +1,7 @@
 import { api } from '@/lib/axios';
+import { buildPagedRequest } from '@/lib/paged';
 import type { ApiRequestOptions } from '@/lib/request-utils';
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   BarcodeDesignerPreviewRequest,
   BarcodeDesignerPreviewResult,
@@ -20,6 +21,14 @@ import type {
 export const barcodeDesignerApi = {
   async getTemplates(options?: ApiRequestOptions): Promise<ApiResponse<BarcodeTemplate[]>> {
     return await api.get<ApiResponse<BarcodeTemplate[]>>('/api/BarcodeDesigner/templates', options);
+  },
+
+  async getTemplatesPaged(params: PagedParams, options?: ApiRequestOptions): Promise<ApiResponse<PagedResponse<BarcodeTemplate>>> {
+    return await api.post<ApiResponse<PagedResponse<BarcodeTemplate>>>(
+      '/api/BarcodeDesigner/templates/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'DisplayName', sortDirection: 'asc' }),
+      options,
+    );
   },
 
   async getBindingCatalog(request?: BarcodeBindingCatalogRequest, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeBindingCatalogGroup[]>> {

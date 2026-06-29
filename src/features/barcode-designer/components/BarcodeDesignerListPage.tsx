@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Edit3, PauseCircle, Plus, Printer, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +11,29 @@ import { MasterDataOpsErpEyebrow, masterDataOpsGridColumn } from '@/features/sha
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeDesignerApi } from '../api/barcode-designer.api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import { getPagedRange } from '@/lib/paged';
+import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import type { BarcodeTemplate } from '../types/barcode-designer-editor.types';
 
 type TemplateColumnKey = 'code' | 'name' | 'type' | 'size' | 'dpi' | 'draft' | 'status' | 'actions';
+
+function mapTemplateSortBy(value: TemplateColumnKey): string {
+  switch (value) {
+    case 'code':
+      return 'TemplateCode';
+    case 'type':
+      return 'LabelType';
+    case 'size':
+      return 'Width';
+    case 'dpi':
+      return 'Dpi';
+    case 'status':
+      return 'IsActive';
+    case 'name':
+    default:
+      return 'DisplayName';
+  }
+}
 
 export function BarcodeDesignerListPage(): ReactElement {
   const { t } = useTranslation('common');
@@ -21,12 +41,19 @@ export function BarcodeDesignerListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
   const permission = useCrudPermission('wms.print-management');
-  const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 20;
+  const pagedGrid = usePagedDataGrid<TemplateColumnKey>({
+    pageKey: 'barcode-designer-templates',
+    defaultSortBy: 'name',
+    defaultSortDirection: 'asc',
+    defaultPageSize: 20,
+    defaultPageNumber: 1,
+    pageNumberBase: 1,
+    mapSortBy: mapTemplateSortBy,
+  });
 
   const templatesQuery = useQuery({
-    queryKey: ['barcode-designer-templates'],
-    queryFn: ({ signal }) => barcodeDesignerApi.getTemplates({ signal }),
+    queryKey: ['barcode-designer-templates', 'paged', pagedGrid.queryParams],
+    queryFn: ({ signal }) => barcodeDesignerApi.getTemplatesPaged(pagedGrid.queryParams, { signal }),
   });
 
   useEffect(() => {
@@ -34,12 +61,9 @@ export function BarcodeDesignerListPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const templates = templatesQuery.data?.data ?? [];
-  const totalPages = Math.max(1, Math.ceil(templates.length / pageSize));
-  const pagedRows = useMemo(
-    () => templates.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
-    [pageNumber, pageSize, templates],
-  );
+  const templatesPage = templatesQuery.data?.data;
+  const pagedRows = templatesPage?.data ?? [];
+  const range = getPagedRange(templatesPage);
 
   const columns = useMemo<PagedDataGridColumn<TemplateColumnKey>[]>(
     () => [
@@ -155,23 +179,30 @@ export function BarcodeDesignerListPage(): ReactElement {
         isError={Boolean(templatesQuery.error)}
         errorText={templatesQuery.error instanceof Error ? templatesQuery.error.message : t('common.error')}
         emptyText={t('common.noData')}
-        pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100]}
-        onPageSizeChange={() => undefined}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={pageNumber > 1}
-        hasNextPage={pageNumber < totalPages}
-        onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
-        onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={pagedGrid.handleSort}
+        pageSize={pagedGrid.pageSize}
+        pageSizeOptions={pagedGrid.pageSizeOptions}
+        onPageSizeChange={pagedGrid.handlePageSizeChange}
+        pageNumber={templatesPage?.pageNumber ?? pagedGrid.pageNumber}
+        totalPages={templatesPage?.totalPages ?? 1}
+        hasPreviousPage={templatesPage?.hasPreviousPage ?? false}
+        hasNextPage={templatesPage?.hasNextPage ?? false}
+        onPreviousPage={pagedGrid.goToPreviousPage}
+        onNextPage={pagedGrid.goToNextPage}
         previousLabel={t('common.previous')}
         nextLabel={t('common.next')}
         paginationInfoText={t('common.paginationInfo', {
-          current: templates.length === 0 ? 0 : (pageNumber - 1) * pageSize + 1,
-          total: Math.min(pageNumber * pageSize, templates.length),
-          totalCount: templates.length,
-          defaultValue: `${templates.length}`,
+          current: range.from,
+          total: range.to,
+          totalCount: range.total,
+          defaultValue: `${range.total}`,
         })}
+        search={{
+          ...pagedGrid.searchConfig,
+          placeholder: t('common.search'),
+        }}
         refresh={{
           onRefresh: () => void templatesQuery.refetch(),
           isLoading: templatesQuery.isLoading,
