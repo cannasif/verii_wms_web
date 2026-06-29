@@ -5,7 +5,9 @@
   "actions": {
     "download": "PDF İndir",
     "downloading": "Hazırlanıyor...",
-    "run": "Çalıştır"
+    "run": "PDF Aç",
+    "detail": "Detayı Getir",
+    "loadingDetail": "Detay Alınıyor..."
   },
   "form": {
     "title": "Fatura PDF Sorgulama",
@@ -44,10 +46,42 @@
     "uuid": "UUID",
     "file": "Dosya"
   },
+  "detail": {
+    "title": "Fatura Üst Bilgisi",
+    "description": "UBL/XML dokümanı {{method}} üzerinden alındı ve parse edildi.",
+    "invoiceNo": "Fatura No",
+    "issueDate": "Tarih",
+    "lineCount": "Satır",
+    "payableAmount": "Ödenecek Tutar",
+    "supplier": "Satıcı",
+    "customer": "Alıcı"
+  },
+  "lines": {
+    "title": "Fatura Satırları",
+    "description": "UBL içindeki mal/hizmet kalemleri stok kodu, miktar, fiyat ve KDV bilgisiyle ayrıştırılır.",
+    "stock": "Stok / Hizmet",
+    "descriptionColumn": "Açıklama",
+    "quantity": "Miktar",
+    "unitPrice": "Birim Fiyat",
+    "tax": "KDV",
+    "total": "Satır Tutarı",
+    "empty": "Satır bulunamadı."
+  },
+  "taxes": {
+    "title": "Vergi Özeti",
+    "description": "KDV matrah, oran ve tutar kırılımları.",
+    "tax": "Vergi",
+    "rate": "Oran",
+    "base": "Matrah",
+    "amount": "Tutar",
+    "empty": "Vergi kırılımı bulunamadı."
+  },
   "messages": {
     "companyRequired": "Firma seçmelisiniz.",
     "uuidRequired": "Geçerli bir UUID girin veya XML içinden UUID yapıştırın.",
     "downloaded": "PDF hazırlandı ve indirildi.",
-    "downloadFailed": "PDF indirilemedi."
+    "downloadFailed": "PDF indirilemedi.",
+    "detailLoaded": "Fatura detayı getirildi.",
+    "detailFailed": "Fatura detayı getirilemedi."
   }
 }

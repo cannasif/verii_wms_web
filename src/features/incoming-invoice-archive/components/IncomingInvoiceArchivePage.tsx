@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Building2, Download, FileText, Search } from 'lucide-react';
+import { Building2, Download, FileSearch, FileText, Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -9,7 +9,7 @@ import { OpsActionButton, OpsListPageShell, OpsTextarea } from '@/components/sha
 import { MasterDataOpsGuidance, MasterDataOpsSection, MasterDataOpsStatGrid } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { incomingInvoiceArchiveApi } from '../api/incoming-invoice-archive.api';
-import type { IncomingInvoiceKind, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
+import type { IncomingInvoiceDetail, IncomingInvoiceKind, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
 
 const UUID_REGEX = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
 
@@ -37,6 +37,23 @@ function openPdf(blob: Blob): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
+function formatAmount(value?: number | null, currency?: string): string {
+  if (value == null) {
+    return '-';
+  }
+
+  return `${new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ${currency ?? ''}`.trim();
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('tr-TR');
+}
+
 export function IncomingInvoiceArchivePage(): ReactElement {
   const { t } = useTranslation(['incoming-invoice-archive', 'common']);
   const { setPageTitle } = useUIStore();
@@ -44,7 +61,9 @@ export function IncomingInvoiceArchivePage(): ReactElement {
   const [invoiceKind, setInvoiceKind] = useState<IncomingInvoiceKind>('Automatic');
   const [uuidInput, setUuidInput] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [lastResult, setLastResult] = useState<{ uuid: string; company?: ELogoPostboxCompany; fileName: string } | null>(null);
+  const [invoiceDetail, setInvoiceDetail] = useState<IncomingInvoiceDetail | null>(null);
 
   useEffect(() => {
     setPageTitle(t('title'));
@@ -95,6 +114,32 @@ export function IncomingInvoiceArchivePage(): ReactElement {
     }
   };
 
+  const handleDetailLookup = async (): Promise<void> => {
+    if (!companyKey) {
+      toast.error(t('messages.companyRequired'));
+      return;
+    }
+    if (!resolvedUuid) {
+      toast.error(t('messages.uuidRequired'));
+      return;
+    }
+
+    setIsLoadingDetail(true);
+    try {
+      const detail = await incomingInvoiceArchiveApi.getInvoiceDetail({
+        companyKey,
+        uuid: resolvedUuid,
+        invoiceKind,
+      });
+      setInvoiceDetail(detail);
+      toast.success(t('messages.detailLoaded'));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('messages.detailFailed'));
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  };
+
   return (
     <OpsListPageShell
       className="wms-ops-erp-skin"
@@ -110,13 +155,24 @@ export function IncomingInvoiceArchivePage(): ReactElement {
       title={t('title')}
       description={t('description')}
       actions={(
-        <OpsActionButton
-          type="button"
-          onClick={() => void handleDownload()}
-          disabled={isDownloading || companiesQuery.isLoading || !resolvedUuid || !companyKey}
-        >
-          {isDownloading ? t('actions.downloading') : t('actions.download')}
-        </OpsActionButton>
+        <div className="flex flex-wrap gap-2">
+          <OpsActionButton
+            type="button"
+            variant="secondary"
+            onClick={() => void handleDetailLookup()}
+            disabled={isLoadingDetail || companiesQuery.isLoading || !resolvedUuid || !companyKey}
+          >
+            <FileSearch className="size-4" />
+            {isLoadingDetail ? t('actions.loadingDetail') : t('actions.detail')}
+          </OpsActionButton>
+          <OpsActionButton
+            type="button"
+            onClick={() => void handleDownload()}
+            disabled={isDownloading || companiesQuery.isLoading || !resolvedUuid || !companyKey}
+          >
+            {isDownloading ? t('actions.downloading') : t('actions.download')}
+          </OpsActionButton>
+        </div>
       )}
     >
       <div className="grid gap-5 xl:grid-cols-[0.58fr_0.42fr]">
@@ -174,10 +230,16 @@ export function IncomingInvoiceArchivePage(): ReactElement {
               <div className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">{t('form.resolvedUuid')}</div>
               <div className="mt-1 break-all font-mono text-sm font-semibold">{resolvedUuid || '-'}</div>
             </div>
-            <OpsActionButton type="button" onClick={() => void handleDownload()} disabled={isDownloading || !resolvedUuid || !companyKey}>
-              <Search className="size-4" />
-              {isDownloading ? t('actions.downloading') : t('actions.run')}
-            </OpsActionButton>
+            <div className="flex flex-wrap gap-2">
+              <OpsActionButton type="button" variant="secondary" onClick={() => void handleDetailLookup()} disabled={isLoadingDetail || !resolvedUuid || !companyKey}>
+                <Search className="size-4" />
+                {isLoadingDetail ? t('actions.loadingDetail') : t('actions.detail')}
+              </OpsActionButton>
+              <OpsActionButton type="button" onClick={() => void handleDownload()} disabled={isDownloading || !resolvedUuid || !companyKey}>
+                <Download className="size-4" />
+                {isDownloading ? t('actions.downloading') : t('actions.run')}
+              </OpsActionButton>
+            </div>
           </div>
         </MasterDataOpsSection>
 
@@ -239,6 +301,107 @@ export function IncomingInvoiceArchivePage(): ReactElement {
           ) : null}
         </div>
       </div>
+
+      {invoiceDetail ? (
+        <div className="mt-5 space-y-5">
+          <MasterDataOpsSection
+            title={t('detail.title')}
+            subtitle={t('detail.description', { method: invoiceDetail.sourceMethod })}
+          >
+            <MasterDataOpsStatGrid
+              className="md:grid-cols-4"
+              items={[
+                { label: t('detail.invoiceNo'), value: invoiceDetail.header.invoiceNumber || '-' },
+                { label: t('detail.issueDate'), value: formatDate(invoiceDetail.header.issueDate) },
+                { label: t('detail.lineCount'), value: invoiceDetail.lines.length },
+                { label: t('detail.payableAmount'), value: formatAmount(invoiceDetail.header.payableAmount, invoiceDetail.header.currencyCode) },
+              ]}
+            />
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('detail.supplier')}</div>
+                <div className="mt-2 text-base font-semibold">{invoiceDetail.supplier.name || '-'}</div>
+                <div className="mt-1 font-mono text-xs text-muted-foreground">{invoiceDetail.supplier.vknOrTckn || '-'}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{invoiceDetail.supplier.addressLine || '-'}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('detail.customer')}</div>
+                <div className="mt-2 text-base font-semibold">{invoiceDetail.customer.name || '-'}</div>
+                <div className="mt-1 font-mono text-xs text-muted-foreground">{invoiceDetail.customer.vknOrTckn || '-'}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{invoiceDetail.customer.addressLine || '-'}</div>
+              </div>
+            </div>
+          </MasterDataOpsSection>
+
+          <MasterDataOpsSection
+            title={t('lines.title')}
+            subtitle={t('lines.description')}
+          >
+            <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-white/10">
+              <table className="min-w-full divide-y divide-slate-200/80 text-sm dark:divide-white/10">
+                <thead className="bg-slate-50/80 text-xs uppercase tracking-[0.14em] text-muted-foreground dark:bg-white/5">
+                  <tr>
+                    <th className="px-3 py-3 text-left">{t('lines.stock')}</th>
+                    <th className="px-3 py-3 text-left">{t('lines.descriptionColumn')}</th>
+                    <th className="px-3 py-3 text-right">{t('lines.quantity')}</th>
+                    <th className="px-3 py-3 text-right">{t('lines.unitPrice')}</th>
+                    <th className="px-3 py-3 text-right">{t('lines.tax')}</th>
+                    <th className="px-3 py-3 text-right">{t('lines.total')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/80 dark:divide-white/10">
+                  {invoiceDetail.lines.map((line, index) => (
+                    <tr key={`${line.lineId}-${index}`}>
+                      <td className="px-3 py-3">
+                        <div className="font-mono text-xs font-semibold">{line.stockCode || '-'}</div>
+                        <div className="text-muted-foreground">{line.stockName || '-'}</div>
+                      </td>
+                      <td className="max-w-[320px] px-3 py-3 text-muted-foreground">{line.description || '-'}</td>
+                      <td className="px-3 py-3 text-right font-mono">{line.quantity ?? '-'} {line.unitCode}</td>
+                      <td className="px-3 py-3 text-right font-mono">{formatAmount(line.unitPrice, invoiceDetail.header.currencyCode)}</td>
+                      <td className="px-3 py-3 text-right font-mono">%{line.taxRate ?? '-'} / {formatAmount(line.taxAmount, invoiceDetail.header.currencyCode)}</td>
+                      <td className="px-3 py-3 text-right font-mono font-semibold">{formatAmount(line.lineExtensionAmount, invoiceDetail.header.currencyCode)}</td>
+                    </tr>
+                  ))}
+                  {invoiceDetail.lines.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">{t('lines.empty')}</td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+          </MasterDataOpsSection>
+
+          <MasterDataOpsSection
+            title={t('taxes.title')}
+            subtitle={t('taxes.description')}
+          >
+            <div className="grid gap-3 md:grid-cols-3">
+              {invoiceDetail.taxes.map((tax, index) => (
+                <div key={`${tax.taxName}-${index}`} className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                  <div className="text-sm font-semibold">{tax.taxName || t('taxes.tax')}</div>
+                  <div className="mt-2 font-mono text-xs text-muted-foreground">
+                    {t('taxes.rate')}: %{tax.percent ?? '-'}
+                  </div>
+                  <div className="mt-1 font-mono text-xs text-muted-foreground">
+                    {t('taxes.base')}: {formatAmount(tax.taxableAmount, invoiceDetail.header.currencyCode)}
+                  </div>
+                  <div className="mt-1 font-mono text-sm font-semibold">
+                    {t('taxes.amount')}: {formatAmount(tax.taxAmount, invoiceDetail.header.currencyCode)}
+                  </div>
+                </div>
+              ))}
+              {invoiceDetail.taxes.length === 0 ? (
+                <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+                  {t('taxes.empty')}
+                </div>
+              ) : null}
+            </div>
+          </MasterDataOpsSection>
+        </div>
+      ) : null}
     </OpsListPageShell>
   );
 }

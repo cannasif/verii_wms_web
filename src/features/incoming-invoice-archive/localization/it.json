@@ -5,7 +5,9 @@
   "actions": {
     "download": "Download PDF",
     "downloading": "Preparing...",
-    "run": "Run"
+    "run": "Open PDF",
+    "detail": "Load Detail",
+    "loadingDetail": "Loading Detail..."
   },
   "form": {
     "title": "Invoice PDF Lookup",
@@ -44,10 +46,42 @@
     "uuid": "UUID",
     "file": "File"
   },
+  "detail": {
+    "title": "Invoice Header",
+    "description": "The UBL/XML document was loaded through {{method}} and parsed.",
+    "invoiceNo": "Invoice No",
+    "issueDate": "Date",
+    "lineCount": "Lines",
+    "payableAmount": "Payable Amount",
+    "supplier": "Supplier",
+    "customer": "Customer"
+  },
+  "lines": {
+    "title": "Invoice Lines",
+    "description": "Goods/service rows from UBL are parsed with stock code, quantity, price and VAT data.",
+    "stock": "Stock / Service",
+    "descriptionColumn": "Description",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "tax": "VAT",
+    "total": "Line Amount",
+    "empty": "No lines found."
+  },
+  "taxes": {
+    "title": "Tax Summary",
+    "description": "VAT taxable amount, rate and amount breakdown.",
+    "tax": "Tax",
+    "rate": "Rate",
+    "base": "Base",
+    "amount": "Amount",
+    "empty": "No tax breakdown found."
+  },
   "messages": {
     "companyRequired": "Please select a company.",
     "uuidRequired": "Enter a valid UUID or paste XML containing a UUID.",
     "downloaded": "PDF was prepared and downloaded.",
-    "downloadFailed": "PDF could not be downloaded."
+    "downloadFailed": "PDF could not be downloaded.",
+    "detailLoaded": "Invoice detail was loaded.",
+    "detailFailed": "Invoice detail could not be loaded."
   }
 }

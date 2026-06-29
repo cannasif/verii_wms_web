@@ -1,5 +1,5 @@
 import { api } from '@/lib/axios';
-import type { ApiResponse, IncomingInvoicePdfRequest, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
+import type { ApiResponse, IncomingInvoiceDetail, IncomingInvoicePdfRequest, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
 
 function extractData<T>(response: ApiResponse<T>): T {
   if (!response.success || response.data === undefined) {
@@ -44,5 +44,10 @@ export const incomingInvoiceArchiveApi = {
     } catch (error) {
       throw new Error(await extractBlobError(error));
     }
+  },
+
+  async getInvoiceDetail(input: IncomingInvoicePdfRequest): Promise<IncomingInvoiceDetail> {
+    const response = await api.post<ApiResponse<IncomingInvoiceDetail>>('/api/incoming-invoice-archive/invoice-detail', input);
+    return extractData(response as ApiResponse<IncomingInvoiceDetail>);
   },
 };
