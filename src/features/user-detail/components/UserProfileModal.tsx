@@ -41,9 +41,8 @@ const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
 ];
 
 const settingsRowBaseClass = cn(
-  'flex w-full items-center justify-between gap-3 rounded-[1.5rem] border px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 md:rounded-[2rem]',
+  'flex min-h-[4.5rem] w-full items-center justify-between gap-3 rounded-[1.5rem] border px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 md:rounded-[2rem]',
   'border-slate-200/70 bg-white/90 dark:border-white/[0.06] dark:bg-white/[0.03]',
-  'md:min-h-0 md:flex-1 md:basis-0',
 );
 
 const settingsProfileRowClass = cn(
@@ -53,7 +52,7 @@ const settingsProfileRowClass = cn(
 );
 
 const settingsIconClass =
-  'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-sm sm:h-12 sm:w-12 md:h-14 md:w-14';
+  'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-sm sm:h-12 sm:w-12';
 
 const settingsHugeiconSize = 22;
 const settingsHugeiconStroke = 1.75;
@@ -101,10 +100,10 @@ export function UserProfileModal({
           'gap-0 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-0 text-slate-900 lg:rounded-[2.5rem]',
           'shadow-[0_28px_70px_rgba(15,23,42,0.14)] dark:border-white/[0.08] dark:bg-[#09090f] dark:text-white dark:shadow-[0_28px_90px_rgba(0,0,0,0.62)]',
           'grid w-[95vw] max-w-[95vw] grid-cols-1',
-          'max-h-[min(620px,92vh)] overflow-y-auto',
+          'max-h-[min(760px,92vh)] overflow-y-auto',
           'sm:max-w-4xl sm:w-full',
           'lg:!max-w-[1100px]',
-          'md:h-[min(620px,90vh)] md:max-h-[min(620px,90vh)] md:grid-cols-[320px_minmax(0,1fr)] md:overflow-hidden',
+          'md:h-[min(760px,90vh)] md:max-h-[min(760px,90vh)] md:grid-cols-[320px_minmax(0,1fr)] md:overflow-hidden',
           'lg:grid-cols-[380px_minmax(0,1fr)]',
         )}
         aria-describedby="user-profile-description"
@@ -190,7 +189,7 @@ export function UserProfileModal({
             </h2>
           </header>
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2.5 overflow-y-auto px-6 py-3 sm:gap-3 sm:px-8 sm:py-4 md:justify-between md:px-10">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto px-6 py-4 sm:px-8 md:px-10">
             <button type="button" onClick={onOpenProfileDetails} className={settingsProfileRowClass}>
               <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                 <span className={cn(settingsIconClass, 'bg-violet-600/90')}>
@@ -313,7 +312,7 @@ export function UserProfileModal({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 md:max-h-[300px] lg:max-h-[340px]">
                 {brandThemes.map((item) => {
                   const isSelected = item.id === brandTheme;
 
