@@ -26,9 +26,54 @@
   },
   "companies": {
     "title": "eLogo Firma Tanımları",
-    "description": "Şifreler kod deposuna yazılmaz; ortam ayarı veya canlı config üzerinden verilir.",
+    "description": "Bağlantı bilgileri SQL tablosundan gelir; şifreler şifreli olarak saklanır.",
     "total": "Firma",
     "configured": "Hazır"
+  },
+  "connections": {
+    "title": "eLogo Bağlantıları",
+    "description": "Gelen fatura/e-Arşiv sorgularında kullanılacak firma bağlantılarını SQL üzerinden yönetin.",
+    "empty": "Bağlantı tanımı bulunamadı.",
+    "actions": {
+      "create": "Bağlantı Ekle"
+    },
+    "table": {
+      "displayName": "Firma",
+      "key": "Anahtar",
+      "vkn": "VKN",
+      "username": "Kullanıcı",
+      "source": "Şirket / Source",
+      "configured": "Şifre Durumu",
+      "default": "Varsayılan",
+      "active": "Aktif"
+    },
+    "dialog": {
+      "createTitle": "eLogo Bağlantısı Ekle",
+      "editTitle": "eLogo Bağlantısını Düzenle"
+    },
+    "form": {
+      "key": "Bağlantı Anahtarı",
+      "displayName": "Firma Adı",
+      "vkn": "VKN",
+      "username": "Kullanıcı Adı",
+      "password": "Web Servis Şifresi",
+      "passwordKeep": "Boş bırakılırsa mevcut şifre korunur",
+      "source": "Şirket / Source",
+      "endpointUrl": "Endpoint URL",
+      "applicationName": "Application Name",
+      "version": "Versiyon",
+      "timeoutSeconds": "Timeout (sn)",
+      "active": "Aktif",
+      "default": "Varsayılan",
+      "description": "Açıklama"
+    },
+    "messages": {
+      "created": "eLogo bağlantısı oluşturuldu.",
+      "updated": "eLogo bağlantısı güncellendi.",
+      "deleted": "eLogo bağlantısı silindi.",
+      "required": "Zorunlu alanları doldurun.",
+      "keyRequired": "Bağlantı anahtarı zorunludur."
+    }
   },
   "status": {
     "ready": "Hazır",
@@ -37,7 +82,7 @@
   "guidance": {
     "title": "Operasyon Notu",
     "description": "eLogo bazı e-Fatura PDF cevaplarını ZIP içinde döndürebilir; API bu paketi açıp içindeki PDF dosyasını kullanıcıya verir.",
-    "secretNote": "Canlı kullanım için ilgili firmanın web servis şifresi backend ortam ayarlarında tanımlanmalıdır."
+    "secretNote": "Canlı kullanım için ilgili firmanın web servis şifresi eLogo bağlantı tanımı ekranından girilmelidir."
   },
   "result": {
     "title": "Son İndirilen Doküman",

@@ -6,6 +6,60 @@ export interface ELogoPostboxCompany {
   isConfigured: boolean;
 }
 
+export interface ELogoConnection {
+  id: number;
+  branchCode: string;
+  key: string;
+  displayName: string;
+  vkn: string;
+  username: string;
+  source: string;
+  endpointUrl?: string | null;
+  applicationName?: string | null;
+  version?: string | null;
+  timeoutSeconds?: number | null;
+  isActive: boolean;
+  isDefault: boolean;
+  isConfigured: boolean;
+  description?: string | null;
+}
+
+export interface ELogoConnectionUpsert {
+  key?: string;
+  displayName: string;
+  vkn: string;
+  username: string;
+  password?: string | null;
+  source: string;
+  endpointUrl?: string | null;
+  applicationName?: string | null;
+  version?: string | null;
+  timeoutSeconds?: number | null;
+  isActive: boolean;
+  isDefault: boolean;
+  description?: string | null;
+}
+
+export interface PagedRequest {
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: string | null;
+  sortDirection?: string | null;
+  search?: string | null;
+  filters?: unknown[];
+  filterLogic?: string;
+}
+
+export interface PagedResponse<T> {
+  data: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
 export type IncomingInvoiceKind = 'EInvoice' | 'EArchive' | 'Automatic';
 
 export interface IncomingInvoicePdfRequest {

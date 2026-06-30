@@ -48,7 +48,10 @@ export const WMS_NAV_ITEMS: NavItem[] = [
           {
             title: 'sidebar.incomingInvoiceArchive',
             titleFallback: 'Gelen Fatura ve Arşiv',
-            href: '/incoming-invoice-archive',
+            children: [
+              { title: 'sidebar.incomingInvoiceArchiveLookup', titleFallback: 'Fatura / Arşiv Sorgula', href: '/incoming-invoice-archive' },
+              { title: 'sidebar.incomingInvoiceArchiveConnections', titleFallback: 'eLogo Bağlantıları', href: '/incoming-invoice-archive/connections' },
+            ],
           },
           {
             title: 'sidebar.warehouseInboundCreate',

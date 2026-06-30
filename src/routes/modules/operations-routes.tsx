@@ -42,6 +42,10 @@ const IncomingInvoiceArchivePage = lazyNamed(
   () => import('@/features/incoming-invoice-archive'),
   'IncomingInvoiceArchivePage',
 );
+const IncomingInvoiceConnectionsPage = lazyNamed(
+  () => import('@/features/incoming-invoice-archive'),
+  'IncomingInvoiceConnectionsPage',
+);
 
 const TransferCreatePage = lazyNamed(
   () => import('@/features/transfer'),
@@ -318,10 +322,22 @@ export const operationsChildRoutes: RouteObject[] = [
   },
   {
     path: 'incoming-invoice-archive',
-    Component: withRoute(IncomingInvoiceArchivePage, {
-      routeName: 'incoming-invoice-archive',
-      namespaces: ['incoming-invoice-archive', 'common'],
-    }),
+    children: [
+      {
+        index: true,
+        Component: withRoute(IncomingInvoiceArchivePage, {
+          routeName: 'incoming-invoice-archive',
+          namespaces: ['incoming-invoice-archive', 'common'],
+        }),
+      },
+      {
+        path: 'connections',
+        Component: withRoute(IncomingInvoiceConnectionsPage, {
+          routeName: 'incoming-invoice-archive-connections',
+          namespaces: ['incoming-invoice-archive', 'common'],
+        }),
+      },
+    ],
   },
   {
     path: 'transfer',

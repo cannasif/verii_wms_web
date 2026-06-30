@@ -297,6 +297,8 @@
     "goodsReceiptAssigned": "Zugewiesene Wareneingangsaufträge",
     "goodsReceiptApproval": "Wareneingangsbestellungen warten auf Genehmigung",
     "incomingInvoiceArchive": "Incoming Invoice and Archive",
+    "incomingInvoiceArchiveLookup": "Invoice / Archive Lookup",
+    "incomingInvoiceArchiveConnections": "eLogo Connections",
     "inventory": "Inventar",
     "warehouse3d": "3D-Lager",
     "warehouse3dOutside": "3D Außenlager",

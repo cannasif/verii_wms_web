@@ -1,5 +1,14 @@
 import { api } from '@/lib/axios';
-import type { ApiResponse, IncomingInvoiceDetail, IncomingInvoicePdfRequest, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
+import type {
+  ApiResponse,
+  ELogoConnection,
+  ELogoConnectionUpsert,
+  ELogoPostboxCompany,
+  IncomingInvoiceDetail,
+  IncomingInvoicePdfRequest,
+  PagedRequest,
+  PagedResponse,
+} from '../types/incoming-invoice-archive.types';
 
 function extractData<T>(response: ApiResponse<T>): T {
   if (!response.success || response.data === undefined) {
@@ -49,5 +58,25 @@ export const incomingInvoiceArchiveApi = {
   async getInvoiceDetail(input: IncomingInvoicePdfRequest): Promise<IncomingInvoiceDetail> {
     const response = await api.post<ApiResponse<IncomingInvoiceDetail>>('/api/incoming-invoice-archive/invoice-detail', input);
     return extractData(response as ApiResponse<IncomingInvoiceDetail>);
+  },
+
+  async getConnectionsPaged(input: PagedRequest): Promise<PagedResponse<ELogoConnection>> {
+    const response = await api.post<ApiResponse<PagedResponse<ELogoConnection>>>('/api/incoming-invoice-archive/connections/paged', input);
+    return extractData(response as ApiResponse<PagedResponse<ELogoConnection>>);
+  },
+
+  async createConnection(input: ELogoConnectionUpsert): Promise<ELogoConnection> {
+    const response = await api.post<ApiResponse<ELogoConnection>>('/api/incoming-invoice-archive/connections', input);
+    return extractData(response as ApiResponse<ELogoConnection>);
+  },
+
+  async updateConnection(id: number, input: ELogoConnectionUpsert): Promise<ELogoConnection> {
+    const response = await api.put<ApiResponse<ELogoConnection>>(`/api/incoming-invoice-archive/connections/${id}`, input);
+    return extractData(response as ApiResponse<ELogoConnection>);
+  },
+
+  async deleteConnection(id: number): Promise<boolean> {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/incoming-invoice-archive/connections/${id}`);
+    return extractData(response as ApiResponse<boolean>);
   },
 };

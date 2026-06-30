@@ -302,6 +302,8 @@
     "goodsReceiptAssigned": "Atanmış Mal Kabul Emirleri",
     "goodsReceiptApproval": "Onay Bekleyen Mal Kabul Emirleri",
     "incomingInvoiceArchive": "Gelen Fatura ve Arşiv",
+    "incomingInvoiceArchiveLookup": "Fatura / Arşiv Sorgula",
+    "incomingInvoiceArchiveConnections": "eLogo Bağlantıları",
     "inventory": "Envanter",
     "warehouse3d": "3D Depo",
     "warehouse3dOutside": "3D Dış Depo",
