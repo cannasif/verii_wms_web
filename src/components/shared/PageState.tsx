@@ -1,8 +1,9 @@
 import { type ReactElement } from 'react';
-import { AlertCircle, Inbox, Loader2 } from 'lucide-react';
+import { AlertCircle, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { OpsLoadingState } from './OpsLoadingState';
 
 type PageStateTone = 'loading' | 'error' | 'empty';
 
@@ -16,8 +17,7 @@ interface PageStateProps {
   compact?: boolean;
 }
 
-const stateConfig: Record<PageStateTone, { icon: typeof Loader2; iconClassName: string }> = {
-  loading: { icon: Loader2, iconClassName: 'text-primary animate-spin' },
+const stateConfig: Record<Exclude<PageStateTone, 'loading'>, { icon: typeof AlertCircle; iconClassName: string }> = {
   error: { icon: AlertCircle, iconClassName: 'text-destructive' },
   empty: { icon: Inbox, iconClassName: 'text-muted-foreground' },
 };
@@ -31,6 +31,21 @@ export function PageState({
   className,
   compact = false,
 }: PageStateProps): ReactElement {
+  if (tone === 'loading') {
+    return (
+      <div
+        className={cn(
+          'wms-ops-page-state wms-ops-page-state--loading',
+          compact && 'wms-ops-page-state--compact',
+          className,
+        )}
+      >
+        <OpsLoadingState message={title} compact={compact} />
+        {description ? <p className="wms-ops-page-state__description">{description}</p> : null}
+      </div>
+    );
+  }
+
   const { icon: Icon, iconClassName } = stateConfig[tone];
 
   return (

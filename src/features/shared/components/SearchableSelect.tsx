@@ -96,7 +96,7 @@ export function SearchableSelect<T>({
       aria-expanded={open}
       className={cn(
         'w-full justify-between',
-        isOps && 'wms-ops-lookup-trigger font-normal',
+        isOps && 'wms-ops-lookup-trigger wms-ops-field h-auto font-normal',
         !isOps && 'font-normal',
         !isOps && className,
         isOps && !selectedOption && !isLoading && 'wms-ops-field--placeholder',

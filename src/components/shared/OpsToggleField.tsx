@@ -1,6 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
+import { OpsCircuitToggleField } from './OpsCircuitToggle';
 
 interface OpsToggleFieldProps {
   checked: boolean;
@@ -20,26 +19,13 @@ export function OpsToggleField({
   className,
 }: OpsToggleFieldProps): ReactElement {
   return (
-    <div
-      data-ops-toggle
-      className={cn(
-        'wms-ops-toggle-card flex flex-row items-start gap-4 rounded-lg border p-4 transition-colors',
-        checked && 'wms-ops-toggle-card--active',
-        className,
-      )}
-    >
-      <Switch
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-        className="wms-ops-switch mt-0.5 shrink-0"
-      />
-      <div className="min-w-0 space-y-1 leading-none">
-        <div className="text-sm font-semibold text-foreground">{title}</div>
-        {description ? (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-    </div>
+    <OpsCircuitToggleField
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      title={title}
+      description={description}
+      disabled={disabled}
+      className={className}
+    />
   );
 }

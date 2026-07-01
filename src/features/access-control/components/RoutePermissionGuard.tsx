@@ -37,7 +37,7 @@ export function RoutePermissionGuard(): ReactElement {
       return <UnauthorizedPage />;
     }
     return (
-      <div key={`${location.pathname}${location.search}${location.hash}:${location.key}`} className="contents">
+      <div key={`${location.pathname}${location.search}${location.hash}`} className="contents">
         <Outlet />
       </div>
     );
@@ -48,7 +48,7 @@ export function RoutePermissionGuard(): ReactElement {
   }
 
   if (canAccessPath(permissions, location.pathname)) {
-    const outletKey = `${location.pathname}${location.search}${location.hash}:${location.key}`;
+    const outletKey = `${location.pathname}${location.search}${location.hash}`;
     return (
       <div key={outletKey} className="contents">
         <Outlet />

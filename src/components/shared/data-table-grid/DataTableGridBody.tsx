@@ -1,6 +1,8 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { OpsGridErrorState } from '../OpsGridErrorState';
+import { OpsGridEmptyState } from '../OpsGridEmptyState';
 import type { DataTableGridColumn } from '../DataTableGrid';
 import type { DataTableVariant } from '../DataTableActionBar';
 import { DataTableGridCell } from './DataTableGridCell';
@@ -111,9 +113,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
         <TableRow>
           <TableCell colSpan={colSpan} className={cn(isOps ? 'border-0 p-0' : 'py-8 text-center text-red-600')}>
             {isOps ? (
-              <div className="wms-ops-grid-error" role="alert">
-                {errorText}
-              </div>
+              <OpsGridErrorState message={errorText} />
             ) : (
               errorText
             )}
@@ -125,7 +125,7 @@ export function DataTableGridBody<TRow, TKey extends string>({
         <TableRow>
           <TableCell colSpan={colSpan} className={cn(isOps ? 'border-0 p-0' : 'py-8 text-center text-muted-foreground')}>
             {isOps ? (
-              <div className="wms-ops-grid-empty">{emptyText}</div>
+              <OpsGridEmptyState message={emptyText} />
             ) : (
               emptyText
             )}

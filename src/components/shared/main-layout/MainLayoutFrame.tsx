@@ -40,7 +40,7 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
           <Navbar navItems={items} />
           <main
             ref={mainRef}
-            className="custom-scrollbar crm-skin relative flex-1 overflow-y-auto pb-20 md:pb-16"
+            className="wms-ops-scrollbar custom-scrollbar crm-skin relative flex-1 overflow-y-auto pb-20 md:pb-16"
           >
             <div
               aria-hidden

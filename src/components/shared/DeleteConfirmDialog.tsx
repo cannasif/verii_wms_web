@@ -20,8 +20,6 @@ type DeleteConfirmDialogProps = {
   isPending?: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void | Promise<void>;
-  /** @deprecated Ops is now the default and only style. */
-  variant?: 'default' | 'ops';
 };
 
 export function DeleteConfirmDialog({

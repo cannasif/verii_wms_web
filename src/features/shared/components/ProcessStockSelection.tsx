@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Loader2, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { lookupApi } from '@/features/shared/api/lookup-api';
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
+import { OpsLoadingState } from '@/components/shared/OpsLoadingState';
 import { cn } from '@/lib/utils';
 import type { BaseSelectedStockItem } from '@/types/document-models';
 
@@ -244,11 +245,8 @@ function StockListPane({
 
       <div ref={listRef} onScroll={onScroll} className="flex-1 space-y-1 overflow-y-auto p-2">
         {isLoadingProducts ? (
-          <div className="py-4 text-center text-sm text-muted-foreground">
-            <span className="inline-flex items-center">
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              {t('common.loading')}
-            </span>
+          <div className="px-2 py-4">
+            <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="py-4 text-center text-sm text-muted-foreground">{t('common.notFound')}</div>
@@ -285,9 +283,8 @@ function StockListPane({
           })
         )}
         {isFetchingNextPage ? (
-          <div className="flex items-center justify-center py-3 text-xs text-muted-foreground">
-            <Loader2 className="mr-2 size-4 animate-spin" />
-            {t('common.loading')}
+          <div className="px-2 py-3">
+            <OpsLoadingState message={t('common.loading')} compact code="MORE" />
           </div>
         ) : null}
       </div>

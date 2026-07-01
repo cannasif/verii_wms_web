@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Loader2, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PagedResponse } from '@/types/api';
 import { Button } from '@/components/ui/button';
+import { OpsLoadingState } from './OpsLoadingState';
 import {
   Dialog,
   DialogContent,
@@ -248,14 +249,8 @@ export function PagedLookupDialog<T>({
               )}
             >
               {query.isLoading ? (
-                <div
-                  className={cn(
-                    'flex items-center justify-center py-8 text-sm',
-                    isOps ? 'wms-ops-lookup-empty' : 'text-slate-500',
-                  )}
-                >
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  {t('common.loading')}
+                <div className={cn('py-6', isOps ? 'px-2' : '')}>
+                  <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
                 </div>
               ) : items.length === 0 ? (
                 <div
@@ -290,14 +285,8 @@ export function PagedLookupDialog<T>({
               )}
 
               {query.isFetchingNextPage ? (
-                <div
-                  className={cn(
-                    'flex items-center justify-center py-3 text-xs',
-                    isOps ? 'wms-ops-lookup-empty' : 'text-slate-500',
-                  )}
-                >
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  {t('common.loading')}
+                <div className={cn('py-3', isOps ? 'px-2' : 'flex items-center justify-center text-xs text-slate-500')}>
+                  <OpsLoadingState message={t('common.loading')} compact code="MORE" />
                 </div>
               ) : null}
             </div>

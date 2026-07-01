@@ -1,10 +1,8 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PagedDataGridColumn } from '@/components/shared';
-import { OpsFieldShell } from '@/components/shared/OpsFieldShell';
-import { OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { DialogContent } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { OpsSelect } from '@/components/shared/OpsSelect';
 import { cn } from '@/lib/utils';
 
 export const MASTER_DATA_OPS_TABLE_COL = 'wms-ops-table-center-col';
@@ -227,15 +225,8 @@ export function MasterDataOpsSelect({
   disabled?: boolean;
 }): ReactElement {
   return (
-    <OpsFieldShell>
-      <Select value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
-        <SelectTrigger className="wms-ops-list-field-trigger h-9 w-full min-w-0 border-0 bg-transparent shadow-none ring-0 focus:ring-0 focus-visible:ring-0">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
-          {children}
-        </SelectContent>
-      </Select>
-    </OpsFieldShell>
+    <OpsSelect value={value} onValueChange={onValueChange} placeholder={placeholder} disabled={disabled}>
+      {children}
+    </OpsSelect>
   );
 }

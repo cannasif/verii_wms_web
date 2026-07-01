@@ -2,6 +2,7 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { OpsFieldShell } from "@/components/shared/OpsFieldShell"
 import { Button } from "@/components/ui/button"
 import { VoiceSearchButton } from "@/components/ui/voice-search-button"
 import {
@@ -35,6 +36,7 @@ interface ComboboxProps {
   modal?: boolean
   disabled?: boolean
   listClassName?: string
+  variant?: 'default' | 'ops'
 }
 
 export function Combobox({
@@ -48,7 +50,8 @@ export function Combobox({
   popoverClassName,
   modal = false,
   disabled = false,
-  listClassName
+  listClassName,
+  variant = 'default',
 }: ComboboxProps) {
   const { t } = useTranslation()
   const [open, setOpen] = React.useState(false)
@@ -58,6 +61,7 @@ export function Combobox({
   const resolvedPlaceholder = placeholder ?? t('common.select')
   const resolvedSearchPlaceholder = searchPlaceholder ?? t('common.search')
   const resolvedEmptyText = emptyText ?? t('common.noResults')
+  const isOps = variant === 'ops'
 
   const selectedOption = options.find((option) => option.value === value)
 
@@ -72,30 +76,45 @@ export function Combobox({
     setPortalContainer(dialogContent ?? null)
   }, [])
 
+  const triggerButton = (
+    <Button
+      type="button"
+      ref={triggerRef}
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      disabled={disabled}
+      className={cn(
+        'w-full justify-between',
+        isOps && 'wms-ops-lookup-trigger wms-ops-field h-auto font-normal',
+        !isOps && 'font-normal',
+        !isOps && !value && 'text-muted-foreground',
+        !isOps && className,
+        isOps && !value && 'wms-ops-field--placeholder',
+      )}
+    >
+      <span className="truncate">
+        {selectedOption ? selectedOption.label : resolvedPlaceholder}
+      </span>
+      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+    </Button>
+  )
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          ref={triggerRef}
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
-          className={cn(
-            "w-full justify-between font-normal",
-            !value && "text-muted-foreground",
-            className
-          )}
-        >
-          <span className="truncate">
-            {selectedOption ? selectedOption.label : resolvedPlaceholder}
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+      {isOps ? (
+        <OpsFieldShell className={className}>
+          <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+        </OpsFieldShell>
+      ) : (
+        <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+      )}
       <PopoverContent
-        className={cn('w-[--radix-popover-trigger-width] p-0', popoverClassName)}
+        className={cn(
+          'w-[--radix-popover-trigger-width] p-0',
+          isOps && 'wms-ops-list-popover wms-ops-lookup-popover',
+          popoverClassName,
+        )}
         align="start"
         container={portalContainer}
       >
