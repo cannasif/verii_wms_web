@@ -8,9 +8,38 @@
     <title> V3RII WMS SYSTEM</title>
     <script>
       (function() {
+        const useCustomBrandThemes = localStorage.getItem('vite-ui-wms-use-custom-brand-themes') === 'true';
         const theme = localStorage.getItem('vite-ui-theme') || 'system';
+        const root = document.documentElement;
+
+        if (useCustomBrandThemes) {
+          const brandTheme = localStorage.getItem('vite-ui-wms-brand-theme') || 'v3rii';
+          const lightThemes = new Set(['cleanLight', 'flatNavy', 'flatSlate', 'flatWhite']);
+          const resolvedTheme = lightThemes.has(brandTheme) ? 'light' : 'dark';
+          root.classList.add(resolvedTheme);
+
+          const classMap = {
+            v3rii: 'theme-v3rii',
+            warehouseBlue: 'theme-warehouse-blue',
+            industrialSteel: 'theme-industrial-steel',
+            safetyGreen: 'theme-safety-green',
+            forkliftAmber: 'theme-forklift-amber',
+            graphite: 'theme-graphite',
+            executive: 'theme-executive',
+            burgundy: 'theme-burgundy',
+            cleanLight: 'theme-clean-light',
+            highContrast: 'theme-high-contrast',
+            flatNavy: 'theme-flat-navy',
+            flatSlate: 'theme-flat-slate',
+            flatWhite: 'theme-flat-white',
+          };
+          root.classList.add(classMap[brandTheme] || 'theme-v3rii');
+          root.dataset.brandTheme = brandTheme;
+          return;
+        }
+
         if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
+          root.classList.add('dark');
         }
       })();
     </script>
