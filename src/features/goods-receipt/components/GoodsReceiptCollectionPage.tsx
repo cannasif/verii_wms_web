@@ -6,7 +6,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { OpsActionButton, OpsFieldShell } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsLoadingState } from '@/components/shared';
 import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { useGrStokBarcode } from '../hooks/useGrStokBarcode';
 import { useAddGrBarcode } from '../hooks/useAddGrBarcode';
@@ -621,7 +621,7 @@ export function GoodsReceiptCollectionPage(): ReactElement {
 
         {isLoadingOrderLines ? (
           <div className="wms-ops-collection__loading">
-            <Loader2 className="size-7 animate-spin" aria-hidden />
+            <OpsLoadingState message={t('common.loading')} code="FETCH" />
           </div>
         ) : orderLinesWithCollected.length > 0 ? (
           <div className="wms-ops-collection__line-grid">

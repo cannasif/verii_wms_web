@@ -5,8 +5,7 @@ import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
-import { OpsActionButton, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { OpsActionButton, OpsCircuitToggleInline, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn, DeleteConfirmDialog } from '@/components/shared';
 import { MasterDataOpsDialogContent, MasterDataOpsFormField, masterDataOpsGridColumn } from '@/features/shared';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -14,7 +13,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { incomingInvoiceArchiveApi } from '../api/incoming-invoice-archive.api';
 import type { ELogoConnection, ELogoConnectionUpsert } from '../types/incoming-invoice-archive.types';
 
-type ColumnKey = 'displayName' | 'key' | 'vkn' | 'username' | 'source' | 'isConfigured' | 'isDefault' | 'isActive' | 'actions';
+type ColumnKey = 'displayName' | 'key' | 'vkn' | 'username' | 'source' | 'isConfigured' | 'isDefault' | 'isActive';
 
 const emptyForm: ELogoConnectionUpsert = {
   key: '',
@@ -61,6 +60,7 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
   const pageKey = 'incoming-invoice-archive-connections';
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ELogoConnection | null>(null);
+  const [connectionToDelete, setConnectionToDelete] = useState<ELogoConnection | null>(null);
   const [formState, setFormState] = useState<ELogoConnectionUpsert>(emptyForm);
 
   const pagedGrid = usePagedDataGrid<ColumnKey>({
@@ -102,6 +102,7 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
     mutationFn: (id: number) => incomingInvoiceArchiveApi.deleteConnection(id),
     onSuccess: async () => {
       toast.success(t('connections.messages.deleted'));
+      setConnectionToDelete(null);
       await query.refetch();
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common:generalError')),
@@ -116,7 +117,6 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
     masterDataOpsGridColumn('isConfigured', t('connections.table.configured')),
     masterDataOpsGridColumn('isDefault', t('connections.table.default')),
     masterDataOpsGridColumn('isActive', t('connections.table.active')),
-    masterDataOpsGridColumn('actions', t('common:actions'), false),
   ], [t]);
 
   const visibleColumnKeys = useMemo<ColumnKey[]>(() => columns.map((column) => column.key), [columns]);
@@ -194,6 +194,7 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className="wms-ops-erp-skin"
       eyebrow={t('eyebrow')}
       title={t('connections.title')}
       description={t('connections.description')}
@@ -235,9 +236,7 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
         sortBy={pagedGrid.sortBy}
         sortDirection={pagedGrid.sortDirection}
         onSort={(columnKey) => {
-          if (columnKey !== 'actions') {
-            pagedGrid.handleSort(columnKey);
-          }
+          pagedGrid.handleSort(columnKey);
         }}
         renderSortIcon={renderSortIcon}
         isLoading={query.isLoading || query.isFetching}
@@ -246,15 +245,22 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
         emptyText={t('connections.empty')}
         showActionsColumn
         actionsHeaderLabel={t('common:actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
         renderActionsCell={(row) => (
-          <div className="flex justify-end gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => startEdit(row)}>
-              <Pencil className="size-4" />
-              <span className="ml-2">{t('common:update')}</span>
+          <div className="wms-ops-row-actions">
+            <Button type="button" variant="ghost" size="icon" className="wms-ops-grid-icon-btn" onClick={() => startEdit(row)} aria-label={t('common:update')}>
+              <Pencil className="size-3" />
             </Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}>
-              <Trash2 className="size-4" />
-              <span className="ml-2">{t('common:delete')}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+              onClick={() => setConnectionToDelete(row)}
+              aria-label={t('common:delete')}
+            >
+              <Trash2 className="size-3" />
             </Button>
           </div>
         )}
@@ -326,10 +332,18 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
                 />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.active')}>
-                <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} />
+                <OpsCircuitToggleInline
+                  checked={formState.isActive}
+                  onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
+                  aria-label={t('connections.form.active')}
+                />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.default')}>
-                <Switch checked={formState.isDefault} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isDefault: checked }))} />
+                <OpsCircuitToggleInline
+                  checked={formState.isDefault}
+                  onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isDefault: checked }))}
+                  aria-label={t('connections.form.default')}
+                />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.description')} className="md:col-span-2">
                 <OpsTextarea value={formState.description ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
@@ -338,15 +352,27 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
           </div>
 
           <DialogFooter className="border-t px-5 py-4">
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+            <OpsActionButton type="button" variant="secondary" onClick={() => setDialogOpen(false)}>
               {t('common:cancel')}
-            </Button>
-            <Button type="button" onClick={handleSave} disabled={saveMutation.isPending}>
+            </OpsActionButton>
+            <OpsActionButton type="button" onClick={handleSave} disabled={saveMutation.isPending}>
               {saveMutation.isPending ? t('common:saving') : t('common:save')}
-            </Button>
+            </OpsActionButton>
           </DialogFooter>
         </MasterDataOpsDialogContent>
       </Dialog>
+
+      <DeleteConfirmDialog
+        open={connectionToDelete != null}
+        itemLabel={connectionToDelete?.displayName || connectionToDelete?.key}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setConnectionToDelete(null);
+        }}
+        onConfirm={() => {
+          if (connectionToDelete) deleteMutation.mutate(connectionToDelete.id);
+        }}
+      />
     </OpsListPageShell>
   );
 }

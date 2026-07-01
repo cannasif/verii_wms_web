@@ -1,5 +1,6 @@
 import { type ReactElement, useRef } from 'react';
 import { Text } from '@react-three/drei';
+import type { Warehouse3dSceneTheme } from '../utils/warehouse-3d-scene-theme';
 import type { WarehouseSlot as WarehouseSlotType } from '../types/warehouse-3d';
 import * as THREE from 'three';
 
@@ -15,6 +16,7 @@ interface Bin3DProps {
   slotWidth: number;
   slotHeight: number;
   shelfDepth: number;
+  sceneTheme: Warehouse3dSceneTheme;
 }
 
 const getBinColor = (totalBakiye: number): string => {
@@ -35,7 +37,8 @@ export function Bin3D({
   binOutlineRef,
   slotWidth,
   slotHeight,
-  shelfDepth
+  shelfDepth,
+  sceneTheme,
 }: Bin3DProps): ReactElement {
   const meshRef = useRef<THREE.Mesh>(null);
   const binColor = getBinColor(slot.totalBakiye);
@@ -68,10 +71,10 @@ export function Bin3D({
         <boxGeometry args={[binWidth, binHeight, binDepth]} />
         <meshStandardMaterial 
           color={binColor} 
-          metalness={0.3} 
-          roughness={0.7}
+          metalness={0.35} 
+          roughness={0.55}
           emissive={binColor}
-          emissiveIntensity={0.05}
+          emissiveIntensity={slot.totalBakiye > 0 ? sceneTheme.binEmissive.filled : sceneTheme.binEmissive.empty}
         />
       </mesh>
 

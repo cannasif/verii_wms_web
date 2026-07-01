@@ -3,16 +3,19 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Plus, Trash2 } from 'lucide-react';
-import { FormPageShell } from '@/components/shared/FormPageShell';
+import { Plus } from 'lucide-react';
+import {
+  OpsActionButton,
+  OpsCircuitToggleField,
+  OpsFormPageShell,
+  OpsInput,
+  OpsSelect,
+  OpsSelectItem,
+  OpsTextarea,
+  PageState,
+} from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
@@ -28,6 +31,13 @@ import {
   type InventoryCountScope,
   type InventoryCountScopeDraft,
 } from '../types/inventory-count';
+import {
+  InventoryCountOpsCallout,
+  InventoryCountOpsDeleteButton,
+  InventoryCountOpsField,
+  InventoryCountOpsScopePanel,
+  InventoryCountOpsSectionHeader,
+} from './inventory-count-ops-ui';
 
 type LookupTarget =
   | { type: 'warehouse'; scopeIndex?: number }
@@ -445,173 +455,155 @@ export function InventoryCountCreatePage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6">
-      <FormPageShell
-        title={t(isEditMode ? 'inventoryCount.create.editTitle' : 'inventoryCount.create.title', { defaultValue: 'Missing translation' })}
-        description={t(isEditMode ? 'inventoryCount.create.editDescription' : 'inventoryCount.create.description', {
-          defaultValue: 'Missing translation',
-        })}
-        isLoading={headerQuery.isLoading || scopesQuery.isLoading}
-        isError={headerQuery.isError || scopesQuery.isError}
-        errorTitle={t('common.error', { defaultValue: 'Missing translation' })}
-        errorDescription={
-          headerQuery.error instanceof Error
-            ? headerQuery.error.message
-            : scopesQuery.error instanceof Error
-              ? scopesQuery.error.message
-              : t('inventoryCount.create.error', { defaultValue: 'Missing translation' })
-        }
-        actions={(
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" onClick={() => navigate('/inventory-count/list')}>
-              {t('common.cancel', { defaultValue: 'Missing translation' })}
-            </Button>
-            <Button type="button" onClick={() => saveMutation.mutate()} disabled={!canSave || saveMutation.isPending}>
-              {saveMutation.isPending
-                ? t('common.saving', { defaultValue: 'Missing translation' })
-                : isEditMode
-                  ? t('common.update', { defaultValue: 'Missing translation' })
-                  : t('inventoryCount.create.saveAndPrepare', { defaultValue: 'Missing translation' })}
-            </Button>
-          </div>
-        )}
-      >
+    <>
+      {isEditMode && (headerQuery.isLoading || scopesQuery.isLoading) ? (
+        <PageState tone="loading" title={t('common.loading')} />
+      ) : null}
+
+      {isEditMode && (headerQuery.isError || scopesQuery.isError) ? (
+        <PageState
+          tone="error"
+          title={t('common.error')}
+          description={
+            headerQuery.error instanceof Error
+              ? headerQuery.error.message
+              : scopesQuery.error instanceof Error
+                ? scopesQuery.error.message
+                : t('inventoryCount.create.error')
+          }
+        />
+      ) : null}
+
+      {(!isEditMode || (headerQuery.isSuccess && scopesQuery.isSuccess)) ? (
+    <OpsFormPageShell
+      className="wms-ops-erp-skin wms-ops-inventory-count-page"
+      eyebrow={t('sidebar.inventoryCount')}
+      title={t(isEditMode ? 'inventoryCount.create.editTitle' : 'inventoryCount.create.title')}
+      description={t(isEditMode ? 'inventoryCount.create.editDescription' : 'inventoryCount.create.description')}
+      actions={(
+        <div className="flex flex-wrap items-center gap-2">
+          <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/inventory-count/list')}>
+            {t('common.cancel')}
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="primary" onClick={() => saveMutation.mutate()} disabled={!canSave || saveMutation.isPending}>
+            {saveMutation.isPending
+              ? t('common.saving')
+              : isEditMode
+                ? t('common.update')
+                : t('inventoryCount.create.saveAndPrepare')}
+          </OpsActionButton>
+        </div>
+      )}
+    >
+      <div className="wms-ops-inventory-count-content">
         {!canSave ? (
-          <Card className="mb-6 border-amber-200 bg-amber-50/80">
-            <CardContent className="py-4 text-sm text-amber-900">
-              {t('inventoryCount.create.permissionInfo', {
-                defaultValue: 'Missing translation',
-              })}
-            </CardContent>
-          </Card>
+          <InventoryCountOpsCallout
+            tone="warn"
+            title={t('common.accessDeniedMessage')}
+            body={t('inventoryCount.create.permissionInfo')}
+          />
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.whatToCountTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.create.whatToCountDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
+                <InventoryCountOpsSectionHeader
+                  title={t('inventoryCount.create.whatToCountTitle')}
+                  description={t('inventoryCount.create.whatToCountDescription')}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.countType', { defaultValue: 'Missing translation' })}</Label>
-                    <Select
+                  <InventoryCountOpsField label={t('inventoryCount.fields.countType')}>
+                    <OpsSelect
                       value={draft.countType}
                       onValueChange={(value) => setDraft((prev) => ({
                         ...prev,
                         countType: value as InventoryCountCreateDraft['countType'],
                       }))}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countTypeOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      {countTypeOptions.map((item) => (
+                        <OpsSelectItem key={item.value} value={item.value}>{item.label}</OpsSelectItem>
+                      ))}
+                    </OpsSelect>
+                  </InventoryCountOpsField>
 
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.countMode', { defaultValue: 'Missing translation' })}</Label>
-                    <Select
+                  <InventoryCountOpsField label={t('inventoryCount.fields.countMode')}>
+                    <OpsSelect
                       value={draft.countMode}
                       onValueChange={(value) => setDraft((prev) => ({
                         ...prev,
                         countMode: value as InventoryCountCreateDraft['countMode'],
                       }))}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countModeOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      {countModeOptions.map((item) => (
+                        <OpsSelectItem key={item.value} value={item.value}>{item.label}</OpsSelectItem>
+                      ))}
+                    </OpsSelect>
+                  </InventoryCountOpsField>
                 </div>
 
-                <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-4 text-sm text-sky-950">
-                  <div className="font-semibold">
-                    {countTypeOptions.find((item) => item.value === draft.countType)?.label}
-                  </div>
-                  <div className="mt-1 leading-6">{getCountTypeDescription(t, draft.countType)}</div>
-                </div>
+                <InventoryCountOpsCallout
+                  tone="info"
+                  title={countTypeOptions.find((item) => item.value === draft.countType)?.label ?? ''}
+                  body={getCountTypeDescription(t, draft.countType)}
+                />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.headerInfoTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.create.headerInfoDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
+                <InventoryCountOpsSectionHeader
+                  title={t('inventoryCount.create.headerInfoTitle')}
+                  description={t('inventoryCount.create.headerInfoDescription')}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>{t('common.documentNo', { defaultValue: 'Missing translation' })}</Label>
-                    <Input value={draft.documentNo} onChange={(event) => setDraft((prev) => ({ ...prev, documentNo: event.target.value }))} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('common.documentDate', { defaultValue: 'Missing translation' })}</Label>
-                    <Input type="date" value={draft.documentDate} onChange={(event) => setDraft((prev) => ({ ...prev, documentDate: event.target.value }))} />
-                  </div>
+                  <InventoryCountOpsField label={t('common.documentNo')}>
+                    <OpsInput value={draft.documentNo} onChange={(event) => setDraft((prev) => ({ ...prev, documentNo: event.target.value }))} />
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('common.documentDate')}>
+                    <OpsInput type="date" value={draft.documentDate} onChange={(event) => setDraft((prev) => ({ ...prev, documentDate: event.target.value }))} />
+                  </InventoryCountOpsField>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.plannedStartDate', { defaultValue: 'Missing translation' })}</Label>
-                    <Input type="date" value={draft.plannedStartDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedStartDate: event.target.value }))} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.plannedEndDate', { defaultValue: 'Missing translation' })}</Label>
-                    <Input type="date" value={draft.plannedEndDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedEndDate: event.target.value }))} />
-                  </div>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.plannedStartDate')}>
+                    <OpsInput type="date" value={draft.plannedStartDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedStartDate: event.target.value }))} />
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.plannedEndDate')}>
+                    <OpsInput type="date" value={draft.plannedEndDate} onChange={(event) => setDraft((prev) => ({ ...prev, plannedEndDate: event.target.value }))} />
+                  </InventoryCountOpsField>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>{t('common.description', { defaultValue: 'Missing translation' })}</Label>
-                  <Textarea value={draft.description1} onChange={(event) => setDraft((prev) => ({ ...prev, description1: event.target.value }))} rows={3} />
-                </div>
+                <InventoryCountOpsField label={t('common.description')}>
+                  <OpsTextarea value={draft.description1} onChange={(event) => setDraft((prev) => ({ ...prev, description1: event.target.value }))} rows={3} />
+                </InventoryCountOpsField>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.freezeMode', { defaultValue: 'Missing translation' })}</Label>
-                    <Select
+                  <InventoryCountOpsField label={t('inventoryCount.fields.freezeMode')}>
+                    <OpsSelect
                       value={draft.freezeMode}
                       onValueChange={(value) => setDraft((prev) => ({
                         ...prev,
                         freezeMode: value as InventoryCountCreateDraft['freezeMode'],
                       }))}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {freezeModeOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      {freezeModeOptions.map((item) => (
+                        <OpsSelectItem key={item.value} value={item.value}>{item.label}</OpsSelectItem>
+                      ))}
+                    </OpsSelect>
+                  </InventoryCountOpsField>
 
-                  <div className="flex items-center justify-between rounded-xl border px-4 py-3">
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium">{t('inventoryCount.fields.isFirstCount', { defaultValue: 'Missing translation' })}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {t('inventoryCount.create.firstCountHint', { defaultValue: 'Missing translation' })}
-                      </div>
-                    </div>
-                    <Switch checked={draft.isFirstCount} onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, isFirstCount: checked }))} />
-                  </div>
+                  <OpsCircuitToggleField
+                    checked={draft.isFirstCount}
+                    onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, isFirstCount: checked }))}
+                    title={t('inventoryCount.fields.isFirstCount')}
+                    description={t('inventoryCount.create.firstCountHint')}
+                    className="h-full min-h-[2.625rem]"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -619,15 +611,15 @@ export function InventoryCountCreatePage(): ReactElement {
             {draft.countType !== 'Combined' ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('inventoryCount.create.scopeTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                  <CardDescription>{t('inventoryCount.create.scopeDescription', {
-                    defaultValue: 'Missing translation',
-                  })}</CardDescription>
+                  <InventoryCountOpsSectionHeader
+                    title={t('inventoryCount.create.scopeTitle')}
+                    description={t('inventoryCount.create.scopeDescription')}
+                  />
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}</Label>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.warehouse')}>
                     <PagedLookupDialog
+                      variant="ops"
                       open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse' } : null)}
                       title={t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}
@@ -641,10 +633,10 @@ export function InventoryCountCreatePage(): ReactElement {
                       getLabel={(item) => item.depoKodu + ' - ' + item.depoIsmi}
                       onSelect={handleWarehouseSelect}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}</Label>
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.stock')}>
                     <PagedLookupDialog
+                      variant="ops"
                       open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'stock' } : null)}
                       title={t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}
@@ -658,10 +650,10 @@ export function InventoryCountCreatePage(): ReactElement {
                       getLabel={(item) => item.stokKodu + ' - ' + item.stokAdi}
                       onSelect={handleStockSelect}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}</Label>
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.yapKod')}>
                     <PagedLookupDialog
+                      variant="ops"
                       open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === undefined}
                       onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod' } : null)}
                       title={t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}
@@ -676,63 +668,52 @@ export function InventoryCountCreatePage(): ReactElement {
                       getLabel={(item) => item.yapKod + ' - ' + item.yapAcik}
                       onSelect={handleYapKodSelect}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Missing translation' })}</Label>
-                    <Input value={draft.rackCode} onChange={(event) => setDraft((prev) => ({ ...prev, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Missing translation' })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Missing translation' })}</Label>
-                    <Input value={draft.cellCode} onChange={(event) => setDraft((prev) => ({ ...prev, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Missing translation' })} />
-                  </div>
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.rack')}>
+                    <OpsInput value={draft.rackCode} onChange={(event) => setDraft((prev) => ({ ...prev, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack')} />
+                  </InventoryCountOpsField>
+                  <InventoryCountOpsField label={t('inventoryCount.fields.cell')}>
+                    <OpsInput value={draft.cellCode} onChange={(event) => setDraft((prev) => ({ ...prev, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell')} />
+                  </InventoryCountOpsField>
                 </CardContent>
               </Card>
             ) : (
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between gap-4">
-                  <div>
-                    <CardTitle>{t('inventoryCount.create.combinedScopeTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                    <CardDescription>{t('inventoryCount.create.combinedScopeDescription')}</CardDescription>
-                  </div>
-                  <Button type="button" variant="outline" onClick={addScope}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t('inventoryCount.create.addScope', { defaultValue: 'Missing translation' })}
-                  </Button>
+                <CardHeader>
+                  <InventoryCountOpsSectionHeader
+                    title={t('inventoryCount.create.combinedScopeTitle')}
+                    description={t('inventoryCount.create.combinedScopeDescription')}
+                    action={(
+                      <OpsActionButton type="button" variant="secondary" onClick={addScope}>
+                        <Plus className="size-4" />
+                        {t('inventoryCount.create.addScope')}
+                      </OpsActionButton>
+                    )}
+                  />
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {draft.scopes.map((scope, index) => (
-                    <div key={index} className="rounded-xl border p-4">
-                      <div className="mb-4 flex items-center justify-between">
-                        <div className="text-sm font-semibold">
-                          {t('inventoryCount.create.scopeRow', { defaultValue: 'Missing translation', index: index + 1 })}
-                        </div>
-                        {draft.scopes.length > 1 ? (
-                          <Button type="button" variant="ghost" size="icon" onClick={() => removeScope(index)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        ) : null}
-                      </div>
-
+                    <InventoryCountOpsScopePanel
+                      key={index}
+                      title={t('inventoryCount.create.scopeRow', { index: index + 1 })}
+                      action={draft.scopes.length > 1 ? (
+                        <InventoryCountOpsDeleteButton label={t('common.delete')} onClick={() => removeScope(index)} />
+                      ) : undefined}
+                    >
                       <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.scopeType', { defaultValue: 'Missing translation' })}</Label>
-                          <Select
+                        <InventoryCountOpsField label={t('inventoryCount.fields.scopeType')}>
+                          <OpsSelect
                             value={scope.scopeType}
                             onValueChange={(value) => updateScope(index, (current) => ({ ...current, scopeType: value as InventoryCountScopeDraft['scopeType'] }))}
                           >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {scopeTypeOptions.map((item) => (
-                                <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}</Label>
+                            {scopeTypeOptions.map((item) => (
+                              <OpsSelectItem key={item.value} value={item.value}>{item.label}</OpsSelectItem>
+                            ))}
+                          </OpsSelect>
+                        </InventoryCountOpsField>
+                        <InventoryCountOpsField label={t('inventoryCount.fields.warehouse')}>
                           <PagedLookupDialog
+                            variant="ops"
                             open={lookupTarget?.type === 'warehouse' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'warehouse', scopeIndex: index } : null)}
                             title={t('inventoryCount.fields.warehouse', { defaultValue: 'Missing translation' })}
@@ -746,10 +727,10 @@ export function InventoryCountCreatePage(): ReactElement {
                             getLabel={(item) => item.depoKodu + ' - ' + item.depoIsmi}
                             onSelect={handleWarehouseSelect}
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}</Label>
+                        </InventoryCountOpsField>
+                        <InventoryCountOpsField label={t('inventoryCount.fields.stock')}>
                           <PagedLookupDialog
+                            variant="ops"
                             open={lookupTarget?.type === 'stock' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'stock', scopeIndex: index } : null)}
                             title={t('inventoryCount.fields.stock', { defaultValue: 'Missing translation' })}
@@ -763,10 +744,10 @@ export function InventoryCountCreatePage(): ReactElement {
                             getLabel={(item) => item.stokKodu + ' - ' + item.stokAdi}
                             onSelect={handleStockSelect}
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}</Label>
+                        </InventoryCountOpsField>
+                        <InventoryCountOpsField label={t('inventoryCount.fields.yapKod')}>
                           <PagedLookupDialog
+                            variant="ops"
                             open={lookupTarget?.type === 'yapkod' && lookupTarget.scopeIndex === index}
                             onOpenChange={(open) => setLookupTarget(open ? { type: 'yapkod', scopeIndex: index } : null)}
                             title={t('inventoryCount.fields.yapKod', { defaultValue: 'Missing translation' })}
@@ -781,17 +762,15 @@ export function InventoryCountCreatePage(): ReactElement {
                             getLabel={(item) => item.yapKod + ' - ' + item.yapAcik}
                             onSelect={handleYapKodSelect}
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.rack', { defaultValue: 'Missing translation' })}</Label>
-                          <Input value={scope.rackCode} onChange={(event) => updateScope(index, (current) => ({ ...current, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack', { defaultValue: 'Missing translation' })} />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t('inventoryCount.fields.cell', { defaultValue: 'Missing translation' })}</Label>
-                          <Input value={scope.cellCode} onChange={(event) => updateScope(index, (current) => ({ ...current, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell', { defaultValue: 'Missing translation' })} />
-                        </div>
+                        </InventoryCountOpsField>
+                        <InventoryCountOpsField label={t('inventoryCount.fields.rack')}>
+                          <OpsInput value={scope.rackCode} onChange={(event) => updateScope(index, (current) => ({ ...current, rackCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterRack')} />
+                        </InventoryCountOpsField>
+                        <InventoryCountOpsField label={t('inventoryCount.fields.cell')}>
+                          <OpsInput value={scope.cellCode} onChange={(event) => updateScope(index, (current) => ({ ...current, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell')} />
+                        </InventoryCountOpsField>
                       </div>
-                    </div>
+                    </InventoryCountOpsScopePanel>
                   ))}
                 </CardContent>
               </Card>
@@ -801,38 +780,47 @@ export function InventoryCountCreatePage(): ReactElement {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.create.readyTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.create.readyDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
+                <InventoryCountOpsSectionHeader
+                  title={t('inventoryCount.create.readyTitle')}
+                  description={t('inventoryCount.create.readyDescription')}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-950">
-                  <div className="font-semibold">{t('inventoryCount.create.summaryTitle', { defaultValue: 'Missing translation' })}</div>
-                  <div className="mt-2 leading-6">{summaryText}</div>
-                </div>
+                <InventoryCountOpsCallout
+                  tone="success"
+                  title={t('inventoryCount.create.summaryTitle')}
+                  body={summaryText}
+                />
 
-                <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-950">
-                  <div className="font-semibold">{t('inventoryCount.create.modeHintTitle', { defaultValue: 'Missing translation' })}</div>
-                  <ul className="mt-2 list-disc space-y-1 pl-4 leading-6">
-                    <li>{draft.countMode === 'Blind' ? 'Depocu sistem miktarini gormez, sadece saydigini girer.' : 'Depocu beklenen miktari da gorur.'}</li>
-                    <li>{draft.freezeMode === 'Hard' ? 'Sayim kapsami sirasinda hareketler sert sekilde engellenir.' : 'Hareketler tamamen durdurulmaz.'}</li>
-                  </ul>
-                </div>
+                <InventoryCountOpsCallout
+                  tone="warn"
+                  title={t('inventoryCount.create.modeHintTitle')}
+                  body={(
+                    <ul className="mt-1 list-none space-y-1 p-0">
+                      <li>{`• ${draft.countMode === 'Blind' ? t('inventoryCount.create.modeHints.blind', { defaultValue: 'Depocu sistem miktarını görmez, sadece saydığını girer.' }) : t('inventoryCount.create.modeHints.open', { defaultValue: 'Depocu beklenen miktarı da görür.' })}`}</li>
+                      <li>{`• ${draft.freezeMode === 'Hard' ? t('inventoryCount.create.modeHints.freezeHard', { defaultValue: 'Sayım kapsamı sırasında hareketler sert şekilde engellenir.' }) : t('inventoryCount.create.modeHints.freezeSoft', { defaultValue: 'Hareketler tamamen durdurulmaz.' })}`}</li>
+                    </ul>
+                  )}
+                />
 
-                <div className="rounded-xl border p-4 text-sm">
-                  <div className="font-semibold">{t('inventoryCount.create.nextStepTitle', { defaultValue: 'Missing translation' })}</div>
-                  <ol className="mt-2 list-decimal space-y-1 pl-4 leading-6 text-muted-foreground">
-                    <li>{t('inventoryCount.create.nextStepOne', { defaultValue: 'Missing translation' })}</li>
-                    <li>{t('inventoryCount.create.nextStepTwo', { defaultValue: 'Missing translation' })}</li>
-                    <li>{t('inventoryCount.create.nextStepThree', { defaultValue: 'Missing translation' })}</li>
-                  </ol>
-                </div>
+                <InventoryCountOpsCallout
+                  tone="info"
+                  title={t('inventoryCount.create.nextStepTitle')}
+                  body={(
+                    <ol className="mt-1 list-decimal space-y-1 pl-4">
+                      <li>{t('inventoryCount.create.nextStepOne')}</li>
+                      <li>{t('inventoryCount.create.nextStepTwo')}</li>
+                      <li>{t('inventoryCount.create.nextStepThree')}</li>
+                    </ol>
+                  )}
+                />
               </CardContent>
             </Card>
           </div>
         </div>
-      </FormPageShell>
-    </div>
+      </div>
+    </OpsFormPageShell>
+      ) : null}
+    </>
   );
 }

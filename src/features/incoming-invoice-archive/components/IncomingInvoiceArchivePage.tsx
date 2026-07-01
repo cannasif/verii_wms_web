@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { OpsActionButton, OpsListPageShell, OpsTextarea } from '@/components/shared';
-import { MasterDataOpsGuidance, MasterDataOpsSection, MasterDataOpsStatGrid } from '@/features/shared';
+import { SelectItem } from '@/components/ui/select';
+import { OpsActionButton, OpsListPageShell, OpsSelect, OpsTextarea } from '@/components/shared';
+import { MasterDataOpsFormField, MasterDataOpsGuidance, MasterDataOpsSection, MasterDataOpsStatGrid } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { incomingInvoiceArchiveApi } from '../api/incoming-invoice-archive.api';
 import type { IncomingInvoiceDetail, IncomingInvoiceKind, ELogoPostboxCompany } from '../types/incoming-invoice-archive.types';
@@ -181,53 +181,45 @@ export function IncomingInvoiceArchivePage(): ReactElement {
           subtitle={t('form.description')}
         >
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2">
-              <span className="wms-ops-form-label">{t('form.company')}</span>
-              <Select value={companyKey} onValueChange={setCompanyKey} disabled={companiesQuery.isLoading}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('form.companyPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {companies.map((company) => (
-                    <SelectItem key={company.key} value={company.key}>
-                      <span className="flex items-center gap-2">
-                        <span>{company.displayName}</span>
-                        {!company.isConfigured ? <Badge variant="outline">{t('status.notConfigured')}</Badge> : null}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </label>
+            <MasterDataOpsFormField label={t('form.company')}>
+              <OpsSelect
+                value={companyKey}
+                onValueChange={setCompanyKey}
+                disabled={companiesQuery.isLoading}
+                placeholder={t('form.companyPlaceholder')}
+              >
+                {companies.map((company) => (
+                  <SelectItem key={company.key} value={company.key}>
+                    <span className="flex items-center gap-2">
+                      <span>{company.displayName}</span>
+                      {!company.isConfigured ? <Badge variant="outline">{t('status.notConfigured')}</Badge> : null}
+                    </span>
+                  </SelectItem>
+                ))}
+              </OpsSelect>
+            </MasterDataOpsFormField>
 
-            <label className="space-y-2">
-              <span className="wms-ops-form-label">{t('form.invoiceKind')}</span>
-              <Select value={invoiceKind} onValueChange={(value) => setInvoiceKind(value as IncomingInvoiceKind)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Automatic">{t('invoiceKind.automatic')}</SelectItem>
-                  <SelectItem value="EInvoice">{t('invoiceKind.eInvoice')}</SelectItem>
-                  <SelectItem value="EArchive">{t('invoiceKind.eArchive')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </label>
+            <MasterDataOpsFormField label={t('form.invoiceKind')}>
+              <OpsSelect value={invoiceKind} onValueChange={(value) => setInvoiceKind(value as IncomingInvoiceKind)}>
+                <SelectItem value="Automatic">{t('invoiceKind.automatic')}</SelectItem>
+                <SelectItem value="EInvoice">{t('invoiceKind.eInvoice')}</SelectItem>
+                <SelectItem value="EArchive">{t('invoiceKind.eArchive')}</SelectItem>
+              </OpsSelect>
+            </MasterDataOpsFormField>
           </div>
 
-          <label className="mt-4 block space-y-2">
-            <span className="wms-ops-form-label">{t('form.uuidOrXml')}</span>
+          <MasterDataOpsFormField label={t('form.uuidOrXml')} className="mt-4">
             <OpsTextarea
               rows={7}
               value={uuidInput}
               onChange={(event) => setUuidInput(event.target.value)}
               placeholder={t('form.uuidPlaceholder')}
             />
-          </label>
+          </MasterDataOpsFormField>
 
-          <div className="mt-4 grid gap-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-sm dark:border-white/10 dark:bg-white/5 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="mt-4 grid gap-3 border border-dashed p-4 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <div className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">{t('form.resolvedUuid')}</div>
+              <div className="wms-ops-prelabel-form-label">{t('form.resolvedUuid')}</div>
               <div className="mt-1 break-all font-mono text-sm font-semibold">{resolvedUuid || '-'}</div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -257,7 +249,7 @@ export function IncomingInvoiceArchivePage(): ReactElement {
 
             <div className="mt-4 space-y-2">
               {companies.map((company) => (
-                <div key={company.key} className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
+                <div key={company.key} className="flex items-center justify-between border px-3 py-2 text-sm">
                   <div>
                     <div className="font-semibold">{company.displayName}</div>
                     <div className="font-mono text-xs text-muted-foreground">{company.vkn} · {company.source}</div>

@@ -402,7 +402,6 @@ export function ProductionTransferListPage(): ReactElement {
       </OpsListPageShell>
 
       <DeleteConfirmDialog
-        variant="ops"
         open={Boolean(itemToDelete)}
         itemLabel={itemToDelete?.documentNo || `#${itemToDelete?.id ?? ''}`}
         isPending={deleteMutation.isPending}

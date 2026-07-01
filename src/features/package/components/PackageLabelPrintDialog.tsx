@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { OpsCircuitToggleField } from '@/components/shared';
 import { packageApi } from '../api/package-api';
 import type { PPackageTreeDto } from '../types/package';
 
@@ -323,7 +323,7 @@ export function PackageLabelPrintDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="wms-ops-form wms-ops-erp-skin max-w-4xl">
         <DialogHeader>
           <DialogTitle>{title ?? t('print.title')}</DialogTitle>
           <DialogDescription>
@@ -422,15 +422,12 @@ export function PackageLabelPrintDialog({
               />
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-3 dark:border-white/10">
-              <div className="space-y-1">
-                <div className="text-sm font-medium">{t('print.gs1Title')}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">
-                  {t('print.gs1Description')}
-                </div>
-              </div>
-              <Switch checked={useGs1SsccForPallets} onCheckedChange={setUseGs1SsccForPallets} />
-            </div>
+            <OpsCircuitToggleField
+              checked={useGs1SsccForPallets}
+              onCheckedChange={setUseGs1SsccForPallets}
+              title={t('print.gs1Title')}
+              description={t('print.gs1Description')}
+            />
 
             <div className="rounded-xl bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:bg-white/3 dark:text-slate-300">
               <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-white">

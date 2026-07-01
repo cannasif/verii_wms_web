@@ -2,8 +2,7 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { OpsActionButton, OpsListPageShell } from '@/components/shared';
+import { OpsActionButton, OpsListPageShell, DeleteConfirmDialog } from '@/components/shared';
 import { useCollectedBarcodes } from '../hooks/useCollectedBarcodes';
 import { useDeleteRoute } from '../hooks/useDeleteRoute';
 import { ArrowLeft, Loader2, Trash2, ExternalLink } from 'lucide-react';
@@ -216,37 +215,18 @@ export function CollectedBarcodesPage(): ReactElement {
         )}
       </OpsListPageShell>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-md gap-0 overflow-hidden border-0 p-0 shadow-none">
-          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
-            <DialogTitle className="wms-ops-detail-dialog__title">
-              {t('transfer.collection.deleteConfirmTitle')}
-            </DialogTitle>
-            <DialogDescription className="wms-ops-detail-dialog__description">
-              {selectedRoute?.packageNo && selectedRoute.packageNo !== '-'
-                ? t('transfer.collection.deleteConfirmWithPackage')
-                : t('transfer.collection.deleteConfirmWithoutPackage')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 border-t px-6 py-4 sm:gap-2">
-            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel')}
-            </OpsActionButton>
-            <OpsActionButton
-              type="button"
-              variant="primary"
-              className="!border-destructive/40 !bg-destructive hover:!bg-destructive/90"
-              onClick={handleDeleteConfirm}
-              disabled={deleteRouteMutation.isPending}
-            >
-              {deleteRouteMutation.isPending ? (
-                <Loader2 className="size-3.5 animate-spin" aria-hidden />
-              ) : null}
-              {t('common.delete')}
-            </OpsActionButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        title={t('transfer.collection.deleteConfirmTitle')}
+        description={
+          selectedRoute?.packageNo && selectedRoute.packageNo !== '-'
+            ? t('transfer.collection.deleteConfirmWithPackage')
+            : t('transfer.collection.deleteConfirmWithoutPackage')
+        }
+        isPending={deleteRouteMutation.isPending}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }

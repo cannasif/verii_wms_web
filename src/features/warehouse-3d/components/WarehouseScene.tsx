@@ -1,8 +1,10 @@
 import { Suspense, lazy, type ReactElement, useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { useTheme } from '@/components/theme-provider';
 import { WarehouseFloor } from './WarehouseFloor';
 import { buildWarehouseModel, calculateCenter, LAYOUT_CONSTANTS } from '../utils/layout-engine';
+import { getWarehouse3dSceneTheme } from '../utils/warehouse-3d-scene-theme';
 import { parseLocation } from '../utils/location-parser';
 import type { WarehouseShelvesWithStockInformationDto, WarehouseSlot as WarehouseSlotType } from '../types/warehouse-3d';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
@@ -28,6 +30,33 @@ interface AisleData {
   length: number;
 }
 
+interface SceneBounds {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+function computeCameraSetup(center: { x: number; y: number; z: number }, bounds: SceneBounds): {
+  cameraPosition: [number, number, number];
+  target: [number, number, number];
+  minDistance: number;
+  maxDistance: number;
+} {
+  const spanX = Math.max(bounds.maxX - bounds.minX, 4);
+  const spanZ = Math.max(bounds.maxZ - bounds.minZ, 4);
+  const span = Math.max(spanX, spanZ);
+  const distance = span * 0.72 + 3.5;
+  const eyeY = Math.max(span * 0.42, 4.5);
+
+  return {
+    cameraPosition: [center.x + distance * 0.55, eyeY, center.z + distance * 0.78],
+    target: [center.x, 1.4, center.z],
+    minDistance: Math.max(span * 0.22, 2.5),
+    maxDistance: Math.max(span * 4, 45),
+  };
+}
+
 const { AISLE_SPACING, BAY_SPACING, AISLE_WIDTH } = LAYOUT_CONSTANTS;
 
 const Shelf3D = lazy(async () => {
@@ -41,6 +70,12 @@ const AisleFloor3D = lazy(async () => {
 });
 
 export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseSceneProps): ReactElement {
+  const { resolvedTheme } = useTheme();
+  const sceneTheme = useMemo(
+    () => getWarehouse3dSceneTheme(resolvedTheme === 'light' ? 'light' : 'dark'),
+    [resolvedTheme],
+  );
+
   const controlsRef = useRef<OrbitControlsType>(null);
   const cameraRef = useRef<ThreePerspectiveCamera>(null);
   const defaultCameraPos = useRef(new Vector3(0, 15, 20));
@@ -51,7 +86,7 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
   const [clickedBin, setClickedBin] = useState<WarehouseSlotType | null>(null);
   const [showLabels] = useState(true);
 
-  const { center, shelfGroups, aisles, bounds } = useMemo(() => {
+  const { center, shelfGroups, aisles, bounds, cameraSetup } = useMemo(() => {
     const builtSlots = buildWarehouseModel(data);
     const calculatedCenter = calculateCenter(builtSlots);
     
@@ -109,15 +144,24 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
       y: calculatedCenter.y,
       z: calculatedCenter.z,
     };
-    
-    defaultCameraPos.current.set(adjustedCenter.x + 15, 15, adjustedCenter.z + 20);
-    defaultTargetPos.current.set(adjustedCenter.x, 0.5, adjustedCenter.z);
+
+    const sceneBounds: SceneBounds = {
+      minX: Number.isFinite(minX) ? minX : 0,
+      maxX: Number.isFinite(maxX) ? maxX + 1 : 8,
+      minZ: Number.isFinite(minZ) ? minZ - AISLE_WIDTH / 2 : 0,
+      maxZ: Number.isFinite(maxZ) ? maxZ + AISLE_WIDTH / 2 : 8,
+    };
+
+    const cameraSetup = computeCameraSetup(adjustedCenter, sceneBounds);
+    defaultCameraPos.current.set(...cameraSetup.cameraPosition);
+    defaultTargetPos.current.set(...cameraSetup.target);
 
     return { 
       center: adjustedCenter, 
       shelfGroups: groups,
       aisles: aisleData,
-      bounds: { minX, maxX: maxX + 1, minZ: minZ - AISLE_WIDTH / 2, maxZ: maxZ + AISLE_WIDTH / 2 },
+      bounds: sceneBounds,
+      cameraSetup,
     };
   }, [data]);
 
@@ -213,39 +257,60 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
 
   return (
     <Canvas
-      gl={{ 
-        antialias: false,
+      key={resolvedTheme}
+      className="wms-ops-warehouse-3d-r3f-canvas"
+      gl={{
+        antialias: true,
         powerPreference: 'high-performance',
       }}
-      dpr={[1, 1.5]}
-      style={{ background: 'linear-gradient(to bottom, #0a0e1a 0%, #0d1628 100%)' }}
+      dpr={[1, 1.75]}
+      onCreated={({ gl }) => {
+        gl.setClearColor(sceneTheme.clearColor);
+      }}
+      style={{ width: '100%', height: '100%' }}
     >
-      <PerspectiveCamera 
-        ref={cameraRef} 
-        makeDefault 
-        position={[center.x + 15, 15, center.z + 20]} 
-        fov={50} 
+      <PerspectiveCamera
+        ref={cameraRef}
+        makeDefault
+        position={cameraSetup.cameraPosition}
+        fov={38}
+        near={0.1}
+        far={500}
       />
       <OrbitControls
         ref={controlsRef}
-        target={[center.x, 0.5, center.z]}
+        target={cameraSetup.target}
         enableDamping
-        dampingFactor={0.05}
-        minDistance={5}
-        maxDistance={80}
-        maxPolarAngle={Math.PI / 2.2}
+        dampingFactor={0.06}
+        minDistance={cameraSetup.minDistance}
+        maxDistance={cameraSetup.maxDistance}
+        maxPolarAngle={Math.PI / 2.05}
       />
 
-      <ambientLight intensity={0.7} color="#f5f8ff" />
-      <directionalLight 
-        position={[15, 30, 20]} 
-        intensity={1.0} 
-        color="#ffffff"
+      <ambientLight intensity={sceneTheme.ambient.intensity} color={sceneTheme.ambient.color} />
+      <directionalLight
+        position={[12, 24, 14]}
+        intensity={sceneTheme.directionalMain.intensity}
+        color={sceneTheme.directionalMain.color}
       />
-      <directionalLight position={[-15, 20, -15]} intensity={0.5} color="#e8f0ff" />
-      <hemisphereLight intensity={0.4} color="#ffffff" groundColor="#1a2332" />
+      <directionalLight
+        position={[-10, 16, -12]}
+        intensity={sceneTheme.directionalFill.intensity}
+        color={sceneTheme.directionalFill.color}
+      />
+      <pointLight
+        position={[center.x, 8, center.z]}
+        intensity={sceneTheme.point.intensity}
+        color={sceneTheme.point.color}
+        distance={40}
+      />
+      <hemisphereLight
+        intensity={sceneTheme.hemisphere.intensity}
+        color={sceneTheme.hemisphere.sky}
+        groundColor={sceneTheme.hemisphere.ground}
+      />
 
-      <WarehouseFloor center={{ x: center.x, z: center.z }} bounds={bounds} />
+      <WarehouseFloor center={{ x: center.x, z: center.z }} bounds={bounds} sceneTheme={sceneTheme} />
 
       <Suspense fallback={null}>
         {aisles.map((aisle) => (
@@ -257,6 +322,7 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
             length={aisle.length}
             selected={selectedAisleId === aisle.row}
             onSelect={() => handleSelectAisle(aisle.row)}
+            sceneTheme={sceneTheme}
           />
         ))}
 
@@ -273,6 +339,7 @@ export function WarehouseScene({ data, onSlotHover, onSlotClick }: WarehouseScen
             onBinHover={(slot) => onSlotHover?.(slot)}
             onBinClick={handleBinClick}
             clickedBin={clickedBin}
+            sceneTheme={sceneTheme}
           />
         ))}
       </Suspense>

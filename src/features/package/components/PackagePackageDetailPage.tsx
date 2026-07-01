@@ -11,7 +11,7 @@ import { useCreatePLine } from '../hooks/useCreatePLine';
 import { useDeletePLine } from '../hooks/useDeletePLine';
 import { useYapKodlar } from '../hooks/useYapKodlar';
 import { useStokBarcode } from '../hooks/useStokBarcode';
-import { DetailPageShell, PageState } from '@/components/shared';
+import { DeleteConfirmDialog, DetailPageShell, PageState } from '@/components/shared';
 import { pLineFormSchema, type PLineFormData, type StokBarcodeDto } from '../types/package';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -594,24 +594,14 @@ export function PackagePackageDetailPage(): ReactElement {
         </Suspense>
       ) : null}
 
-      <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('package.packageDetail.deleteConfirm')}</DialogTitle>
-            <DialogDescription>
-              {t('package.packageDetail.deleteConfirmMessage')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={!permission.canDelete || deleteMutation.isPending}>
-              {deleteMutation.isPending ? t('common.loading') : t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={permission.canDelete && deleteDialogOpen}
+        title={t('package.packageDetail.deleteConfirm')}
+        description={t('package.packageDetail.deleteConfirmMessage')}
+        isPending={deleteMutation.isPending}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={() => void handleDelete()}
+      />
 
       <Dialog open={permission.canUpdate && lineDialogOpen} onOpenChange={(open) => {
         setLineDialogOpen(open);

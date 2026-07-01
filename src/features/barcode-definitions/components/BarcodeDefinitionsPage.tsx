@@ -20,9 +20,8 @@ import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } fr
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsCircuitToggleField, OpsFormPageShell } from '@/components/shared';
 import {
   MasterDataOpsDialogContent,
   MasterDataOpsErpEyebrow,
@@ -687,29 +686,21 @@ export function BarcodeDefinitionsPage(): ReactElement {
               />
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-slate-200/80 px-4 py-3 dark:border-white/10">
-              <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('common.active')}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.activeHelp')}</p>
-              </div>
-              <Switch
-                checked={formState.isActive}
-                onCheckedChange={(checked) => setFormState((current) => ({ ...current, isActive: checked }))}
-                disabled={!permission.canCreate && !permission.canUpdate}
-              />
-            </div>
+            <OpsCircuitToggleField
+              checked={formState.isActive}
+              onCheckedChange={(checked) => setFormState((current) => ({ ...current, isActive: checked }))}
+              title={t('common.active')}
+              description={t('barcodeManagement.activeHelp')}
+              disabled={!permission.canCreate && !permission.canUpdate}
+            />
 
-            <div className="flex items-center justify-between rounded-xl border border-slate-200/80 px-4 py-3 dark:border-white/10">
-              <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('barcodeManagement.erpFallbackLabel')}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeManagement.erpFallbackHelp')}</p>
-              </div>
-              <Switch
-                checked={formState.allowMirrorLookup}
-                onCheckedChange={(checked) => setFormState((current) => ({ ...current, allowMirrorLookup: checked }))}
-                disabled={!permission.canCreate && !permission.canUpdate}
-              />
-            </div>
+            <OpsCircuitToggleField
+              checked={formState.allowMirrorLookup}
+              onCheckedChange={(checked) => setFormState((current) => ({ ...current, allowMirrorLookup: checked }))}
+              title={t('barcodeManagement.erpFallbackLabel')}
+              description={t('barcodeManagement.erpFallbackHelp')}
+              disabled={!permission.canCreate && !permission.canUpdate}
+            />
           </div>
           </div>
 

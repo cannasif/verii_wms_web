@@ -3,19 +3,55 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { DetailPageShell } from '@/components/shared/DetailPageShell';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { inventoryCountApi } from '../api/inventory-count-api';
 import type { InventoryCountHeader, InventoryCountLine } from '../types/inventory-count';
+import {
+  getInventoryCountModeLabel,
+  getInventoryCountStatusLabel,
+  InventoryCountOpsBadge,
+  InventoryCountOpsCallout,
+  InventoryCountOpsEmpty,
+  InventoryCountOpsField,
+  InventoryCountOpsLineCard,
+  InventoryCountOpsSectionHeader,
+  InventoryCountOpsStat,
+  InventoryCountOpsStatGrid,
+  inventoryCountStatusTone,
+} from './inventory-count-ops-ui';
+
+const EMPTY_LINES: InventoryCountLine[] = [];
+
+function parseHeaderId(value: string | null): number | null {
+  const parsed = Number(value ?? '');
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function normalizeLineId(value: unknown): number | null {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function dedupeLines(lines: InventoryCountLine[]): InventoryCountLine[] {
+  const seen = new Set<number>();
+  const unique: InventoryCountLine[] = [];
+
+  for (const line of lines) {
+    const lineId = normalizeLineId(line.id);
+    if (lineId == null || seen.has(lineId)) {
+      continue;
+    }
+    seen.add(lineId);
+    unique.push(line);
+  }
+
+  return unique.sort((left, right) => left.sequenceNo - right.sequenceNo);
+}
 
 function buildHeaderLabel(header: InventoryCountHeader): string {
   return (header.documentNo || 'Belgesiz') + ' - ' + (header.countType || 'Sayim');
@@ -30,13 +66,6 @@ function formatNumber(value?: number | null): string {
   return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 3 }).format(value ?? 0);
 }
 
-function statusTone(status?: string): 'secondary' | 'destructive' | 'default' | 'outline' {
-  if (status === 'Recount' || status === 'Review') return 'destructive';
-  if (status === 'Counted' || status === 'Completed') return 'default';
-  if (status === 'Counting') return 'outline';
-  return 'secondary';
-}
-
 export function InventoryCountProcessPage(): ReactElement {
   const { t } = useTranslation();
   const { setPageTitle } = useUIStore();
@@ -44,8 +73,8 @@ export function InventoryCountProcessPage(): ReactElement {
   const authUserId = useAuthStore((state) => state.user?.id);
   const canUpdate = permissionAccess.can('wms.inventory-count.update');
   const [searchParams, setSearchParams] = useSearchParams();
-  const headerIdFromQuery = Number(searchParams.get('headerId') ?? '');
-  const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(Number.isFinite(headerIdFromQuery) && headerIdFromQuery > 0 ? headerIdFromQuery : null);
+  const headerIdFromQuery = parseHeaderId(searchParams.get('headerId'));
+  const [selectedHeaderId, setSelectedHeaderId] = useState<number | null>(headerIdFromQuery);
   const [selectedLineId, setSelectedLineId] = useState<number | null>(null);
   const [headerLookupOpen, setHeaderLookupOpen] = useState(false);
   const [lineLookupOpen, setLineLookupOpen] = useState(false);
@@ -55,7 +84,7 @@ export function InventoryCountProcessPage(): ReactElement {
   const [note, setNote] = useState('');
 
   useEffect(() => {
-    setPageTitle(t('inventoryCount.process.title', { defaultValue: 'Missing translation' }));
+    setPageTitle(t('inventoryCount.process.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
@@ -90,33 +119,56 @@ export function InventoryCountProcessPage(): ReactElement {
     [headerRows, selectedHeaderId],
   );
 
+  useEffect(() => {
+    if (headerIdFromQuery == null) {
+      return;
+    }
+    setSelectedHeaderId((current) => (current === headerIdFromQuery ? current : headerIdFromQuery));
+  }, [headerIdFromQuery]);
+
   const linesQuery = useQuery({
     queryKey: ['inventory-count-process-lines', selectedHeaderId],
     queryFn: () => inventoryCountApi.getLinesByHeader(selectedHeaderId || 0),
     enabled: Boolean(selectedHeaderId),
+    staleTime: 30_000,
   });
 
-  const lineRows = linesQuery.data ?? [];
+  const lineRows = useMemo(
+    () => (linesQuery.data ? dedupeLines(linesQuery.data) : EMPTY_LINES),
+    [linesQuery.data],
+  );
 
   useEffect(() => {
-    if (selectedHeaderId) {
-      setSearchParams({ headerId: String(selectedHeaderId) }, { replace: true });
+    if (!selectedHeaderId) {
+      return;
     }
-  }, [selectedHeaderId, setSearchParams]);
+    const currentHeaderId = parseHeaderId(searchParams.get('headerId'));
+    if (currentHeaderId === selectedHeaderId) {
+      return;
+    }
+    setSearchParams({ headerId: String(selectedHeaderId) }, { replace: true });
+  }, [searchParams, selectedHeaderId, setSearchParams]);
 
   useEffect(() => {
-    if (!selectedLineId && lineRows.length > 0) {
-      setSelectedLineId(lineRows[0].id);
+    if (lineRows.length === 0) {
+      return;
     }
-    if (selectedLineId && lineRows.every((line) => line.id !== selectedLineId)) {
-      setSelectedLineId(lineRows[0]?.id ?? null);
+
+    const selectedId = normalizeLineId(selectedLineId);
+    const hasSelectedLine = selectedId != null && lineRows.some((line) => normalizeLineId(line.id) === selectedId);
+
+    if (!hasSelectedLine) {
+      setSelectedLineId(normalizeLineId(lineRows[0]?.id));
     }
   }, [lineRows, selectedLineId]);
 
-  const selectedLine = useMemo(
-    () => lineRows.find((item) => item.id === selectedLineId) ?? null,
-    [lineRows, selectedLineId],
-  );
+  const selectedLine = useMemo(() => {
+    const selectedId = normalizeLineId(selectedLineId);
+    if (selectedId == null) {
+      return null;
+    }
+    return lineRows.find((item) => normalizeLineId(item.id) === selectedId) ?? null;
+  }, [lineRows, selectedLineId]);
 
   useEffect(() => {
     if (selectedHeader) {
@@ -133,12 +185,12 @@ export function InventoryCountProcessPage(): ReactElement {
   const saveEntryMutation = useMutation({
     mutationFn: async () => {
       if (!selectedLine) {
-        throw new Error(t('inventoryCount.process.errors.lineRequired', { defaultValue: 'Missing translation' }));
+        throw new Error(t('inventoryCount.process.errors.lineRequired'));
       }
 
       const quantity = Number(enteredQuantity);
       if (!Number.isFinite(quantity) || quantity < 0) {
-        throw new Error(t('inventoryCount.process.errors.quantityRequired', { defaultValue: 'Missing translation' }));
+        throw new Error(t('inventoryCount.process.errors.quantityRequired'));
       }
 
       return await inventoryCountApi.addCountEntry({
@@ -152,7 +204,7 @@ export function InventoryCountProcessPage(): ReactElement {
       });
     },
     onSuccess: async () => {
-      toast.success(t('inventoryCount.process.success', { defaultValue: 'Missing translation' }));
+      toast.success(t('inventoryCount.process.success'));
       setEnteredQuantity('');
       setNote('');
       await linesQuery.refetch();
@@ -160,57 +212,66 @@ export function InventoryCountProcessPage(): ReactElement {
       await allHeadersQuery.refetch();
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : t('inventoryCount.process.error', { defaultValue: 'Missing translation' }));
+      toast.error(error instanceof Error ? error.message : t('inventoryCount.process.error'));
     },
   });
 
   const isBlindCount = selectedHeader?.countMode === 'Blind';
+  const isLoading = assignedHeadersQuery.isLoading || allHeadersQuery.isLoading;
+  const isError = Boolean(assignedHeadersQuery.error) || Boolean(allHeadersQuery.error);
+  const errorMessage = (assignedHeadersQuery.error as Error)?.message || (allHeadersQuery.error as Error)?.message;
+
+  if (isLoading) {
+    return <PageState tone="loading" title={t('common.loading')} />;
+  }
+
+  if (isError) {
+    return (
+      <PageState
+        tone="error"
+        title={t('inventoryCount.process.loadErrorTitle')}
+        description={errorMessage}
+      />
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <DetailPageShell
-        title={t('inventoryCount.process.title', { defaultValue: 'Missing translation' })}
-        description={t('inventoryCount.process.description', {
-          defaultValue: 'Missing translation',
-        })}
-        isLoading={assignedHeadersQuery.isLoading || allHeadersQuery.isLoading}
-        isError={Boolean(assignedHeadersQuery.error) || Boolean(allHeadersQuery.error)}
-        errorTitle={t('inventoryCount.process.loadErrorTitle', { defaultValue: 'Missing translation' })}
-        errorDescription={(assignedHeadersQuery.error as Error)?.message || (allHeadersQuery.error as Error)?.message}
-      >
+    <OpsFormPageShell
+      className="wms-ops-erp-skin wms-ops-inventory-count-page"
+      eyebrow={t('sidebar.inventoryCount')}
+      title={t('inventoryCount.process.title')}
+      description={t('inventoryCount.process.description')}
+    >
+      <div className="wms-ops-inventory-count-content">
         {!canUpdate ? (
-          <Card className="mb-6 border-amber-200 bg-amber-50/80">
-            <CardContent className="py-4 text-sm text-amber-900">
-              {t('inventoryCount.process.permissionInfo', {
-                defaultValue: 'Missing translation',
-              })}
-            </CardContent>
-          </Card>
+          <InventoryCountOpsCallout
+            tone="warn"
+            title={t('common.accessDeniedMessage')}
+            body={t('inventoryCount.process.permissionInfo')}
+          />
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.process.pickHeaderTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.process.pickHeaderDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
+                <InventoryCountOpsSectionHeader
+                  title={t('inventoryCount.process.pickHeaderTitle')}
+                  description={t('inventoryCount.process.pickHeaderDescription')}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}</Label>
+                <InventoryCountOpsField label={t('inventoryCount.fields.header')}>
                   <PagedLookupDialog<InventoryCountHeader>
+                    variant="ops"
                     open={headerLookupOpen}
                     onOpenChange={setHeaderLookupOpen}
-                    title={t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}
-                    description={t('inventoryCount.process.pickHeaderDescription', {
-                      defaultValue: 'Missing translation',
-                    })}
+                    title={t('inventoryCount.fields.header')}
+                    description={t('inventoryCount.process.pickHeaderDescription')}
                     value={selectedHeaderLabel || (selectedHeaderId ? `#${selectedHeaderId}` : '')}
-                    placeholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Missing translation' })}
-                    searchPlaceholder={t('inventoryCount.placeholders.selectHeader', { defaultValue: 'Missing translation' })}
-                    emptyText={t('inventoryCount.process.emptyHeaderMessage', { defaultValue: 'Missing translation' })}
+                    placeholder={t('inventoryCount.placeholders.selectHeader')}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectHeader')}
+                    emptyText={t('inventoryCount.process.emptyHeaderMessage')}
                     queryKey={['inventory-count-process-header-lookup', authUserId || 'all']}
                     fetchPage={({ pageNumber, pageSize, search }) =>
                       authUserId
@@ -231,54 +292,48 @@ export function InventoryCountProcessPage(): ReactElement {
                       setSelectedLineLabel('');
                     }}
                   />
-                </div>
+                </InventoryCountOpsField>
 
                 {selectedHeader ? (
-                  <div className="grid gap-3 rounded-xl border p-4 md:grid-cols-2">
-                    <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countType', { defaultValue: 'Missing translation' })}</div>
-                      <div className="font-medium">{selectedHeader.countType}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countMode', { defaultValue: 'Missing translation' })}</div>
-                      <div className="font-medium">
-                        {isBlindCount
-                          ? t('inventoryCount.create.options.countMode.blind')
-                          : t('inventoryCount.create.options.countMode.open')}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lineCount', { defaultValue: 'Missing translation' })}</div>
-                      <div className="font-medium">{selectedHeader.lineCount ?? 0}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.status', { defaultValue: 'Missing translation' })}</div>
-                      <div><Badge variant={statusTone(selectedHeader.status)}>{selectedHeader.status || 'Draft'}</Badge></div>
-                    </div>
-                  </div>
+                  <InventoryCountOpsStatGrid columns={2}>
+                    <InventoryCountOpsStat label={t('inventoryCount.fields.countType')} value={selectedHeader.countType || '-'} />
+                    <InventoryCountOpsStat
+                      label={t('inventoryCount.fields.countMode')}
+                      value={getInventoryCountModeLabel(t, selectedHeader.countMode)}
+                    />
+                    <InventoryCountOpsStat label={t('inventoryCount.fields.lineCount')} value={selectedHeader.lineCount ?? 0} />
+                    <InventoryCountOpsStat
+                      label={t('inventoryCount.fields.status')}
+                      value={(
+                        <InventoryCountOpsBadge tone={inventoryCountStatusTone(selectedHeader.status)}>
+                          {getInventoryCountStatusLabel(t, selectedHeader.status)}
+                        </InventoryCountOpsBadge>
+                      )}
+                    />
+                  </InventoryCountOpsStatGrid>
                 ) : null}
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>{t('inventoryCount.process.entryTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.process.entryDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
+                <InventoryCountOpsSectionHeader
+                  title={t('inventoryCount.process.entryTitle')}
+                  description={t('inventoryCount.process.entryDescription')}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.line', { defaultValue: 'Missing translation' })}</Label>
+                <InventoryCountOpsField label={t('inventoryCount.fields.line')}>
                   <PagedLookupDialog<InventoryCountLine>
+                    variant="ops"
                     open={lineLookupOpen}
                     onOpenChange={setLineLookupOpen}
-                    title={t('inventoryCount.fields.line', { defaultValue: 'Missing translation' })}
-                    description={selectedHeaderLabel || t('inventoryCount.fields.header', { defaultValue: 'Missing translation' })}
+                    title={t('inventoryCount.fields.line')}
+                    description={selectedHeaderLabel || t('inventoryCount.fields.header')}
                     value={selectedLineLabel || (selectedLineId ? `#${selectedLineId}` : '')}
-                    placeholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Missing translation' })}
-                    searchPlaceholder={t('inventoryCount.placeholders.selectLine', { defaultValue: 'Missing translation' })}
-                    emptyText={t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Missing translation' })}
+                    placeholder={t('inventoryCount.placeholders.selectLine')}
+                    searchPlaceholder={t('inventoryCount.placeholders.selectLine')}
+                    emptyText={t('inventoryCount.process.emptyLineMessage')}
                     disabled={!selectedHeaderId}
                     queryKey={['inventory-count-process-line-lookup', selectedHeaderId || 'none']}
                     fetchPage={({ pageNumber, pageSize, search }) =>
@@ -287,131 +342,135 @@ export function InventoryCountProcessPage(): ReactElement {
                     getKey={(line) => line.id.toString()}
                     getLabel={buildLineLabel}
                     onSelect={(line) => {
-                      setSelectedLineId(line.id);
+                      setSelectedLineId(normalizeLineId(line.id));
                       setSelectedLineLabel(buildLineLabel(line));
                     }}
                   />
-                </div>
+                </InventoryCountOpsField>
 
                 {selectedLine ? (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 text-sm">
-                    <div className="font-semibold">{selectedLine.stockCode}</div>
+                  <div className="wms-ops-inventory-count-line-detail">
+                    <div className="wms-ops-inventory-count-line-detail__title">{selectedLine.stockCode}</div>
                     <div className="mt-1 text-muted-foreground">
-                      {[selectedLine.warehouseCode, selectedLine.rackCode, selectedLine.cellCode].filter(Boolean).join(' / ') || 'Konum bilgisi yok'}
+                      {[selectedLine.warehouseCode, selectedLine.rackCode, selectedLine.cellCode].filter(Boolean).join(' / ') || t('inventoryCount.process.noLocation', { defaultValue: 'Konum bilgisi yok' })}
                     </div>
-                    <div className="mt-3 grid gap-3 md:grid-cols-3">
-                      <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Missing translation' })}</div>
-                        <div className="font-medium">{isBlindCount ? '-' : formatNumber(selectedLine.expectedQuantity)}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.lastCountedQuantity', { defaultValue: 'Missing translation' })}</div>
-                        <div className="font-medium">{formatNumber(selectedLine.countedQuantity)}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.unit', { defaultValue: 'Missing translation' })}</div>
-                        <div className="font-medium">{selectedLine.unit || '-'}</div>
-                      </div>
+                    <div className="mt-3">
+                      <InventoryCountOpsStatGrid columns={3}>
+                        <InventoryCountOpsStat
+                          label={t('inventoryCount.fields.expectedQuantity')}
+                          value={isBlindCount ? '-' : formatNumber(selectedLine.expectedQuantity)}
+                        />
+                        <InventoryCountOpsStat
+                          label={t('inventoryCount.fields.lastCountedQuantity')}
+                          value={formatNumber(selectedLine.countedQuantity)}
+                        />
+                        <InventoryCountOpsStat label={t('inventoryCount.fields.unit')} value={selectedLine.unit || '-'} />
+                      </InventoryCountOpsStatGrid>
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-                    {t('inventoryCount.process.emptyLineMessage', { defaultValue: 'Missing translation' })}
-                  </div>
+                  <InventoryCountOpsEmpty>{t('inventoryCount.process.emptyLineMessage')}</InventoryCountOpsEmpty>
                 )}
 
-                <div className="space-y-2">
-                  <Label>{t('inventoryCount.fields.enteredQuantity', { defaultValue: 'Missing translation' })}</Label>
-                  <Input
+                <InventoryCountOpsField label={t('inventoryCount.fields.enteredQuantity')}>
+                  <OpsInput
                     type="number"
                     min="0"
                     step="0.001"
                     value={enteredQuantity}
                     onChange={(event) => setEnteredQuantity(event.target.value)}
-                    placeholder={t('inventoryCount.placeholders.enterQuantity', { defaultValue: 'Missing translation' })}
+                    placeholder={t('inventoryCount.placeholders.enterQuantity')}
                     disabled={!selectedLine || !canUpdate}
                   />
-                </div>
+                </InventoryCountOpsField>
 
-                <div className="space-y-2">
-                  <Label>{t('common.note', { defaultValue: 'Missing translation' })}</Label>
-                  <Textarea
+                <InventoryCountOpsField label={t('common.note')}>
+                  <OpsTextarea
                     value={note}
                     onChange={(event) => setNote(event.target.value)}
                     rows={3}
-                    placeholder={t('inventoryCount.placeholders.enterNote', { defaultValue: 'Missing translation' })}
+                    placeholder={t('inventoryCount.placeholders.enterNote')}
                     disabled={!selectedLine || !canUpdate}
                   />
+                </InventoryCountOpsField>
+
+                <OpsActionButton
+                  type="button"
+                  variant="primary"
+                  onClick={() => saveEntryMutation.mutate()}
+                  disabled={!selectedLine || !canUpdate || saveEntryMutation.isPending}
+                >
+                  {saveEntryMutation.isPending ? t('common.saving') : t('inventoryCount.process.saveEntry')}
+                </OpsActionButton>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <InventoryCountOpsSectionHeader
+                title={t('inventoryCount.process.lineListTitle')}
+                description={t('inventoryCount.process.lineListDescription')}
+              />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {linesQuery.isPending && lineRows.length === 0 ? (
+                <InventoryCountOpsEmpty>{t('common.loading')}</InventoryCountOpsEmpty>
+              ) : lineRows.length === 0 ? (
+                <InventoryCountOpsEmpty>{t('inventoryCount.process.noLines')}</InventoryCountOpsEmpty>
+              ) : (
+                <div className="wms-ops-inventory-count-line-list max-h-[min(68dvh,720px)] space-y-3 overflow-y-auto pr-1">
+                  {lineRows.map((line) => {
+                  const lineId = normalizeLineId(line.id);
+                  const isActive = lineId != null && lineId === normalizeLineId(selectedLineId);
+                  return (
+                    <InventoryCountOpsLineCard
+                      key={lineId ?? `line-${line.sequenceNo}`}
+                      active={isActive}
+                      isDifference={line.isDifference}
+                      onClick={() => {
+                        if (lineId != null) {
+                          setSelectedLineId(lineId);
+                          setSelectedLineLabel(buildLineLabel(line));
+                        }
+                      }}
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="wms-ops-inventory-count-line-card__title">{line.stockCode}</div>
+                          <div className="wms-ops-inventory-count-line-card__meta">
+                            {[line.warehouseCode, line.rackCode, line.cellCode].filter(Boolean).join(' / ') || t('inventoryCount.process.noLocation', { defaultValue: 'Konum bilgisi yok' })}
+                          </div>
+                        </div>
+                        <InventoryCountOpsBadge tone={inventoryCountStatusTone(line.countStatus)}>
+                          {getInventoryCountStatusLabel(t, line.countStatus)}
+                        </InventoryCountOpsBadge>
+                      </div>
+                      <div className="mt-3">
+                        <InventoryCountOpsStatGrid columns={3}>
+                          <InventoryCountOpsStat
+                            label={t('inventoryCount.fields.expectedQuantity')}
+                            value={isBlindCount ? '-' : formatNumber(line.expectedQuantity)}
+                          />
+                          <InventoryCountOpsStat
+                            label={t('inventoryCount.fields.countedQuantity')}
+                            value={formatNumber(line.countedQuantity)}
+                          />
+                          <InventoryCountOpsStat
+                            label={t('inventoryCount.fields.difference')}
+                            value={isBlindCount ? '-' : formatNumber(line.differenceQuantity)}
+                          />
+                        </InventoryCountOpsStatGrid>
+                      </div>
+                    </InventoryCountOpsLineCard>
+                  );
+                })}
                 </div>
-
-                <Button type="button" onClick={() => saveEntryMutation.mutate()} disabled={!selectedLine || !canUpdate || saveEntryMutation.isPending}>
-                  {saveEntryMutation.isPending
-                    ? t('common.saving', { defaultValue: 'Missing translation' })
-                    : t('inventoryCount.process.saveEntry', { defaultValue: 'Missing translation' })}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('inventoryCount.process.lineListTitle', { defaultValue: 'Missing translation' })}</CardTitle>
-                <CardDescription>{t('inventoryCount.process.lineListDescription', {
-                  defaultValue: 'Missing translation',
-                })}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {linesQuery.isLoading ? (
-                  <div className="rounded-xl border p-4 text-sm text-muted-foreground">
-                    {t('common.loading', { defaultValue: 'Missing translation' })}
-                  </div>
-                ) : lineRows.length === 0 ? (
-                  <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-                    {t('inventoryCount.process.noLines', { defaultValue: 'Missing translation' })}
-                  </div>
-                ) : (
-                  lineRows.map((line) => {
-                    const isActive = line.id === selectedLineId;
-                    return (
-                      <button
-                        type="button"
-                        key={line.id}
-                        onClick={() => setSelectedLineId(line.id)}
-                        className={`w-full rounded-xl border p-4 text-left transition ${isActive ? 'border-sky-500 bg-sky-50' : line.isDifference ? 'border-rose-300 bg-rose-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'}`}
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <div className="font-semibold">{line.stockCode}</div>
-                            <div className="mt-1 text-sm text-muted-foreground">
-                              {[line.warehouseCode, line.rackCode, line.cellCode].filter(Boolean).join(' / ') || 'Konum bilgisi yok'}
-                            </div>
-                          </div>
-                          <Badge variant={statusTone(line.countStatus)}>{line.countStatus}</Badge>
-                        </div>
-                        <div className="mt-3 grid gap-3 md:grid-cols-3">
-                          <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.expectedQuantity', { defaultValue: 'Missing translation' })}</div>
-                            <div className="font-medium">{isBlindCount ? '-' : formatNumber(line.expectedQuantity)}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.countedQuantity', { defaultValue: 'Missing translation' })}</div>
-                            <div className="font-medium">{formatNumber(line.countedQuantity)}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-muted-foreground">{t('inventoryCount.fields.difference', { defaultValue: 'Missing translation' })}</div>
-                            <div className="font-medium">{isBlindCount ? '-' : formatNumber(line.differenceQuantity)}</div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      </DetailPageShell>
-    </div>
+      </div>
+    </OpsFormPageShell>
   );
 }

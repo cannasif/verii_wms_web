@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Edit3, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
+  DeleteConfirmDialog,
   OpsActionButton,
   OpsInput,
   OpsListPageShell,
@@ -74,6 +75,8 @@ interface KkdCrudPageProps<TItem extends { id: number }, TForm extends object, T
   defaultColumnWidths?: Record<string, number>;
   gridMinWidthClassName?: string;
   gridHeaderLayout?: 'default' | 'slant';
+  dialogSize?: 'md' | 'lg' | 'xl' | 'full';
+  dialogClassName?: string;
 }
 
 function formatDateInput(value: unknown): string {
@@ -128,6 +131,8 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
   defaultColumnWidths = KKD_CRUD_DEFAULT_COLUMN_WIDTHS,
   gridMinWidthClassName,
   gridHeaderLayout,
+  dialogSize = 'lg',
+  dialogClassName,
 }: KkdCrudPageProps<TItem, TForm, TColumnKey>): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
   const { setPageTitle } = useUIStore();
@@ -382,7 +387,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
       </OpsListPageShell>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <KkdOpsDialogContent className="max-w-3xl">
+        <KkdOpsDialogContent size={dialogSize} className={dialogClassName}>
           <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
             <DialogTitle className="wms-ops-detail-dialog__title">
               {editingItem ? t('common.edit') : t('common.add')}
@@ -391,7 +396,7 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
               {description}
             </DialogDescription>
           </DialogHeader>
-          <div className="wms-ops-form max-h-[calc(90dvh-9rem)] overflow-y-auto px-4 py-4 sm:px-6">
+          <div className="wms-ops-scrollbar wms-ops-form min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
             {renderForm ? (
               renderForm({ formState, setFormState, editingItem })
             ) : (
@@ -467,38 +472,22 @@ export function KkdCrudPage<TItem extends { id: number }, TForm extends object, 
         </KkdOpsDialogContent>
       </Dialog>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <KkdOpsDialogContent className="max-w-md">
-          <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-4 py-4 pr-12 sm:px-6 sm:pr-14">
-            <DialogTitle className="wms-ops-detail-dialog__title">{t('common.delete')}</DialogTitle>
-            <DialogDescription className="wms-ops-detail-dialog__description">
-              {itemToDelete ? t('kkd.operational.deleteConfirm', { name: breadcrumbCurrent }) : t('common.delete')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="wms-ops-detail-dialog__footer shrink-0 gap-2 border-t px-4 py-4 sm:px-6">
-            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel')}
-            </OpsActionButton>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => {
-                if (!itemToDelete) return;
-                const rowId = resolveRowId(itemToDelete);
-                if (!rowId) {
-                  toast.error(t('common.generalError'));
-                  return;
-                }
-                deleteMutation.mutate(rowId);
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-              {t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </KkdOpsDialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        title={t('common.delete')}
+        description={itemToDelete ? t('kkd.operational.deleteConfirm', { name: breadcrumbCurrent }) : undefined}
+        isPending={deleteMutation.isPending}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={() => {
+          if (!itemToDelete) return;
+          const rowId = resolveRowId(itemToDelete);
+          if (!rowId) {
+            toast.error(t('common.generalError'));
+            return;
+          }
+          deleteMutation.mutate(rowId);
+        }}
+      />
     </>
   );
 }

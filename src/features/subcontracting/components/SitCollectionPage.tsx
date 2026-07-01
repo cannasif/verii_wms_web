@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { OpsActionButton, OpsFieldShell } from '@/components/shared';
+import { OpsActionButton, OpsFieldShell, OpsLoadingState } from '@/components/shared';
 import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { useSitStokBarcode } from '../hooks/useSitStokBarcode';
 import { useAddSitBarcode } from '../hooks/useAddSitBarcode';
@@ -396,7 +396,7 @@ export function SitCollectionPage(): ReactElement {
 
       <div className="wms-ops-collection__body custom-scrollbar">
         {isLoadingOrderLines ? (
-          <div className="wms-ops-collection__loading"><Loader2 className="size-7 animate-spin" aria-hidden /></div>
+          <div className="wms-ops-collection__loading"><OpsLoadingState message={t('common.loading')} code="FETCH" /></div>
         ) : orderLinesWithCollected.length > 0 ? (
           <div className="wms-ops-collection__line-grid">
             {orderLinesWithCollected.map((line) => {

@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PagedDataGrid, PagedLookupDialog, type PagedDataGridColumn } from '@/components/shared';
-import { MasterDataOpsErpEyebrow, MasterDataOpsFormField, masterDataOpsGridColumn } from '@/features/shared';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { OpsActionButton, OpsCircuitToggleInline, OpsFormPageShell, OpsInput, OpsSelectItem, OpsTextarea, PagedDataGrid, PagedLookupDialog, type PagedDataGridColumn } from '@/components/shared';
+import { MasterDataOpsErpEyebrow, MasterDataOpsFormField, MasterDataOpsSelect, masterDataOpsGridColumn } from '@/features/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -269,24 +267,21 @@ export function ShelfManagementPage(): ReactElement {
                 </MasterDataOpsFormField>
 
                 <MasterDataOpsFormField label={t('shelfManagement.parentShelf')} className="md:col-span-2 xl:col-span-2">
-                  <Select
+                  <MasterDataOpsSelect
                     value={form.parentShelfId ? String(form.parentShelfId) : '__none__'}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, parentShelfId: value === '__none__' ? null : Number(value) }))
                     }
+                    placeholder={t('shelfManagement.parentShelfPh')}
+                    disabled={formReadOnly}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={t('shelfManagement.parentShelfPh')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">{t('shelfManagement.none')}</SelectItem>
-                      {filteredParents.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.code} · {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <OpsSelectItem value="__none__">{t('shelfManagement.none')}</OpsSelectItem>
+                    {filteredParents.map((item) => (
+                      <OpsSelectItem key={item.id} value={String(item.id)}>
+                        {item.code} · {item.name}
+                      </OpsSelectItem>
+                    ))}
+                  </MasterDataOpsSelect>
                 </MasterDataOpsFormField>
 
                 <MasterDataOpsFormField label={t('shelfManagement.code')}>
@@ -298,22 +293,18 @@ export function ShelfManagementPage(): ReactElement {
                 </MasterDataOpsFormField>
 
                 <MasterDataOpsFormField label={t('shelfManagement.type')}>
-                  <Select
+                  <MasterDataOpsSelect
                     value={form.locationType}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, locationType: value as ShelfUpsertRequest['locationType'] }))
                     }
+                    disabled={formReadOnly}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Zone">{t('shelfManagement.locationZone')}</SelectItem>
-                      <SelectItem value="Rack">{t('shelfManagement.locationRack')}</SelectItem>
-                      <SelectItem value="Shelf">{t('shelfManagement.locationShelf')}</SelectItem>
-                      <SelectItem value="Cell">{t('shelfManagement.locationCell')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <OpsSelectItem value="Zone">{t('shelfManagement.locationZone')}</OpsSelectItem>
+                    <OpsSelectItem value="Rack">{t('shelfManagement.locationRack')}</OpsSelectItem>
+                    <OpsSelectItem value="Shelf">{t('shelfManagement.locationShelf')}</OpsSelectItem>
+                    <OpsSelectItem value="Cell">{t('shelfManagement.locationCell')}</OpsSelectItem>
+                  </MasterDataOpsSelect>
                 </MasterDataOpsFormField>
 
                 <MasterDataOpsFormField label={t('shelfManagement.levelNo')}>
@@ -337,23 +328,19 @@ export function ShelfManagementPage(): ReactElement {
                 </MasterDataOpsFormField>
 
                 <MasterDataOpsFormField label={t('shelfManagement.barcodeEntryMode')}>
-                  <Select
+                  <MasterDataOpsSelect
                     value={form.barcodeEntryMode}
                     onValueChange={(value) =>
                       setForm((current) => ({ ...current, barcodeEntryMode: value as ShelfUpsertRequest['barcodeEntryMode'] }))
                     }
+                    disabled={formReadOnly}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Auto">{t('shelfManagement.barcodeModeAuto')}</SelectItem>
-                      <SelectItem value="Manual">{t('shelfManagement.barcodeModeManual')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <OpsSelectItem value="Auto">{t('shelfManagement.barcodeModeAuto')}</OpsSelectItem>
+                    <OpsSelectItem value="Manual">{t('shelfManagement.barcodeModeManual')}</OpsSelectItem>
+                  </MasterDataOpsSelect>
                 </MasterDataOpsFormField>
 
-                <MasterDataOpsFormField label={t('shelfManagement.barcode')} className="md:col-span-2 xl:col-span-2">
+                <MasterDataOpsFormField label={t('shelfManagement.barcode')} className="md:col-span-2">
                   <OpsInput
                     value={form.barcodeEntryMode === 'Auto' ? barcodePreview : (form.barcode ?? '')}
                     onChange={(event) => setForm((current) => ({ ...current, barcode: event.target.value }))}
@@ -365,33 +352,39 @@ export function ShelfManagementPage(): ReactElement {
                     }
                   />
                 </MasterDataOpsFormField>
+
+                <MasterDataOpsFormField label={t('shelfManagement.activeRecord')}>
+                  <div className="flex min-h-[2.25rem] items-center justify-between gap-3 border border-[color:var(--wms-ops-field-border)] bg-[color:var(--wms-ops-field-bg)] px-3">
+                    <span className="min-w-0 text-[0.6875rem] leading-snug opacity-70">
+                      {t('shelfManagement.activeRecordHelp')}
+                    </span>
+                    <OpsCircuitToggleInline
+                      checked={form.isActive}
+                      onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))}
+                      disabled={formReadOnly}
+                      aria-label={t('shelfManagement.activeRecord')}
+                    />
+                  </div>
+                </MasterDataOpsFormField>
               </div>
 
-              <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-                <div className="rounded-none border border-[color:var(--wms-ops-card-border)] bg-[color-mix(in_oklab,var(--wms-ops-accent)_6%,var(--wms-ops-card-bg))] p-4">
-                  <div className="font-mono text-xs uppercase tracking-wider text-[color:var(--wms-ops-accent)]">
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="rounded-none border border-[color:var(--wms-ops-card-border)] bg-[color-mix(in_oklab,var(--wms-ops-accent)_6%,var(--wms-ops-card-bg))] p-3">
+                  <div className="font-mono text-[0.6875rem] uppercase tracking-wider text-[color:var(--wms-ops-accent)]">
                     {t('shelfManagement.barcodePreviewTitle')}
                   </div>
-                  <div className="mt-2 font-mono text-lg">{barcodePreview || '-'}</div>
-                  <div className="mt-2 text-xs opacity-70">{t('shelfManagement.barcodePreviewHelp')}</div>
+                  <div className="mt-1.5 font-mono text-base">{barcodePreview || '-'}</div>
+                  <div className="mt-1.5 text-[0.6875rem] leading-snug opacity-70">{t('shelfManagement.barcodePreviewHelp')}</div>
                 </div>
 
                 <MasterDataOpsFormField label={t('common.description')} className="min-w-0">
                   <OpsTextarea
                     value={form.description ?? ''}
                     onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                    rows={4}
-                    className="min-h-[7.5rem]"
+                    rows={3}
+                    className="min-h-[5rem]"
                   />
                 </MasterDataOpsFormField>
-
-                <div className="flex min-w-[12rem] flex-col justify-center rounded-none border border-[color:var(--wms-ops-card-border)] px-4 py-3">
-                  <div className="text-sm font-medium">{t('shelfManagement.activeRecord')}</div>
-                  <div className="mt-1 text-xs opacity-70">{t('shelfManagement.activeRecordHelp')}</div>
-                  <div className="mt-3">
-                    <Switch checked={form.isActive} onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))} />
-                  </div>
-                </div>
               </div>
             </fieldset>
           </div>
@@ -404,7 +397,7 @@ export function ShelfManagementPage(): ReactElement {
               <h3 className="wms-ops-pt-terminal__title">{t('shelfManagement.listTitle')}</h3>
             </div>
           </div>
-          <div className="wms-ops-form p-4 sm:px-5 sm:pb-5">
+          <div className="wms-ops-list wms-ops-form p-4 sm:px-5 sm:pb-5">
             <PagedDataGrid<ShelfDefinitionDto, ShelfColumnKey>
               variant="ops"
               pageKey={pageKey}
@@ -450,7 +443,7 @@ export function ShelfManagementPage(): ReactElement {
               actionsHeaderLabel={t('shelfManagement.colAction')}
               actionsCellClassName="wms-ops-table-actions-col"
               renderActionsCell={(item) => (
-                <div className="wms-ops-row-actions flex justify-end gap-1">
+                <div className="wms-ops-row-actions">
                   {permission.canUpdate ? (
                     <Button
                       type="button"
@@ -483,7 +476,7 @@ export function ShelfManagementPage(): ReactElement {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="wms-ops-grid-icon-btn"
+                      className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
                       aria-label={t('common.delete')}
                       disabled={deleteMutation.isPending}
                       onClick={() => deleteMutation.mutate(item.id)}

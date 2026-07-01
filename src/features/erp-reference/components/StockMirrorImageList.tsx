@@ -1,7 +1,7 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { CheckCircle2, Loader2, Star, Trash2 } from 'lucide-react';
+import { DeleteConfirmDialog } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { StockImageDto } from '../types/erpReference.types';
 import { erpReferenceApi } from '../api/erpReference.api';
 import { getStockImageUrl } from '../utils/image-url';
@@ -89,23 +89,16 @@ export function StockMirrorImageList({ images, isBusy = false, onChanged }: Stoc
         ))}
       </div>
 
-      <Dialog open={Boolean(imageToDelete)} onOpenChange={(open) => !open && setImageToDelete(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Görsel sil</DialogTitle>
-            <DialogDescription>Seçili stok görselini silmek istediğine emin misin?</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setImageToDelete(null)} disabled={pendingAction === 'delete'}>
-              Vazgeç
-            </Button>
-            <Button type="button" variant="destructive" onClick={() => void handleDelete()} disabled={pendingAction === 'delete'}>
-              {pendingAction === 'delete' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Sil
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={Boolean(imageToDelete)}
+        title="Görsel sil"
+        description="Seçili stok görselini silmek istediğine emin misin?"
+        isPending={pendingAction === 'delete'}
+        onOpenChange={(open) => {
+          if (!open) setImageToDelete(null);
+        }}
+        onConfirm={() => void handleDelete()}
+      />
     </>
   );
 }

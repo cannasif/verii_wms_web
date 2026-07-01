@@ -78,5 +78,11 @@
       "description": "Paket header, koli/palet, line ve etiket basım durumlarını görün."
     }
   },
-  "open": "Ekranı aç"
+  "open": "Ekranı aç",
+  "terminal": {
+    "modules": "MODUL",
+    "statusReady": "HAZIR",
+    "selectHint": "Terminal oturumu icin bir rapor modulu secin.",
+    "routePrefix": "ROTA"
+  }
 }

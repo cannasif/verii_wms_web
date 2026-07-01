@@ -241,10 +241,27 @@
         "periodPlaceholder": "Period Placeholder",
         "rolePh": "Role Ph",
         "roleTitle": "Role Title",
+        "sectionBase": "Department, role and group",
+        "sectionBaseSub": "Select the department, role and stock group for this entitlement rule.",
+        "sectionInitial": "Initial entry entitlement",
+        "sectionInitialSub": "Quantity and waiting rules for the first assignment.",
+        "sectionThreeMonth": "After 3 months",
+        "sectionThreeMonthSub": "Additional entitlement after the third month.",
+        "sectionRoutine": "Routine period",
+        "sectionRoutineSub": "Recurring periodic entitlement rules.",
+        "sectionFlags": "Status",
+        "sectionFlagsSub": "Active and mandatory flags for the rule.",
+        "introTitle": "Entitlement matrix summary",
         "touchGuideLine1": "Touch Guide Line1",
         "touchGuideLine2": "Touch Guide Line2",
         "touchGuideLine3": "Touch Guide Line3",
         "touchGuideTitle": "Touch Guide Title"
+      },
+      "override": {
+        "sectionEmployee": "Employee and group",
+        "sectionEntitlement": "Extra entitlement and validity",
+        "sectionStatus": "Description and status",
+        "introTitle": "Manual override summary"
       },
       "overview": {
         "actionsTitle": "Actions Title",

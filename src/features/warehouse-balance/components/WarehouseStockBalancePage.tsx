@@ -1,11 +1,13 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DatabaseZap, RefreshCcw } from 'lucide-react';
+import { DatabaseZap, Package, RefreshCcw, Warehouse } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { MasterDataOpsErpEyebrow, MasterDataOpsSection, MasterDataOpsStatGrid, masterDataOpsGridColumn } from '@/features/shared';
+import { cn } from '@/lib/utils';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -62,6 +64,24 @@ function formatNumber(value: number | null | undefined): string {
 function formatDate(value?: string | null): string {
   if (!value) return '-';
   return new Date(value).toLocaleString('tr-TR');
+}
+
+function renderTruncatedTooltip(text: string | null | undefined, className?: string): ReactElement {
+  const value = text?.trim();
+  if (!value) {
+    return <span className={className}>-</span>;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={cn('block min-w-0 cursor-default truncate', className)}>{value}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={4} className="max-w-md whitespace-normal break-words text-left">
+        {value}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 export function WarehouseStockBalancePage(): ReactElement {
@@ -246,6 +266,7 @@ export function WarehouseStockBalancePage(): ReactElement {
 
       <section className="wms-ops-receiving-area border">
         <div className="wms-ops-form p-4 sm:p-5">
+          <TooltipProvider delayDuration={200}>
           <PagedDataGrid<WarehouseStockBalanceDto, StockColumnKey>
             variant="ops"
             pageKey="warehouse-stock-balance-grid"
@@ -263,9 +284,9 @@ export function WarehouseStockBalancePage(): ReactElement {
                   );
                 case 'stock':
                   return (
-                    <div className="flex flex-col">
-                      <span className="font-medium">{row.stockCode ?? '-'}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.stockName ?? '-'}</span>
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">{row.stockCode ?? '-'}</span>
+                      {renderTruncatedTooltip(row.stockName, 'text-xs text-slate-500 dark:text-slate-400')}
                     </div>
                   );
                 case 'yapKod':
@@ -330,29 +351,60 @@ export function WarehouseStockBalancePage(): ReactElement {
             }}
             showActionsColumn={permission.canUpdate}
             actionsHeaderLabel={t('common.actions')}
+            actionsCellClassName="wms-ops-table-actions-col"
+            iconOnlyActions
             renderActionsCell={(row) => permission.canUpdate ? (
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => rebuildWarehouseMutation.mutate(row.warehouseId)}
-                  disabled={rebuildWarehouseMutation.isPending}
-                >
-                  <RefreshCcw className="size-4" />
-                  <span className="ml-2">{t('warehouseBalance.stock.rebuildWarehouse', { defaultValue: 'Missing translation' })}</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => rebuildStockMutation.mutate(row.stockId)}
-                  disabled={rebuildStockMutation.isPending}
-                >
-                  <RefreshCcw className="size-4" />
-                  <span className="ml-2">{t('warehouseBalance.stock.rebuildStock', { defaultValue: 'Missing translation' })}</span>
-                </Button>
-              </div>
+                <div className="wms-ops-row-actions">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="wms-ops-grid-icon-btn"
+                        aria-label={t('warehouseBalance.stock.rebuildWarehouse')}
+                        onClick={() => rebuildWarehouseMutation.mutate(row.warehouseId)}
+                        disabled={rebuildWarehouseMutation.isPending}
+                      >
+                        <Warehouse className="size-3" aria-hidden />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={6} className="max-w-[14rem] text-center">
+                      <p className="font-medium">{t('warehouseBalance.stock.rebuildWarehouse')}</p>
+                      <p className="mt-0.5 text-[0.6875rem] opacity-80">
+                        {t('warehouseBalance.stock.rebuildWarehouseHint', {
+                          defaultValue: 'Recalculates the balance summary for this warehouse row.',
+                        })}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="wms-ops-grid-icon-btn"
+                        aria-label={t('warehouseBalance.stock.rebuildStock')}
+                        onClick={() => rebuildStockMutation.mutate(row.stockId)}
+                        disabled={rebuildStockMutation.isPending}
+                      >
+                        <Package className="size-3" aria-hidden />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={6} className="max-w-[14rem] text-center">
+                      <p className="font-medium">{t('warehouseBalance.stock.rebuildStock')}</p>
+                      <p className="mt-0.5 text-[0.6875rem] opacity-80">
+                        {t('warehouseBalance.stock.rebuildStockHint', {
+                          defaultValue: 'Recalculates the balance summary for this stock card.',
+                        })}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
             ) : null}
           />
+          </TooltipProvider>
         </div>
       </section>
 

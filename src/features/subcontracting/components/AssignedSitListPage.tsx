@@ -349,7 +349,6 @@ export function AssignedSitListPage(): ReactElement {
         onConfirm={() => {
           if (headerToDelete) deleteMutation.mutate(headerToDelete.id);
         }}
-        variant="ops"
       />
     </>
   );

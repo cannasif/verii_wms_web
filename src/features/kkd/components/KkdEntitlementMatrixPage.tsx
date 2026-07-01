@@ -9,15 +9,17 @@ import { KkdCrudPage, type KkdCrudField } from './KkdCrudPage';
 import {
   KKD_MATRIX_COLUMN_WIDTHS,
   KKD_MATRIX_TABLE_MIN_WIDTH_CLASS,
-  KkdOpsFormBanner,
+  KkdOpsCollapsibleGuide,
   KkdOpsFormField,
   KkdOpsSection,
+  KkdOpsSelect,
   renderKkdActiveCell,
   renderKkdGenericCell,
   renderKkdPeriodTypeCell,
   renderKkdTextChip,
   renderKkdYesNoCell,
 } from './kkd-ops-ui';
+import { SelectItem } from '@/components/ui/select';
 import { kkdApi } from '../api/kkd.api';
 import type {
   CreateKkdEntitlementMatrixRowDto,
@@ -62,6 +64,8 @@ function buildMatrixDefaults(departmentId: number, roleId: number): Pick<CreateK
   };
 }
 
+const ROUTINE_PERIOD_TYPES = ['Year', 'Month', 'Day'] as const;
+
 function KkdEntitlementMatrixForm({
   formState,
   setFormState,
@@ -81,251 +85,258 @@ function KkdEntitlementMatrixForm({
   const stockGroups = stockGroupsQuery.data ?? [];
 
   const labelWithHelp = (label: string, helpKey: string): ReactElement => (
-    <div className="flex items-center">
-      {label}
-      <FieldHelpTooltip text={t(helpKey, { ns: 'common' })} />
-    </div>
-  );
-
-  const helperText = (text: string): ReactElement => (
-    <p className="wms-ops-prelabel-panel__hint">{text}</p>
+    <span className="wms-ops-kkd-matrix-label">
+      <span className="wms-ops-kkd-matrix-label__text">{label}</span>
+      <FieldHelpTooltip text={t(helpKey, { ns: 'common' })} variant="ops" />
+    </span>
   );
 
   return (
-    <div className="space-y-4">
-      <KkdOpsFormBanner tone="info">
-        {t('kkd.operational.matrix.intro')}
-      </KkdOpsFormBanner>
+    <div className="wms-ops-kkd-matrix-form space-y-5">
+      <div className="grid gap-2 sm:grid-cols-2">
+        <KkdOpsCollapsibleGuide tone="info" title={t('kkd.operational.matrix.introTitle', { defaultValue: 'Hak matrisi özeti' })}>
+          {t('kkd.operational.matrix.intro')}
+        </KkdOpsCollapsibleGuide>
 
-      <details className="wms-ops-kkd-form-banner wms-ops-kkd-form-banner--warn md:col-span-2">
-        <summary className="wms-ops-kkd-form-banner__title cursor-pointer select-none">
-          {t('kkd.operational.matrix.touchGuideTitle')}
-        </summary>
-        <div className="wms-ops-kkd-form-banner__content mt-2 space-y-1">
-          <div>{t('kkd.operational.matrix.touchGuideLine1')}</div>
-          <div>{t('kkd.operational.matrix.touchGuideLine2')}</div>
-          <div>{t('kkd.operational.matrix.touchGuideLine3')}</div>
-        </div>
-      </details>
+        <KkdOpsCollapsibleGuide tone="warn" title={t('kkd.operational.matrix.touchGuideTitle')}>
+          <p>{t('kkd.operational.matrix.touchGuideLine1')}</p>
+          <p>{t('kkd.operational.matrix.touchGuideLine2')}</p>
+          <p>{t('kkd.operational.matrix.touchGuideLine3')}</p>
+        </KkdOpsCollapsibleGuide>
+      </div>
 
       <KkdOpsSection title={t('kkd.operational.matrix.sectionBase')}>
-        <div className="grid gap-4 md:grid-cols-2">
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblDepartment'), 'help.kkd.matrix.department')}>
-        <PagedLookupDialog<KkdEmployeeDepartmentDto>
-          variant="ops"
-          open={departmentDialogOpen}
-          onOpenChange={setDepartmentDialogOpen}
-          title={t('kkd.operational.matrix.departmentTitle')}
-          value={formState.departmentId ? `#${formState.departmentId}` : null}
-          placeholder={t('kkd.operational.matrix.departmentPh')}
-          queryKey={['kkd', 'matrix-form', 'departments']}
-          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-            kkdApi.getDepartments({ pageNumber, pageSize, search }, { signal })
-          }
-          getKey={(item) => String(item.id)}
-          getLabel={(item) => `${item.departmentCode} - ${item.departmentName}`}
-          onSelect={(item) => setFormState((prev) => ({
-            ...prev,
-            departmentId: item.id,
-            roleId: 0,
-            ...buildMatrixDefaults(item.id, 0),
-          }))}
-        />
-      </KkdOpsFormField>
+        <div className="wms-ops-kkd-matrix-field-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblDepartment'), 'help.kkd.matrix.department')}>
+            <PagedLookupDialog<KkdEmployeeDepartmentDto>
+              variant="ops"
+              open={departmentDialogOpen}
+              onOpenChange={setDepartmentDialogOpen}
+              title={t('kkd.operational.matrix.departmentTitle')}
+              value={formState.departmentId ? `#${formState.departmentId}` : null}
+              placeholder={t('kkd.operational.matrix.departmentPh')}
+              queryKey={['kkd', 'matrix-form', 'departments']}
+              fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                kkdApi.getDepartments({ pageNumber, pageSize, search }, { signal })
+              }
+              getKey={(item) => String(item.id)}
+              getLabel={(item) => `${item.departmentCode} - ${item.departmentName}`}
+              onSelect={(item) => setFormState((prev) => ({
+                ...prev,
+                departmentId: item.id,
+                roleId: 0,
+                ...buildMatrixDefaults(item.id, 0),
+              }))}
+            />
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRole'), 'help.kkd.matrix.role')}>
-        <PagedLookupDialog<KkdEmployeeRoleDto>
-          variant="ops"
-          open={roleDialogOpen}
-          onOpenChange={setRoleDialogOpen}
-          title={t('kkd.operational.matrix.roleTitle')}
-          value={formState.roleId ? `#${formState.roleId}` : null}
-          placeholder={formState.departmentId ? t('kkd.operational.matrix.rolePh') : t('kkd.operational.matrix.departmentPhNeedDept')}
-          queryKey={['kkd', 'matrix-form', 'roles', formState.departmentId || 0]}
-          fetchPage={({ pageNumber, pageSize, search, signal }) =>
-            kkdApi.getRoles({
-              pageNumber,
-              pageSize,
-              search,
-              filters: formState.departmentId
-                ? [{ column: 'DepartmentId', operator: 'eq', value: String(formState.departmentId) }]
-                : [],
-            }, { signal })
-          }
-          getKey={(item) => String(item.id)}
-          getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
-          disabled={!formState.departmentId}
-          onSelect={(item) => setFormState((prev) => ({
-            ...prev,
-            roleId: item.id,
-            ...buildMatrixDefaults(prev.departmentId, item.id),
-          }))}
-        />
-      </KkdOpsFormField>
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRole'), 'help.kkd.matrix.role')}>
+            <PagedLookupDialog<KkdEmployeeRoleDto>
+              variant="ops"
+              open={roleDialogOpen}
+              onOpenChange={setRoleDialogOpen}
+              title={t('kkd.operational.matrix.roleTitle')}
+              value={formState.roleId ? `#${formState.roleId}` : null}
+              placeholder={formState.departmentId ? t('kkd.operational.matrix.rolePh') : t('kkd.operational.matrix.departmentPhNeedDept')}
+              queryKey={['kkd', 'matrix-form', 'roles', formState.departmentId || 0]}
+              fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                kkdApi.getRoles({
+                  pageNumber,
+                  pageSize,
+                  search,
+                  filters: formState.departmentId
+                    ? [{ column: 'DepartmentId', operator: 'eq', value: String(formState.departmentId) }]
+                    : [],
+                }, { signal })
+              }
+              getKey={(item) => String(item.id)}
+              getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
+              disabled={!formState.departmentId}
+              onSelect={(item) => setFormState((prev) => ({
+                ...prev,
+                roleId: item.id,
+                ...buildMatrixDefaults(prev.departmentId, item.id),
+              }))}
+            />
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblGroupCode'), 'help.kkd.matrix.groupCode')}>
-        <SearchableSelect<KkdStockGroupOption>
-          value={formState.groupCode}
-          onValueChange={(value) => {
-            const selected = stockGroups.find((item) => item.groupCode === value);
-            setFormState((prev) => ({ ...prev, groupCode: value, groupName: selected?.groupName ?? '' }));
-          }}
-          options={stockGroups}
-          getOptionValue={(item) => item.groupCode}
-          getOptionLabel={(item) => `${item.groupCode}${item.groupName ? ` - ${item.groupName}` : ''}`}
-          placeholder={t('kkd.placeholders.selectStockGroup')}
-          searchPlaceholder={t('kkd.operational.matrix.groupSearch')}
-          emptyText={t('kkd.operational.matrix.groupEmpty')}
-          isLoading={stockGroupsQuery.isLoading}
-          variant="ops"
-          modal
-        />
-      </KkdOpsFormField>
+          <KkdOpsFormField
+            className="sm:col-span-2 xl:col-span-1"
+            label={labelWithHelp(t('kkd.operational.matrix.lblGroupCode'), 'help.kkd.matrix.groupCode')}
+          >
+            <SearchableSelect<KkdStockGroupOption>
+              value={formState.groupCode}
+              onValueChange={(value) => {
+                const selected = stockGroups.find((item) => item.groupCode === value);
+                setFormState((prev) => ({ ...prev, groupCode: value, groupName: selected?.groupName ?? '' }));
+              }}
+              options={stockGroups}
+              getOptionValue={(item) => item.groupCode}
+              getOptionLabel={(item) => `${item.groupCode}${item.groupName ? ` - ${item.groupName}` : ''}`}
+              placeholder={t('kkd.placeholders.selectStockGroup')}
+              searchPlaceholder={t('kkd.operational.matrix.groupSearch')}
+              emptyText={t('kkd.operational.matrix.groupEmpty')}
+              isLoading={stockGroupsQuery.isLoading}
+              variant="ops"
+              modal
+            />
+          </KkdOpsFormField>
         </div>
       </KkdOpsSection>
 
-      <KkdOpsSection title={t('kkd.operational.matrix.sectionInitial')}>
-        <div className="grid gap-4 md:grid-cols-2">
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblInitialIssue'), 'help.kkd.matrix.initialQuantity')}>
-        <OpsInput type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
-      </KkdOpsFormField>
+      <div className="grid gap-5 xl:grid-cols-2">
+        <KkdOpsSection title={t('kkd.operational.matrix.sectionInitial')}>
+          <div className="wms-ops-kkd-matrix-field-grid grid gap-3 sm:grid-cols-2">
+            <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblInitialIssue'), 'help.kkd.matrix.initialQuantity')}>
+              <OpsInput type="number" step="0.01" value={formState.initialIssueQuantity} onChange={(event) => setFormState((prev) => ({ ...prev, initialIssueQuantity: Number(event.target.value) || 0 }))} />
+            </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblInitialFreqDays'), 'help.kkd.matrix.initialFrequencyDays')}>
-        <OpsInput
-          type="number"
-          value={formState.initialFrequencyDays ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, initialFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintInitialFreqDays'))}
-      </KkdOpsFormField>
+            <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblInitialFreqDays'), 'help.kkd.matrix.initialFrequencyDays')}>
+              <OpsInput
+                type="number"
+                value={formState.initialFrequencyDays ?? ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, initialFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
+              />
+            </KkdOpsFormField>
 
-      <OpsToggleField
-        checked={formState.initialAllowBulkIssue}
-        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, initialAllowBulkIssue: checked }))}
-        title={labelWithHelp(t('kkd.operational.matrix.lblInitialBulk'), 'help.kkd.matrix.initialBulk')}
-      />
+            <KkdOpsFormField className="sm:col-span-2" label={labelWithHelp(t('kkd.operational.matrix.lblInitialFreqQty'), 'help.kkd.matrix.initialFrequencyQuantity')}>
+              <OpsInput
+                type="number"
+                step="0.01"
+                value={formState.initialQuantityPerFrequency ?? ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, initialQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+              />
+            </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblInitialFreqQty'), 'help.kkd.matrix.initialFrequencyQuantity')}>
-        <OpsInput
-          type="number"
-          step="0.01"
-          value={formState.initialQuantityPerFrequency ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, initialQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintInitialFreqQty'))}
-      </KkdOpsFormField>
-        </div>
-      </KkdOpsSection>
+            <div className="wms-ops-kkd-matrix-toggle sm:col-span-2">
+              <OpsToggleField
+                checked={formState.initialAllowBulkIssue}
+                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, initialAllowBulkIssue: checked }))}
+                title={labelWithHelp(t('kkd.operational.matrix.lblInitialBulk'), 'help.kkd.matrix.initialBulk')}
+              />
+            </div>
+          </div>
+        </KkdOpsSection>
 
-      <KkdOpsSection title={t('kkd.operational.matrix.sectionThreeMonth')}>
-        <div className="grid gap-4 md:grid-cols-2">
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthQty'), 'help.kkd.matrix.threeMonthQuantity')}>
-        <OpsInput
-          type="number"
-          step="0.01"
-          value={formState.additionalAfterMonthsQuantity ?? 0}
-          onChange={(event) => setFormState((prev) => ({
-            ...prev,
-            additionalAfterMonths: 3,
-            additionalAfterMonthsQuantity: Number(event.target.value) || 0,
-          }))}
-        />
-      </KkdOpsFormField>
+        <KkdOpsSection title={t('kkd.operational.matrix.sectionThreeMonth')}>
+          <div className="wms-ops-kkd-matrix-field-grid grid gap-3 sm:grid-cols-2">
+            <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthQty'), 'help.kkd.matrix.threeMonthQuantity')}>
+              <OpsInput
+                type="number"
+                step="0.01"
+                value={formState.additionalAfterMonthsQuantity ?? 0}
+                onChange={(event) => setFormState((prev) => ({
+                  ...prev,
+                  additionalAfterMonths: 3,
+                  additionalAfterMonthsQuantity: Number(event.target.value) || 0,
+                }))}
+              />
+            </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqDays'), 'help.kkd.matrix.threeMonthFrequencyDays')}>
-        <OpsInput
-          type="number"
-          value={formState.threeMonthFrequencyDays ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintThreeMonthFreqDays'))}
-      </KkdOpsFormField>
+            <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqDays'), 'help.kkd.matrix.threeMonthFrequencyDays')}>
+              <OpsInput
+                type="number"
+                value={formState.threeMonthFrequencyDays ?? ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
+              />
+            </KkdOpsFormField>
 
-      <OpsToggleField
-        checked={formState.threeMonthAllowBulkIssue}
-        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, threeMonthAllowBulkIssue: checked }))}
-        title={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthBulk'), 'help.kkd.matrix.threeMonthBulk')}
-      />
+            <KkdOpsFormField className="sm:col-span-2" label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqQty'), 'help.kkd.matrix.threeMonthFrequencyQuantity')}>
+              <OpsInput
+                type="number"
+                step="0.01"
+                value={formState.threeMonthQuantityPerFrequency ?? ''}
+                onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+              />
+            </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthFreqQty'), 'help.kkd.matrix.threeMonthFrequencyQuantity')}>
-        <OpsInput
-          type="number"
-          step="0.01"
-          value={formState.threeMonthQuantityPerFrequency ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, threeMonthQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintThreeMonthFreqQty'))}
-      </KkdOpsFormField>
-        </div>
-      </KkdOpsSection>
+            <div className="wms-ops-kkd-matrix-toggle sm:col-span-2">
+              <OpsToggleField
+                checked={formState.threeMonthAllowBulkIssue}
+                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, threeMonthAllowBulkIssue: checked }))}
+                title={labelWithHelp(t('kkd.operational.matrix.lblThreeMonthBulk'), 'help.kkd.matrix.threeMonthBulk')}
+              />
+            </div>
+          </div>
+        </KkdOpsSection>
+      </div>
 
       <KkdOpsSection title={t('kkd.operational.matrix.sectionRoutine')}>
-        <div className="grid gap-4 md:grid-cols-2">
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineQty'), 'help.kkd.matrix.routineQuantity')}>
-        <OpsInput
-          type="number"
-          step="0.01"
-          value={formState.routineQuantity}
-          onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantity: Number(event.target.value) || 0 }))}
-        />
-      </KkdOpsFormField>
+        <div className="wms-ops-kkd-matrix-field-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineQty'), 'help.kkd.matrix.routineQuantity')}>
+            <OpsInput
+              type="number"
+              step="0.01"
+              value={formState.routineQuantity}
+              onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantity: Number(event.target.value) || 0 }))}
+            />
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutinePeriodType'), 'help.kkd.matrix.routinePeriodType')}>
-        <OpsInput
-          value={formState.routinePeriodType}
-          onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodType: event.target.value || 'Year' }))}
-          placeholder={t('kkd.operational.matrix.periodPlaceholder')}
-        />
-      </KkdOpsFormField>
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutinePeriodType'), 'help.kkd.matrix.routinePeriodType')}>
+            <KkdOpsSelect
+              value={formState.routinePeriodType || 'Year'}
+              onValueChange={(value) => setFormState((prev) => ({ ...prev, routinePeriodType: value }))}
+            >
+              {ROUTINE_PERIOD_TYPES.map((periodType) => (
+                <SelectItem key={periodType} value={periodType}>
+                  {t(`periodTypes.${periodType}`)}
+                </SelectItem>
+              ))}
+            </KkdOpsSelect>
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineInterval'), 'help.kkd.matrix.routinePeriodInterval')}>
-        <OpsInput
-          type="number"
-          value={formState.routinePeriodInterval}
-          onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodInterval: Number(event.target.value) || 1 }))}
-        />
-      </KkdOpsFormField>
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineInterval'), 'help.kkd.matrix.routinePeriodInterval')}>
+            <OpsInput
+              type="number"
+              value={formState.routinePeriodInterval}
+              onChange={(event) => setFormState((prev) => ({ ...prev, routinePeriodInterval: Number(event.target.value) || 1 }))}
+            />
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqDays'), 'help.kkd.matrix.routineFrequencyDays')}>
-        <OpsInput
-          type="number"
-          value={formState.routineFrequencyDays ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, routineFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintRoutineFreqDays'))}
-      </KkdOpsFormField>
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqDays'), 'help.kkd.matrix.routineFrequencyDays')}>
+            <OpsInput
+              type="number"
+              value={formState.routineFrequencyDays ?? ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, routineFrequencyDays: event.target.value ? Number(event.target.value) : null }))}
+            />
+          </KkdOpsFormField>
 
-      <OpsToggleField
-        checked={formState.routineAllowBulkIssue}
-        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, routineAllowBulkIssue: checked }))}
-        title={labelWithHelp(t('kkd.operational.matrix.lblRoutineBulk'), 'help.kkd.matrix.routineBulk')}
-      />
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqQty'), 'help.kkd.matrix.routineFrequencyQuantity')}>
+            <OpsInput
+              type="number"
+              step="0.01"
+              value={formState.routineQuantityPerFrequency ?? ''}
+              onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
+            />
+          </KkdOpsFormField>
 
-      <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblRoutineFreqQty'), 'help.kkd.matrix.routineFrequencyQuantity')}>
-        <OpsInput
-          type="number"
-          step="0.01"
-          value={formState.routineQuantityPerFrequency ?? ''}
-          onChange={(event) => setFormState((prev) => ({ ...prev, routineQuantityPerFrequency: event.target.value ? Number(event.target.value) : null }))}
-        />
-        {helperText(t('kkd.operational.matrix.hintRoutineFreqQty'))}
-      </KkdOpsFormField>
+          <div className="wms-ops-kkd-matrix-toggle sm:col-span-2 xl:col-span-3">
+            <OpsToggleField
+              checked={formState.routineAllowBulkIssue}
+              onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, routineAllowBulkIssue: checked }))}
+              title={labelWithHelp(t('kkd.operational.matrix.lblRoutineBulk'), 'help.kkd.matrix.routineBulk')}
+            />
+          </div>
         </div>
       </KkdOpsSection>
 
       <KkdOpsSection title={t('kkd.operational.matrix.sectionFlags')}>
-        <div className="grid gap-4 md:grid-cols-2">
-      <OpsToggleField
-        checked={formState.isActive}
-        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
-        title={labelWithHelp(t('kkd.operational.matrix.lblActive'), 'help.kkd.matrix.isActive')}
-      />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="wms-ops-kkd-matrix-toggle">
+            <OpsToggleField
+              checked={formState.isActive}
+              onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
+              title={labelWithHelp(t('kkd.operational.matrix.lblActive'), 'help.kkd.matrix.isActive')}
+            />
+          </div>
 
-      <OpsToggleField
-        checked={formState.isMandatory}
-        onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isMandatory: checked }))}
-        title={labelWithHelp(t('kkd.operational.matrix.lblMandatory'), 'help.kkd.matrix.isMandatory')}
-      />
+          <div className="wms-ops-kkd-matrix-toggle">
+            <OpsToggleField
+              checked={formState.isMandatory}
+              onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isMandatory: checked }))}
+              title={labelWithHelp(t('kkd.operational.matrix.lblMandatory'), 'help.kkd.matrix.isMandatory')}
+            />
+          </div>
         </div>
       </KkdOpsSection>
     </div>
@@ -468,6 +479,8 @@ export function KkdEntitlementMatrixPage(): ReactElement {
       renderCell={(row, columnKey) => renderMatrixCell(row, columnKey)}
       defaultColumnWidths={KKD_MATRIX_COLUMN_WIDTHS}
       gridMinWidthClassName={KKD_MATRIX_TABLE_MIN_WIDTH_CLASS}
+      dialogSize="full"
+      dialogClassName="wms-ops-kkd-matrix-dialog"
       renderForm={({ formState, setFormState }) => (
         <KkdEntitlementMatrixForm formState={formState} setFormState={setFormState} />
       )}

@@ -5,9 +5,9 @@ import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
 import {
   OpsActionButton,
+  OpsCircuitToggleField,
   OpsInput,
   OpsListPageShell,
   OpsTextarea,
@@ -425,14 +425,16 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
-                <span className="text-sm font-semibold">{t('documentSeries.columns.eDispatch')}</span>
-                <Switch checked={formState.requiresEDispatch} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, requiresEDispatch: checked }))} className="wms-ops-switch" />
-              </div>
-              <div className="wms-ops-toggle-card flex items-center justify-between rounded-lg border p-3">
-                <span className="text-sm font-semibold">{t('documentSeries.columns.isActive')}</span>
-                <Switch checked={formState.isActive} onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))} className="wms-ops-switch" />
-              </div>
+              <OpsCircuitToggleField
+                checked={formState.requiresEDispatch}
+                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, requiresEDispatch: checked }))}
+                title={t('documentSeries.columns.eDispatch')}
+              />
+              <OpsCircuitToggleField
+                checked={formState.isActive}
+                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
+                title={t('documentSeries.columns.isActive')}
+              />
             </div>
 
             <MasterDataOpsFormField label={t('common.description')} className="mt-4">

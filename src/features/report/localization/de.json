@@ -78,5 +78,11 @@
       "description": "View package headers, cartons/pallets, lines, and label print states."
     }
   },
-  "open": "Open screen"
+  "open": "Open screen",
+  "terminal": {
+    "modules": "MODULE",
+    "statusReady": "BEREIT",
+    "selectHint": "Wahlen Sie ein Berichtsmodul fur die Terminal-Sitzung.",
+    "routePrefix": "ROUTE"
+  }
 }

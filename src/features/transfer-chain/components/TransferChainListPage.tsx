@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { OpsActionButton, OpsFieldShell, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog, OpsActionButton, OpsFieldShell, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
@@ -647,34 +647,20 @@ export function TransferChainListPage(): ReactElement {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!deleteItem} onOpenChange={(next) => !next && setDeleteItem(null)}>
-        <DialogContent className="wms-ops-form wms-ops-detail-dialog max-w-md gap-0 overflow-hidden border-0 p-0 shadow-none">
-          <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-4">
-            <DialogTitle className="wms-ops-detail-dialog__title">{t('delete.title')}</DialogTitle>
-            <DialogDescription className="wms-ops-detail-dialog__description">
-              {t('delete.description', { name: deleteItem?.name ?? deleteItem?.code ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 border-t px-6 py-4 sm:gap-2">
-            <OpsActionButton type="button" variant="secondary" onClick={() => setDeleteItem(null)}>
-              {t('common:cancel')}
-            </OpsActionButton>
-            <OpsActionButton
-              type="button"
-              variant="primary"
-              className="!border-destructive/40 !bg-destructive hover:!bg-destructive/90"
-              disabled={deleteMutation.isPending}
-              onClick={async () => {
-                if (!deleteItem) return;
-                await deleteMutation.mutateAsync(deleteItem.id);
-                setDeleteItem(null);
-              }}
-            >
-              {deleteMutation.isPending ? t('common:processing') : t('common:delete')}
-            </OpsActionButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={Boolean(deleteItem)}
+        title={t('delete.title')}
+        description={t('delete.description', { name: deleteItem?.name ?? deleteItem?.code ?? '' })}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setDeleteItem(null);
+        }}
+        onConfirm={() => void (async () => {
+          if (!deleteItem) return;
+          await deleteMutation.mutateAsync(deleteItem.id);
+          setDeleteItem(null);
+        })()}
+      />
     </>
   );
 }

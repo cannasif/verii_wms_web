@@ -17,7 +17,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { OpsFormPageShell, PageState } from '@/components/shared';
+import { OpsFormPageShell, OpsSelect, OpsSelectItem, PageState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
@@ -1032,17 +1031,14 @@ export function ProductionProcessPage(): ReactElement {
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div className="space-y-2">
                   <Label>{t('common.status')}</Label>
-                  <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('production.process.filterAllOrders')}</SelectItem>
-                      <SelectItem value="Draft">{orderStatusLabel('Draft')}</SelectItem>
-                      <SelectItem value="Ready">{orderStatusLabel('Ready')}</SelectItem>
-                      <SelectItem value="InProgress">{orderStatusLabel('InProgress')}</SelectItem>
-                      <SelectItem value="Paused">{orderStatusLabel('Paused')}</SelectItem>
-                      <SelectItem value="Completed">{orderStatusLabel('Completed')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <OpsSelect value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
+                    <OpsSelectItem value="all">{t('production.process.filterAllOrders')}</OpsSelectItem>
+                    <OpsSelectItem value="Draft">{orderStatusLabel('Draft')}</OpsSelectItem>
+                    <OpsSelectItem value="Ready">{orderStatusLabel('Ready')}</OpsSelectItem>
+                    <OpsSelectItem value="InProgress">{orderStatusLabel('InProgress')}</OpsSelectItem>
+                    <OpsSelectItem value="Paused">{orderStatusLabel('Paused')}</OpsSelectItem>
+                    <OpsSelectItem value="Completed">{orderStatusLabel('Completed')}</OpsSelectItem>
+                  </OpsSelect>
                 </div>
                 <div className="space-y-2 xl:col-span-2">
                   <Label>{t('production.process.orderSearchLabel')}</Label>
@@ -1367,14 +1363,11 @@ export function ProductionProcessPage(): ReactElement {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label>{t('production.process.lineHistoryRole')}</Label>
-                      <Select value={historyRoleFilter} onValueChange={setHistoryRoleFilter}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('production.process.lineHistoryFilterAll')}</SelectItem>
-                          <SelectItem value="Consumption">{t('production.process.lineRoleConsumption')}</SelectItem>
-                          <SelectItem value="Output">{t('production.process.lineRoleOutput')}</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <OpsSelect value={historyRoleFilter} onValueChange={setHistoryRoleFilter}>
+                        <OpsSelectItem value="all">{t('production.process.lineHistoryFilterAll')}</OpsSelectItem>
+                        <OpsSelectItem value="Consumption">{t('production.process.lineRoleConsumption')}</OpsSelectItem>
+                        <OpsSelectItem value="Output">{t('production.process.lineRoleOutput')}</OpsSelectItem>
+                      </OpsSelect>
                     </div>
                     <div className="space-y-2">
                       <Label>{t('production.process.lineHistoryStock')}</Label>

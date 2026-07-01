@@ -298,7 +298,6 @@ export function ProductionTransferDetailPage(): ReactElement {
       </OpsFormPageShell>
 
       <DeleteConfirmDialog
-        variant="ops"
         open={deleteDialogOpen}
         title={t('productionTransfer.list.deleteTitle')}
         description={t('productionTransfer.list.deleteDescription', {

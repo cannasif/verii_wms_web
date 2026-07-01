@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { PagedDataGrid, type PagedDataGridColumn, DeleteConfirmDialog } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { DefinitionExcelActions } from '@/features/definition-excel';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
@@ -274,18 +273,17 @@ export function ParameterListPage(): ReactElement {
         />
       </div>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('parameters.delete.title')}</DialogTitle>
-            <DialogDescription>{t('parameters.delete.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>{t('common.cancel')}</Button>
-            <Button variant="destructive" onClick={() => void handleDelete()}>{t('common.delete')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        title={t('parameters.delete.title')}
+        description={t('parameters.delete.description')}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setSelectedParameter(null);
+        }}
+        onConfirm={() => void handleDelete()}
+      />
     </div>
   );
 }

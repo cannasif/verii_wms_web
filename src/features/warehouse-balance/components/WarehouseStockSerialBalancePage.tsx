@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { RefreshCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MasterDataOpsErpEyebrow, MasterDataOpsStatGrid, masterDataOpsGridColumn } from '@/features/shared';
+import { cn } from '@/lib/utils';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -49,6 +51,24 @@ function formatNumber(value: number | null | undefined): string {
 function formatDate(value?: string | null): string {
   if (!value) return '-';
   return new Date(value).toLocaleString('tr-TR');
+}
+
+function renderTruncatedTooltip(text: string | null | undefined, className?: string): ReactElement {
+  const value = text?.trim();
+  if (!value) {
+    return <span className={className}>-</span>;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={cn('block min-w-0 cursor-default truncate', className)}>{value}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={4} className="max-w-md whitespace-normal break-words text-left">
+        {value}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 export function WarehouseStockSerialBalancePage(): ReactElement {
@@ -114,6 +134,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
 
       <section className="wms-ops-receiving-area border">
         <div className="wms-ops-form p-4 sm:p-5">
+          <TooltipProvider delayDuration={200}>
           <PagedDataGrid<WarehouseStockSerialBalanceDto, SerialColumnKey>
             variant="ops"
             pageKey="warehouse-serial-balance-grid"
@@ -140,9 +161,9 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
                     : '-';
                 case 'stock':
                   return (
-                    <div className="flex flex-col">
-                      <span className="font-medium">{row.stockCode ?? '-'}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{row.stockName ?? '-'}</span>
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">{row.stockCode ?? '-'}</span>
+                      {renderTruncatedTooltip(row.stockName, 'text-xs text-slate-500 dark:text-slate-400')}
                     </div>
                   );
                 case 'yapKod':
@@ -207,6 +228,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
               label: t('common.refresh'),
             }}
           />
+          </TooltipProvider>
         </div>
       </section>
     </OpsListPageShell>

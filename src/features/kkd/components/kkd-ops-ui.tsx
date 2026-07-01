@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DialogContent } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -109,14 +109,26 @@ export const KKD_REPORT_COLUMN_WIDTHS: Record<string, number> = {
 export function KkdOpsDialogContent({
   children,
   className,
+  size = 'lg',
 }: {
   children: ReactNode;
   className?: string;
+  size?: 'md' | 'lg' | 'xl' | 'full';
 }): ReactElement {
+  const sizeClass =
+    size === 'md'
+      ? 'w-[min(96vw,28rem)] sm:max-w-xl'
+      : size === 'xl'
+        ? 'w-[min(96vw,56rem)] sm:max-w-4xl lg:max-w-5xl'
+        : size === 'full'
+          ? 'w-[min(96vw,72rem)] sm:max-w-[72rem]'
+          : 'w-[min(96vw,48rem)] sm:max-w-3xl';
+
   return (
     <DialogContent
       className={cn(
-        'wms-ops-form wms-ops-detail-dialog flex max-h-[90dvh] flex-col gap-0 overflow-hidden border-0 p-0 shadow-none sm:max-w-2xl',
+        'wms-ops-form wms-ops-detail-dialog wms-ops-kkd-dialog flex max-h-[min(90dvh,920px)] flex-col gap-0 overflow-hidden border-0 p-0 shadow-none',
+        sizeClass,
         className,
       )}
     >
@@ -169,7 +181,7 @@ export function KkdOpsFormField({
   htmlFor?: string;
 }): ReactElement {
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('wms-ops-form-item', className)}>
       <label className="wms-ops-prelabel-form-label" htmlFor={htmlFor}>
         {label}
       </label>
@@ -200,6 +212,34 @@ export function KkdOpsFormBanner({
       {title ? <div className="wms-ops-kkd-form-banner__title">{title}</div> : null}
       <div className="wms-ops-kkd-form-banner__content">{children}</div>
     </div>
+  );
+}
+
+export function KkdOpsCollapsibleGuide({
+  title,
+  children,
+  tone = 'info',
+  className,
+}: {
+  title: ReactNode;
+  children: ReactNode;
+  tone?: 'info' | 'warn';
+  className?: string;
+}): ReactElement {
+  return (
+    <details
+      className={cn(
+        'wms-ops-kkd-form-guide group',
+        `wms-ops-kkd-form-guide--${tone}`,
+        className,
+      )}
+    >
+      <summary className="wms-ops-kkd-form-guide__summary">
+        <ChevronRight className="wms-ops-kkd-form-guide__chevron size-3.5 shrink-0" aria-hidden />
+        <span>{title}</span>
+      </summary>
+      <div className="wms-ops-kkd-form-guide__body">{children}</div>
+    </details>
   );
 }
 

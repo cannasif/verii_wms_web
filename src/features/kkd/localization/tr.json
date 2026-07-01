@@ -246,14 +246,22 @@
         "lblActive": "Aktif",
         "lblMandatory": "Zorunlu",
         "sectionBase": "Bölüm, görev ve grup",
+        "sectionBaseSub": "Hak kuralının uygulanacağı bölüm, görev ve stok grubunu seçin.",
         "sectionInitial": "İlk giriş hakkı",
+        "sectionInitialSub": "İşe ilk girişte verilecek miktar ve bekleme kuralları.",
         "sectionThreeMonth": "3. ay sonrası",
+        "sectionThreeMonthSub": "3 ayı dolduran personel için ek hak tanımı.",
         "sectionRoutine": "Rutin dönem",
-        "sectionFlags": "Durum"
+        "sectionRoutineSub": "Periyodik tekrarlayan hak kuralları.",
+        "sectionFlags": "Durum",
+        "sectionFlagsSub": "Kuralın aktiflik ve zorunluluk durumu.",
+        "introTitle": "Hak matrisi özeti"
       },
       "override": {
         "sectionEmployee": "Çalışan ve grup",
-        "sectionEntitlement": "Ek hak ve geçerlilik"
+        "sectionEntitlement": "Ek hak ve geçerlilik",
+        "sectionStatus": "Açıklama ve durum",
+        "introTitle": "Manuel istisna özeti"
       },
       "overview": {
         "pageTitle": "KKD Operasyon Özeti",

@@ -2,11 +2,9 @@ import { Suspense, lazy, type ReactElement, useCallback, useEffect, useMemo, use
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Box, Compass, Footprints, Move3D, Package, RotateCcw, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Box, Compass, Footprints, Layers, Move3D, Package, RotateCcw, Warehouse } from 'lucide-react';
+import { SelectItem } from '@/components/ui/select';
+import { OpsListPageShell, OpsLoadingState, OpsSelect, PageState } from '@/components/shared';
 import { getApiBaseUrl } from '@/lib/axios';
 import { erpReferenceApi } from '@/features/erp-reference/api/erpReference.api';
 import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpReference.types';
@@ -17,103 +15,28 @@ import type {
 } from '../types/warehouse-3d';
 import type { CameraPreset } from './outside/OutsideScene';
 import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
+import {
+  Warehouse3dOpsChip,
+  Warehouse3dOpsDetailCard,
+  Warehouse3dOpsDetailField,
+  Warehouse3dOpsEmpty,
+  Warehouse3dOpsEmptyIcon,
+  Warehouse3dOpsField,
+  Warehouse3dOpsHud,
+  Warehouse3dOpsLegend,
+  Warehouse3dOpsLegendItem,
+  Warehouse3dOpsModeToggle,
+  Warehouse3dOpsRackPanel,
+  Warehouse3dOpsRackThumb,
+  Warehouse3dOpsSectionHeader,
+  Warehouse3dOpsStat,
+  Warehouse3dOpsStatGrid,
+  Warehouse3dOpsViewport,
+  Warehouse3dOpsCameraBar,
+  Warehouse3dOpsCameraButton,
+} from './warehouse-3d-ops-ui';
 
 type ViewMode = '2d' | '3d';
-
-interface RackDetailPanelProps {
-  items: SteelPlacementVisualizationItemDto[];
-  selectedItemId: number | null;
-  onSelectItem: (item: SteelPlacementVisualizationItemDto) => void;
-  onClose: () => void;
-  resolveImageUrl: (url: string | null | undefined) => string | null;
-}
-
-function RackDetailPanel({
-  items,
-  selectedItemId,
-  onSelectItem,
-  onClose,
-  resolveImageUrl,
-}: RackDetailPanelProps): ReactElement {
-  const sortedItems = useMemo(
-    () => [...items].sort((a, b) => (a.stackOrderNo ?? 0) - (b.stackOrderNo ?? 0)),
-    [items],
-  );
-  const slotLabel =
-    sortedItems.length > 0
-      ? `R${sortedItems[0].rowNo ?? 1}/P${sortedItems[0].positionNo ?? 1}`
-      : '';
-
-  return (
-    <div className="absolute inset-x-0 bottom-0 z-20 rounded-b-2xl border-t border-white/10 bg-slate-950/95 backdrop-blur-xl">
-      <div className="flex items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
-          <span className="text-xs font-semibold text-cyan-300">{slotLabel}</span>
-          <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 text-[10px] font-bold text-cyan-400 ring-1 ring-cyan-400/20">
-            {sortedItems.length}
-          </span>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="h-6 w-6 rounded-full text-slate-400 hover:text-white"
-        >
-          <X className="size-3.5" />
-        </Button>
-      </div>
-
-      <div className="flex gap-2.5 overflow-x-auto px-4 pb-3 pt-0.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
-        {sortedItems.map((item) => {
-          const imageUrl = resolveImageUrl(item.imageUrl);
-          const isSelected = selectedItemId === item.lineId;
-
-          return (
-            <button
-              key={item.lineId}
-              type="button"
-              onClick={() => onSelectItem(item)}
-              className={`group relative shrink-0 cursor-pointer rounded-xl border-2 p-1.5 transition-all duration-200 ${
-                isSelected
-                  ? 'border-cyan-400 bg-cyan-400/10 shadow-[0_0_14px_rgba(34,211,238,0.30)]'
-                  : 'border-white/10 bg-white/5 hover:border-sky-400/40 hover:bg-sky-400/5'
-              }`}
-            >
-              <div className="relative mb-1.5 h-14 w-[68px] overflow-hidden rounded-lg">
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={item.stockCode}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-slate-700/60 to-slate-800/60">
-                    <Package className="size-5 text-slate-500" />
-                  </div>
-                )}
-                <div className="absolute bottom-0.5 right-0.5 rounded bg-black/75 px-1 py-0.5 text-[8px] font-bold leading-none text-cyan-300">
-                  #{item.stackOrderNo ?? 1}
-                </div>
-                {isSelected && (
-                  <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-cyan-400/60" />
-                )}
-              </div>
-
-              <div className="w-[68px] truncate text-center text-[9px] font-semibold leading-tight text-slate-300">
-                {item.stockCode}
-              </div>
-              <div className="w-[68px] truncate text-center text-[8px] leading-tight text-slate-500">
-                {item.serialNo}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 const OutsideScene = lazy(async () => {
   const module = await import('./outside/OutsideScene');
@@ -152,6 +75,11 @@ function sortItems(items: SteelPlacementVisualizationItemDto[]): SteelPlacementV
   });
 }
 
+function parsePositiveId(value: string | null): number {
+  const parsed = Number(value ?? '');
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
 function VisualizationPlane({
   location,
   mode,
@@ -166,21 +94,7 @@ function VisualizationPlane({
   const items = sortItems(location.items);
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-2xl border border-white/10 ${
-        mode === '3d'
-          ? 'min-h-[240px] bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_35%),linear-gradient(180deg,rgba(14,20,35,0.98),rgba(8,12,22,0.98))]'
-          : 'min-h-[220px] bg-[linear-gradient(180deg,rgba(14,20,35,0.95),rgba(9,15,27,0.96))]'
-      }`}
-      style={{
-        backgroundImage:
-          mode === '3d'
-            ? 'radial-gradient(circle at top, rgba(34,211,238,0.16), transparent 35%), linear-gradient(180deg, rgba(14,20,35,0.98), rgba(8,12,22,0.98))'
-            : 'linear-gradient(180deg, rgba(14,20,35,0.95), rgba(9,15,27,0.96))',
-      }}
-    >
-      <div className="pointer-events-none absolute inset-0 opacity-25" style={{ backgroundImage: 'linear-gradient(rgba(96,165,250,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(96,165,250,0.12) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
-      <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,0.55))]" />
+    <div className={`wms-ops-warehouse-3d-plane ${mode === '3d' ? 'min-h-[15rem]' : 'min-h-[13.75rem]'}`}>
       <div className={`${mode === '3d' ? 'relative mx-auto mt-6 h-[190px] w-[92%] perspective-[1100px]' : 'relative mx-auto mt-4 h-[180px] w-[92%]'}`}>
         {items.map((item) => {
           const col = Math.max((item.positionNo ?? 1) - 1, 0);
@@ -196,8 +110,10 @@ function VisualizationPlane({
               key={item.lineId}
               type="button"
               onClick={() => onSelectItem(item)}
-              className={`absolute flex h-[74px] w-[118px] items-end overflow-hidden rounded-xl border text-left shadow-xl transition ${
-                isSelected ? 'border-cyan-300 ring-2 ring-cyan-400/50' : 'border-sky-400/20 hover:border-sky-300/60'
+              className={`absolute flex h-[74px] w-[118px] items-end overflow-hidden rounded-none border text-left shadow-xl transition ${
+                isSelected
+                  ? 'border-[color:var(--wms-ops-circuit-accent)] ring-2 ring-[color:color-mix(in_oklab,var(--wms-ops-circuit-accent)_45%,transparent)]'
+                  : 'border-[color:color-mix(in_oklab,var(--wms-ops-field-border)_90%,transparent)] hover:border-[color:color-mix(in_oklab,var(--wms-ops-circuit-accent)_38%,transparent)]'
               }`}
               style={{
                 left,
@@ -211,7 +127,7 @@ function VisualizationPlane({
                 background:
                   imageUrl
                     ? `linear-gradient(180deg, rgba(7,10,18,0.05), rgba(7,10,18,0.68)), url(${imageUrl}) center/cover`
-                    : 'linear-gradient(180deg, rgba(34,211,238,0.22), rgba(14,165,233,0.16))',
+                    : 'linear-gradient(180deg, color-mix(in oklab, var(--wms-ops-circuit-accent) 22%, transparent), color-mix(in oklab, var(--wms-ops-accent) 16%, transparent))',
               }}
             >
               <div className="w-full bg-black/55 px-2 py-1 text-[10px] leading-tight text-white backdrop-blur-sm">
@@ -230,8 +146,8 @@ export function OutsideWarehousePage(): ReactElement {
   const { t } = useTranslation();
   const { reportScreenReady } = useRouteScreenReady();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialWarehouseId = Number(searchParams.get('warehouseId') ?? '0') || 0;
-  const initialShelfId = Number(searchParams.get('shelfId') ?? '0') || undefined;
+  const initialWarehouseId = parsePositiveId(searchParams.get('warehouseId'));
+  const initialShelfId = parsePositiveId(searchParams.get('shelfId')) || undefined;
   const initialAreaCode = searchParams.get('areaCode') ?? '';
   const initialMode = (searchParams.get('mode')?.toLowerCase() === '2d' ? '2d' : '3d') as ViewMode;
 
@@ -278,6 +194,13 @@ export function OutsideWarehousePage(): ReactElement {
   const locations = useMemo(() => visualization?.locations ?? [], [visualization]);
 
   useEffect(() => {
+    const warehouseIdFromUrl = parsePositiveId(searchParams.get('warehouseId'));
+    if (warehouseIdFromUrl > 0) {
+      setSelectedWarehouseId((current) => (current === warehouseIdFromUrl ? current : warehouseIdFromUrl));
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (!selectedWarehouseId && warehouses.length > 0) {
       setSelectedWarehouseId(warehouses[0].id);
     }
@@ -314,12 +237,19 @@ export function OutsideWarehousePage(): ReactElement {
       return;
     }
 
-    const params = new URLSearchParams(searchParams);
-    params.set('warehouseId', String(selectedWarehouseId));
-    if (initialShelfId) params.set('shelfId', String(initialShelfId));
-    if (initialAreaCode) params.set('areaCode', initialAreaCode);
-    params.set('mode', mode);
-    setSearchParams(params, { replace: true });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('warehouseId', String(selectedWarehouseId));
+    if (initialShelfId) nextParams.set('shelfId', String(initialShelfId));
+    else nextParams.delete('shelfId');
+    if (initialAreaCode) nextParams.set('areaCode', initialAreaCode);
+    else nextParams.delete('areaCode');
+    nextParams.set('mode', mode);
+
+    const current = searchParams.toString();
+    const next = nextParams.toString();
+    if (current !== next) {
+      setSearchParams(nextParams, { replace: true });
+    }
   }, [initialAreaCode, initialShelfId, mode, searchParams, selectedWarehouseId, setSearchParams]);
 
   useEffect(() => {
@@ -340,216 +270,218 @@ export function OutsideWarehousePage(): ReactElement {
 
   const selectedWarehouse = warehouses.find((warehouse) => warehouse.id === selectedWarehouseId) ?? null;
 
+  const toolbar = (
+    <div className="grid w-full gap-3 sm:grid-cols-2 xl:max-w-xl">
+      <Warehouse3dOpsField label={t('inventory.outsideWarehouse.selectWarehousePrompt')}>
+        <OpsSelect
+          value={selectedWarehouseId ? String(selectedWarehouseId) : ''}
+          onValueChange={(value) => setSelectedWarehouseId(Number(value))}
+          placeholder={t('inventory.outsideWarehouse.selectWarehousePrompt')}
+        >
+          {warehouses.map((warehouse: WarehouseReferenceDto) => (
+            <SelectItem key={warehouse.id} value={String(warehouse.id)}>
+              {warehouse.warehouseCode} - {warehouse.warehouseName}
+            </SelectItem>
+          ))}
+        </OpsSelect>
+      </Warehouse3dOpsField>
+      <Warehouse3dOpsField label={t('inventory.outsideWarehouse.title')}>
+        <Warehouse3dOpsModeToggle
+          value={mode}
+          onChange={setMode}
+          label2d={t('inventory.outsideWarehouse.mode2d')}
+          label3d={t('inventory.outsideWarehouse.mode3d')}
+        />
+      </Warehouse3dOpsField>
+    </div>
+  );
+
+  if (warehousesQuery.isLoading) {
+    return <PageState tone="loading" title={t('common.loading')} />;
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <Badge variant="secondary">{t('inventory.outsideWarehouse.title')}</Badge>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">{t('inventory.outsideWarehouse.title')}</h1>
-          <p className="mt-2 max-w-3xl text-sm text-slate-400">{t('inventory.outsideWarehouse.realSubtitle')}</p>
-        </div>
+    <OpsListPageShell
+      className="wms-ops-erp-skin wms-ops-warehouse-3d-page"
+      eyebrow={t('sidebar.warehouse3dOutside')}
+      title={t('inventory.outsideWarehouse.title')}
+      description={t('inventory.outsideWarehouse.realSubtitle')}
+      actions={toolbar}
+    >
+      <div className="wms-ops-warehouse-3d-content">
+        <Warehouse3dOpsStatGrid columns={3}>
+          <Warehouse3dOpsStat label={t('inventory.outsideWarehouse.totalLocations')} value={visualization?.totalLocationCount ?? 0} />
+          <Warehouse3dOpsStat label={t('inventory.outsideWarehouse.totalPlates')} value={visualization?.totalPlateCount ?? 0} />
+          <Warehouse3dOpsStat
+            label={t('inventory.outsideWarehouse.selectedLocation')}
+            value={selectedLocation ? getLocationLabel(selectedLocation) : '-'}
+          />
+        </Warehouse3dOpsStatGrid>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:w-[560px]">
-          <Select value={selectedWarehouseId ? String(selectedWarehouseId) : ''} onValueChange={(value) => setSelectedWarehouseId(Number(value))}>
-            <SelectTrigger className="border-white/10 bg-white/5">
-              <SelectValue placeholder={t('inventory.outsideWarehouse.selectWarehousePrompt')} />
-            </SelectTrigger>
-            <SelectContent>
-              {warehouses.map((warehouse: WarehouseReferenceDto) => (
-                <SelectItem key={warehouse.id} value={String(warehouse.id)}>
-                  {warehouse.warehouseCode} - {warehouse.warehouseName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div className="flex rounded-2xl border border-white/10 bg-white/5 p-1">
-            <Button type="button" variant={mode === '2d' ? 'secondary' : 'ghost'} className="flex-1" onClick={() => setMode('2d')}>
-              {t('inventory.outsideWarehouse.mode2d')}
-            </Button>
-            <Button type="button" variant={mode === '3d' ? 'secondary' : 'ghost'} className="flex-1" onClick={() => setMode('3d')}>
-              {t('inventory.outsideWarehouse.mode3d')}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-white/10 bg-white/5">
-          <CardHeader className="pb-2">
-            <CardDescription>{t('inventory.outsideWarehouse.totalLocations')}</CardDescription>
-            <CardTitle>{visualization?.totalLocationCount ?? 0}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="border-white/10 bg-white/5">
-          <CardHeader className="pb-2">
-            <CardDescription>{t('inventory.outsideWarehouse.totalPlates')}</CardDescription>
-            <CardTitle>{visualization?.totalPlateCount ?? 0}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="border-white/10 bg-white/5">
-          <CardHeader className="pb-2">
-            <CardDescription>{t('inventory.outsideWarehouse.selectedLocation')}</CardDescription>
-            <CardTitle>{selectedLocation ? getLocationLabel(selectedLocation) : '-'}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
-      {!selectedWarehouseId ? (
-        <Card className="border-white/10 bg-white/5">
-          <CardContent className="p-10 text-center text-slate-400">{t('inventory.outsideWarehouse.selectWarehousePrompt')}</CardContent>
-        </Card>
-      ) : visualizationQuery.isLoading ? (
-        <Card className="border-white/10 bg-white/5">
-          <CardContent className="p-10 text-center text-slate-400">{t('common.loading')}</CardContent>
-        </Card>
-      ) : locations.length === 0 ? (
-        <Card className="border-white/10 bg-white/5">
-          <CardContent className="p-10 text-center text-slate-400">{t('inventory.outsideWarehouse.noPlacementData')}</CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {locations.map((location) => (
-                <Button
-                  key={location.locationKey}
-                  type="button"
-                  variant={selectedLocation?.locationKey === location.locationKey ? 'secondary' : 'outline'}
-                  className="rounded-full"
-                  onClick={() => {
-                    setSelectedLocationKey(location.locationKey);
-                    setSelectedItemId(location.items[0]?.lineId ?? null);
-                  }}
-                >
-                  {getLocationLabel(location)}
-                </Button>
-              ))}
+        {!selectedWarehouseId ? (
+          <Warehouse3dOpsViewport centered>
+            <Warehouse3dOpsEmpty
+              icon={(
+                <Warehouse3dOpsEmptyIcon>
+                  <Warehouse />
+                </Warehouse3dOpsEmptyIcon>
+              )}
+              title={t('inventory.outsideWarehouse.selectWarehousePrompt')}
+            />
+          </Warehouse3dOpsViewport>
+        ) : visualizationQuery.isLoading ? (
+          <Warehouse3dOpsViewport centered>
+            <div className="flex w-full min-h-[20rem] flex-1 items-center justify-center p-6">
+              <OpsLoadingState message={t('common.loading')} code="LOAD" />
             </div>
+          </Warehouse3dOpsViewport>
+        ) : locations.length === 0 ? (
+          <Warehouse3dOpsViewport centered>
+            <Warehouse3dOpsEmpty
+              icon={(
+                <Warehouse3dOpsEmptyIcon>
+                  <Layers />
+                </Warehouse3dOpsEmptyIcon>
+              )}
+              title={t('inventory.outsideWarehouse.noPlacementData')}
+            />
+          </Warehouse3dOpsViewport>
+        ) : (
+          <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {locations.map((location) => (
+                  <Warehouse3dOpsChip
+                    key={location.locationKey}
+                    active={selectedLocation?.locationKey === location.locationKey}
+                    onClick={() => {
+                      setSelectedLocationKey(location.locationKey);
+                      setSelectedItemId(location.items[0]?.lineId ?? null);
+                    }}
+                  >
+                    {getLocationLabel(location)}
+                  </Warehouse3dOpsChip>
+                ))}
+              </div>
 
-            <Card className="border-white/10 bg-white/5">
-              <CardHeader>
-                <CardTitle>{selectedWarehouse?.warehouseName ?? visualization?.warehouseName}</CardTitle>
-                <CardDescription>
-                  {mode === '3d' ? t('inventory.outsideWarehouse.mode3dHint') : t('inventory.outsideWarehouse.mode2dHint')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+              <div className="space-y-3 border border-[color:var(--wms-ops-card-border)] p-4">
+                <Warehouse3dOpsSectionHeader
+                  title={selectedWarehouse?.warehouseName ?? visualization?.warehouseName ?? t('inventory.outsideWarehouse.title')}
+                  description={mode === '3d' ? t('inventory.outsideWarehouse.mode3dHint') : t('inventory.outsideWarehouse.mode2dHint')}
+                />
+
                 {selectedLocation ? (
                   mode === '3d' ? (
-                    <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60">
-                      <Suspense
-                        fallback={
-                          <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
-                            {t('common.loading')}
-                          </div>
-                        }
-                      >
-                        <OutsideScene
-                          location={selectedLocation}
-                          selectedItemId={selectedItemId}
-                          onSelectItem={(item) => setSelectedItemId(item.lineId)}
-                          resolveImageUrl={resolveImageUrl}
-                          cameraPreset={cameraPreset}
-                          cameraPresetVersion={cameraPresetVersion}
-                          selectedRackKey={selectedRackKey}
-                          onSelectRack={handleSelectRack}
-                        />
-                      </Suspense>
+                    <Warehouse3dOpsViewport scene className="wms-ops-warehouse-3d-viewport--tall">
+                      <div className="wms-ops-warehouse-3d-viewport__canvas">
+                        <Suspense
+                          fallback={(
+                            <div className="flex h-full items-center justify-center p-6">
+                              <OpsLoadingState message={t('common.loading')} code="SCENE" />
+                            </div>
+                          )}
+                        >
+                          <OutsideScene
+                            location={selectedLocation}
+                            selectedItemId={selectedItemId}
+                            onSelectItem={(item) => setSelectedItemId(item.lineId)}
+                            resolveImageUrl={resolveImageUrl}
+                            cameraPreset={cameraPreset}
+                            cameraPresetVersion={cameraPresetVersion}
+                            selectedRackKey={selectedRackKey}
+                            onSelectRack={handleSelectRack}
+                          />
+                        </Suspense>
+                      </div>
 
-                      <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3">
-                        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-[11px] font-medium text-cyan-200 backdrop-blur">
+                      <Warehouse3dOpsHud position="top-left">
+                        <div className="wms-ops-warehouse-3d-hud-pill">
                           {selectedRackKey ? (
                             <>
-                              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+                              <span className="mr-2 inline-block size-1.5 rounded-full bg-[color:var(--wms-ops-circuit-accent)]" />
                               {t('inventory.outsideWarehouse.rackSelected')}
                             </>
                           ) : (
                             `${selectedLocation.plateCount} ${t('inventory.outsideWarehouse.totalPlates')}`
                           )}
                         </div>
-                        <div className="pointer-events-auto flex gap-1.5 rounded-full border border-white/10 bg-slate-950/70 p-1 backdrop-blur">
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant={cameraPreset === 'iso' && !selectedRackKey ? 'secondary' : 'ghost'}
-                            onClick={() => triggerCameraPreset('iso')}
+                      </Warehouse3dOpsHud>
+
+                      <Warehouse3dOpsHud position="top-right">
+                        <Warehouse3dOpsCameraBar>
+                          <Warehouse3dOpsCameraButton
+                            active={cameraPreset === 'iso' && !selectedRackKey}
                             title={t('inventory.outsideWarehouse.cameraIso')}
-                            className="h-8 w-8"
+                            onClick={() => triggerCameraPreset('iso')}
                           >
                             <Move3D className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant={cameraPreset === 'top' && !selectedRackKey ? 'secondary' : 'ghost'}
-                            onClick={() => triggerCameraPreset('top')}
+                          </Warehouse3dOpsCameraButton>
+                          <Warehouse3dOpsCameraButton
+                            active={cameraPreset === 'top' && !selectedRackKey}
                             title={t('inventory.outsideWarehouse.cameraTop')}
-                            className="h-8 w-8"
+                            onClick={() => triggerCameraPreset('top')}
                           >
                             <Compass className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant={cameraPreset === 'front' && !selectedRackKey ? 'secondary' : 'ghost'}
-                            onClick={() => triggerCameraPreset('front')}
+                          </Warehouse3dOpsCameraButton>
+                          <Warehouse3dOpsCameraButton
+                            active={cameraPreset === 'front' && !selectedRackKey}
                             title={t('inventory.outsideWarehouse.cameraFront')}
-                            className="h-8 w-8"
+                            onClick={() => triggerCameraPreset('front')}
                           >
                             <Box className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant={cameraPreset === 'eye' && !selectedRackKey ? 'secondary' : 'ghost'}
-                            onClick={() => triggerCameraPreset('eye')}
+                          </Warehouse3dOpsCameraButton>
+                          <Warehouse3dOpsCameraButton
+                            active={cameraPreset === 'eye' && !selectedRackKey}
                             title={t('inventory.outsideWarehouse.cameraEye')}
-                            className="h-8 w-8"
+                            onClick={() => triggerCameraPreset('eye')}
                           >
                             <Footprints className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => triggerCameraPreset('reset')}
+                          </Warehouse3dOpsCameraButton>
+                          <Warehouse3dOpsCameraButton
                             title={t('inventory.outsideWarehouse.cameraReset')}
-                            className="h-8 w-8"
+                            onClick={() => triggerCameraPreset('reset')}
                           >
                             <RotateCcw className="size-4" />
-                          </Button>
-                        </div>
-                      </div>
+                          </Warehouse3dOpsCameraButton>
+                        </Warehouse3dOpsCameraBar>
+                      </Warehouse3dOpsHud>
 
-                      {!selectedRackKey && (
-                        <div className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-300">
-                          <div className="rounded-md border border-white/10 bg-slate-950/70 px-2.5 py-1 backdrop-blur">
+                      {!selectedRackKey ? (
+                        <Warehouse3dOpsHud position="bottom">
+                          <div className="wms-ops-warehouse-3d-hud-pill">
                             {t('inventory.outsideWarehouse.interactionHint')}
                           </div>
-                          <div className="flex items-center gap-3 rounded-md border border-white/10 bg-slate-950/70 px-2.5 py-1 backdrop-blur">
-                            <span className="flex items-center gap-1.5">
-                              <span className="size-2 rounded-sm" style={{ backgroundColor: '#22d3ee' }} />
-                              {t('inventory.outsideWarehouse.legendSelected')}
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                              <span className="size-2 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
-                              {t('inventory.outsideWarehouse.legendHover')}
-                            </span>
-                          </div>
-                        </div>
-                      )}
+                          <Warehouse3dOpsLegend>
+                            <Warehouse3dOpsLegendItem color="#22d3ee" label={t('inventory.outsideWarehouse.legendSelected')} />
+                            <Warehouse3dOpsLegendItem color="#3b82f6" label={t('inventory.outsideWarehouse.legendHover')} />
+                          </Warehouse3dOpsLegend>
+                        </Warehouse3dOpsHud>
+                      ) : null}
 
-                      {selectedRackKey && selectedRackItems.length > 0 && (
-                        <RackDetailPanel
-                          items={selectedRackItems}
-                          selectedItemId={selectedItemId}
-                          onSelectItem={(item) => setSelectedItemId(item.lineId)}
+                      {selectedRackKey && selectedRackItems.length > 0 ? (
+                        <Warehouse3dOpsRackPanel
+                          slotLabel={
+                            selectedRackItems.length > 0
+                              ? `R${selectedRackItems[0].rowNo ?? 1}/P${selectedRackItems[0].positionNo ?? 1}`
+                              : ''
+                          }
+                          count={selectedRackItems.length}
                           onClose={() => handleSelectRack(null, [])}
-                          resolveImageUrl={resolveImageUrl}
-                        />
-                      )}
-                    </div>
+                        >
+                          {sortItems(selectedRackItems).map((item) => (
+                            <Warehouse3dOpsRackThumb
+                              key={item.lineId}
+                              active={selectedItemId === item.lineId}
+                              imageUrl={resolveImageUrl(item.imageUrl)}
+                              stockCode={item.stockCode}
+                              serialNo={item.serialNo}
+                              stackOrder={item.stackOrderNo ?? 1}
+                              onClick={() => setSelectedItemId(item.lineId)}
+                            />
+                          ))}
+                        </Warehouse3dOpsRackPanel>
+                      ) : null}
+                    </Warehouse3dOpsViewport>
                   ) : (
                     <VisualizationPlane
                       location={selectedLocation}
@@ -559,19 +491,16 @@ export function OutsideWarehousePage(): ReactElement {
                     />
                   )
                 ) : null}
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
 
-          <Card className="border-white/10 bg-white/5">
-            <CardHeader>
-              <CardTitle>{t('inventory.outsideWarehouse.detailTitle')}</CardTitle>
-              <CardDescription>{selectedLocation ? getLocationLabel(selectedLocation) : '-'}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <Warehouse3dOpsDetailCard
+              title={t('inventory.outsideWarehouse.detailTitle')}
+              subtitle={selectedLocation ? getLocationLabel(selectedLocation) : '-'}
+            >
               {selectedItem ? (
-                <>
-                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                <div className="space-y-4">
+                  <div className="wms-ops-warehouse-3d-detail-image">
                     {getFullImageUrl(selectedItem.imageUrl) ? (
                       <img
                         src={getFullImageUrl(selectedItem.imageUrl) ?? undefined}
@@ -579,51 +508,41 @@ export function OutsideWarehousePage(): ReactElement {
                         className="h-48 w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-48 items-center justify-center text-sm text-slate-400">{t('inventory.outsideWarehouse.noImage')}</div>
+                      <div className="flex h-48 items-center justify-center text-sm opacity-60">
+                        <Package className="mr-2 size-4" />
+                        {t('inventory.outsideWarehouse.noImage')}
+                      </div>
                     )}
                   </div>
 
-                  <div className="grid gap-3 text-sm">
-                    <div className="rounded-xl border border-white/10 p-3">
-                      <div className="text-slate-400">{t('inventory.outsideWarehouse.product')}</div>
-                      <div className="mt-1 font-medium text-white">{selectedItem.stockName ?? selectedItem.stockCode}</div>
-                      <div className="text-slate-400">{selectedItem.stockCode}</div>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.serialNo')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.serialNo}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.dCode')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.dCode}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.qty')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.quantity}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.supplier')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.supplierCode}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.placementType')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.placementType}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 p-3">
-                        <div className="text-slate-400">{t('inventory.outsideWarehouse.stackOrder')}</div>
-                        <div className="mt-1 font-medium text-white">{selectedItem.stackOrderNo ?? '-'}</div>
-                      </div>
-                    </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Warehouse3dOpsDetailField
+                      label={t('inventory.outsideWarehouse.product')}
+                      value={selectedItem.stockName ?? selectedItem.stockCode}
+                      hint={selectedItem.stockCode}
+                    />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.serialNo')} value={selectedItem.serialNo} />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.dCode')} value={selectedItem.dCode} />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.qty')} value={selectedItem.quantity} />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.supplier')} value={selectedItem.supplierCode} />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.placementType')} value={selectedItem.placementType} />
+                    <Warehouse3dOpsDetailField label={t('inventory.outsideWarehouse.stackOrder')} value={selectedItem.stackOrderNo ?? '-'} />
                   </div>
-                </>
+                </div>
               ) : (
-                <div className="rounded-xl border border-white/10 p-6 text-sm text-slate-400">{t('inventory.outsideWarehouse.noPlacementData')}</div>
+                <Warehouse3dOpsEmpty
+                  icon={(
+                    <Warehouse3dOpsEmptyIcon>
+                      <Layers />
+                    </Warehouse3dOpsEmptyIcon>
+                  )}
+                  title={t('inventory.outsideWarehouse.noPlacementData')}
+                />
               )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+            </Warehouse3dOpsDetailCard>
+          </div>
+        )}
+      </div>
+    </OpsListPageShell>
   );
 }

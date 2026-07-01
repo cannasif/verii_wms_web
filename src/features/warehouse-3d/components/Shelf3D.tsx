@@ -3,6 +3,7 @@ import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Bin3D } from './Bin3D';
 import type { WarehouseSlot as WarehouseSlotType } from '../types/warehouse-3d';
+import type { Warehouse3dSceneTheme } from '../utils/warehouse-3d-scene-theme';
 import { LAYOUT_CONSTANTS } from '../utils/layout-engine';
 import * as THREE from 'three';
 
@@ -17,6 +18,7 @@ interface Shelf3DProps {
   onBinHover: (slot: WarehouseSlotType | null) => void;
   onBinClick: (slot: WarehouseSlotType | null) => void;
   clickedBin: WarehouseSlotType | null;
+  sceneTheme: Warehouse3dSceneTheme;
 }
 
 const SLOT_WIDTH = LAYOUT_CONSTANTS.SHELF_WIDTH;
@@ -39,7 +41,8 @@ export function Shelf3D({
   onSelect, 
   onBinHover, 
   onBinClick, 
-  clickedBin 
+  clickedBin,
+  sceneTheme,
 }: Shelf3DProps): ReactElement {
   const binOutlineRefs = useRef<Map<string, THREE.Mesh>>(new Map());
   
@@ -94,15 +97,15 @@ export function Shelf3D({
         >
           <div
             style={{
-              background: selected ? 'rgba(60, 157, 255, 0.92)' : 'rgba(13, 22, 40, 0.88)',
-              color: '#fff',
+              background: selected ? sceneTheme.label.bgSelected : sceneTheme.label.bg,
+              color: sceneTheme.label.text,
               padding: '6px 12px',
               borderRadius: '6px',
               fontSize: '10px',
               fontWeight: 600,
               whiteSpace: 'nowrap',
-              border: selected ? '2px solid rgba(60, 157, 255, 1)' : '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: selected ? '0 0 16px rgba(60, 157, 255, 0.5)' : '0 2px 8px rgba(0,0,0,0.3)',
+              border: selected ? `2px solid ${sceneTheme.label.borderSelected}` : `1px solid ${sceneTheme.label.border}`,
+              boxShadow: selected ? `0 0 16px ${sceneTheme.label.borderSelected}` : '0 2px 8px rgba(0,0,0,0.15)',
             }}
           >
             {label}
@@ -112,7 +115,7 @@ export function Shelf3D({
 
       <mesh position={[0, BASE_HEIGHT / 2, 0]}>
         <boxGeometry args={[shelfWidth, BASE_HEIGHT, SHELF_DEPTH]} />
-        <meshStandardMaterial color="#1a2332" metalness={0.6} roughness={0.4} />
+        <meshStandardMaterial color={sceneTheme.shelf.base} metalness={0.65} roughness={0.35} />
       </mesh>
 
       {Array.from({ length: 4 }).map((_, i) => {
@@ -121,23 +124,23 @@ export function Shelf3D({
         return (
           <mesh key={i} position={[x, shelfHeight / 2, z]}>
             <boxGeometry args={[POST_THICKNESS, shelfHeight, POST_THICKNESS]} />
-            <meshStandardMaterial color="#2a3442" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color={sceneTheme.shelf.post} metalness={0.75} roughness={0.25} />
           </mesh>
         );
       })}
 
       <mesh position={[0, shelfHeight / 2, -SHELF_DEPTH / 2 + BACK_PANEL_THICKNESS / 2]} receiveShadow>
         <boxGeometry args={[shelfWidth - POST_THICKNESS * 2, shelfHeight, BACK_PANEL_THICKNESS]} />
-        <meshStandardMaterial color="#384454" metalness={0.5} roughness={0.5} />
+        <meshStandardMaterial color={sceneTheme.shelf.panel} metalness={0.55} roughness={0.45} />
       </mesh>
 
       <mesh position={[-shelfWidth / 2 + POST_THICKNESS + BACK_PANEL_THICKNESS / 2, shelfHeight / 2, 0]} receiveShadow>
         <boxGeometry args={[BACK_PANEL_THICKNESS, shelfHeight, SHELF_DEPTH - POST_THICKNESS * 2]} />
-        <meshStandardMaterial color="#384454" metalness={0.5} roughness={0.5} />
+        <meshStandardMaterial color={sceneTheme.shelf.panel} metalness={0.55} roughness={0.45} />
       </mesh>
       <mesh position={[shelfWidth / 2 - POST_THICKNESS - BACK_PANEL_THICKNESS / 2, shelfHeight / 2, 0]} receiveShadow>
         <boxGeometry args={[BACK_PANEL_THICKNESS, shelfHeight, SHELF_DEPTH - POST_THICKNESS * 2]} />
-        <meshStandardMaterial color="#384454" metalness={0.5} roughness={0.5} />
+        <meshStandardMaterial color={sceneTheme.shelf.panel} metalness={0.55} roughness={0.45} />
       </mesh>
 
       {Array.from({ length: levelCount }).map((_, level) => {
@@ -145,7 +148,7 @@ export function Shelf3D({
         return (
           <mesh key={`shelf-${level}`} position={[0, y, 0]} receiveShadow>
             <boxGeometry args={[shelfWidth - POST_THICKNESS * 2, 0.04, SHELF_DEPTH - POST_THICKNESS * 2]} />
-            <meshStandardMaterial color="#3d4a5e" metalness={0.6} roughness={0.4} />
+            <meshStandardMaterial color={sceneTheme.shelf.level} metalness={0.62} roughness={0.38} />
           </mesh>
         );
       })}
@@ -154,26 +157,26 @@ export function Shelf3D({
         <>
           <mesh position={[0, shelfHeight, 0]}>
             <boxGeometry args={[shelfWidth + 0.1, 0.05, SHELF_DEPTH + 0.1]} />
-            <meshBasicMaterial color="#3c9dff" transparent opacity={0.8} toneMapped={false} />
+            <meshBasicMaterial color={sceneTheme.shelf.selectGlow} transparent opacity={0.8} toneMapped={false} />
           </mesh>
           
           <mesh position={[0, 0, 0]}>
             <boxGeometry args={[shelfWidth + 0.1, 0.05, SHELF_DEPTH + 0.1]} />
-            <meshBasicMaterial color="#3c9dff" transparent opacity={0.8} toneMapped={false} />
+            <meshBasicMaterial color={sceneTheme.shelf.selectGlow} transparent opacity={0.8} toneMapped={false} />
           </mesh>
           
           <mesh position={[-shelfWidth / 2, shelfHeight / 2, SHELF_DEPTH / 2]}>
             <boxGeometry args={[0.05, shelfHeight, 0.05]} />
-            <meshBasicMaterial color="#3c9dff" transparent opacity={0.8} toneMapped={false} />
+            <meshBasicMaterial color={sceneTheme.shelf.selectGlow} transparent opacity={0.8} toneMapped={false} />
           </mesh>
           <mesh position={[shelfWidth / 2, shelfHeight / 2, SHELF_DEPTH / 2]}>
             <boxGeometry args={[0.05, shelfHeight, 0.05]} />
-            <meshBasicMaterial color="#3c9dff" transparent opacity={0.8} toneMapped={false} />
+            <meshBasicMaterial color={sceneTheme.shelf.selectGlow} transparent opacity={0.8} toneMapped={false} />
           </mesh>
           
           <pointLight
             position={[0, shelfHeight / 2, SHELF_DEPTH / 2 + 0.2]}
-            color="#3c9dff"
+            color={sceneTheme.shelf.selectGlow}
             intensity={0.3}
             distance={shelfHeight}
             decay={2}
@@ -197,6 +200,7 @@ export function Shelf3D({
           slotWidth={SLOT_WIDTH}
           slotHeight={SLOT_HEIGHT}
           shelfDepth={SHELF_DEPTH}
+          sceneTheme={sceneTheme}
         />
       ))}
     </group>

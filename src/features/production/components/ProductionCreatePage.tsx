@@ -5,16 +5,12 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsSelect, OpsSelectItem, OpsTextarea, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Switch } from '@/components/ui/switch';
 import { Stepper } from '@/components/ui/stepper';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
@@ -43,9 +39,20 @@ import {
   type ProductionHeaderDetail,
   } from '../types/production';
 import {
+  ProductionOpsDeleteButton,
+  ProductionOpsBadge,
+  ProductionOpsCircuitToggle,
+  ProductionOpsCircuitToggleField,
+  ProductionPlanLineGrid,
+  ProductionPlanLinePaginatedBody,
+  ProductionPlanLineGridCell,
+  ProductionPlanLineGridHead,
+  ProductionPlanLineGridHeader,
+  ProductionPlanLineGridRow,
   ProductionOpsCallout as InfoCallout,
   ProductionOpsField as Field,
   ProductionOpsHintCard as PlannerHintCard,
+  ProductionOpsReadinessMissing,
   ProductionRequiredMark as RequiredMark,
   ProductionOpsSectionHeader as SectionHeader,
   ProductionOpsSummaryStat as SummaryStat,
@@ -291,7 +298,6 @@ export function ProductionCreatePage(): ReactElement {
   const serialModeLabel = (value: (typeof serialModes)[number]): string => t(`production.create.enums.serialMode.${value}`);
   const dependencyTypeLabel = (value: (typeof dependencyTypes)[number]): string => t(`production.create.enums.dependencyType.${value}`);
   const assignmentTypeLabel = (value: (typeof assignmentTypes)[number]): string => t(`production.create.enums.assignmentType.${value}`);
-  const priorityLabel = (value: number): string => priorityOptions.find((item) => item.value === value)?.label ?? 'Normal';
 
   useEffect(() => {
     setPageTitle(isEditMode ? t('production.create.editTitle', { defaultValue: 'Missing translation' }) : t('production.create.title'));
@@ -776,15 +782,14 @@ export function ProductionCreatePage(): ReactElement {
               />
             </Field>
             <div className="flex items-end">
-              <Button
+              <OpsActionButton
                 type="button"
                 className="w-full"
-                size="sm"
                 onClick={() => templateMutation.mutate()}
                 disabled={templateMutation.isPending || !canFetchErpTemplate}
               >
                 {templateMutation.isPending ? t('common.loading') : t('production.create.erp.fetch')}
-              </Button>
+              </OpsActionButton>
             </div>
           </div>
         </TabsContent>
@@ -857,15 +862,14 @@ export function ProductionCreatePage(): ReactElement {
               <OpsInput type="number" min="0" step="0.001" value={erpInput.quantity} onChange={(e) => setErpInput((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} />
             </Field>
             <div className="flex items-end">
-              <Button
+              <OpsActionButton
                 type="button"
                 className="w-full"
-                size="sm"
                 onClick={() => templateMutation.mutate()}
                 disabled={templateMutation.isPending || !canFetchErpTemplate}
               >
                 {templateMutation.isPending ? t('common.loading') : t('production.create.erp.fetch')}
-              </Button>
+              </OpsActionButton>
             </div>
           </div>
         </TabsContent>
@@ -921,7 +925,7 @@ export function ProductionCreatePage(): ReactElement {
       ) : null}
 
       {!editDetailQuery.isLoading && !editDetailQuery.isError ? (
-        <div className="space-y-4 text-sm leading-normal">
+        <div className="wms-ops-production-content space-y-4 leading-normal">
           {!permission.canMutate ? <PermissionNotice /> : null}
           {!canSaveProduction ? (
             <InfoCallout
@@ -949,9 +953,9 @@ export function ProductionCreatePage(): ReactElement {
                 <TabsTrigger className="px-2.5 text-xs" value="planner">{t('production.create.plannerTab', { defaultValue: 'Missing translation' })}</TabsTrigger>
                 <TabsTrigger className="px-2.5 text-xs" value="advanced">{t('production.create.advancedTab', { defaultValue: 'Missing translation' })}</TabsTrigger>
               </TabsList>
-              <Badge className="text-xs font-normal" variant="secondary">
+              <ProductionOpsBadge>
                 {t('production.create.review.source')}: {draft.source === 'erp' ? t('production.create.review.sourceErp') : t('production.create.review.sourceManual')}
-              </Badge>
+              </ProductionOpsBadge>
             </div>
 
             <TabsContent value="planner" className="mt-4 space-y-4">
@@ -1080,22 +1084,19 @@ export function ProductionCreatePage(): ReactElement {
                         </Field>
                         <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}><OpsInput type="number" min="0" step="0.001" value={draft.header.plannedQuantity} onChange={(e) => updateHeader('plannedQuantity', Number(e.target.value) || 0)} /></Field>
                         <Field label={t('production.create.planType')}>
-                          <Select value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
-                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                            <SelectContent>{planTypes.map((value) => <SelectItem key={value} value={value}>{planTypeLabel(value)}</SelectItem>)}</SelectContent>
-                          </Select>
+                          <OpsSelect value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
+                            {planTypes.map((value) => <OpsSelectItem key={value} value={value}>{planTypeLabel(value)}</OpsSelectItem>)}
+                          </OpsSelect>
                         </Field>
                         <Field label={t('production.create.executionMode')}>
-                          <Select value={draft.header.executionMode} onValueChange={(value) => updateHeader('executionMode', value as ProductionPlanDraft['header']['executionMode'])}>
-                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                            <SelectContent>{executionModes.map((value) => <SelectItem key={value} value={value}>{executionModeLabel(value)}</SelectItem>)}</SelectContent>
-                          </Select>
+                          <OpsSelect value={draft.header.executionMode} onValueChange={(value) => updateHeader('executionMode', value as ProductionPlanDraft['header']['executionMode'])}>
+                            {executionModes.map((value) => <OpsSelectItem key={value} value={value}>{executionModeLabel(value)}</OpsSelectItem>)}
+                          </OpsSelect>
                         </Field>
                         <Field label={t('common.priority')}>
-                          <Select value={String(draft.header.priority)} onValueChange={(value) => updateHeader('priority', Number(value))}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder={priorityLabel(draft.header.priority)} /></SelectTrigger>
-                            <SelectContent>{priorityOptions.map((option) => <SelectItem key={option.value} value={String(option.value)}>{option.label}</SelectItem>)}</SelectContent>
-                          </Select>
+                          <OpsSelect value={String(draft.header.priority)} onValueChange={(value) => updateHeader('priority', Number(value))}>
+                            {priorityOptions.map((option) => <OpsSelectItem key={option.value} value={String(option.value)}>{option.label}</OpsSelectItem>)}
+                          </OpsSelect>
                         </Field>
                       </div>
                     </CardContent>
@@ -1121,12 +1122,10 @@ export function ProductionCreatePage(): ReactElement {
                       {validationNotes.length === 0 ? (
                         <PlannerHintCard title={t('production.create.readiness.title')} body={t('production.create.readiness.ready')} />
                       ) : (
-                        <div className="rounded-xl border border-amber-200/70 bg-amber-50/80 p-3 text-xs text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
-                          <div className="font-semibold">{t('production.create.readiness.missing')}</div>
-                          <ul className="mt-1.5 list-disc space-y-0.5 pl-4 leading-snug">
-                            {validationNotes.map((note) => <li key={note}>{note}</li>)}
-                          </ul>
-                        </div>
+                        <ProductionOpsReadinessMissing
+                          title={t('production.create.readiness.missing')}
+                          items={validationNotes}
+                        />
                       )}
                     </CardContent>
                   </Card>
@@ -1190,7 +1189,7 @@ export function ProductionCreatePage(): ReactElement {
                             }}
                             role="listitem"
                           >
-                            <Card className="gap-3 border-slate-200/70 py-3 shadow-sm dark:border-white/10">
+                            <Card className="gap-3 py-3 shadow-none">
                               <CardHeader className="pb-2">
                                 <div className="flex gap-2">
                                   <button
@@ -1217,11 +1216,11 @@ export function ProductionCreatePage(): ReactElement {
                                         <CardDescription>{t('production.create.planner.stageCardHint', { defaultValue: 'Missing translation' })}</CardDescription>
                                       </div>
                                       <div className="flex shrink-0 flex-wrap items-center gap-1">
-                                        <Badge className="text-xs font-normal" variant="secondary">{t('production.create.orderBadge', { index: index + 1 })}</Badge>
-                                        <Badge className="text-xs font-normal" variant="outline">
+                                        <ProductionOpsBadge>{t('production.create.orderBadge', { index: index + 1 })}</ProductionOpsBadge>
+                                        <ProductionOpsBadge tone="info">
                                           {t('production.create.planner.flowBadge', { defaultValue: 'Missing translation' })}: {order.sequenceNo ?? index + 1}
                                           {order.parallelGroupNo ? ` / P${order.parallelGroupNo}` : ''}
-                                        </Badge>
+                                        </ProductionOpsBadge>
                                         <Button
                                           type="button"
                                           size="sm"
@@ -1246,14 +1245,14 @@ export function ProductionCreatePage(): ReactElement {
                               title={t('production.create.planner.stageSimpleTitle', { defaultValue: 'Missing translation' })}
                               body={t('production.create.planner.stageSimpleBody', { defaultValue: 'Missing translation' })}
                             />
-                            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200/70 bg-slate-50/70 p-2.5 text-xs dark:border-white/10 dark:bg-white/5">
-                              <Badge className="text-xs font-normal" variant={index === 0 ? 'default' : 'secondary'}>
+                            <div className="wms-ops-production-panel flex flex-wrap items-center gap-2 p-2.5 text-xs">
+                              <ProductionOpsBadge tone={index === 0 ? 'active' : 'default'}>
                                 {index === 0
                                   ? t('production.create.planner.firstStage', { defaultValue: 'Missing translation' })
                                   : order.parallelGroupNo === draft.orders[index - 1]?.parallelGroupNo && order.sequenceNo === draft.orders[index - 1]?.sequenceNo
                                     ? t('production.create.planner.parallelStage', { defaultValue: 'Missing translation' })
                                     : t('production.create.planner.afterStage', { defaultValue: 'Missing translation' })}
-                              </Badge>
+                              </ProductionOpsBadge>
                               <span className="text-muted-foreground">
                                 {t('production.create.planner.flowBadge', { defaultValue: 'Missing translation' })}: {order.sequenceNo ?? index + 1}
                                 {order.parallelGroupNo ? ` / P${order.parallelGroupNo}` : ''}
@@ -1261,10 +1260,9 @@ export function ProductionCreatePage(): ReactElement {
                             </div>
                             <div className="grid gap-3 md:grid-cols-3">
                               <Field label={t('production.create.planner.stagePreset', { defaultValue: 'Missing translation' })}>
-                                <Select onValueChange={(value) => applyStagePreset(order.localId, value as (typeof stagePresetOptions)[number]['value'])}>
-                                  <SelectTrigger className="w-full"><SelectValue placeholder={t('production.create.planner.stagePresetPlaceholder', { defaultValue: 'Missing translation' })} /></SelectTrigger>
-                                  <SelectContent>{stagePresetOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-                                </Select>
+                                <OpsSelect value="" onValueChange={(value) => applyStagePreset(order.localId, value as (typeof stagePresetOptions)[number]['value'])} placeholder={t('production.create.planner.stagePresetPlaceholder', { defaultValue: 'Missing translation' })}>
+  {stagePresetOptions.map((option) => <OpsSelectItem key={option.value} value={option.value}>{option.label}</OpsSelectItem>)}
+</OpsSelect>
                               </Field>
                                 <Field label={t('production.create.planner.flowChoice', { defaultValue: 'Missing translation' })}>
                                 <div className="flex flex-wrap gap-1.5">
@@ -1343,10 +1341,9 @@ export function ProductionCreatePage(): ReactElement {
                                 />
                               </Field>
                               <Field label={t('production.create.orderType')}>
-                                <Select value={order.orderType} onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, orderType: value as ProductionOrderDraft['orderType'] }))}>
-                                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                  <SelectContent>{orderTypes.map((value) => <SelectItem key={value} value={value}>{orderTypeLabel(value)}</SelectItem>)}</SelectContent>
-                                </Select>
+                                <OpsSelect value={order.orderType} onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, orderType: value as ProductionOrderDraft['orderType'] }))}>
+  {orderTypes.map((value) => <OpsSelectItem key={value} value={value}>{orderTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                               </Field>
                             </div>
                             <Field label={t('production.create.sourceWarehouse')}>
@@ -1447,17 +1444,29 @@ export function ProductionCreatePage(): ReactElement {
                         />
                       ) : null}
                       {groupedOutputs.map(({ order, rows }) => (
-                        <div key={order.localId} className="rounded-lg border border-slate-200/70 bg-muted/20 p-3 dark:border-white/10">
+                        <div key={order.localId} className="wms-ops-production-panel">
                           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                             <div className="min-w-0">
-                              <div className="text-sm font-medium">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
+                              <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
                               <div className="text-xs text-muted-foreground">{order.producedStockCode || '-'}</div>
                             </div>
                             <Button type="button" size="sm" variant="outline" onClick={() => addOutputForOrder(order.localId)}>{t('production.create.addOutput')}</Button>
                           </div>
-                          <div className="space-y-2">
-                            {rows.map((row) => (
-                              <div key={row.localId} className="grid gap-2 md:grid-cols-5">
+                          <div className="wms-ops-production-line-table-wrap">
+                            <ProductionPlanLineGrid variant="planner-output">
+                              <ProductionPlanLineGridHeader>
+                                <ProductionPlanLineGridHead>{t('production.create.columns.stock')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.columns.quantity')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.trackingMode')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead className="wms-ops-production-line-grid__head--actions">{t('common.actions')}</ProductionPlanLineGridHead>
+                              </ProductionPlanLineGridHeader>
+                              <ProductionPlanLinePaginatedBody
+                                items={rows}
+                                getRowKey={(row) => row.localId}
+                                renderRow={(row) => (
+                              <ProductionPlanLineGridRow key={row.localId}>
+                                <ProductionPlanLineGridCell>
                                 <PagedLookupDialog<StockLookup>
                                   variant="ops"
                                   open={activeLookupKey === `planner-output-stock-${row.localId}`}
@@ -1487,6 +1496,8 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-output-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
                                   }}
                                 />
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
                                 <PagedLookupDialog<YapKodLookup>
                                   variant="ops"
                                   open={activeLookupKey === `planner-output-yapkod-${row.localId}`}
@@ -1509,14 +1520,22 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-output-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                   }}
                                 />
-                                <OpsInput type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
-                                <Select value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
-                                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                  <SelectContent>{trackingModes.map((value) => <SelectItem key={value} value={value}>{trackingModeLabel(value)}</SelectItem>)}</SelectContent>
-                                </Select>
-                                <Button type="button" size="sm" variant="ghost" onClick={() => removeOutput(row.localId)}>{t('common.delete')}</Button>
-                              </div>
-                            ))}
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
+                                <OpsInput className="wms-ops-production-qty-input" type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
+                                <OpsSelect value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
+  {trackingModes.map((value) => <OpsSelectItem key={value} value={value}>{trackingModeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell className="wms-ops-production-line-grid__cell--actions">
+                                <ProductionOpsDeleteButton label={t('common.delete')} onClick={() => removeOutput(row.localId)} />
+                                </ProductionPlanLineGridCell>
+                              </ProductionPlanLineGridRow>
+                                )}
+                              />
+                            </ProductionPlanLineGrid>
                           </div>
                         </div>
                       ))}
@@ -1541,17 +1560,30 @@ export function ProductionCreatePage(): ReactElement {
                         />
                       ) : null}
                       {groupedConsumptions.map(({ order, rows }) => (
-                        <div key={order.localId} className="rounded-lg border border-slate-200/70 bg-muted/20 p-3 dark:border-white/10">
+                        <div key={order.localId} className="wms-ops-production-panel">
                           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                             <div className="min-w-0">
-                              <div className="text-sm font-medium">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
+                              <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
                               <div className="text-xs text-muted-foreground">{t('production.create.planner.consumptionForStage', { defaultValue: 'Missing translation' })}</div>
                             </div>
                             <Button type="button" size="sm" variant="outline" onClick={() => addConsumptionForOrder(order.localId)}>{t('production.create.addConsumption')}</Button>
                           </div>
-                          <div className="space-y-2">
-                            {rows.map((row) => (
-                              <div key={row.localId} className="grid gap-2 md:grid-cols-6">
+                          <div className="wms-ops-production-line-table-wrap">
+                            <ProductionPlanLineGrid variant="planner-consumption">
+                              <ProductionPlanLineGridHeader>
+                                <ProductionPlanLineGridHead>{t('production.create.sourceStock')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.columns.quantity')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.serialEntryMode')}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead>{t('production.create.isBackflush', { defaultValue: 'Missing translation' })}</ProductionPlanLineGridHead>
+                                <ProductionPlanLineGridHead className="wms-ops-production-line-grid__head--actions">{t('common.actions')}</ProductionPlanLineGridHead>
+                              </ProductionPlanLineGridHeader>
+                              <ProductionPlanLinePaginatedBody
+                                items={rows}
+                                getRowKey={(row) => row.localId}
+                                renderRow={(row) => (
+                              <ProductionPlanLineGridRow key={row.localId}>
+                                <ProductionPlanLineGridCell>
                                 <PagedLookupDialog<StockLookup>
                                   variant="ops"
                                   open={activeLookupKey === `planner-consumption-stock-${row.localId}`}
@@ -1581,6 +1613,8 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-consumption-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
                                   }}
                                 />
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
                                 <PagedLookupDialog<YapKodLookup>
                                   variant="ops"
                                   open={activeLookupKey === `planner-consumption-yapkod-${row.localId}`}
@@ -1603,18 +1637,30 @@ export function ProductionCreatePage(): ReactElement {
                                     setLookupLabel(`planner-consumption-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                   }}
                                 />
-                                <OpsInput type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
-                                <Select value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
-                                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                  <SelectContent>{serialModes.map((value) => <SelectItem key={value} value={value}>{serialModeLabel(value)}</SelectItem>)}</SelectContent>
-                                </Select>
-                                <div className="flex h-9 items-center justify-between gap-2 rounded-lg border border-slate-200/70 px-2 dark:border-white/10">
-                                  <span className="text-xs">{t('production.create.isBackflush', { defaultValue: 'Missing translation' })}</span>
-                                  <Switch className="scale-90" checked={row.isBackflush} onCheckedChange={(checked) => updateConsumption(row.localId, (current) => ({ ...current, isBackflush: checked }))} />
-                                </div>
-                                <Button type="button" size="sm" variant="ghost" onClick={() => removeConsumption(row.localId)}>{t('common.delete')}</Button>
-                              </div>
-                            ))}
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
+                                <OpsInput className="wms-ops-production-qty-input" type="number" min="0" step="0.001" placeholder={t('production.create.columns.quantity')} value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
+                                <OpsSelect value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
+  {serialModes.map((value) => <OpsSelectItem key={value} value={value}>{serialModeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell>
+                                <ProductionOpsCircuitToggle
+                                  compact
+                                  checked={row.isBackflush}
+                                  onCheckedChange={(checked) => updateConsumption(row.localId, (current) => ({ ...current, isBackflush: checked }))}
+                                  aria-label={t('production.create.isBackflush', { defaultValue: 'Missing translation' })}
+                                />
+                                </ProductionPlanLineGridCell>
+                                <ProductionPlanLineGridCell className="wms-ops-production-line-grid__cell--actions">
+                                <ProductionOpsDeleteButton label={t('common.delete')} onClick={() => removeConsumption(row.localId)} />
+                                </ProductionPlanLineGridCell>
+                              </ProductionPlanLineGridRow>
+                                )}
+                              />
+                            </ProductionPlanLineGrid>
                           </div>
                         </div>
                       ))}
@@ -1656,16 +1702,16 @@ export function ProductionCreatePage(): ReactElement {
                         const predecessor = orderOptions.find((option) => option.value === dependency.predecessorOrderLocalId)?.label ?? '-';
                         const successor = orderOptions.find((option) => option.value === dependency.successorOrderLocalId)?.label ?? '-';
                         return (
-                          <div key={dependency.localId} className="rounded-lg border border-slate-200/70 bg-muted/15 p-3 dark:border-white/10">
+                          <div key={dependency.localId} className="wms-ops-production-panel">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <Badge className="max-w-40 truncate text-xs font-normal" variant="secondary">{predecessor}</Badge>
+                              <ProductionOpsBadge className="max-w-40 truncate">{predecessor}</ProductionOpsBadge>
                               <span className="text-xs text-muted-foreground">{dependencyTypeLabel(dependency.dependencyType)}</span>
-                              <Badge className="max-w-40 truncate text-xs font-normal" variant="secondary">{successor}</Badge>
+                              <ProductionOpsBadge className="max-w-40 truncate">{successor}</ProductionOpsBadge>
                             </div>
                             <div className="mt-2 flex flex-wrap gap-1.5">
-                              {dependency.requiredOutputAvailable ? <Badge className="text-xs font-normal" variant="outline">{t('production.create.outputReady')}</Badge> : null}
-                              {dependency.requiredTransferCompleted ? <Badge className="text-xs font-normal" variant="outline">{t('production.create.transferReady')}</Badge> : null}
-                              {dependency.lagMinutes > 0 ? <Badge className="text-xs font-normal" variant="outline">{t('production.create.lagMinutes')}: {dependency.lagMinutes}</Badge> : null}
+                              {dependency.requiredOutputAvailable ? <ProductionOpsBadge tone="info">{t('production.create.outputReady')}</ProductionOpsBadge> : null}
+                              {dependency.requiredTransferCompleted ? <ProductionOpsBadge tone="info">{t('production.create.transferReady')}</ProductionOpsBadge> : null}
+                              {dependency.lagMinutes > 0 ? <ProductionOpsBadge tone="info">{t('production.create.lagMinutes')}: {dependency.lagMinutes}</ProductionOpsBadge> : null}
                             </div>
                           </div>
                         );
@@ -1685,11 +1731,11 @@ export function ProductionCreatePage(): ReactElement {
                       <CardContent className="space-y-2">
                         {draft.header.assignments.map((assignment) => (
                           <div key={assignment.localId} className="grid gap-2 md:grid-cols-4">
-                            <Select value={assignment.assignmentType} onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignmentType: value as ProductionHeaderAssignmentDraft['assignmentType'] }))}>
-                              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                              <SelectContent>{assignmentTypes.map((value) => <SelectItem key={value} value={value}>{assignmentTypeLabel(value)}</SelectItem>)}</SelectContent>
-                            </Select>
+                            <OpsSelect value={assignment.assignmentType} onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignmentType: value as ProductionHeaderAssignmentDraft['assignmentType'] }))}>
+  {assignmentTypes.map((value) => <OpsSelectItem key={value} value={value}>{assignmentTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                             <Combobox
+                              variant="ops"
                               options={userOptions}
                               value={assignment.assignedUserId ? String(assignment.assignedUserId) : ''}
                               onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignedUserId: value ? Number(value) : undefined }))}
@@ -1698,6 +1744,7 @@ export function ProductionCreatePage(): ReactElement {
                               emptyText={t('production.create.userEmpty', { defaultValue: 'Missing translation' })}
                             />
                             <Combobox
+                              variant="ops"
                               options={roleOptions}
                               value={assignment.assignedRoleId ? String(assignment.assignedRoleId) : ''}
                               onValueChange={(value) => updateHeaderAssignment(assignment.localId, (row) => ({ ...row, assignedRoleId: value ? Number(value) : undefined }))}
@@ -1721,19 +1768,19 @@ export function ProductionCreatePage(): ReactElement {
                       </CardHeader>
                       <CardContent className="space-y-3">
                         {draft.orders.map((order) => (
-                          <div key={order.localId} className="rounded-lg border border-slate-200/70 bg-muted/15 p-3 dark:border-white/10">
+                          <div key={order.localId} className="wms-ops-production-panel">
                             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                              <div className="text-sm font-medium">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
+                              <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
                               <Button type="button" size="sm" variant="outline" onClick={() => addOrderAssignment(order.localId)}>{t('production.create.addOrderAssignment')}</Button>
                             </div>
                             <div className="space-y-2">
                               {order.assignments.map((assignment) => (
                                 <div key={assignment.localId} className="grid gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto]">
-                                  <Select value={assignment.assignmentType} onValueChange={(value) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, assignmentType: value as ProductionOrderAssignmentDraft['assignmentType'] }))}>
-                                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                    <SelectContent>{assignmentTypes.map((value) => <SelectItem key={value} value={value}>{assignmentTypeLabel(value)}</SelectItem>)}</SelectContent>
-                                  </Select>
+                                  <OpsSelect value={assignment.assignmentType} onValueChange={(value) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, assignmentType: value as ProductionOrderAssignmentDraft['assignmentType'] }))}>
+  {assignmentTypes.map((value) => <OpsSelectItem key={value} value={value}>{assignmentTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                                   <Combobox
+                                    variant="ops"
                                     options={userOptions}
                                     value={assignment.assignedUserId ? String(assignment.assignedUserId) : ''}
                                     onValueChange={(value) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, assignedUserId: value ? Number(value) : undefined }))}
@@ -1788,25 +1835,23 @@ export function ProductionCreatePage(): ReactElement {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex flex-wrap gap-1.5">
-                      <Badge className="text-xs font-normal" variant="secondary">
+                      <ProductionOpsBadge>
                         {t('production.create.review.source')}: {draft.source === 'erp' ? t('production.create.review.sourceErp') : t('production.create.review.sourceManual')}
-                      </Badge>
-                      <Badge className="text-xs font-normal" variant="secondary">
+                      </ProductionOpsBadge>
+                      <ProductionOpsBadge>
                         {t('production.create.review.execution')}: {executionModeLabel(draft.header.executionMode)}
-                      </Badge>
-                      <Badge className="max-w-full truncate text-xs font-normal" variant="secondary">
+                      </ProductionOpsBadge>
+                      <ProductionOpsBadge className="max-w-full truncate">
                         {t('production.create.review.mainStock')}: {draft.header.mainStockCode || '-'}
-                      </Badge>
+                      </ProductionOpsBadge>
                     </div>
                     {validationNotes.length === 0 ? (
                       <PlannerHintCard title={t('production.create.readiness.title')} body={t('production.create.readiness.ready')} />
                     ) : (
-                      <div className="rounded-xl border border-amber-200/70 bg-amber-50/80 p-3 text-xs text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
-                        <div className="font-semibold">{t('production.create.readiness.missing')}</div>
-                        <ul className="mt-1.5 list-disc space-y-0.5 pl-4 leading-snug">
-                          {validationNotes.map((note) => <li key={note}>{note}</li>)}
-                        </ul>
-                      </div>
+                      <ProductionOpsReadinessMissing
+                        title={t('production.create.readiness.missing')}
+                        items={validationNotes}
+                      />
                     )}
                   </CardContent>
                 </Card>
@@ -1822,22 +1867,19 @@ export function ProductionCreatePage(): ReactElement {
                   <Field label={t('common.documentDate')}><OpsInput type="date" value={draft.header.documentDate} onChange={(e) => updateHeader('documentDate', e.target.value)} /></Field>
                   <Field label={t('common.projectCode')}><OpsInput value={draft.header.projectCode} onChange={(e) => updateHeader('projectCode', e.target.value)} /></Field>
                   <Field label={t('production.create.planType')}>
-                    <Select value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
-                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{planTypes.map((value) => <SelectItem key={value} value={value}>{planTypeLabel(value)}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <OpsSelect value={draft.header.planType} onValueChange={(value) => updateHeader('planType', value as ProductionPlanDraft['header']['planType'])}>
+  {planTypes.map((value) => <OpsSelectItem key={value} value={value}>{planTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                   </Field>
                   <Field label={t('production.create.executionMode')}>
-                    <Select value={draft.header.executionMode} onValueChange={(value) => updateHeader('executionMode', value as ProductionPlanDraft['header']['executionMode'])}>
-                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{executionModes.map((value) => <SelectItem key={value} value={value}>{executionModeLabel(value)}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <OpsSelect value={draft.header.executionMode} onValueChange={(value) => updateHeader('executionMode', value as ProductionPlanDraft['header']['executionMode'])}>
+  {executionModes.map((value) => <OpsSelectItem key={value} value={value}>{executionModeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                   </Field>
                   <Field label={t('common.priority')}>
-                    <Select value={String(draft.header.priority)} onValueChange={(value) => updateHeader('priority', Number(value))}>
-                      <SelectTrigger className="w-full"><SelectValue placeholder={priorityLabel(draft.header.priority)} /></SelectTrigger>
-                      <SelectContent>{priorityOptions.map((option) => <SelectItem key={option.value} value={String(option.value)}>{option.label}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <OpsSelect value={String(draft.header.priority)} onValueChange={(value) => updateHeader('priority', Number(value))}>
+  {priorityOptions.map((option) => <OpsSelectItem key={option.value} value={String(option.value)}>{option.label}</OpsSelectItem>)}
+</OpsSelect>
                   </Field>
                   <Field label={t('production.create.mainStockCode')}>
                     <PagedLookupDialog<StockLookup>
@@ -1911,11 +1953,11 @@ export function ProductionCreatePage(): ReactElement {
                 <CardContent>
                   <Accordion type="multiple" className="space-y-2">
                     {draft.orders.map((order, index) => (
-                      <AccordionItem key={order.localId} value={order.localId} className="rounded-xl border border-slate-200/70 px-3 dark:border-white/10">
+                      <AccordionItem key={order.localId} value={order.localId} className="wms-ops-production-panel px-3">
                         <AccordionTrigger className="py-3 hover:no-underline data-[state=open]:pb-2">
                           <div className="flex flex-1 flex-wrap items-center gap-2 text-left">
-                            <Badge className="text-xs font-normal" variant="secondary">{t('production.create.orderBadge', { index: index + 1 })}</Badge>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{order.orderNo || t('production.create.orderPlaceholder')}</span>
+                            <ProductionOpsBadge>{t('production.create.orderBadge', { index: index + 1 })}</ProductionOpsBadge>
+                            <span className="wms-ops-production-panel__title">{order.orderNo || t('production.create.orderPlaceholder')}</span>
                             <span className="text-xs text-muted-foreground">{order.producedStockCode || t('production.create.stockPlaceholder')}</span>
                             <span className="text-xs tabular-nums text-muted-foreground">{order.plannedQuantity} {t('common.unit')}</span>
                           </div>
@@ -1924,10 +1966,9 @@ export function ProductionCreatePage(): ReactElement {
                           <div className="grid gap-3 md:grid-cols-4">
                             <Field label={t('production.create.orderNo')}><OpsInput value={order.orderNo} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, orderNo: e.target.value }))} /></Field>
                             <Field label={t('production.create.orderType')}>
-                              <Select value={order.orderType} onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, orderType: value as ProductionOrderDraft['orderType'] }))}>
-                                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                <SelectContent>{orderTypes.map((value) => <SelectItem key={value} value={value}>{orderTypeLabel(value)}</SelectItem>)}</SelectContent>
-                              </Select>
+                              <OpsSelect value={order.orderType} onValueChange={(value) => updateOrder(order.localId, (current) => ({ ...current, orderType: value as ProductionOrderDraft['orderType'] }))}>
+  {orderTypes.map((value) => <OpsSelectItem key={value} value={value}>{orderTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
                             </Field>
                             <Field label={t('production.create.producedStockCode')}><OpsInput value={order.producedStockCode} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, producedStockCode: e.target.value }))} /></Field>
                             <Field label={t('production.create.producedStockCode')}>
@@ -2035,20 +2076,18 @@ export function ProductionCreatePage(): ReactElement {
                             <Field label={t('production.create.sequenceNo')}><OpsInput type="number" value={order.sequenceNo ?? ''} onChange={(e) => updateOrder(order.localId, (current) => ({ ...current, sequenceNo: e.target.value === '' ? undefined : Number(e.target.value) }))} /></Field>
                           </div>
                           <div className="grid gap-3 md:grid-cols-3">
-                            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200/70 p-2.5 dark:border-white/10">
-                              <div className="min-w-0">
-                                <div className="text-xs font-medium">{t('production.create.canStartManually')}</div>
-                                <div className="text-[11px] leading-snug text-muted-foreground">{t('production.create.canStartManuallyHint')}</div>
-                              </div>
-                              <Switch className="shrink-0 scale-90" checked={order.canStartManually} onCheckedChange={(checked) => updateOrder(order.localId, (current) => ({ ...current, canStartManually: checked }))} />
-                            </div>
-                            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200/70 p-2.5 dark:border-white/10">
-                              <div className="min-w-0">
-                                <div className="text-xs font-medium">{t('production.create.autoStart')}</div>
-                                <div className="text-[11px] leading-snug text-muted-foreground">{t('production.create.autoStartHint')}</div>
-                              </div>
-                              <Switch className="shrink-0 scale-90" checked={order.autoStartWhenDependenciesDone} onCheckedChange={(checked) => updateOrder(order.localId, (current) => ({ ...current, autoStartWhenDependenciesDone: checked }))} />
-                            </div>
+                            <ProductionOpsCircuitToggleField
+                              checked={order.canStartManually}
+                              onCheckedChange={(checked) => updateOrder(order.localId, (current) => ({ ...current, canStartManually: checked }))}
+                              title={t('production.create.canStartManually')}
+                              description={t('production.create.canStartManuallyHint')}
+                            />
+                            <ProductionOpsCircuitToggleField
+                              checked={order.autoStartWhenDependenciesDone}
+                              onCheckedChange={(checked) => updateOrder(order.localId, (current) => ({ ...current, autoStartWhenDependenciesDone: checked }))}
+                              title={t('production.create.autoStart')}
+                              description={t('production.create.autoStartHint')}
+                            />
                             <div className="flex items-center justify-end">
                               <Button type="button" size="sm" variant="ghost" onClick={() => removeOrder(order.localId)} disabled={draft.orders.length === 1}>{t('common.delete')}</Button>
                             </div>
@@ -2069,25 +2108,26 @@ export function ProductionCreatePage(): ReactElement {
                       action={<Button type="button" size="sm" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, outputs: [...prev.outputs, createEmptyOutputDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addOutput')}</Button>}
                     />
                   </CardHeader>
-                  <CardContent className="overflow-x-auto">
-                    <Table className="text-xs">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('production.create.columns.order')}</TableHead>
-                          <TableHead>{t('production.create.columns.stock')}</TableHead>
-                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</TableHead>
-                          <TableHead>{t('production.create.columns.quantity')}</TableHead>
-                          <TableHead>{t('production.create.trackingMode')}</TableHead>
-                          <TableHead>{t('common.actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {draft.outputs.map((row) => (
-                          <TableRow key={row.localId}>
-                            <TableCell>
-                              <Combobox options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
-                            </TableCell>
-                            <TableCell>
+                  <CardContent className="wms-ops-production-line-table-wrap">
+                    <ProductionPlanLineGrid variant="output">
+                      <ProductionPlanLineGridHeader>
+                        <ProductionPlanLineGridHead>{t('production.create.columns.order')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.columns.stock')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.columns.quantity')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.trackingMode')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead className="wms-ops-production-line-grid__head--actions">{t('common.actions')}</ProductionPlanLineGridHead>
+                      </ProductionPlanLineGridHeader>
+                      <ProductionPlanLinePaginatedBody
+                        items={draft.outputs}
+                        getRowKey={(row) => row.localId}
+                        renderRow={(row) => (
+                          <ProductionPlanLineGridRow key={row.localId}>
+                            <ProductionPlanLineGridCell>
+                              <Combobox
+                              variant="ops" options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
                               <PagedLookupDialog<StockLookup>
                                 variant="ops"
                                 open={activeLookupKey === `advanced-output-stock-${row.localId}`}
@@ -2117,8 +2157,8 @@ export function ProductionCreatePage(): ReactElement {
                                   setLookupLabel(`advanced-output-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
                                 }}
                               />
-                            </TableCell>
-                            <TableCell>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
                               <PagedLookupDialog<YapKodLookup>
                                 variant="ops"
                                 open={activeLookupKey === `advanced-output-yapkod-${row.localId}`}
@@ -2141,19 +2181,22 @@ export function ProductionCreatePage(): ReactElement {
                                   setLookupLabel(`advanced-output-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                 }}
                               />
-                            </TableCell>
-                            <TableCell><OpsInput type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
-                            <TableCell>
-                              <Select value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
-                                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                <SelectContent>{trackingModes.map((value) => <SelectItem key={value} value={value}>{trackingModeLabel(value)}</SelectItem>)}</SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell><Button type="button" size="sm" variant="ghost" onClick={() => removeOutput(row.localId)}>{t('common.delete')}</Button></TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
+                              <OpsInput className="wms-ops-production-qty-input" type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateOutput(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
+                              <OpsSelect value={row.trackingMode} onValueChange={(value) => updateOutput(row.localId, (current) => ({ ...current, trackingMode: value as ProductionOutputDraft['trackingMode'] }))}>
+  {trackingModes.map((value) => <OpsSelectItem key={value} value={value}>{trackingModeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell className="wms-ops-production-line-grid__cell--actions">
+                              <ProductionOpsDeleteButton label={t('common.delete')} onClick={() => removeOutput(row.localId)} />
+                            </ProductionPlanLineGridCell>
+                          </ProductionPlanLineGridRow>
+                        )}
+                      />
+                    </ProductionPlanLineGrid>
                   </CardContent>
                 </Card>
 
@@ -2165,25 +2208,26 @@ export function ProductionCreatePage(): ReactElement {
                       action={<Button type="button" size="sm" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, consumptions: [...prev.consumptions, createEmptyConsumptionDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addConsumption')}</Button>}
                     />
                   </CardHeader>
-                  <CardContent className="overflow-x-auto">
-                    <Table className="text-xs">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('production.create.columns.order')}</TableHead>
-                          <TableHead>{t('production.create.sourceStock')}</TableHead>
-                          <TableHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</TableHead>
-                          <TableHead>{t('production.create.columns.quantity')}</TableHead>
-                          <TableHead>{t('production.create.serialEntryMode')}</TableHead>
-                          <TableHead>{t('common.actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {draft.consumptions.map((row) => (
-                          <TableRow key={row.localId}>
-                            <TableCell>
-                              <Combobox options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
-                            </TableCell>
-                            <TableCell>
+                  <CardContent className="wms-ops-production-line-table-wrap">
+                    <ProductionPlanLineGrid variant="consumption">
+                      <ProductionPlanLineGridHeader>
+                        <ProductionPlanLineGridHead>{t('production.create.columns.order')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.sourceStock')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.yapKod', { defaultValue: 'Missing translation' })}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.columns.quantity')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead>{t('production.create.serialEntryMode')}</ProductionPlanLineGridHead>
+                        <ProductionPlanLineGridHead className="wms-ops-production-line-grid__head--actions">{t('common.actions')}</ProductionPlanLineGridHead>
+                      </ProductionPlanLineGridHeader>
+                      <ProductionPlanLinePaginatedBody
+                        items={draft.consumptions}
+                        getRowKey={(row) => row.localId}
+                        renderRow={(row) => (
+                          <ProductionPlanLineGridRow key={row.localId}>
+                            <ProductionPlanLineGridCell>
+                              <Combobox
+                              variant="ops" options={orderComboboxOptions} value={row.orderLocalId} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, orderLocalId: value }))} placeholder={t('production.create.selectOrderPlaceholder')} />
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
                               <PagedLookupDialog<StockLookup>
                                 variant="ops"
                                 open={activeLookupKey === `advanced-consumption-stock-${row.localId}`}
@@ -2213,8 +2257,8 @@ export function ProductionCreatePage(): ReactElement {
                                   setLookupLabel(`advanced-consumption-stock-${row.localId}`, `${item.stokKodu} - ${item.stokAdi}`);
                                 }}
                               />
-                            </TableCell>
-                            <TableCell>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
                               <PagedLookupDialog<YapKodLookup>
                                 variant="ops"
                                 open={activeLookupKey === `advanced-consumption-yapkod-${row.localId}`}
@@ -2237,19 +2281,22 @@ export function ProductionCreatePage(): ReactElement {
                                   setLookupLabel(`advanced-consumption-yapkod-${row.localId}`, `${item.yapKod}${item.yapAcik ? ` - ${item.yapAcik}` : ''}`);
                                 }}
                               />
-                            </TableCell>
-                            <TableCell><OpsInput type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} /></TableCell>
-                            <TableCell>
-                              <Select value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
-                                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                                <SelectContent>{serialModes.map((value) => <SelectItem key={value} value={value}>{serialModeLabel(value)}</SelectItem>)}</SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell><Button type="button" size="sm" variant="ghost" onClick={() => removeConsumption(row.localId)}>{t('common.delete')}</Button></TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
+                              <OpsInput className="wms-ops-production-qty-input" type="number" min="0" step="0.001" value={row.plannedQuantity} onChange={(e) => updateConsumption(row.localId, (current) => ({ ...current, plannedQuantity: Number(e.target.value) || 0 }))} />
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell>
+                              <OpsSelect value={row.serialEntryMode} onValueChange={(value) => updateConsumption(row.localId, (current) => ({ ...current, serialEntryMode: value as ProductionConsumptionDraft['serialEntryMode'] }))}>
+  {serialModes.map((value) => <OpsSelectItem key={value} value={value}>{serialModeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
+                            </ProductionPlanLineGridCell>
+                            <ProductionPlanLineGridCell className="wms-ops-production-line-grid__cell--actions">
+                              <ProductionOpsDeleteButton label={t('common.delete')} onClick={() => removeConsumption(row.localId)} />
+                            </ProductionPlanLineGridCell>
+                          </ProductionPlanLineGridRow>
+                        )}
+                      />
+                    </ProductionPlanLineGrid>
                   </CardContent>
                 </Card>
               </div>
@@ -2264,17 +2311,16 @@ export function ProductionCreatePage(): ReactElement {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {draft.dependencies.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-slate-200 p-3 text-xs text-muted-foreground dark:border-white/10">
+                    <div className="wms-ops-production-empty">
                       {t('production.create.dependencies.empty')}
                     </div>
                   ) : draft.dependencies.map((dependency) => (
-                    <div key={dependency.localId} className="grid gap-2 rounded-lg border border-slate-200/70 bg-muted/10 p-3 md:grid-cols-[1.2fr_1fr_1.2fr_0.8fr_auto] dark:border-white/10">
-                      <Combobox options={orderComboboxOptions} value={dependency.predecessorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, predecessorOrderLocalId: value }))} placeholder={t('production.create.predecessor')} />
-                      <Select value={dependency.dependencyType} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, dependencyType: value as ProductionDependencyDraft['dependencyType'] }))}>
-                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                        <SelectContent>{dependencyTypes.map((value) => <SelectItem key={value} value={value}>{dependencyTypeLabel(value)}</SelectItem>)}</SelectContent>
-                      </Select>
-                      <Combobox options={orderComboboxOptions} value={dependency.successorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, successorOrderLocalId: value }))} placeholder={t('production.create.successor')} />
+                    <div key={dependency.localId} className="wms-ops-production-panel grid gap-2 p-3 md:grid-cols-[1.2fr_1fr_1.2fr_0.8fr_auto]">
+                      <Combobox variant="ops" options={orderComboboxOptions} value={dependency.predecessorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, predecessorOrderLocalId: value }))} placeholder={t('production.create.predecessor')} />
+                      <OpsSelect value={dependency.dependencyType} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, dependencyType: value as ProductionDependencyDraft['dependencyType'] }))}>
+  {dependencyTypes.map((value) => <OpsSelectItem key={value} value={value}>{dependencyTypeLabel(value)}</OpsSelectItem>)}
+</OpsSelect>
+                      <Combobox variant="ops" options={orderComboboxOptions} value={dependency.successorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, successorOrderLocalId: value }))} placeholder={t('production.create.successor')} />
                       <OpsInput type="number" value={dependency.lagMinutes} onChange={(e) => updateDependency(dependency.localId, (current) => ({ ...current, lagMinutes: Number(e.target.value) || 0 }))} placeholder={t('production.create.lagMinutes')} />
                       <Button type="button" size="sm" variant="ghost" onClick={() => removeDependency(dependency.localId)}>{t('common.delete')}</Button>
                     </div>

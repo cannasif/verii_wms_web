@@ -9,10 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsCircuitToggleField, OpsFormPageShell } from '@/components/shared';
 import { MasterDataOpsErpEyebrow } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { barcodeDesignerApi } from '@/features/barcode-designer/api/barcode-designer.api';
@@ -274,18 +273,21 @@ export function PrinterManagementPage(): ReactElement {
                 <Textarea value={form.description ?? ''} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                <label className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                  <span className="text-sm">{t('common.active')}</span>
-                  <Switch checked={form.isActive} onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))} />
-                </label>
-                <label className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                  <span className="text-sm">{t('common.default')}</span>
-                  <Switch checked={form.isDefault} onCheckedChange={(checked) => setForm((current) => ({ ...current, isDefault: checked }))} />
-                </label>
-                <label className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                  <span className="text-sm">{t('printerManagement.printerForm.rawCommand')}</span>
-                  <Switch checked={form.supportsRawCommands} onCheckedChange={(checked) => setForm((current) => ({ ...current, supportsRawCommands: checked }))} />
-                </label>
+                <OpsCircuitToggleField
+                  checked={form.isActive}
+                  onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))}
+                  title={t('common.active')}
+                />
+                <OpsCircuitToggleField
+                  checked={form.isDefault}
+                  onCheckedChange={(checked) => setForm((current) => ({ ...current, isDefault: checked }))}
+                  title={t('common.default')}
+                />
+                <OpsCircuitToggleField
+                  checked={form.supportsRawCommands}
+                  onCheckedChange={(checked) => setForm((current) => ({ ...current, supportsRawCommands: checked }))}
+                  title={t('printerManagement.printerForm.rawCommand')}
+                />
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 <Button onClick={() => saveMutation.mutate()} disabled={printerFormReadOnly}>
@@ -383,14 +385,16 @@ export function PrinterManagementPage(): ReactElement {
                 <Textarea value={profileForm.description ?? ''} onChange={(event) => setProfileForm((current) => ({ ...current, description: event.target.value }))} />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                  <span className="text-sm">{t('common.active')}</span>
-                  <Switch checked={profileForm.isActive} onCheckedChange={(checked) => setProfileForm((current) => ({ ...current, isActive: checked }))} />
-                </label>
-                <label className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-3 py-2 dark:border-white/10">
-                  <span className="text-sm">{t('printerManagement.profileForm.defaultProfile')}</span>
-                  <Switch checked={profileForm.isDefault} onCheckedChange={(checked) => setProfileForm((current) => ({ ...current, isDefault: checked }))} />
-                </label>
+                <OpsCircuitToggleField
+                  checked={profileForm.isActive}
+                  onCheckedChange={(checked) => setProfileForm((current) => ({ ...current, isActive: checked }))}
+                  title={t('common.active')}
+                />
+                <OpsCircuitToggleField
+                  checked={profileForm.isDefault}
+                  onCheckedChange={(checked) => setProfileForm((current) => ({ ...current, isDefault: checked }))}
+                  title={t('printerManagement.profileForm.defaultProfile')}
+                />
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 <Button onClick={() => saveProfileMutation.mutate()} disabled={profileFormReadOnly || profileForm.printerDefinitionId <= 0}>

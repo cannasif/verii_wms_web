@@ -1,17 +1,43 @@
 import { Suspense, lazy, startTransition, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWarehouse3d } from '../hooks/useWarehouse3d';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertTriangle, Boxes, Hand, MousePointerClick, Monitor, Move3d, Scroll, Warehouse } from 'lucide-react';
+import { SelectItem } from '@/components/ui/select';
+import { OpsActionButton, OpsListPageShell, OpsLoadingState, OpsSelect, PageState } from '@/components/shared';
 import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
-import type { WarehouseSlot } from '../types/warehouse-3d';
-import { Button } from '@/components/ui/button';
 import { useRouteScreenReady } from '@/routes/RouteRuntimeBoundary';
+import { useWarehouse3d } from '../hooks/useWarehouse3d';
+import type { WarehouseSlot } from '../types/warehouse-3d';
+import {
+  Warehouse3dOpsControlPanel,
+  Warehouse3dOpsControlRow,
+  Warehouse3dOpsDetailCard,
+  Warehouse3dOpsEmpty,
+  Warehouse3dOpsEmptyIcon,
+  Warehouse3dOpsField,
+  Warehouse3dOpsLegend,
+  Warehouse3dOpsLegendItem,
+  Warehouse3dOpsStockRow,
+  Warehouse3dOpsViewport,
+} from './warehouse-3d-ops-ui';
 
 const WarehouseScene = lazy(async () => {
   const module = await import('./WarehouseScene');
   return { default: module.WarehouseScene };
 });
+
+const STOCK_COLORS = {
+  empty: '#49546d',
+  low: '#f7ba3e',
+  medium: '#3c9dff',
+  high: '#10b981',
+} as const;
+
+function getStockColor(totalBakiye: number): string {
+  if (totalBakiye === 0) return STOCK_COLORS.empty;
+  if (totalBakiye < 10) return STOCK_COLORS.low;
+  if (totalBakiye < 50) return STOCK_COLORS.medium;
+  return STOCK_COLORS.high;
+}
 
 export function Warehouse3dPage(): ReactElement {
   const { t } = useTranslation();
@@ -21,15 +47,20 @@ export function Warehouse3dPage(): ReactElement {
   const [hoveredSlot, setHoveredSlot] = useState<WarehouseSlot | null>(null);
   const [clickedSlot, setClickedSlot] = useState<WarehouseSlot | null>(null);
   const screenReadyReportedRef = useRef(false);
-  
+
   const { data: warehouses, isLoading: isLoadingWarehouses } = useWarehouses();
-  const { data: warehouseData, isLoading, error, isFetching } = useWarehouse3d(selectedDepoKodu, !!selectedDepoKodu && sceneActivated);
+  const { data: warehouseData, isLoading, error, isFetching } = useWarehouse3d(
+    selectedDepoKodu,
+    Boolean(selectedDepoKodu) && sceneActivated,
+  );
 
   const displaySlot = clickedSlot || hoveredSlot;
   const selectedWarehouse = useMemo(
     () => warehouses?.find((warehouse) => warehouse.depoKodu.toString() === selectedDepoKodu) ?? null,
     [warehouses, selectedDepoKodu],
   );
+
+  const isSceneReady = Boolean(selectedDepoKodu && sceneActivated && warehouseData && !isLoading && !error);
 
   function handleWarehouseChange(value: string): void {
     setSelectedDepoKodu(value);
@@ -47,212 +78,205 @@ export function Warehouse3dPage(): ReactElement {
     reportScreenReady('initial-screen');
   }, [isLoadingWarehouses, reportScreenReady, selectedDepoKodu]);
 
+  const legend = (
+    <Warehouse3dOpsLegend>
+      <Warehouse3dOpsLegendItem color={STOCK_COLORS.empty} label={t('inventory.warehouse3d.empty')} />
+      <Warehouse3dOpsLegendItem color={STOCK_COLORS.low} label={t('inventory.warehouse3d.lowStock')} />
+      <Warehouse3dOpsLegendItem color={STOCK_COLORS.medium} label={t('inventory.warehouse3d.mediumStock')} />
+      <Warehouse3dOpsLegendItem color={STOCK_COLORS.high} label={t('inventory.warehouse3d.highStock')} />
+    </Warehouse3dOpsLegend>
+  );
+
+  if (isLoadingWarehouses) {
+    return <PageState tone="loading" title={t('common.loading')} />;
+  }
+
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="mb-2 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
-        <label className="text-sm font-medium">
-          {t('inventory.warehouse3d.selectWarehouse')}
-        </label>
-        <Select value={selectedDepoKodu} onValueChange={handleWarehouseChange}>
-          <SelectTrigger className="w-full sm:max-w-[260px]">
-            <SelectValue placeholder={t('inventory.warehouse3d.selectWarehouse')} />
-          </SelectTrigger>
-          <SelectContent>
-            {warehouses?.map((warehouse) => (
-              <SelectItem key={warehouse.depoKodu} value={warehouse.depoKodu.toString()}>
-                {warehouse.depoIsmi} ({warehouse.depoKodu})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        
-        <div className="flex flex-wrap gap-3 text-sm lg:ml-auto lg:justify-end">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded" style={{ background: '#49546d' }}></div>
-            <span>{t('inventory.warehouse3d.empty')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded" style={{ background: '#f7ba3e' }}></div>
-            <span>{t('inventory.warehouse3d.lowStock')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded" style={{ background: '#3c9dff' }}></div>
-            <span>{t('inventory.warehouse3d.mediumStock')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded" style={{ background: '#10b981' }}></div>
-            <span>{t('inventory.warehouse3d.highStock')}</span>
-          </div>
-        </div>
-      </div>
-
-      {!selectedDepoKodu && (
-        <div className="hidden min-h-[460px] items-center justify-center rounded-lg border bg-muted/30 md:flex xl:min-h-[600px]">
-          <div className="text-center p-6">
-            <div className="text-5xl mb-4">📦</div>
-            <p className="text-lg text-muted-foreground">
-              {t('inventory.warehouse3d.pleaseSelectWarehouse')}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {selectedDepoKodu && isLoading && (
-        <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>{t('common.loading')}</p>
-          </div>
-        </div>
-      )}
-
-      {selectedDepoKodu && !sceneActivated && !isLoading && (
-        <div className="hidden min-h-[460px] items-center justify-center rounded-lg border bg-muted/30 md:flex xl:min-h-[600px]">
-          <div className="max-w-xl text-center p-6">
-            <div className="text-5xl mb-4">🏗️</div>
-            <p className="text-lg font-medium text-foreground">
-              {selectedWarehouse?.depoIsmi ?? t('inventory.warehouse3d.selectWarehouse')}
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t('inventory.warehouse3d.lazyLoadHint')}
-            </p>
-            <Button
-              type="button"
-              className="mt-5"
-              onClick={() => startTransition(() => setSceneActivated(true))}
-              disabled={isFetching}
+    <OpsListPageShell
+      className="wms-ops-erp-skin wms-ops-warehouse-3d-page"
+      eyebrow={t('sidebar.warehouse3d')}
+      title={t('inventory.warehouse3d.title')}
+      description={t('inventory.warehouse3d.description')}
+      actions={legend}
+    >
+      <div className="wms-ops-warehouse-3d-content">
+        <div className="wms-ops-warehouse-3d-toolbar">
+          <Warehouse3dOpsField label={t('inventory.warehouse3d.selectWarehouse')} className="min-w-[14rem] flex-1 sm:max-w-xs">
+            <OpsSelect
+              value={selectedDepoKodu}
+              onValueChange={handleWarehouseChange}
+              placeholder={t('inventory.warehouse3d.selectWarehouse')}
             >
-              {t('inventory.warehouse3d.load3dView')}
-            </Button>
-          </div>
+              {warehouses?.map((warehouse) => (
+                <SelectItem key={warehouse.depoKodu} value={warehouse.depoKodu.toString()}>
+                  {warehouse.depoIsmi} ({warehouse.depoKodu})
+                </SelectItem>
+              ))}
+            </OpsSelect>
+          </Warehouse3dOpsField>
         </div>
-      )}
 
-      {selectedDepoKodu && error && (
-        <div className="flex min-h-[460px] items-center justify-center xl:min-h-[600px]">
-          <p className="text-destructive">
-            {t('inventory.warehouse3d.error')}
-          </p>
-        </div>
-      )}
+        <Warehouse3dOpsViewport scene={isSceneReady} centered={!isSceneReady}>
+          {!selectedDepoKodu ? (
+            <Warehouse3dOpsEmpty
+              icon={(
+                <Warehouse3dOpsEmptyIcon>
+                  <Warehouse />
+                </Warehouse3dOpsEmptyIcon>
+              )}
+              title={t('inventory.warehouse3d.pleaseSelectWarehouse')}
+            />
+          ) : null}
 
-      {selectedDepoKodu && sceneActivated && warehouseData && !isLoading && (
-        <>
-          <div className="relative hidden min-h-[460px] md:block xl:min-h-[600px]">
-            <div className="h-full w-full rounded-lg overflow-hidden">
-              <Suspense
-                fallback={
-                  <div className="flex h-full min-h-[460px] items-center justify-center xl:min-h-[600px]">
-                    <div className="text-center">
-                      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
-                      <p>{t('common.loading')}</p>
-                    </div>
-                  </div>
-                }
-              >
-                <WarehouseScene
-                  key={selectedDepoKodu}
-                  data={warehouseData}
-                  onSlotHover={setHoveredSlot}
-                  onSlotClick={setClickedSlot}
-                />
-              </Suspense>
-            </div>
-            
-            <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur rounded-lg p-3 text-xs space-y-1">
-              <div className="font-medium mb-2">{t('inventory.warehouse3d.controls')}</div>
-              <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.leftClickDrag')}</kbd>
-                <span>{t('inventory.warehouse3d.rotate')}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.rightClickDrag')}</kbd>
-                <span>{t('inventory.warehouse3d.pan')}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.scroll')}</kbd>
-                <span>{t('inventory.warehouse3d.zoom')}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-muted rounded text-[10px]">{t('inventory.warehouse3d.clickShelf')}</kbd>
-                <span>{t('inventory.warehouse3d.selectShelf')}</span>
-              </div>
-            </div>
-            
-            {displaySlot && (
-              <Card className="absolute top-4 right-4 w-80 z-10 bg-background/95 backdrop-blur">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{displaySlot.hucreKodu}</CardTitle>
-                    {clickedSlot && (
-                      <button 
-                        onClick={() => setClickedSlot(null)}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                  <CardDescription className="flex items-center gap-2">
-                    <span 
-                      className="w-2 h-2 rounded-full"
-                      style={{ 
-                        background: displaySlot.totalBakiye === 0 ? '#49546d' : 
-                                    displaySlot.totalBakiye < 10 ? '#f7ba3e' : 
-                                    displaySlot.totalBakiye < 50 ? '#3c9dff' : '#10b981'
-                      }}
-                    />
-                    {t('inventory.warehouse3d.totalStock')}: {displaySlot.totalBakiye}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {displaySlot.stocks.length > 0 ? (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">
-                        {t('inventory.warehouse3d.products')}:
-                      </p>
-                      <div className="space-y-1 max-h-60 overflow-y-auto">
-                        {displaySlot.stocks.map((stock, index) => (
-                          <div key={index} className="text-xs p-2 bg-muted rounded">
-                            <p className="font-medium">{stock.stokAdi}</p>
-                            <p className="text-muted-foreground">
-                              {stock.stokKodu} - {t('inventory.warehouse3d.quantity')}: {stock.bakiye}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t('inventory.warehouse3d.emptyCell')}
-                    </p>
+          {selectedDepoKodu && isLoading ? (
+            <OpsLoadingState message={t('common.loading')} code="LOAD" />
+          ) : null}
+
+          {selectedDepoKodu && error ? (
+            <Warehouse3dOpsEmpty
+              icon={(
+                <Warehouse3dOpsEmptyIcon>
+                  <AlertTriangle />
+                </Warehouse3dOpsEmptyIcon>
+              )}
+              title={t('inventory.warehouse3d.error')}
+              description={(error as Error).message}
+            />
+          ) : null}
+
+          {selectedDepoKodu && !sceneActivated && !isLoading && !error ? (
+            <>
+              <div className="hidden w-full md:block">
+                <Warehouse3dOpsEmpty
+                  icon={(
+                    <Warehouse3dOpsEmptyIcon>
+                      <Boxes />
+                    </Warehouse3dOpsEmptyIcon>
                   )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-          
-          <div className="flex min-h-[320px] items-center justify-center md:hidden">
-            <div className="text-center p-6">
-              <div className="text-4xl mb-4">🖥️</div>
-              <p className="text-muted-foreground">
-                {t('inventory.warehouse3d.desktopOnly')}
-              </p>
-            </div>
-          </div>
-        </>
-      )}
+                  title={selectedWarehouse?.depoIsmi ?? t('inventory.warehouse3d.selectWarehouse')}
+                  description={t('inventory.warehouse3d.lazyLoadHint')}
+                  action={(
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      onClick={() => startTransition(() => setSceneActivated(true))}
+                      disabled={isFetching}
+                    >
+                      {t('inventory.warehouse3d.load3dView')}
+                    </OpsActionButton>
+                  )}
+                />
+              </div>
+              <div className="w-full md:hidden">
+                <Warehouse3dOpsEmpty
+                  icon={(
+                    <Warehouse3dOpsEmptyIcon>
+                      <Monitor />
+                    </Warehouse3dOpsEmptyIcon>
+                  )}
+                  title={t('inventory.warehouse3d.desktopOnly')}
+                />
+              </div>
+            </>
+          ) : null}
 
-      {!selectedDepoKodu && (
-        <div className="flex min-h-[320px] items-center justify-center md:hidden">
-          <div className="text-center p-6">
-            <div className="text-4xl mb-4">📦</div>
-            <p className="text-muted-foreground">
-              {t('inventory.warehouse3d.pleaseSelectWarehouse')}
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
+          {isSceneReady && warehouseData ? (
+            <>
+              <div className="hidden md:contents">
+                <div className="wms-ops-warehouse-3d-viewport__canvas">
+                  <Suspense
+                    fallback={(
+                      <div className="flex h-full min-h-[28rem] items-center justify-center p-6">
+                        <OpsLoadingState message={t('common.loading')} code="SCENE" />
+                      </div>
+                    )}
+                  >
+                    <WarehouseScene
+                      key={selectedDepoKodu}
+                      data={warehouseData}
+                      onSlotHover={setHoveredSlot}
+                      onSlotClick={setClickedSlot}
+                    />
+                  </Suspense>
+                </div>
+
+                <div className="absolute bottom-4 left-4 z-10">
+                  <Warehouse3dOpsControlPanel title={t('inventory.warehouse3d.controls')}>
+                    <Warehouse3dOpsControlRow
+                      icon={<Move3d />}
+                      keys={t('inventory.warehouse3d.leftClickDrag')}
+                      label={t('inventory.warehouse3d.rotate')}
+                    />
+                    <Warehouse3dOpsControlRow
+                      icon={<Hand />}
+                      keys={t('inventory.warehouse3d.rightClickDrag')}
+                      label={t('inventory.warehouse3d.pan')}
+                    />
+                    <Warehouse3dOpsControlRow
+                      icon={<Scroll />}
+                      keys={t('inventory.warehouse3d.scroll')}
+                      label={t('inventory.warehouse3d.zoom')}
+                    />
+                    <Warehouse3dOpsControlRow
+                      icon={<MousePointerClick />}
+                      keys={t('inventory.warehouse3d.clickShelf')}
+                      label={t('inventory.warehouse3d.selectShelf')}
+                    />
+                  </Warehouse3dOpsControlPanel>
+                </div>
+
+                {displaySlot ? (
+                  <Warehouse3dOpsDetailCard
+                    className="absolute top-4 right-4 z-10 w-80"
+                    title={displaySlot.hucreKodu}
+                    subtitle={(
+                      <span className="inline-flex items-center gap-2">
+                        <span
+                          className="inline-block size-2 rounded-full"
+                          style={{ background: getStockColor(displaySlot.totalBakiye) }}
+                          aria-hidden
+                        />
+                        {t('inventory.warehouse3d.totalStock')}: {displaySlot.totalBakiye}
+                      </span>
+                    )}
+                    onClose={clickedSlot ? () => setClickedSlot(null) : undefined}
+                  >
+                    {displaySlot.stocks.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="text-xs font-semibold uppercase tracking-[0.08em] opacity-70">
+                          {t('inventory.warehouse3d.products')}
+                        </div>
+                        <div className="max-h-60 space-y-1 overflow-y-auto">
+                          {displaySlot.stocks.map((stock, index) => (
+                            <Warehouse3dOpsStockRow
+                              key={`${stock.stokKodu}-${index}`}
+                              title={stock.stokAdi}
+                              subtitle={`${stock.stokKodu} - ${t('inventory.warehouse3d.quantity')}: ${stock.bakiye}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs opacity-70">{t('inventory.warehouse3d.emptyCell')}</p>
+                    )}
+                  </Warehouse3dOpsDetailCard>
+                ) : null}
+              </div>
+
+              <div className="w-full md:hidden">
+                <Warehouse3dOpsEmpty
+                  icon={(
+                    <Warehouse3dOpsEmptyIcon>
+                      <Monitor />
+                    </Warehouse3dOpsEmptyIcon>
+                  )}
+                  title={t('inventory.warehouse3d.desktopOnly')}
+                />
+              </div>
+            </>
+          ) : null}
+        </Warehouse3dOpsViewport>
+      </div>
+    </OpsListPageShell>
   );
 }

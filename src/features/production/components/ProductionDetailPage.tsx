@@ -7,21 +7,19 @@ import { useUIStore } from '@/stores/ui-store';
 import { OpsFormPageShell, PageState } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { productionApi } from '../api/production-api';
 import { productionTransferApi } from '@/features/production-transfer/api/production-transfer-api';
+import {
+  ProductionOpsBadge,
+  ProductionOpsCallout,
+} from './production-ops-ui';
 
 function InfoCallout({ title, body }: { title: string; body: string }): ReactElement {
-  return (
-    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-      <div className="font-medium text-slate-900 dark:text-slate-100">{title}</div>
-      <div className="mt-1 leading-6">{body}</div>
-    </div>
-  );
+  return <ProductionOpsCallout title={title} body={body} />;
 }
 
 export function ProductionDetailPage(): ReactElement {
@@ -100,6 +98,7 @@ export function ProductionDetailPage(): ReactElement {
   return (
     <>
       <OpsFormPageShell
+        className="wms-ops-erp-skin wms-ops-production-page"
         eyebrow={
           <>
             <span>{t('production.breadcrumb.parent')}</span>
@@ -143,7 +142,7 @@ export function ProductionDetailPage(): ReactElement {
         ) : null}
 
         {detailQuery.data && !isPageLoading && !isPageError ? (
-        <div className="space-y-6">
+        <div className="wms-ops-production-content space-y-6">
           {!permission.canMutate ? <PermissionNotice /> : null}
           <InfoCallout
             title={t('production.detail.statusInfoTitle', { defaultValue: 'Missing translation' })}
@@ -167,11 +166,11 @@ export function ProductionDetailPage(): ReactElement {
               <CardTitle>{t('production.detail.headerAssignments', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              {detailQuery.data.headerAssignments.length === 0 ? <span className="text-sm text-slate-500">-</span> : null}
+              {detailQuery.data.headerAssignments.length === 0 ? <span className="text-muted-foreground">-</span> : null}
               {detailQuery.data.headerAssignments.map((assignment) => (
-                <Badge key={assignment.id} variant="secondary">
+                <ProductionOpsBadge key={assignment.id}>
                   {assignment.assignmentType} / U:{assignment.assignedUserId ?? '-'} / R:{assignment.assignedRoleId ?? '-'}
-                </Badge>
+                </ProductionOpsBadge>
               ))}
             </CardContent>
           </Card>
@@ -200,12 +199,12 @@ export function ProductionDetailPage(): ReactElement {
                       <TableCell>{order.producedStockCode}</TableCell>
                       <TableCell>{order.plannedQuantity}</TableCell>
                       <TableCell>{order.completedQuantity ?? 0}</TableCell>
-                      <TableCell><Badge variant="secondary">{order.status}</Badge></TableCell>
+                      <TableCell><ProductionOpsBadge>{order.status}</ProductionOpsBadge></TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {order.assignments.length === 0 ? <span>-</span> : null}
                           {order.assignments.map((assignment) => (
-                            <Badge key={assignment.id} variant="outline">{assignment.assignmentType} / U:{assignment.assignedUserId ?? '-'}</Badge>
+                            <ProductionOpsBadge key={assignment.id} tone="info">{assignment.assignmentType} / U:{assignment.assignedUserId ?? '-'}</ProductionOpsBadge>
                           ))}
                         </div>
                       </TableCell>
@@ -227,15 +226,15 @@ export function ProductionDetailPage(): ReactElement {
                 const consumptionGap = order.consumptions.reduce((total, row) => total + (row.plannedQuantity - (row.consumedQuantity ?? 0)), 0);
 
                 return (
-                  <div key={order.id} className="rounded-2xl border border-slate-200/70 p-4 dark:border-white/10">
+                  <div key={order.id} className="wms-ops-production-panel p-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="secondary">{order.status}</Badge>
-                      <span className="font-medium">{order.orderNo}</span>
-                      <span className="text-sm text-slate-500">{order.producedStockCode}</span>
+                      <ProductionOpsBadge>{order.status}</ProductionOpsBadge>
+                      <span className="wms-ops-production-panel__title">{order.orderNo}</span>
+                      <span className="text-muted-foreground">{order.producedStockCode}</span>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge variant={outputGap > 0 ? 'secondary' : 'default'}>{t('production.detail.outputGap', { value: outputGap })}</Badge>
-                      <Badge variant={consumptionGap > 0 ? 'secondary' : 'default'}>{t('production.detail.consumptionGap', { value: consumptionGap })}</Badge>
+                      <ProductionOpsBadge tone={outputGap > 0 ? 'default' : 'active'}>{t('production.detail.outputGap', { value: outputGap })}</ProductionOpsBadge>
+                      <ProductionOpsBadge tone={consumptionGap > 0 ? 'default' : 'active'}>{t('production.detail.consumptionGap', { value: consumptionGap })}</ProductionOpsBadge>
                     </div>
                   </div>
                 );
@@ -253,16 +252,16 @@ export function ProductionDetailPage(): ReactElement {
                 const linkedTransfers = orderTransferMap.get(order.id) ?? [];
 
                 return (
-                  <div key={order.id} className="rounded-2xl border border-slate-200/70 p-4 dark:border-white/10">
+                  <div key={order.id} className="wms-ops-production-panel p-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="secondary">{order.status}</Badge>
-                      <span className="font-medium">{order.orderNo}</span>
-                      <span className="text-sm text-slate-500">{order.producedStockCode}</span>
+                      <ProductionOpsBadge>{order.status}</ProductionOpsBadge>
+                      <span className="wms-ops-production-panel__title">{order.orderNo}</span>
+                      <span className="text-muted-foreground">{order.producedStockCode}</span>
                     </div>
                     {linkedTransfers.length === 0 ? (
-                      <div className="mt-3 text-sm text-slate-500">{t('production.detail.noOrderTransfer')}</div>
+                      <div className="mt-3 text-muted-foreground">{t('production.detail.noOrderTransfer')}</div>
                     ) : (
-                      <div className="mt-3 overflow-hidden rounded-xl border border-slate-200/70 dark:border-white/10">
+                      <div className="mt-3 overflow-hidden wms-ops-production-panel">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -280,7 +279,7 @@ export function ProductionDetailPage(): ReactElement {
                                 <TableCell>{transfer.transferPurpose || '-'}</TableCell>
                                 <TableCell>{transfer.sourceWarehouse || '-'}</TableCell>
                                 <TableCell>{transfer.targetWarehouse || '-'}</TableCell>
-                                <TableCell><Badge variant="outline">{transfer.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}</Badge></TableCell>
+                                <TableCell><ProductionOpsBadge tone="info">{transfer.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}</ProductionOpsBadge></TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -316,9 +315,9 @@ export function ProductionDetailPage(): ReactElement {
                         <TableCell>{dependency.dependencyType}</TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {dependency.requiredTransferCompleted ? <Badge variant="outline">{t('production.detail.badges.transfer')}</Badge> : null}
-                            {dependency.requiredOutputAvailable ? <Badge variant="outline">{t('production.detail.badges.output')}</Badge> : null}
-                            {dependency.lagMinutes > 0 ? <Badge variant="outline">{t('production.detail.badges.lag', { minutes: dependency.lagMinutes })}</Badge> : null}
+                            {dependency.requiredTransferCompleted ? <ProductionOpsBadge tone="info">{t('production.detail.badges.transfer')}</ProductionOpsBadge> : null}
+                            {dependency.requiredOutputAvailable ? <ProductionOpsBadge tone="info">{t('production.detail.badges.output')}</ProductionOpsBadge> : null}
+                            {dependency.lagMinutes > 0 ? <ProductionOpsBadge tone="info">{t('production.detail.badges.lag', { minutes: dependency.lagMinutes })}</ProductionOpsBadge> : null}
                             {!dependency.requiredTransferCompleted && !dependency.requiredOutputAvailable && dependency.lagMinutes <= 0 ? <span>-</span> : null}
                           </div>
                         </TableCell>
@@ -347,7 +346,7 @@ export function ProductionDetailPage(): ReactElement {
                   <TableBody>
                     {(transfersQuery.data?.data ?? []).length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-sm text-slate-500">{t('production.detail.noPlanTransfer')}</TableCell>
+                        <TableCell colSpan={5} className="text-muted-foreground">{t('production.detail.noPlanTransfer')}</TableCell>
                       </TableRow>
                     ) : (
                       (transfersQuery.data?.data ?? []).map((transfer) => (
@@ -356,7 +355,7 @@ export function ProductionDetailPage(): ReactElement {
                           <TableCell>{transfer.transferPurpose || '-'}</TableCell>
                           <TableCell>{transfer.sourceWarehouse || '-'}</TableCell>
                           <TableCell>{transfer.targetWarehouse || '-'}</TableCell>
-                          <TableCell><Badge variant="secondary">{transfer.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}</Badge></TableCell>
+                          <TableCell><ProductionOpsBadge>{transfer.isCompleted ? t('productionTransfer.detail.completed') : t('productionTransfer.detail.open')}</ProductionOpsBadge></TableCell>
                         </TableRow>
                       ))
                     )}

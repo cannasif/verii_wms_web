@@ -2,16 +2,13 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, ArrowUp, ClipboardCheck, Pencil, Trash2 } from 'lucide-react';
+import { ClipboardCheck, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
@@ -19,6 +16,13 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { inventoryCountApi } from '../api/inventory-count-api';
 import type { InventoryCountHeader } from '../types/inventory-count';
+import {
+  getInventoryCountModeLabel,
+  getInventoryCountStatusLabel,
+  getInventoryCountTypeLabel,
+  InventoryCountOpsBadge,
+  inventoryCountStatusTone,
+} from './inventory-count-ops-ui';
 
 type AssignedInventoryCountColumnKey =
   | 'documentNo'
@@ -51,18 +55,6 @@ function mapSortBy(value: AssignedInventoryCountColumnKey): string {
       return 'DifferenceLineCount';
     default:
       return 'Id';
-  }
-}
-
-function getCountTypeLabel(value?: string | null): string {
-  switch (value) {
-    case 'General': return 'Genel';
-    case 'Warehouse': return 'Depo';
-    case 'Stock': return 'Stok';
-    case 'Rack': return 'Raf';
-    case 'Cell': return 'Hucre';
-    case 'Combined': return 'Birlesik';
-    default: return value || '-';
   }
 }
 
@@ -102,13 +94,7 @@ export function AssignedInventoryCountListPage(): ReactElement {
     { key: 'actions', label: t('common.actions'), sortable: false },
   ], [t]);
 
-  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
-    pageKey,
-    columns: columns.map(({ key, label }) => ({ key, label })),
-    idColumnKey: 'documentNo',
-  });
-
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['inventory-count-assigned-list', authUserId, pagedGrid.queryParams],
     queryFn: () => inventoryCountApi.getAssignedHeadersPaged(authUserId || 0, pagedGrid.queryParams),
     enabled: Boolean(authUserId),
@@ -121,34 +107,26 @@ export function AssignedInventoryCountListPage(): ReactElement {
       setItemToDelete(null);
       await refetch();
     },
-    onError: (error: Error) => {
-      toast.error(error.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
+    onError: (mutationError: Error) => {
+      toast.error(mutationError.message || t('common.deleteError', { defaultValue: 'Kayıt silinemedi.' }));
     },
   });
 
   const exportColumns = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({
-      key,
-      label: columns.find((column) => column.key === key)?.label ?? key,
-    })),
-    [columns, orderedVisibleColumns],
+    () => columns.filter((column) => column.key !== 'actions').map(({ key, label }) => ({ key, label })),
+    [columns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(() => (
     (data?.data ?? []).map((row) => ({
       documentNo: row.documentNo || '-',
-      countType: getCountTypeLabel(row.countType),
-      countMode: row.countMode || '-',
-      status: row.status || '-',
+      countType: getInventoryCountTypeLabel(t, row.countType),
+      countMode: getInventoryCountModeLabel(t, row.countMode),
+      status: getInventoryCountStatusLabel(t, row.status),
       lineCount: row.lineCount ?? 0,
       differenceLineCount: row.differenceLineCount ?? 0,
     }))
-  ), [data?.data]);
-
-  const visibleColumnKeys = useMemo(
-    () => orderedVisibleColumns.filter((key) => key !== 'actions') as AssignedInventoryCountColumnKey[],
-    [orderedVisibleColumns],
-  );
+  ), [data?.data, t]);
 
   const range = getPagedRange(data);
   const paginationInfoText = t('common.paginationInfo', {
@@ -157,31 +135,36 @@ export function AssignedInventoryCountListPage(): ReactElement {
     totalCount: range.total,
   });
 
-  const renderSortIcon = (columnKey: AssignedInventoryCountColumnKey): ReactElement | null => {
-    if (columnKey !== pagedGrid.sortBy) return null;
-    return pagedGrid.sortDirection === 'asc'
-      ? <ArrowUp className="ml-1 h-3.5 w-3.5" />
-      : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
-  };
-
   return (
-    <div className="crm-page space-y-6">
+    <OpsListPageShell
+      className="wms-ops-erp-skin wms-ops-inventory-count-page"
+      eyebrow={t('sidebar.inventoryCount')}
+      title={t('inventoryCount.assigned.title')}
+      description={t('inventoryCount.assigned.searchPlaceholder')}
+    >
       {!permission.canMutate ? <PermissionNotice message={t('common.accessDeniedMessage')} /> : null}
+
       <PagedDataGrid<InventoryCountHeader, AssignedInventoryCountColumnKey>
+        variant="ops"
+        pageKey={pageKey}
+        idColumnKey="documentNo"
         columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
         rows={data?.data ?? []}
         rowKey={(row) => row.id}
         renderCell={(row, columnKey) => {
           switch (columnKey) {
             case 'documentNo':
-              return <span className="font-medium">{row.documentNo || '-'}</span>;
+              return <span className="font-medium tabular-nums">{row.documentNo || '-'}</span>;
             case 'countType':
-              return getCountTypeLabel(row.countType);
+              return getInventoryCountTypeLabel(t, row.countType);
             case 'countMode':
-              return row.countMode === 'Blind' ? 'Kor' : row.countMode === 'Open' ? 'Acik' : (row.countMode || '-');
+              return getInventoryCountModeLabel(t, row.countMode);
             case 'status':
-              return <Badge variant="secondary">{row.status || 'Draft'}</Badge>;
+              return (
+                <InventoryCountOpsBadge tone={inventoryCountStatusTone(row.status)}>
+                  {getInventoryCountStatusLabel(t, row.status)}
+                </InventoryCountOpsBadge>
+              );
             case 'lineCount':
               return row.lineCount ?? 0;
             case 'differenceLineCount':
@@ -195,26 +178,51 @@ export function AssignedInventoryCountListPage(): ReactElement {
         onSort={(columnKey) => {
           if (columnKey !== 'actions') pagedGrid.handleSort(columnKey);
         }}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         isError={Boolean(error)}
         errorText={error instanceof Error ? error.message : t('inventoryCount.assigned.error')}
         emptyText={t('inventoryCount.assigned.noData')}
-        showActionsColumn={orderedVisibleColumns.includes('actions') && (permission.canUpdate || permission.canDelete)}
+        showActionsColumn={permission.canUpdate || permission.canDelete}
         actionsHeaderLabel={t('common.actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
         renderActionsCell={(row) => (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button type="button" variant="secondary" size="sm" onClick={() => navigate('/inventory-count/edit/' + String(row.id))} disabled={!permission.canUpdate || !canEditInventoryCount(row)}>
-              <Pencil className="size-4" />
-              <span className="ml-2">{t('inventoryCount.actions.edit', { defaultValue: 'Düzenle' })}</span>
+          <div className="wms-ops-row-actions">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn"
+              onClick={() => navigate('/inventory-count/edit/' + String(row.id))}
+              disabled={!permission.canUpdate || !canEditInventoryCount(row)}
+              aria-label={t('inventoryCount.actions.edit')}
+              title={t('inventoryCount.actions.edit')}
+            >
+              <Pencil className="size-3" />
             </Button>
-            <Button type="button" size="sm" onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))} disabled={!permission.canUpdate}>
-              <ClipboardCheck className="size-4" />
-              <span className="ml-2">{t('inventoryCount.actions.process')}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn"
+              onClick={() => navigate('/inventory-count/process?headerId=' + String(row.id))}
+              disabled={!permission.canUpdate}
+              aria-label={t('inventoryCount.actions.process')}
+              title={t('inventoryCount.actions.process')}
+            >
+              <ClipboardCheck className="size-3" />
             </Button>
-            <Button type="button" variant="destructive" size="sm" onClick={() => setItemToDelete(row)} disabled={!permission.canDelete || deleteMutation.isPending}>
-              <Trash2 className="size-4" />
-              <span className="ml-2">{t('common.delete')}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+              onClick={() => setItemToDelete(row)}
+              disabled={!permission.canDelete || deleteMutation.isPending}
+              aria-label={t('common.delete')}
+              title={t('common.delete')}
+            >
+              <Trash2 className="size-3" />
             </Button>
           </div>
         )}
@@ -230,35 +238,35 @@ export function AssignedInventoryCountListPage(): ReactElement {
         previousLabel={t('common.previous')}
         nextLabel={t('common.next')}
         paginationInfoText={paginationInfoText}
-        actionBar={{
-          pageKey,
-          userId,
-          columns: columns.map(({ key, label }) => ({ key, label })),
-          visibleColumns,
-          columnOrder,
-          onVisibleColumnsChange: setVisibleColumns,
-          onColumnOrderChange: setColumnOrder,
-          exportFileName: 'inventory-count-assigned-list',
-          exportColumns,
-          exportRows,
-          filterColumns: advancedFilterColumns,
-          defaultFilterColumn: 'documentNo',
-          draftFilterRows: pagedGrid.draftFilterRows,
-          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-          filterLogic: pagedGrid.filterLogic,
-          onFilterLogicChange: pagedGrid.setFilterLogic,
-          onApplyFilters: pagedGrid.applyAdvancedFilters,
-          onClearFilters: pagedGrid.clearAdvancedFilters,
-          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-          search: {
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('inventoryCount.assigned.searchPlaceholder'),
-          },
-          leftSlot: <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />,
+        search={{
+          value: pagedGrid.searchInput,
+          onValueChange: pagedGrid.searchConfig.onValueChange,
+          onSearchChange: pagedGrid.searchConfig.onSearchChange,
+          placeholder: t('inventoryCount.assigned.searchPlaceholder'),
         }}
+        filterColumns={advancedFilterColumns}
+        defaultFilterColumn="documentNo"
+        draftFilterRows={pagedGrid.draftFilterRows}
+        onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+        filterLogic={pagedGrid.filterLogic}
+        onFilterLogicChange={pagedGrid.setFilterLogic}
+        onApplyFilters={pagedGrid.applyAdvancedFilters}
+        onClearFilters={pagedGrid.clearAdvancedFilters}
+        appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+        leftSlot={<VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />}
+        refresh={{
+          onRefresh: () => {
+            void refetch();
+          },
+          isLoading: isFetching,
+          label: t('common.refresh'),
+        }}
+        exportFileName="inventory-count-assigned-list"
+        exportColumns={exportColumns}
+        exportRows={exportRows}
+        minTableWidthClassName="min-w-[48rem]"
       />
+
       <DeleteConfirmDialog
         open={itemToDelete != null}
         onOpenChange={(open) => {
@@ -270,6 +278,6 @@ export function AssignedInventoryCountListPage(): ReactElement {
           if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
         }}
       />
-    </div>
+    </OpsListPageShell>
   );
 }

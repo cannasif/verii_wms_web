@@ -1,10 +1,8 @@
 import { type ReactElement, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Activity,
   AlertTriangle,
-  ArrowRight,
   BarChart3,
   Boxes,
   ClipboardCheck,
@@ -14,9 +12,13 @@ import {
   Truck,
   Warehouse,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { OpsListPageShell } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
+import {
+  ReportsOpsModuleCard,
+  ReportsOpsSection,
+  ReportsOpsStatusBar,
+} from './report-ops-ui';
 
 interface ReportCard {
   titleKey: string;
@@ -24,6 +26,7 @@ interface ReportCard {
   href: string;
   icon: typeof BarChart3;
   badgeKey: string;
+  moduleCode: string;
 }
 
 const operationalCards: ReportCard[] = [
@@ -33,6 +36,7 @@ const operationalCards: ReportCard[] = [
     href: '/erp/warehouse-stock-balance',
     icon: Warehouse,
     badgeKey: 'badges.inventory',
+    moduleCode: 'INV-STK-BAL',
   },
   {
     titleKey: 'cards.serialBalance.title',
@@ -40,6 +44,7 @@ const operationalCards: ReportCard[] = [
     href: '/erp/warehouse-serial-balance',
     icon: Search,
     badgeKey: 'badges.traceability',
+    moduleCode: 'INV-SRL-BAL',
   },
   {
     titleKey: 'cards.packageStation.title',
@@ -47,6 +52,7 @@ const operationalCards: ReportCard[] = [
     href: '/package/station',
     icon: PackageCheck,
     badgeKey: 'badges.packaging',
+    moduleCode: 'PKG-STATION',
   },
   {
     titleKey: 'cards.packageSettings.title',
@@ -54,6 +60,7 @@ const operationalCards: ReportCard[] = [
     href: '/package/settings',
     icon: Boxes,
     badgeKey: 'badges.configuration',
+    moduleCode: 'PKG-CFG',
   },
   {
     titleKey: 'cards.shipmentApproval.title',
@@ -61,6 +68,7 @@ const operationalCards: ReportCard[] = [
     href: '/shipment/approval',
     icon: Truck,
     badgeKey: 'badges.erpApproval',
+    moduleCode: 'SHP-ERP-APR',
   },
   {
     titleKey: 'cards.shipmentLoading.title',
@@ -68,6 +76,7 @@ const operationalCards: ReportCard[] = [
     href: '/shipment/loading',
     icon: Truck,
     badgeKey: 'badges.loading',
+    moduleCode: 'SHP-LOAD',
   },
   {
     titleKey: 'cards.transferChains.title',
@@ -75,6 +84,7 @@ const operationalCards: ReportCard[] = [
     href: '/transfer/chains',
     icon: Route,
     badgeKey: 'badges.chain',
+    moduleCode: 'TRF-CHAIN',
   },
   {
     titleKey: 'cards.traceExplorer.title',
@@ -82,6 +92,7 @@ const operationalCards: ReportCard[] = [
     href: '/trace-explorer',
     icon: Activity,
     badgeKey: 'badges.support',
+    moduleCode: 'SUP-TRACE',
   },
   {
     titleKey: 'cards.qualityQueue.title',
@@ -89,6 +100,7 @@ const operationalCards: ReportCard[] = [
     href: '/quality-control/quarantine',
     icon: AlertTriangle,
     badgeKey: 'badges.quality',
+    moduleCode: 'QC-QUAR',
   },
 ];
 
@@ -99,6 +111,7 @@ const workflowCards: ReportCard[] = [
     href: '/goods-receipt/list',
     icon: ClipboardCheck,
     badgeKey: 'badges.workflow',
+    moduleCode: 'WF-GR-LIST',
   },
   {
     titleKey: 'workflows.transfer.title',
@@ -106,6 +119,7 @@ const workflowCards: ReportCard[] = [
     href: '/transfer/list',
     icon: Route,
     badgeKey: 'badges.workflow',
+    moduleCode: 'WF-TR-LIST',
   },
   {
     titleKey: 'workflows.shipment.title',
@@ -113,6 +127,7 @@ const workflowCards: ReportCard[] = [
     href: '/shipment/list',
     icon: Truck,
     badgeKey: 'badges.workflow',
+    moduleCode: 'WF-SH-LIST',
   },
   {
     titleKey: 'workflows.package.title',
@@ -120,49 +135,14 @@ const workflowCards: ReportCard[] = [
     href: '/package/list',
     icon: PackageCheck,
     badgeKey: 'badges.workflow',
+    moduleCode: 'WF-PK-LIST',
   },
 ];
-
-function ReportLinkCard({ card }: { card: ReportCard }): ReactElement {
-  const { t } = useTranslation(['report', 'common']);
-  const Icon = card.icon;
-
-  return (
-    <Link
-      to={card.href}
-      className="group block rounded-3xl border border-slate-200 bg-white/95 shadow-sm transition-all hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
-    >
-      <Card className="h-full border-0 bg-transparent shadow-none">
-        <CardHeader className="space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="rounded-2xl bg-cyan-50 p-3 text-cyan-700 transition-colors group-hover:bg-cyan-100">
-              <Icon className="size-6" />
-            </div>
-            <Badge variant="secondary" className="rounded-full">
-              {t(card.badgeKey)}
-            </Badge>
-          </div>
-          <div>
-            <CardTitle className="text-base font-black text-slate-950">{t(card.titleKey)}</CardTitle>
-            <CardDescription className="mt-2 leading-6 text-slate-500">
-              {t(card.descriptionKey)}
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <span className="inline-flex items-center gap-2 text-sm font-bold text-cyan-700">
-            {t('open')}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-          </span>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
 
 export function ReportsPage(): ReactElement {
   const { t } = useTranslation(['report', 'common']);
   const { setPageTitle } = useUIStore();
+  const allCards = [...operationalCards, ...workflowCards];
 
   useEffect(() => {
     setPageTitle(t('hero.title'));
@@ -170,42 +150,64 @@ export function ReportsPage(): ReactElement {
   }, [setPageTitle, t]);
 
   return (
-    <div className="space-y-8 crm-page">
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 p-6 text-white shadow-sm md:p-8">
-        <div className="max-w-3xl">
-          <Badge className="rounded-full bg-cyan-400 text-slate-950 hover:bg-cyan-400">
-            {t('hero.eyebrow')}
-          </Badge>
-          <h1 className="mt-5 text-3xl font-black tracking-tight md:text-4xl">{t('hero.title')}</h1>
-          <p className="mt-3 text-sm leading-7 text-slate-300 md:text-base">
-            {t('hero.description')}
-          </p>
-        </div>
-      </section>
+    <OpsListPageShell
+      className="wms-ops-erp-skin wms-ops-reports-page"
+      eyebrow={t('hero.eyebrow')}
+      title={t('hero.title')}
+      description={t('hero.description')}
+    >
+      <div className="wms-ops-reports-terminal">
+        <div className="wms-ops-reports-terminal__scanlines" aria-hidden />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-black text-slate-950">{t('sections.operationalVisibility')}</h2>
-          <p className="mt-1 text-sm text-slate-500">{t('sections.operationalVisibilityDescription')}</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {operationalCards.map((card) => (
-            <ReportLinkCard key={card.href} card={card} />
-          ))}
-        </div>
-      </section>
+        <ReportsOpsStatusBar
+          moduleCount={allCards.length}
+          modulesLabel={t('terminal.modules')}
+          statusLabel={t('terminal.statusReady')}
+          hint={t('terminal.selectHint')}
+        />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-black text-slate-950">{t('sections.workflowAudit')}</h2>
-          <p className="mt-1 text-sm text-slate-500">{t('sections.workflowAuditDescription')}</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {workflowCards.map((card) => (
-            <ReportLinkCard key={card.href} card={card} />
+        <ReportsOpsSection
+          title={t('sections.operationalVisibility')}
+          description={t('sections.operationalVisibilityDescription')}
+          sectionCode="SEC-OPS"
+        >
+          {operationalCards.map((card, index) => (
+            <ReportsOpsModuleCard
+              key={card.href}
+              index={index + 1}
+              moduleCode={card.moduleCode}
+              title={t(card.titleKey)}
+              description={t(card.descriptionKey)}
+              badge={t(card.badgeKey)}
+              href={card.href}
+              icon={card.icon}
+              openLabel={t('open')}
+              routePrefix={t('terminal.routePrefix')}
+            />
           ))}
-        </div>
-      </section>
-    </div>
+        </ReportsOpsSection>
+
+        <ReportsOpsSection
+          title={t('sections.workflowAudit')}
+          description={t('sections.workflowAuditDescription')}
+          sectionCode="SEC-WF"
+        >
+          {workflowCards.map((card, index) => (
+            <ReportsOpsModuleCard
+              key={card.href}
+              index={operationalCards.length + index + 1}
+              moduleCode={card.moduleCode}
+              title={t(card.titleKey)}
+              description={t(card.descriptionKey)}
+              badge={t(card.badgeKey)}
+              href={card.href}
+              icon={card.icon}
+              openLabel={t('open')}
+              routePrefix={t('terminal.routePrefix')}
+            />
+          ))}
+        </ReportsOpsSection>
+      </div>
+    </OpsListPageShell>
   );
 }

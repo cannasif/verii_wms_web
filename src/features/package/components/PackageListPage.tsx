@@ -9,15 +9,7 @@ import { useDeletePHeader } from '../hooks/useDeletePHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { DeleteConfirmDialog, OpsActionButton, OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { cn } from '@/lib/utils';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -458,22 +450,14 @@ export function PackageListPage(): ReactElement {
           />
       </OpsListPageShell>
 
-      <Dialog open={permission.canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('package.list.deleteConfirm')}</DialogTitle>
-            <DialogDescription>{t('package.list.deleteConfirmMessage')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('common.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={!permission.canDelete || deleteMutation.isPending}>
-              {deleteMutation.isPending ? t('common.loading') : t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={permission.canDelete && deleteDialogOpen}
+        title={t('package.list.deleteConfirm')}
+        description={t('package.list.deleteConfirmMessage')}
+        isPending={deleteMutation.isPending}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={() => void handleDelete()}
+      />
     </>
   );
 }
