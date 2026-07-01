@@ -1869,10 +1869,10 @@
       "pan": "Kaydır",
       "zoom": "Yakınlaştır/Uzaklaştır",
       "selectShelf": "Raf Seç",
-      "leftClickDrag": "🖱️ Sol Tık + Sürükle",
-      "rightClickDrag": "🖱️ Sağ Tık + Sürükle",
-      "scroll": "🖱️ Scroll",
-      "clickShelf": "🖱️ Raf Tıkla",
+      "leftClickDrag": "LMB·SUR",
+      "rightClickDrag": "RMB·SUR",
+      "scroll": "SCROLL",
+      "clickShelf": "TIK",
       "lazyLoadHint": "3D depo gorunumu agir bir ekran. Ilk acilisi hizli tutmak icin model ve stok katmani sadece istediginizde yuklenir.",
       "load3dView": "3D Gorunumu Yukle"
     }
@@ -2742,6 +2742,9 @@
     "settingsProfileHint": "Müşteri bilgilerini güncelleyin",
     "settingsLanguage": "Dil Seçeneği",
     "settingsAppearance": "Görünüm Modu",
+    "settingsAppearanceDisabledHint": "Özel tema aktifken aydınlık/koyu modu kullanılamaz",
+    "settingsUseCustomBrandThemes": "Özel temaları kullan",
+    "settingsUseCustomBrandThemesHint": "Açıldığında hazır kurumsal temalardan birini seçebilirsiniz",
     "settingsBrandTheme": "Kurumsal Tema",
     "settingsBrandThemeHint": "WMS genel görünümünü operasyon kimliğine göre değiştirin",
     "organizationBadge": "V3RII.CO",
@@ -3166,6 +3169,9 @@
       "addOutput": "Çıktı ekle",
       "addConsumption": "Tüketim ekle",
       "addDependency": "Bağımlılık ekle",
+      "circuitOn": "AÇIK",
+      "circuitOff": "KAPALI",
+      "linePage": "{{current}} / {{total}}",
       "planner": {
         "dragHandleAria": "Sürükleyerek sırayı değiştir",
         "dragReorderHint": "Sol tutamacı sürükleyip başka bir kartın üzerine bırakın; Akış numaraları güncellenir ve seçili yürütme moduna göre bağımlılıklar yeniden kurulur. (Paralel modda bağ yoktur.)",
@@ -3901,6 +3907,14 @@
       "edit": "Düzenle",
       "process": "Direkt Giriş"
     },
+    "status": {
+      "Draft": "Taslak",
+      "Counting": "Sayılıyor",
+      "Counted": "Sayıldı",
+      "Recount": "Tekrar sayım",
+      "Review": "İnceleme",
+      "Completed": "Tamamlandı"
+    },
     "fields": {
       "countType": "Sayım tipi",
       "countMode": "Sayım modu",
@@ -4292,7 +4306,9 @@
       "empty": "Depo stok bakiyesi bulunamadı",
       "searchPlaceholder": "Depo, stok veya yapkod ara...",
       "rebuildWarehouse": "Depoyu yeniden oluştur",
-      "rebuildStock": "Stoğu yeniden oluştur"
+      "rebuildWarehouseHint": "Bu satırdaki depo için bakiye özetini yeniden hesaplar.",
+      "rebuildStock": "Stoğu yeniden oluştur",
+      "rebuildStockHint": "Bu satırdaki stok kartı için bakiye özetini yeniden hesaplar."
     },
     "consistency": {
       "columns": {
@@ -4432,6 +4448,16 @@
         "routineFrequencyQuantity": "Rutin hak parçalı kullandırılıyorsa, her alımda en fazla kaç adet verileceğini belirtir.",
         "isActive": "Kapalı kayıtlar hak hesabına dahil edilmez.",
         "isMandatory": "Bu grup iş güvenliği açısından zorunlu ise işaretlenebilir; raporlama ve kontrol için kullanılır."
+      },
+      "override": {
+        "employee": "Manuel ek hak atanacak çalışanı seçin. Bu kayıt yalnızca seçilen personele uygulanır.",
+        "groupCode": "Ek hakkın hangi stok grubu için geçerli olacağını seçin. Hak hesabı grup kodu üzerinden yürür.",
+        "extraQuantity": "Matris kuralının üzerine eklenecek ek hak adedidir. Kullanılan miktar bu kayıttan düşülür.",
+        "validFrom": "Ek hakkın geçerli olmaya başlayacağı tarihi seçin.",
+        "validTo": "İsteğe bağlı bitiş tarihi. Boş bırakılırsa süresiz geçerli sayılır.",
+        "approver": "İsteğe bağlı: ek hakkı onaylayan veya talep eden kullanıcı kaydı.",
+        "reason": "İstisnai durumun kısa açıklaması; denetim ve raporlama için saklanır.",
+        "isActive": "Kapalı kayıtlar hak hesabına dahil edilmez."
       }
     }
   },

@@ -1161,10 +1161,10 @@
       "pan": "Déplacer",
       "zoom": "Zoom avant/arrière",
       "selectShelf": "Sélectionner une étagère",
-      "leftClickDrag": "🖱️ Clic gauche + Glisser",
-      "rightClickDrag": "🖱️ Clic droit + Glisser",
-      "scroll": "🖱️ Défiler",
-      "clickShelf": "🖱️ Cliquer sur l'étagère"
+      "leftClickDrag": "LMB·GLIS",
+      "rightClickDrag": "RMB·GLIS",
+      "scroll": "SCROLL",
+      "clickShelf": "CLIC"
     }
   },
   "subcontracting": {
@@ -2014,6 +2014,9 @@
     "settingsProfileHint": "Update customer information",
     "settingsLanguage": "Language option",
     "settingsAppearance": "Appearance mode",
+    "settingsAppearanceDisabledHint": "Light/dark mode is unavailable while a custom theme is active",
+    "settingsUseCustomBrandThemes": "Use custom themes",
+    "settingsUseCustomBrandThemesHint": "Choose from preset corporate themes when enabled",
     "settingsBrandTheme": "Corporate theme",
     "settingsBrandThemeHint": "Adjust the WMS appearance for the operation identity",
     "organizationBadge": "V3RII.CO",

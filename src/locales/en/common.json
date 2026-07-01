@@ -1869,10 +1869,10 @@
       "pan": "Pan",
       "zoom": "Zoom In/Out",
       "selectShelf": "Select Shelf",
-      "leftClickDrag": "🖱️ Left Click + Drag",
-      "rightClickDrag": "🖱️ Right Click + Drag",
-      "scroll": "🖱️ Scroll",
-      "clickShelf": "🖱️ Click Shelf",
+      "leftClickDrag": "LMB·DRAG",
+      "rightClickDrag": "RMB·DRAG",
+      "scroll": "SCROLL",
+      "clickShelf": "CLICK",
       "lazyLoadHint": "3D warehouse view is heavy. To keep first render fast, model and stock layers load only when you request it.",
       "load3dView": "Load 3D View"
     }
@@ -2742,6 +2742,9 @@
     "settingsProfileHint": "Update customer information",
     "settingsLanguage": "Language option",
     "settingsAppearance": "Appearance mode",
+    "settingsAppearanceDisabledHint": "Light/dark mode is unavailable while a custom theme is active",
+    "settingsUseCustomBrandThemes": "Use custom themes",
+    "settingsUseCustomBrandThemesHint": "Choose from preset corporate themes when enabled",
     "settingsBrandTheme": "Corporate theme",
     "settingsBrandThemeHint": "Adjust the WMS appearance for the operation identity",
     "organizationBadge": "V3RII.CO",
@@ -3166,6 +3169,9 @@
       "addOutput": "Add output",
       "addConsumption": "Add consumption",
       "addDependency": "Add dependency",
+      "circuitOn": "ON",
+      "circuitOff": "OFF",
+      "linePage": "{{current}} / {{total}}",
       "planner": {
         "dragHandleAria": "Drag to reorder",
         "dragReorderHint": "Drag the handle on the left and drop on another card to update flow numbers and rebuild dependencies for the current execution mode. (No links in parallel mode.)",
@@ -3896,6 +3902,14 @@
       "edit": "Edit",
       "process": "Direct Entry"
     },
+    "status": {
+      "Draft": "Draft",
+      "Counting": "Counting",
+      "Counted": "Counted",
+      "Recount": "Recount",
+      "Review": "Review",
+      "Completed": "Completed"
+    },
     "fields": {
       "countType": "Count type",
       "countMode": "Count mode",
@@ -4287,7 +4301,9 @@
       "empty": "No warehouse stock balance found",
       "searchPlaceholder": "Search warehouse, stock or yapkod...",
       "rebuildWarehouse": "Rebuild warehouse",
-      "rebuildStock": "Rebuild stock"
+      "rebuildWarehouseHint": "Recalculates the balance summary for this warehouse row.",
+      "rebuildStock": "Rebuild stock",
+      "rebuildStockHint": "Recalculates the balance summary for this stock card."
     },
     "consistency": {
       "columns": {
@@ -4427,6 +4443,16 @@
         "routineFrequencyQuantity": "If recurring entitlement is used in parts, this defines the maximum quantity per issue.",
         "isActive": "Inactive rows are ignored by entitlement calculation.",
         "isMandatory": "Enable this if the group is mandatory for occupational safety; it can be used in controls and reporting."
+      },
+      "override": {
+        "employee": "Select the employee who will receive this manual extra entitlement. The record applies only to this person.",
+        "groupCode": "Select the stock group this extra entitlement applies to. Entitlement is resolved by group code.",
+        "extraQuantity": "Extra quantity added on top of the matrix rule. Consumed quantity is deducted from this record.",
+        "validFrom": "Date when the extra entitlement becomes valid.",
+        "validTo": "Optional end date. Leave empty for no expiry.",
+        "approver": "Optional user who approved or requested the extra entitlement.",
+        "reason": "Short description of the exceptional case; kept for audit and reporting.",
+        "isActive": "Inactive rows are ignored by entitlement calculation."
       }
     }
   },
