@@ -1,13 +1,17 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, KeyRound, Plus, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsListPageShell,
+  PagedDataGrid,
+  type PagedDataGridColumn,
+  DeleteConfirmDialog,
+} from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { MasterDataOpsFlagChip, masterDataOpsGridColumn } from '@/features/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -24,6 +28,12 @@ import { PermissionDefinitionForm } from './PermissionDefinitionForm';
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import type { CreatePermissionDefinitionSchema } from '../schemas/permission-definition-schema';
 import { isPermissionCodeAvailableOnMobile, PERMISSION_CODE_CATALOG, resolvePermissionDisplayLabel } from '../utils/permission-config';
+import {
+  ACCESS_CONTROL_OPS_DEFAULT_WIDTHS,
+  ACCESS_CONTROL_OPS_PAGE_CLASS,
+  AccessControlOpsEyebrow,
+  AccessControlOpsStatGrid,
+} from './access-control-ops-ui';
 
 type PermissionDefinitionColumnKey = 'code' | 'name' | 'platforms' | 'isActive' | 'updatedDate' | 'actions';
 
@@ -68,12 +78,12 @@ export function PermissionDefinitionsPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<PermissionDefinitionColumnKey>[]>(
     () => [
-      { key: 'code', label: t('permissionDefinitions.table.code') },
-      { key: 'name', label: t('permissionDefinitions.table.name') },
-      { key: 'platforms', label: 'Platformlar', sortable: false },
-      { key: 'isActive', label: t('permissionDefinitions.table.isActive'), sortable: false },
-      { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
-      { key: 'actions', label: t('common.actions'), sortable: false },
+      masterDataOpsGridColumn('code', t('permissionDefinitions.table.code')),
+      masterDataOpsGridColumn('name', t('permissionDefinitions.table.name')),
+      masterDataOpsGridColumn('platforms', t('permissionDefinitions.table.platforms', { defaultValue: 'Platforms' }), false),
+      masterDataOpsGridColumn('isActive', t('permissionDefinitions.table.isActive'), false),
+      masterDataOpsGridColumn('updatedDate', t('permissionDefinitions.table.updatedDate')),
+      masterDataOpsGridColumn('actions', t('common.actions'), false),
     ],
     [t],
   );
@@ -81,6 +91,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: ACCESS_CONTROL_OPS_DEFAULT_WIDTHS,
   });
 
   const { data, isLoading, error } = usePermissionDefinitionsQuery(pagedGrid.queryParams);
@@ -175,76 +186,44 @@ export function PermissionDefinitionsPage(): ReactElement {
   };
 
   return (
-    <div className="w-full space-y-6 crm-page">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionDefinitions'), isActive: true }]} />
-
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Sparkles className="size-4" />
-              {t('sidebar.permissionDefinitions')}
-            </div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors dark:text-white">
-              {t('permissionDefinitions.title')}
-            </h1>
-            <p className="text-sm font-medium text-slate-600 transition-colors dark:text-slate-300">
-              {t('permissionDefinitions.description')}
-            </p>
-          </div>
-          {canCreate ? (
-            <Button
-              onClick={() => {
-                setEditingItem(null);
-                setFormOpen(true);
-              }}
-              className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-white shadow-lg shadow-pink-500/20 hover:text-white"
-            >
-              <Plus size={18} className="mr-2" />
-              {t('permissionDefinitions.add')}
-            </Button>
-          ) : null}
+    <OpsListPageShell
+      className={ACCESS_CONTROL_OPS_PAGE_CLASS}
+      eyebrow={<AccessControlOpsEyebrow page={t('sidebar.permissionDefinitions')} />}
+      title={t('permissionDefinitions.title')}
+      description={t('permissionDefinitions.description')}
+      actions={canCreate ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <OpsActionButton type="button" variant="secondary" onClick={() => void handleSyncFromRoutes()} disabled={isLoading || syncMutation.isPending}>
+            <RefreshCw size={16} className={syncMutation.isPending ? 'animate-spin' : undefined} />
+            {t('permissionDefinitions.syncFromRoutes')}
+          </OpsActionButton>
+          <OpsActionButton
+            type="button"
+            variant="primary"
+            onClick={() => {
+              setEditingItem(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus size={16} />
+            {t('permissionDefinitions.add')}
+          </OpsActionButton>
         </div>
+      ) : null}
+    >
+      <AccessControlOpsStatGrid
+        className="mb-6 md:grid-cols-3"
+        items={[
+          { label: t('permissionDefinitions.title'), value: totalCount },
+          { label: t('permissionDefinitions.table.isActive'), value: activeCount },
+          { label: t('permissionDefinitions.syncFromRoutes'), value: PERMISSION_CODE_CATALOG.length },
+        ]}
+      />
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                <KeyRound className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionDefinitions.title')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <ShieldCheck className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionDefinitions.table.isActive')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
-                <RefreshCw className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Route Sync</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{PERMISSION_CODE_CATALOG.length}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+      <section className="wms-ops-receiving-area border">
+        <div className="wms-ops-list wms-ops-form p-4 sm:p-5">
         <PagedDataGrid<PermissionDefinitionDto, PermissionDefinitionColumnKey>
+          variant="ops"
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}
@@ -252,7 +231,7 @@ export function PermissionDefinitionsPage(): ReactElement {
           renderCell={(item, columnKey) => {
             switch (columnKey) {
               case 'code':
-                return <span className="font-mono text-sm">{item.code}</span>;
+                return <span className="wms-ops-code-badge">{item.code}</span>;
               case 'name': {
                 const displayName = resolvePermissionDisplayLabel(item.code, item.name, (key, fallback) => t(key, fallback ?? key));
                 const showOriginal = Boolean(item.name.trim() && item.name.trim().toLowerCase() !== displayName.trim().toLowerCase());
@@ -266,16 +245,12 @@ export function PermissionDefinitionsPage(): ReactElement {
                 );
               }
               case 'isActive':
-                return (
-                  <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                    {item.isActive ? t('common.yes') : t('common.no')}
-                  </Badge>
-                );
+                return <MasterDataOpsFlagChip tone={item.isActive ? 'success' : 'warn'}>{item.isActive ? t('common.yes') : t('common.no')}</MasterDataOpsFlagChip>;
               case 'platforms':
                 return (
                   <div className="flex flex-wrap gap-2">
-                    {item.availableOnWeb ? <Badge variant="secondary">Web</Badge> : null}
-                    {item.availableOnMobile ? <Badge variant="secondary">Mobile</Badge> : null}
+                    {item.availableOnWeb ? <MasterDataOpsFlagChip tone="info">Web</MasterDataOpsFlagChip> : null}
+                    {item.availableOnMobile ? <MasterDataOpsFlagChip tone="info">Mobile</MasterDataOpsFlagChip> : null}
                   </div>
                 );
               case 'updatedDate':
@@ -298,26 +273,42 @@ export function PermissionDefinitionsPage(): ReactElement {
           emptyText={t('common.noData')}
           showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
             canUpdate || canDelete ? (
-              <>
+              <div className="wms-ops-row-actions">
                 {canUpdate ? (
-                  <Button variant="ghost" size="sm" className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300" onClick={() => {
-                    setEditingItem(item);
-                    setFormOpen(true);
-                  }}>
-                    <span>{t('common.edit')}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="wms-ops-grid-icon-btn"
+                    onClick={() => {
+                      setEditingItem(item);
+                      setFormOpen(true);
+                    }}
+                    aria-label={t('common.edit')}
+                  >
+                    <Pencil className="size-3" />
                   </Button>
                 ) : null}
                 {canDelete ? (
-                  <Button variant="ghost" size="sm" className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" onClick={() => {
-                    setItemToDelete(item);
-                    setDeleteDialogOpen(true);
-                  }}>
-                    <span>{t('common.delete')}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
+                    onClick={() => {
+                      setItemToDelete(item);
+                      setDeleteDialogOpen(true);
+                    }}
+                    aria-label={t('common.delete')}
+                  >
+                    <Trash2 className="size-3" />
                   </Button>
                 ) : null}
-              </>
+              </div>
             ) : null
           )}
           pageSize={pagedGrid.pageSize}
@@ -333,6 +324,7 @@ export function PermissionDefinitionsPage(): ReactElement {
           nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
           actionBar={{
+            variant: 'ops',
             pageKey,
             userId,
             columns: columns.map(({ key, label }) => ({ key, label })),
@@ -360,13 +352,7 @@ export function PermissionDefinitionsPage(): ReactElement {
             },
             leftSlot: (
               <div className="flex items-center gap-2">
-                <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />
-                {canCreate ? (
-                  <Button variant="outline" size="sm" onClick={() => void handleSyncFromRoutes()} disabled={isLoading || syncMutation.isPending}>
-                    <RefreshCw size={16} className={syncMutation.isPending ? 'mr-2 animate-spin' : 'mr-2'} />
-                    {t('permissionDefinitions.syncFromRoutes')}
-                  </Button>
-                ) : null}
+                <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />
                 <Button variant="outline" size="sm" onClick={() => void handleRefresh()} disabled={isLoading}>
                   <RefreshCw size={16} className={isLoading ? 'mr-2 animate-spin' : 'mr-2'} />
                   {t('common.refresh')}
@@ -375,7 +361,8 @@ export function PermissionDefinitionsPage(): ReactElement {
             ),
           }}
         />
-      </div>
+        </div>
+      </section>
 
       <PermissionDefinitionForm
         open={formOpen}
@@ -386,35 +373,24 @@ export function PermissionDefinitionsPage(): ReactElement {
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
-          <DialogHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
-            <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">{t('permissionDefinitions.delete.confirmTitle')}</DialogTitle>
-            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
-              {t('permissionDefinitions.delete.confirmMessage', {
-                name: itemToDelete?.name ?? '',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="border-t border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => void (async () => {
-                if (!itemToDelete) return;
-                await deleteMutation.mutateAsync(itemToDelete.id);
-                setDeleteDialogOpen(false);
-                setItemToDelete(null);
-              })()}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        title={t('permissionDefinitions.delete.confirmTitle')}
+        description={t('permissionDefinitions.delete.confirmMessage', {
+          name: itemToDelete?.name ?? '',
+        })}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setItemToDelete(null);
+        }}
+        onConfirm={() => void (async () => {
+          if (!itemToDelete) return;
+          await deleteMutation.mutateAsync(itemToDelete.id);
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+        })()}
+      />
+    </OpsListPageShell>
   );
 }

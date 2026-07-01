@@ -1,21 +1,26 @@
 import { type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
+import { OpsActionButton, OpsListPageShell } from '@/components/shared';
+import { ACCESS_CONTROL_OPS_PAGE_CLASS, AccessControlOpsEyebrow } from './access-control-ops-ui';
 
 export function UnauthorizedPage(): ReactElement {
+  const { t } = useTranslation('access-control');
   const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center">
-      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">
-        Access Denied
-      </h1>
-      <p className="text-slate-500 dark:text-slate-400 mb-6 max-w-md">
-        You do not have permission to access this page. Please contact your administrator
-        if you believe this is an error.
-      </p>
-      <Button onClick={() => navigate('/')} variant="default">
-        Go to Dashboard
-      </Button>
-    </div>
+    <OpsListPageShell
+      className={ACCESS_CONTROL_OPS_PAGE_CLASS}
+      eyebrow={<AccessControlOpsEyebrow page={t('unauthorized.title')} />}
+      title={t('unauthorized.title')}
+      description={t('unauthorized.description')}
+      actions={(
+        <OpsActionButton type="button" onClick={() => navigate('/')}>
+          {t('unauthorized.action')}
+        </OpsActionButton>
+      )}
+    >
+      <div className="wms-ops-form-hint py-8 text-center">{t('unauthorized.description')}</div>
+    </OpsListPageShell>
   );
 }

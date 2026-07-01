@@ -2,24 +2,12 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Dialog } from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
@@ -30,9 +18,15 @@ import {
 import type { PermissionDefinitionDto } from '../types/access-control.types';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { PERMISSION_CODE_CATALOG, getRoutesForPermissionCode, getPermissionDisplayMeta } from '../utils/permission-config';
-import { Badge } from '@/components/ui/badge';
+import {
+  AccessControlOpsDialogContent,
+  AccessControlOpsDialogFooter,
+  AccessControlOpsDialogHeader,
+  AccessControlOpsFormField,
+} from './access-control-ops-ui';
+import { MasterDataOpsFlagChip } from '@/features/shared';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { KeyRound, Sparkles } from 'lucide-react';
+import { OpsCircuitToggleField, OpsInput, OpsTextarea } from '@/components/shared';
 
 interface PermissionDefinitionFormProps {
   open: boolean;
@@ -115,44 +109,31 @@ export function PermissionDefinitionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-visible flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Sparkles className="size-4" />
-              {item ? t('permissionDefinitions.form.editTitle') : t('permissionDefinitions.form.addTitle')}
-            </div>
-            <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {item
-                ? t('permissionDefinitions.form.editTitle')
-                : t('permissionDefinitions.form.addTitle')}
-            </DialogTitle>
-            <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-              {item
-                ? t('permissionDefinitions.form.editDescription')
-                : t('permissionDefinitions.form.addDescription')}
-            </DialogDescription>
-          </div>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+      <AccessControlOpsDialogContent size="lg">
+        <AccessControlOpsDialogHeader
+          title={item ? t('permissionDefinitions.form.editTitle') : t('permissionDefinitions.form.addTitle')}
+          description={item ? t('permissionDefinitions.form.editDescription') : t('permissionDefinitions.form.addDescription')}
+        />
+        <div className="wms-ops-form max-h-[min(68dvh,720px)] overflow-y-auto px-5 py-4">
           <Form {...form}>
-            <form id="permission-definition-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 crm-page">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/3">
+            <form id="permission-definition-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <AccessControlOpsFormField label={(
+                      <span className="inline-flex items-center">
                       {t('permissionDefinitions.form.code')}
                       {isZodFieldRequired(createPermissionDefinitionSchema, 'code') && <span className="text-red-500">*</span>}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
-                    </FormLabel>
+                      <FieldHelpTooltip text={t('help.permissionDefinition.code')} variant="ops" />
+                      </span>
+                    )}>
                     <FormControl>
                       <Combobox
                         options={permissionCodeOptions}
                         value={field.value}
+                        variant="ops"
                         modal
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -167,24 +148,25 @@ export function PermissionDefinitionForm({
                         emptyText={t('permissionDefinitions.form.codeEmpty')}
                       />
                     </FormControl>
+                    </AccessControlOpsFormField>
                     <FormMessage />
                     {field.value ? (
                       <div className="pt-3">
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="wms-ops-form-hint text-xs">
                           {t('permissionDefinitions.form.affectedRoutes'
                           )}
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {getRoutesForPermissionCode(field.value).length === 0 ? (
-                            <span className="text-xs text-slate-400">
+                            <span className="wms-ops-form-hint text-xs">
                               {t('permissionDefinitions.form.affectedRoutesNone'
                               )}
                             </span>
                           ) : (
                             getRoutesForPermissionCode(field.value).map((route) => (
-                              <Badge key={route} variant="secondary" className="font-mono text-xs">
+                              <MasterDataOpsFlagChip key={route}>
                                 {route}
-                              </Badge>
+                              </MasterDataOpsFlagChip>
                             ))
                           )}
                         </div>
@@ -193,21 +175,23 @@ export function PermissionDefinitionForm({
                   </FormItem>
                 )}
               />
-              </div>
               <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <AccessControlOpsFormField label={(
+                      <span className="inline-flex items-center">
                       {t('permissionDefinitions.form.name')}
                       {isZodFieldRequired(createPermissionDefinitionSchema, 'name') && <span className="text-red-500">*</span>}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
-                    </FormLabel>
+                      <FieldHelpTooltip text={t('help.permissionDefinition.name')} variant="ops" />
+                      </span>
+                    )}>
                     <FormControl>
-                      <Input {...field} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
+                      <OpsInput {...field} placeholder={t('permissionDefinitions.form.namePlaceholder')} maxLength={150} />
                     </FormControl>
+                    </AccessControlOpsFormField>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -217,13 +201,16 @@ export function PermissionDefinitionForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="inline-flex items-center">
+                    <AccessControlOpsFormField label={(
+                      <span className="inline-flex items-center">
                       {t('permissionDefinitions.form.description')}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.description')} />
-                    </FormLabel>
+                      <FieldHelpTooltip text={t('help.permissionDefinition.description')} variant="ops" />
+                      </span>
+                    )}>
                     <FormControl>
-                      <Textarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
+                      <OpsTextarea {...field} value={field.value ?? ''} placeholder={t('permissionDefinitions.form.descriptionPlaceholder')} maxLength={500} className="min-h-[80px]" />
                     </FormControl>
+                    </AccessControlOpsFormField>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -234,16 +221,15 @@ export function PermissionDefinitionForm({
                   control={form.control}
                   name="availableOnWeb"
                   render={({ field }) => (
-                    <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-white/3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <FormLabel>Web</FormLabel>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">Bu izin web uygulamasında kullanılabilir.</div>
-                        </div>
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                      </div>
+                  <FormItem>
+                      <FormControl>
+                        <OpsCircuitToggleField
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          title="Web"
+                          description={t('permissionDefinitions.form.webHelp')}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -251,16 +237,15 @@ export function PermissionDefinitionForm({
                   control={form.control}
                   name="availableOnMobile"
                   render={({ field }) => (
-                    <FormItem className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 dark:border-white/10 dark:bg-white/3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <FormLabel>Mobile</FormLabel>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">Bu izin mobil akışlarda kullanıcıya verilebilir.</div>
-                        </div>
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                      </div>
+                    <FormItem>
+                      <FormControl>
+                        <OpsCircuitToggleField
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          title="Mobile"
+                          description={t('permissionDefinitions.form.mobileHelp')}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -268,20 +253,17 @@ export function PermissionDefinitionForm({
             </form>
           </Form>
         </div>
-
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {t('common.cancel')}
-          </Button>
-          <span className="inline-flex items-center gap-1">
-            <FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" />
-            <Button type="submit" form="permission-definition-form" disabled={isLoading || !isFormValid} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
-              <KeyRound className="mr-2 size-4" />
-              {isLoading ? t('common.saving') : t('common.save')}
-            </Button>
-          </span>
-        </DialogFooter>
-      </DialogContent>
+        <AccessControlOpsDialogFooter
+          onCancel={() => onOpenChange(false)}
+          cancelLabel={t('common.cancel')}
+          saveLabel={t('common.save')}
+          isLoading={isLoading}
+          saveDisabled={!isFormValid}
+          saveType="submit"
+          formId="permission-definition-form"
+          leading={<FieldHelpTooltip text={t('help.permissionDefinition.save')} side="top" variant="ops" />}
+        />
+      </AccessControlOpsDialogContent>
     </Dialog>
   );
 }

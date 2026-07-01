@@ -1,21 +1,21 @@
 import { type ReactElement, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog';
 import { usePermissionGroupQuery } from '../hooks/usePermissionGroupQuery';
 import { useSetPermissionGroupPermissionsMutation } from '../hooks/useSetPermissionGroupPermissionsMutation';
 import { PermissionDefinitionMultiSelect } from './PermissionDefinitionMultiSelect';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import { getPermissionActionLabel, getPermissionScope, getPermissionScopeDisplayMeta, resolvePermissionDisplayLabel } from '../utils/permission-config';
-import { Settings, Sparkles } from 'lucide-react';
+import {
+  AccessControlOpsActionSummary,
+  AccessControlOpsDialogContent,
+  AccessControlOpsDialogFooter,
+  AccessControlOpsDialogHeader,
+  AccessControlOpsFormField,
+} from './access-control-ops-ui';
+import { MasterDataOpsFlagChip, MasterDataOpsGuidance } from '@/features/shared';
 
 interface GroupPermissionsPanelProps {
   groupId: number | null;
@@ -102,54 +102,36 @@ export function GroupPermissionsPanel({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-linear-to-r from-slate-50 via-white to-cyan-50/50 dark:from-[#1a1025] dark:via-[#130822] dark:to-cyan-950/30">
-          <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-            <Sparkles className="size-4" />
-            {t('permissionGroups.managePermissions')}
-          </div>
-          <DialogTitle>
-            {t('permissionGroups.permissionsPanel.title')}
-          </DialogTitle>
-          <DialogDescription>
-            {group?.name} - {t('permissionGroups.permissionsPanel.description')}
-          </DialogDescription>
-        </DialogHeader>
+      <AccessControlOpsDialogContent size="full">
+        <AccessControlOpsDialogHeader
+          title={t('permissionGroups.permissionsPanel.title')}
+          description={`${group?.name ?? '-'} - ${t('permissionGroups.permissionsPanel.description')}`}
+        />
 
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-          <div className="mb-4 rounded-lg border border-slate-200/70 bg-slate-50/70 px-4 py-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-            <div className="font-medium text-slate-900 dark:text-slate-100">
-              {t('permissionGroups.permissionsPanel.introTitle', { defaultValue: 'Missing translation' })}
-            </div>
-            <div className="mt-1 leading-6">
-              {t('permissionGroups.permissionsPanel.introBody', { defaultValue: 'Missing translation' })}
-            </div>
-          </div>
+        <div className="wms-ops-form max-h-[min(68dvh,720px)] overflow-y-auto px-5 py-4">
+          <MasterDataOpsGuidance
+            title={t('permissionGroups.permissionsPanel.introTitle', { defaultValue: 'Missing translation' })}
+            lines={[t('permissionGroups.permissionsPanel.introBody', { defaultValue: 'Missing translation' })]}
+          />
           {isSystemAdminGroup && (
-            <div className="mb-4 rounded-2xl border border-amber-300/50 bg-amber-50 px-4 py-3 text-xs text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300">
+            <div className="mt-4 rounded-2xl border border-amber-300/50 bg-amber-50 px-4 py-3 text-xs text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300">
               {t('permissionGroups.systemAdminLocked')}
             </div>
           )}
-          <div className="mb-4 grid gap-3 md:grid-cols-4">
-            <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.view', { defaultValue: 'Missing translation' })}</div>
-              <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.view}</div>
-            </div>
-            <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.create', { defaultValue: 'Missing translation' })}</div>
-              <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.create}</div>
-            </div>
-            <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.update', { defaultValue: 'Missing translation' })}</div>
-              <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.update}</div>
-            </div>
-            <div className="rounded-lg border border-slate-200/70 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
-              <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.delete', { defaultValue: 'Missing translation' })}</div>
-              <div className="mt-1 text-lg font-semibold">{currentPermissionSummary.delete}</div>
-            </div>
+          <div className="mt-4">
+            <AccessControlOpsActionSummary
+              title={t('permissionGroups.permissionsPanel.selectionSummaryTitle', { defaultValue: 'Missing translation' })}
+              description={t('permissionGroups.permissionsPanel.selectionSummaryBody', { defaultValue: 'Missing translation' })}
+              items={[
+                { label: t('common.view', { defaultValue: 'Missing translation' }), value: currentPermissionSummary.view },
+                { label: t('common.create', { defaultValue: 'Missing translation' }), value: currentPermissionSummary.create },
+                { label: t('common.update', { defaultValue: 'Missing translation' }), value: currentPermissionSummary.update },
+                { label: t('common.delete', { defaultValue: 'Missing translation' }), value: currentPermissionSummary.delete },
+              ]}
+            />
           </div>
           {group?.permissionCodes && group.permissionCodes.length > 0 && (
-            <div className="mb-4 rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
+            <div className="mt-4 rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
                 {t('permissionGroups.permissionsPanel.currentCodes')}
               </p>
@@ -167,9 +149,9 @@ export function GroupPermissionsPanel({
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {actionCodes.map((codeLabel) => (
-                              <Badge key={`${scopeLabel}-${actionLabel}-${codeLabel}`} variant="secondary" className="text-xs">
+                              <MasterDataOpsFlagChip key={`${scopeLabel}-${actionLabel}-${codeLabel}`}>
                                 {codeLabel}
-                              </Badge>
+                              </MasterDataOpsFlagChip>
                             ))}
                           </div>
                         </div>
@@ -180,28 +162,31 @@ export function GroupPermissionsPanel({
               </div>
             </div>
           )}
-          <div className="rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
-            <p className="text-sm font-medium mb-2 inline-flex items-center">
-              {t('permissionGroups.form.permissions')}
-              <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
-            </p>
-            <PermissionDefinitionMultiSelect value={selectedIds} onChange={setSelectedIds} disabled={setPermissions.isPending || isSystemAdminGroup} />
+          <div className="mt-4 rounded-3xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/3">
+            <AccessControlOpsFormField
+              label={(
+                <span className="inline-flex items-center">
+                  {t('permissionGroups.form.permissions')}
+                  <FieldHelpTooltip text={t('help.permissionGroup.permissions')} variant="ops" />
+                </span>
+              )}
+            >
+              <PermissionDefinitionMultiSelect value={selectedIds} onChange={setSelectedIds} disabled={setPermissions.isPending || isSystemAdminGroup} />
+            </AccessControlOpsFormField>
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={setPermissions.isPending}>
-            {t('common.cancel')}
-          </Button>
-          <span className="inline-flex items-center gap-1">
-            <FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" />
-            <Button onClick={handleSave} disabled={setPermissions.isPending || isSystemAdminGroup} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
-              <Settings className="mr-2 size-4" />
-              {setPermissions.isPending ? t('common.saving') : t('common.save')}
-            </Button>
-          </span>
-        </DialogFooter>
-      </DialogContent>
+        <AccessControlOpsDialogFooter
+          onCancel={() => onOpenChange(false)}
+          onSave={handleSave}
+          cancelLabel={t('common.cancel')}
+          saveLabel={t('common.save')}
+          isLoading={setPermissions.isPending}
+          saveDisabled={isSystemAdminGroup}
+          saveType="button"
+          leading={<FieldHelpTooltip text={t('help.permissionGroup.save')} side="top" variant="ops" />}
+        />
+      </AccessControlOpsDialogContent>
     </Dialog>
   );
 }

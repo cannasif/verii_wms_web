@@ -1,13 +1,17 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowDown, ArrowUp, KeyRound, Plus, RefreshCw, Settings, ShieldCheck, Sparkles, Users2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, RefreshCw, Settings, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsListPageShell,
+  PagedDataGrid,
+  type PagedDataGridColumn,
+  DeleteConfirmDialog,
+} from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { MasterDataOpsFlagChip, masterDataOpsGridColumn } from '@/features/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
@@ -22,6 +26,12 @@ import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
+import {
+  ACCESS_CONTROL_OPS_DEFAULT_WIDTHS,
+  ACCESS_CONTROL_OPS_PAGE_CLASS,
+  AccessControlOpsEyebrow,
+  AccessControlOpsStatGrid,
+} from './access-control-ops-ui';
 
 type PermissionGroupColumnKey = 'name' | 'isSystemAdmin' | 'isActive' | 'permissionCount' | 'actions';
 
@@ -66,11 +76,11 @@ export function PermissionGroupsPage(): ReactElement {
 
   const columns = useMemo<PagedDataGridColumn<PermissionGroupColumnKey>[]>(
     () => [
-      { key: 'name', label: t('permissionGroups.table.name') },
-      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin'), sortable: false },
-      { key: 'isActive', label: t('permissionGroups.table.isActive'), sortable: false },
-      { key: 'permissionCount', label: t('permissionGroups.table.permissionCount'), sortable: false },
-      { key: 'actions', label: t('common.actions'), sortable: false },
+      masterDataOpsGridColumn('name', t('permissionGroups.table.name')),
+      masterDataOpsGridColumn('isSystemAdmin', t('permissionGroups.table.isSystemAdmin'), false),
+      masterDataOpsGridColumn('isActive', t('permissionGroups.table.isActive'), false),
+      masterDataOpsGridColumn('permissionCount', t('permissionGroups.table.permissionCount'), false),
+      masterDataOpsGridColumn('actions', t('common.actions'), false),
     ],
     [t],
   );
@@ -78,6 +88,7 @@ export function PermissionGroupsPage(): ReactElement {
   const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
+    defaultWidths: ACCESS_CONTROL_OPS_DEFAULT_WIDTHS,
   });
 
   const { data, isLoading, error } = usePermissionGroupsQuery(pagedGrid.queryParams);
@@ -172,75 +183,40 @@ export function PermissionGroupsPage(): ReactElement {
   };
 
   return (
-    <div className="w-full space-y-6 crm-page">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.permissionGroups'), isActive: true }]} />
+    <OpsListPageShell
+      className={ACCESS_CONTROL_OPS_PAGE_CLASS}
+      eyebrow={<AccessControlOpsEyebrow page={t('sidebar.permissionGroups')} />}
+      title={t('permissionGroups.title')}
+      description={t('permissionGroups.description')}
+      actions={canCreate ? (
+        <OpsActionButton
+          type="button"
+          variant="primary"
+          onClick={() => {
+            const main = document.querySelector('main');
+            if (main) mainScrollTopRef.current = main.scrollTop;
+            setEditingItem(null);
+            setFormOpen(true);
+          }}
+        >
+          <Plus size={16} />
+          {t('permissionGroups.add')}
+        </OpsActionButton>
+      ) : null}
+    >
+      <AccessControlOpsStatGrid
+        className="mb-6 md:grid-cols-3"
+        items={[
+          { label: t('permissionGroups.title'), value: totalCount },
+          { label: t('permissionGroups.table.isActive'), value: activeCount },
+          { label: t('permissionGroups.table.isSystemAdmin'), value: systemAdminCount },
+        ]}
+      />
 
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="inline-flex w-fit items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-              <Sparkles className="size-4" />
-              {t('sidebar.permissionGroups')}
-            </div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors dark:text-white">
-              {t('permissionGroups.title')}
-            </h1>
-            <p className="text-sm font-medium text-slate-600 transition-colors dark:text-slate-300">
-              {t('permissionGroups.description')}
-            </p>
-          </div>
-          {canCreate ? (
-            <Button onClick={() => {
-              const main = document.querySelector('main');
-              if (main) mainScrollTopRef.current = main.scrollTop;
-              setEditingItem(null);
-              setFormOpen(true);
-            }} className="h-11 rounded-2xl border-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 text-white shadow-lg shadow-pink-500/20 hover:text-white">
-              <Plus size={18} className="mr-2" />
-              {t('permissionGroups.add')}
-            </Button>
-          ) : null}
-        </div>
-
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                <Users2 className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionGroups.title')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <ShieldCheck className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionGroups.table.isActive')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{activeCount}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
-                <KeyRound className="size-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('permissionGroups.table.isSystemAdmin')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{systemAdminCount}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3">
+      <section className="wms-ops-receiving-area border">
+        <div className="wms-ops-list wms-ops-form p-4 sm:p-5">
         <PagedDataGrid<PermissionGroupDto, PermissionGroupColumnKey>
+          variant="ops"
           columns={columns}
           visibleColumnKeys={visibleColumnKeys}
           rows={data?.data ?? []}
@@ -250,17 +226,9 @@ export function PermissionGroupsPage(): ReactElement {
               case 'name':
                 return <span className="font-medium">{item.name}</span>;
               case 'isSystemAdmin':
-                return (
-                  <Badge variant={item.isSystemAdmin ? 'default' : 'secondary'}>
-                    {item.isSystemAdmin ? t('common.yes') : t('common.no')}
-                  </Badge>
-                );
+                return <MasterDataOpsFlagChip tone={item.isSystemAdmin ? 'info' : 'default'}>{item.isSystemAdmin ? t('common.yes') : t('common.no')}</MasterDataOpsFlagChip>;
               case 'isActive':
-                return (
-                  <Badge variant={item.isActive ? 'default' : 'secondary'}>
-                    {item.isActive ? t('common.yes') : t('common.no')}
-                  </Badge>
-                );
+                return <MasterDataOpsFlagChip tone={item.isActive ? 'success' : 'warn'}>{item.isActive ? t('common.yes') : t('common.no')}</MasterDataOpsFlagChip>;
               case 'permissionCount':
                 return item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0;
               case 'actions':
@@ -281,14 +249,17 @@ export function PermissionGroupsPage(): ReactElement {
           emptyText={t('common.noData')}
           showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
           actionsHeaderLabel={t('common.actions')}
+          iconOnlyActions
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(item) => (
             canUpdate || canDelete ? (
-              <>
+              <div className="wms-ops-row-actions">
                 {canUpdate ? (
                   <>
                     <Button
+                      type="button"
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={() => {
                         if (item.isSystemAdmin) return;
                         setPermissionsPanelGroupId(item.id);
@@ -296,14 +267,15 @@ export function PermissionGroupsPage(): ReactElement {
                       }}
                       title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : t('permissionGroups.managePermissions')}
                       disabled={item.isSystemAdmin}
-                      className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+                      className="wms-ops-grid-icon-btn"
+                      aria-label={t('permissionGroups.managePermissions')}
                     >
                       <Settings className="size-4" />
-                      <span>{t('permissionGroups.managePermissions')}</span>
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={() => {
                         if (item.isSystemAdmin) return;
                         const main = document.querySelector('main');
@@ -313,17 +285,19 @@ export function PermissionGroupsPage(): ReactElement {
                       }}
                       disabled={item.isSystemAdmin}
                       title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
-                      className="rounded-xl text-slate-600 hover:bg-cyan-50 hover:text-cyan-700 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-300"
+                      className="wms-ops-grid-icon-btn"
+                      aria-label={t('common.edit')}
                     >
-                      <span>{t('common.edit')}</span>
+                      <Pencil className="size-3" />
                     </Button>
                   </>
                 ) : null}
                 {canDelete ? (
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="sm"
-                    className="rounded-xl text-red-600 hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                    size="icon"
+                    className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger"
                     onClick={() => {
                       if (item.isSystemAdmin) return;
                       setItemToDelete(item);
@@ -331,11 +305,12 @@ export function PermissionGroupsPage(): ReactElement {
                     }}
                     disabled={item.isSystemAdmin}
                     title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked') : undefined}
+                    aria-label={t('common.delete')}
                   >
-                    <span>{t('common.delete')}</span>
+                    <Trash2 className="size-3" />
                   </Button>
                 ) : null}
-              </>
+              </div>
             ) : null
           )}
           pageSize={pagedGrid.pageSize}
@@ -351,6 +326,7 @@ export function PermissionGroupsPage(): ReactElement {
           nextLabel={t('common.next')}
           paginationInfoText={paginationInfoText}
           actionBar={{
+            variant: 'ops',
             pageKey,
             userId,
             columns: columns.map(({ key, label }) => ({ key, label })),
@@ -378,7 +354,7 @@ export function PermissionGroupsPage(): ReactElement {
             },
             leftSlot: (
               <div className="flex items-center gap-2">
-                <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="sm" variant="outline" />
+                <VoiceSearchButton onResult={pagedGrid.handleVoiceSearch} size="icon" variant="ghost" className="wms-ops-voice-btn" />
                 <Button variant="outline" size="sm" onClick={() => void handleRefresh()} disabled={isLoading}>
                   <RefreshCw size={16} className={isLoading ? 'mr-2 animate-spin' : 'mr-2'} />
                   {t('common.refresh')}
@@ -387,7 +363,8 @@ export function PermissionGroupsPage(): ReactElement {
             ),
           }}
         />
-      </div>
+        </div>
+      </section>
 
       <PermissionGroupForm
         open={formOpen}
@@ -399,33 +376,22 @@ export function PermissionGroupsPage(): ReactElement {
 
       <GroupPermissionsPanel groupId={permissionsPanelGroupId} open={permissionsPanelOpen} onOpenChange={setPermissionsPanelOpen} />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
-          <DialogHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
-            <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">{t('permissionGroups.delete.confirmTitle')}</DialogTitle>
-            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
-              {t('permissionGroups.delete.confirmMessage', { name: itemToDelete?.name ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="border-t border-slate-100 bg-slate-50/80 px-6 py-5 dark:border-cyan-800/30 dark:bg-blue-900/20">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => void (async () => {
-                if (!itemToDelete) return;
-                await deleteMutation.mutateAsync(itemToDelete.id);
-                setDeleteDialogOpen(false);
-                setItemToDelete(null);
-              })()}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? t('common.processing') : t('common.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        title={t('permissionGroups.delete.confirmTitle')}
+        description={t('permissionGroups.delete.confirmMessage', { name: itemToDelete?.name ?? '' })}
+        isPending={deleteMutation.isPending}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setItemToDelete(null);
+        }}
+        onConfirm={() => void (async () => {
+          if (!itemToDelete) return;
+          await deleteMutation.mutateAsync(itemToDelete.id);
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+        })()}
+      />
+    </OpsListPageShell>
   );
 }

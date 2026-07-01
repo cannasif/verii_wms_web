@@ -1,15 +1,15 @@
 import { type ReactElement, useMemo } from 'react';
 import { ArrowDown, ArrowUp, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { MasterDataOpsFlagChip, masterDataOpsGridColumn } from '@/features/shared';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { OpsCircuitToggleInline } from '@/components/shared';
 import { useUserList } from '../hooks/useUserList';
 import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
@@ -28,6 +28,17 @@ interface UserTableProps {
   onEdit?: (user: UserDto) => void;
   canUpdate?: boolean;
 }
+
+const USER_MANAGEMENT_DEFAULT_WIDTHS: Record<string, number> = {
+  id: 6,
+  username: 14,
+  email: 18,
+  fullName: 16,
+  role: 10,
+  status: 14,
+  createdDate: 11,
+  actions: 5,
+};
 
 const advancedFilterColumns: readonly FilterColumnConfig[] = [
   { value: 'username', type: 'string', labelKey: 'userManagement.table.username' },
@@ -73,14 +84,14 @@ export function UserTable({
 
   const columns = useMemo<PagedDataGridColumn<UserColumnKey>[]>(
     () => [
-      { key: 'id', label: t('userManagement.table.id') },
-      { key: 'username', label: t('userManagement.table.username') },
-      { key: 'email', label: t('userManagement.table.email') },
-      { key: 'fullName', label: t('userManagement.table.fullName'), sortable: false },
-      { key: 'role', label: t('userManagement.table.role'), sortable: false },
-      { key: 'status', label: t('userManagement.table.status'), sortable: false },
-      { key: 'createdDate', label: t('userManagement.table.createdDate') },
-      { key: 'actions', label: t('common.actions'), sortable: false },
+      masterDataOpsGridColumn('id', t('userManagement.table.id')),
+      masterDataOpsGridColumn('username', t('userManagement.table.username')),
+      masterDataOpsGridColumn('email', t('userManagement.table.email')),
+      masterDataOpsGridColumn('fullName', t('userManagement.table.fullName'), false),
+      masterDataOpsGridColumn('role', t('userManagement.table.role'), false),
+      masterDataOpsGridColumn('status', t('userManagement.table.status'), false),
+      masterDataOpsGridColumn('createdDate', t('userManagement.table.createdDate')),
+      masterDataOpsGridColumn('actions', t('common.actions'), false),
     ],
     [t],
   );
@@ -89,6 +100,7 @@ export function UserTable({
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
+    defaultWidths: USER_MANAGEMENT_DEFAULT_WIDTHS,
   });
 
   const { data, isLoading, error } = useUserList(pagedGrid.queryParams);
@@ -145,117 +157,128 @@ export function UserTable({
   });
 
   return (
-    <PagedDataGrid<UserDto, UserColumnKey>
-      columns={columns}
-      visibleColumnKeys={visibleColumnKeys}
-      rows={data?.data ?? []}
-      rowKey={(row) => row.id}
-      renderCell={(user, columnKey) => {
-        switch (columnKey) {
-          case 'id':
-            return user.id;
-          case 'username':
-            return <span className="font-medium">{user.username}</span>;
-          case 'email':
-            return user.email;
-          case 'fullName':
-            return user.fullName || '-';
-          case 'role':
-            return <Badge variant="outline">{user.role || '-'}</Badge>;
-          case 'status':
-            return (
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={user.isActive}
-                  onCheckedChange={(checked) => void handleStatusChange(user, checked)}
-                  disabled={updateUser.isPending || !canUpdate}
-                />
-                <span className="text-sm text-muted-foreground">
-                  {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
-                </span>
-                {user.isEmailConfirmed && (
-                  <Badge variant="outline" className="text-xs">
-                    {t('userManagement.table.confirmed')}
-                  </Badge>
-                )}
-              </div>
-            );
-          case 'createdDate':
-            return user.creationTime || user.createdDate
-              ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
-              : '-';
-          case 'actions':
-          default:
-            return null;
-        }
-      }}
-      sortBy={pagedGrid.sortBy}
-      sortDirection={pagedGrid.sortDirection}
-      onSort={(columnKey) => {
-        if (columnKey === 'fullName' || columnKey === 'role' || columnKey === 'status' || columnKey === 'actions') return;
-        pagedGrid.handleSort(columnKey);
-      }}
-      renderSortIcon={renderSortIcon}
-      isLoading={isLoading}
-      isError={Boolean(error)}
-      errorText={t('common.errors.userListLoadFailed', { ns: 'common' })}
-      emptyText={t('userManagement.table.noData')}
-      showActionsColumn={orderedVisibleColumns.includes('actions') && Boolean(onEdit) && canUpdate}
-      actionsHeaderLabel={t('common.actions')}
-      renderActionsCell={(user) => (
-        onEdit && canUpdate ? (
-          <Button variant="ghost" size="sm" onClick={() => onEdit(user)}>
-            <Pencil className="size-4" />
-            <span>{t('common.edit')}</span>
-          </Button>
-        ) : null
-      )}
-      pageSize={pagedGrid.pageSize}
-      pageSizeOptions={pagedGrid.pageSizeOptions}
-      onPageSizeChange={pagedGrid.handlePageSizeChange}
-      pageNumber={pagedGrid.getDisplayPageNumber(data)}
-      totalPages={data?.totalPages ?? 1}
-      hasPreviousPage={data?.hasPreviousPage ?? false}
-      hasNextPage={data?.hasNextPage ?? false}
-      onPreviousPage={pagedGrid.goToPreviousPage}
-      onNextPage={pagedGrid.goToNextPage}
-      previousLabel={t('common.previous')}
-      nextLabel={t('common.next')}
-      paginationInfoText={paginationInfoText}
-      actionBar={{
-        pageKey,
-        userId,
-        columns: columns.map(({ key, label }) => ({ key, label })),
-        visibleColumns,
-        columnOrder,
-        onVisibleColumnsChange: setVisibleColumns,
-        onColumnOrderChange: setColumnOrder,
-        exportFileName: pageKey,
-        exportColumns,
-        exportRows,
-        filterColumns: advancedFilterColumns,
-        defaultFilterColumn: 'username',
-        draftFilterRows: pagedGrid.draftFilterRows,
-        onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
-        filterLogic: pagedGrid.filterLogic,
-        onFilterLogicChange: pagedGrid.setFilterLogic,
-        onApplyFilters: pagedGrid.applyAdvancedFilters,
-        onClearFilters: pagedGrid.clearAdvancedFilters,
-        translationNamespace: 'common',
-        appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
-        search: {
-          ...pagedGrid.searchConfig,
-          placeholder: t('userManagement.searchPlaceholder', { defaultValue: t('common.search') }),
-          className: 'h-9 w-full md:w-64',
-        },
-        leftSlot: (
-          <VoiceSearchButton
-            onResult={pagedGrid.handleVoiceSearch}
-            size="sm"
-            variant="outline"
-          />
-        ),
-      }}
-    />
+    <div className="wms-ops-list wms-ops-form p-4 sm:p-5">
+      <PagedDataGrid<UserDto, UserColumnKey>
+        variant="ops"
+        columns={columns}
+        visibleColumnKeys={visibleColumnKeys}
+        rows={data?.data ?? []}
+        rowKey={(row) => row.id}
+        renderCell={(user, columnKey) => {
+          switch (columnKey) {
+            case 'id':
+              return <span className="wms-ops-table-id-value">{user.id}</span>;
+            case 'username':
+              return <span className="font-medium">{user.username}</span>;
+            case 'email':
+              return user.email;
+            case 'fullName':
+              return user.fullName || '-';
+            case 'role':
+              return <MasterDataOpsFlagChip>{user.role || '-'}</MasterDataOpsFlagChip>;
+            case 'status':
+              return (
+                <div className="flex flex-wrap items-center gap-2">
+                  <OpsCircuitToggleInline
+                    checked={user.isActive}
+                    onCheckedChange={(checked) => void handleStatusChange(user, checked)}
+                    disabled={updateUser.isPending || !canUpdate}
+                    aria-label={user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                  />
+                  <span className="text-xs opacity-75">
+                    {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
+                  </span>
+                  {user.isEmailConfirmed ? (
+                    <MasterDataOpsFlagChip tone="info">{t('userManagement.table.confirmed')}</MasterDataOpsFlagChip>
+                  ) : null}
+                </div>
+              );
+            case 'createdDate':
+              return user.creationTime || user.createdDate
+                ? new Date(user.creationTime ?? user.createdDate ?? '').toLocaleDateString(i18n.language)
+                : '-';
+            case 'actions':
+            default:
+              return null;
+          }
+        }}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={(columnKey) => {
+          if (columnKey === 'fullName' || columnKey === 'role' || columnKey === 'status' || columnKey === 'actions') return;
+          pagedGrid.handleSort(columnKey);
+        }}
+        renderSortIcon={renderSortIcon}
+        isLoading={isLoading}
+        isError={Boolean(error)}
+        errorText={t('common.errors.userListLoadFailed', { ns: 'common' })}
+        emptyText={t('userManagement.table.noData')}
+        showActionsColumn={orderedVisibleColumns.includes('actions') && Boolean(onEdit) && canUpdate}
+        actionsHeaderLabel={t('common.actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
+        renderActionsCell={(user) => (
+          onEdit && canUpdate ? (
+            <div className="wms-ops-row-actions">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="wms-ops-grid-icon-btn"
+                onClick={() => onEdit(user)}
+                aria-label={t('common.edit')}
+              >
+                <Pencil className="size-3" />
+              </Button>
+            </div>
+          ) : null
+        )}
+        pageSize={pagedGrid.pageSize}
+        pageSizeOptions={pagedGrid.pageSizeOptions}
+        onPageSizeChange={pagedGrid.handlePageSizeChange}
+        pageNumber={pagedGrid.getDisplayPageNumber(data)}
+        totalPages={data?.totalPages ?? 1}
+        hasPreviousPage={data?.hasPreviousPage ?? false}
+        hasNextPage={data?.hasNextPage ?? false}
+        onPreviousPage={pagedGrid.goToPreviousPage}
+        onNextPage={pagedGrid.goToNextPage}
+        previousLabel={t('common.previous')}
+        nextLabel={t('common.next')}
+        paginationInfoText={paginationInfoText}
+        actionBar={{
+          pageKey,
+          userId,
+          columns: columns.map(({ key, label }) => ({ key, label })),
+          visibleColumns,
+          columnOrder,
+          onVisibleColumnsChange: setVisibleColumns,
+          onColumnOrderChange: setColumnOrder,
+          exportFileName: pageKey,
+          exportColumns,
+          exportRows,
+          filterColumns: advancedFilterColumns,
+          defaultFilterColumn: 'username',
+          draftFilterRows: pagedGrid.draftFilterRows,
+          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+          filterLogic: pagedGrid.filterLogic,
+          onFilterLogicChange: pagedGrid.setFilterLogic,
+          onApplyFilters: pagedGrid.applyAdvancedFilters,
+          onClearFilters: pagedGrid.clearAdvancedFilters,
+          translationNamespace: 'common',
+          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+          search: {
+            ...pagedGrid.searchConfig,
+            placeholder: t('userManagement.searchPlaceholder', { defaultValue: t('common.search') }),
+          },
+          leftSlot: (
+            <VoiceSearchButton
+              onResult={pagedGrid.handleVoiceSearch}
+              size="sm"
+              variant="outline"
+            />
+          ),
+        }}
+      />
+    </div>
   );
 }

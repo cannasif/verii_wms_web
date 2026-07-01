@@ -46,6 +46,8 @@
       "description": "Açıklama",
       "descriptionPlaceholder": "İsteğe bağlı açıklama",
       "isActive": "Aktif",
+      "webHelp": "Bu izin web akışlarında verilebilir.",
+      "mobileHelp": "Bu izin mobil akışlarda verilebilir.",
       "codeSearchPlaceholder": "Ara...",
       "codeEmpty": "Sonuç bulunamadı"
     },
@@ -208,6 +210,11 @@
     "previewWarehouses": "Depolar",
     "previewAssignments": "Eşleşen Atamalar",
     "noExplicitPolicy": "Açık politika yok"
+  },
+  "unauthorized": {
+    "title": "Erişim Engellendi",
+    "description": "Bu sayfaya erişim izniniz yok. Bunun bir hata olduğunu düşünüyorsanız yöneticinizle iletişime geçin.",
+    "action": "Panele Dön"
   },
   "common": {
     "cancel": "Vazgeç",

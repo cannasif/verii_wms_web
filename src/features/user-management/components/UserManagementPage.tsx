@@ -1,7 +1,9 @@
 import { type ReactElement, useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
-import { Button } from '@/components/ui/button';
+import { OpsActionButton, OpsListPageShell } from '@/components/shared';
+import { USER_MANAGEMENT_OPS_PAGE_CLASS } from '@/features/access-control';
 import { UserStats } from './UserStats';
 import { UserTable } from './UserTable';
 import { UserForm } from './UserForm';
@@ -10,6 +12,18 @@ import { useUpdateUser } from '../hooks/useUpdateUser';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import type { UserDto, CreateUserDto, UpdateUserDto } from '../types/user-types';
 import type { UserFormSchema, UserUpdateFormSchema } from '../types/user-types';
+
+function UserManagementOpsEyebrow(): ReactElement {
+  const { t } = useTranslation(['user-management', 'access-control']);
+
+  return (
+    <>
+      <span>{t('sidebar.accessControl', { ns: 'access-control' })}</span>
+      <span className="mx-2 opacity-60">/</span>
+      <span>{t('userManagement.menu')}</span>
+    </>
+  );
+}
 
 export function UserManagementPage(): ReactElement {
   const { t } = useTranslation(['user-management', 'common']);
@@ -70,26 +84,21 @@ export function UserManagementPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6 crm-page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">
-            {t('userManagement.menu')}
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {t('userManagement.description')}
-          </p>
-        </div>
-        {canCreate ? (
-          <Button onClick={handleAddClick}>
-            {t('userManagement.addButton')}
-          </Button>
-        ) : null}
-      </div>
-
+    <OpsListPageShell
+      className={USER_MANAGEMENT_OPS_PAGE_CLASS}
+      eyebrow={<UserManagementOpsEyebrow />}
+      title={t('userManagement.menu')}
+      description={t('userManagement.description')}
+      actions={canCreate ? (
+        <OpsActionButton type="button" variant="primary" onClick={handleAddClick}>
+          <Plus size={16} />
+          {t('userManagement.addButton')}
+        </OpsActionButton>
+      ) : null}
+    >
       <UserStats />
 
-      <div className="space-y-4">
+      <section className="wms-ops-receiving-area mt-6 border">
         <UserTable
           canUpdate={canUpdate}
           onEdit={canUpdate ? (u) => {
@@ -97,7 +106,7 @@ export function UserManagementPage(): ReactElement {
             setFormOpen(true);
           } : undefined}
         />
-      </div>
+      </section>
 
       <UserForm
         open={formOpen}
@@ -106,6 +115,6 @@ export function UserManagementPage(): ReactElement {
         user={editingUser}
         isLoading={createUser.isPending || updateUser.isPending}
       />
-    </div>
+    </OpsListPageShell>
   );
 }

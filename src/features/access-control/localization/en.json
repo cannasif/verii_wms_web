@@ -46,6 +46,8 @@
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
       "isActive": "Active",
+      "webHelp": "This permission can be granted for web flows.",
+      "mobileHelp": "This permission can be granted for mobile flows.",
       "codeSearchPlaceholder": "Search...",
       "codeEmpty": "No results found"
     },
@@ -208,6 +210,11 @@
     "previewWarehouses": "Warehouses",
     "previewAssignments": "Matching Assignments",
     "noExplicitPolicy": "No explicit policy"
+  },
+  "unauthorized": {
+    "title": "Access Denied",
+    "description": "You do not have permission to access this page. Contact your administrator if this appears to be incorrect.",
+    "action": "Go to Dashboard"
   },
   "common": {
     "cancel": "Cancel",

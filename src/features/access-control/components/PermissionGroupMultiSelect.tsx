@@ -1,6 +1,11 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
+import {
+  AccessControlOpsCheckbox,
+  AccessControlOpsMultiSelectPanel,
+  AccessControlOpsScrollList,
+} from './access-control-ops-ui';
 
 interface PermissionGroupMultiSelectProps {
   value: number[];
@@ -40,48 +45,46 @@ export function PermissionGroupMultiSelect({
   };
 
   if (isLoading) {
-    return <div className="text-sm text-slate-500 py-4">{t('common.loading')}</div>;
+    return <div className="wms-ops-form-hint py-4 text-sm">{t('common.loading')}</div>;
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="select-all-groups"
-          className="h-4 w-4 rounded border border-input accent-primary"
-          checked={items.length > 0 && value.length === items.length}
-          onChange={(e) => handleSelectAll(e.target.checked)}
-          disabled={disabled || items.length === 0}
-        />
-        <label htmlFor="select-all-groups" className="text-sm font-medium cursor-pointer">
-          {t('userGroupAssignments.selectAll')}
-        </label>
-      </div>
-      <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
-        {items.length === 0 ? (
-          <p className="text-sm text-slate-500 py-2">{t('userGroupAssignments.noGroups')}</p>
-        ) : (
-          items.map((item) => (
-            <div key={item.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id={`group-${item.id}`}
-                className="h-4 w-4 rounded border border-input accent-primary"
-                checked={value.includes(item.id)}
-                onChange={() => handleToggle(item.id)}
-                disabled={disabled}
-              />
-              <label htmlFor={`group-${item.id}`} className="text-sm cursor-pointer flex-1">
-                {item.name}
-                {item.isSystemAdmin && (
-                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">({t('common.systemAdmin')})</span>
-                )}
-              </label>
+    <AccessControlOpsMultiSelectPanel>
+      <AccessControlOpsCheckbox
+        id="select-all-groups"
+        checked={items.length > 0 && value.length === items.length}
+        onCheckedChange={handleSelectAll}
+        disabled={disabled || items.length === 0}
+        compact
+        label={t('userGroupAssignments.selectAll')}
+      />
+      <AccessControlOpsScrollList
+        className="wms-ops-access-control-group-picker max-h-[min(42dvh,18rem)] space-y-1 border p-2 sm:max-h-[min(48dvh,22rem)] sm:p-3"
+        isEmpty={items.length === 0}
+        emptyText={t('userGroupAssignments.noGroups')}
+      >
+        <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => (
+            <div key={item.id} className="wms-ops-access-control-permission-row rounded-sm px-1 py-0.5">
+            <AccessControlOpsCheckbox
+              id={`group-${item.id}`}
+              checked={value.includes(item.id)}
+              onCheckedChange={() => handleToggle(item.id)}
+              disabled={disabled}
+              compact
+              label={(
+                <span className="text-sm">
+                  {item.name}
+                  {item.isSystemAdmin && (
+                    <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">({t('common.systemAdmin')})</span>
+                  )}
+                </span>
+              )}
+            />
             </div>
-          ))
-        )}
-      </div>
-    </div>
+        ))}
+        </div>
+      </AccessControlOpsScrollList>
+    </AccessControlOpsMultiSelectPanel>
   );
 }

@@ -70,7 +70,7 @@ export function UserProfileModal({
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { resolvedTheme, brandTheme, setTheme, setBrandTheme } = useTheme();
+  const { resolvedTheme, brandTheme, useCustomBrandThemes, setTheme, setBrandTheme, setUseCustomBrandThemes } = useTheme();
   const { user, logout } = useAuthStore();
   const { data: userDetail } = useUserDetail();
 
@@ -266,7 +266,7 @@ export function UserProfileModal({
               </Select>
             </div>
 
-            <div className={settingsRowBaseClass}>
+            <div className={cn(settingsRowBaseClass, useCustomBrandThemes && 'opacity-60')}>
               <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                 <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-accent)] text-[var(--wms-brand-on-primary)]')}>
                   <HugeiconsIcon
@@ -277,12 +277,20 @@ export function UserProfileModal({
                     aria-hidden
                   />
                 </span>
-                <span className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
-                  {t('profile.settingsAppearance')}
-                </span>
+                <div className="min-w-0">
+                  <span className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
+                    {t('profile.settingsAppearance')}
+                  </span>
+                  {useCustomBrandThemes ? (
+                    <p className="mt-0.5 text-xs leading-snug text-slate-500 sm:text-sm dark:text-slate-400">
+                      {t('profile.settingsAppearanceDisabledHint')}
+                    </p>
+                  ) : null}
+                </div>
               </div>
               <Switch
                 checked={isDark}
+                disabled={useCustomBrandThemes}
                 onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
                 className={cn(
                   'data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
@@ -298,20 +306,33 @@ export function UserProfileModal({
                 'border-slate-200/70 bg-white/90 dark:border-white/[0.06] dark:bg-white/[0.03]',
               )}
             >
-              <div className="mb-3 flex items-start gap-3 sm:gap-4">
-                <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]')}>
-                  <Palette className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} aria-hidden />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
-                    {t('profile.settingsBrandTheme')}
-                  </p>
-                  <p className="mt-0.5 text-xs leading-snug text-slate-500 sm:text-sm dark:text-slate-400">
-                    {t('profile.settingsBrandThemeHint')}
-                  </p>
+              <div className="mb-3 flex items-start justify-between gap-3 sm:gap-4">
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]')}>
+                    <Palette className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
+                      {t('profile.settingsUseCustomBrandThemes')}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-snug text-slate-500 sm:text-sm dark:text-slate-400">
+                      {t('profile.settingsUseCustomBrandThemesHint')}
+                    </p>
+                  </div>
                 </div>
+                <Switch
+                  checked={useCustomBrandThemes}
+                  onCheckedChange={setUseCustomBrandThemes}
+                  aria-label={t('profile.settingsUseCustomBrandThemes')}
+                  className={cn(
+                    'shrink-0 data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
+                    'data-[state=checked]:bg-[var(--wms-brand-primary)]',
+                    'data-[state=checked]:shadow-[0_0_12px_var(--wms-brand-shadow)]',
+                  )}
+                />
               </div>
 
+              {useCustomBrandThemes ? (
               <div className="grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 md:max-h-[300px] lg:max-h-[340px]">
                 {brandThemes.map((item) => {
                   const isSelected = item.id === brandTheme;
@@ -357,6 +378,7 @@ export function UserProfileModal({
                   );
                 })}
               </div>
+              ) : null}
             </div>
           </div>
 

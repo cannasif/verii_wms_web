@@ -2,32 +2,14 @@ import { type ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Dialog } from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   userFormSchema,
   userUpdateFormSchema,
@@ -40,6 +22,14 @@ import type { RoleOption } from '../hooks/useUserAuthorityOptionsQuery';
 import { useUserPermissionGroupsForForm } from '../hooks/useUserPermissionGroupsForForm';
 import { usePermissionGroupOptionsQuery } from '../hooks/usePermissionGroupOptionsQuery';
 import { UserFormPermissionGroupSelect } from './UserFormPermissionGroupSelect';
+import {
+  AccessControlOpsDialogContent,
+  AccessControlOpsDialogFooter,
+  AccessControlOpsDialogHeader,
+  AccessControlOpsFormField,
+} from '@/features/access-control';
+import { MasterDataOpsSelect } from '@/features/shared';
+import { OpsCircuitToggleField, OpsInput, OpsSelectItem } from '@/components/shared';
 
 interface UserFormProps {
   open: boolean;
@@ -241,246 +231,234 @@ export function UserForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {user
-              ? t('userManagement.form.editUser')
-              : t('userManagement.form.addUser')}
-          </DialogTitle>
-          <DialogDescription>
-            {user
-              ? t('userManagement.form.editDescription')
-              : t('userManagement.form.addDescription')}
-          </DialogDescription>
-        </DialogHeader>
+      <AccessControlOpsDialogContent size="lg">
+        <AccessControlOpsDialogHeader
+          title={user ? t('userManagement.form.editUser') : t('userManagement.form.addUser')}
+          description={user ? t('userManagement.form.editDescription') : t('userManagement.form.addDescription')}
+        />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.username')}
-                      {!isEditMode && <span className="text-destructive ml-1">*</span>}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t('userManagement.form.usernamePlaceholder')}
-                        maxLength={50}
-                        disabled={isEditMode}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.email')}
-                      {!isEditMode && <span className="text-destructive ml-1">*</span>}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder={t('userManagement.form.emailPlaceholder')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {!isEditMode && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.password')}
-                      <span className="text-destructive ml-1">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder={t('userManagement.form.passwordPlaceholder')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.firstName')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t('userManagement.form.firstNamePlaceholder')}
-                        maxLength={50}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.lastName')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t('userManagement.form.lastNamePlaceholder')}
-                        maxLength={50}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.phoneNumber')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t('userManagement.form.phoneNumberPlaceholder')}
-                        maxLength={20}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="roleId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('userManagement.form.role')}
-                      {!isEditMode && <span className="text-destructive ml-1">*</span>}
-                    </FormLabel>
-                    <Select
-                      value={field.value ? String(field.value) : ''}
-                      onValueChange={(v) => field.onChange(v ? parseInt(v, 10) : 0)}
-                      disabled={isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t('userManagement.form.rolePlaceholder')}
+        <div className="wms-ops-form max-h-[min(72dvh,680px)] overflow-y-auto px-5 py-4">
+          <Form {...form}>
+            <form id="user-management-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={(
+                        <>
+                          {t('userManagement.form.username')}
+                          {!isEditMode ? <span className="text-red-500">*</span> : null}
+                        </>
+                      )}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            placeholder={t('userManagement.form.usernamePlaceholder')}
+                            maxLength={50}
+                            disabled={isEditMode}
                           />
-                        </SelectTrigger>
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={(
+                        <>
+                          {t('userManagement.form.email')}
+                          {!isEditMode ? <span className="text-red-500">*</span> : null}
+                        </>
+                      )}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            type="email"
+                            placeholder={t('userManagement.form.emailPlaceholder')}
+                          />
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {!isEditMode ? (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={(
+                        <>
+                          {t('userManagement.form.password')}
+                          <span className="text-red-500">*</span>
+                        </>
+                      )}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            type="password"
+                            placeholder={t('userManagement.form.passwordPlaceholder')}
+                          />
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={t('userManagement.form.firstName')}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            placeholder={t('userManagement.form.firstNamePlaceholder')}
+                            maxLength={50}
+                          />
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={t('userManagement.form.lastName')}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            placeholder={t('userManagement.form.lastNamePlaceholder')}
+                            maxLength={50}
+                          />
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={t('userManagement.form.phoneNumber')}>
+                        <FormControl>
+                          <OpsInput
+                            {...field}
+                            placeholder={t('userManagement.form.phoneNumberPlaceholder')}
+                            maxLength={20}
+                          />
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="roleId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <AccessControlOpsFormField label={(
+                        <>
+                          {t('userManagement.form.role')}
+                          {!isEditMode ? <span className="text-red-500">*</span> : null}
+                        </>
+                      )}>
+                        <FormControl>
+                          <MasterDataOpsSelect
+                            value={field.value ? String(field.value) : ''}
+                            onValueChange={(v) => field.onChange(v ? parseInt(v, 10) : 0)}
+                            placeholder={t('userManagement.form.rolePlaceholder')}
+                            disabled={isLoading}
+                          >
+                            {roleOptions.map((opt) => (
+                              <OpsSelectItem key={opt.value} value={String(opt.value)}>
+                                {opt.label}
+                              </OpsSelectItem>
+                            ))}
+                          </MasterDataOpsSelect>
+                        </FormControl>
+                      </AccessControlOpsFormField>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="permissionGroupIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <AccessControlOpsFormField label={t('userManagement.form.permissionGroups')}>
+                      <FormControl>
+                        <UserFormPermissionGroupSelect
+                          value={field.value ?? []}
+                          onChange={field.onChange}
+                          disabled={isLoading}
+                          isAdminRole={isAdminRole}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {roleOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={String(opt.value)}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </AccessControlOpsFormField>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="permissionGroupIds"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t('userManagement.form.permissionGroups')}
-                  </FormLabel>
-                  <FormControl>
-                    <UserFormPermissionGroupSelect
-                      value={field.value ?? []}
-                      onChange={field.onChange}
-                      disabled={isLoading}
-                      isAdminRole={isAdminRole}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <OpsCircuitToggleField
+                        checked={field.value ?? true}
+                        onCheckedChange={field.onChange}
+                        title={t('userManagement.form.isActive')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </div>
 
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel>
-                    {t('userManagement.form.isActive')}
-                  </FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isLoading}
-              >
-                {t('userManagement.form.cancel')}
-              </Button>
-              <Button type="submit" disabled={isLoading || !isFormValid}>
-                {isLoading
-                  ? t('userManagement.form.saving')
-                  : t('userManagement.form.save')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
+        <AccessControlOpsDialogFooter
+          onCancel={() => onOpenChange(false)}
+          cancelLabel={t('userManagement.form.cancel')}
+          saveLabel={isLoading ? t('userManagement.form.saving') : t('userManagement.form.save')}
+          isLoading={isLoading}
+          saveDisabled={!isFormValid}
+          saveType="submit"
+          formId="user-management-form"
+        />
+      </AccessControlOpsDialogContent>
     </Dialog>
   );
 }

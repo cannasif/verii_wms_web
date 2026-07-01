@@ -1,11 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Plus, ShieldCheck, Sparkles, Trash2, UserRound, Warehouse } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
-import { Input } from '@/components/ui/input';
 import { useUIStore } from '@/stores/ui-store';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { useWarehouses } from '@/features/goods-receipt/hooks/useWarehouses';
@@ -14,6 +10,14 @@ import { useAllWmsScopePoliciesQuery } from '../hooks/useAllWmsScopePoliciesQuer
 import { useUserWmsScopePoliciesQuery } from '../hooks/useUserWmsScopePoliciesQuery';
 import { useSetUserWmsScopePoliciesMutation } from '../hooks/useSetUserWmsScopePoliciesMutation';
 import { useWmsScopePolicyResolutionQuery } from '../hooks/useWmsScopePolicyResolutionQuery';
+import { MasterDataOpsFlagChip, MasterDataOpsGuidance } from '@/features/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput } from '@/components/shared';
+import {
+  ACCESS_CONTROL_OPS_PAGE_CLASS,
+  AccessControlOpsEyebrow,
+  AccessControlOpsSection,
+  AccessControlOpsStatGrid,
+} from './access-control-ops-ui';
 
 type AssignmentRow = {
   localId: string;
@@ -131,108 +135,73 @@ export function WmsScopeAssignmentsPage(): ReactElement {
   const selectedAssignments = useMemo(() => (userAssignments ?? []).filter((item) => !selectedEntityType || item.entityType === selectedEntityType), [selectedEntityType, userAssignments]);
 
   return (
-    <div className="w-full space-y-6 crm-page">
-      <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.wmsScopeAssignments'), isActive: true }]} />
-
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-linear-to-br from-white via-cyan-50/70 to-pink-50/70 p-5 shadow-sm dark:border-cyan-800/30 dark:from-blue-950/70 dark:via-blue-950/90 dark:to-cyan-950/40 sm:p-6">
-        <div className="inline-flex items-center gap-2 rounded-2xl border border-cyan-200 bg-white/80 px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm dark:border-cyan-800/40 dark:bg-blue-950/60 dark:text-cyan-300">
-          <Sparkles className="size-4" />
-          {t('sidebar.wmsScopeAssignments')}
-        </div>
-        <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{t('wmsScopeAssignments.title')}</h1>
-        <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">{t('wmsScopeAssignments.description')}</p>
-
-        <div className="mt-5 grid gap-3 sm:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-100 p-2.5 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300"><UserRound className="size-4" /></div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.selectUser')}</p>
-                <p className="mt-1 line-clamp-2 text-sm font-black text-slate-900 dark:text-white">{selectedUserLabel}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"><ShieldCheck className="size-4" /></div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.assignedPolicies')}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{assignmentRows.length}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-fuchsia-100 p-2.5 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300"><Warehouse className="size-4" /></div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.resolutionScope')}</p>
-                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">{selectedEntityType ?? '-'}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-cyan-800/30 dark:bg-blue-950/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-pink-100 p-2.5 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300"><CheckCircle2 className="size-4" /></div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.statusLabel')}</p>
-                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">{hasChanges ? t('wmsScopeAssignments.statusPending') : t('wmsScopeAssignments.statusCurrent')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4 rounded-[28px] border border-slate-200/70 bg-white/85 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/3 sm:p-6">
+    <OpsFormPageShell
+      className={ACCESS_CONTROL_OPS_PAGE_CLASS}
+      eyebrow={<AccessControlOpsEyebrow page={t('sidebar.wmsScopeAssignments')} />}
+      title={t('wmsScopeAssignments.title')}
+      description={t('wmsScopeAssignments.description')}
+    >
+      <div className="space-y-4">
+        <AccessControlOpsStatGrid
+          className="md:grid-cols-4"
+          items={[
+            { label: t('wmsScopeAssignments.selectUser'), value: selectedUserLabel },
+            { label: t('wmsScopeAssignments.assignedPolicies'), value: assignmentRows.length },
+            { label: t('wmsScopeAssignments.resolutionScope'), value: selectedEntityType ?? '-' },
+            { label: t('wmsScopeAssignments.statusLabel'), value: hasChanges ? t('wmsScopeAssignments.statusPending') : t('wmsScopeAssignments.statusCurrent') },
+          ]}
+        />
+        <MasterDataOpsGuidance
+          title={t('wmsScopeAssignments.editorTitle')}
+          lines={[t('wmsScopeAssignments.editorDescription')]}
+        />
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div className="space-y-4">
-            <div>
-              <label className="mb-3 inline-flex text-sm font-medium">{t('wmsScopeAssignments.selectUser')}</label>
+            <AccessControlOpsSection title={t('wmsScopeAssignments.selectUser')} subtitle={t('wmsScopeAssignments.selectUserHint')}>
               <Combobox
                 options={userOptions}
                 value={selectedUserId?.toString() ?? ''}
+                variant="ops"
                 onValueChange={(value) => setSelectedUserId(value ? parseInt(value, 10) : null)}
                 placeholder={t('wmsScopeAssignments.selectUserPlaceholder')}
                 searchPlaceholder={t('common.search')}
                 emptyText={t('wmsScopeAssignments.noUsers')}
                 disabled={usersLoading}
               />
-            </div>
+            </AccessControlOpsSection>
 
             {selectedUserId != null ? (
-              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-base font-black text-slate-900 dark:text-white">{t('wmsScopeAssignments.editorTitle')}</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.editorDescription')}</p>
-                  </div>
-                  {canUpdateAssignments ? (
-                    <Button type="button" variant="outline" className="rounded-2xl" onClick={handleAddRow}>
-                      <Plus className="mr-2 size-4" />
-                      {t('wmsScopeAssignments.addAssignment')}
-                    </Button>
-                  ) : null}
-                </div>
-
+              <AccessControlOpsSection
+                title={t('wmsScopeAssignments.editorTitle')}
+                subtitle={t('wmsScopeAssignments.editorDescription')}
+                actions={canUpdateAssignments ? (
+                  <OpsActionButton type="button" variant="secondary" onClick={handleAddRow}>
+                    <Plus className="mr-2 size-4" />
+                    {t('wmsScopeAssignments.addAssignment')}
+                  </OpsActionButton>
+                ) : undefined}
+              >
                 {assignmentsLoading ? (
-                  <div className="py-8 text-center text-slate-500">{t('common.loading')}</div>
+                  <div className="wms-ops-form-hint py-8 text-center">{t('common.loading')}</div>
                 ) : assignmentRows.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                  <div className="wms-ops-form-hint py-8 text-center">
                     {t('wmsScopeAssignments.empty')}
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {assignmentRows.map((row) => (
-                      <div key={row.localId} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-950/20 lg:grid-cols-[minmax(0,1.4fr)_140px_180px_auto]">
+                      <div key={row.localId} className="grid gap-3 rounded-2xl border p-4 lg:grid-cols-[minmax(0,1.4fr)_140px_180px_auto]">
                         <Combobox
                           options={policyOptions}
                           value={row.wmsScopePolicyId?.toString() ?? ''}
+                          variant="ops"
                           onValueChange={(value) => handleRowChange(row.localId, { wmsScopePolicyId: value ? parseInt(value, 10) : null })}
                           placeholder={t('wmsScopeAssignments.policyPlaceholder')}
                           searchPlaceholder={t('common.search')}
                           emptyText={t('common.noData')}
                           disabled={!canUpdateAssignments}
                         />
-                        <Input
+                        <OpsInput
                           value={row.branchCode}
                           onChange={(event) => handleRowChange(row.localId, { branchCode: event.target.value })}
                           placeholder={t('wmsScopeAssignments.branchCodePlaceholder')}
@@ -241,6 +210,7 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                         <Combobox
                           options={warehouseOptions}
                           value={row.warehouseId?.toString() ?? ''}
+                          variant="ops"
                           onValueChange={(value) => handleRowChange(row.localId, { warehouseId: value ? parseInt(value, 10) : null })}
                           placeholder={t('wmsScopeAssignments.warehousePlaceholder')}
                           searchPlaceholder={t('common.search')}
@@ -248,10 +218,10 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                           disabled={!canUpdateAssignments}
                         />
                         {canUpdateAssignments ? (
-                          <Button type="button" variant="outline" className="rounded-2xl text-rose-600" onClick={() => handleRemoveRow(row.localId)}>
+                          <OpsActionButton type="button" variant="secondary" onClick={() => handleRemoveRow(row.localId)}>
                             <Trash2 className="mr-2 size-4" />
                             {t('common.delete')}
-                          </Button>
+                          </OpsActionButton>
                         ) : null}
                       </div>
                     ))}
@@ -260,99 +230,96 @@ export function WmsScopeAssignmentsPage(): ReactElement {
 
                 {hasChanges && canUpdateAssignments ? (
                   <div className="flex justify-end">
-                    <Button onClick={handleSave} disabled={setAssignments.isPending} className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white">
+                    <OpsActionButton onClick={handleSave} disabled={setAssignments.isPending}>
                       {setAssignments.isPending ? t('common.saving') : t('common.save')}
-                    </Button>
+                    </OpsActionButton>
                   </div>
                 ) : null}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('wmsScopeAssignments.selectUserHint')}
-              </div>
-            )}
+              </AccessControlOpsSection>
+            ) : null}
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/3">
-            <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white">{t('wmsScopeAssignments.previewTitle')}</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.previewDescription')}</p>
-            </div>
+          <AccessControlOpsSection
+            title={t('wmsScopeAssignments.previewTitle')}
+            subtitle={t('wmsScopeAssignments.previewDescription')}
+          >
+            <div className="space-y-3">
+              <Combobox
+                options={entityTypeOptions}
+                value={selectedEntityType ?? ''}
+                variant="ops"
+                onValueChange={(value) => setSelectedEntityType(value || null)}
+                placeholder={t('wmsScopeAssignments.entityTypePlaceholder')}
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.noData')}
+              />
 
-            <Combobox
-              options={entityTypeOptions}
-              value={selectedEntityType ?? ''}
-              onValueChange={(value) => setSelectedEntityType(value || null)}
-              placeholder={t('wmsScopeAssignments.entityTypePlaceholder')}
-              searchPlaceholder={t('common.search')}
-              emptyText={t('common.noData')}
-            />
-
-            {selectedEntityType && selectedUserId != null ? (
-              resolutionQuery.isLoading ? (
-                <div className="py-8 text-center text-slate-500">{t('common.loading')}</div>
-              ) : resolutionQuery.data ? (
-                <div className="space-y-3">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-950/30">
-                    <div className="flex flex-wrap gap-2">
-                      {(resolutionQuery.data.scopeTypes ?? []).length === 0 ? (
-                        <Badge variant="secondary">{t('wmsScopeAssignments.noExplicitPolicy')}</Badge>
-                      ) : (
-                        resolutionQuery.data.scopeTypes.map((scopeType) => (
-                          <Badge key={scopeType} variant="outline">{scopeTypeLabels[scopeType] ?? scopeType}</Badge>
-                        ))
-                      )}
-                    </div>
-                    <div className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                      <p>{t('wmsScopeAssignments.previewUnrestricted')}: <span className="font-semibold">{resolutionQuery.data.isUnrestricted ? t('common.yes') : t('common.no')}</span></p>
-                      <p>{t('wmsScopeAssignments.previewIncludeSelf')}: <span className="font-semibold">{resolutionQuery.data.includeSelf ? t('common.yes') : t('common.no')}</span></p>
-                      <p>{t('wmsScopeAssignments.previewAssignedOnly')}: <span className="font-semibold">{resolutionQuery.data.requiresAssignedRecords ? t('common.yes') : t('common.no')}</span></p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-950/30">
-                    <p className="text-xs font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.previewBranches')}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {(resolutionQuery.data.branchCodes ?? []).length === 0
-                        ? <Badge variant="secondary">-</Badge>
-                        : resolutionQuery.data.branchCodes.map((code) => <Badge key={code}>{code}</Badge>)}
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-950/30">
-                    <p className="text-xs font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.previewWarehouses')}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {(resolutionQuery.data.warehouseIds ?? []).length === 0
-                        ? <Badge variant="secondary">-</Badge>
-                        : resolutionQuery.data.warehouseIds.map((id) => <Badge key={id}>#{id}</Badge>)}
-                    </div>
-                  </div>
-
-                  {selectedAssignments.length > 0 ? (
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-950/30">
-                      <p className="text-xs font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{t('wmsScopeAssignments.previewAssignments')}</p>
-                      <div className="mt-3 space-y-2">
-                        {selectedAssignments.map((item) => (
-                          <div key={item.id} className="rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-white/10">
-                            <div className="font-semibold text-slate-900 dark:text-white">{item.policyName}</div>
-                            <div className="text-slate-500 dark:text-slate-400">
-                              {item.branchCode || '-'} / {item.warehouseId ? `#${item.warehouseId}` : '-'}
-                            </div>
-                          </div>
-                        ))}
+              {selectedEntityType && selectedUserId != null ? (
+                resolutionQuery.isLoading ? (
+                  <div className="wms-ops-form-hint py-8 text-center">{t('common.loading')}</div>
+                ) : resolutionQuery.data ? (
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border p-4">
+                      <div className="flex flex-wrap gap-2">
+                        {(resolutionQuery.data.scopeTypes ?? []).length === 0 ? (
+                          <MasterDataOpsFlagChip>{t('wmsScopeAssignments.noExplicitPolicy')}</MasterDataOpsFlagChip>
+                        ) : (
+                          resolutionQuery.data.scopeTypes.map((scopeType) => (
+                            <MasterDataOpsFlagChip key={scopeType}>{scopeTypeLabels[scopeType] ?? scopeType}</MasterDataOpsFlagChip>
+                          ))
+                        )}
+                      </div>
+                      <div className="mt-4 space-y-2 text-sm">
+                        <p>{t('wmsScopeAssignments.previewUnrestricted')}: <span className="font-semibold">{resolutionQuery.data.isUnrestricted ? t('common.yes') : t('common.no')}</span></p>
+                        <p>{t('wmsScopeAssignments.previewIncludeSelf')}: <span className="font-semibold">{resolutionQuery.data.includeSelf ? t('common.yes') : t('common.no')}</span></p>
+                        <p>{t('wmsScopeAssignments.previewAssignedOnly')}: <span className="font-semibold">{resolutionQuery.data.requiresAssignedRecords ? t('common.yes') : t('common.no')}</span></p>
                       </div>
                     </div>
-                  ) : null}
+
+                    <div className="rounded-2xl border p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewBranches')}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(resolutionQuery.data.branchCodes ?? []).length === 0
+                          ? <MasterDataOpsFlagChip>-</MasterDataOpsFlagChip>
+                          : resolutionQuery.data.branchCodes.map((code) => <MasterDataOpsFlagChip key={code}>{code}</MasterDataOpsFlagChip>)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewWarehouses')}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(resolutionQuery.data.warehouseIds ?? []).length === 0
+                          ? <MasterDataOpsFlagChip>-</MasterDataOpsFlagChip>
+                          : resolutionQuery.data.warehouseIds.map((id) => <MasterDataOpsFlagChip key={id}>#{id}</MasterDataOpsFlagChip>)}
+                      </div>
+                    </div>
+
+                    {selectedAssignments.length > 0 ? (
+                      <div className="rounded-2xl border p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewAssignments')}</p>
+                        <div className="mt-3 space-y-2">
+                          {selectedAssignments.map((item) => (
+                            <div key={item.id} className="rounded-xl border px-3 py-2 text-sm">
+                              <div className="font-semibold">{item.policyName}</div>
+                              <div className="opacity-80">
+                                {item.branchCode || '-'} / {item.warehouseId ? `#${item.warehouseId}` : '-'}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null
+              ) : (
+                <div className="wms-ops-form-hint py-8 text-center">
+                  {t('wmsScopeAssignments.previewEmpty')}
                 </div>
-              ) : null
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {t('wmsScopeAssignments.previewEmpty')}
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </AccessControlOpsSection>
         </div>
       </div>
-    </div>
+    </OpsFormPageShell>
   );
 }

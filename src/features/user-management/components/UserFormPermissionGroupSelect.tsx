@@ -1,6 +1,11 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePermissionGroupOptionsQuery } from '../hooks/usePermissionGroupOptionsQuery';
+import {
+  AccessControlOpsCheckbox,
+  AccessControlOpsMultiSelectPanel,
+  AccessControlOpsScrollList,
+} from '@/features/access-control';
 
 interface UserFormPermissionGroupSelectProps {
   value: number[];
@@ -36,67 +41,48 @@ export function UserFormPermissionGroupSelect({
   };
 
   if (isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground py-4">
-        {t('userManagement.table.loading')}
-      </div>
-    );
+    return <div className="wms-ops-form-hint py-4 text-sm">{t('userManagement.table.loading')}</div>;
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <input
-          id="user-form-select-all-groups"
-          type="checkbox"
-          className="h-4 w-4 rounded border border-input accent-primary"
-          checked={selectableItems.length > 0 && selectableItems.every((item) => value.includes(item.value))}
-          onChange={(e) => handleSelectAll(e.target.checked)}
-          disabled={disabled || selectableItems.length === 0}
-        />
-        <label
-          htmlFor="user-form-select-all-groups"
-          className="text-sm font-medium cursor-pointer"
-        >
-          {t('userManagement.form.selectAll')}
-        </label>
-      </div>
-      <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2 space-y-2">
-        {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-2">
-            {t('userManagement.form.permissionGroupsNoData')}
-          </p>
-        ) : (
-          items.map((item) => (
-            <div key={item.value} className="flex items-center gap-2">
-              <input
+    <AccessControlOpsMultiSelectPanel>
+      <AccessControlOpsCheckbox
+        id="user-form-select-all-groups"
+        checked={selectableItems.length > 0 && selectableItems.every((item) => value.includes(item.value))}
+        onCheckedChange={handleSelectAll}
+        disabled={disabled || selectableItems.length === 0}
+        compact
+        label={t('userManagement.form.selectAll')}
+      />
+      <AccessControlOpsScrollList
+        className="wms-ops-access-control-group-picker max-h-[min(42dvh,16rem)] space-y-1 border p-2 sm:p-3"
+        isEmpty={items.length === 0}
+        emptyText={t('userManagement.form.permissionGroupsNoData')}
+      >
+        <div className="grid gap-1 sm:grid-cols-2">
+          {items.map((item) => (
+            <div key={item.value} className="wms-ops-access-control-permission-row rounded-sm px-1 py-0.5">
+              <AccessControlOpsCheckbox
                 id={`user-form-group-${item.value}`}
-                type="checkbox"
-                className="h-4 w-4 rounded border border-input accent-primary"
                 checked={value.includes(item.value)}
-                onChange={() => handleToggle(item.value)}
+                onCheckedChange={() => handleToggle(item.value)}
                 disabled={disabled || (!isAdminRole && !!item.isSystemAdmin)}
-              />
-              <label
-                htmlFor={`user-form-group-${item.value}`}
-                className="text-sm cursor-pointer flex-1"
-              >
-                {item.label}
-                {item.isSystemAdmin && (
-                  <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">({t('common.systemAdmin')})</span>
+                compact
+                label={(
+                  <span className="text-sm">
+                    {item.label}
+                    {item.isSystemAdmin ? (
+                      <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
+                        ({t('userManagement.form.systemAdmin', { defaultValue: 'System Admin' })})
+                      </span>
+                    ) : null}
+                  </span>
                 )}
-              </label>
+              />
             </div>
-          ))
-        )}
-      </div>
-      {!isAdminRole && items.some((item) => item.isSystemAdmin) && (
-        <p className="text-xs text-amber-600 dark:text-amber-400">
-          {t(
-            'userManagement.form.systemAdminRequiresAdminRole'
-          )}
-        </p>
-      )}
-    </div>
+          ))}
+        </div>
+      </AccessControlOpsScrollList>
+    </AccessControlOpsMultiSelectPanel>
   );
 }
