@@ -286,6 +286,45 @@ export const WMS_NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    title: 'sidebar.purchaseManagement',
+    titleFallback: 'Satınalma Yönetimi',
+    icon: inventoryIcon,
+    children: [
+      {
+        title: 'sidebar.purchaseRequests',
+        titleFallback: 'Satınalma Talepleri',
+        children: [
+          { title: 'sidebar.purchaseRequestCreate', titleFallback: 'Yeni Satınalma Talebi', href: '/purchase/requests/create' },
+          { title: 'sidebar.purchaseRequestList', titleFallback: 'Satınalma Talep Listesi', href: '/purchase/requests' },
+        ],
+      },
+      {
+        title: 'sidebar.purchaseRfqs',
+        titleFallback: 'Teklif İstekleri (RFQ)',
+        children: [
+          { title: 'sidebar.purchaseRfqCreate', titleFallback: 'Yeni Teklif İsteği (RFQ)', href: '/purchase/rfqs/create' },
+          { title: 'sidebar.purchaseRfqList', titleFallback: 'Teklif İstekleri (RFQ)', href: '/purchase/rfqs' },
+        ],
+      },
+      {
+        title: 'sidebar.supplierQuotations',
+        titleFallback: 'Tedarikçi Teklifleri',
+        children: [
+          { title: 'sidebar.supplierQuotationCreate', titleFallback: 'Yeni Tedarikçi Teklifi', href: '/purchase/supplier-quotations/create' },
+          { title: 'sidebar.supplierQuotationList', titleFallback: 'Tedarikçi Teklif Listesi', href: '/purchase/supplier-quotations' },
+        ],
+      },
+      {
+        title: 'sidebar.purchaseOrders',
+        titleFallback: 'Satınalma Siparişleri',
+        children: [
+          { title: 'sidebar.purchaseOrderCreate', titleFallback: 'Yeni Satınalma Siparişi', href: '/purchase/orders/create' },
+          { title: 'sidebar.purchaseOrderList', titleFallback: 'Satınalma Sipariş Listesi', href: '/purchase/orders' },
+        ],
+      },
+    ],
+  },
+  {
     title: 'sidebar.inventoryGroup',
     titleFallback: 'Envanter',
     icon: inventoryIcon,

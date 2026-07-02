@@ -7,6 +7,7 @@ import { authRouteTrees } from './modules/auth-routes';
 import { adminChildRoutes } from './modules/admin-routes';
 import { erpChildRoutes } from './modules/erp-routes';
 import { operationsChildRoutes } from './modules/operations-routes';
+import { purchaseChildRoutes } from './modules/purchase-routes';
 import { lazyNamed, withRoute } from './route-utils';
 
 const WelcomePage = lazyNamed(() => import('@/features/welcome'), 'WelcomePage');
@@ -30,6 +31,7 @@ export function createAppRouter() {
         { path: 'dashboard', Component: withRoute(DashboardPage, { routeName: 'dashboard' }) },
         { path: 'reports', Component: withRoute(ReportsPage, { routeName: 'reports', namespaces: ['report', 'common'] }) },
         ...operationsChildRoutes,
+        ...purchaseChildRoutes,
         {
           path: 'parameters',
           children: [{ path: ':type', Component: withRoute(ParameterFormPage, { routeName: 'parameters-form' }) }],
