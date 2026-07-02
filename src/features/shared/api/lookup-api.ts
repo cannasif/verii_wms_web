@@ -1,7 +1,17 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { getLocalizedText } from '@/lib/localized-error';
-import type { BranchLookup, CustomerLookup, ProjectLookup, ShelfLookup, StockLookup, WarehouseLookup, YapKodLookup } from './lookup-types';
+import type {
+  BranchLookup,
+  CustomerLookup,
+  ExchangeRateLookup,
+  ProjectLookup,
+  ShelfLookup,
+  SpecialCodeLookup,
+  StockLookup,
+  WarehouseLookup,
+  YapKodLookup,
+} from './lookup-types';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 import { buildPagedRequest } from '@/lib/paged';
 
@@ -279,6 +289,28 @@ export const lookupApi = {
       return await getServerListData<ProjectLookup>('/api/netsis-read/projects', options);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.erpProjectsLoadFailed'));
+    }
+  },
+
+  getSpecialCodes: async (tableType: number, specialCode?: string, options?: ApiRequestOptions): Promise<SpecialCodeLookup[]> => {
+    try {
+      const query = new URLSearchParams({ tableType: String(tableType) });
+      if (specialCode?.trim()) {
+        query.set('specialCode', specialCode.trim());
+      }
+      return await getServerListData<SpecialCodeLookup>(`/api/netsis-read/getSpecialCodes?${query.toString()}`, options);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.unknown'));
+    }
+  },
+
+  getExchangeRates: async (date: string | Date, pricingType: number, options?: ApiRequestOptions): Promise<ExchangeRateLookup[]> => {
+    try {
+      const normalizedDate = typeof date === 'string' ? date : date.toISOString();
+      const query = new URLSearchParams({ date: normalizedDate, pricingType: String(pricingType) });
+      return await getServerListData<ExchangeRateLookup>(`/api/netsis-read/getExchangeRate?${query.toString()}`, options);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : getLocalizedText('common.errors.unknown'));
     }
   },
 

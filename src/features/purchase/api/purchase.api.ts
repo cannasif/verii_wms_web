@@ -48,4 +48,9 @@ export const purchaseApi = {
     const response = await api.put<ApiResponse<unknown>>(`/api/${endpoint}/${id}`, dto);
     return extractData(response);
   },
+
+  async convertSupplierQuotationToOrder(id: number, dto: { orderNo?: string | null; orderDate?: string | null; deliveryDate?: string | null } = {}): Promise<Record<string, unknown>> {
+    const response = await api.post<ApiResponse<Record<string, unknown>>>(`/api/SupplierQuotation/${id}/convert-to-order`, dto);
+    return extractData(response);
+  },
 };

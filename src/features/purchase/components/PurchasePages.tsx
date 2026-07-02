@@ -1,8 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Pencil, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, FilePlus2, Pencil, Plus, Save, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   OpsActionButton,
@@ -199,6 +199,7 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const config = purchasePageConfigs[kind];
   const pageKey = `purchase-${kind}-list`;
 
@@ -220,6 +221,17 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
   const query = useQuery({
     queryKey: ['purchase', config.endpoint, pagedGrid.queryParams],
     queryFn: () => purchaseApi.getPaged(config.endpoint, pagedGrid.queryParams),
+  });
+
+  const convertToOrderMutation = useMutation({
+    mutationFn: (id: number) => purchaseApi.convertSupplierQuotationToOrder(id),
+    onSuccess: (result) => {
+      void queryClient.invalidateQueries({ queryKey: ['purchase'] });
+      toast.success('Tedarikçi teklifi satınalma siparişine çevrildi.');
+      const orderId = Number(result.id);
+      navigate(Number.isFinite(orderId) && orderId > 0 ? `/purchase/orders/${orderId}/edit` : '/purchase/orders');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
@@ -291,19 +303,42 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
         showActionsColumn
         actionsHeaderLabel="İşlemler"
         actionsCellClassName="text-right"
-        renderActionsCell={(row) => (
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-primary"
-            onClick={(event) => {
-              event.stopPropagation();
-              navigate(`${config.listPath}/${row.id}/edit`);
-            }}
-            aria-label="Düzenle"
-          >
-            <Pencil className="size-4" />
-          </button>
-        )}
+        renderActionsCell={(row) => {
+          const canConvertToOrder = kind === 'quotation'
+            && !['Converted', 'Cancelled', 'Rejected'].includes(row.status);
+
+          return (
+            <div className="flex items-center justify-end gap-2">
+              {canConvertToOrder ? (
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 transition hover:border-emerald-500/60 hover:bg-emerald-500/15 dark:text-emerald-300"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    convertToOrderMutation.mutate(row.id);
+                  }}
+                  disabled={convertToOrderMutation.isPending}
+                  aria-label="Siparişe çevir"
+                  title="Siparişe çevir"
+                >
+                  <FilePlus2 className="size-4" />
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  navigate(`${config.listPath}/${row.id}/edit`);
+                }}
+                aria-label="Düzenle"
+                title="Düzenle"
+              >
+                <Pencil className="size-4" />
+              </button>
+            </div>
+          );
+        }}
         pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
         pageSizeOptions={pagedGrid.pageSizeOptions}
         onPageSizeChange={pagedGrid.handlePageSizeChange}

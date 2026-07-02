@@ -50,6 +50,19 @@ export interface ProjectLookup {
   projeAciklama: string;
 }
 
+export interface SpecialCodeLookup {
+  isletmeKodu: number;
+  ozelKod: string;
+  aciklama?: string | null;
+  displayName: string;
+}
+
+export interface ExchangeRateLookup {
+  dovizTipi: number;
+  dovizIsmi?: string | null;
+  kurDegeri?: number | null;
+}
+
 export interface WarehouseLookup {
   id: number;
   depoKodu: number;
