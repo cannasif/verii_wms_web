@@ -1,7 +1,7 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
-import type { CreatePurchaseDocumentDto, PurchaseListRowDto } from '../types/purchase.types';
+import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, PurchaseApprovalRuleDto, PurchaseListRowDto } from '../types/purchase.types';
 
 export type PurchaseEndpoint = 'PurchaseRequest' | 'PurchaseRfq' | 'SupplierQuotation' | 'PurchaseOrder';
 
@@ -51,6 +51,51 @@ export const purchaseApi = {
 
   async convertSupplierQuotationToOrder(id: number, dto: { orderNo?: string | null; orderDate?: string | null; deliveryDate?: string | null } = {}): Promise<Record<string, unknown>> {
     const response = await api.post<ApiResponse<Record<string, unknown>>>(`/api/SupplierQuotation/${id}/convert-to-order`, dto);
+    return extractData(response);
+  },
+
+  async submitApproval(endpoint: Extract<PurchaseEndpoint, 'SupplierQuotation' | 'PurchaseOrder'>, id: number, reason?: string): Promise<unknown> {
+    const response = await api.post<ApiResponse<unknown>>(`/api/${endpoint}/${id}/submit-approval`, { reason: reason || null });
+    return extractData(response);
+  },
+
+  async approve(endpoint: Extract<PurchaseEndpoint, 'SupplierQuotation' | 'PurchaseOrder'>, id: number, reason?: string): Promise<unknown> {
+    const response = await api.post<ApiResponse<unknown>>(`/api/${endpoint}/${id}/approve`, { reason: reason || null });
+    return extractData(response);
+  },
+
+  async reject(endpoint: Extract<PurchaseEndpoint, 'SupplierQuotation' | 'PurchaseOrder'>, id: number, reason?: string): Promise<unknown> {
+    const response = await api.post<ApiResponse<unknown>>(`/api/${endpoint}/${id}/reject`, { reason: reason || null });
+    return extractData(response);
+  },
+};
+
+export const purchaseApprovalRuleApi = {
+  async getPaged(params: PagedParams = {}): Promise<PagedResponse<PurchaseApprovalRuleDto>> {
+    const response = await api.post<ApiResponse<PagedResponse<PurchaseApprovalRuleDto>>>(
+      '/api/PurchaseApprovalRule/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 10, sortBy: 'Id', sortDirection: 'desc' }),
+    );
+    return normalizePaged(response);
+  },
+
+  async getById(id: number): Promise<PurchaseApprovalRuleDto> {
+    const response = await api.get<ApiResponse<PurchaseApprovalRuleDto>>(`/api/PurchaseApprovalRule/${id}`);
+    return extractData(response);
+  },
+
+  async create(dto: CreatePurchaseApprovalRuleDto): Promise<PurchaseApprovalRuleDto> {
+    const response = await api.post<ApiResponse<PurchaseApprovalRuleDto>>('/api/PurchaseApprovalRule', dto);
+    return extractData(response);
+  },
+
+  async update(id: number, dto: CreatePurchaseApprovalRuleDto): Promise<PurchaseApprovalRuleDto> {
+    const response = await api.put<ApiResponse<PurchaseApprovalRuleDto>>(`/api/PurchaseApprovalRule/${id}`, dto);
+    return extractData(response);
+  },
+
+  async delete(id: number): Promise<boolean> {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/PurchaseApprovalRule/${id}`);
     return extractData(response);
   },
 };

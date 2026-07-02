@@ -1,1 +1,1 @@
-export { PurchaseCreatePage, PurchaseListPage } from './components/PurchasePages';
+export { PurchaseApprovalRulesPage, PurchaseCreatePage, PurchaseListPage } from './components/PurchasePages';

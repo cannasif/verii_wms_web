@@ -1,5 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import { PurchaseCreatePage, PurchaseListPage } from '@/features/purchase';
+import { PurchaseApprovalRulesPage, PurchaseCreatePage, PurchaseListPage } from '@/features/purchase';
 import { withRoute } from '../route-utils';
 
 export const purchaseChildRoutes: RouteObject[] = [
@@ -18,6 +18,7 @@ export const purchaseChildRoutes: RouteObject[] = [
       { path: 'orders', Component: withRoute(() => <PurchaseListPage kind="order" />, { routeName: 'purchase-orders', namespaces: ['common'] }) },
       { path: 'orders/create', Component: withRoute(() => <PurchaseCreatePage kind="order" />, { routeName: 'purchase-order-create', namespaces: ['common'] }) },
       { path: 'orders/:id/edit', Component: withRoute(() => <PurchaseCreatePage kind="order" />, { routeName: 'purchase-order-edit', namespaces: ['common'] }) },
+      { path: 'approval-rules', Component: withRoute(() => <PurchaseApprovalRulesPage />, { routeName: 'purchase-approval-rules', namespaces: ['common'] }) },
     ],
   },
 ];

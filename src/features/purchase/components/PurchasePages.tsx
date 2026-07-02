@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, FilePlus2, Pencil, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, CheckCircle2, FilePlus2, Pencil, Plus, Save, Send, Trash2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   OpsActionButton,
@@ -21,8 +21,8 @@ import type { WmsDocumentSeriesDefinitionPagedRowDto } from '@/features/document
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
-import { purchaseApi, type PurchaseEndpoint } from '../api/purchase.api';
-import type { CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseListRowDto } from '../types/purchase.types';
+import { purchaseApi, purchaseApprovalRuleApi, type PurchaseEndpoint } from '../api/purchase.api';
+import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseListRowDto } from '../types/purchase.types';
 
 type ColumnKey = 'id' | 'documentNo' | 'status' | 'supplier' | 'currencyCode' | 'grandTotal' | 'sourceDocumentNo' | 'documentDate';
 type PurchasePageKind = 'request' | 'rfq' | 'quotation' | 'order';
@@ -234,6 +234,25 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
+  const approvalMutation = useMutation({
+    mutationFn: ({ action, id }: { action: 'submit' | 'approve' | 'reject'; id: number }) => {
+      const endpoint = config.endpoint as Extract<PurchaseEndpoint, 'SupplierQuotation' | 'PurchaseOrder'>;
+      if (action === 'submit') return purchaseApi.submitApproval(endpoint, id);
+      if (action === 'approve') return purchaseApi.approve(endpoint, id);
+      return purchaseApi.reject(endpoint, id, 'Liste ekranından reddedildi.');
+    },
+    onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({ queryKey: ['purchase'] });
+      const messages = {
+        submit: 'Belge onaya gönderildi.',
+        approve: 'Belge onaylandı.',
+        reject: 'Belge reddedildi.',
+      };
+      toast.success(messages[variables.action]);
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
+  });
+
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(() => [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'documentNo', label: config.documentNoLabel, sortable: true },
@@ -304,11 +323,59 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
         actionsHeaderLabel="İşlemler"
         actionsCellClassName="text-right"
         renderActionsCell={(row) => {
+          const isApprovalSupported = kind === 'quotation' || kind === 'order';
+          const canSubmitApproval = isApprovalSupported && ['Draft', 'Rejected'].includes(row.status);
+          const canApproveOrReject = isApprovalSupported && row.status === 'PendingApproval';
           const canConvertToOrder = kind === 'quotation'
-            && !['Converted', 'Cancelled', 'Rejected'].includes(row.status);
+            && !['Converted', 'Cancelled', 'Rejected', 'PendingApproval'].includes(row.status);
 
           return (
             <div className="flex items-center justify-end gap-2">
+              {canSubmitApproval ? (
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-700 transition hover:border-blue-500/60 hover:bg-blue-500/15 dark:text-blue-300"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    approvalMutation.mutate({ action: 'submit', id: row.id });
+                  }}
+                  disabled={approvalMutation.isPending}
+                  aria-label="Onaya gönder"
+                  title="Onaya gönder"
+                >
+                  <Send className="size-4" />
+                </button>
+              ) : null}
+              {canApproveOrReject ? (
+                <>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 transition hover:border-emerald-500/60 hover:bg-emerald-500/15 dark:text-emerald-300"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      approvalMutation.mutate({ action: 'approve', id: row.id });
+                    }}
+                    disabled={approvalMutation.isPending}
+                    aria-label="Onayla"
+                    title="Onayla"
+                  >
+                    <CheckCircle2 className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-700 transition hover:border-rose-500/60 hover:bg-rose-500/15 dark:text-rose-300"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      approvalMutation.mutate({ action: 'reject', id: row.id });
+                    }}
+                    disabled={approvalMutation.isPending}
+                    aria-label="Reddet"
+                    title="Reddet"
+                  >
+                    <XCircle className="size-4" />
+                  </button>
+                </>
+              ) : null}
               {canConvertToOrder ? (
                 <button
                   type="button"
@@ -371,6 +438,317 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
           documentDate: row.documentDate,
         }))}
       />
+    </OpsListPageShell>
+  );
+}
+
+type ApprovalRuleColumnKey = 'id' | 'ruleName' | 'documentKind' | 'stepOrder' | 'approverUserId' | 'amountRange' | 'scope' | 'isActive';
+
+const emptyApprovalRuleForm: CreatePurchaseApprovalRuleDto = {
+  ruleName: '',
+  documentKind: 'PurchaseOrder',
+  stepOrder: 1,
+  approverUserId: 0,
+  department: null,
+  projectCode: null,
+  currencyCode: null,
+  minAmount: null,
+  maxAmount: null,
+  isActive: true,
+  requireAllPreviousSteps: true,
+  description: null,
+};
+
+function mapApprovalRuleSortBy(value: ApprovalRuleColumnKey): string {
+  switch (value) {
+    case 'ruleName': return 'RuleName';
+    case 'documentKind': return 'DocumentKind';
+    case 'stepOrder': return 'StepOrder';
+    case 'approverUserId': return 'ApproverUserId';
+    case 'isActive': return 'IsActive';
+    default: return 'Id';
+  }
+}
+
+function formatAmountRange(row: PurchaseApprovalRuleDto): string {
+  const min = row.minAmount ?? 0;
+  const max = row.maxAmount;
+  return max == null
+    ? `${new Intl.NumberFormat('tr-TR').format(min)}+`
+    : `${new Intl.NumberFormat('tr-TR').format(min)} - ${new Intl.NumberFormat('tr-TR').format(max)}`;
+}
+
+export function PurchaseApprovalRulesPage(): ReactElement {
+  const { t } = useTranslation('common');
+  const queryClient = useQueryClient();
+  const { setPageTitle } = useUIStore();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<CreatePurchaseApprovalRuleDto>(emptyApprovalRuleForm);
+  const pageKey = 'purchase-approval-rules';
+
+  const pagedGrid = usePagedDataGrid<ApprovalRuleColumnKey>({
+    pageKey,
+    defaultSortBy: 'id',
+    defaultSortDirection: 'desc',
+    defaultPageNumber: 1,
+    defaultPageSize: 10,
+    pageNumberBase: 1,
+    mapSortBy: mapApprovalRuleSortBy,
+  });
+
+  useEffect(() => {
+    setPageTitle('Satınalma Onay Kuralları');
+    return () => setPageTitle(null);
+  }, [setPageTitle]);
+
+  const query = useQuery({
+    queryKey: ['purchase', 'approval-rules', pagedGrid.queryParams],
+    queryFn: () => purchaseApprovalRuleApi.getPaged(pagedGrid.queryParams),
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: (dto: CreatePurchaseApprovalRuleDto) => editingId
+      ? purchaseApprovalRuleApi.update(editingId, dto)
+      : purchaseApprovalRuleApi.create(dto),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['purchase', 'approval-rules'] });
+      setEditingId(null);
+      setForm(emptyApprovalRuleForm);
+      toast.success('Satınalma onay kuralı kaydedildi.');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => purchaseApprovalRuleApi.delete(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['purchase', 'approval-rules'] });
+      toast.success('Satınalma onay kuralı silindi.');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
+  });
+
+  const columns = useMemo<PagedDataGridColumn<ApprovalRuleColumnKey>[]>(() => [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'ruleName', label: 'Kural', sortable: true },
+    { key: 'documentKind', label: 'Belge Tipi', sortable: true },
+    { key: 'stepOrder', label: 'Adım', sortable: true },
+    { key: 'approverUserId', label: 'Onaycı', sortable: true },
+    { key: 'amountRange', label: 'Tutar Aralığı' },
+    { key: 'scope', label: 'Kapsam' },
+    { key: 'isActive', label: 'Aktif', sortable: true },
+  ], []);
+
+  const range = getPagedRange(query.data, 1);
+
+  function handleEdit(row: PurchaseApprovalRuleDto): void {
+    setEditingId(row.id);
+    setForm({
+      ruleName: row.ruleName,
+      documentKind: row.documentKind,
+      stepOrder: row.stepOrder,
+      approverUserId: row.approverUserId,
+      department: row.department ?? null,
+      projectCode: row.projectCode ?? null,
+      currencyCode: row.currencyCode ?? null,
+      minAmount: row.minAmount ?? null,
+      maxAmount: row.maxAmount ?? null,
+      isActive: row.isActive,
+      requireAllPreviousSteps: row.requireAllPreviousSteps,
+      description: row.description ?? null,
+    });
+  }
+
+  function handleSave(): void {
+    if (!form.ruleName.trim()) {
+      toast.error('Kural adı zorunludur.');
+      return;
+    }
+    if (!form.approverUserId || form.approverUserId <= 0) {
+      toast.error('Onaycı kullanıcı ID zorunludur.');
+      return;
+    }
+    if (form.maxAmount != null && form.minAmount != null && form.maxAmount < form.minAmount) {
+      toast.error('Maksimum tutar minimum tutardan küçük olamaz.');
+      return;
+    }
+
+    saveMutation.mutate({
+      ...form,
+      ruleName: form.ruleName.trim(),
+      department: form.department?.trim() || null,
+      projectCode: form.projectCode?.trim() || null,
+      currencyCode: form.currencyCode?.trim().toUpperCase() || null,
+      description: form.description?.trim() || null,
+    });
+  }
+
+  return (
+    <OpsListPageShell
+      eyebrow="WMS / SATINALMA"
+      title="Satınalma Onay Kuralları"
+      description="Tedarikçi teklifleri ve satınalma siparişleri için tutar, kapsam ve adım bazlı onay akışlarını tanımlayın."
+    >
+      <div className="grid gap-5 xl:grid-cols-[420px_1fr]">
+        <section className="rounded-2xl border bg-card/90 p-5 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-bold">{editingId ? 'Kuralı Düzenle' : 'Yeni Onay Kuralı'}</h3>
+            <p className="text-sm text-muted-foreground">Belge tipi ve tutar aralığına göre sıralı onay adımları oluşturulur.</p>
+          </div>
+          <div className="grid gap-3">
+            <label className="grid gap-1 text-sm font-semibold">
+              Kural Adı *
+              <OpsInput value={form.ruleName} onChange={(event) => setForm((prev) => ({ ...prev, ruleName: event.target.value }))} />
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              Belge Tipi *
+              <select
+                className="h-11 rounded-xl border border-input bg-background px-3 text-sm"
+                value={form.documentKind}
+                onChange={(event) => setForm((prev) => ({ ...prev, documentKind: event.target.value }))}
+              >
+                <option value="SupplierQuotation">Tedarikçi Teklifi</option>
+                <option value="PurchaseOrder">Satınalma Siparişi</option>
+              </select>
+            </label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-sm font-semibold">
+                Adım *
+                <OpsInput type="number" min={1} value={form.stepOrder} onChange={(event) => setForm((prev) => ({ ...prev, stepOrder: toNumber(event.target.value, 1) }))} />
+              </label>
+              <label className="grid gap-1 text-sm font-semibold">
+                Onaycı User ID *
+                <OpsInput type="number" min={1} value={form.approverUserId || ''} onChange={(event) => setForm((prev) => ({ ...prev, approverUserId: toNumber(event.target.value) }))} />
+              </label>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-sm font-semibold">
+                Min Tutar
+                <OpsInput type="number" value={form.minAmount ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, minAmount: event.target.value ? toNumber(event.target.value) : null }))} />
+              </label>
+              <label className="grid gap-1 text-sm font-semibold">
+                Max Tutar
+                <OpsInput type="number" value={form.maxAmount ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, maxAmount: event.target.value ? toNumber(event.target.value) : null }))} />
+              </label>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-sm font-semibold">
+                Departman
+                <OpsInput value={form.department ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, department: event.target.value }))} />
+              </label>
+              <label className="grid gap-1 text-sm font-semibold">
+                Proje
+                <OpsInput value={form.projectCode ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, projectCode: event.target.value }))} />
+              </label>
+            </div>
+            <label className="grid gap-1 text-sm font-semibold">
+              Para Birimi
+              <OpsInput value={form.currencyCode ?? ''} placeholder="Boş ise tüm para birimleri" onChange={(event) => setForm((prev) => ({ ...prev, currencyCode: event.target.value }))} />
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              Açıklama
+              <OpsTextarea value={form.description ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} />
+            </label>
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" checked={form.isActive} onChange={(event) => setForm((prev) => ({ ...prev, isActive: event.target.checked }))} />
+              Aktif
+            </label>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending}>
+                <Save className="size-4" />
+                Kaydet
+              </OpsActionButton>
+              <OpsActionButton type="button" variant="secondary" onClick={() => { setEditingId(null); setForm(emptyApprovalRuleForm); }}>
+                Temizle
+              </OpsActionButton>
+            </div>
+          </div>
+        </section>
+
+        <PagedDataGrid<PurchaseApprovalRuleDto, ApprovalRuleColumnKey>
+          variant="ops"
+          pageKey={pageKey}
+          columns={columns}
+          rows={query.data?.data ?? []}
+          rowKey={(row) => row.id}
+          renderCell={(row, columnKey) => {
+            switch (columnKey) {
+              case 'id': return row.id;
+              case 'ruleName': return row.ruleName;
+              case 'documentKind': return row.documentKind === 'SupplierQuotation' ? 'Tedarikçi Teklifi' : 'Satınalma Siparişi';
+              case 'stepOrder': return row.stepOrder;
+              case 'approverUserId': return `#${row.approverUserId}`;
+              case 'amountRange': return `${formatAmountRange(row)} ${row.currencyCode || ''}`.trim();
+              case 'scope': return [row.department, row.projectCode].filter(Boolean).join(' / ') || 'Genel';
+              case 'isActive': return row.isActive ? 'Aktif' : 'Pasif';
+              default: return null;
+            }
+          }}
+          sortBy={pagedGrid.sortBy}
+          sortDirection={pagedGrid.sortDirection}
+          onSort={pagedGrid.handleSort}
+          isLoading={query.isLoading}
+          isError={Boolean(query.error)}
+          errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
+          emptyText="Onay kuralı bulunamadı."
+          showActionsColumn
+          actionsHeaderLabel="İşlemler"
+          renderActionsCell={(row) => (
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                onClick={() => handleEdit(row)}
+                aria-label="Düzenle"
+                title="Düzenle"
+              >
+                <Pencil className="size-4" />
+              </button>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-700 transition hover:border-rose-500/60 hover:bg-rose-500/15 dark:text-rose-300"
+                onClick={() => deleteMutation.mutate(row.id)}
+                disabled={deleteMutation.isPending}
+                aria-label="Sil"
+                title="Sil"
+              >
+                <Trash2 className="size-4" />
+              </button>
+            </div>
+          )}
+          pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
+          pageSizeOptions={pagedGrid.pageSizeOptions}
+          onPageSizeChange={pagedGrid.handlePageSizeChange}
+          pageNumber={pagedGrid.getDisplayPageNumber(query.data)}
+          totalPages={Math.max(query.data?.totalPages ?? 1, 1)}
+          hasPreviousPage={Boolean(query.data?.hasPreviousPage)}
+          hasNextPage={Boolean(query.data?.hasNextPage)}
+          onPreviousPage={pagedGrid.goToPreviousPage}
+          onNextPage={pagedGrid.goToNextPage}
+          previousLabel={t('common.previous')}
+          nextLabel={t('common.next')}
+          paginationInfoText={`${range.from}-${range.to} / ${range.total} kayıt`}
+          search={{
+            value: pagedGrid.searchInput,
+            onValueChange: pagedGrid.searchConfig.onValueChange,
+            onSearchChange: pagedGrid.searchConfig.onSearchChange,
+            placeholder: 'Kural, belge tipi, departman ara',
+          }}
+          refresh={{ onRefresh: () => { void query.refetch(); }, isLoading: query.isLoading, label: t('common.refresh') }}
+          exportFileName="purchase-approval-rules"
+          exportColumns={columns.map((column) => ({ key: column.key, label: column.label }))}
+          exportRows={(query.data?.data ?? []).map((row) => ({
+            id: row.id,
+            ruleName: row.ruleName,
+            documentKind: row.documentKind,
+            stepOrder: row.stepOrder,
+            approverUserId: row.approverUserId,
+            amountRange: formatAmountRange(row),
+            scope: [row.department, row.projectCode].filter(Boolean).join(' / ') || 'Genel',
+            isActive: row.isActive ? 'Aktif' : 'Pasif',
+          }))}
+        />
+      </div>
     </OpsListPageShell>
   );
 }

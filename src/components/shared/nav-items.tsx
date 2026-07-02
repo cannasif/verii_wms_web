@@ -322,6 +322,13 @@ export const WMS_NAV_ITEMS: NavItem[] = [
           { title: 'sidebar.purchaseOrderList', titleFallback: 'Satınalma Sipariş Listesi', href: '/purchase/orders' },
         ],
       },
+      {
+        title: 'sidebar.purchaseApproval',
+        titleFallback: 'Satınalma Onay',
+        children: [
+          { title: 'sidebar.purchaseApprovalRules', titleFallback: 'Onay Kuralları', href: '/purchase/approval-rules' },
+        ],
+      },
     ],
   },
   {

@@ -10,6 +10,13 @@ export interface PurchaseListRowDto {
   grandTotal: number;
   sourceDocumentNo?: string | null;
   documentDate: string;
+  approvalRuleId?: number | null;
+  approvalStepOrder?: number | null;
+  approvalSubmittedAt?: string | null;
+  approvedByUserId?: number | null;
+  approvedAt?: string | null;
+  rejectedByUserId?: number | null;
+  rejectedAt?: string | null;
   createdDate?: string | null;
   updatedDate?: string | null;
 }
@@ -72,4 +79,38 @@ export interface CreatePurchaseDocumentDto {
   suppliers?: Array<{ supplierId: number; email?: string | null }>;
   exchangeRates?: Array<{ currency: string; exchangeRate: number; exchangeRateDate?: string | null; isOfficial: boolean }>;
   notes?: Record<string, string | null>;
+}
+
+export interface PurchaseApprovalRuleDto {
+  id: number;
+  branchCode?: string | null;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+  ruleName: string;
+  documentKind: string;
+  stepOrder: number;
+  approverUserId: number;
+  department?: string | null;
+  projectCode?: string | null;
+  currencyCode?: string | null;
+  minAmount?: number | null;
+  maxAmount?: number | null;
+  isActive: boolean;
+  requireAllPreviousSteps: boolean;
+  description?: string | null;
+}
+
+export interface CreatePurchaseApprovalRuleDto {
+  ruleName: string;
+  documentKind: string;
+  stepOrder: number;
+  approverUserId: number;
+  department?: string | null;
+  projectCode?: string | null;
+  currencyCode?: string | null;
+  minAmount?: number | null;
+  maxAmount?: number | null;
+  isActive: boolean;
+  requireAllPreviousSteps: boolean;
+  description?: string | null;
 }
