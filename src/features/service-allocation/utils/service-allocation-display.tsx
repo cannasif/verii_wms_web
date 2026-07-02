@@ -29,6 +29,15 @@ export const serviceProcessTypeOptions = [
   { value: '3', labelKey: 'serviceAllocation.enum.serviceProcessType.3' },
 ] as const;
 
+export const serviceDecisionTypeOptions = [
+  { value: '1', labelKey: 'serviceAllocation.enum.serviceDecisionType.1' },
+  { value: '2', labelKey: 'serviceAllocation.enum.serviceDecisionType.2' },
+  { value: '3', labelKey: 'serviceAllocation.enum.serviceDecisionType.3' },
+  { value: '4', labelKey: 'serviceAllocation.enum.serviceDecisionType.4' },
+  { value: '5', labelKey: 'serviceAllocation.enum.serviceDecisionType.5' },
+  { value: '6', labelKey: 'serviceAllocation.enum.serviceDecisionType.6' },
+] as const;
+
 function coerceNumber(value: string | number | undefined | null): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
   if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return Number(value);
@@ -116,6 +125,72 @@ export function renderServiceProcessType(value: string | number | undefined | nu
       return badge('bg-emerald-100 text-emerald-800 hover:bg-emerald-100', tt('serviceAllocation.enum.serviceProcessType.3'));
     default:
       return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', String(value ?? '-'));
+  }
+}
+
+export function renderServiceAssignmentStatus(value: string | number | undefined | null): ReactElement {
+  const numeric = coerceNumber(value);
+  switch (numeric) {
+    case 0:
+      return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', tt('serviceAllocation.enum.serviceAssignmentStatus.0'));
+    case 1:
+      return badge('bg-zinc-100 text-zinc-700 hover:bg-zinc-100', tt('serviceAllocation.enum.serviceAssignmentStatus.1'));
+    case 2:
+      return badge('bg-sky-100 text-sky-700 hover:bg-sky-100', tt('serviceAllocation.enum.serviceAssignmentStatus.2'));
+    case 3:
+      return badge('bg-blue-100 text-blue-800 hover:bg-blue-100', tt('serviceAllocation.enum.serviceAssignmentStatus.3'));
+    case 4:
+      return badge('bg-green-100 text-green-800 hover:bg-green-100', tt('serviceAllocation.enum.serviceAssignmentStatus.4'));
+    case 5:
+      return badge('bg-rose-100 text-rose-800 hover:bg-rose-100', tt('serviceAllocation.enum.serviceAssignmentStatus.5'));
+    default:
+      return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', String(value ?? '-'));
+  }
+}
+
+export function renderServiceWorkSessionStatus(value: string | number | undefined | null): ReactElement {
+  const numeric = coerceNumber(value);
+  switch (numeric) {
+    case 0:
+      return badge('bg-blue-100 text-blue-800 hover:bg-blue-100', tt('serviceAllocation.enum.serviceWorkSessionStatus.0'));
+    case 1:
+      return badge('bg-green-100 text-green-800 hover:bg-green-100', tt('serviceAllocation.enum.serviceWorkSessionStatus.1'));
+    case 2:
+      return badge('bg-rose-100 text-rose-800 hover:bg-rose-100', tt('serviceAllocation.enum.serviceWorkSessionStatus.2'));
+    default:
+      return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', String(value ?? '-'));
+  }
+}
+
+export function renderServiceDecisionType(value: string | number | undefined | null): ReactElement {
+  const numeric = coerceNumber(value);
+  if (!numeric) {
+    return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', '-');
+  }
+
+  const colorMap: Record<number, string> = {
+    1: 'bg-green-100 text-green-800 hover:bg-green-100',
+    2: 'bg-amber-100 text-amber-800 hover:bg-amber-100',
+    3: 'bg-sky-100 text-sky-700 hover:bg-sky-100',
+    4: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+    5: 'bg-rose-100 text-rose-800 hover:bg-rose-100',
+    6: 'bg-emerald-100 text-emerald-800 hover:bg-emerald-100',
+  };
+  return badge(colorMap[numeric] ?? 'bg-slate-100 text-slate-700 hover:bg-slate-100', tt(`serviceAllocation.enum.serviceDecisionType.${numeric}`));
+}
+
+export function renderServiceWarrantyStatus(value: string | number | undefined | null): ReactElement {
+  const numeric = coerceNumber(value);
+  switch (numeric) {
+    case 1:
+      return badge('bg-green-100 text-green-800 hover:bg-green-100', tt('serviceAllocation.enum.serviceWarrantyStatus.1'));
+    case 2:
+      return badge('bg-amber-100 text-amber-800 hover:bg-amber-100', tt('serviceAllocation.enum.serviceWarrantyStatus.2'));
+    case 3:
+      return badge('bg-slate-100 text-slate-700 hover:bg-slate-100', tt('serviceAllocation.enum.serviceWarrantyStatus.3'));
+    case 0:
+    default:
+      return badge('bg-zinc-100 text-zinc-700 hover:bg-zinc-100', tt('serviceAllocation.enum.serviceWarrantyStatus.0'));
   }
 }
 

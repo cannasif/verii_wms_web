@@ -4,11 +4,16 @@ import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   AllocationRecomputeResponse,
   AllocationQueueRow,
+  AssignServiceCaseRequest,
   BusinessDocumentLinkRow,
+  CompleteServiceCaseWorkRequest,
   CreateServiceCaseLineRequest,
   CreateServiceCaseRequest,
+  ServiceCaseAssignmentRow,
   ServiceCaseRow,
   ServiceCaseTimelineResponse,
+  ServiceCaseWorkSessionRow,
+  StartServiceCaseWorkRequest,
   UpdateServiceCaseRequest,
 } from '../types/service-allocation.types';
 
@@ -115,6 +120,58 @@ export const serviceAllocationApi = {
 
   async deleteServiceCase(id: number): Promise<ApiResponse<boolean>> {
     return await api.delete<ApiResponse<boolean>>(`/api/ServiceCase/${id}`);
+  },
+
+  async assignServiceCase(id: number, payload: AssignServiceCaseRequest): Promise<ServiceCaseAssignmentRow> {
+    const response = await api.post<ApiResponse<ServiceCaseAssignmentRow>>(`/api/ServiceCase/${id}/assign`, payload);
+    if (!response.data) {
+      throw new Error(response.message || 'Service case could not be assigned.');
+    }
+
+    return response.data;
+  },
+
+  async startServiceCaseWork(id: number, payload: StartServiceCaseWorkRequest): Promise<ServiceCaseWorkSessionRow> {
+    const formData = new FormData();
+    formData.append('assignmentId', String(payload.assignmentId));
+    if (payload.startNote) {
+      formData.append('startNote', payload.startNote);
+    }
+    payload.beforeRepairPhotos.forEach((file) => formData.append('beforeRepairPhotos', file));
+
+    const response = await api.post<ApiResponse<ServiceCaseWorkSessionRow>>(`/api/ServiceCase/${id}/start-work`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    if (!response.data) {
+      throw new Error(response.message || 'Service work could not be started.');
+    }
+
+    return response.data;
+  },
+
+  async completeServiceCaseWork(id: number, payload: CompleteServiceCaseWorkRequest): Promise<ServiceCaseWorkSessionRow> {
+    const formData = new FormData();
+    formData.append('workSessionId', String(payload.workSessionId));
+    formData.append('decisionType', String(payload.decisionType));
+    if (payload.decisionReason) {
+      formData.append('decisionReason', payload.decisionReason);
+    }
+    if (payload.resolutionNote) {
+      formData.append('resolutionNote', payload.resolutionNote);
+    }
+    if (payload.completionNote) {
+      formData.append('completionNote', payload.completionNote);
+    }
+    payload.completionMedia.forEach((file) => formData.append('completionMedia', file));
+
+    const response = await api.post<ApiResponse<ServiceCaseWorkSessionRow>>(`/api/ServiceCase/${id}/complete-work`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    if (!response.data) {
+      throw new Error(response.message || 'Service work could not be completed.');
+    }
+
+    return response.data;
   },
 
   async createServiceCaseLine(payload: CreateServiceCaseLineRequest) {

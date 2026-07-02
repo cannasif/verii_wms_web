@@ -1,9 +1,11 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ChangeEvent, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { OpsActionButton, OpsFormPageShell, OpsServiceEyebrow, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow, OpsTextarea, PageState } from '@/components/shared';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS } from '@/components/shared/ops-field-styles';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { serviceAllocationApi } from '../api/service-allocation.api';
@@ -15,8 +17,13 @@ import {
 import {
   renderDocumentLinkPurpose,
   renderDocumentModule,
+  renderServiceAssignmentStatus,
   renderServiceCaseLineType,
   renderServiceCaseStatus,
+  renderServiceDecisionType,
+  renderServiceWarrantyStatus,
+  renderServiceWorkSessionStatus,
+  serviceDecisionTypeOptions,
 } from '../utils/service-allocation-display';
 
 function formatDate(value?: string): string {
@@ -25,15 +32,47 @@ function formatDate(value?: string): string {
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('tr-TR');
 }
 
+function fileListToArray(event: ChangeEvent<HTMLInputElement>): File[] {
+  return Array.from(event.target.files ?? []);
+}
+
+function formatDuration(seconds?: number): string {
+  if (!seconds && seconds !== 0) return '-';
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return minutes > 0 ? `${minutes} dk ${remainingSeconds} sn` : `${remainingSeconds} sn`;
+}
+
 export function ServiceCaseTimelinePage(): ReactElement {
   const { t } = useTranslation(['service-allocation', 'common']);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id } = useParams();
   const parsedId = Number(id);
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.service-allocation');
   const query = useServiceCaseTimelineQuery(parsedId);
   const timeline = query.data;
+  const [assignedBranchCode, setAssignedBranchCode] = useState('0');
+  const [assignedUserEmail, setAssignedUserEmail] = useState('');
+  const [assignmentNote, setAssignmentNote] = useState('');
+  const [startAssignmentId, setStartAssignmentId] = useState('');
+  const [startNote, setStartNote] = useState('');
+  const [beforeRepairPhotos, setBeforeRepairPhotos] = useState<File[]>([]);
+  const [completeWorkSessionId, setCompleteWorkSessionId] = useState('');
+  const [decisionType, setDecisionType] = useState('1');
+  const [decisionReason, setDecisionReason] = useState('');
+  const [resolutionNote, setResolutionNote] = useState('');
+  const [completionNote, setCompletionNote] = useState('');
+  const [completionMedia, setCompletionMedia] = useState<File[]>([]);
+  const openAssignments = useMemo(
+    () => timeline?.assignments.filter((item) => ![3, 4, 5].includes(Number(item.status))) ?? [],
+    [timeline?.assignments],
+  );
+  const startedSessions = useMemo(
+    () => timeline?.workSessions.filter((item) => Number(item.status) === 0) ?? [],
+    [timeline?.workSessions],
+  );
   const recomputeMutation = useMutation({
     mutationFn: async () => {
       const stockId = timeline?.serviceCase.incomingStockId;
@@ -55,11 +94,81 @@ export function ServiceCaseTimelinePage(): ReactElement {
       toast.error(error.message || t('serviceAllocation.recompute.error'));
     },
   });
+  const assignMutation = useMutation({
+    mutationFn: () =>
+      serviceAllocationApi.assignServiceCase(parsedId, {
+        assignedBranchCode,
+        assignedUserEmail: assignedUserEmail || undefined,
+        note: assignmentNote || undefined,
+      }),
+    onSuccess: () => {
+      toast.success(t('serviceAllocation.technicalService.assignSuccess'));
+      setAssignmentNote('');
+      setAssignedUserEmail('');
+      void query.refetch();
+      queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('serviceAllocation.technicalService.assignError'));
+    },
+  });
+  const startWorkMutation = useMutation({
+    mutationFn: () =>
+      serviceAllocationApi.startServiceCaseWork(parsedId, {
+        assignmentId: Number(startAssignmentId),
+        startNote: startNote || undefined,
+        beforeRepairPhotos,
+      }),
+    onSuccess: () => {
+      toast.success(t('serviceAllocation.technicalService.startSuccess'));
+      setStartNote('');
+      setBeforeRepairPhotos([]);
+      setStartAssignmentId('');
+      void query.refetch();
+      queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('serviceAllocation.technicalService.startError'));
+    },
+  });
+  const completeWorkMutation = useMutation({
+    mutationFn: () =>
+      serviceAllocationApi.completeServiceCaseWork(parsedId, {
+        workSessionId: Number(completeWorkSessionId),
+        decisionType: Number(decisionType),
+        decisionReason: decisionReason || undefined,
+        resolutionNote: resolutionNote || undefined,
+        completionNote: completionNote || undefined,
+        completionMedia,
+      }),
+    onSuccess: () => {
+      toast.success(t('serviceAllocation.technicalService.completeSuccess'));
+      setDecisionReason('');
+      setResolutionNote('');
+      setCompletionNote('');
+      setCompletionMedia([]);
+      setCompleteWorkSessionId('');
+      void query.refetch();
+      queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('serviceAllocation.technicalService.completeError'));
+    },
+  });
 
   useEffect(() => {
     setPageTitle(t('serviceAllocation.timeline.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  useEffect(() => {
+    if (!timeline) {
+      return;
+    }
+
+    setStartAssignmentId((current) => current || String(openAssignments[0]?.id ?? ''));
+    setCompleteWorkSessionId((current) => current || String(startedSessions[0]?.id ?? ''));
+  }, [openAssignments, startedSessions, timeline]);
 
   return (
     <OpsFormPageShell
@@ -110,6 +219,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
                 <ServiceCaseDetailRow label={t('serviceAllocation.status')}>
                   {renderServiceCaseStatus(timeline.serviceCase.status)}
                 </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.warrantyStatus')}>
+                  {renderServiceWarrantyStatus(timeline.serviceCase.warrantyStatus)}
+                </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.decisionType')}>
+                  {renderServiceDecisionType(timeline.serviceCase.decisionType)}
+                </ServiceCaseDetailRow>
                 <ServiceCaseDetailRow label={t('serviceAllocation.receivedAt')}>
                   {formatDate(timeline.serviceCase.receivedAt)}
                 </ServiceCaseDetailRow>
@@ -127,6 +242,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
                 </ServiceCaseDetailRow>
                 <ServiceCaseDetailRow label={t('serviceAllocation.serialNo')}>
                   {timeline.serviceCase.incomingSerialNo || '-'}
+                </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.barcode')}>
+                  {timeline.serviceCase.barcode || '-'}
+                </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.saleDate')}>
+                  {formatDate(timeline.serviceCase.saleDate)}
                 </ServiceCaseDetailRow>
                 <ServiceCaseDetailRow label={t('serviceAllocation.intakeWarehouseId')}>
                   {timeline.serviceCase.intakeWarehouseId ?? '-'}
@@ -146,6 +267,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
                 <ServiceCaseDetailRow label={t('serviceAllocation.timeline.lastMovement')}>
                   {formatDate(timeline.timeline[0]?.linkedAt)}
                 </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.technicalService.mediaCount')}>
+                  {timeline.media.length}
+                </ServiceCaseDetailRow>
+                <ServiceCaseDetailRow label={t('serviceAllocation.technicalService.assignmentCount')}>
+                  {timeline.assignments.length}
+                </ServiceCaseDetailRow>
               </div>
               {timeline.serviceCase.diagnosisNote ? (
                 <div className="wms-ops-detail-panel__body">
@@ -155,6 +282,115 @@ export function ServiceCaseTimelinePage(): ReactElement {
               ) : null}
             </div>
           </div>
+
+          {permission.canUpdate ? (
+            <section className="wms-ops-detail-panel overflow-hidden">
+              <h3 className="wms-ops-detail-section-title">{t('serviceAllocation.technicalService.title')}</h3>
+              <div className="grid gap-4 p-4 lg:grid-cols-3">
+                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                  <div className="mb-3">
+                    <div className="font-semibold">{t('serviceAllocation.technicalService.assignTitle')}</div>
+                    <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.assignDescription')}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <OpsInput value={assignedBranchCode} onChange={(event) => setAssignedBranchCode(event.target.value)} placeholder={t('serviceAllocation.technicalService.branchCode')} />
+                    <OpsInput value={assignedUserEmail} onChange={(event) => setAssignedUserEmail(event.target.value)} placeholder={t('serviceAllocation.technicalService.technicianEmail')} />
+                    <OpsTextarea value={assignmentNote} onChange={(event) => setAssignmentNote(event.target.value)} rows={3} placeholder={t('serviceAllocation.technicalService.note')} />
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      disabled={!assignedBranchCode || assignMutation.isPending}
+                      onClick={() => assignMutation.mutate()}
+                    >
+                      {assignMutation.isPending ? t('common.loading') : t('serviceAllocation.technicalService.assignAction')}
+                    </OpsActionButton>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                  <div className="mb-3">
+                    <div className="font-semibold">{t('serviceAllocation.technicalService.startTitle')}</div>
+                    <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.startDescription')}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <Select value={startAssignmentId} onValueChange={setStartAssignmentId}>
+                      <SelectTrigger className={OPS_FIELD_CLASS}>
+                        <SelectValue placeholder={t('serviceAllocation.technicalService.selectAssignment')} />
+                      </SelectTrigger>
+                      <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                        {openAssignments.map((assignment) => (
+                          <SelectItem key={assignment.id} value={String(assignment.id)}>
+                            #{assignment.id} - {assignment.assignedBranchCode}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <OpsTextarea value={startNote} onChange={(event) => setStartNote(event.target.value)} rows={3} placeholder={t('serviceAllocation.technicalService.startNote')} />
+                    <OpsInput type="file" accept="image/*" multiple onChange={(event) => setBeforeRepairPhotos(fileListToArray(event))} />
+                    <div className="text-xs text-muted-foreground">
+                      {t('serviceAllocation.technicalService.selectedFileCount', { count: beforeRepairPhotos.length })}
+                    </div>
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      disabled={!startAssignmentId || beforeRepairPhotos.length === 0 || startWorkMutation.isPending}
+                      onClick={() => startWorkMutation.mutate()}
+                    >
+                      {startWorkMutation.isPending ? t('common.loading') : t('serviceAllocation.technicalService.startAction')}
+                    </OpsActionButton>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                  <div className="mb-3">
+                    <div className="font-semibold">{t('serviceAllocation.technicalService.completeTitle')}</div>
+                    <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.completeDescription')}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <Select value={completeWorkSessionId} onValueChange={setCompleteWorkSessionId}>
+                      <SelectTrigger className={OPS_FIELD_CLASS}>
+                        <SelectValue placeholder={t('serviceAllocation.technicalService.selectWorkSession')} />
+                      </SelectTrigger>
+                      <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                        {startedSessions.map((session) => (
+                          <SelectItem key={session.id} value={String(session.id)}>
+                            #{session.id} - {formatDate(session.startedAt)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={decisionType} onValueChange={setDecisionType}>
+                      <SelectTrigger className={OPS_FIELD_CLASS}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                        {serviceDecisionTypeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {t(option.labelKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <OpsTextarea value={decisionReason} onChange={(event) => setDecisionReason(event.target.value)} rows={2} placeholder={t('serviceAllocation.technicalService.decisionReason')} />
+                    <OpsTextarea value={resolutionNote} onChange={(event) => setResolutionNote(event.target.value)} rows={2} placeholder={t('serviceAllocation.technicalService.resolutionNote')} />
+                    <OpsTextarea value={completionNote} onChange={(event) => setCompletionNote(event.target.value)} rows={2} placeholder={t('serviceAllocation.technicalService.completionNote')} />
+                    <OpsInput type="file" accept="image/*,video/*" multiple onChange={(event) => setCompletionMedia(fileListToArray(event))} />
+                    <div className="text-xs text-muted-foreground">
+                      {t('serviceAllocation.technicalService.selectedFileCount', { count: completionMedia.length })}
+                    </div>
+                    <OpsActionButton
+                      type="button"
+                      variant="primary"
+                      disabled={!completeWorkSessionId || completionMedia.length === 0 || completeWorkMutation.isPending}
+                      onClick={() => completeWorkMutation.mutate()}
+                    >
+                      {completeWorkMutation.isPending ? t('common.loading') : t('serviceAllocation.technicalService.completeAction')}
+                    </OpsActionButton>
+                  </div>
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <ServiceCaseOpsDataTable
             title={t('serviceAllocation.lines')}
@@ -175,6 +411,79 @@ export function ServiceCaseTimelinePage(): ReactElement {
                 <td className="wms-ops-table-center-col font-mono text-xs">{line.quantity}</td>
                 <td className="wms-ops-table-center-col font-mono text-xs">{line.erpOrderNo || '-'}</td>
                 <td className="wms-ops-table-center-col font-mono text-xs">{line.erpOrderId || '-'}</td>
+              </tr>
+            ))}
+          </ServiceCaseOpsDataTable>
+
+          <ServiceCaseOpsDataTable
+            title={t('serviceAllocation.technicalService.assignments')}
+            isEmpty={timeline.assignments.length === 0}
+            emptyText={t('serviceAllocation.technicalService.noAssignments')}
+            columns={[
+              { key: 'assignedBranchCode', label: t('serviceAllocation.technicalService.branchCode'), className: 'wms-ops-table-center-col' },
+              { key: 'assignedUserEmail', label: t('serviceAllocation.technicalService.technicianEmail'), className: 'wms-ops-table-center-col' },
+              { key: 'status', label: t('serviceAllocation.status'), className: 'wms-ops-table-center-col' },
+              { key: 'assignedAt', label: t('serviceAllocation.technicalService.assignedAt'), className: 'wms-ops-table-center-col' },
+              { key: 'startedAt', label: t('serviceAllocation.technicalService.startedAt'), className: 'wms-ops-table-center-col' },
+              { key: 'completedAt', label: t('serviceAllocation.technicalService.completedAt'), className: 'wms-ops-table-center-col' },
+            ]}
+          >
+            {timeline.assignments.map((assignment) => (
+              <tr key={assignment.id}>
+                <td className="wms-ops-table-center-col font-mono text-xs">{assignment.assignedBranchCode}</td>
+                <td className="wms-ops-table-center-col">{assignment.assignedUserEmail || '-'}</td>
+                <td className="wms-ops-table-center-col">{renderServiceAssignmentStatus(assignment.status)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(assignment.assignedAt)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(assignment.startedAt)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(assignment.completedAt)}</td>
+              </tr>
+            ))}
+          </ServiceCaseOpsDataTable>
+
+          <ServiceCaseOpsDataTable
+            title={t('serviceAllocation.technicalService.workSessions')}
+            isEmpty={timeline.workSessions.length === 0}
+            emptyText={t('serviceAllocation.technicalService.noWorkSessions')}
+            columns={[
+              { key: 'technician', label: t('serviceAllocation.technicalService.technicianEmail'), className: 'wms-ops-table-center-col' },
+              { key: 'status', label: t('serviceAllocation.status'), className: 'wms-ops-table-center-col' },
+              { key: 'startedAt', label: t('serviceAllocation.technicalService.startedAt'), className: 'wms-ops-table-center-col' },
+              { key: 'finishedAt', label: t('serviceAllocation.technicalService.finishedAt'), className: 'wms-ops-table-center-col' },
+              { key: 'duration', label: t('serviceAllocation.technicalService.duration'), className: 'wms-ops-table-center-col' },
+            ]}
+          >
+            {timeline.workSessions.map((session) => (
+              <tr key={session.id}>
+                <td className="wms-ops-table-center-col">{session.technicianUserEmail || `#${session.technicianUserId}`}</td>
+                <td className="wms-ops-table-center-col">{renderServiceWorkSessionStatus(session.status)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(session.startedAt)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(session.finishedAt)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDuration(session.durationSeconds)}</td>
+              </tr>
+            ))}
+          </ServiceCaseOpsDataTable>
+
+          <ServiceCaseOpsDataTable
+            title={t('serviceAllocation.technicalService.media')}
+            isEmpty={timeline.media.length === 0}
+            emptyText={t('serviceAllocation.technicalService.noMedia')}
+            columns={[
+              { key: 'fileName', label: t('serviceAllocation.technicalService.fileName'), className: 'wms-ops-table-center-col' },
+              { key: 'mediaPhase', label: t('serviceAllocation.technicalService.mediaPhase'), className: 'wms-ops-table-center-col' },
+              { key: 'contentType', label: t('serviceAllocation.technicalService.contentType'), className: 'wms-ops-table-center-col' },
+              { key: 'capturedAt', label: t('serviceAllocation.technicalService.capturedAt'), className: 'wms-ops-table-center-col' },
+            ]}
+          >
+            {timeline.media.map((media) => (
+              <tr key={media.id}>
+                <td className="wms-ops-table-center-col">
+                  <a className="font-mono text-xs underline" href={media.fileUrl} target="_blank" rel="noreferrer">
+                    {media.fileName}
+                  </a>
+                </td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{t(`serviceAllocation.enum.serviceMediaPhase.${media.mediaPhase}`)}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{media.contentType || '-'}</td>
+                <td className="wms-ops-table-center-col font-mono text-xs">{formatDate(media.capturedAt)}</td>
               </tr>
             ))}
           </ServiceCaseOpsDataTable>

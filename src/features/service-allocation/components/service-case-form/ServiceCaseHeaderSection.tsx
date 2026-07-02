@@ -147,6 +147,43 @@ export function ServiceCaseHeaderSection({
       />
       <FormField
         control={form.control}
+        name="requestSource"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.requestSource')}</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <OpsFieldShell>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                </OpsFieldShell>
+              </FormControl>
+              <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                {[0, 1, 2, 3, 4].map((value) => (
+                  <SelectItem key={value} value={String(value)}>
+                    {t(`serviceAllocation.enum.serviceRequestSource.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="requestReference"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.requestReference')}</FormLabel>
+            <FormControl>
+              <OpsInput {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="incomingStockCode"
         render={({ field }) => (
           <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
@@ -186,6 +223,98 @@ export function ServiceCaseHeaderSection({
         render={({ field }) => (
           <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
             <FormLabel>{t('serviceAllocation.serialNo')}</FormLabel>
+            <FormControl>
+              <OpsInput {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="barcode"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.barcode')}</FormLabel>
+            <FormControl>
+              <OpsInput {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="saleDate"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.saleDate')}</FormLabel>
+            <FormControl>
+              <OpsInput type="date" {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="warrantyStatus"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.warrantyStatus')}</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <OpsFieldShell>
+                  <SelectTrigger className={cn('w-full', OPS_FIELD_CLASS)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                </OpsFieldShell>
+              </FormControl>
+              <SelectContent className={OPS_SELECT_CONTENT_CLASS}>
+                {[0, 1, 2, 3].map((value) => (
+                  <SelectItem key={value} value={String(value)}>
+                    {t(`serviceAllocation.enum.serviceWarrantyStatus.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="warrantyPeriodMonths"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.warrantyPeriodMonths')}</FormLabel>
+            <FormControl>
+              <OpsInput type="number" min={1} {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="forceWarrantyOverride"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.forceWarrantyOverride')}</FormLabel>
+            <FormControl>
+              <label className="flex min-h-11 items-center gap-3 rounded-2xl border bg-background/70 px-4 text-sm">
+                <input
+                  type="checkbox"
+                  checked={Boolean(field.value)}
+                  onChange={(event) => field.onChange(event.target.checked)}
+                />
+                <span>{t('serviceAllocation.forceWarrantyOverrideHint')}</span>
+              </label>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="warrantyOverrideReason"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.warrantyOverrideReason')}</FormLabel>
             <FormControl>
               <OpsInput {...field} />
             </FormControl>
@@ -274,10 +403,70 @@ export function ServiceCaseHeaderSection({
       />
       <FormField
         control={form.control}
+        name="serviceWarehouseId"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.serviceWarehouseId')}</FormLabel>
+            <FormControl>
+              <OpsInput type="number" {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="serviceShelfId"
+        render={({ field }) => (
+          <FormItem className={SERVICE_CASE_FORM_ITEM_CLASS}>
+            <FormLabel>{t('serviceAllocation.serviceShelfId')}</FormLabel>
+            <FormControl>
+              <OpsInput type="number" {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="customerComplaint"
+        render={({ field }) => (
+          <FormItem className={cn(SERVICE_CASE_FORM_ITEM_CLASS, 'md:col-span-2')}>
+            <FormLabel>{t('serviceAllocation.customerComplaint')}</FormLabel>
+            <FormControl>
+              <OpsTextarea {...field} rows={3} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="faultDescription"
+        render={({ field }) => (
+          <FormItem className={cn(SERVICE_CASE_FORM_ITEM_CLASS, 'md:col-span-2')}>
+            <FormLabel>{t('serviceAllocation.faultDescription')}</FormLabel>
+            <FormControl>
+              <OpsTextarea {...field} rows={3} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="diagnosisNote"
         render={({ field }) => (
           <FormItem className={cn(SERVICE_CASE_FORM_ITEM_CLASS, 'md:col-span-2')}>
             <FormLabel>{t('serviceAllocation.diagnosisNote')}</FormLabel>
+            <FormControl>
+              <OpsTextarea {...field} rows={4} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="resolutionNote"
+        render={({ field }) => (
+          <FormItem className={cn(SERVICE_CASE_FORM_ITEM_CLASS, 'md:col-span-2')}>
+            <FormLabel>{t('serviceAllocation.resolutionNote')}</FormLabel>
             <FormControl>
               <OpsTextarea {...field} rows={4} />
             </FormControl>
