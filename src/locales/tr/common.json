@@ -411,9 +411,9 @@
     "inventoryCountAssigned": "Atanmış Sayım Emirleri",
     "inventoryCountProcess": "Sayım Direkt Giriş Yap",
     "inventoryCountList": "Sayım Emirleri",
-    "erpDocumentSeries": "Belge Seri Yönetimi",
-    "erpDocumentSeriesDefinitions": "Belge Seri Tanımları",
-    "erpDocumentSeriesRules": "Belge Seri Kuralları",
+    "erpDocumentSeries": "Dosya Tipi ve Belge Seri",
+    "erpDocumentSeriesDefinitions": "Dosya / Belge Seri Tanımları",
+    "erpDocumentSeriesRules": "Dosya Tipi Seri Kuralları",
     "erpBarcodeDesigner": "Barkod Tasarımcısı",
     "erpBarcodeDesignerCreate": "Barkod Tasarımı Oluştur",
     "erpBarcodeDesignerEdit": "Barkod Tasarımını Düzenle",
@@ -1345,6 +1345,22 @@
       "defaultDefinition": "Genel varsayılan",
       "unknown": "Çözümleme"
     },
+    "operationTypeLabels": {
+      "WI": "Ambar Girişi",
+      "WO": "Ambar Çıkışı",
+      "WT": "Depo Transferi",
+      "SH": "Sevkiyat",
+      "SIT": "Yarı Mamul Çıkış Transferi",
+      "SRT": "Yarı Mamul Giriş Transferi",
+      "PR": "Üretim",
+      "PT": "Üretim Transferi",
+      "QRETURN": "Kalite İade",
+      "QREJECT": "Kalite Red",
+      "PURCHASE_REQUEST": "Satınalma Talebi",
+      "PURCHASE_RFQ": "Satınalma Teklif İsteği (RFQ)",
+      "PURCHASE_QUOTATION": "Satınalma Tedarikçi Teklifi",
+      "PURCHASE_ORDER": "Satınalma Siparişi"
+    },
     "columns": {
       "code": "Kod",
       "name": "Ad",
@@ -1373,15 +1389,15 @@
       "definition": "Belge seri tanımı seçiniz"
     },
     "definitions": {
-      "pageTitle": "Belge Seri Tanımları",
-      "pageDescription": "Belge numarası seri tanımlarını yönetin.",
+      "pageTitle": "Dosya / Belge Seri Tanımları",
+      "pageDescription": "CRM dosya tipi mantığıyla uyumlu belge numarası, seri prefix ve numara akışını yönetin.",
       "empty": "Gösterilecek belge seri tanımı bulunamadı.",
       "createTitle": "Belge Seri Tanımı Oluştur",
       "editTitle": "Belge Seri Tanımını Güncelle"
     },
     "rules": {
-      "pageTitle": "Belge Seri Kuralları",
-      "pageDescription": "Depo, cari ve kullanıcıya göre belge seri eşleştirme kurallarını yönetin.",
+      "pageTitle": "Dosya Tipi Seri Kuralları",
+      "pageDescription": "Depo, cari, kullanıcı ve işlem tipine göre kullanılacak dosya/belge serisini eşleştirin.",
       "empty": "Gösterilecek belge seri kuralı bulunamadı.",
       "createTitle": "Belge Seri Kuralı Oluştur",
       "editTitle": "Belge Seri Kuralını Güncelle"

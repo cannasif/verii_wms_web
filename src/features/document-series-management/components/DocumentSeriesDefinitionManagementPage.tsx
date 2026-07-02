@@ -38,6 +38,7 @@ import {
   documentSeriesDocumentFlows,
   documentSeriesOperationTypes,
   documentSeriesYearModes,
+  getDocumentSeriesOperationTypeLabel,
 } from './document-series/shared';
 
 type ColumnKey = 'code' | 'name' | 'operationType' | 'documentFlow' | 'warehouse' | 'seriesPrefix' | 'currentNumber' | 'isEDispatchSeries' | 'isDefault' | 'isActive' | 'actions';
@@ -264,7 +265,7 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
             case 'name':
               return row.name;
             case 'operationType':
-              return row.operationType;
+              return getDocumentSeriesOperationTypeLabel(t, row.operationType);
             case 'documentFlow':
               return row.documentFlow;
             case 'warehouse': return buildWarehouseLabel(row.warehouseCode, row.warehouseName) || '-';
@@ -356,7 +357,7 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
                 <OpsInput value={formState.name} onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))} />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('documentSeries.columns.operationType')}>
-                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{getDocumentSeriesOperationTypeLabel(t, item)}</option>)}</select>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('documentSeries.columns.documentFlow')}>
                 <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.documentFlow} onChange={(event) => setFormState((prev) => ({ ...prev, documentFlow: event.target.value }))}>{documentSeriesDocumentFlows.map((item) => <option key={item} value={item}>{item}</option>)}</select>

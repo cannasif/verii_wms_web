@@ -37,9 +37,10 @@ function normalizePaged<T>(response: ApiResponse<PagedResponse<T>>): PagedRespon
 
 export const documentSeriesManagementApi = {
   async getDefinitionsPaged(params: PagedParams = {}): Promise<PagedResponse<WmsDocumentSeriesDefinitionPagedRowDto>> {
-    const response = await api.get<ApiResponse<PagedResponse<WmsDocumentSeriesDefinitionPagedRowDto>>>('/api/DocumentSeriesManagement/definitions/paged', {
-      params: buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WmsDocumentSeriesDefinitionPagedRowDto>>>(
+      '/api/DocumentSeriesManagement/definitions/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     return normalizePaged(response);
   },
 
@@ -64,9 +65,10 @@ export const documentSeriesManagementApi = {
   },
 
   async getRulesPaged(params: PagedParams = {}): Promise<PagedResponse<WmsDocumentSeriesRulePagedRowDto>> {
-    const response = await api.get<ApiResponse<PagedResponse<WmsDocumentSeriesRulePagedRowDto>>>('/api/DocumentSeriesManagement/rules/paged', {
-      params: buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
-    });
+    const response = await api.post<ApiResponse<PagedResponse<WmsDocumentSeriesRulePagedRowDto>>>(
+      '/api/DocumentSeriesManagement/rules/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     return normalizePaged(response);
   },
 

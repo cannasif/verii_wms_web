@@ -627,21 +627,18 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 searchPlaceholder="Seri kodu veya adı ara"
                 emptyText="Satınalma için aktif belge serisi bulunamadı."
                 queryKey={['purchase', 'document-series', kind]}
-                fetchPage={async ({ search }) => {
-                  const response = await documentSeriesManagementApi.getDefinitionsPaged({ pageNumber: 1, pageSize: 200, search });
+                fetchPage={({ pageNumber, pageSize, search }) => {
                   const operationType = getPurchaseSeriesOperationType(kind);
-                  const filtered = (response.data ?? []).filter((item) => item.operationType === operationType && item.isActive);
-
-                  return {
-                    ...response,
-                    data: filtered,
-                    totalCount: filtered.length,
-                    pageNumber: 1,
-                    pageSize: filtered.length || 20,
-                    totalPages: 1,
-                    hasPreviousPage: false,
-                    hasNextPage: false,
-                  };
+                  return documentSeriesManagementApi.getDefinitionsPaged({
+                    pageNumber,
+                    pageSize,
+                    search,
+                    filters: [
+                      { column: 'OperationType', operator: 'Equals', value: operationType },
+                      { column: 'IsActive', operator: 'Equals', value: 'true' },
+                    ],
+                    filterLogic: 'and',
+                  });
                 }}
                 getKey={(definition) => definition.id.toString()}
                 getLabel={buildSeriesLabel}

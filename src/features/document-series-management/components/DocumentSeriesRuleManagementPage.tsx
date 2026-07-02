@@ -41,6 +41,7 @@ import {
   buildDefinitionLabel,
   buildWarehouseLabel,
   documentSeriesOperationTypes,
+  getDocumentSeriesOperationTypeLabel,
 } from './document-series/shared';
 
 type ColumnKey = 'definition' | 'operationType' | 'warehouse' | 'customer' | 'user' | 'requiresEDispatch' | 'priority' | 'isActive' | 'actions';
@@ -255,7 +256,7 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
           switch (columnKey) {
             case 'definition': return buildDefinitionLabel(row.documentSeriesDefinitionCode, row.documentSeriesDefinitionName);
             case 'operationType':
-              return row.operationType;
+              return getDocumentSeriesOperationTypeLabel(t, row.operationType);
             case 'warehouse': return buildWarehouseLabel(row.warehouseCode, row.warehouseName) || '-';
             case 'customer': return buildCustomerLabel(row.customerCode, row.customerName) || '-';
             case 'user': return row.userFullName || '-';
@@ -357,7 +358,7 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
                 />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('documentSeries.columns.operationType')}>
-                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                <select className="wms-ops-field w-full rounded-none border bg-transparent px-3 py-2" value={formState.operationType} onChange={(event) => setFormState((prev) => ({ ...prev, operationType: event.target.value }))}>{documentSeriesOperationTypes.map((item) => <option key={item} value={item}>{getDocumentSeriesOperationTypeLabel(t, item)}</option>)}</select>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('documentSeries.columns.companyCode')}>
                 <OpsInput value={formState.companyCode ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, companyCode: event.target.value }))} />

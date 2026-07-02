@@ -160,27 +160,17 @@ export function OperationDocumentSeriesSelector({
       disabled={disabled}
       triggerClassName={isOps ? OPS_FIELD_CLASS : undefined}
       queryKey={['document-series', 'definitions', operationType]}
-      fetchPage={async ({ search }) => {
-        const response = await documentSeriesManagementApi.getDefinitionsPaged({
-          pageNumber: 1,
-          pageSize: 200,
+      fetchPage={({ pageNumber, pageSize, search }) =>
+        documentSeriesManagementApi.getDefinitionsPaged({
+          pageNumber,
+          pageSize,
           search,
-        });
-
-        const filtered = (response.data ?? []).filter(
-          (item) => item.operationType === operationType && item.isActive,
-        );
-
-        return {
-          ...response,
-          data: filtered,
-          totalCount: filtered.length,
-          pageNumber: 1,
-          totalPages: 1,
-          hasPreviousPage: false,
-          hasNextPage: false,
-        };
-      }}
+          filters: [
+            { column: 'OperationType', operator: 'Equals', value: operationType },
+            { column: 'IsActive', operator: 'Equals', value: 'true' },
+          ],
+          filterLogic: 'and',
+        })}
       getKey={(item) => item.id.toString()}
       getLabel={buildDefinitionLabel}
       onSelect={(definition) => {
