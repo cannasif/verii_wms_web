@@ -134,6 +134,24 @@ export function ServiceCaseTimelinePage(): ReactElement {
       toast.error(error.message || t('serviceAllocation.disposition.linkError'));
     },
   });
+  const generateDispositionDocumentMutation = useMutation({
+    mutationFn: () =>
+      serviceAllocationApi.generateServiceCaseDispositionDocument(parsedId, {
+        note: dispositionDocumentNote || undefined,
+      }),
+    onSuccess: () => {
+      toast.success(t('serviceAllocation.disposition.generateSuccess'));
+      setDispositionDocumentHeaderId('');
+      setDispositionDocumentLineId('');
+      setDispositionDocumentNote('');
+      void query.refetch();
+      void dispositionPlanQuery.refetch();
+      queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('serviceAllocation.disposition.generateError'));
+    },
+  });
   const assignMutation = useMutation({
     mutationFn: () =>
       serviceAllocationApi.assignServiceCase(parsedId, {
@@ -386,6 +404,31 @@ export function ServiceCaseTimelinePage(): ReactElement {
                   </p>
                   {permission.canUpdate && dispositionPlan.isReadyForDisposition && !dispositionPlan.hasDispositionDocument ? (
                     <div className="mt-4 rounded-2xl border bg-muted/20 p-3">
+                      <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.generateFormTitle')}</div>
+                      <OpsTextarea
+                        value={dispositionDocumentNote}
+                        onChange={(event) => setDispositionDocumentNote(event.target.value)}
+                        rows={2}
+                        placeholder={t('serviceAllocation.disposition.notePlaceholder')}
+                      />
+                      <div className="mt-3 flex justify-end">
+                        <OpsActionButton
+                          type="button"
+                          variant="primary"
+                          disabled={
+                            !dispositionPlan.requiredDocumentModule
+                            || !dispositionPlan.requiredLinkPurpose
+                            || generateDispositionDocumentMutation.isPending
+                          }
+                          onClick={() => generateDispositionDocumentMutation.mutate()}
+                        >
+                          {generateDispositionDocumentMutation.isPending
+                            ? t('common.loading')
+                            : t('serviceAllocation.disposition.generateAction')}
+                        </OpsActionButton>
+                      </div>
+
+                      <div className="my-4 border-t" />
                       <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.linkFormTitle')}</div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <OpsInput
@@ -403,13 +446,6 @@ export function ServiceCaseTimelinePage(): ReactElement {
                           placeholder={t('serviceAllocation.disposition.documentLinePlaceholder')}
                         />
                       </div>
-                      <OpsTextarea
-                        className="mt-3"
-                        value={dispositionDocumentNote}
-                        onChange={(event) => setDispositionDocumentNote(event.target.value)}
-                        rows={2}
-                        placeholder={t('serviceAllocation.disposition.notePlaceholder')}
-                      />
                       <div className="mt-3 flex justify-end">
                         <OpsActionButton
                           type="button"

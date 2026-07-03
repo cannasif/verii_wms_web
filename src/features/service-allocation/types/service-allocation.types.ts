@@ -206,6 +206,10 @@ export type RegisterServiceCaseDispositionLinkRequest = {
   note?: string;
 };
 
+export type GenerateServiceCaseDispositionDocumentRequest = {
+  note?: string;
+};
+
 export type CreateServiceCaseRequest = {
   caseNo: string;
   requestSource?: number;
