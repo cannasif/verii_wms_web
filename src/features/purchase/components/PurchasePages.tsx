@@ -1,8 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Pencil, Plus, RefreshCw, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Loader2, Pencil, Plus, RefreshCw, Save, Search, Send, Trash2, Users, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -862,9 +862,10 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   const [stockLookupOpen, setStockLookupOpen] = useState(false);
   const [seriesLookupOpen, setSeriesLookupOpen] = useState(false);
   const [supplierLabel, setSupplierLabel] = useState('');
-  const [rfqSupplierLabel, setRfqSupplierLabel] = useState('');
   const [stockLabel, setStockLabel] = useState('');
   const [seriesLabel, setSeriesLabel] = useState('');
+  const [rfqSupplierSearchInput, setRfqSupplierSearchInput] = useState('');
+  const [rfqSupplierSearch, setRfqSupplierSearch] = useState('');
   const [formState, setFormState] = useState({
     documentNo: '',
     documentSeriesDefinitionId: '',
@@ -919,6 +920,26 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     enabled: isCommercial && exchangeRateDialogOpen,
     staleTime: 5 * 60 * 1000,
   });
+
+  const rfqSupplierQuery = useInfiniteQuery({
+    queryKey: ['purchase', 'rfq-supplier-multi-lookup', rfqSupplierSearch],
+    queryFn: ({ pageParam = 1, signal }) =>
+      lookupApi.getCustomersPaged({
+        pageNumber: Number(pageParam),
+        pageSize: 20,
+        search: rfqSupplierSearch,
+        filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
+      }, { signal }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined,
+    enabled: isRfq && rfqSupplierLookupOpen,
+    staleTime: 60 * 1000,
+  });
+
+  const rfqSupplierLookupItems = useMemo(
+    () => rfqSupplierQuery.data?.pages.flatMap((page) => page.data ?? []) ?? [],
+    [rfqSupplierQuery.data?.pages],
+  );
 
   useEffect(() => {
     setPageTitle(editingId ? `${config.createTitle} Düzenle` : config.createTitle);
@@ -1143,14 +1164,29 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     setLines((prev) => prev.filter((_, currentIndex) => currentIndex !== index));
   }
 
-  function handleAddRfqSupplier(customer: CustomerLookup): void {
+  function handleToggleRfqSupplier(customer: CustomerLookup): void {
     setRfqSuppliers((prev) => {
       if (prev.some((item) => item.supplierId === customer.id)) {
-        return prev;
+        return prev.filter((item) => item.supplierId !== customer.id);
       }
       return [...prev, { supplierId: customer.id, label: buildSupplierLabel(customer), email: customer.acik1 || null }];
     });
-    setRfqSupplierLabel('');
+  }
+
+  function handleSelectVisibleRfqSuppliers(): void {
+    setRfqSuppliers((prev) => {
+      const selected = new Map(prev.map((supplier) => [supplier.supplierId, supplier]));
+      rfqSupplierLookupItems.forEach((customer) => {
+        if (!selected.has(customer.id)) {
+          selected.set(customer.id, { supplierId: customer.id, label: buildSupplierLabel(customer), email: customer.acik1 || null });
+        }
+      });
+      return Array.from(selected.values());
+    });
+  }
+
+  function isRfqSupplierSelected(customerId: number): boolean {
+    return rfqSuppliers.some((supplier) => supplier.supplierId === customerId);
   }
 
   function handleApplyExchangeRates(): void {
@@ -1291,45 +1327,51 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
             {isRfq ? (
               <div className="space-y-2 lg:col-span-2">
                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                  <Building2 className="size-4 text-cyan-600" />
+                  <Users className="size-4 text-cyan-600" />
                   RFQ Gönderilecek Tedarikçiler
                 </div>
-                <PagedLookupDialog<CustomerLookup>
-                  variant="ops"
-                  open={rfqSupplierLookupOpen}
-                  onOpenChange={setRfqSupplierLookupOpen}
-                  title="RFQ tedarikçisi seç"
-                  value={rfqSupplierLabel}
-                  placeholder="ERP eşleşmeli cari ekle"
-                  searchPlaceholder="Cari kodu veya unvan ara"
-                  emptyText="ERP eşleşmeli tedarikçi bulunamadı."
-                  queryKey={['purchase', 'rfq-supplier-lookup']}
-                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                    lookupApi.getCustomersPaged({
-                      pageNumber,
-                      pageSize,
-                      search,
-                      filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
-                    }, { signal })
-                  }
-                  getKey={(customer) => customer.id.toString()}
-                  getLabel={buildSupplierLabel}
-                  onSelect={handleAddRfqSupplier}
-                />
-                {rfqSuppliers.length ? (
-                  <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="group flex min-h-[4.5rem] w-full items-center justify-between gap-4 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-left shadow-sm transition hover:border-cyan-400 hover:bg-cyan-50/50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/10"
+                  onClick={() => setRfqSupplierLookupOpen(true)}
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-black text-slate-900 dark:text-white">
+                      {rfqSuppliers.length > 0 ? `${rfqSuppliers.length} tedarikçi seçildi` : 'ERP eşleşmeli tedarikçileri pencereden seç'}
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold text-muted-foreground">
+                      RFQ aynı belge içinden birden fazla tedarikçiye gönderilebilir.
+                    </span>
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-cyan-100 px-3 py-2 text-xs font-black text-cyan-700 transition group-hover:bg-cyan-200 dark:bg-cyan-400/15 dark:text-cyan-200">
+                    <Search className="size-4" />
+                    Çoklu Seç
+                  </span>
+                </button>
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                  {rfqSuppliers.length ? (
+                    <div className="flex flex-wrap gap-2">
                     {rfqSuppliers.map((supplier) => (
                       <button
                         key={supplier.supplierId}
                         type="button"
-                        className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                        className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-black text-cyan-800 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-cyan-300/20 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-rose-300/30 dark:hover:bg-rose-400/10 dark:hover:text-rose-100"
                         onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
+                        title="Tedarikçiyi listeden çıkar"
                       >
-                        {supplier.label} x
+                        <CheckCircle2 className="size-3.5" />
+                        {supplier.label}
+                        <X className="size-3.5" />
                       </button>
                     ))}
-                  </div>
-                ) : null}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                      <Users className="size-4" />
+                      Henüz RFQ tedarikçisi seçilmedi.
+                    </div>
+                  )}
+                </div>
               </div>
             ) : null}
 
@@ -1708,6 +1750,215 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
             <OpsTextarea rows={5} value={formState.description} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
           </label>
         </section>
+
+        {isRfq ? (
+          <Dialog
+            open={rfqSupplierLookupOpen}
+            onOpenChange={(open) => {
+              setRfqSupplierLookupOpen(open);
+              if (!open) {
+                setRfqSupplierSearch('');
+                setRfqSupplierSearchInput('');
+              }
+            }}
+          >
+            <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-5xl">
+              <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg">
+                      <Users className="size-5" />
+                    </span>
+                    <div>
+                      <DialogTitle className="text-xl font-black">RFQ Tedarikçi Seçimi</DialogTitle>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        ERP eşleşmeli carileri pencereden çoklu seçin; RFQ aynı anda tüm seçili tedarikçilere hazırlanır.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
+                    onClick={() => setRfqSupplierLookupOpen(false)}
+                    aria-label="Kapat"
+                  >
+                    <X className="size-5" />
+                  </button>
+                </div>
+              </DialogHeader>
+
+              <div className="max-h-[calc(88vh-10rem)] overflow-y-auto px-6 py-5">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+                  <div className="rounded-2xl border bg-white/95 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="relative flex-1">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                        <OpsInput
+                          value={rfqSupplierSearchInput}
+                          onChange={(event) => setRfqSupplierSearchInput(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault();
+                              setRfqSupplierSearch(rfqSupplierSearchInput.trim());
+                            }
+                          }}
+                          placeholder="Cari kodu, unvan veya e-posta ile ara"
+                          className="pl-10"
+                        />
+                      </div>
+                      <OpsActionButton type="button" variant="secondary" onClick={() => setRfqSupplierSearch(rfqSupplierSearchInput.trim())}>
+                        <Search className="size-4" />
+                        Ara
+                      </OpsActionButton>
+                      <OpsActionButton type="button" variant="secondary" onClick={handleSelectVisibleRfqSuppliers} disabled={rfqSupplierLookupItems.length === 0}>
+                        <CheckCircle2 className="size-4" />
+                        Görünenleri Seç
+                      </OpsActionButton>
+                    </div>
+
+                    <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+                      <table className="w-full min-w-[760px] text-sm">
+                        <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+                          <tr>
+                            <th className="w-14 px-4 py-3 text-center">Seç</th>
+                            <th className="px-4 py-3 text-left">Cari Kodu</th>
+                            <th className="px-4 py-3 text-left">Cari Ünvan</th>
+                            <th className="px-4 py-3 text-left">E-Posta</th>
+                            <th className="px-4 py-3 text-center">Durum</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rfqSupplierQuery.isLoading ? (
+                            <tr>
+                              <td colSpan={5} className="px-4 py-14 text-center">
+                                <span className="inline-flex items-center gap-2 text-sm font-black text-muted-foreground">
+                                  <Loader2 className="size-5 animate-spin" />
+                                  Tedarikçiler yükleniyor...
+                                </span>
+                              </td>
+                            </tr>
+                          ) : rfqSupplierLookupItems.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="px-4 py-14 text-center text-sm font-bold text-muted-foreground">
+                                ERP eşleşmeli tedarikçi bulunamadı.
+                              </td>
+                            </tr>
+                          ) : (
+                            rfqSupplierLookupItems.map((customer) => {
+                              const selected = isRfqSupplierSelected(customer.id);
+                              return (
+                                <tr
+                                  key={customer.id}
+                                  className={`cursor-pointer border-t border-slate-200 transition dark:border-white/10 ${
+                                    selected ? 'bg-cyan-50/90 dark:bg-cyan-400/10' : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                                  }`}
+                                  onClick={() => handleToggleRfqSupplier(customer)}
+                                >
+                                  <td className="px-4 py-3 text-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={selected}
+                                      onChange={() => handleToggleRfqSupplier(customer)}
+                                      onClick={(event) => event.stopPropagation()}
+                                      className="size-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+                                      aria-label={`${buildSupplierLabel(customer)} seç`}
+                                    />
+                                  </td>
+                                  <td className="px-4 py-3 font-mono text-xs font-black text-cyan-700 dark:text-cyan-200">{customer.cariKod}</td>
+                                  <td className="px-4 py-3">
+                                    <div className="font-black text-slate-900 dark:text-white">{customer.cariIsim}</div>
+                                    <div className="text-xs font-semibold text-muted-foreground">ID #{customer.id}</div>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm font-semibold text-muted-foreground">{customer.acik1 || '-'}</td>
+                                  <td className="px-4 py-3 text-center">
+                                    {selected ? (
+                                      <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-black text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
+                                        <CheckCircle2 className="size-3.5" />
+                                        Seçili
+                                      </span>
+                                    ) : (
+                                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-muted-foreground dark:bg-white/[0.06]">
+                                        Seçilebilir
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {rfqSupplierQuery.hasNextPage ? (
+                      <div className="mt-4 flex justify-center">
+                        <OpsActionButton
+                          type="button"
+                          variant="secondary"
+                          onClick={() => rfqSupplierQuery.fetchNextPage()}
+                          disabled={rfqSupplierQuery.isFetchingNextPage}
+                        >
+                          {rfqSupplierQuery.isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : <ArrowDown className="size-4" />}
+                          Daha Fazla Yükle
+                        </OpsActionButton>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <aside className="rounded-2xl border bg-white/95 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="font-black">Seçilen Tedarikçiler</h4>
+                        <p className="text-xs font-semibold text-muted-foreground">RFQ gönderim listesi</p>
+                      </div>
+                      <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-black text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
+                        {rfqSuppliers.length}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto pr-1">
+                      {rfqSuppliers.length ? (
+                        rfqSuppliers.map((supplier) => (
+                          <div key={supplier.supplierId} className="rounded-2xl border border-cyan-100 bg-cyan-50/70 p-3 dark:border-cyan-300/20 dark:bg-cyan-400/10">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-black text-slate-900 dark:text-white">{supplier.label}</div>
+                                <div className="mt-1 text-xs font-semibold text-muted-foreground">{supplier.email || 'E-posta yok'}</div>
+                              </div>
+                              <button
+                                type="button"
+                                className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-white text-rose-600 transition hover:bg-rose-50 dark:border-rose-300/20 dark:bg-white/[0.06] dark:text-rose-200"
+                                onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
+                                aria-label="Tedarikçiyi çıkar"
+                              >
+                                <X className="size-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="rounded-2xl border border-dashed p-5 text-center text-sm font-semibold text-muted-foreground dark:border-white/10">
+                          Henüz tedarikçi seçilmedi.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-5 grid gap-2">
+                      <OpsActionButton type="button" variant="primary" onClick={() => setRfqSupplierLookupOpen(false)} disabled={rfqSuppliers.length === 0}>
+                        <CheckCircle2 className="size-4" />
+                        Seçimleri Kullan
+                      </OpsActionButton>
+                      <OpsActionButton type="button" variant="secondary" onClick={() => setRfqSuppliers([])} disabled={rfqSuppliers.length === 0}>
+                        <Trash2 className="size-4" />
+                        Seçimleri Temizle
+                      </OpsActionButton>
+                    </div>
+                  </aside>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ) : null}
 
         <Dialog open={exchangeRateDialogOpen} onOpenChange={setExchangeRateDialogOpen}>
           <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-4xl">
