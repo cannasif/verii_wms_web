@@ -15,6 +15,7 @@ export {
   ADMIN_OPS_PAGE_CLASS,
   USER_MANAGEMENT_OPS_PAGE_CLASS,
   AccessControlOpsCheckbox,
+  AccessControlOpsCheckboxControl,
   AccessControlOpsDialogContent,
   AccessControlOpsDialogFooter,
   AccessControlOpsDialogHeader,
