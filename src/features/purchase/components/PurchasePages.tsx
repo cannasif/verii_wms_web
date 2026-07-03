@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Box, Calculator, CheckCircle2, FilePlus2, Pencil, Plus, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Pencil, Plus, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -1089,186 +1089,245 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       }
     >
       <div className="wms-ops-form space-y-5">
-        <section className="grid gap-4 rounded-xl border bg-card/90 p-5 xl:grid-cols-4">
-          {isCommercial ? (
-            <div className="grid gap-2 text-sm font-semibold xl:col-span-2">
-              Belge Seri Tanımı
-              <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
-                variant="ops"
-                open={seriesLookupOpen}
-                onOpenChange={setSeriesLookupOpen}
-                title="Satınalma belge serisi seç"
-                value={seriesLabel}
-                placeholder="Seri seçildiğinde belge no önerilir"
-                searchPlaceholder="Seri kodu veya adı ara"
-                emptyText="Satınalma için aktif belge serisi bulunamadı."
-                queryKey={['purchase', 'document-series', kind]}
-                fetchPage={({ pageNumber, pageSize, search }) => {
-                  const operationType = getPurchaseSeriesOperationType(kind);
-                  return documentSeriesManagementApi.getDefinitionsPaged({
-                    pageNumber,
-                    pageSize,
-                    search,
-                    filters: [
-                      { column: 'OperationType', operator: 'Equals', value: operationType },
-                      { column: 'IsActive', operator: 'Equals', value: 'true' },
-                    ],
-                    filterLogic: 'and',
-                  });
-                }}
-                getKey={(definition) => definition.id.toString()}
-                getLabel={buildSeriesLabel}
-                onSelect={(definition) => {
-                  const preview = buildSeriesPreview(definition);
-                  setSeriesLabel(buildSeriesLabel(definition));
-                  setFormState((prev) => ({
-                    ...prev,
-                    documentSeriesDefinitionId: String(definition.id),
-                    documentNo: prev.documentNo || preview,
-                  }));
-                }}
-              />
-              <span className="text-xs font-medium text-muted-foreground">
-                WMS belge seri tanımı seçilirse satınalma teklif/sipariş numarası bu seriye göre izlenir.
+        <section className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
+            {isCommercial ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                  <Building2 className="size-4 text-cyan-600" />
+                  Tedarikçi
+                </div>
+                <PagedLookupDialog<CustomerLookup>
+                  variant="ops"
+                  open={supplierLookupOpen}
+                  onOpenChange={setSupplierLookupOpen}
+                  title="ERP eşleşmeli tedarikçi seç"
+                  value={supplierLabel}
+                  placeholder="Tedarikçi cari seç"
+                  searchPlaceholder="Cari kodu veya unvan ara"
+                  emptyText="ERP eşleşmeli tedarikçi bulunamadı."
+                  queryKey={['purchase', 'supplier-lookup']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    lookupApi.getCustomersPaged({
+                      pageNumber,
+                      pageSize,
+                      search,
+                      filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
+                    }, { signal })
+                  }
+                  getKey={(customer) => customer.id.toString()}
+                  getLabel={buildSupplierLabel}
+                  onSelect={(customer) => {
+                    setSupplierLabel(buildSupplierLabel(customer));
+                    setFormState((prev) => ({ ...prev, supplierId: String(customer.id) }));
+                  }}
+                />
+              </div>
+            ) : null}
+
+            {isRfq ? (
+              <div className="space-y-2 lg:col-span-2">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                  <Building2 className="size-4 text-cyan-600" />
+                  RFQ Gönderilecek Tedarikçiler
+                </div>
+                <PagedLookupDialog<CustomerLookup>
+                  variant="ops"
+                  open={rfqSupplierLookupOpen}
+                  onOpenChange={setRfqSupplierLookupOpen}
+                  title="RFQ tedarikçisi seç"
+                  value={rfqSupplierLabel}
+                  placeholder="ERP eşleşmeli cari ekle"
+                  searchPlaceholder="Cari kodu veya unvan ara"
+                  emptyText="ERP eşleşmeli tedarikçi bulunamadı."
+                  queryKey={['purchase', 'rfq-supplier-lookup']}
+                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                    lookupApi.getCustomersPaged({
+                      pageNumber,
+                      pageSize,
+                      search,
+                      filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
+                    }, { signal })
+                  }
+                  getKey={(customer) => customer.id.toString()}
+                  getLabel={buildSupplierLabel}
+                  onSelect={handleAddRfqSupplier}
+                />
+                {rfqSuppliers.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {rfqSuppliers.map((supplier) => (
+                      <button
+                        key={supplier.supplierId}
+                        type="button"
+                        className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                        onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
+                      >
+                        {supplier.label} x
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <label className={`grid gap-2 text-sm font-bold ${isCommercial ? '' : 'lg:col-span-2'}`}>
+              <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                <FileText className="size-4 text-blue-600" />
+                Konu
               </span>
-            </div>
-          ) : null}
-          <label className="grid gap-2 text-sm font-semibold">
-            {config.documentNoLabel}
-            <OpsInput value={formState.documentNo} onChange={(event) => setFormState((prev) => ({ ...prev, documentNo: event.target.value }))} />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold">
-            Belge Tarihi
-            <OpsInput type="date" value={formState.documentDate} onChange={(event) => setFormState((prev) => ({ ...prev, documentDate: event.target.value }))} />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold">
-            {kind === 'request' ? 'İhtiyaç Tarihi' : kind === 'rfq' ? 'Son Teklif Tarihi' : kind === 'quotation' ? 'Geçerlilik Tarihi' : 'Teslim Tarihi'}
-            <OpsInput
-              type="date"
-              value={kind === 'quotation' ? formState.validUntil : kind === 'order' ? formState.deliveryDate : formState.dueDate}
-              onChange={(event) => {
-                const value = event.target.value;
-                setFormState((prev) => kind === 'quotation'
-                  ? { ...prev, validUntil: value }
-                  : kind === 'order'
-                    ? { ...prev, deliveryDate: value }
-                    : { ...prev, dueDate: value });
-              }}
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold">
-            Para Birimi / Kur
-            <div className="grid grid-cols-[1fr_1fr] gap-2">
-              <OpsInput value={formState.currencyCode} onChange={(event) => setFormState((prev) => ({ ...prev, currencyCode: event.target.value }))} />
-              <OpsInput type="number" step="0.0001" value={formState.exchangeRate} onChange={(event) => setFormState((prev) => ({ ...prev, exchangeRate: event.target.value }))} />
-            </div>
-          </label>
+              <OpsInput value={formState.subject} placeholder="Belgenin konusu veya kısa açıklaması" onChange={(event) => setFormState((prev) => ({ ...prev, subject: event.target.value }))} />
+            </label>
+          </div>
+        </section>
 
-          {isCommercial ? (
-            <div className="grid gap-2 text-sm font-semibold xl:col-span-2">
-              ERP Eşleşmeli Tedarikçi
-              <PagedLookupDialog<CustomerLookup>
-                variant="ops"
-                open={supplierLookupOpen}
-                onOpenChange={setSupplierLookupOpen}
-                title="ERP eşleşmeli tedarikçi seç"
-                value={supplierLabel}
-                placeholder="Tedarikçi cari seç"
-                searchPlaceholder="Cari kodu veya unvan ara"
-                emptyText="ERP eşleşmeli tedarikçi bulunamadı."
-                queryKey={['purchase', 'supplier-lookup']}
-                fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                  lookupApi.getCustomersPaged({
-                    pageNumber,
-                    pageSize,
-                    search,
-                    filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
-                  }, { signal })
-                }
-                getKey={(customer) => customer.id.toString()}
-                getLabel={buildSupplierLabel}
-                onSelect={(customer) => {
-                  setSupplierLabel(buildSupplierLabel(customer));
-                  setFormState((prev) => ({ ...prev, supplierId: String(customer.id) }));
-                }}
-              />
+        <section className="grid gap-5 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,0.88fr)_minmax(0,1fr)]">
+          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                <CreditCard className="size-5" />
+              </span>
+              <div>
+                <h3 className="font-black">Finansal</h3>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Para birimi ve ödeme</p>
+              </div>
             </div>
-          ) : null}
+            <div className="grid gap-4">
+              <label className="grid gap-2 text-sm font-bold">
+                Para Birimi *
+                <OpsInput value={formState.currencyCode} onChange={(event) => setFormState((prev) => ({ ...prev, currencyCode: event.target.value }))} />
+              </label>
+              <label className="grid gap-2 text-sm font-bold">
+                Kur *
+                <OpsInput type="number" step="0.0001" value={formState.exchangeRate} onChange={(event) => setFormState((prev) => ({ ...prev, exchangeRate: event.target.value }))} />
+              </label>
+              {isCommercial ? (
+                <label className="grid gap-2 text-sm font-bold">
+                  Ödeme Tipi
+                  <OpsInput value={formState.paymentTypeCode} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTypeCode: event.target.value }))} />
+                </label>
+              ) : null}
+            </div>
+          </div>
 
-          {isRfq ? (
-            <div className="grid gap-2 text-sm font-semibold xl:col-span-2">
-              RFQ Gönderilecek Tedarikçiler
-              <PagedLookupDialog<CustomerLookup>
-                variant="ops"
-                open={rfqSupplierLookupOpen}
-                onOpenChange={setRfqSupplierLookupOpen}
-                title="RFQ tedarikçisi seç"
-                value={rfqSupplierLabel}
-                placeholder="ERP eşleşmeli cari ekle"
-                searchPlaceholder="Cari kodu veya unvan ara"
-                emptyText="ERP eşleşmeli tedarikçi bulunamadı."
-                queryKey={['purchase', 'rfq-supplier-lookup']}
-                fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                  lookupApi.getCustomersPaged({
-                    pageNumber,
-                    pageSize,
-                    search,
-                    filters: [{ column: 'IsErpIntegrated', operator: 'Equals', value: 'true' }],
-                  }, { signal })
-                }
-                getKey={(customer) => customer.id.toString()}
-                getLabel={buildSupplierLabel}
-                onSelect={handleAddRfqSupplier}
-              />
-              {rfqSuppliers.length ? (
-                <div className="flex flex-wrap gap-2">
-                  {rfqSuppliers.map((supplier) => (
-                    <button
-                      key={supplier.supplierId}
-                      type="button"
-                      className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                      onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
-                    >
-                      {supplier.label} x
-                    </button>
-                  ))}
+          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
+                <CalendarDays className="size-5" />
+              </span>
+              <div>
+                <h3 className="font-black">Tip & Tarihler</h3>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Belge tarihi ve süreç tarihi</p>
+              </div>
+            </div>
+            <div className="grid gap-4">
+              {isCommercial ? (
+                <label className="grid gap-2 text-sm font-bold">
+                  Satınalma Tipi
+                  <OpsInput value={formState.purchaseType} onChange={(event) => setFormState((prev) => ({ ...prev, purchaseType: event.target.value }))} />
+                </label>
+              ) : null}
+              <label className="grid gap-2 text-sm font-bold">
+                Belge Tarihi
+                <OpsInput type="date" value={formState.documentDate} onChange={(event) => setFormState((prev) => ({ ...prev, documentDate: event.target.value }))} />
+              </label>
+              <label className="grid gap-2 text-sm font-bold">
+                {kind === 'request' ? 'İhtiyaç Tarihi' : kind === 'rfq' ? 'Son Teklif Tarihi' : kind === 'quotation' ? 'Geçerlilik Tarihi' : 'Teslim Tarihi'}
+                <OpsInput
+                  type="date"
+                  value={kind === 'quotation' ? formState.validUntil : kind === 'order' ? formState.deliveryDate : formState.dueDate}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setFormState((prev) => kind === 'quotation'
+                      ? { ...prev, validUntil: value }
+                      : kind === 'order'
+                        ? { ...prev, deliveryDate: value }
+                        : { ...prev, dueDate: value });
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
+                <FileText className="size-5" />
+              </span>
+              <div>
+                <h3 className="font-black">Belge Açıklaması</h3>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Seri, proje ve özel kodlar</p>
+              </div>
+            </div>
+            <div className="grid gap-4">
+              {isCommercial ? (
+                <label className="grid gap-2 text-sm font-bold">
+                  Belge Seri Tanımı
+                  <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
+                    variant="ops"
+                    open={seriesLookupOpen}
+                    onOpenChange={setSeriesLookupOpen}
+                    title="Satınalma belge serisi seç"
+                    value={seriesLabel}
+                    placeholder="Seri seçildiğinde belge no önerilir"
+                    searchPlaceholder="Seri kodu veya adı ara"
+                    emptyText="Satınalma için aktif belge serisi bulunamadı."
+                    queryKey={['purchase', 'document-series', kind]}
+                    fetchPage={({ pageNumber, pageSize, search }) => {
+                      const operationType = getPurchaseSeriesOperationType(kind);
+                      return documentSeriesManagementApi.getDefinitionsPaged({
+                        pageNumber,
+                        pageSize,
+                        search,
+                        filters: [
+                          { column: 'OperationType', operator: 'Equals', value: operationType },
+                          { column: 'IsActive', operator: 'Equals', value: 'true' },
+                        ],
+                        filterLogic: 'and',
+                      });
+                    }}
+                    getKey={(definition) => definition.id.toString()}
+                    getLabel={buildSeriesLabel}
+                    onSelect={(definition) => {
+                      const preview = buildSeriesPreview(definition);
+                      setSeriesLabel(buildSeriesLabel(definition));
+                      setFormState((prev) => ({
+                        ...prev,
+                        documentSeriesDefinitionId: String(definition.id),
+                        documentNo: prev.documentNo || preview,
+                      }));
+                    }}
+                  />
+                </label>
+              ) : null}
+              <label className="grid gap-2 text-sm font-bold">
+                {config.documentNoLabel}
+                <OpsInput value={formState.documentNo} onChange={(event) => setFormState((prev) => ({ ...prev, documentNo: event.target.value }))} />
+              </label>
+              <label className="grid gap-2 text-sm font-bold">
+                <span className="inline-flex items-center gap-2">
+                  <Folder className="size-4 text-sky-600" />
+                  Proje Kodu
+                </span>
+                <OpsInput value={formState.projectCode} onChange={(event) => setFormState((prev) => ({ ...prev, projectCode: event.target.value }))} />
+              </label>
+              <label className="grid gap-2 text-sm font-bold">
+                Departman
+                <OpsInput value={formState.department} onChange={(event) => setFormState((prev) => ({ ...prev, department: event.target.value }))} />
+              </label>
+              {isCommercial ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="grid gap-2 text-sm font-bold">
+                    Özel Kod 1
+                    <OpsInput value={formState.ozelKod1} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod1: event.target.value }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    Özel Kod 2
+                    <OpsInput value={formState.ozelKod2} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod2: event.target.value }))} />
+                  </label>
                 </div>
               ) : null}
             </div>
-          ) : null}
-
-          <label className="grid gap-2 text-sm font-semibold xl:col-span-2">
-            Konu
-            <OpsInput value={formState.subject} onChange={(event) => setFormState((prev) => ({ ...prev, subject: event.target.value }))} />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold">
-            Departman
-            <OpsInput value={formState.department} onChange={(event) => setFormState((prev) => ({ ...prev, department: event.target.value }))} />
-          </label>
-          <label className="grid gap-2 text-sm font-semibold">
-            Proje Kodu
-            <OpsInput value={formState.projectCode} onChange={(event) => setFormState((prev) => ({ ...prev, projectCode: event.target.value }))} />
-          </label>
-          {isCommercial ? (
-            <>
-              <label className="grid gap-2 text-sm font-semibold">
-                Satınalma Tipi
-                <OpsInput value={formState.purchaseType} onChange={(event) => setFormState((prev) => ({ ...prev, purchaseType: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Ödeme Tipi
-                <OpsInput value={formState.paymentTypeCode} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTypeCode: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Özel Kod 1
-                <OpsInput value={formState.ozelKod1} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod1: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Özel Kod 2
-                <OpsInput value={formState.ozelKod2} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod2: event.target.value }))} />
-              </label>
-            </>
-          ) : null}
+          </div>
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
