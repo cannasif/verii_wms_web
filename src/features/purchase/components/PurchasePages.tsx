@@ -2,8 +2,14 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, CheckCircle2, FilePlus2, Pencil, Plus, Save, Send, Trash2, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, Box, Calculator, CheckCircle2, FilePlus2, Pencil, Plus, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   OpsActionButton,
   OpsFormPageShell,
@@ -800,6 +806,8 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   });
   const [rfqSuppliers, setRfqSuppliers] = useState<Array<{ supplierId: number; label: string; email?: string | null }>>([]);
   const [lineDraft, setLineDraft] = useState<CreatePurchaseLineDto>(createEmptyLine);
+  const [lineDialogOpen, setLineDialogOpen] = useState(false);
+  const [editingLineIndex, setEditingLineIndex] = useState<number | null>(null);
   const [lines, setLines] = useState<CreatePurchaseLineDto[]>([]);
 
   useEffect(() => {
@@ -909,23 +917,53 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     };
   }, [formState.generalDiscountAmount, formState.generalDiscountRate, isCommercial, lines]);
 
-  function handleAddLine(): void {
+  function openNewLineDialog(): void {
+    setEditingLineIndex(null);
+    setLineDraft(createEmptyLine());
+    setStockLabel('');
+    setLineDialogOpen(true);
+  }
+
+  function openEditLineDialog(index: number): void {
+    const line = lines[index];
+    if (!line) return;
+    setEditingLineIndex(index);
+    setLineDraft({
+      ...createEmptyLine(),
+      ...line,
+      stockId: line.stockId ?? null,
+      productCode: line.productCode ?? '',
+      productName: line.productName ?? '',
+      unit: line.unit ?? '',
+    });
+    setStockLabel(line.productCode || line.productName ? `${line.productCode || '-'} - ${line.productName}` : '');
+    setLineDialogOpen(true);
+  }
+
+  function resetLineDialog(): void {
+    setLineDialogOpen(false);
+    setEditingLineIndex(null);
+    setLineDraft(createEmptyLine());
+    setStockLabel('');
+  }
+
+  function normalizeLineDraft(): CreatePurchaseLineDto | null {
     if (!lineDraft.productName.trim()) {
       toast.error('Satır için stok veya ürün adı seçilmelidir.');
-      return;
+      return null;
     }
 
     if (!lineDraft.quantity || lineDraft.quantity <= 0) {
       toast.error('Miktar sıfırdan büyük olmalıdır.');
-      return;
+      return null;
     }
 
     if (!validateDiscounts(lineDraft)) {
       toast.error('Satır iskontoları 100 veya üzeri olamaz.');
-      return;
+      return null;
     }
 
-    setLines((prev) => [...prev, {
+    return {
       ...lineDraft,
       productCode: lineDraft.productCode?.trim() || null,
       productName: lineDraft.productName.trim(),
@@ -934,9 +972,34 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       description2: lineDraft.description2?.trim() || null,
       description3: lineDraft.description3?.trim() || null,
       erpProjectCode: lineDraft.erpProjectCode?.trim() || null,
-    }]);
-    setLineDraft(createEmptyLine());
-    setStockLabel('');
+    };
+  }
+
+  function handleSaveLine(options: { keepOpen?: boolean } = {}): void {
+    const normalizedLine = normalizeLineDraft();
+    if (!normalizedLine) return;
+
+    setLines((prev) => {
+      if (editingLineIndex != null) {
+        return prev.map((line, index) => index === editingLineIndex ? normalizedLine : line);
+      }
+      return [...prev, normalizedLine];
+    });
+
+    if (options.keepOpen) {
+      setEditingLineIndex(null);
+      setLineDraft(createEmptyLine());
+      setStockLabel('');
+      return;
+    }
+
+    resetLineDialog();
+  }
+
+  function handleCloneLine(index: number): void {
+    const line = lines[index];
+    if (!line) return;
+    setLines((prev) => [...prev, { ...line }]);
   }
 
   function handleRemoveLine(index: number): void {
@@ -1208,151 +1271,163 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
           ) : null}
         </section>
 
-        <section className="grid gap-4 rounded-xl border bg-card/90 p-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-4">
-            <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_120px_140px_100px]">
-              <div className="grid gap-2 text-sm font-semibold">
-                Stok / Kalem
-                <PagedLookupDialog<StockLookup>
-                  variant="ops"
-                  open={stockLookupOpen}
-                  onOpenChange={setStockLookupOpen}
-                  title="Stok seç"
-                  value={stockLabel}
-                  placeholder="RII_STOK içinden stok seç"
-                  searchPlaceholder="Stok kodu veya adı ara"
-                  emptyText="Stok bulunamadı."
-                  queryKey={['purchase', 'stock-lookup']}
-                  fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                    lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
-                  }
-                  getKey={(stock) => stock.id.toString()}
-                  getLabel={buildStockLabel}
-                  onSelect={(stock) => {
-                    setStockLabel(buildStockLabel(stock));
-                    setLineDraft((prev) => ({
-                      ...prev,
-                      stockId: stock.id,
-                      productCode: stock.stokKodu,
-                      productName: stock.stokAdi,
-                      unit: stock.olcuBr1,
-                    }));
-                  }}
-                />
+        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="overflow-hidden rounded-2xl border border-slate-300/80 bg-white/95 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 bg-slate-50/90 px-5 py-4 dark:border-white/10 dark:bg-white/[0.05]">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg">
+                  <Box className="size-5" />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-lg font-black tracking-tight">Satınalma Satırları</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {lines.length > 0 ? `${lines.length} kalem eklendi` : 'Henüz stok/kalem satırı eklenmedi'}
+                  </p>
+                </div>
               </div>
-              <label className="grid gap-2 text-sm font-semibold">
-                Miktar
-                <OpsInput type="number" step="0.0001" value={lineDraft.quantity} onChange={(event) => setLineDraft((prev) => ({ ...prev, quantity: toNumber(event.target.value, 1) }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Birim Fiyat
-                <OpsInput type="number" step="0.0001" value={lineDraft.unitPrice} onChange={(event) => setLineDraft((prev) => ({ ...prev, unitPrice: toNumber(event.target.value) }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                KDV %
-                <OpsInput type="number" step="0.01" value={lineDraft.vatRate} onChange={(event) => setLineDraft((prev) => ({ ...prev, vatRate: toNumber(event.target.value) }))} />
-              </label>
+              <OpsActionButton type="button" variant="primary" onClick={openNewLineDialog}>
+                <Plus className="size-4" />
+                Satır Ekle
+              </OpsActionButton>
             </div>
 
-            <div className="grid gap-3 lg:grid-cols-3">
-              {[1, 2, 3].map((discountIndex) => {
-                const key = `discount${discountIndex}` as 'discount1' | 'discount2' | 'discount3';
-                return (
-                  <label key={key} className="grid gap-2 text-sm font-semibold">
-                    İskonto {discountIndex} %
-                    <OpsInput
-                      type="number"
-                      min={0}
-                      max={99.9999}
-                      step="0.01"
-                      value={lineDraft[key]}
-                      onChange={(event) => setLineDraft((prev) => ({ ...prev, [key]: toNumber(event.target.value) }))}
-                    />
-                  </label>
-                );
-              })}
-            </div>
-
-            <div className="grid gap-3 lg:grid-cols-3">
-              <label className="grid gap-2 text-sm font-semibold">
-                Açıklama 1
-                <OpsInput value={lineDraft.description1 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description1: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Açıklama 2
-                <OpsInput value={lineDraft.description2 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description2: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Açıklama 3
-                <OpsInput value={lineDraft.description3 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description3: event.target.value }))} />
-              </label>
-            </div>
-
-            <OpsActionButton type="button" variant="secondary" onClick={handleAddLine}>
-              <Plus className="size-4" />
-              Satır Ekle
-            </OpsActionButton>
-
-            <div className="overflow-x-auto rounded-xl border">
-              <table className="min-w-full text-sm">
-                <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
-                  <tr>
-                    <th className="px-3 py-2 text-left">Stok</th>
-                    <th className="px-3 py-2 text-right">Miktar</th>
-                    <th className="px-3 py-2 text-right">Birim Fiyat</th>
-                    <th className="px-3 py-2 text-right">İsk.</th>
-                    <th className="px-3 py-2 text-right">Toplam</th>
-                    <th className="px-3 py-2" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {lines.length === 0 ? (
+            {lines.length === 0 ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+                <span className="inline-flex size-20 items-center justify-center rounded-full border border-dashed border-slate-300 bg-slate-50 text-slate-400 dark:border-white/10 dark:bg-white/[0.04]">
+                  <Box className="size-9" />
+                </span>
+                <div>
+                  <h4 className="text-xl font-black">Henüz satır eklenmedi</h4>
+                  <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
+                    Teklif veya siparişe birden fazla stok eklemek için Satır Ekle butonunu kullanın. Her kalem miktar, fiyat, iskonto, KDV ve açıklamalarıyla ayrı izlenir.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-[980px] w-full text-sm">
+                  <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
                     <tr>
-                      <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">Henüz satır eklenmedi.</td>
+                      <th className="px-4 py-3 text-left">Stok / Kalem</th>
+                      <th className="px-4 py-3 text-right">Miktar</th>
+                      <th className="px-4 py-3 text-right">Birim Fiyat</th>
+                      <th className="px-4 py-3 text-right">İskonto</th>
+                      <th className="px-4 py-3 text-right">KDV</th>
+                      <th className="px-4 py-3 text-right">Satır Toplamı</th>
+                      <th className="px-4 py-3 text-center">İşlemler</th>
                     </tr>
-                  ) : lines.map((line, index) => {
-                    const calculated = calculateLineTotals(line);
-                    return (
-                      <tr key={`${line.productCode || line.productName}-${index}`} className="border-t">
-                        <td className="px-3 py-2">
-                          <div className="font-semibold">{line.productName}</div>
-                          <div className="text-xs text-muted-foreground">{line.productCode || '-'}</div>
-                        </td>
-                        <td className="px-3 py-2 text-right">{line.quantity} {line.unit}</td>
-                        <td className="px-3 py-2 text-right">{formatMoney(line.unitPrice, formState.currencyCode)}</td>
-                        <td className="px-3 py-2 text-right">{line.discount1}/{line.discount2}/{line.discount3}</td>
-                        <td className="px-3 py-2 text-right font-semibold">{formatMoney(calculated.total, formState.currencyCode)}</td>
-                        <td className="px-3 py-2 text-right">
-                          <button type="button" className="rounded-lg p-2 text-destructive hover:bg-destructive/10" onClick={() => handleRemoveLine(index)} aria-label="Satırı sil">
-                            <Trash2 className="size-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {lines.map((line, index) => {
+                      const calculated = calculateLineTotals(line);
+                      return (
+                        <tr key={`${line.productCode || line.productName}-${index}`} className="border-t border-slate-200/80 transition hover:bg-sky-50/50 dark:border-white/10 dark:hover:bg-white/[0.04]">
+                          <td className="px-4 py-3">
+                            <div className="font-black text-slate-900 dark:text-white">{line.productName}</div>
+                            <div className="mt-1 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
+                              <span>{line.productCode || 'Kod yok'}</span>
+                              <span>•</span>
+                              <span>{line.unit || 'Birim yok'}</span>
+                              {line.description1 ? <span>• {line.description1}</span> : null}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold tabular-nums">{line.quantity}</td>
+                          <td className="px-4 py-3 text-right font-mono tabular-nums">{formatMoney(line.unitPrice, formState.currencyCode)}</td>
+                          <td className="px-4 py-3 text-right text-xs font-bold text-muted-foreground">{line.discount1}/{line.discount2}/{line.discount3}</td>
+                          <td className="px-4 py-3 text-right font-bold">%{line.vatRate}</td>
+                          <td className="px-4 py-3 text-right font-black text-cyan-700 dark:text-cyan-300">{formatMoney(calculated.total, formState.currencyCode)}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-cyan-400 hover:text-cyan-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300"
+                                onClick={() => openEditLineDialog(index)}
+                                aria-label="Satırı düzenle"
+                                title="Satırı düzenle"
+                              >
+                                <Pencil className="size-4" />
+                              </button>
+                              <button
+                                type="button"
+                                className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-400 hover:text-blue-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300"
+                                onClick={() => handleCloneLine(index)}
+                                aria-label="Satırı kopyala"
+                                title="Satırı kopyala"
+                              >
+                                <Plus className="size-4" />
+                              </button>
+                              <button
+                                type="button"
+                                className="inline-flex size-8 items-center justify-center rounded-full border border-rose-200 bg-rose-50 text-rose-600 shadow-sm transition hover:border-rose-400 hover:bg-rose-100 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-300"
+                                onClick={() => handleRemoveLine(index)}
+                                aria-label="Satırı sil"
+                                title="Satırı sil"
+                              >
+                                <Trash2 className="size-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
-          <aside className="space-y-4 rounded-xl border bg-muted/30 p-4">
-            <h3 className="font-semibold">Belge Özeti</h3>
-            {isCommercial ? (
-              <div className="grid gap-3">
-                <label className="grid gap-2 text-sm font-semibold">
-                  Genel İskonto %
-                  <OpsInput type="number" min={0} max={99.9999} step="0.01" value={formState.generalDiscountRate} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountRate: event.target.value }))} />
-                </label>
-                <label className="grid gap-2 text-sm font-semibold">
-                  Genel İskonto Tutarı
-                  <OpsInput type="number" min={0} step="0.01" value={formState.generalDiscountAmount} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountAmount: event.target.value }))} />
-                </label>
+          <aside className="xl:sticky xl:top-6">
+            <div className="overflow-hidden rounded-2xl border border-slate-300/80 bg-white/95 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+              <div className="flex items-center gap-3 border-b border-slate-200/80 bg-slate-50/90 px-5 py-4 dark:border-white/10 dark:bg-white/[0.05]">
+                <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                  <Calculator className="size-5" />
+                </span>
+                <div>
+                  <h3 className="font-black">Özet</h3>
+                  <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Genel toplam analizi</p>
+                </div>
               </div>
-            ) : null}
-            <div className="space-y-2 border-t pt-3 text-sm">
-              <div className="flex justify-between"><span>Ara Toplam</span><strong>{formatMoney(totals.subTotal, formState.currencyCode)}</strong></div>
-              <div className="flex justify-between"><span>KDV</span><strong>{formatMoney(totals.vatTotal, formState.currencyCode)}</strong></div>
-              <div className="flex justify-between text-base"><span>Genel Toplam</span><strong>{formatMoney(totals.grandTotal, formState.currencyCode)}</strong></div>
+
+              <div className="space-y-5 p-5">
+                {isCommercial ? (
+                  <div className="grid gap-3">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                      <label className="grid gap-2 text-sm font-semibold">
+                        Genel İskonto %
+                        <OpsInput type="number" min={0} max={99.9999} step="0.01" value={formState.generalDiscountRate} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountRate: event.target.value }))} />
+                      </label>
+                      <label className="grid gap-2 text-sm font-semibold">
+                        Genel İskonto Tutarı
+                        <OpsInput type="number" min={0} step="0.01" value={formState.generalDiscountAmount} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountAmount: event.target.value }))} />
+                      </label>
+                    </div>
+                    <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-200">
+                      Genel iskonto satırlar toplamına uygulanır; satır iskontoları ayrıca korunur.
+                    </div>
+                  </div>
+                ) : null}
+
+                <dl className="space-y-3 border-t pt-4 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <dt className="font-bold text-muted-foreground">Kalem Sayısı</dt>
+                    <dd className="font-black">{lines.length}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="font-bold text-muted-foreground">Ara Toplam</dt>
+                    <dd className="font-mono font-black tabular-nums">{formatMoney(totals.subTotal, formState.currencyCode)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="font-bold text-muted-foreground">Toplam KDV</dt>
+                    <dd className="font-mono font-black tabular-nums">{formatMoney(totals.vatTotal, formState.currencyCode)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-t pt-4 text-base">
+                    <dt className="font-black">Genel Toplam</dt>
+                    <dd className="font-mono text-xl font-black tabular-nums text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-emerald-500">
+                      {formatMoney(totals.grandTotal, formState.currencyCode)}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           </aside>
         </section>
@@ -1389,6 +1464,172 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
             <OpsTextarea rows={5} value={formState.description} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
           </label>
         </section>
+
+        <Dialog open={lineDialogOpen} onOpenChange={(open) => { if (!open) resetLineDialog(); else setLineDialogOpen(true); }}>
+          <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-5xl">
+            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg">
+                    {editingLineIndex == null ? <Plus className="size-5" /> : <Pencil className="size-5" />}
+                  </span>
+                  <div>
+                    <DialogTitle className="text-xl font-black">
+                      {editingLineIndex == null ? 'Satır Ekle' : 'Satırı Düzenle'}
+                    </DialogTitle>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Stok, miktar, fiyat, iskonto, KDV ve açıklama bilgilerini tek kalem için girin.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
+                  onClick={resetLineDialog}
+                  aria-label="Kapat"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            </DialogHeader>
+
+            <div className="max-h-[calc(92vh-9rem)] overflow-y-auto px-6 py-5">
+              <div className="grid gap-5">
+                <div className="rounded-2xl border bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+                  <label className="grid gap-2 text-sm font-bold">
+                    Stok *
+                    <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
+                      <PagedLookupDialog<StockLookup>
+                        variant="ops"
+                        open={stockLookupOpen}
+                        onOpenChange={setStockLookupOpen}
+                        title="Stok seç"
+                        value={stockLabel}
+                        placeholder="RII_STOK içinden stok seç"
+                        searchPlaceholder="Stok kodu veya adı ara"
+                        emptyText="Stok bulunamadı."
+                        queryKey={['purchase', 'stock-lookup']}
+                        fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                          lookupApi.getProductsPaged({ pageNumber, pageSize, search }, { signal })
+                        }
+                        getKey={(stock) => stock.id.toString()}
+                        getLabel={buildStockLabel}
+                        onSelect={(stock) => {
+                          setStockLabel(buildStockLabel(stock));
+                          setLineDraft((prev) => ({
+                            ...prev,
+                            stockId: stock.id,
+                            productCode: stock.stokKodu,
+                            productName: stock.stokAdi,
+                            unit: stock.olcuBr1,
+                          }));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 text-sm font-black text-sky-700 transition hover:border-sky-400 hover:bg-sky-100 dark:border-sky-400/20 dark:bg-sky-500/10 dark:text-sky-200"
+                        onClick={() => setStockLookupOpen(true)}
+                      >
+                        <Search className="size-4" />
+                        Stok Ara
+                      </button>
+                    </div>
+                  </label>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    <label className="grid gap-2 text-sm font-bold">
+                      Stok Kodu
+                      <OpsInput value={lineDraft.productCode ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, productCode: event.target.value }))} />
+                    </label>
+                    <label className="grid gap-2 text-sm font-bold">
+                      Stok Adı / Kalem Adı *
+                      <OpsInput value={lineDraft.productName} onChange={(event) => setLineDraft((prev) => ({ ...prev, productName: event.target.value }))} />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-4">
+                  <label className="grid gap-2 text-sm font-bold">
+                    Miktar *
+                    <OpsInput type="number" step="0.0001" value={lineDraft.quantity} onChange={(event) => setLineDraft((prev) => ({ ...prev, quantity: toNumber(event.target.value, 1) }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    Birim
+                    <OpsInput value={lineDraft.unit ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, unit: event.target.value }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    Birim Fiyat
+                    <OpsInput type="number" step="0.0001" value={lineDraft.unitPrice} onChange={(event) => setLineDraft((prev) => ({ ...prev, unitPrice: toNumber(event.target.value) }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    KDV %
+                    <OpsInput type="number" step="0.01" value={lineDraft.vatRate} onChange={(event) => setLineDraft((prev) => ({ ...prev, vatRate: toNumber(event.target.value) }))} />
+                  </label>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                  {[1, 2, 3].map((discountIndex) => {
+                    const key = `discount${discountIndex}` as 'discount1' | 'discount2' | 'discount3';
+                    return (
+                      <label key={key} className="grid gap-2 text-sm font-bold">
+                        {discountIndex}. İskonto %
+                        <OpsInput
+                          type="number"
+                          min={0}
+                          max={99.9999}
+                          step="0.01"
+                          value={lineDraft[key]}
+                          onChange={(event) => setLineDraft((prev) => ({ ...prev, [key]: toNumber(event.target.value) }))}
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                  <label className="grid gap-2 text-sm font-bold">
+                    Açıklama 1
+                    <OpsInput value={lineDraft.description1 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description1: event.target.value }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    Açıklama 2
+                    <OpsInput value={lineDraft.description2 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description2: event.target.value }))} />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold">
+                    Açıklama 3
+                    <OpsInput value={lineDraft.description3 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description3: event.target.value }))} />
+                  </label>
+                </div>
+
+                <div className="rounded-2xl border bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                    <span className="font-bold text-muted-foreground">Satır Önizleme</span>
+                    <strong className="font-mono text-lg text-cyan-700 dark:text-cyan-300">
+                      {formatMoney(calculateLineTotals(lineDraft).total, formState.currencyCode)}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-slate-50/90 px-6 py-4 dark:border-white/10 dark:bg-white/[0.05]">
+              <OpsActionButton type="button" variant="secondary" onClick={resetLineDialog}>
+                İptal
+              </OpsActionButton>
+              <div className="flex flex-wrap gap-2">
+                {editingLineIndex == null ? (
+                  <OpsActionButton type="button" variant="secondary" onClick={() => handleSaveLine({ keepOpen: true })}>
+                    <Plus className="size-4" />
+                    Kaydet ve Yeni Satır
+                  </OpsActionButton>
+                ) : null}
+                <OpsActionButton type="button" variant="primary" onClick={() => handleSaveLine()}>
+                  <Save className="size-4" />
+                  {editingLineIndex == null ? 'Satırı Ekle' : 'Satırı Güncelle'}
+                </OpsActionButton>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </OpsFormPageShell>
   );
