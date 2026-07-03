@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PagedResponse } from '@/types/api';
 import { Button } from '@/components/ui/button';
@@ -133,6 +133,13 @@ export function PagedLookupDialog<T>({
 
   const isOps = variant === 'ops';
   const resolvedSearchPlaceholder = searchPlaceholder ?? t('paged.searchPlaceholder');
+  const isLookupFetching = query.isFetching && !query.isFetchingNextPage;
+  const isInitialLoading = query.isLoading || (isLookupFetching && items.length === 0);
+  const triggerIcon = open && isLookupFetching ? (
+    <Loader2 className="size-4 shrink-0 animate-spin opacity-70" aria-hidden />
+  ) : (
+    <Search className="size-4 shrink-0 opacity-60" aria-hidden />
+  );
 
   const trigger = isOps ? (
     <OpsFieldShell>
@@ -147,7 +154,7 @@ export function PagedLookupDialog<T>({
         disabled={disabled}
       >
         <span className="truncate">{value || placeholder}</span>
-        <Search className="size-4 shrink-0 opacity-60" aria-hidden />
+        {triggerIcon}
       </button>
     </OpsFieldShell>
   ) : (
@@ -163,7 +170,11 @@ export function PagedLookupDialog<T>({
       disabled={disabled}
     >
       <span className="truncate">{value || placeholder}</span>
-      <Search className="size-4 opacity-50" />
+      {open && isLookupFetching ? (
+        <Loader2 className="size-4 animate-spin opacity-70" aria-hidden />
+      ) : (
+        <Search className="size-4 opacity-50" aria-hidden />
+      )}
     </Button>
   );
 
@@ -221,8 +232,13 @@ export function PagedLookupDialog<T>({
                   variant="secondary"
                   className="wms-ops-lookup-search-btn shrink-0"
                   onClick={() => setSearch(searchInput.trim())}
+                  disabled={isLookupFetching}
                 >
-                  <Search className="size-3.5" aria-hidden />
+                  {isLookupFetching ? (
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  ) : (
+                    <Search className="size-3.5" aria-hidden />
+                  )}
                   {t('paged.search')}
                 </OpsActionButton>
               ) : (
@@ -231,8 +247,13 @@ export function PagedLookupDialog<T>({
                   variant="secondary"
                   className="h-10 shrink-0 gap-1.5 px-4"
                   onClick={() => setSearch(searchInput.trim())}
+                  disabled={isLookupFetching}
                 >
-                  <Search className="size-4 opacity-80" aria-hidden />
+                  {isLookupFetching ? (
+                    <Loader2 className="size-4 animate-spin opacity-80" aria-hidden />
+                  ) : (
+                    <Search className="size-4 opacity-80" aria-hidden />
+                  )}
                   {t('paged.search')}
                 </Button>
               )}
@@ -248,40 +269,58 @@ export function PagedLookupDialog<T>({
                   : 'rounded-2xl border border-slate-200/70 bg-slate-50/80 dark:border-white/10 dark:bg-white/3',
               )}
             >
-              {query.isLoading ? (
+              {isInitialLoading ? (
                 <div className={cn('py-6', isOps ? 'px-2' : '')}>
                   <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
                 </div>
-              ) : items.length === 0 ? (
-                <div
-                  className={cn(
-                    'py-8 text-center text-sm',
-                    isOps ? 'wms-ops-lookup-empty' : 'text-slate-500',
-                  )}
-                >
-                  {emptyText ?? t('common.noResults')}
-                </div>
               ) : (
-                items.map((item) => (
-                  <button
-                    key={getKey(item)}
-                    type="button"
-                    className={cn(
-                      'flex w-full items-start px-3 py-2 text-left text-sm transition',
-                      isOps
-                        ? 'wms-ops-lookup-item'
-                        : 'rounded-xl border border-slate-200/70 bg-white/80 hover:border-sky-300 hover:bg-sky-50/70 dark:border-white/10 dark:bg-white/4 dark:hover:border-sky-400/50 dark:hover:bg-sky-500/10',
-                    )}
-                    onClick={() => {
-                      onSelect(item);
-                      onOpenChange(false);
-                    }}
-                  >
-                    <span className={isOps ? 'wms-ops-lookup-item__label' : 'font-medium text-slate-900 dark:text-white'}>
-                      {getLabel(item)}
-                    </span>
-                  </button>
-                ))
+                <>
+                  {isLookupFetching ? (
+                    <div
+                      className={cn(
+                        'sticky top-0 z-10 mb-2 flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm',
+                        isOps
+                          ? 'border-cyan-300/20 bg-slate-950/85 text-cyan-100'
+                          : 'border-slate-200 bg-white/95 text-slate-600 dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-200',
+                      )}
+                    >
+                      <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                      {t('common.loading')}
+                    </div>
+                  ) : null}
+
+                  {items.length === 0 ? (
+                    <div
+                      className={cn(
+                        'py-8 text-center text-sm',
+                        isOps ? 'wms-ops-lookup-empty' : 'text-slate-500',
+                      )}
+                    >
+                      {emptyText ?? t('common.noResults')}
+                    </div>
+                  ) : (
+                    items.map((item) => (
+                      <button
+                        key={getKey(item)}
+                        type="button"
+                        className={cn(
+                          'flex w-full items-start px-3 py-2 text-left text-sm transition',
+                          isOps
+                            ? 'wms-ops-lookup-item'
+                            : 'rounded-xl border border-slate-200/70 bg-white/80 hover:border-sky-300 hover:bg-sky-50/70 dark:border-white/10 dark:bg-white/4 dark:hover:border-sky-400/50 dark:hover:bg-sky-500/10',
+                        )}
+                        onClick={() => {
+                          onSelect(item);
+                          onOpenChange(false);
+                        }}
+                      >
+                        <span className={isOps ? 'wms-ops-lookup-item__label' : 'font-medium text-slate-900 dark:text-white'}>
+                          {getLabel(item)}
+                        </span>
+                      </button>
+                    ))
+                  )}
+                </>
               )}
 
               {query.isFetchingNextPage ? (

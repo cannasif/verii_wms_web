@@ -26,7 +26,7 @@ import {
   pixelDeltaToWeightDelta,
 } from './data-table-grid/column-widths';
 import { findColumn, isInteractiveTarget } from './data-table-grid/shared';
-import { ArrowUpDown, GripVertical } from 'lucide-react';
+import { ArrowUpDown, GripVertical, Loader2 } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -195,6 +195,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   renderSortIcon,
   isLoading = false,
   isError = false,
+  loadingText = 'Loading...',
   errorText = 'An error occurred while loading rows.',
   emptyText = 'No rows found.',
   minTableWidthClassName = 'min-w-[1200px]',
@@ -581,11 +582,11 @@ export function DataTableGrid<TRow, TKey extends string>({
       <div
         ref={tableScrollRef}
         className={cn(
-          'w-full min-w-0 overflow-x-auto overflow-y-hidden',
+          'relative w-full min-w-0 overflow-x-auto overflow-y-hidden',
           isOps
             ? 'wms-ops-table-wrap border'
             : 'rounded-2xl border border-slate-200/70 bg-white dark:border-white/10 dark:bg-[#130822]',
-          isDragging ? 'cursor-grabbing select-none' : 'cursor-grab',
+          isLoading ? 'cursor-wait' : isDragging ? 'cursor-grabbing select-none' : 'cursor-grab',
         )}
         onPointerDown={handleScrollDragStart}
         onPointerMove={handleScrollDragMove}
@@ -660,6 +661,29 @@ export function DataTableGrid<TRow, TKey extends string>({
             />
           </Table>
         </DndContext>
+
+        {isLoading ? (
+          <div
+            className={cn(
+              'absolute inset-0 z-20 flex items-start justify-center bg-background/35 backdrop-blur-[1px]',
+              isOps ? 'pt-24' : 'pt-20',
+            )}
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <div
+              className={cn(
+                'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-xl',
+                isOps
+                  ? 'border-cyan-300/25 bg-slate-950/85 text-cyan-100'
+                  : 'border-slate-200/80 bg-white/95 text-slate-700 dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-100',
+              )}
+            >
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              <span>{loadingText}</span>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <DataTableGridPagination

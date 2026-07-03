@@ -21,6 +21,7 @@ interface PagedDataGridProps<TRow, TKey extends string> {
   renderSortIcon?: (columnKey: TKey) => ReactNode;
   isLoading?: boolean;
   isError?: boolean;
+  loadingText?: string;
   errorText?: string;
   emptyText?: string;
   rowClassName?: string | ((row: TRow) => string | undefined);
@@ -114,6 +115,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
   renderSortIcon,
   isLoading,
   isError,
+  loadingText,
   errorText,
   emptyText,
   rowClassName,
@@ -298,6 +300,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       renderSortIcon={renderSortIcon}
       isLoading={isLoading}
       isError={isError}
+      loadingText={loadingText}
       errorText={errorText}
       emptyText={emptyText}
       rowClassName={rowClassName}

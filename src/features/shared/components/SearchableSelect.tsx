@@ -99,21 +99,21 @@ export function SearchableSelect<T>({
         isOps && 'wms-ops-lookup-trigger wms-ops-field h-auto font-normal',
         !isOps && 'font-normal',
         !isOps && className,
-        isOps && !selectedOption && !isLoading && 'wms-ops-field--placeholder',
+        isOps && !selectedOption && 'wms-ops-field--placeholder',
       )}
-      disabled={disabled || isLoading}
+      disabled={disabled}
     >
-      {isLoading ? (
-        <span className="flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className={cn(!isOps && 'text-muted-foreground')}>{t('common.loading')}</span>
-        </span>
-      ) : selectedOption ? (
-        <span className="truncate">{getOptionLabel(selectedOption)}</span>
-      ) : (
-        <span className={cn(!isOps && 'text-muted-foreground')}>{resolvedPlaceholder}</span>
-      )}
-      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      <span className="min-w-0 flex-1 truncate text-left">
+        {selectedOption ? (
+          getOptionLabel(selectedOption)
+        ) : (
+          <span className={cn(!isOps && 'text-muted-foreground')}>{resolvedPlaceholder}</span>
+        )}
+      </span>
+      <span className="ml-2 inline-flex shrink-0 items-center gap-1">
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin opacity-70" aria-hidden /> : null}
+        <ChevronsUpDown className="h-4 w-4 opacity-50" aria-hidden />
+      </span>
     </Button>
   );
 

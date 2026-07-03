@@ -209,14 +209,9 @@ export function SearchableMultiSelect<T>({
             isOps ? 'wms-ops-lookup-trigger wms-ops-lookup-trigger--multi h-auto min-h-10 font-normal' : 'min-h-10 h-auto',
             className,
           )}
-          disabled={disabled || isLoading}
+          disabled={disabled}
         >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-muted-foreground">{t('common.loading')}</span>
-            </span>
-          ) : selectedOptions.length > 0 ? (
+          {selectedOptions.length > 0 ? (
             <div className="flex flex-1 flex-wrap gap-1 py-0.5">
               {selectedOptions.map((option) => renderSelectedChip(option, getOptionValue(option)))}
             </div>
@@ -225,7 +220,10 @@ export function SearchableMultiSelect<T>({
               {resolvedPlaceholder}
             </span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <span className="ml-2 inline-flex shrink-0 items-center gap-1">
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin opacity-70" aria-hidden /> : null}
+            <ChevronsUpDown className="h-4 w-4 opacity-50" aria-hidden />
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
