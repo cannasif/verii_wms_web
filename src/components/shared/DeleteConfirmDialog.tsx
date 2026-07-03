@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { OpsActionButton } from '@/components/shared';
+import { OpsActionButton } from './OpsActionButton';
 import { cn } from '@/lib/utils';
 
 type DeleteConfirmDialogProps = {
