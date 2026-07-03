@@ -2,11 +2,11 @@ import { type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import type { NotificationDto } from '../types/notification';
 import { formatNotificationTime } from '../utils/date-utils';
 import { notificationApi } from '../api/notification-api';
 import { useNotificationStore } from '../stores/notification-store';
+import { cn } from '@/lib/utils';
 
 interface NotificationItemProps {
   notification: NotificationDto;
@@ -26,9 +26,9 @@ export function NotificationItem({ notification }: NotificationItemProps): React
       };
       return routeMap[entityType] || null;
     }
-    
+
     const prefix = entityType.replace('Header', '');
-    
+
     const headerRouteMap: Record<string, { route: string; useCollection: boolean }> = {
       WT: { route: 'transfer', useCollection: true },
       GR: { route: 'goods-receipt', useCollection: true },
@@ -38,16 +38,15 @@ export function NotificationItem({ notification }: NotificationItemProps): React
       WI: { route: 'warehouse/inbound', useCollection: false },
       WO: { route: 'warehouse/outbound', useCollection: false },
     };
-    
+
     const routeConfig = headerRouteMap[prefix];
     if (routeConfig) {
       if (routeConfig.useCollection) {
         return `/${routeConfig.route}/collection/${entityId}`;
-      } else {
-        return `/${routeConfig.route}/assigned`;
       }
+      return `/${routeConfig.route}/assigned`;
     }
-    
+
     return null;
   };
 
@@ -64,9 +63,9 @@ export function NotificationItem({ notification }: NotificationItemProps): React
 
   const handleMarkAsRead = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
-    
+
     if (notification.isRead) return;
-    
+
     try {
       await notificationApi.markNotificationsAsReadBulk([notification.id]);
       markAsReadStore(notification.id);
@@ -79,46 +78,41 @@ export function NotificationItem({ notification }: NotificationItemProps): React
   return (
     <div
       onClick={handleClick}
-      className="relative flex flex-col gap-2 p-3 rounded-md border cursor-pointer transition-all hover:bg-accent bg-accent/50 border-border"
+      className={cn(
+        'wms-ops-notification-terminal__entry',
+        !notification.isRead && 'wms-ops-notification-terminal__entry--unread',
+      )}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleClick();
+          void handleClick();
         }
       }}
     >
-      {!notification.isRead && (
-        <div className="absolute top-2 right-2 size-2 rounded-full bg-green-500" />
-      )}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <h4 className="text-sm truncate font-semibold">
-            {notification.title}
-          </h4>
-        </div>
-        <p className="text-sm line-clamp-2 mt-1">
-          {notification.message}
-        </p>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-muted-foreground">
-            {formatNotificationTime(notification.timestamp)}
-          </p>
-          {!notification.isRead && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkAsRead}
-              className="h-7 text-xs gap-1.5"
-            >
-              <CheckIcon className="size-3" />
-              {t('notification.markAsRead')}
-            </Button>
-          )}
-        </div>
+      <div className="wms-ops-notification-terminal__entry-head">
+        <span className="wms-ops-notification-terminal__tag">
+          [{notification.isRead ? 'LOG' : 'NEW'}]
+        </span>
+        <h4 className="wms-ops-notification-terminal__entry-title">{notification.title}</h4>
+      </div>
+      <p className="wms-ops-notification-terminal__entry-message">{notification.message}</p>
+      <div className="wms-ops-notification-terminal__entry-foot">
+        <time className="wms-ops-notification-terminal__entry-time">
+          {formatNotificationTime(notification.timestamp)}
+        </time>
+        {!notification.isRead ? (
+          <button
+            type="button"
+            onClick={handleMarkAsRead}
+            className="wms-ops-notification-terminal__mark-read"
+          >
+            <CheckIcon className="size-3" aria-hidden />
+            {t('notification.markAsRead')}
+          </button>
+        ) : null}
       </div>
     </div>
   );
 }
-

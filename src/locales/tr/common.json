@@ -679,7 +679,11 @@
   "welcome": {
     "title": "Hoş geldiniz",
     "subtitle": "Depo yönetim sistemine giriş yaptınız. Devam etmek için panele gidin.",
-    "goToDashboard": "Panele git"
+    "goToDashboard": "Panele git",
+    "terminal": {
+      "eyebrow": "WMS / TERMİNAL",
+      "accessGranted": "ERİŞİM ONAYLANDI"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -693,9 +697,9 @@
     "criticalStock": "Kritik Stok",
     "criticalStockItems": "Düşük stoklu ürünler",
     "recentTransactions": "Son İşlemler",
-    "recentTransactionsSubtitle": "Son 24 saatteki işlemler",
+    "recentTransactionsSubtitle": "Son güncellenen mal kabul ve sevkiyat hareketleri",
     "quickAccess": "Hızlı Erişim",
-    "quickAccessSubtitle": "Yaygın işlemler",
+    "quickAccessSubtitle": "Sık kullanılan operasyon komutları",
     "newGoodsReceipt": "Yeni Mal Kabul",
     "newShipment": "Yeni Sevkiyat",
     "stockQuery": "Stok Sorgula",
@@ -705,7 +709,44 @@
     "shipmentNumber": "Sevkiyat #{{number}}",
     "inventoryUpdate": "Envanter Güncelleme",
     "hoursAgo": "{{hours}} saat önce",
-    "user": "Kullanıcı"
+    "user": "Kullanıcı",
+    "terminal": {
+      "eyebrow": "WMS / KOMUT MERKEZİ",
+      "welcome": "Hoş geldin, {{name}}",
+      "operator": "OPERATÖR",
+      "branch": "ŞUBE",
+      "branchFallback": "Şube seçilmedi",
+      "systemPulse": "SİSTEM DURUMU",
+      "online": "ÇEVRİMİÇİ",
+      "syncing": "SENKRONİZE",
+      "myTasks": "GÖREVLERİM",
+      "statusHint": "Canlı operasyon metrikleri ve son hareketler aşağıda.",
+      "metricsPanel": "OPERASYON METRİKLERİ",
+      "stockSkuCount": "Stok Kalemi",
+      "stockSkuHint": "Depo bakiye kayıtları",
+      "openGoodsReceiptHint": "Toplam mal kabul emri",
+      "openShipmentHint": "Toplam sevkiyat emri",
+      "pendingApproval": "Onay Bekleyen",
+      "pendingApprovalHint": "Mal kabul onay kuyruğu",
+      "myAssignments": "Bana Atanan",
+      "myAssignmentsHint": "Mal kabul + sevkiyat görevleri",
+      "transferCount": "Transfer",
+      "transferHint": "Aktif transfer emirleri",
+      "activityEmpty": "Henüz görüntülenecek hareket yok.",
+      "pending": "Bekliyor",
+      "minutesAgo": "{{minutes}} dk önce",
+      "launch": "Başlat",
+      "quickLinksEmpty": "Bu kullanıcı için hızlı komut bulunamadı.",
+      "assignedGoodsReceipt": "Atanan Mal Kabul",
+      "transferList": "Transfer Listesi",
+      "reportsHub": "Rapor Merkezi",
+      "quickGrDescription": "Yeni mal kabul emri oluştur",
+      "quickAssignedDescription": "Sana atanan mal kabul işlerini aç",
+      "quickShipmentDescription": "Yeni sevkiyat emri başlat",
+      "quickTransferDescription": "Transfer emirlerini listele",
+      "quickStockDescription": "Depo stok bakiyesini sorgula",
+      "quickReportsDescription": "Operasyon raporlarına geç"
+    }
   },
   "goodsReceipt": {
     "create": {
@@ -2682,7 +2723,10 @@
     "loading": "Yükleniyor...",
     "disconnected": "Bağlantı kesildi",
     "notifications": "Bildirimler",
-    "connectionDisconnected": "Bağlantı kesildi"
+    "connectionDisconnected": "Bağlantı kesildi",
+    "terminal": {
+      "noEntries": "Bildirim bulunmuyor"
+    }
   },
   "userDetail": {
     "title": "Kullanıcı Detayları",
@@ -2764,6 +2808,11 @@
     "settingsBrandTheme": "Kurumsal Tema",
     "settingsBrandThemeHint": "WMS genel görünümünü operasyon kimliğine göre değiştirin",
     "organizationBadge": "V3RII.CO",
+    "terminal": {
+      "switchOn": "ON",
+      "switchOff": "OFF",
+      "eyebrow": "PROFIL / KULLANICI"
+    },
     "profileSettings": "Profil Ayarları",
     "branchLabel": "Şube",
     "changePhoto": "Profil resmini seç veya değiştir",

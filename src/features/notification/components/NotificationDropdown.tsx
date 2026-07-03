@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { useNotificationStore } from '../stores/notification-store';
 import { notificationApi } from '../api/notification-api';
 import { NotificationItem } from './NotificationItem';
@@ -43,10 +41,10 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
   const loadInitialNotifications = useCallback(async (): Promise<void> => {
     if (hasLoadedForOpenRef.current) return;
-    
+
     hasLoadedForOpenRef.current = true;
     setLoading(true);
-    
+
     try {
       const response = await notificationApi.getPagedNotifications({
         pageNumber: 1,
@@ -54,12 +52,11 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
         sortBy: 'Id',
         sortDirection: 'desc',
       });
-      
+
       setNotifications(response.data);
       setPaginationState(1, response.totalPages, response.hasNextPage);
       setUnreadCount(response.totalCount);
     } catch {
-      // Initial load failures are handled by the shared notification connection flow.
       hasLoadedForOpenRef.current = false;
     } finally {
       setLoading(false);
@@ -68,9 +65,9 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
   const loadMoreNotifications = useCallback(async (): Promise<void> => {
     if (!hasNextPage || isLoadingMore || isLoading) return;
-    
+
     setLoadingMore(true);
-    
+
     try {
       const nextPage = currentPage + 1;
       const response = await notificationApi.getPagedNotifications({
@@ -79,7 +76,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
         sortBy: 'Id',
         sortDirection: 'desc',
       });
-      
+
       appendNotifications(response.data);
       setPaginationState(nextPage, response.totalPages, response.hasNextPage);
     } catch {
@@ -89,23 +86,22 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
     }
   }, [hasNextPage, isLoadingMore, isLoading, currentPage, setLoadingMore, appendNotifications, setPaginationState]);
 
-
   const handleScroll = useCallback((): void => {
     if (!scrollContainerRef.current || isLoadingMore || isLoading) return;
-    
+
     const container = scrollContainerRef.current;
     const scrollTop = container.scrollTop;
     const scrollHeight = container.scrollHeight;
     const clientHeight = container.clientHeight;
     const threshold = 200;
-    
+
     if (scrollHeight - scrollTop - clientHeight < threshold && hasNextPage) {
       loadMoreNotifications();
     }
   }, [isLoadingMore, isLoading, hasNextPage, loadMoreNotifications]);
 
   const debouncedScrollHandlerRef = useRef<((...args: unknown[]) => void) | undefined>(undefined);
-  
+
   useEffect(() => {
     debouncedScrollHandlerRef.current = debounce(handleScroll, 300);
     return () => {
@@ -116,10 +112,10 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || !isOpen) return;
-    
+
     const handler = debouncedScrollHandlerRef.current;
     if (!handler) return;
-    
+
     container.addEventListener('scroll', handler);
     return () => {
       container.removeEventListener('scroll', handler);
@@ -156,7 +152,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
 
   const handleMarkAllAsRead = async (): Promise<void> => {
     if (unreadCount === 0) return;
-    
+
     try {
       await notificationApi.markAllAsRead();
       markAllAsReadStore();
@@ -172,64 +168,68 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
       <DropdownMenuTrigger asChild>
         {children}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 p-0" sideOffset={8}>
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <DropdownMenuLabel className="p-0 font-semibold">
-            {t('notification.title')}
-            {hasUnread && (
-              <span className="ml-2 text-xs font-normal text-muted-foreground">
-                ({unreadCount} {t('notification.unreadCount')})
+      <DropdownMenuContent align="end" className="wms-ops-notification-terminal w-80 p-0" sideOffset={8}>
+        <div className="wms-ops-notification-terminal__header">
+          <div className="wms-ops-notification-terminal__title-row">
+            <span className="wms-ops-notification-terminal__prompt" aria-hidden>
+              {'> '}
+            </span>
+            <span className="wms-ops-notification-terminal__title">{t('notification.title')}</span>
+            {hasUnread ? (
+              <span className="wms-ops-notification-terminal__badge">
+                [{unreadCount} {t('notification.unreadCount')}]
               </span>
-            )}
-          </DropdownMenuLabel>
-          {hasUnread && (
-            <Button
-              variant="ghost"
-              size="sm"
+            ) : null}
+          </div>
+          {hasUnread ? (
+            <button
+              type="button"
               onClick={handleMarkAllAsRead}
-              className="h-7 text-xs"
+              className="wms-ops-notification-terminal__mark-all"
               disabled={isMarkingAsRead}
             >
               {t('notification.markAllAsRead')}
-            </Button>
-          )}
+            </button>
+          ) : null}
         </div>
 
         <div
           ref={scrollContainerRef}
-          className="max-h-[400px] overflow-y-auto"
+          className="wms-ops-notification-terminal__body wms-ops-scrollbar max-h-[400px] overflow-y-auto"
         >
           {isLoading ? (
-            <div className="p-4 text-center text-sm text-muted-foreground">
+            <p className="wms-ops-notification-terminal__log-line wms-ops-notification-terminal__log-line--dim">
+              <span className="wms-ops-notification-terminal__tag">[SYS]</span>
               {t('notification.loading')}
-            </div>
+              <span className="wms-ops-notification-terminal__cursor" aria-hidden>
+                _
+              </span>
+            </p>
+          ) : notifications.length === 0 ? (
+            <p className="wms-ops-notification-terminal__log-line wms-ops-notification-terminal__log-line--empty">
+              <span className="wms-ops-notification-terminal__tag">[SYS]</span>
+              {t('notification.terminal.noEntries', { defaultValue: t('notification.noNotifications') })}
+            </p>
           ) : (
-            <div className="p-2 space-y-1">
-              {notifications.length === 0 ? (
-                <div className="p-8 text-center">
-                  <p className="text-sm text-muted-foreground">{t('notification.noNotifications')}</p>
-                </div>
-              ) : (
-                <>
-                  {notifications.map((notification) => (
-                    <NotificationItem key={notification.id} notification={notification} />
-                  ))}
-                  {isLoadingMore && (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
-                      {t('notification.loading')}
-                    </div>
-                  )}
-                  {!hasNextPage && notifications.length > 0 && (
-                    <div className="p-2 text-center text-xs text-muted-foreground">
-                      {t('notification.noMoreNotifications')}
-                    </div>
-                  )}
-                </>
-              )}
+            <div className="wms-ops-notification-terminal__list">
+              {notifications.map((notification) => (
+                <NotificationItem key={notification.id} notification={notification} />
+              ))}
+              {isLoadingMore ? (
+                <p className="wms-ops-notification-terminal__log-line wms-ops-notification-terminal__log-line--dim">
+                  <span className="wms-ops-notification-terminal__tag">[SYS]</span>
+                  {t('notification.loading')}
+                </p>
+              ) : null}
+              {!hasNextPage && notifications.length > 0 ? (
+                <p className="wms-ops-notification-terminal__log-line wms-ops-notification-terminal__log-line--dim">
+                  <span className="wms-ops-notification-terminal__tag">[EOF]</span>
+                  {t('notification.noMoreNotifications')}
+                </p>
+              ) : null}
             </div>
           )}
         </div>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

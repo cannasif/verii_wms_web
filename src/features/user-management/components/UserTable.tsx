@@ -1,7 +1,8 @@
 import { type ReactElement, useMemo } from 'react';
-import { ArrowDown, ArrowUp, Pencil } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { MasterDataOpsFlagChip, masterDataOpsGridColumn } from '@/features/shared';
@@ -189,7 +190,23 @@ export function UserTable({
                     {user.isActive ? t('userManagement.table.active') : t('userManagement.table.inactive')}
                   </span>
                   {user.isEmailConfirmed ? (
-                    <MasterDataOpsFlagChip tone="info">{t('userManagement.table.confirmed')}</MasterDataOpsFlagChip>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="inline-flex cursor-default"
+                            aria-label={t('userManagement.table.confirmed')}
+                          >
+                            <MasterDataOpsFlagChip tone="info">
+                              <ShieldCheck className="size-3" aria-hidden />
+                            </MasterDataOpsFlagChip>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          {t('userManagement.table.confirmed')}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ) : null}
                 </div>
               );

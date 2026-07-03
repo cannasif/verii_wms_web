@@ -1,256 +1,244 @@
-import { type ReactElement, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { useUIStore } from '@/stores/ui-store';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+  ArrowLeftRight,
+  ClipboardCheck,
+  PackageSearch,
+  Truck,
+  UserCheck,
+  Warehouse,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useUIStore } from '@/stores/ui-store';
+import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
+import {
+  DashboardOpsActivityFeed,
+  DashboardOpsHero,
+  DashboardOpsMetricTile,
+  DashboardOpsPanel,
+  DashboardOpsQuickLink,
+  DashboardOpsSection,
+  DashboardOpsStatusBar,
+} from './dashboard-ops-ui';
+
+interface QuickLinkConfig {
+  permission: string;
+  moduleCode: string;
+  titleKey: string;
+  descriptionKey: string;
+  href: string;
+  icon: typeof ClipboardCheck;
+}
+
+const QUICK_LINKS: QuickLinkConfig[] = [
+  {
+    permission: 'wms.goods-receipt.create',
+    moduleCode: 'CMD-GR-NEW',
+    titleKey: 'dashboard.newGoodsReceipt',
+    descriptionKey: 'dashboard.terminal.quickGrDescription',
+    href: '/goods-receipt/create',
+    icon: ClipboardCheck,
+  },
+  {
+    permission: 'wms.goods-receipt.view',
+    moduleCode: 'CMD-GR-ASN',
+    titleKey: 'dashboard.terminal.assignedGoodsReceipt',
+    descriptionKey: 'dashboard.terminal.quickAssignedDescription',
+    href: '/goods-receipt/assigned',
+    icon: UserCheck,
+  },
+  {
+    permission: 'wms.shipment.create',
+    moduleCode: 'CMD-SH-NEW',
+    titleKey: 'dashboard.newShipment',
+    descriptionKey: 'dashboard.terminal.quickShipmentDescription',
+    href: '/shipment/create',
+    icon: Truck,
+  },
+  {
+    permission: 'wms.transfer.view',
+    moduleCode: 'CMD-TR-LST',
+    titleKey: 'dashboard.terminal.transferList',
+    descriptionKey: 'dashboard.terminal.quickTransferDescription',
+    href: '/transfer/list',
+    icon: ArrowLeftRight,
+  },
+  {
+    permission: 'wms.warehouse-balance.view',
+    moduleCode: 'CMD-STK-QRY',
+    titleKey: 'dashboard.stockQuery',
+    descriptionKey: 'dashboard.terminal.quickStockDescription',
+    href: '/erp/warehouse-stock-balance',
+    icon: Warehouse,
+  },
+  {
+    permission: 'wms.reports.view',
+    moduleCode: 'CMD-RPT-HUB',
+    titleKey: 'dashboard.terminal.reportsHub',
+    descriptionKey: 'dashboard.terminal.quickReportsDescription',
+    href: '/reports',
+    icon: PackageSearch,
+  },
+];
+
+function formatRelativeTimestamp(value: string, language: string, t: (key: string, options?: Record<string, unknown>) => string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.max(1, Math.floor(diffMs / 60_000));
+  if (diffMinutes < 60) {
+    return t('dashboard.terminal.minutesAgo', { defaultValue: '{{minutes}} dk önce', minutes: diffMinutes });
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 48) {
+    return t('dashboard.hoursAgo', { hours: diffHours });
+  }
+
+  return date.toLocaleString(language);
+}
 
 export function DashboardPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { setPageTitle } = useUIStore();
+  const permissionAccess = usePermissionAccess();
+  const { user, branch, metrics, isLoading } = useDashboardMetrics();
 
   useEffect(() => {
     setPageTitle(t('dashboard.title'));
-    return () => {
-      setPageTitle(null);
-    };
-  }, [t, setPageTitle]);
+    return () => setPageTitle(null);
+  }, [setPageTitle, t]);
+
+  const displayName = user?.name || user?.email || t('dashboard.user');
+  const branchLabel = branch?.name || branch?.code || t('dashboard.terminal.branchFallback');
+
+  const visibleQuickLinks = useMemo(
+    () => QUICK_LINKS.filter((link) => permissionAccess.can(link.permission)),
+    [permissionAccess],
+  );
 
   return (
-    <div className="space-y-6 crm-page">
+    <div className="wms-ops-dashboard-page wms-ops-erp-skin">
+      <div className="wms-ops-dashboard-terminal">
+        <div className="wms-ops-dashboard-terminal__scanlines" aria-hidden />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard.totalStock')}</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-              <path d="M3 6h18" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">
-              +12.5% {t('dashboard.totalStockChange')}
-            </p>
-          </CardContent>
-        </Card>
+        <DashboardOpsHero
+          eyebrow={t('dashboard.terminal.eyebrow', { defaultValue: 'WMS / KOMUT MERKEZİ' })}
+          title={t('dashboard.terminal.welcome', { defaultValue: 'Hoş geldin, {{name}}', name: displayName })}
+          subtitle={t('dashboard.subtitle')}
+          operatorLabel={t('dashboard.terminal.operator', { defaultValue: 'OPERATÖR' })}
+          operatorValue={displayName}
+          branchLabel={t('dashboard.terminal.branch', { defaultValue: 'ŞUBE' })}
+          branchValue={branchLabel}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard.goodsReceipt')}</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">45</div>
-            <p className="text-xs text-muted-foreground">
-              {t('dashboard.goodsReceiptPending')}
-            </p>
-          </CardContent>
-        </Card>
+        <DashboardOpsPanel>
+          <DashboardOpsStatusBar
+            pulseLabel={t('dashboard.terminal.systemPulse', { defaultValue: 'SİSTEM DURUMU' })}
+            pulseValue={isLoading ? t('dashboard.terminal.syncing', { defaultValue: 'SENKRONİZE' }) : t('dashboard.terminal.online', { defaultValue: 'ÇEVRİMİÇİ' })}
+            tasksLabel={t('dashboard.terminal.myTasks', { defaultValue: 'GÖREVLERİM' })}
+            tasksValue={String(metrics.myTasksCount).padStart(2, '0')}
+            hint={t('dashboard.terminal.statusHint', { defaultValue: 'Canlı operasyon metrikleri ve son hareketler aşağıda.' })}
+          />
+        </DashboardOpsPanel>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard.shipment')}</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M5 18l6-6M5 18v-5a2 2 0 0 1 2-2h5" />
-              <path d="m13 6 4 4-4 4" />
-              <path d="M17 10h5" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">23</div>
-            <p className="text-xs text-muted-foreground">
-              {t('dashboard.shipmentPrepared')}
-            </p>
-          </CardContent>
-        </Card>
+        <DashboardOpsPanel className="wms-ops-dashboard-panel--metrics">
+          <div className="wms-ops-dashboard-panel__heading">
+            <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
+            <span>{t('dashboard.terminal.metricsPanel', { defaultValue: 'OPERASYON METRİKLERİ' })}</span>
+          </div>
+          <div className="wms-ops-dashboard-metrics">
+          <DashboardOpsMetricTile
+            label={t('dashboard.terminal.stockSkuCount', { defaultValue: 'Stok Kalemi' })}
+            value={metrics.stockSkuCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.stockSkuHint', { defaultValue: 'Depo bakiye kayıtları' })}
+            tone="accent"
+            isLoading={isLoading}
+          />
+          <DashboardOpsMetricTile
+            label={t('dashboard.goodsReceipt')}
+            value={metrics.goodsReceiptCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.openGoodsReceiptHint', { defaultValue: 'Toplam mal kabul emri' })}
+            isLoading={isLoading}
+          />
+          <DashboardOpsMetricTile
+            label={t('dashboard.shipment')}
+            value={metrics.shipmentCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.openShipmentHint', { defaultValue: 'Toplam sevkiyat emri' })}
+            isLoading={isLoading}
+          />
+          <DashboardOpsMetricTile
+            label={t('dashboard.terminal.pendingApproval', { defaultValue: 'Onay Bekleyen' })}
+            value={metrics.pendingApprovalCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.pendingApprovalHint', { defaultValue: 'Mal kabul onay kuyruğu' })}
+            tone="warn"
+            isLoading={isLoading}
+          />
+          <DashboardOpsMetricTile
+            label={t('dashboard.terminal.myAssignments', { defaultValue: 'Bana Atanan' })}
+            value={metrics.myTasksCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.myAssignmentsHint', { defaultValue: 'Mal kabul + sevkiyat görevleri' })}
+            tone="success"
+            isLoading={isLoading}
+          />
+          <DashboardOpsMetricTile
+            label={t('dashboard.terminal.transferCount', { defaultValue: 'Transfer' })}
+            value={metrics.transferCount.toLocaleString(i18n.language)}
+            hint={t('dashboard.terminal.transferHint', { defaultValue: 'Aktif transfer emirleri' })}
+            isLoading={isLoading}
+          />
+          </div>
+        </DashboardOpsPanel>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard.criticalStock')}</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">
-              {t('dashboard.criticalStockItems')}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,1fr)]">
+          <DashboardOpsSection
+            title={t('dashboard.recentTransactions')}
+            description={t('dashboard.recentTransactionsSubtitle')}
+            sectionCode="FEED-OPS"
+          >
+            <DashboardOpsActivityFeed
+              items={metrics.activityItems}
+              emptyText={t('dashboard.terminal.activityEmpty', { defaultValue: 'Henüz görüntülenecek hareket yok.' })}
+              kindLabels={{
+                'goods-receipt': t('dashboard.goodsReceipt'),
+                shipment: t('dashboard.shipment'),
+              }}
+              statusLabels={{
+                completed: t('dashboard.completed'),
+                preparing: t('dashboard.preparing'),
+                pending: t('dashboard.terminal.pending', { defaultValue: 'Bekliyor' }),
+              }}
+              formatTimestamp={(value) => formatRelativeTimestamp(value, i18n.language, t)}
+            />
+          </DashboardOpsSection>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>{t('dashboard.recentTransactions')}</CardTitle>
-            <CardDescription>{t('dashboard.recentTransactionsSubtitle')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{t('dashboard.goodsReceiptNumber', { number: 1234 })}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('dashboard.hoursAgo', { hours: 2 })}
-                  </p>
-                </div>
-                <Badge variant="secondary">{t('dashboard.completed')}</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{t('dashboard.shipmentNumber', { number: 5678 })}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('dashboard.hoursAgo', { hours: 4 })}
-                  </p>
-                </div>
-                <Badge variant="default">{t('dashboard.preparing')}</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{t('dashboard.inventoryUpdate')}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('dashboard.hoursAgo', { hours: 6 })}
-                  </p>
-                </div>
-                <Badge variant="secondary">{t('dashboard.completed')}</Badge>
-              </div>
+          <DashboardOpsSection
+            title={t('dashboard.quickAccess')}
+            description={t('dashboard.quickAccessSubtitle')}
+            sectionCode="CMD-QUICK"
+          >
+            <div className="wms-ops-dashboard-quick-grid">
+              {visibleQuickLinks.length === 0 ? (
+                <p className="wms-ops-dashboard-activity__empty">
+                  {t('dashboard.terminal.quickLinksEmpty', { defaultValue: 'Bu kullanıcı için hızlı komut bulunamadı.' })}
+                </p>
+              ) : visibleQuickLinks.map((link, index) => (
+                <DashboardOpsQuickLink
+                  key={link.href}
+                  index={index + 1}
+                  moduleCode={link.moduleCode}
+                  title={t(link.titleKey)}
+                  description={t(link.descriptionKey, { defaultValue: link.titleKey })}
+                  href={link.href}
+                  icon={link.icon}
+                  openLabel={t('dashboard.terminal.launch', { defaultValue: 'Başlat' })}
+                />
+              ))}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t('dashboard.quickAccess')}</CardTitle>
-            <CardDescription>{t('dashboard.quickAccessSubtitle')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Link
-                to="/goods-receipt/create"
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent cursor-pointer transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                  <span className="text-sm">{t('dashboard.newGoodsReceipt')}</span>
-                </div>
-              </Link>
-              <Link
-                to="/shipment"
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent cursor-pointer transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M5 18l6-6M5 18v-5a2 2 0 0 1 2-2h5" />
-                    <path d="m13 6 4 4-4 4" />
-                    <path d="M17 10h5" />
-                  </svg>
-                  <span className="text-sm">{t('dashboard.newShipment')}</span>
-                </div>
-              </Link>
-              <Link
-                to="/inventory"
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent cursor-pointer transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                    <path d="M3 6h18" />
-                    <path d="M16 10a4 4 0 0 1-8 0" />
-                  </svg>
-                  <span className="text-sm">{t('dashboard.stockQuery')}</span>
-                </div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+          </DashboardOpsSection>
+        </div>
       </div>
     </div>
   );
 }
-
