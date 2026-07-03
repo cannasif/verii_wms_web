@@ -200,6 +200,12 @@ export type ServiceCaseDispositionPlan = {
   existingLinks: BusinessDocumentLinkRow[];
 };
 
+export type RegisterServiceCaseDispositionLinkRequest = {
+  documentHeaderId: number;
+  documentLineId?: number;
+  note?: string;
+};
+
 export type CreateServiceCaseRequest = {
   caseNo: string;
   requestSource?: number;

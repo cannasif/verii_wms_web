@@ -81,6 +81,13 @@
       "nextAction": "Next Action",
       "requiredAction": "Required Action",
       "qualityGate": "Quality Gates",
+      "linkFormTitle": "Link Created WMS Document",
+      "documentHeaderPlaceholder": "Document header ID",
+      "documentLinePlaceholder": "Document line ID (optional)",
+      "notePlaceholder": "Link note",
+      "linkAction": "Link Document",
+      "linkSuccess": "WMS document linked to service decision.",
+      "linkError": "WMS document could not be linked.",
       "pass": "Done",
       "pending": "Pending",
       "actions": {

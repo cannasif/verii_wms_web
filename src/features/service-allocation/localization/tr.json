@@ -81,6 +81,13 @@
       "nextAction": "Sıradaki Aksiyon",
       "requiredAction": "Gerekli İşlem",
       "qualityGate": "Kontrol Listesi",
+      "linkFormTitle": "Oluşturulan WMS Belgesini Bağla",
+      "documentHeaderPlaceholder": "Belge başlık ID",
+      "documentLinePlaceholder": "Belge satır ID (opsiyonel)",
+      "notePlaceholder": "Bağlantı notu",
+      "linkAction": "Belgeyi Bağla",
+      "linkSuccess": "WMS belgesi servis kararına bağlandı.",
+      "linkError": "WMS belgesi bağlanamadı.",
       "pass": "Tamam",
       "pending": "Bekliyor",
       "actions": {

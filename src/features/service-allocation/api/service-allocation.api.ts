@@ -9,6 +9,7 @@ import type {
   CompleteServiceCaseWorkRequest,
   CreateServiceCaseLineRequest,
   CreateServiceCaseRequest,
+  RegisterServiceCaseDispositionLinkRequest,
   ServiceCaseAssignmentRow,
   ServiceCaseDispositionPlan,
   ServiceCaseRow,
@@ -83,6 +84,18 @@ export const serviceAllocationApi = {
     const response = await api.get<ApiResponse<ServiceCaseDispositionPlan>>(`/api/ServiceCase/${id}/disposition-plan`);
     if (!response.data) {
       throw new Error(response.message || 'Service case disposition plan could not be loaded.');
+    }
+
+    return response.data;
+  },
+
+  async registerServiceCaseDispositionLink(
+    id: number,
+    payload: RegisterServiceCaseDispositionLinkRequest,
+  ): Promise<BusinessDocumentLinkRow> {
+    const response = await api.post<ApiResponse<BusinessDocumentLinkRow>>(`/api/ServiceCase/${id}/disposition-link`, payload);
+    if (!response.data) {
+      throw new Error(response.message || 'Service case disposition document could not be linked.');
     }
 
     return response.data;

@@ -69,6 +69,9 @@ export function ServiceCaseTimelinePage(): ReactElement {
     enabled: Number.isFinite(parsedId) && parsedId > 0,
   });
   const dispositionPlan = dispositionPlanQuery.data;
+  const [dispositionDocumentHeaderId, setDispositionDocumentHeaderId] = useState('');
+  const [dispositionDocumentLineId, setDispositionDocumentLineId] = useState('');
+  const [dispositionDocumentNote, setDispositionDocumentNote] = useState('');
   const [assignedBranchCode, setAssignedBranchCode] = useState('0');
   const [assignedUserEmail, setAssignedUserEmail] = useState('');
   const [assignmentNote, setAssignmentNote] = useState('');
@@ -109,6 +112,26 @@ export function ServiceCaseTimelinePage(): ReactElement {
     },
     onError: (error: Error) => {
       toast.error(error.message || t('serviceAllocation.recompute.error'));
+    },
+  });
+  const registerDispositionLinkMutation = useMutation({
+    mutationFn: () =>
+      serviceAllocationApi.registerServiceCaseDispositionLink(parsedId, {
+        documentHeaderId: Number(dispositionDocumentHeaderId),
+        documentLineId: dispositionDocumentLineId ? Number(dispositionDocumentLineId) : undefined,
+        note: dispositionDocumentNote || undefined,
+      }),
+    onSuccess: () => {
+      toast.success(t('serviceAllocation.disposition.linkSuccess'));
+      setDispositionDocumentHeaderId('');
+      setDispositionDocumentLineId('');
+      setDispositionDocumentNote('');
+      void query.refetch();
+      void dispositionPlanQuery.refetch();
+      queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('serviceAllocation.disposition.linkError'));
     },
   });
   const assignMutation = useMutation({
@@ -361,6 +384,50 @@ export function ServiceCaseTimelinePage(): ReactElement {
                   <p className="mt-4 rounded-2xl border bg-muted/50 p-3 text-sm text-muted-foreground">
                     {dispositionPlan.message}
                   </p>
+                  {permission.canUpdate && dispositionPlan.isReadyForDisposition && !dispositionPlan.hasDispositionDocument ? (
+                    <div className="mt-4 rounded-2xl border bg-muted/20 p-3">
+                      <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.linkFormTitle')}</div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <OpsInput
+                          type="number"
+                          min={1}
+                          value={dispositionDocumentHeaderId}
+                          onChange={(event) => setDispositionDocumentHeaderId(event.target.value)}
+                          placeholder={t('serviceAllocation.disposition.documentHeaderPlaceholder')}
+                        />
+                        <OpsInput
+                          type="number"
+                          min={1}
+                          value={dispositionDocumentLineId}
+                          onChange={(event) => setDispositionDocumentLineId(event.target.value)}
+                          placeholder={t('serviceAllocation.disposition.documentLinePlaceholder')}
+                        />
+                      </div>
+                      <OpsTextarea
+                        className="mt-3"
+                        value={dispositionDocumentNote}
+                        onChange={(event) => setDispositionDocumentNote(event.target.value)}
+                        rows={2}
+                        placeholder={t('serviceAllocation.disposition.notePlaceholder')}
+                      />
+                      <div className="mt-3 flex justify-end">
+                        <OpsActionButton
+                          type="button"
+                          variant="primary"
+                          disabled={
+                            !dispositionDocumentHeaderId
+                            || Number(dispositionDocumentHeaderId) <= 0
+                            || registerDispositionLinkMutation.isPending
+                          }
+                          onClick={() => registerDispositionLinkMutation.mutate()}
+                        >
+                          {registerDispositionLinkMutation.isPending
+                            ? t('common.loading')
+                            : t('serviceAllocation.disposition.linkAction')}
+                        </OpsActionButton>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="rounded-2xl border bg-background/80 p-4">
