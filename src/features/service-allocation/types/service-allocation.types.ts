@@ -182,6 +182,24 @@ export type ServiceCaseTimelineResponse = {
   timeline: ServiceCaseTimelineEvent[];
 };
 
+export type ServiceCaseDispositionPlan = {
+  serviceCaseId: number;
+  caseNo: string;
+  decisionType: number;
+  currentStatus: number;
+  isReadyForDisposition: boolean;
+  hasCompletedWorkSession: boolean;
+  hasCompletionVideo: boolean;
+  hasDispositionDocument: boolean;
+  requiredDocumentModule?: string | number | null;
+  requiredLinkPurpose?: string | number | null;
+  requiredAction: string;
+  fromWarehouseId?: number | null;
+  toWarehouseId?: number | null;
+  message: string;
+  existingLinks: BusinessDocumentLinkRow[];
+};
+
 export type CreateServiceCaseRequest = {
   caseNo: string;
   requestSource?: number;

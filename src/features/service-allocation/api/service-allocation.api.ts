@@ -10,6 +10,7 @@ import type {
   CreateServiceCaseLineRequest,
   CreateServiceCaseRequest,
   ServiceCaseAssignmentRow,
+  ServiceCaseDispositionPlan,
   ServiceCaseRow,
   ServiceCaseTimelineResponse,
   ServiceCaseWorkSessionRow,
@@ -73,6 +74,15 @@ export const serviceAllocationApi = {
     const response = await api.get<ApiResponse<ServiceCaseTimelineResponse>>(`/api/ServiceCase/${id}/timeline`);
     if (!response.data) {
       throw new Error(response.message || 'Service case timeline could not be loaded.');
+    }
+
+    return response.data;
+  },
+
+  async getServiceCaseDispositionPlan(id: number): Promise<ServiceCaseDispositionPlan> {
+    const response = await api.get<ApiResponse<ServiceCaseDispositionPlan>>(`/api/ServiceCase/${id}/disposition-plan`);
+    if (!response.data) {
+      throw new Error(response.message || 'Service case disposition plan could not be loaded.');
     }
 
     return response.data;

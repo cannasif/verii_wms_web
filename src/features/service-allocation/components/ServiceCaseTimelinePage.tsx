@@ -1,7 +1,7 @@
 import { type ChangeEvent, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow, OpsTextarea, PageState } from '@/components/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,6 +36,16 @@ function fileListToArray(event: ChangeEvent<HTMLInputElement>): File[] {
   return Array.from(event.target.files ?? []);
 }
 
+function hasVideoFile(files: File[]): boolean {
+  return files.some((file) => {
+    if (file.type.toLowerCase().startsWith('video/')) {
+      return true;
+    }
+
+    return /\.(mp4|mov|avi|mkv|webm)$/i.test(file.name);
+  });
+}
+
 function formatDuration(seconds?: number): string {
   if (!seconds && seconds !== 0) return '-';
   const minutes = Math.floor(seconds / 60);
@@ -53,6 +63,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
   const permission = useCrudPermission('wms.service-allocation');
   const query = useServiceCaseTimelineQuery(parsedId);
   const timeline = query.data;
+  const dispositionPlanQuery = useQuery({
+    queryKey: ['service-allocation', 'service-case', parsedId, 'disposition-plan'],
+    queryFn: () => serviceAllocationApi.getServiceCaseDispositionPlan(parsedId),
+    enabled: Number.isFinite(parsedId) && parsedId > 0,
+  });
+  const dispositionPlan = dispositionPlanQuery.data;
   const [assignedBranchCode, setAssignedBranchCode] = useState('0');
   const [assignedUserEmail, setAssignedUserEmail] = useState('');
   const [assignmentNote, setAssignmentNote] = useState('');
@@ -73,6 +89,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
     () => timeline?.workSessions.filter((item) => Number(item.status) === 0) ?? [],
     [timeline?.workSessions],
   );
+  const completionHasVideo = useMemo(() => hasVideoFile(completionMedia), [completionMedia]);
   const recomputeMutation = useMutation({
     mutationFn: async () => {
       const stockId = timeline?.serviceCase.incomingStockId;
@@ -149,6 +166,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
       setCompletionMedia([]);
       setCompleteWorkSessionId('');
       void query.refetch();
+      void dispositionPlanQuery.refetch();
       queryClient.invalidateQueries({ queryKey: ['service-allocation'] });
     },
     onError: (error: Error) => {
@@ -283,6 +301,90 @@ export function ServiceCaseTimelinePage(): ReactElement {
             </div>
           </div>
 
+          <section className="wms-ops-detail-panel overflow-hidden">
+            <div className="flex flex-col gap-2 border-b p-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h3 className="wms-ops-detail-section-title mb-1">{t('serviceAllocation.disposition.title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('serviceAllocation.disposition.subtitle')}</p>
+              </div>
+              <span
+                className={`wms-ops-code-badge self-start ${
+                  dispositionPlan?.hasDispositionDocument
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : dispositionPlan?.isReadyForDisposition
+                      ? 'bg-cyan-100 text-cyan-700'
+                      : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                {dispositionPlan?.hasDispositionDocument
+                  ? t('serviceAllocation.disposition.linked')
+                  : dispositionPlan?.isReadyForDisposition
+                    ? t('serviceAllocation.disposition.ready')
+                    : t('serviceAllocation.disposition.waiting')}
+              </span>
+            </div>
+
+            {dispositionPlanQuery.isLoading ? (
+              <div className="p-4 text-sm text-muted-foreground">{t('common.loading')}</div>
+            ) : dispositionPlanQuery.isError || !dispositionPlan ? (
+              <div className="p-4 text-sm text-destructive">{t('serviceAllocation.disposition.loadError')}</div>
+            ) : (
+              <div className="grid gap-4 p-4 lg:grid-cols-[1.15fr_0.85fr]">
+                <div className="rounded-2xl border bg-background/80 p-4">
+                  <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.nextAction')}</div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <ServiceCaseDetailRow label={t('serviceAllocation.disposition.requiredAction')}>
+                      {t(`serviceAllocation.disposition.actions.${dispositionPlan.requiredAction}`, {
+                        defaultValue: dispositionPlan.requiredAction || '-',
+                      })}
+                    </ServiceCaseDetailRow>
+                    <ServiceCaseDetailRow label={t('serviceAllocation.documentModule')}>
+                      {dispositionPlan.requiredDocumentModule !== null && dispositionPlan.requiredDocumentModule !== undefined
+                        ? renderDocumentModule(dispositionPlan.requiredDocumentModule)
+                        : '-'}
+                    </ServiceCaseDetailRow>
+                    <ServiceCaseDetailRow label={t('serviceAllocation.linkPurpose')}>
+                      {dispositionPlan.requiredLinkPurpose !== null && dispositionPlan.requiredLinkPurpose !== undefined
+                        ? renderDocumentLinkPurpose(dispositionPlan.requiredLinkPurpose)
+                        : '-'}
+                    </ServiceCaseDetailRow>
+                    <ServiceCaseDetailRow label={t('serviceAllocation.fromWarehouse')}>
+                      {dispositionPlan.fromWarehouseId ?? '-'}
+                    </ServiceCaseDetailRow>
+                    <ServiceCaseDetailRow label={t('serviceAllocation.toWarehouse')}>
+                      {dispositionPlan.toWarehouseId ?? '-'}
+                    </ServiceCaseDetailRow>
+                    <ServiceCaseDetailRow label={t('serviceAllocation.timeline.linkCount')}>
+                      {dispositionPlan.existingLinks.length}
+                    </ServiceCaseDetailRow>
+                  </div>
+                  <p className="mt-4 rounded-2xl border bg-muted/50 p-3 text-sm text-muted-foreground">
+                    {dispositionPlan.message}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border bg-background/80 p-4">
+                  <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.qualityGate')}</div>
+                  <div className="space-y-2 text-sm">
+                    {[
+                      { key: 'decision', passed: dispositionPlan.decisionType !== 0 },
+                      { key: 'completedWork', passed: dispositionPlan.hasCompletedWorkSession },
+                      { key: 'completionVideo', passed: dispositionPlan.hasCompletionVideo },
+                      { key: 'documentLink', passed: dispositionPlan.hasDispositionDocument },
+                    ].map((gate) => (
+                      <div key={gate.key} className="flex items-center justify-between rounded-xl border bg-muted/30 px-3 py-2">
+                        <span>{t(`serviceAllocation.disposition.gates.${gate.key}`)}</span>
+                        <span className={gate.passed ? 'font-semibold text-emerald-600' : 'font-semibold text-amber-600'}>
+                          {gate.passed ? t('serviceAllocation.disposition.pass') : t('serviceAllocation.disposition.pending')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+
           {permission.canUpdate ? (
             <section className="wms-ops-detail-panel overflow-hidden">
               <h3 className="wms-ops-detail-section-title">{t('serviceAllocation.technicalService.title')}</h3>
@@ -377,11 +479,14 @@ export function ServiceCaseTimelinePage(): ReactElement {
                     <OpsInput type="file" accept="image/*,video/*" multiple onChange={(event) => setCompletionMedia(fileListToArray(event))} />
                     <div className="text-xs text-muted-foreground">
                       {t('serviceAllocation.technicalService.selectedFileCount', { count: completionMedia.length })}
+                      {!completionHasVideo && completionMedia.length > 0 ? (
+                        <span className="ml-2 text-destructive">{t('serviceAllocation.technicalService.videoRequired')}</span>
+                      ) : null}
                     </div>
                     <OpsActionButton
                       type="button"
                       variant="primary"
-                      disabled={!completeWorkSessionId || completionMedia.length === 0 || completeWorkMutation.isPending}
+                      disabled={!completeWorkSessionId || !completionHasVideo || completeWorkMutation.isPending}
                       onClick={() => completeWorkMutation.mutate()}
                     >
                       {completeWorkMutation.isPending ? t('common.loading') : t('serviceAllocation.technicalService.completeAction')}

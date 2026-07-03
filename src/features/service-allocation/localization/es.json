@@ -62,6 +62,34 @@
       "error": "Allocation recompute failed.",
       "action": "Recompute Allocation"
     },
+    "disposition": {
+      "title": "Post-Decision WMS Action",
+      "subtitle": "Track the required warehouse or shipment action and missing gates after the service decision is completed.",
+      "ready": "Action Ready",
+      "waiting": "Missing Gate",
+      "linked": "Document Linked",
+      "loadError": "Disposition plan could not be loaded.",
+      "nextAction": "Next Action",
+      "requiredAction": "Required Action",
+      "qualityGate": "Quality Gates",
+      "pass": "Done",
+      "pending": "Pending",
+      "actions": {
+        "SelectServiceDecision": "Select service decision",
+        "CompleteTechnicalServiceWork": "Complete technical service work",
+        "UploadCompletionVideo": "Upload completion video",
+        "CreateReturnTransferToMainWarehouse": "Create return transfer to main warehouse",
+        "CreateCustomerReturnShipment": "Create customer return shipment",
+        "CreateReplacementShipment": "Create replacement shipment",
+        "RegisterScrapRejectDisposition": "Register scrap / rejected disposition"
+      },
+      "gates": {
+        "decision": "Service decision",
+        "completedWork": "Completed work session",
+        "completionVideo": "Completion video",
+        "documentLink": "Linked WMS document"
+      }
+    },
     "form": {
       "createTitle": "Create Service Case",
       "editTitle": "Edit Service Case",
@@ -219,7 +247,8 @@
       "startTitle": "Start Work",
       "startDescription": "Before-repair photo is required; this step starts the service duration.",
       "completeTitle": "Complete Work",
-      "completeDescription": "Close the work with completion photo/video and service decision.",
+      "completeDescription": "Close the work with a completion video and service decision.",
+      "videoRequired": "Completion video is required.",
       "branchCode": "Branch Code",
       "technicianEmail": "Technician Email",
       "note": "Note",

@@ -71,6 +71,34 @@
       "error": "Atama yeniden hesaplanamadı.",
       "action": "Atamayı Yeniden Hesapla"
     },
+    "disposition": {
+      "title": "Karar Sonrası WMS Aksiyonu",
+      "subtitle": "Servis kararı tamamlandıktan sonra hangi depo/sevk aksiyonunun gerektiğini ve eksik kontrolleri izleyin.",
+      "ready": "Aksiyon Hazır",
+      "waiting": "Eksik Kontrol Var",
+      "linked": "Belge Bağlı",
+      "loadError": "Karar sonrası aksiyon planı yüklenemedi.",
+      "nextAction": "Sıradaki Aksiyon",
+      "requiredAction": "Gerekli İşlem",
+      "qualityGate": "Kontrol Listesi",
+      "pass": "Tamam",
+      "pending": "Bekliyor",
+      "actions": {
+        "SelectServiceDecision": "Servis kararı seç",
+        "CompleteTechnicalServiceWork": "Teknik servis işini tamamla",
+        "UploadCompletionVideo": "Tamamlama videosu yükle",
+        "CreateReturnTransferToMainWarehouse": "Ana depoya dönüş transferi aç",
+        "CreateCustomerReturnShipment": "Müşteriye dönüş sevk emri aç",
+        "CreateReplacementShipment": "Değişim sevk emri aç",
+        "RegisterScrapRejectDisposition": "Hurda / red karar kaydı oluştur"
+      },
+      "gates": {
+        "decision": "Servis kararı",
+        "completedWork": "Tamamlanmış iş oturumu",
+        "completionVideo": "Tamamlama videosu",
+        "documentLink": "Bağlı WMS belgesi"
+      }
+    },
     "form": {
       "createTitle": "Servis Kaydı Oluştur",
       "editTitle": "Servis Kaydını Düzenle",
@@ -235,7 +263,8 @@
       "startTitle": "İşe Başla",
       "startDescription": "Tamir öncesi fotoğraf zorunludur; bu adım servis süresini başlatır.",
       "completeTitle": "İşi Tamamla",
-      "completeDescription": "Tamamlama fotoğrafı veya videosu ve servis kararı ile işi kapatın.",
+      "completeDescription": "Tamamlama videosu ve servis kararı ile işi kapatın.",
+      "videoRequired": "Tamamlama videosu zorunludur.",
       "branchCode": "Şube Kodu",
       "technicianEmail": "Teknisyen E-posta",
       "note": "Not",
