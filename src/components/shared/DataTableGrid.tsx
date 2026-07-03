@@ -515,8 +515,8 @@ export function DataTableGrid<TRow, TKey extends string>({
         size="sm"
         onClick={() => onSort?.(key)}
         className={cn(
-          'h-7 w-full min-w-0 overflow-hidden px-1',
-          isOps ? 'justify-center gap-0.5' : 'flex-1 justify-center gap-1.5 px-2',
+          'h-auto min-h-8 w-full min-w-0 px-1 py-1',
+          isOps ? 'justify-center gap-0.5 leading-tight' : 'flex-1 justify-center gap-1.5 px-2 leading-tight',
           'rounded',
           'text-slate-600 dark:text-slate-300',
           'hover:bg-slate-200/60 dark:hover:bg-white/10',
@@ -524,13 +524,13 @@ export function DataTableGrid<TRow, TKey extends string>({
           'transition-colors',
         )}
       >
-        <span className="truncate" title={label}>{label}</span>
+        <span className="block min-w-0 whitespace-normal break-words text-center leading-tight" title={label}>{label}</span>
         {helpIcon}
         {sortIcon}
       </Button>
     ) : (
-      <span className="inline-flex w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden px-1">
-        <span className="truncate" title={label}>{label}</span>
+      <span className="inline-flex w-full min-w-0 items-center justify-center gap-1.5 px-1 py-1">
+        <span className="block min-w-0 whitespace-normal break-words text-center leading-tight" title={label}>{label}</span>
         {helpIcon}
       </span>
     );

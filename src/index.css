@@ -5628,9 +5628,9 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   font-size: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
-  min-height: 1.5rem !important;
-  height: 1.5rem !important;
-  padding-block: 0 !important;
+  min-height: 2rem !important;
+  height: auto !important;
+  padding-block: 0.25rem !important;
   max-width: 100%;
 }
 

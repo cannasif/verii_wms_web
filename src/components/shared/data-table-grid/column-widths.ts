@@ -43,7 +43,7 @@ export function resizeColumnWeightPair(
   };
 }
 
-export function getTableMinWidthPx(totalWeight: number, floorPx = 1200, pxPerWeight = 12): number {
+export function getTableMinWidthPx(totalWeight: number, floorPx = 1280, pxPerWeight = 32): number {
   if (totalWeight <= 0) return floorPx;
   return Math.max(floorPx, Math.round(totalWeight * pxPerWeight));
 }
