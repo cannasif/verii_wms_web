@@ -2,7 +2,6 @@ import { type ReactElement, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Navbar } from '../Navbar';
 import { Sidebar } from '../Sidebar';
-import { Footer } from '../Footer';
 import { RoutePermissionGuard } from '@/features/access-control/components/RoutePermissionGuard';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
@@ -40,7 +39,7 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
           <Navbar navItems={items} />
           <main
             ref={mainRef}
-            className="wms-ops-scrollbar custom-scrollbar crm-skin relative flex-1 overflow-y-auto pb-20 md:pb-16"
+            className="wms-ops-scrollbar custom-scrollbar crm-skin relative flex-1 overflow-y-auto"
           >
             <div
               aria-hidden
@@ -54,7 +53,6 @@ export function MainLayoutFrame({ items }: MainLayoutFrameProps): ReactElement {
               <RoutePermissionGuard />
             </div>
           </main>
-          <Footer />
         </div>
       </div>
     </div>

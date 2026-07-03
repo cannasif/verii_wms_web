@@ -6,12 +6,14 @@ export function OpsCircuitToggle({
   onCheckedChange,
   disabled,
   compact = false,
+  horizontal = false,
   'aria-label': ariaLabel,
 }: {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
   compact?: boolean;
+  horizontal?: boolean;
   'aria-label'?: string;
 }): ReactElement {
   return (
@@ -24,6 +26,7 @@ export function OpsCircuitToggle({
       className={cn(
         'wms-ops-circuit-toggle',
         compact && 'wms-ops-circuit-toggle--compact',
+        horizontal && 'wms-ops-circuit-toggle--horizontal',
         checked && 'wms-ops-circuit-toggle--on',
       )}
       onClick={() => onCheckedChange(!checked)}
