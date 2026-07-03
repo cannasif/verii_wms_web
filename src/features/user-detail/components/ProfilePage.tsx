@@ -4,11 +4,10 @@ import { toast } from 'sonner';
 import { Building2, Camera, Loader2, Mail, Settings } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
-import { Button } from '@/components/ui/button';
+import { OpsActionButton } from '@/components/shared/OpsActionButton';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { useUploadProfilePicture } from '../hooks/useUploadProfilePicture';
 import { getFullProfileImageUrl } from '../utils/profile-image';
-import { cn } from '@/lib/utils';
 import { ProfileSettingsModal } from './ProfileSettingsModal';
 
 const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -84,44 +83,38 @@ export function ProfilePage(): ReactElement {
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 px-4 pb-12 pt-2 md:px-6">
-      <section
-        aria-label={t('profile.title')}
-        className={cn(
-          'relative overflow-hidden rounded-[1.75rem] border p-6 backdrop-blur-2xl backdrop-saturate-150 md:rounded-[2rem] md:p-8',
-          'border-slate-200/45 bg-white/[0.62] shadow-[0_10px_36px_rgba(15,23,42,0.055),0_2px_14px_rgba(15,23,42,0.035)] ring-1 ring-white/65',
-          'dark:border-white/[0.062] dark:bg-[rgba(22,17,30,0.34)] dark:shadow-[0_22px_52px_rgba(0,0,0,0.44),inset_0_1px_0_0_rgba(255,255,255,0.05)]',
-          'dark:ring-white/[0.04]'
-        )}
-      >
+    <div className="wms-ops-profile-page mx-auto w-full max-w-6xl px-4 pb-12 pt-2 md:px-6">
+      <section aria-label={t('profile.title')} className="wms-ops-profile-page__card wms-ops-form">
+        <span className="wms-ops-profile-page__frame" aria-hidden>
+          <span className="wms-ops-profile-page__corner wms-ops-profile-page__corner--tl" />
+          <span className="wms-ops-profile-page__corner wms-ops-profile-page__corner--tr" />
+          <span className="wms-ops-profile-page__corner wms-ops-profile-page__corner--bl" />
+          <span className="wms-ops-profile-page__corner wms-ops-profile-page__corner--br" />
+        </span>
+
         {isLoadingUserDetail ? (
           <div className="flex w-full items-center justify-center py-16">
-            <Loader2 className="size-8 animate-spin text-slate-400 dark:text-zinc-500" aria-hidden />
+            <Loader2 className="size-8 animate-spin text-[var(--cyb-cyan)]" aria-hidden />
           </div>
         ) : (
-          <>
-            <div className="absolute right-6 top-6 z-10 md:right-8 md:top-8">
-              <Button
+          <div className="wms-ops-profile-page__content">
+            <div className="wms-ops-profile-page__toolbar">
+              <p className="wms-ops-profile-page__eyebrow">
+                {t('profile.terminal.eyebrow', { defaultValue: 'PROFIL / KULLANICI' })}
+              </p>
+              <OpsActionButton
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={() => setProfileSettingsOpen(true)}
-                className={cn(
-                  'h-11 rounded-full border border-sky-700/15 px-6 font-semibold shadow-none backdrop-blur-xl transition-colors',
-                  'bg-gradient-to-r from-sky-500/[0.08] via-white/55 to-orange-500/[0.1] text-slate-800 ring-1 ring-inset ring-white/35',
-                  'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.48)]',
-                  'hover:border-sky-600/25 hover:from-sky-500/[0.12] hover:via-white/60 hover:to-orange-500/[0.14] hover:ring-sky-200/45 hover:text-slate-900',
-                  'dark:border-sky-400/18 dark:bg-gradient-to-r dark:from-sky-950/65 dark:via-[rgba(22,17,30,0.48)] dark:to-orange-950/50 dark:text-white dark:ring-sky-400/12',
-                  'dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]',
-                  'dark:hover:border-orange-400/22 dark:hover:from-sky-900/55 dark:hover:via-[rgba(28,20,34,0.55)] dark:hover:to-orange-900/45 dark:hover:ring-orange-400/15 dark:hover:text-white'
-                )}
+                className="wms-ops-profile-page__settings-btn wms-ops-action-btn--secondary"
               >
-                <Settings className="mr-2 size-4 shrink-0 text-sky-600 dark:text-sky-400" strokeWidth={1.85} aria-hidden />
+                <Settings className="size-4 shrink-0" strokeWidth={1.85} aria-hidden />
                 {t('profile.profileSettings')}
-              </Button>
+              </OpsActionButton>
             </div>
 
-            <div className="flex max-md:pr-[11rem] flex-row items-start gap-5 md:gap-8 md:pr-44">
-              <div className="relative shrink-0">
+            <div className="wms-ops-profile-page__main">
+              <div className="wms-ops-profile-page__avatar-wrap">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -135,67 +128,51 @@ export function ProfilePage(): ReactElement {
                   disabled={uploadPictureMutation.isPending}
                   onClick={handleAvatarPickClick}
                   aria-label={t('profile.changePhoto')}
-                  className={cn(
-                    'group block rounded-[26px] bg-white/95 p-2 shadow-md ring-1 ring-inset ring-slate-200/70 md:p-2.5',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
-                    'dark:bg-zinc-900/50 dark:shadow-[0_12px_36px_rgba(9,9,11,0.42),0_0_36px_-8px_rgba(56,189,248,0.22)] dark:ring-white/[0.07] dark:focus-visible:ring-offset-zinc-950',
-                    'disabled:pointer-events-none disabled:opacity-70',
-                  )}
+                  className="wms-ops-profile-page__avatar-btn group"
                 >
-                  <div className="relative size-[7.5rem] overflow-hidden rounded-[17px] ring-1 ring-slate-200/80 md:size-[8.5rem] dark:ring-black/20">
+                  <div className="wms-ops-profile-page__avatar">
                     {uploadPictureMutation.isPending ? (
-                      <div className="flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
-                        <Loader2 className="size-9 animate-spin text-white" aria-hidden />
+                      <div className="flex size-full items-center justify-center">
+                        <Loader2 className="size-9 animate-spin text-[var(--cyb-cyan)]" aria-hidden />
                       </div>
                     ) : imageUrl ? (
                       <>
                         <img src={imageUrl} alt="" className="size-full object-cover" />
-                        <span
-                          className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
-                          aria-hidden
-                        />
-                        <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
-                          <Camera className="size-8 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.55)] md:size-9" strokeWidth={1.75} aria-hidden />
-                        </span>
+                        <span className="wms-ops-profile-page__avatar-overlay" aria-hidden />
+                        <Camera className="wms-ops-profile-page__avatar-camera" strokeWidth={1.75} aria-hidden />
                       </>
                     ) : (
                       <>
-                        <div className="flex size-full items-center justify-center bg-linear-to-br from-sky-400 via-sky-500 to-orange-500">
-                          <span className="text-5xl font-bold tracking-tight text-white drop-shadow-md transition-[opacity,filter] duration-200 group-hover:opacity-40 group-hover:brightness-[0.88] group-focus-visible:opacity-40 group-focus-visible:brightness-[0.88] md:text-6xl">
-                            {displayInitial}
-                          </span>
-                        </div>
-                        <span
-                          className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/45 group-focus-visible:bg-black/45"
-                          aria-hidden
-                        />
-                        <Camera
-                          className="pointer-events-none absolute inset-0 m-auto size-8 text-white opacity-0 drop-shadow-[0_0_14px_rgba(255,255,255,0.65)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:size-9"
-                          strokeWidth={1.75}
-                          aria-hidden
-                        />
+                        <span className="wms-ops-profile-page__avatar-initial">{displayInitial}</span>
+                        <span className="wms-ops-profile-page__avatar-overlay" aria-hidden />
+                        <Camera className="wms-ops-profile-page__avatar-camera" strokeWidth={1.75} aria-hidden />
                       </>
                     )}
                   </div>
                 </button>
               </div>
 
-              <div className="min-w-0 flex-1 text-left">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl dark:text-white">{displayName}</h1>
-                <div className="mt-2 flex flex-row flex-wrap items-center justify-start gap-0 text-sm text-slate-600 md:mt-2.5 md:text-[0.9375rem] dark:text-zinc-300">
-                  <span className="inline-flex min-w-0 items-center gap-2 md:pr-4">
-                    <Mail className="size-4 shrink-0 text-slate-500 dark:text-zinc-400" aria-hidden />
+              <div className="wms-ops-profile-page__meta">
+                <h1 className="wms-ops-profile-page__name">{displayName}</h1>
+                <div className="wms-ops-profile-page__lines">
+                  <p className="wms-ops-profile-page__line">
+                    <Mail className="size-4 shrink-0" aria-hidden />
+                    <span className="wms-ops-profile-page__line-prefix" aria-hidden>
+                      {'> '}
+                    </span>
                     <span className="truncate">{emailLine}</span>
-                  </span>
-                  <span className="mx-2 h-5 w-px shrink-0 bg-slate-300/90 dark:bg-white/15" aria-hidden />
-                  <span className="inline-flex items-center gap-2" aria-label={t('profile.branchLabel')}>
-                    <Building2 className="size-4 shrink-0 text-slate-500 dark:text-zinc-400" aria-hidden />
+                  </p>
+                  <p className="wms-ops-profile-page__line" aria-label={t('profile.branchLabel')}>
+                    <Building2 className="size-4 shrink-0" aria-hidden />
+                    <span className="wms-ops-profile-page__line-prefix" aria-hidden>
+                      {'> '}
+                    </span>
                     <span>{branchLine}</span>
-                  </span>
+                  </p>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </section>
 

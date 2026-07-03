@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Check, ChevronRight, Palette, ShieldCheck, X } from 'lucide-react';
+import { ChevronRight, Palette, ShieldCheck, X } from 'lucide-react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Building03Icon,
@@ -14,7 +14,8 @@ import {
 } from '@hugeicons/core-free-icons';
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { OpsCircuitToggle } from '@/components/shared/OpsCircuitToggle';
+import { OpsLightSwitch } from '@/components/shared/OpsLightSwitch';
 import { useTheme } from '@/components/theme-provider';
 import { brandThemes } from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
@@ -41,13 +42,14 @@ const SUPPORTED_LANGUAGES: readonly SupportedLanguage[] = [
 ];
 
 const settingsRowBaseClass = cn(
-  'flex min-h-[4.5rem] w-full items-center justify-between gap-3 rounded-[1.5rem] border px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 md:rounded-[2rem]',
+  'wms-ops-profile-modal__row',
+  'flex min-h-[4.5rem] w-full items-center justify-between gap-3 border px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4',
   'border-slate-200/70 bg-white/90 dark:border-white/[0.06] dark:bg-white/[0.03]',
 );
 
 const settingsProfileRowClass = cn(
   settingsRowBaseClass,
-  'group cursor-pointer text-left transition-[border-color,box-shadow,transform] duration-300',
+  'wms-ops-profile-modal__row--link group cursor-pointer text-left transition-[border-color,box-shadow,transform] duration-300',
   'hover:border-[var(--wms-brand-ring)] hover:bg-[var(--wms-brand-soft)] hover:shadow-[0_0_20px_var(--wms-brand-shadow)]',
 );
 
@@ -97,7 +99,7 @@ export function UserProfileModal({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          'gap-0 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-0 text-slate-900 lg:rounded-[2.5rem]',
+          'wms-ops-profile-modal gap-0 overflow-hidden border border-slate-200/80 bg-white p-0 text-slate-900',
           'shadow-[0_28px_70px_rgba(15,23,42,0.14)] dark:border-white/[0.08] dark:bg-[#09090f] dark:text-white dark:shadow-[0_28px_90px_rgba(0,0,0,0.62)]',
           'grid w-[95vw] max-w-[95vw] grid-cols-1',
           'max-h-[min(760px,92vh)] overflow-y-auto',
@@ -113,7 +115,7 @@ export function UserProfileModal({
         <DialogClose
           type="button"
           className={cn(
-            'absolute right-4 top-4 z-20 flex cursor-pointer items-center justify-center rounded-2xl p-2.5 transition-[border-color,box-shadow,transform] duration-300 md:right-6 md:top-6',
+            'wms-ops-profile-modal__close absolute right-4 top-4 z-20 flex cursor-pointer items-center justify-center p-2.5 transition-[border-color,box-shadow,transform] duration-300 md:right-6 md:top-6',
             'border border-slate-200/80 bg-white/80 text-slate-500',
             'hover:border-red-300/50 hover:bg-red-50/90 hover:text-red-600 active:scale-90',
             'dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400',
@@ -129,7 +131,7 @@ export function UserProfileModal({
           id="user-profile-description"
           aria-label={t('profile.title')}
           className={cn(
-            'relative flex flex-col items-center justify-center gap-5 border-b border-slate-200/70 px-6 py-8 sm:gap-6 sm:px-8 sm:py-9',
+            'wms-ops-profile-modal__aside relative flex flex-col items-center justify-center gap-5 border-b border-slate-200/70 px-6 py-8 sm:gap-6 sm:px-8 sm:py-9',
             'bg-linear-to-b from-slate-50 to-white dark:border-white/[0.06] dark:from-[#0c0c14] dark:to-[#09090f]',
             'md:h-full md:min-h-0 md:shrink-0 md:border-b-0 md:border-r md:overflow-y-auto md:py-10',
             'md:w-[320px] lg:w-[380px]',
@@ -164,7 +166,7 @@ export function UserProfileModal({
             </span>
           </div>
 
-          <div className="flex w-full max-w-[min(280px,100%)] items-center gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/90 px-4 py-3 shadow-sm dark:border-white/[0.06] dark:bg-white/[0.03]">
+          <div className="wms-ops-profile-modal__mail flex w-full max-w-[min(280px,100%)] items-center gap-3 border border-slate-200/70 bg-slate-50/90 px-4 py-3 shadow-sm dark:border-white/[0.06] dark:bg-white/[0.03]">
             <HugeiconsIcon
               icon={Mail02Icon}
               size={20}
@@ -178,8 +180,8 @@ export function UserProfileModal({
           </div>
         </aside>
 
-        <div className="flex h-full min-h-0 min-w-0 flex-col bg-slate-50/80 md:overflow-hidden dark:bg-[#07070c]">
-          <header className="flex shrink-0 items-center gap-3 border-b border-dashed border-slate-200/70 px-6 pb-4 pt-14 sm:px-8 md:px-10 md:pt-8 dark:border-white/[0.08]">
+        <div className="wms-ops-profile-modal__panel flex h-full min-h-0 min-w-0 flex-col bg-slate-50/80 md:overflow-hidden dark:bg-[#07070c]">
+          <header className="wms-ops-profile-modal__header flex shrink-0 items-center gap-3 border-b border-dashed border-slate-200/70 px-6 pb-4 pt-14 sm:px-8 md:px-10 md:pt-8 dark:border-white/[0.08]">
             <span
               className="h-8 w-0.5 shrink-0 rounded-full bg-[var(--wms-brand-primary)] shadow-[0_0_10px_var(--wms-brand-shadow)]"
               aria-hidden
@@ -234,25 +236,19 @@ export function UserProfileModal({
               <Select value={currentLanguage.code} onValueChange={handleLanguageChange}>
                 <SelectTrigger
                   className={cn(
-                    'h-10 w-auto min-w-[5.75rem] shrink-0 gap-2 rounded-xl border px-3 text-sm font-semibold shadow-none transition-all duration-300 sm:h-11 sm:min-w-[6.5rem] sm:px-4 sm:text-base',
-                    'border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)] hover:border-[var(--wms-brand-primary)]',
+                    'wms-ops-profile-lang-trigger h-10 w-auto min-w-[5.75rem] shrink-0 gap-2 px-3 text-sm font-semibold sm:h-11 sm:min-w-[6.5rem] sm:px-4 sm:text-base',
                     '[&_[data-slot=select-value]]:gap-1.5 [&_[data-slot=select-value]]:flex [&_[data-slot=select-value]]:items-center',
-                    '[&_svg]:text-[var(--wms-brand-primary)]',
                   )}
                 >
                   <SelectValue placeholder={currentLanguage.flagLabel} />
                 </SelectTrigger>
-                <SelectContent
-                  className={cn(
-                    'rounded-2xl border border-[var(--wms-brand-ring)] bg-[var(--wms-app-panel-strong)] text-foreground shadow-2xl',
-                  )}
-                >
+                <SelectContent className="wms-ops-profile-lang-select wms-ops-scrollbar">
                   {SUPPORTED_LANGUAGES.map((lang) => (
                     <SelectItem
                       key={lang.code}
                       value={lang.code}
                       textValue={lang.name}
-                      className="rounded-xl focus:bg-[var(--wms-brand-soft)]"
+                      className="wms-ops-profile-lang-item"
                     >
                       <span className="flex items-center gap-2">
                         <span className="text-base leading-none" aria-hidden>
@@ -288,26 +284,26 @@ export function UserProfileModal({
                   ) : null}
                 </div>
               </div>
-              <Switch
-                checked={isDark}
-                disabled={useCustomBrandThemes}
-                onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                className={cn(
-                  'data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
-                  'data-[state=checked]:bg-[var(--wms-brand-primary)]',
-                  'data-[state=checked]:shadow-[0_0_12px_var(--wms-brand-shadow)]',
-                )}
-              />
+              <div className="wms-ops-profile-modal__switch-slot shrink-0 self-center">
+                <OpsLightSwitch
+                  checked={isDark}
+                  disabled={useCustomBrandThemes}
+                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                  onLabel={t('profile.terminal.switchOn', { defaultValue: 'ON' })}
+                  offLabel={t('profile.terminal.switchOff', { defaultValue: 'OFF' })}
+                  aria-label={t('profile.settingsAppearance')}
+                />
+              </div>
             </div>
 
             <div
               className={cn(
-                'rounded-[1.5rem] border px-4 py-4 sm:px-5 md:rounded-[2rem]',
+                'wms-ops-profile-modal__theme-panel border px-4 py-4 sm:px-5',
                 'border-slate-200/70 bg-white/90 dark:border-white/[0.06] dark:bg-white/[0.03]',
               )}
             >
-              <div className="mb-3 flex items-start justify-between gap-3 sm:gap-4">
-                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+              <div className="mb-3 flex items-center justify-between gap-3 sm:gap-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                   <span className={cn(settingsIconClass, 'bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]')}>
                     <Palette className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} aria-hidden />
                   </span>
@@ -320,20 +316,18 @@ export function UserProfileModal({
                     </p>
                   </div>
                 </div>
-                <Switch
-                  checked={useCustomBrandThemes}
-                  onCheckedChange={setUseCustomBrandThemes}
-                  aria-label={t('profile.settingsUseCustomBrandThemes')}
-                  className={cn(
-                    'shrink-0 data-[state=unchecked]:bg-slate-300 dark:data-[state=unchecked]:bg-zinc-700',
-                    'data-[state=checked]:bg-[var(--wms-brand-primary)]',
-                    'data-[state=checked]:shadow-[0_0_12px_var(--wms-brand-shadow)]',
-                  )}
-                />
+                <div className="wms-ops-profile-modal__circuit-slot shrink-0">
+                  <OpsCircuitToggle
+                    horizontal
+                    checked={useCustomBrandThemes}
+                    onCheckedChange={setUseCustomBrandThemes}
+                    aria-label={t('profile.settingsUseCustomBrandThemes')}
+                  />
+                </div>
               </div>
 
               {useCustomBrandThemes ? (
-              <div className="grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 md:max-h-[300px] lg:max-h-[340px]">
+              <div className="wms-ops-profile-modal__theme-grid wms-ops-scrollbar grid max-h-[260px] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 md:max-h-[300px] lg:max-h-[340px]">
                 {brandThemes.map((item) => {
                   const isSelected = item.id === brandTheme;
 
@@ -344,14 +338,14 @@ export function UserProfileModal({
                       onClick={() => setBrandTheme(item.id)}
                       aria-pressed={isSelected}
                       className={cn(
-                        'group flex min-h-16 items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200',
+                        'wms-ops-profile-modal__theme-option group flex min-h-16 items-center gap-3 border p-3 text-left transition-all duration-200',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wms-brand-ring)]',
                         isSelected
-                          ? 'border-[var(--wms-brand-primary)] bg-[var(--wms-brand-soft)] shadow-[0_12px_30px_-22px_var(--wms-brand-shadow)]'
+                          ? 'wms-ops-profile-modal__theme-option--selected border-[var(--wms-brand-primary)] bg-[var(--wms-brand-soft)] shadow-[0_12px_30px_-22px_var(--wms-brand-shadow)]'
                           : 'border-slate-200 bg-white/70 hover:border-[var(--wms-brand-ring)] hover:bg-white dark:border-white/10 dark:bg-black/10 dark:hover:bg-white/5',
                       )}
                     >
-                      <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/50 shadow-sm dark:border-white/10">
+                      <span className="flex h-9 w-12 shrink-0 overflow-hidden border border-white/50 shadow-sm dark:border-white/10">
                         {item.swatches.map((color) => (
                           <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
                         ))}
@@ -366,13 +360,16 @@ export function UserProfileModal({
                       </span>
                       <span
                         className={cn(
-                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all',
-                          isSelected
-                            ? 'border-[var(--wms-brand-primary)] bg-[var(--wms-brand-primary)] text-[var(--wms-brand-on-primary)]'
-                            : 'border-slate-200 text-transparent dark:border-white/10',
+                          'wms-ops-profile-theme-check',
+                          isSelected && 'wms-ops-profile-theme-check--on',
                         )}
+                        aria-hidden
                       >
-                        <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+                        <span className="wms-ops-profile-theme-check__fill" />
+                        <span className="wms-ops-profile-theme-check__corner wms-ops-profile-theme-check__corner--tl" />
+                        <span className="wms-ops-profile-theme-check__corner wms-ops-profile-theme-check__corner--tr" />
+                        <span className="wms-ops-profile-theme-check__corner wms-ops-profile-theme-check__corner--bl" />
+                        <span className="wms-ops-profile-theme-check__corner wms-ops-profile-theme-check__corner--br" />
                       </span>
                     </button>
                   );
@@ -387,7 +384,7 @@ export function UserProfileModal({
               type="button"
               onClick={handleLogout}
               className={cn(
-                'flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-[1.25rem] bg-[image:var(--wms-brand-gradient)] px-6 md:h-14',
+                'wms-ops-profile-modal__logout flex h-12 w-full cursor-pointer items-center justify-center gap-3 bg-[image:var(--wms-brand-gradient)] px-6 md:h-14',
                 'text-sm font-bold uppercase tracking-[0.08em] text-white transition-all duration-300 sm:text-base',
                 'shadow-[0_8px_24px_var(--wms-brand-shadow)]',
                 'hover:scale-[1.01] hover:brightness-[1.05] hover:shadow-[0_10px_32px_var(--wms-brand-shadow)]',

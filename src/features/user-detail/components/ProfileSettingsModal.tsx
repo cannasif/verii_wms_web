@@ -5,6 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
+import { OpsActionButton } from '@/components/shared/OpsActionButton';
+import { OpsFieldShell } from '@/components/shared/OpsFieldShell';
+import { OpsSelect, OpsSelectItem } from '@/components/shared/OpsSelect';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { useCreateUserDetail } from '../hooks/useCreateUserDetail';
@@ -36,8 +38,10 @@ import {
   Phone,
   Mail,
   Linkedin,
+  type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { type ComponentProps } from 'react';
 
 export interface ProfileSettingsModalProps {
   open: boolean;
@@ -46,14 +50,62 @@ export interface ProfileSettingsModalProps {
 
 type ProfileTab = 'personal' | 'security';
 
-const fieldLabelClass =
-  'text-[11px] font-semibold uppercase tracking-wider text-sky-100/45 mb-1.5 block';
+function ProfileSettingsIconInput({
+  icon: Icon,
+  invalid,
+  className,
+  ...props
+}: {
+  icon: LucideIcon;
+  invalid?: boolean;
+} & ComponentProps<typeof Input>): ReactElement {
+  return (
+    <OpsFieldShell aria-invalid={invalid}>
+      <div className="relative">
+        <Icon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" aria-hidden />
+        <Input
+          className={cn(OPS_FIELD_CLASS, 'pl-10', className)}
+          aria-invalid={invalid}
+          {...props}
+        />
+      </div>
+    </OpsFieldShell>
+  );
+}
 
-const inputIconWrapClass =
-  'relative flex h-11 w-full items-center rounded-xl border border-sky-400/18 bg-sky-950/28 transition-colors focus-within:border-orange-300/28 focus-within:ring-1 focus-within:ring-orange-400/18';
-
-const inputInnerClass =
-  'h-full w-full rounded-xl border-0 bg-transparent pl-10 pr-3 text-sm text-white placeholder:text-sky-200/40 focus-visible:ring-0 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60';
+function ProfileSettingsPasswordInput({
+  icon: Icon,
+  invalid,
+  visible,
+  onToggleVisible,
+  ...props
+}: {
+  icon: LucideIcon;
+  invalid?: boolean;
+  visible: boolean;
+  onToggleVisible: () => void;
+} & ComponentProps<typeof Input>): ReactElement {
+  return (
+    <OpsFieldShell aria-invalid={invalid}>
+      <div className="relative">
+        <Icon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" aria-hidden />
+        <Input
+          className={cn(OPS_FIELD_CLASS, 'pl-10 pr-10')}
+          aria-invalid={invalid}
+          type={visible ? 'text' : 'password'}
+          {...props}
+        />
+        <button
+          type="button"
+          onClick={onToggleVisible}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--wms-ops-accent)] opacity-70 transition-opacity hover:opacity-100"
+        >
+          {visible ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
+        </button>
+      </div>
+    </OpsFieldShell>
+  );
+}
 
 export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModalProps): ReactElement {
   const { t } = useTranslation();
@@ -215,31 +267,30 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
       <DialogContent
           showCloseButton
           className={cn(
-            'flex h-full max-h-[100dvh] w-full max-w-[min(100vw,24rem)] flex-col gap-0 overflow-hidden border-y-0 border-l border-r-0 border-sky-400/22 bg-gradient-to-br from-[#0f172a]/97 via-[#1a1626]/96 to-[#231a18]/95 p-0 shadow-[0_0_60px_-12px_rgba(14,165,233,0.22),0_0_48px_-18px_rgba(251,146,60,0.12)] backdrop-blur-xl sm:max-w-[28rem]',
-            '!fixed !top-0 !right-0 !bottom-0 !left-auto !flex !translate-x-0 !translate-y-0 rounded-none rounded-l-[1.65rem] sm:rounded-l-3xl',
+            'wms-ops-profile-settings wms-ops-form flex h-full max-h-[100dvh] w-full max-w-[min(100vw,24rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[28rem]',
+            '!fixed !top-0 !right-0 !bottom-0 !left-auto !flex !translate-x-0 !translate-y-0',
             'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-100 duration-300',
-            'text-white [&_[data-slot=dialog-close]]:rounded-full [&_[data-slot=dialog-close]]:border [&_[data-slot=dialog-close]]:border-sky-400/22 [&_[data-slot=dialog-close]]:bg-sky-950/45 [&_[data-slot=dialog-close]]:p-2 [&_[data-slot=dialog-close]]:hover:border-orange-300/28 [&_[data-slot=dialog-close]]:hover:bg-orange-950/35'
           )}
         >
-          <div className="shrink-0 border-b border-sky-200/10 px-6 pb-4 pt-6 md:px-8 md:pb-5 md:pt-7">
+          <div className="wms-ops-profile-settings__header shrink-0">
             <DialogHeader className="gap-2 space-y-0 text-left">
-              <DialogTitle className="text-xl font-bold tracking-tight text-white">
+              <DialogTitle className="wms-ops-profile-settings__title">
                 {t('profile.profileSettings')}
               </DialogTitle>
-              <DialogDescription className="text-sm leading-relaxed text-sky-100/55">
+              <DialogDescription className="wms-ops-profile-settings__subtitle">
                 {t('profile.settingsModalSubtitle')}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-sky-400/15 bg-sky-950/35 p-1 ring-1 ring-orange-400/10">
+            <div className="wms-ops-profile-settings__tabs" role="tablist">
               <button
                 type="button"
+                role="tab"
+                aria-selected={tab === 'personal'}
                 onClick={() => setTab('personal')}
                 className={cn(
-                  'flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition-colors md:px-4',
-                  tab === 'personal'
-                    ? 'border border-sky-300/25 bg-gradient-to-br from-sky-500/18 to-orange-500/12 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
-                    : 'border border-transparent text-sky-100/50 hover:text-sky-50'
+                  'wms-ops-profile-settings__tab',
+                  tab === 'personal' && 'wms-ops-profile-settings__tab--active',
                 )}
               >
                 <User className="size-4 shrink-0" aria-hidden />
@@ -247,12 +298,12 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={tab === 'security'}
                 onClick={() => setTab('security')}
                 className={cn(
-                  'flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition-colors md:px-4',
-                  tab === 'security'
-                    ? 'border border-sky-300/25 bg-gradient-to-br from-sky-500/18 to-orange-500/12 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
-                    : 'border border-transparent text-sky-100/50 hover:text-sky-50'
+                  'wms-ops-profile-settings__tab',
+                  tab === 'security' && 'wms-ops-profile-settings__tab--active',
                 )}
               >
                 <Lock className="size-4 shrink-0" aria-hidden />
@@ -261,48 +312,46 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-5 md:px-8 md:py-6">
+          <div className="wms-ops-profile-settings__body wms-ops-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
             {isLoadingUserDetail ? (
               <div className="flex items-center justify-center py-14">
-                <Loader2 className="size-8 animate-spin text-sky-400/70" aria-hidden />
+                <Loader2 className="size-8 animate-spin text-[var(--cyb-cyan)]" aria-hidden />
               </div>
             ) : tab === 'personal' ? (
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmitProfile)} className="space-y-5">
+                <form onSubmit={form.handleSubmit(handleSubmitProfile)} className="wms-ops-profile-settings__form">
                   <FormField
                     control={form.control}
                     name="note"
                     render={({ field }) => <input type="hidden" {...field} />}
                   />
 
-                  <div className="rounded-2xl border border-sky-400/14 bg-gradient-to-br from-sky-950/45 to-orange-950/30 p-5 md:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
+                  <div className="wms-ops-profile-settings__panel">
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-4">
                       <FormField
                         control={form.control}
                         name="height"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.height')}</FormLabel>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.height')}</FormLabel>
                             <FormControl>
-                              <div className={inputIconWrapClass}>
-                                <Ruler className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  min={0}
-                                  max={300}
-                                  placeholder={t('userDetail.placeholderHeight')}
-                                  className={inputInnerClass}
-                                  {...field}
-                                  value={field.value ?? ''}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    field.onChange(value === '' ? null : parseFloat(value));
-                                  }}
-                                />
-                              </div>
+                              <ProfileSettingsIconInput
+                                icon={Ruler}
+                                invalid={fieldState.invalid}
+                                type="number"
+                                step="0.1"
+                                min={0}
+                                max={300}
+                                placeholder={t('userDetail.placeholderHeight')}
+                                {...field}
+                                value={field.value ?? ''}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(value === '' ? null : parseFloat(value));
+                                }}
+                              />
                             </FormControl>
-                            <FormMessage className="text-rose-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -310,29 +359,27 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       <FormField
                         control={form.control}
                         name="weight"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.weight')}</FormLabel>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.weight')}</FormLabel>
                             <FormControl>
-                              <div className={inputIconWrapClass}>
-                                <Scale className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                <Input
-                                  type="number"
-                                  step="0.1"
-                                  min={0}
-                                  max={500}
-                                  placeholder={t('userDetail.placeholderWeight')}
-                                  className={inputInnerClass}
-                                  {...field}
-                                  value={field.value ?? ''}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    field.onChange(value === '' ? null : parseFloat(value));
-                                  }}
-                                />
-                              </div>
+                              <ProfileSettingsIconInput
+                                icon={Scale}
+                                invalid={fieldState.invalid}
+                                type="number"
+                                step="0.1"
+                                min={0}
+                                max={500}
+                                placeholder={t('userDetail.placeholderWeight')}
+                                {...field}
+                                value={field.value ?? ''}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(value === '' ? null : parseFloat(value));
+                                }}
+                              />
                             </FormControl>
-                            <FormMessage className="text-rose-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -342,34 +389,27 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       <FormField
                         control={form.control}
                         name="gender"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.genderFieldLabel')}</FormLabel>
-                            <Select
-                              value={field.value?.toString() ?? Gender.NotSpecified.toString()}
-                              onValueChange={(value) => {
-                                const numValue = parseInt(value, 10);
-                                field.onChange(numValue === Gender.NotSpecified ? null : (numValue as Gender));
-                              }}
-                            >
-                              <FormControl>
-                                <div className={cn(inputIconWrapClass, 'cursor-pointer')}>
-                                  <User className="pointer-events-none absolute left-3 top-1/2 z-[1] size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                  <SelectTrigger className="h-11 w-full min-w-0 flex-1 cursor-pointer border-0 bg-transparent px-3 py-0 pl-10 pr-8 text-sm text-white shadow-none outline-none ring-0 focus-visible:border-0 focus-visible:ring-0 data-[placeholder]:text-sky-200/40 [&>svg]:shrink-0 [&>svg]:text-sky-300/55">
-                                    <SelectValue placeholder={t('userDetail.selectGender')} />
-                                  </SelectTrigger>
-                                </div>
-                              </FormControl>
-                              <SelectContent className="border-sky-400/18 bg-gradient-to-b from-[#141c28] to-[#1f1410] text-white">
-                                <SelectItem value={Gender.NotSpecified.toString()}>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.genderFieldLabel')}</FormLabel>
+                            <FormControl>
+                              <OpsSelect
+                                value={field.value?.toString() ?? Gender.NotSpecified.toString()}
+                                onValueChange={(value) => {
+                                  const numValue = parseInt(value, 10);
+                                  field.onChange(numValue === Gender.NotSpecified ? null : (numValue as Gender));
+                                }}
+                                aria-invalid={fieldState.invalid}
+                              >
+                                <OpsSelectItem value={Gender.NotSpecified.toString()}>
                                   {t('userDetail.gender.notSpecified')}
-                                </SelectItem>
-                                <SelectItem value={Gender.Male.toString()}>{t('userDetail.gender.male')}</SelectItem>
-                                <SelectItem value={Gender.Female.toString()}>{t('userDetail.gender.female')}</SelectItem>
-                                <SelectItem value={Gender.Other.toString()}>{t('userDetail.gender.other')}</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-rose-400" />
+                                </OpsSelectItem>
+                                <OpsSelectItem value={Gender.Male.toString()}>{t('userDetail.gender.male')}</OpsSelectItem>
+                                <OpsSelectItem value={Gender.Female.toString()}>{t('userDetail.gender.female')}</OpsSelectItem>
+                                <OpsSelectItem value={Gender.Other.toString()}>{t('userDetail.gender.other')}</OpsSelectItem>
+                              </OpsSelect>
+                            </FormControl>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -379,37 +419,33 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       <FormField
                         control={form.control}
                         name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.phoneNumber')}</FormLabel>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.phoneNumber')}</FormLabel>
                             <FormControl>
-                              <div className={inputIconWrapClass}>
-                                <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                <Input
-                                  type="tel"
-                                  placeholder={t('userDetail.placeholderPhone')}
-                                  className={inputInnerClass}
-                                  {...field}
-                                  value={field.value ?? ''}
-                                />
-                              </div>
+                              <ProfileSettingsIconInput
+                                icon={Phone}
+                                invalid={fieldState.invalid}
+                                type="tel"
+                                placeholder={t('userDetail.placeholderPhone')}
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
-                            <FormMessage className="text-rose-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
 
-                      <FormItem>
-                        <FormLabel className={fieldLabelClass}>{t('userDetail.emailAddress')}</FormLabel>
-                        <div className={inputIconWrapClass}>
-                          <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                          <Input
-                            readOnly
-                            value={user?.email ?? ''}
-                            placeholder={t('userDetail.placeholderEmail')}
-                            className={cn(inputInnerClass, 'cursor-default opacity-90')}
-                          />
-                        </div>
+                      <FormItem className="wms-ops-form-item">
+                        <FormLabel>{t('userDetail.emailAddress')}</FormLabel>
+                        <ProfileSettingsIconInput
+                          icon={Mail}
+                          readOnly
+                          value={user?.email ?? ''}
+                          placeholder={t('userDetail.placeholderEmail')}
+                          className="cursor-default opacity-90"
+                        />
                       </FormItem>
                     </div>
 
@@ -417,43 +453,36 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       <FormField
                         control={form.control}
                         name="linkedInUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.linkedInProfile')}</FormLabel>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.linkedInProfile')}</FormLabel>
                             <FormControl>
-                              <div className={inputIconWrapClass}>
-                                <Linkedin className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                <Input
-                                  type="url"
-                                  placeholder={t('userDetail.placeholderLinkedIn')}
-                                  className={inputInnerClass}
-                                  {...field}
-                                  value={field.value ?? ''}
-                                />
-                              </div>
+                              <ProfileSettingsIconInput
+                                icon={Linkedin}
+                                invalid={fieldState.invalid}
+                                type="url"
+                                placeholder={t('userDetail.placeholderLinkedIn')}
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
-                            <FormMessage className="text-rose-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                   </div>
 
-                  <DialogFooter className="gap-2 border-t border-sky-200/10 pt-5 sm:justify-end">
-                    <Button
+                  <DialogFooter className="wms-ops-profile-settings__footer wms-ops-actions">
+                    <OpsActionButton
                       type="button"
-                      variant="outline"
+                      variant="secondary"
                       onClick={() => onOpenChange(false)}
                       disabled={isLoading}
-                      className="rounded-xl border-sky-400/25 bg-sky-950/25 text-white hover:border-orange-300/30 hover:bg-orange-950/25"
                     >
                       {t('common.cancel')}
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="rounded-xl border border-orange-400/25 bg-gradient-to-r from-sky-600/35 to-orange-600/30 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] hover:from-sky-500/45 hover:to-orange-500/38"
-                    >
+                    </OpsActionButton>
+                    <OpsActionButton type="submit" variant="primary" disabled={isLoading}>
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
@@ -464,7 +493,7 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       ) : (
                         t('common.save')
                       )}
-                    </Button>
+                    </OpsActionButton>
                   </DialogFooter>
                 </form>
               </Form>
@@ -472,38 +501,26 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
               <Form {...changePasswordForm}>
                 <form
                   onSubmit={changePasswordForm.handleSubmit(handleChangePasswordSubmit)}
-                  className="space-y-5"
+                  className="wms-ops-profile-settings__form"
                 >
-                  <div className="rounded-2xl border border-sky-400/14 bg-gradient-to-br from-sky-950/45 to-orange-950/30 p-5 md:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
+                  <div className="wms-ops-profile-settings__panel">
                     <FormField
                       control={changePasswordForm.control}
                       name="currentPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabelClass}>{t('userDetail.currentPassword')}</FormLabel>
+                      render={({ field, fieldState }) => (
+                        <FormItem className="wms-ops-form-item">
+                          <FormLabel>{t('userDetail.currentPassword')}</FormLabel>
                           <FormControl>
-                            <div className={cn(inputIconWrapClass, 'pr-10')}>
-                              <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                              <Input
-                                {...field}
-                                type={isCurrentPasswordVisible ? 'text' : 'password'}
-                                placeholder="••••••••"
-                                className={cn(inputInnerClass, 'pr-10')}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setIsCurrentPasswordVisible((v) => !v)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-sky-300/65 hover:text-orange-100/90"
-                              >
-                                {isCurrentPasswordVisible ? (
-                                  <EyeOff className="size-4" aria-hidden />
-                                ) : (
-                                  <Eye className="size-4" aria-hidden />
-                                )}
-                              </button>
-                            </div>
+                            <ProfileSettingsPasswordInput
+                              icon={Lock}
+                              invalid={fieldState.invalid}
+                              visible={isCurrentPasswordVisible}
+                              onToggleVisible={() => setIsCurrentPasswordVisible((v) => !v)}
+                              placeholder="••••••••"
+                              {...field}
+                            />
                           </FormControl>
-                          <FormMessage className="text-rose-400" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -512,43 +529,27 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                       <FormField
                         control={changePasswordForm.control}
                         name="newPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={fieldLabelClass}>{t('userDetail.newPassword')}</FormLabel>
+                        render={({ field, fieldState }) => (
+                          <FormItem className="wms-ops-form-item">
+                            <FormLabel>{t('userDetail.newPassword')}</FormLabel>
                             <FormControl>
-                              <div className={cn(inputIconWrapClass, 'pr-10')}>
-                                <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sky-400/70" aria-hidden />
-                                <Input
-                                  {...field}
-                                  type={isNewPasswordVisible ? 'text' : 'password'}
-                                  placeholder={t('userDetail.newPasswordPlaceholder')}
-                                  className={cn(inputInnerClass, 'pr-10')}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setIsNewPasswordVisible((v) => !v)}
-                                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sky-300/65 hover:text-orange-100/90"
-                                >
-                                  {isNewPasswordVisible ? (
-                                    <EyeOff className="size-4" aria-hidden />
-                                  ) : (
-                                    <Eye className="size-4" aria-hidden />
-                                  )}
-                                </button>
-                              </div>
+                              <ProfileSettingsPasswordInput
+                                icon={Lock}
+                                invalid={fieldState.invalid}
+                                visible={isNewPasswordVisible}
+                                onToggleVisible={() => setIsNewPasswordVisible((v) => !v)}
+                                placeholder={t('userDetail.newPasswordPlaceholder')}
+                                {...field}
+                              />
                             </FormControl>
-                            <FormMessage className="text-rose-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
 
                     <div className="mt-6 flex justify-end">
-                      <Button
-                        type="submit"
-                        disabled={isChangingPassword}
-                        className="rounded-xl border border-orange-400/25 bg-gradient-to-r from-sky-600/35 to-orange-600/30 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] hover:from-sky-500/45 hover:to-orange-500/38"
-                      >
+                      <OpsActionButton type="submit" variant="primary" disabled={isChangingPassword}>
                         {isChangingPassword ? (
                           <>
                             <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
@@ -560,7 +561,7 @@ export function ProfileSettingsModal({ open, onOpenChange }: ProfileSettingsModa
                             {t('userDetail.changePasswordButton')}
                           </>
                         )}
-                      </Button>
+                      </OpsActionButton>
                     </div>
                   </div>
                 </form>

@@ -679,7 +679,11 @@
   "welcome": {
     "title": "Welcome",
     "subtitle": "You have signed in to the warehouse management system. Go to the dashboard to continue.",
-    "goToDashboard": "Go to dashboard"
+    "goToDashboard": "Go to dashboard",
+    "terminal": {
+      "eyebrow": "WMS / TERMINAL",
+      "accessGranted": "ACCESS GRANTED"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -693,9 +697,9 @@
     "criticalStock": "Critical Stock",
     "criticalStockItems": "Low stock products",
     "recentTransactions": "Recent Transactions",
-    "recentTransactionsSubtitle": "Transactions in the last 24 hours",
+    "recentTransactionsSubtitle": "Latest updated goods receipt and shipment activity",
     "quickAccess": "Quick Access",
-    "quickAccessSubtitle": "Common operations",
+    "quickAccessSubtitle": "Frequently used operation commands",
     "newGoodsReceipt": "New Goods Receipt",
     "newShipment": "New Shipment",
     "stockQuery": "Stock Query",
@@ -705,7 +709,44 @@
     "shipmentNumber": "Shipment #{{number}}",
     "inventoryUpdate": "Inventory Update",
     "hoursAgo": "{{hours}} hours ago",
-    "user": "User"
+    "user": "User",
+    "terminal": {
+      "eyebrow": "WMS / COMMAND CENTER",
+      "welcome": "Welcome, {{name}}",
+      "operator": "OPERATOR",
+      "branch": "BRANCH",
+      "branchFallback": "No branch selected",
+      "systemPulse": "SYSTEM STATUS",
+      "online": "ONLINE",
+      "syncing": "SYNCING",
+      "myTasks": "MY TASKS",
+      "statusHint": "Live operation metrics and recent movements are below.",
+      "metricsPanel": "OPERATION METRICS",
+      "stockSkuCount": "Stock Items",
+      "stockSkuHint": "Warehouse balance records",
+      "openGoodsReceiptHint": "Total goods receipt orders",
+      "openShipmentHint": "Total shipment orders",
+      "pendingApproval": "Awaiting Approval",
+      "pendingApprovalHint": "Goods receipt approval queue",
+      "myAssignments": "Assigned To Me",
+      "myAssignmentsHint": "Goods receipt + shipment tasks",
+      "transferCount": "Transfer",
+      "transferHint": "Active transfer orders",
+      "activityEmpty": "No activity to display yet.",
+      "pending": "Pending",
+      "minutesAgo": "{{minutes}} min ago",
+      "launch": "Launch",
+      "quickLinksEmpty": "No quick commands available for this user.",
+      "assignedGoodsReceipt": "Assigned Goods Receipt",
+      "transferList": "Transfer List",
+      "reportsHub": "Reports Hub",
+      "quickGrDescription": "Create a new goods receipt order",
+      "quickAssignedDescription": "Open goods receipt tasks assigned to you",
+      "quickShipmentDescription": "Start a new shipment order",
+      "quickTransferDescription": "List transfer orders",
+      "quickStockDescription": "Query warehouse stock balance",
+      "quickReportsDescription": "Go to operation reports"
+    }
   },
   "goodsReceipt": {
     "create": {
@@ -2666,7 +2707,10 @@
     "loading": "Loading...",
     "disconnected": "Connection disconnected",
     "notifications": "Notifications",
-    "connectionDisconnected": "Connection disconnected"
+    "connectionDisconnected": "Connection disconnected",
+    "terminal": {
+      "noEntries": "No notifications found"
+    }
   },
   "userDetail": {
     "title": "User Details",
@@ -2748,6 +2792,11 @@
     "settingsBrandTheme": "Corporate theme",
     "settingsBrandThemeHint": "Adjust the WMS appearance for the operation identity",
     "organizationBadge": "V3RII.CO",
+    "terminal": {
+      "switchOn": "ON",
+      "switchOff": "OFF",
+      "eyebrow": "PROFILE / USER"
+    },
     "profileSettings": "Profile settings",
     "branchLabel": "Branch",
     "changePhoto": "Choose or change profile photo",

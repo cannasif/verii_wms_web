@@ -215,6 +215,48 @@ export function AccessControlOpsMultiSelectPanel({
   );
 }
 
+export function AccessControlOpsCheckboxControl({
+  id,
+  checked,
+  onCheckedChange,
+  disabled,
+  'aria-label': ariaLabel,
+  className,
+}: {
+  id: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
+  'aria-label'?: string;
+  className?: string;
+}): ReactElement {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      id={id}
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      className={cn(
+        'wms-ops-access-control-terminal-checkbox shrink-0',
+        checked && 'wms-ops-access-control-terminal-checkbox--checked',
+        disabled && 'opacity-50',
+        className,
+      )}
+      onClick={() => {
+        if (!disabled) onCheckedChange(!checked);
+      }}
+    >
+      <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--tl" aria-hidden />
+      <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--tr" aria-hidden />
+      <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--bl" aria-hidden />
+      <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--br" aria-hidden />
+      <span className="wms-ops-access-control-terminal-checkbox__fill" aria-hidden />
+    </button>
+  );
+}
+
 export function AccessControlOpsCheckbox({
   id,
   checked,
@@ -236,28 +278,13 @@ export function AccessControlOpsCheckbox({
 }): ReactElement {
   return (
     <div className={cn('wms-ops-access-control-checkbox flex items-start gap-2.5', compact && 'items-center', className)}>
-      <button
-        type="button"
-        role="checkbox"
+      <AccessControlOpsCheckboxControl
         id={id}
-        aria-checked={checked}
-        aria-labelledby={`${id}-label`}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
         disabled={disabled}
-        className={cn(
-          'wms-ops-access-control-terminal-checkbox mt-0.5 shrink-0',
-          checked && 'wms-ops-access-control-terminal-checkbox--checked',
-          disabled && 'opacity-50',
-        )}
-        onClick={() => {
-          if (!disabled) onCheckedChange(!checked);
-        }}
-      >
-        <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--tl" aria-hidden />
-        <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--tr" aria-hidden />
-        <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--bl" aria-hidden />
-        <span className="wms-ops-access-control-terminal-checkbox__corner wms-ops-access-control-terminal-checkbox__corner--br" aria-hidden />
-        <span className="wms-ops-access-control-terminal-checkbox__mark" aria-hidden>{checked ? '×' : ''}</span>
-      </button>
+        className="mt-0.5"
+      />
       <label id={`${id}-label`} htmlFor={id} className="wms-ops-access-control-checkbox__label min-w-0 cursor-pointer">
         <span className={cn('block', compact && 'text-sm')}>{label}</span>
         {description ? (

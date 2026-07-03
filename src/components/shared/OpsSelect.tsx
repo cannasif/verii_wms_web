@@ -12,6 +12,7 @@ interface OpsSelectProps {
   disabled?: boolean;
   className?: string;
   triggerClassName?: string;
+  'aria-invalid'?: boolean;
 }
 
 export function OpsSelect({
@@ -22,9 +23,10 @@ export function OpsSelect({
   disabled,
   className,
   triggerClassName,
+  'aria-invalid': ariaInvalid,
 }: OpsSelectProps): ReactElement {
   return (
-    <OpsFieldShell className={className}>
+    <OpsFieldShell className={className} aria-invalid={ariaInvalid}>
       <Select value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
         <SelectTrigger className={cn(OPS_SELECT_TRIGGER_CLASS, triggerClassName)}>
           <SelectValue placeholder={placeholder} />
