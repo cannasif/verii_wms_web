@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Pencil, Plus, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Pencil, Plus, RefreshCw, Save, Search, Send, Trash2, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -21,17 +21,27 @@ import {
   type PagedDataGridColumn,
 } from '@/components/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { CustomerLookup, StockLookup } from '@/features/shared/api/lookup-types';
+import type { CustomerLookup, ExchangeRateLookup, StockLookup } from '@/features/shared/api/lookup-types';
 import { documentSeriesManagementApi } from '@/features/document-series-management/api/document-series-management.api';
 import type { WmsDocumentSeriesDefinitionPagedRowDto } from '@/features/document-series-management/types/document-series-management.types';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { purchaseApi, purchaseApprovalRuleApi, type PurchaseEndpoint } from '../api/purchase.api';
-import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseListRowDto } from '../types/purchase.types';
+import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseListRowDto, PurchaseNotesDto } from '../types/purchase.types';
 
 type ColumnKey = 'id' | 'documentNo' | 'status' | 'supplier' | 'currencyCode' | 'grandTotal' | 'sourceDocumentNo' | 'documentDate';
 type PurchasePageKind = 'request' | 'rfq' | 'quotation' | 'order';
+type PurchaseNoteKey = keyof PurchaseNotesDto;
+
+interface PurchaseExchangeRateState {
+  currency: string;
+  exchangeRate: number;
+  exchangeRateDate: string;
+  isOfficial: boolean;
+  dovizTipi?: number | null;
+  dovizIsmi?: string | null;
+}
 
 interface PurchasePageConfig {
   kind: PurchasePageKind;
@@ -97,6 +107,24 @@ const purchasePageConfigs: Record<PurchasePageKind, PurchasePageConfig> = {
   },
 };
 
+const purchaseNoteKeys: PurchaseNoteKey[] = [
+  'note1',
+  'note2',
+  'note3',
+  'note4',
+  'note5',
+  'note6',
+  'note7',
+  'note8',
+  'note9',
+  'note10',
+  'note11',
+  'note12',
+  'note13',
+  'note14',
+  'note15',
+];
+
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
     case 'documentNo': return 'DocumentNo';
@@ -119,6 +147,67 @@ function formatDate(value?: string | null): string {
 
 function formatMoney(value: number, currencyCode: string): string {
   return `${new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0)} ${currencyCode || 'TL'}`;
+}
+
+function formatRate(value: number): string {
+  return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 4, maximumFractionDigits: 6 }).format(value || 0);
+}
+
+function normalizeCurrencyToken(value: unknown): string {
+  return String(value ?? '').trim().toUpperCase();
+}
+
+function buildExchangeRatesFromErp(
+  erpRates: ExchangeRateLookup[],
+  existingRates: PurchaseExchangeRateState[],
+  documentDate: string,
+): PurchaseExchangeRateState[] {
+  const fallbackDate = documentDate || new Date().toISOString().slice(0, 10);
+  const existingByCurrency = new Map(existingRates.map((rate) => [normalizeCurrencyToken(rate.currency || rate.dovizTipi), rate]));
+
+  return erpRates
+    .filter((rate) => rate.dovizTipi !== 0)
+    .map((rate) => {
+      const currency = String(rate.dovizTipi);
+      const existing = existingByCurrency.get(normalizeCurrencyToken(currency))
+        ?? existingRates.find((item) => item.dovizTipi === rate.dovizTipi);
+      const erpValue = Number(rate.kurDegeri ?? 0);
+      const existingValue = Number(existing?.exchangeRate ?? 0);
+
+      return {
+        currency,
+        exchangeRate: existingValue > 0 ? existingValue : erpValue,
+        exchangeRateDate: existing?.exchangeRateDate || fallbackDate,
+        isOfficial: existing ? existing.isOfficial : erpValue > 0,
+        dovizTipi: rate.dovizTipi,
+        dovizIsmi: rate.dovizIsmi ?? null,
+      };
+    });
+}
+
+function resolveSelectedExchangeRate(rates: PurchaseExchangeRateState[], currencyCode: string): PurchaseExchangeRateState | undefined {
+  const normalized = normalizeCurrencyToken(currencyCode);
+  if (!normalized || normalized === 'TL' || normalized === 'TRY') return undefined;
+
+  return rates.find((rate) => {
+    const rateCurrency = normalizeCurrencyToken(rate.currency);
+    const rateName = normalizeCurrencyToken(rate.dovizIsmi);
+    return rateCurrency === normalized || rateName === normalized || String(rate.dovizTipi ?? '') === normalized;
+  });
+}
+
+function buildPurchaseNotesFromForm(formState: Record<string, string>): PurchaseNotesDto {
+  return purchaseNoteKeys.reduce<PurchaseNotesDto>((notes, key) => {
+    const value = formState[key]?.trim();
+    notes[key] = value || null;
+    return notes;
+  }, {});
+}
+
+function getPurchaseNoteValue(notes: unknown, key: PurchaseNoteKey): string {
+  if (!notes || typeof notes !== 'object') return '';
+  const value = (notes as Record<string, unknown>)[key];
+  return value == null ? '' : String(value);
 }
 
 function createEmptyLine(): CreatePurchaseLineDto {
@@ -801,6 +890,18 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     note1: '',
     note2: '',
     note3: '',
+    note4: '',
+    note5: '',
+    note6: '',
+    note7: '',
+    note8: '',
+    note9: '',
+    note10: '',
+    note11: '',
+    note12: '',
+    note13: '',
+    note14: '',
+    note15: '',
     message: '',
     description: '',
   });
@@ -809,6 +910,15 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [editingLineIndex, setEditingLineIndex] = useState<number | null>(null);
   const [lines, setLines] = useState<CreatePurchaseLineDto[]>([]);
+  const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<PurchaseExchangeRateState[]>([]);
+
+  const exchangeRateQuery = useQuery({
+    queryKey: ['purchase', 'exchange-rates', formState.documentDate, 1],
+    queryFn: () => lookupApi.getExchangeRates(formState.documentDate || new Date(), 1),
+    enabled: isCommercial && exchangeRateDialogOpen,
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     setPageTitle(editingId ? `${config.createTitle} Düzenle` : config.createTitle);
@@ -855,9 +965,21 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       paymentTerms: String(detail.paymentTerms ?? ''),
       generalDiscountRate: String(detail.generalDiscountRate ?? '0'),
       generalDiscountAmount: String(detail.generalDiscountAmount ?? '0'),
-      note1: typeof detail.notes === 'object' && detail.notes ? String((detail.notes as Record<string, unknown>).note1 ?? '') : '',
-      note2: typeof detail.notes === 'object' && detail.notes ? String((detail.notes as Record<string, unknown>).note2 ?? '') : '',
-      note3: typeof detail.notes === 'object' && detail.notes ? String((detail.notes as Record<string, unknown>).note3 ?? '') : '',
+      note1: getPurchaseNoteValue(detail.notes, 'note1'),
+      note2: getPurchaseNoteValue(detail.notes, 'note2'),
+      note3: getPurchaseNoteValue(detail.notes, 'note3'),
+      note4: getPurchaseNoteValue(detail.notes, 'note4'),
+      note5: getPurchaseNoteValue(detail.notes, 'note5'),
+      note6: getPurchaseNoteValue(detail.notes, 'note6'),
+      note7: getPurchaseNoteValue(detail.notes, 'note7'),
+      note8: getPurchaseNoteValue(detail.notes, 'note8'),
+      note9: getPurchaseNoteValue(detail.notes, 'note9'),
+      note10: getPurchaseNoteValue(detail.notes, 'note10'),
+      note11: getPurchaseNoteValue(detail.notes, 'note11'),
+      note12: getPurchaseNoteValue(detail.notes, 'note12'),
+      note13: getPurchaseNoteValue(detail.notes, 'note13'),
+      note14: getPurchaseNoteValue(detail.notes, 'note14'),
+      note15: getPurchaseNoteValue(detail.notes, 'note15'),
       message: String(detail.message ?? ''),
       description: String(detail.description ?? ''),
     }));
@@ -873,6 +995,16 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       description2: line.description2 ?? null,
       description3: line.description3 ?? null,
     })));
+    setExchangeRates(Array.isArray(detail.exchangeRates)
+      ? (detail.exchangeRates as Array<Record<string, unknown>>).map((rate) => ({
+        currency: String(rate.currency ?? ''),
+        exchangeRate: Number(rate.exchangeRate ?? 0),
+        exchangeRateDate: rate.exchangeRateDate ? new Date(String(rate.exchangeRateDate)).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+        isOfficial: Boolean(rate.isOfficial ?? true),
+        dovizTipi: Number.isFinite(Number(rate.currency)) ? Number(rate.currency) : null,
+        dovizIsmi: null,
+      }))
+      : []);
     setSupplierLabel(supplierErpCode || supplierName ? `${supplierErpCode} - ${supplierName}` : '');
     setRfqSuppliers(detailSuppliers.map((supplier) => ({
       supplierId: supplier.supplierId,
@@ -881,6 +1013,11 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     })));
     setSeriesLabel('');
   }, [config.documentDateField, config.documentNoField, detailQuery.data]);
+
+  useEffect(() => {
+    if (!exchangeRateDialogOpen || !exchangeRateQuery.data) return;
+    setExchangeRates((prev) => buildExchangeRatesFromErp(exchangeRateQuery.data, prev, formState.documentDate));
+  }, [exchangeRateDialogOpen, exchangeRateQuery.data, formState.documentDate]);
 
   const mutation = useMutation({
     mutationFn: (dto: CreatePurchaseDocumentDto) => editingId
@@ -1016,6 +1153,21 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     setRfqSupplierLabel('');
   }
 
+  function handleApplyExchangeRates(): void {
+    const selectedRate = resolveSelectedExchangeRate(exchangeRates, formState.currencyCode);
+    if (selectedRate && selectedRate.exchangeRate > 0) {
+      setFormState((prev) => ({ ...prev, exchangeRate: String(selectedRate.exchangeRate) }));
+    }
+    setExchangeRateDialogOpen(false);
+  }
+
+  function handleExchangeRateValueChange(index: number, value: string): void {
+    const numericValue = toNumber(value);
+    setExchangeRates((prev) => prev.map((rate, currentIndex) => currentIndex === index
+      ? { ...rate, exchangeRate: numericValue, isOfficial: false }
+      : rate));
+  }
+
   function handleSubmit(): void {
     const currencyCode = formState.currencyCode.trim().toUpperCase() || 'TL';
     const exchangeRate = Number(formState.exchangeRate || '0');
@@ -1044,6 +1196,17 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       return;
     }
 
+    const commercialExchangeRates = exchangeRates.length
+      ? exchangeRates
+        .filter((rate) => rate.exchangeRate > 0)
+        .map((rate) => ({
+          currency: rate.currency || String(rate.dovizTipi ?? currencyCode),
+          exchangeRate: rate.exchangeRate,
+          exchangeRateDate: rate.exchangeRateDate ? new Date(rate.exchangeRateDate).toISOString() : new Date().toISOString(),
+          isOfficial: rate.isOfficial,
+        }))
+      : [{ currency: currencyCode, exchangeRate, exchangeRateDate: new Date().toISOString(), isOfficial: true }];
+
     mutation.mutate({
       [config.documentNoField]: formState.documentNo.trim() || null,
       [config.documentDateField]: formState.documentDate ? new Date(formState.documentDate).toISOString() : null,
@@ -1071,8 +1234,8 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       description: formState.description.trim() || null,
       lines,
       suppliers: isRfq ? rfqSuppliers.map((supplier) => ({ supplierId: supplier.supplierId, email: supplier.email ?? null })) : [],
-      exchangeRates: [{ currency: currencyCode, exchangeRate, exchangeRateDate: new Date().toISOString(), isOfficial: true }],
-      notes: isCommercial ? { note1: formState.note1 || null, note2: formState.note2 || null, note3: formState.note3 || null } : undefined,
+      exchangeRates: isCommercial ? commercialExchangeRates : [],
+      notes: isCommercial ? buildPurchaseNotesFromForm(formState) : undefined,
     } as CreatePurchaseDocumentDto);
   }
 
@@ -1200,6 +1363,16 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 Kur *
                 <OpsInput type="number" step="0.0001" value={formState.exchangeRate} onChange={(event) => setFormState((prev) => ({ ...prev, exchangeRate: event.target.value }))} />
               </label>
+              {isCommercial ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-400 hover:bg-emerald-100 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200"
+                  onClick={() => setExchangeRateDialogOpen(true)}
+                >
+                  <RefreshCw className="size-4" />
+                  Kur Listesi / Düzenle
+                </button>
+              ) : null}
               {isCommercial ? (
                 <label className="grid gap-2 text-sm font-bold">
                   Ödeme Tipi
@@ -1508,14 +1681,26 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 Ödeme Şartları
                 <OpsInput value={formState.paymentTerms} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTerms: event.target.value }))} />
               </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Belge Notu 1
-                <OpsInput value={formState.note1} onChange={(event) => setFormState((prev) => ({ ...prev, note1: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Belge Notu 2
-                <OpsInput value={formState.note2} onChange={(event) => setFormState((prev) => ({ ...prev, note2: event.target.value }))} />
-              </label>
+              <div className="lg:col-span-2">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-black">Belge Ek Açıklamaları</h3>
+                    <p className="text-xs font-semibold text-muted-foreground">Netsis belge notu alanları Note1-Note15 olarak saklanır.</p>
+                  </div>
+                  <span className="rounded-full border bg-muted/60 px-3 py-1 text-xs font-black text-muted-foreground">15 alan</span>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {purchaseNoteKeys.map((noteKey, index) => (
+                    <label key={noteKey} className="grid gap-2 text-sm font-semibold">
+                      Belge Notu {index + 1}
+                      <OpsInput
+                        value={formState[noteKey]}
+                        onChange={(event) => setFormState((prev) => ({ ...prev, [noteKey]: event.target.value }))}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
             </>
           ) : null}
           <label className="grid gap-2 text-sm font-semibold lg:col-span-2">
@@ -1523,6 +1708,121 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
             <OpsTextarea rows={5} value={formState.description} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
           </label>
         </section>
+
+        <Dialog open={exchangeRateDialogOpen} onOpenChange={setExchangeRateDialogOpen}>
+          <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-4xl">
+            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-400 text-white shadow-lg">
+                    <RefreshCw className="size-5" />
+                  </span>
+                  <div>
+                    <DialogTitle className="text-xl font-black">Kur Listesi</DialogTitle>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Belge tarihine göre Netsis kur fonksiyonundan gelen değerleri kontrol edin; gerekiyorsa belgeye özel düzeltin.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
+                  onClick={() => setExchangeRateDialogOpen(false)}
+                  aria-label="Kapat"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            </DialogHeader>
+
+            <div className="max-h-[calc(88vh-9rem)] overflow-y-auto px-6 py-5">
+              <div className="mb-4 grid gap-3 md:grid-cols-3">
+                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Belge Para Birimi</div>
+                  <div className="mt-2 text-2xl font-black">{formState.currencyCode || 'TL'}</div>
+                </div>
+                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Aktif Kur</div>
+                  <div className="mt-2 text-2xl font-black">{formatRate(toNumber(formState.exchangeRate, 1))}</div>
+                </div>
+                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Kur Tarihi</div>
+                  <div className="mt-2 text-2xl font-black">{formState.documentDate || '-'}</div>
+                </div>
+              </div>
+
+              {exchangeRateQuery.isLoading ? (
+                <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed bg-muted/30">
+                  <div className="flex items-center gap-3 text-sm font-black text-muted-foreground">
+                    <RefreshCw className="size-5 animate-spin" />
+                    Kur bilgileri Netsis üzerinden alınıyor...
+                  </div>
+                </div>
+              ) : exchangeRateQuery.isError ? (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm font-bold text-rose-700 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-200">
+                  Kur bilgileri alınamadı. Manuel kur girip belgeyi kaydedebilirsiniz.
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-2xl border bg-white/90 dark:border-white/10 dark:bg-white/[0.04]">
+                  <table className="w-full min-w-[720px] text-sm">
+                    <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+                      <tr>
+                        <th className="px-4 py-3 text-left">Döviz Tipi</th>
+                        <th className="px-4 py-3 text-left">Döviz İsmi</th>
+                        <th className="px-4 py-3 text-right">Kur</th>
+                        <th className="px-4 py-3 text-center">Kaynak</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {exchangeRates.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-10 text-center text-sm font-bold text-muted-foreground">
+                            Bu tarih için kur bilgisi bulunamadı.
+                          </td>
+                        </tr>
+                      ) : exchangeRates.map((rate, index) => (
+                        <tr key={`${rate.currency}-${rate.dovizTipi ?? index}`} className="border-t border-slate-200/80 dark:border-white/10">
+                          <td className="px-4 py-3 font-black">{rate.dovizTipi ?? rate.currency}</td>
+                          <td className="px-4 py-3 font-semibold text-muted-foreground">{rate.dovizIsmi || rate.currency}</td>
+                          <td className="px-4 py-3 text-right">
+                            <OpsInput
+                              type="number"
+                              step="0.000001"
+                              value={rate.exchangeRate}
+                              onChange={(event) => handleExchangeRateValueChange(index, event.target.value)}
+                              className="ml-auto max-w-44 text-right font-mono"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`rounded-full px-3 py-1 text-xs font-black ${rate.isOfficial ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200' : 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200'}`}>
+                              {rate.isOfficial ? 'Netsis' : 'Manuel'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-slate-50/90 px-6 py-4 dark:border-white/10 dark:bg-white/[0.05]">
+              <OpsActionButton type="button" variant="secondary" onClick={() => exchangeRateQuery.refetch()}>
+                <RefreshCw className="size-4" />
+                Netsis Kurunu Yenile
+              </OpsActionButton>
+              <div className="flex flex-wrap gap-2">
+                <OpsActionButton type="button" variant="secondary" onClick={() => setExchangeRateDialogOpen(false)}>
+                  İptal
+                </OpsActionButton>
+                <OpsActionButton type="button" variant="primary" onClick={handleApplyExchangeRates}>
+                  <Save className="size-4" />
+                  Kur Snapshot Kaydet
+                </OpsActionButton>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={lineDialogOpen} onOpenChange={(open) => { if (!open) resetLineDialog(); else setLineDialogOpen(true); }}>
           <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-5xl">

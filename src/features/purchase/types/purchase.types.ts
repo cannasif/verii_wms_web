@@ -78,7 +78,25 @@ export interface CreatePurchaseDocumentDto {
   lines: CreatePurchaseLineDto[];
   suppliers?: Array<{ supplierId: number; email?: string | null }>;
   exchangeRates?: Array<{ currency: string; exchangeRate: number; exchangeRateDate?: string | null; isOfficial: boolean }>;
-  notes?: Record<string, string | null>;
+  notes?: PurchaseNotesDto;
+}
+
+export interface PurchaseNotesDto {
+  note1?: string | null;
+  note2?: string | null;
+  note3?: string | null;
+  note4?: string | null;
+  note5?: string | null;
+  note6?: string | null;
+  note7?: string | null;
+  note8?: string | null;
+  note9?: string | null;
+  note10?: string | null;
+  note11?: string | null;
+  note12?: string | null;
+  note13?: string | null;
+  note14?: string | null;
+  note15?: string | null;
 }
 
 export interface PurchaseApprovalRuleDto {
