@@ -21,14 +21,14 @@ import {
   type PagedDataGridColumn,
 } from '@/components/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
-import type { CustomerLookup, ExchangeRateLookup, StockLookup } from '@/features/shared/api/lookup-types';
+import type { CustomerLookup, ExchangeRateLookup, ProjectLookup, SpecialCodeLookup, StockLookup } from '@/features/shared/api/lookup-types';
 import { documentSeriesManagementApi } from '@/features/document-series-management/api/document-series-management.api';
 import type { WmsDocumentSeriesDefinitionPagedRowDto } from '@/features/document-series-management/types/document-series-management.types';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
-import { purchaseApi, purchaseApprovalRuleApi, type PurchaseEndpoint } from '../api/purchase.api';
-import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseListRowDto, PurchaseNotesDto } from '../types/purchase.types';
+import { purchaseApi, purchaseApprovalRuleApi, purchaseDefinitionApi, type PurchaseEndpoint } from '../api/purchase.api';
+import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseDefinitionDto, PurchaseListRowDto, PurchaseNotesDto } from '../types/purchase.types';
 
 type ColumnKey = 'id' | 'documentNo' | 'status' | 'supplier' | 'currencyCode' | 'grandTotal' | 'sourceDocumentNo' | 'documentDate';
 type PurchasePageKind = 'request' | 'rfq' | 'quotation' | 'order';
@@ -254,6 +254,54 @@ function buildSeriesPreview(definition: WmsDocumentSeriesDefinitionPagedRowDto):
 
 function buildSeriesLabel(definition: WmsDocumentSeriesDefinitionPagedRowDto): string {
   return `${definition.code} - ${definition.name} (${definition.seriesPrefix})`;
+}
+
+function normalizeLookupSearch(value: unknown): string {
+  return String(value ?? '').trim().toLocaleLowerCase('tr-TR');
+}
+
+function matchesLookupSearch(search: string, values: Array<unknown>): boolean {
+  const query = normalizeLookupSearch(search);
+  if (!query) return true;
+  return values.some((value) => normalizeLookupSearch(value).includes(query));
+}
+
+function toClientPagedResponse<T>(items: T[], pageNumber: number, pageSize: number): {
+  data: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+} {
+  const safePageNumber = Math.max(1, pageNumber || 1);
+  const safePageSize = Math.max(1, pageSize || 20);
+  const start = (safePageNumber - 1) * safePageSize;
+  const data = items.slice(start, start + safePageSize);
+  const totalPages = Math.max(1, Math.ceil(items.length / safePageSize));
+
+  return {
+    data,
+    totalCount: items.length,
+    pageNumber: safePageNumber,
+    pageSize: safePageSize,
+    totalPages,
+    hasPreviousPage: safePageNumber > 1,
+    hasNextPage: start + data.length < items.length,
+  };
+}
+
+function buildProjectLabel(project: ProjectLookup): string {
+  return [project.projeKod, project.projeAciklama].filter(Boolean).join(' - ');
+}
+
+function buildSpecialCodeLabel(specialCode: SpecialCodeLookup): string {
+  return [specialCode.ozelKod, specialCode.aciklama || specialCode.displayName].filter(Boolean).join(' - ');
+}
+
+function buildPurchaseDefinitionLabel(definition: PurchaseDefinitionDto): string {
+  return [definition.code, definition.name].filter(Boolean).join(' - ');
 }
 
 function getPurchaseSeriesOperationType(kind: PurchasePageKind): string {
@@ -861,9 +909,18 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   const [rfqSupplierLookupOpen, setRfqSupplierLookupOpen] = useState(false);
   const [stockLookupOpen, setStockLookupOpen] = useState(false);
   const [seriesLookupOpen, setSeriesLookupOpen] = useState(false);
+  const [projectLookupOpen, setProjectLookupOpen] = useState(false);
+  const [specialCode1LookupOpen, setSpecialCode1LookupOpen] = useState(false);
+  const [specialCode2LookupOpen, setSpecialCode2LookupOpen] = useState(false);
+  const [purchaseTypeLookupOpen, setPurchaseTypeLookupOpen] = useState(false);
+  const [paymentTypeLookupOpen, setPaymentTypeLookupOpen] = useState(false);
+  const [deliveryTypeLookupOpen, setDeliveryTypeLookupOpen] = useState(false);
   const [supplierLabel, setSupplierLabel] = useState('');
   const [stockLabel, setStockLabel] = useState('');
   const [seriesLabel, setSeriesLabel] = useState('');
+  const [purchaseTypeLabel, setPurchaseTypeLabel] = useState('');
+  const [paymentTypeLabel, setPaymentTypeLabel] = useState('');
+  const [deliveryTypeLabel, setDeliveryTypeLabel] = useState('');
   const [rfqSupplierSearchInput, setRfqSupplierSearchInput] = useState('');
   const [rfqSupplierSearch, setRfqSupplierSearch] = useState('');
   const [formState, setFormState] = useState({
@@ -877,6 +934,9 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     exchangeRate: '1',
     subject: '',
     supplierId: '',
+    purchaseTypeDefinitionId: '',
+    paymentTypeDefinitionId: '',
+    deliveryTypeDefinitionId: '',
     purchaseType: 'Yurtiçi',
     paymentTypeCode: '',
     department: '',
@@ -962,6 +1022,12 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       : [];
     const supplierErpCode = typeof detail.supplierErpCode === 'string' ? detail.supplierErpCode : '';
     const supplierName = typeof detail.supplierNameSnapshot === 'string' ? detail.supplierNameSnapshot : '';
+    const purchaseTypeDefinitionCode = typeof detail.purchaseTypeDefinitionCode === 'string' ? detail.purchaseTypeDefinitionCode : '';
+    const purchaseTypeDefinitionName = typeof detail.purchaseTypeDefinitionName === 'string' ? detail.purchaseTypeDefinitionName : '';
+    const paymentTypeDefinitionCode = typeof detail.paymentTypeDefinitionCode === 'string' ? detail.paymentTypeDefinitionCode : '';
+    const paymentTypeDefinitionName = typeof detail.paymentTypeDefinitionName === 'string' ? detail.paymentTypeDefinitionName : '';
+    const deliveryTypeDefinitionCode = typeof detail.deliveryTypeDefinitionCode === 'string' ? detail.deliveryTypeDefinitionCode : '';
+    const deliveryTypeDefinitionName = typeof detail.deliveryTypeDefinitionName === 'string' ? detail.deliveryTypeDefinitionName : '';
 
     setFormState((prev) => ({
       ...prev,
@@ -975,6 +1041,9 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       exchangeRate: String(detail.exchangeRate ?? '1'),
       subject: String(detail.subject ?? ''),
       supplierId: detail.supplierId ? String(detail.supplierId) : '',
+      purchaseTypeDefinitionId: detail.purchaseTypeDefinitionId ? String(detail.purchaseTypeDefinitionId) : '',
+      paymentTypeDefinitionId: detail.paymentTypeDefinitionId ? String(detail.paymentTypeDefinitionId) : '',
+      deliveryTypeDefinitionId: detail.deliveryTypeDefinitionId ? String(detail.deliveryTypeDefinitionId) : '',
       purchaseType: String(detail.purchaseType ?? prev.purchaseType),
       paymentTypeCode: String(detail.paymentTypeCode ?? ''),
       department: String(detail.department ?? ''),
@@ -1027,6 +1096,9 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       }))
       : []);
     setSupplierLabel(supplierErpCode || supplierName ? `${supplierErpCode} - ${supplierName}` : '');
+    setPurchaseTypeLabel([purchaseTypeDefinitionCode, purchaseTypeDefinitionName].filter(Boolean).join(' - '));
+    setPaymentTypeLabel([paymentTypeDefinitionCode, paymentTypeDefinitionName].filter(Boolean).join(' - '));
+    setDeliveryTypeLabel([deliveryTypeDefinitionCode, deliveryTypeDefinitionName].filter(Boolean).join(' - '));
     setRfqSuppliers(detailSuppliers.map((supplier) => ({
       supplierId: supplier.supplierId,
       label: `${supplier.supplierErpCode || ''} - ${supplier.supplierNameSnapshot || ''}`.trim(),
@@ -1254,6 +1326,9 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       exchangeRate,
       subject: formState.subject.trim() || null,
       supplierId: formState.supplierId ? Number(formState.supplierId) : null,
+      purchaseTypeDefinitionId: isCommercial && formState.purchaseTypeDefinitionId ? Number(formState.purchaseTypeDefinitionId) : null,
+      paymentTypeDefinitionId: isCommercial && formState.paymentTypeDefinitionId ? Number(formState.paymentTypeDefinitionId) : null,
+      deliveryTypeDefinitionId: isCommercial && formState.deliveryTypeDefinitionId ? Number(formState.deliveryTypeDefinitionId) : null,
       purchaseType: isCommercial ? formState.purchaseType.trim() || null : null,
       paymentTypeCode: isCommercial ? formState.paymentTypeCode.trim() || null : null,
       documentSeriesDefinitionId: formState.documentSeriesDefinitionId ? Number(formState.documentSeriesDefinitionId) : null,
@@ -1418,7 +1493,33 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
               {isCommercial ? (
                 <label className="grid gap-2 text-sm font-bold">
                   Ödeme Tipi
-                  <OpsInput value={formState.paymentTypeCode} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTypeCode: event.target.value }))} />
+                  <PagedLookupDialog<PurchaseDefinitionDto>
+                    variant="ops"
+                    open={paymentTypeLookupOpen}
+                    onOpenChange={setPaymentTypeLookupOpen}
+                    title="Ödeme tipi seç"
+                    value={paymentTypeLabel || formState.paymentTypeCode}
+                    placeholder="Ödeme tipi seçin"
+                    searchPlaceholder="Kod veya açıklama ara"
+                    emptyText="Ödeme tipi bulunamadı."
+                    queryKey={['purchase', 'definitions', 'PaymentType']}
+                    fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                      const definitions = await purchaseDefinitionApi.getActiveByCategory('PaymentType', { signal });
+                      const filtered = definitions.filter((definition) =>
+                        matchesLookupSearch(search, [definition.code, definition.name, definition.description]));
+                      return toClientPagedResponse(filtered, pageNumber, pageSize);
+                    }}
+                    getKey={(definition) => definition.id.toString()}
+                    getLabel={buildPurchaseDefinitionLabel}
+                    onSelect={(definition) => {
+                      setPaymentTypeLabel(buildPurchaseDefinitionLabel(definition));
+                      setFormState((prev) => ({
+                        ...prev,
+                        paymentTypeDefinitionId: String(definition.id),
+                        paymentTypeCode: definition.code,
+                      }));
+                    }}
+                  />
                 </label>
               ) : null}
             </div>
@@ -1438,7 +1539,33 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
               {isCommercial ? (
                 <label className="grid gap-2 text-sm font-bold">
                   Satınalma Tipi
-                  <OpsInput value={formState.purchaseType} onChange={(event) => setFormState((prev) => ({ ...prev, purchaseType: event.target.value }))} />
+                  <PagedLookupDialog<PurchaseDefinitionDto>
+                    variant="ops"
+                    open={purchaseTypeLookupOpen}
+                    onOpenChange={setPurchaseTypeLookupOpen}
+                    title="Satınalma tipi seç"
+                    value={purchaseTypeLabel || formState.purchaseType}
+                    placeholder="Satınalma tipi seçin"
+                    searchPlaceholder="Kod veya açıklama ara"
+                    emptyText="Satınalma tipi bulunamadı."
+                    queryKey={['purchase', 'definitions', 'PurchaseType']}
+                    fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                      const definitions = await purchaseDefinitionApi.getActiveByCategory('PurchaseType', { signal });
+                      const filtered = definitions.filter((definition) =>
+                        matchesLookupSearch(search, [definition.code, definition.name, definition.description]));
+                      return toClientPagedResponse(filtered, pageNumber, pageSize);
+                    }}
+                    getKey={(definition) => definition.id.toString()}
+                    getLabel={buildPurchaseDefinitionLabel}
+                    onSelect={(definition) => {
+                      setPurchaseTypeLabel(buildPurchaseDefinitionLabel(definition));
+                      setFormState((prev) => ({
+                        ...prev,
+                        purchaseTypeDefinitionId: String(definition.id),
+                        purchaseType: definition.code,
+                      }));
+                    }}
+                  />
                 </label>
               ) : null}
               <label className="grid gap-2 text-sm font-bold">
@@ -1523,7 +1650,32 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                   <Folder className="size-4 text-sky-600" />
                   Proje Kodu
                 </span>
-                <OpsInput value={formState.projectCode} onChange={(event) => setFormState((prev) => ({ ...prev, projectCode: event.target.value }))} />
+                <PagedLookupDialog<ProjectLookup>
+                  variant="ops"
+                  open={projectLookupOpen}
+                  onOpenChange={setProjectLookupOpen}
+                  title="ERP proje kodu seç"
+                  value={formState.projectCode}
+                  placeholder="Proje kodu seçin"
+                  searchPlaceholder="Proje kodu veya açıklaması ara"
+                  emptyText="ERP proje kodu bulunamadı."
+                  queryKey={['purchase', 'project-codes']}
+                  fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                    const projects = await lookupApi.getProjects({ signal });
+                    const filtered = projects.filter((project) =>
+                      matchesLookupSearch(search, [project.projeKod, project.projeAciklama]));
+                    return toClientPagedResponse(filtered, pageNumber, pageSize);
+                  }}
+                  getKey={(project) => project.projeKod}
+                  getLabel={buildProjectLabel}
+                  onSelect={(project) => {
+                    setFormState((prev) => ({
+                      ...prev,
+                      projectCode: project.projeKod,
+                      erpProjectCode: project.projeKod,
+                    }));
+                  }}
+                />
               </label>
               <label className="grid gap-2 text-sm font-bold">
                 Departman
@@ -1533,11 +1685,53 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm font-bold">
                     Özel Kod 1
-                    <OpsInput value={formState.ozelKod1} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod1: event.target.value }))} />
+                    <PagedLookupDialog<SpecialCodeLookup>
+                      variant="ops"
+                      open={specialCode1LookupOpen}
+                      onOpenChange={setSpecialCode1LookupOpen}
+                      title="ERP özel kod 1 seç"
+                      value={formState.ozelKod1}
+                      placeholder="Özel kod 1 seçin"
+                      searchPlaceholder="Özel kod veya açıklama ara"
+                      emptyText="Özel kod 1 bulunamadı."
+                      queryKey={['purchase', 'special-codes', 1]}
+                      fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                        const specialCodes = await lookupApi.getSpecialCodes(1, undefined, { signal });
+                        const filtered = specialCodes.filter((specialCode) =>
+                          matchesLookupSearch(search, [specialCode.ozelKod, specialCode.aciklama, specialCode.displayName]));
+                        return toClientPagedResponse(filtered, pageNumber, pageSize);
+                      }}
+                      getKey={(specialCode) => specialCode.ozelKod}
+                      getLabel={buildSpecialCodeLabel}
+                      onSelect={(specialCode) => {
+                        setFormState((prev) => ({ ...prev, ozelKod1: specialCode.ozelKod }));
+                      }}
+                    />
                   </label>
                   <label className="grid gap-2 text-sm font-bold">
                     Özel Kod 2
-                    <OpsInput value={formState.ozelKod2} onChange={(event) => setFormState((prev) => ({ ...prev, ozelKod2: event.target.value }))} />
+                    <PagedLookupDialog<SpecialCodeLookup>
+                      variant="ops"
+                      open={specialCode2LookupOpen}
+                      onOpenChange={setSpecialCode2LookupOpen}
+                      title="ERP özel kod 2 seç"
+                      value={formState.ozelKod2}
+                      placeholder="Özel kod 2 seçin"
+                      searchPlaceholder="Özel kod veya açıklama ara"
+                      emptyText="Özel kod 2 bulunamadı."
+                      queryKey={['purchase', 'special-codes', 2]}
+                      fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                        const specialCodes = await lookupApi.getSpecialCodes(2, undefined, { signal });
+                        const filtered = specialCodes.filter((specialCode) =>
+                          matchesLookupSearch(search, [specialCode.ozelKod, specialCode.aciklama, specialCode.displayName]));
+                        return toClientPagedResponse(filtered, pageNumber, pageSize);
+                      }}
+                      getKey={(specialCode) => specialCode.ozelKod}
+                      getLabel={buildSpecialCodeLabel}
+                      onSelect={(specialCode) => {
+                        setFormState((prev) => ({ ...prev, ozelKod2: specialCode.ozelKod }));
+                      }}
+                    />
                   </label>
                 </div>
               ) : null}
@@ -1716,8 +1910,34 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
           {isCommercial ? (
             <>
               <label className="grid gap-2 text-sm font-semibold">
-                Teslimat Şartları
-                <OpsInput value={formState.deliveryTerms} onChange={(event) => setFormState((prev) => ({ ...prev, deliveryTerms: event.target.value }))} />
+                Teslimat Tipi / Şekli
+                <PagedLookupDialog<PurchaseDefinitionDto>
+                  variant="ops"
+                  open={deliveryTypeLookupOpen}
+                  onOpenChange={setDeliveryTypeLookupOpen}
+                  title="Teslimat tipi seç"
+                  value={deliveryTypeLabel || formState.deliveryTerms}
+                  placeholder="Teslimat tipi seçin"
+                  searchPlaceholder="Kod veya açıklama ara"
+                  emptyText="Teslimat tipi bulunamadı."
+                  queryKey={['purchase', 'definitions', 'DeliveryType']}
+                  fetchPage={async ({ pageNumber, pageSize, search, signal }) => {
+                    const definitions = await purchaseDefinitionApi.getActiveByCategory('DeliveryType', { signal });
+                    const filtered = definitions.filter((definition) =>
+                      matchesLookupSearch(search, [definition.code, definition.name, definition.description]));
+                    return toClientPagedResponse(filtered, pageNumber, pageSize);
+                  }}
+                  getKey={(definition) => definition.id.toString()}
+                  getLabel={buildPurchaseDefinitionLabel}
+                  onSelect={(definition) => {
+                    setDeliveryTypeLabel(buildPurchaseDefinitionLabel(definition));
+                    setFormState((prev) => ({
+                      ...prev,
+                      deliveryTypeDefinitionId: String(definition.id),
+                      deliveryTerms: prev.deliveryTerms || definition.name,
+                    }));
+                  }}
+                />
               </label>
               <label className="grid gap-2 text-sm font-semibold">
                 Ödeme Şartları

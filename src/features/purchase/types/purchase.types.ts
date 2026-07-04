@@ -59,6 +59,9 @@ export interface CreatePurchaseDocumentDto {
   supplierId?: number | null;
   buyerUserId?: number | null;
   documentSeriesDefinitionId?: number | null;
+  purchaseTypeDefinitionId?: number | null;
+  paymentTypeDefinitionId?: number | null;
+  deliveryTypeDefinitionId?: number | null;
   purchaseType?: string | null;
   paymentTypeCode?: string | null;
   currencyCode: string;
@@ -131,4 +134,18 @@ export interface CreatePurchaseApprovalRuleDto {
   isActive: boolean;
   requireAllPreviousSteps: boolean;
   description?: string | null;
+}
+
+export interface PurchaseDefinitionDto {
+  id: number;
+  branchCode?: string | null;
+  createdDate?: string | null;
+  updatedDate?: string | null;
+  category: 'PaymentType' | 'PurchaseType' | 'DeliveryType' | string;
+  code: string;
+  name: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  isDefault: boolean;
 }
