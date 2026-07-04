@@ -1,17 +1,19 @@
 {
-  "title": "Incoming Invoice and Archive",
+  "title": "Incoming e-Document Lookup",
   "eyebrow": "Inbound Operations",
-  "description": "Validate an incoming e-Invoice or e-Archive UUID through eLogo and download the PDF document.",
+  "description": "Validate an incoming e-Invoice or e-Archive UUID through eLogo, retrieve PDF/UBL documents and inspect parsed line details.",
   "actions": {
     "download": "Download PDF",
     "downloading": "Preparing...",
     "run": "Open PDF",
+    "downloadXml": "Download XML",
+    "downloadingXml": "Preparing XML...",
     "detail": "Load Detail",
     "loadingDetail": "Loading Detail..."
   },
   "form": {
-    "title": "Invoice PDF Lookup",
-    "description": "Enter the UUID directly or paste UBL/XML content. The UUID is extracted automatically.",
+    "title": "UUID e-Invoice / e-Archive Lookup",
+    "description": "Enter the UUID directly or paste UBL/XML content. Auto mode tries e-Invoice first, then e-Archive.",
     "company": "Company",
     "companyPlaceholder": "Select company",
     "invoiceKind": "Document Type",
@@ -20,7 +22,7 @@
     "resolvedUuid": "Detected UUID"
   },
   "invoiceKind": {
-    "automatic": "Auto Detect",
+    "automatic": "Auto Detect (e-Invoice + e-Archive)",
     "eInvoice": "e-Invoice",
     "eArchive": "e-Archive"
   },
@@ -81,7 +83,7 @@
   },
   "guidance": {
     "title": "Operational Note",
-    "description": "eLogo may return some e-Invoice PDFs inside a ZIP package; the API extracts the PDF before returning it.",
+    "description": "In auto mode the API tries the same UUID against e-Invoice first and then e-Archive. eLogo may return some PDFs inside a ZIP package; the API extracts the PDF before returning it.",
     "secretNote": "For production use, enter the company web service password from the eLogo connection management screen."
   },
   "result": {
@@ -126,6 +128,8 @@
     "uuidRequired": "Enter a valid UUID or paste XML containing a UUID.",
     "downloaded": "PDF was prepared and downloaded.",
     "downloadFailed": "PDF could not be downloaded.",
+    "xmlDownloaded": "XML/UBL was downloaded.",
+    "xmlDownloadFailed": "XML/UBL could not be downloaded.",
     "detailLoaded": "Invoice detail was loaded.",
     "detailFailed": "Invoice detail could not be loaded."
   }

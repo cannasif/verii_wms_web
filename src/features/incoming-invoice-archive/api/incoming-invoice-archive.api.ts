@@ -55,6 +55,22 @@ export const incomingInvoiceArchiveApi = {
     }
   },
 
+  async downloadInvoiceXml(input: IncomingInvoicePdfRequest): Promise<{ blob: Blob; fileName: string }> {
+    try {
+      const response = await api.post<Blob>('/api/incoming-invoice-archive/invoice-xml', input, {
+        responseType: 'blob',
+      });
+      const blob = response as unknown as Blob;
+
+      return {
+        blob,
+        fileName: `${input.uuid}.xml`,
+      };
+    } catch (error) {
+      throw new Error(await extractBlobError(error));
+    }
+  },
+
   async getInvoiceDetail(input: IncomingInvoicePdfRequest): Promise<IncomingInvoiceDetail> {
     const response = await api.post<ApiResponse<IncomingInvoiceDetail>>('/api/incoming-invoice-archive/invoice-detail', input);
     return extractData(response as ApiResponse<IncomingInvoiceDetail>);

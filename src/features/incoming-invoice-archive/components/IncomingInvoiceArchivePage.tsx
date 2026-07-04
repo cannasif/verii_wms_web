@@ -61,6 +61,7 @@ export function IncomingInvoiceArchivePage(): ReactElement {
   const [invoiceKind, setInvoiceKind] = useState<IncomingInvoiceKind>('Automatic');
   const [uuidInput, setUuidInput] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDownloadingXml, setIsDownloadingXml] = useState(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [lastResult, setLastResult] = useState<{ uuid: string; company?: ELogoPostboxCompany; fileName: string } | null>(null);
   const [invoiceDetail, setInvoiceDetail] = useState<IncomingInvoiceDetail | null>(null);
@@ -114,6 +115,32 @@ export function IncomingInvoiceArchivePage(): ReactElement {
     }
   };
 
+  const handleDownloadXml = async (): Promise<void> => {
+    if (!companyKey) {
+      toast.error(t('messages.companyRequired'));
+      return;
+    }
+    if (!resolvedUuid) {
+      toast.error(t('messages.uuidRequired'));
+      return;
+    }
+
+    setIsDownloadingXml(true);
+    try {
+      const result = await incomingInvoiceArchiveApi.downloadInvoiceXml({
+        companyKey,
+        uuid: resolvedUuid,
+        invoiceKind,
+      });
+      downloadBlob(result.blob, result.fileName || `${resolvedUuid}.xml`);
+      toast.success(t('messages.xmlDownloaded'));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('messages.xmlDownloadFailed'));
+    } finally {
+      setIsDownloadingXml(false);
+    }
+  };
+
   const handleDetailLookup = async (): Promise<void> => {
     if (!companyKey) {
       toast.error(t('messages.companyRequired'));
@@ -164,6 +191,15 @@ export function IncomingInvoiceArchivePage(): ReactElement {
           >
             <FileSearch className="size-4" />
             {isLoadingDetail ? t('actions.loadingDetail') : t('actions.detail')}
+          </OpsActionButton>
+          <OpsActionButton
+            type="button"
+            variant="secondary"
+            onClick={() => void handleDownloadXml()}
+            disabled={isDownloadingXml || companiesQuery.isLoading || !resolvedUuid || !companyKey}
+          >
+            <FileText className="size-4" />
+            {isDownloadingXml ? t('actions.downloadingXml') : t('actions.downloadXml')}
           </OpsActionButton>
           <OpsActionButton
             type="button"
@@ -226,6 +262,10 @@ export function IncomingInvoiceArchivePage(): ReactElement {
               <OpsActionButton type="button" variant="secondary" onClick={() => void handleDetailLookup()} disabled={isLoadingDetail || !resolvedUuid || !companyKey}>
                 <Search className="size-4" />
                 {isLoadingDetail ? t('actions.loadingDetail') : t('actions.detail')}
+              </OpsActionButton>
+              <OpsActionButton type="button" variant="secondary" onClick={() => void handleDownloadXml()} disabled={isDownloadingXml || !resolvedUuid || !companyKey}>
+                <FileText className="size-4" />
+                {isDownloadingXml ? t('actions.downloadingXml') : t('actions.downloadXml')}
               </OpsActionButton>
               <OpsActionButton type="button" onClick={() => void handleDownload()} disabled={isDownloading || !resolvedUuid || !companyKey}>
                 <Download className="size-4" />

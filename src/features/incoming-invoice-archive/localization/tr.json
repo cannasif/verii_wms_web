@@ -1,17 +1,19 @@
 {
-  "title": "Gelen Fatura ve Arşiv",
+  "title": "Gelen e-Belge Sorgulama",
   "eyebrow": "Gelen Operasyonlar",
-  "description": "eLogo üzerinden gelen e-Fatura veya e-Arşiv UUID bilgisini doğrulayın ve PDF dokümanını indirin.",
+  "description": "eLogo üzerinden gelen e-Fatura veya e-Arşiv UUID bilgisini doğrulayın, PDF/UBL dokümanını alın ve satır detaylarını görüntüleyin.",
   "actions": {
     "download": "PDF İndir",
     "downloading": "Hazırlanıyor...",
     "run": "PDF Aç",
+    "downloadXml": "XML İndir",
+    "downloadingXml": "XML Hazırlanıyor...",
     "detail": "Detayı Getir",
     "loadingDetail": "Detay Alınıyor..."
   },
   "form": {
-    "title": "Fatura PDF Sorgulama",
-    "description": "UUID bilgisini doğrudan yazabilir veya UBL/XML içinden yapıştırabilirsiniz. Sistem UUID bilgisini otomatik ayıklar.",
+    "title": "UUID ile e-Fatura / e-Arşiv Sorgulama",
+    "description": "UUID bilgisini doğrudan yazabilir veya UBL/XML içinden yapıştırabilirsiniz. Otomatik mod önce e-Fatura, sonra e-Arşiv kanalını dener.",
     "company": "Firma",
     "companyPlaceholder": "Firma seçin",
     "invoiceKind": "Belge Tipi",
@@ -20,7 +22,7 @@
     "resolvedUuid": "Algılanan UUID"
   },
   "invoiceKind": {
-    "automatic": "Otomatik Bul",
+    "automatic": "Otomatik Bul (e-Fatura + e-Arşiv)",
     "eInvoice": "e-Fatura",
     "eArchive": "e-Arşiv"
   },
@@ -81,7 +83,7 @@
   },
   "guidance": {
     "title": "Operasyon Notu",
-    "description": "eLogo bazı e-Fatura PDF cevaplarını ZIP içinde döndürebilir; API bu paketi açıp içindeki PDF dosyasını kullanıcıya verir.",
+    "description": "Otomatik modda API aynı UUID için önce e-Fatura, ardından e-Arşiv tarafını dener. eLogo bazı PDF cevaplarını ZIP içinde döndürebilir; API bu paketi açıp içindeki PDF dosyasını kullanıcıya verir.",
     "secretNote": "Canlı kullanım için ilgili firmanın web servis şifresi eLogo bağlantı tanımı ekranından girilmelidir."
   },
   "result": {
@@ -126,6 +128,8 @@
     "uuidRequired": "Geçerli bir UUID girin veya XML içinden UUID yapıştırın.",
     "downloaded": "PDF hazırlandı ve indirildi.",
     "downloadFailed": "PDF indirilemedi.",
+    "xmlDownloaded": "XML/UBL indirildi.",
+    "xmlDownloadFailed": "XML/UBL indirilemedi.",
     "detailLoaded": "Fatura detayı getirildi.",
     "detailFailed": "Fatura detayı getirilemedi."
   }
