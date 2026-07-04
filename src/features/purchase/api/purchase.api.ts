@@ -1,7 +1,7 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
-import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, PurchaseApprovalRuleDto, PurchaseDefinitionDto, PurchaseListRowDto } from '../types/purchase.types';
+import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDefinitionDto, CreatePurchaseDocumentDto, PurchaseApprovalRuleDto, PurchaseDefinitionDto, PurchaseListRowDto } from '../types/purchase.types';
 
 export type PurchaseEndpoint = 'PurchaseRequest' | 'PurchaseRfq' | 'SupplierQuotation' | 'PurchaseOrder';
 
@@ -112,5 +112,25 @@ export const purchaseDefinitionApi = {
       buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'SortOrder', sortDirection: 'asc' }),
     );
     return normalizePaged(response);
+  },
+
+  async getById(id: number): Promise<PurchaseDefinitionDto> {
+    const response = await api.get<ApiResponse<PurchaseDefinitionDto>>(`/api/PurchaseDefinition/${id}`);
+    return extractData(response);
+  },
+
+  async create(dto: CreatePurchaseDefinitionDto): Promise<PurchaseDefinitionDto> {
+    const response = await api.post<ApiResponse<PurchaseDefinitionDto>>('/api/PurchaseDefinition', dto);
+    return extractData(response);
+  },
+
+  async update(id: number, dto: CreatePurchaseDefinitionDto): Promise<PurchaseDefinitionDto> {
+    const response = await api.put<ApiResponse<PurchaseDefinitionDto>>(`/api/PurchaseDefinition/${id}`, dto);
+    return extractData(response);
+  },
+
+  async delete(id: number): Promise<boolean> {
+    const response = await api.delete<ApiResponse<boolean>>(`/api/PurchaseDefinition/${id}`);
+    return extractData(response);
   },
 };

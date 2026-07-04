@@ -1,5 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import { PurchaseApprovalRulesPage, PurchaseCreatePage, PurchaseListPage } from '@/features/purchase';
+import { PurchaseApprovalRulesPage, PurchaseCreatePage, PurchaseDefinitionPage, PurchaseListPage } from '@/features/purchase';
 import { withRoute } from '../route-utils';
 
 export const purchaseChildRoutes: RouteObject[] = [
@@ -18,6 +18,9 @@ export const purchaseChildRoutes: RouteObject[] = [
       { path: 'orders', Component: withRoute(() => <PurchaseListPage kind="order" />, { routeName: 'purchase-orders', namespaces: ['common'] }) },
       { path: 'orders/create', Component: withRoute(() => <PurchaseCreatePage kind="order" />, { routeName: 'purchase-order-create', namespaces: ['common'] }) },
       { path: 'orders/:id/edit', Component: withRoute(() => <PurchaseCreatePage kind="order" />, { routeName: 'purchase-order-edit', namespaces: ['common'] }) },
+      { path: 'definitions/payment-types', Component: withRoute(() => <PurchaseDefinitionPage category="PaymentType" />, { routeName: 'purchase-payment-type-definitions', namespaces: ['common'] }) },
+      { path: 'definitions/purchase-types', Component: withRoute(() => <PurchaseDefinitionPage category="PurchaseType" />, { routeName: 'purchase-type-definitions', namespaces: ['common'] }) },
+      { path: 'definitions/delivery-types', Component: withRoute(() => <PurchaseDefinitionPage category="DeliveryType" />, { routeName: 'purchase-delivery-type-definitions', namespaces: ['common'] }) },
       { path: 'approval-rules', Component: withRoute(() => <PurchaseApprovalRulesPage />, { routeName: 'purchase-approval-rules', namespaces: ['common'] }) },
     ],
   },

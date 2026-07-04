@@ -149,3 +149,15 @@ export interface PurchaseDefinitionDto {
   isActive: boolean;
   isDefault: boolean;
 }
+
+export type PurchaseDefinitionCategory = 'PaymentType' | 'PurchaseType' | 'DeliveryType';
+
+export interface CreatePurchaseDefinitionDto {
+  category: PurchaseDefinitionCategory;
+  code: string;
+  name: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  isDefault: boolean;
+}

@@ -372,6 +372,15 @@ export const WMS_NAV_ITEMS: NavItem[] = [
           { title: 'sidebar.purchaseApprovalRules', titleFallback: 'Onay Kuralları', href: '/purchase/approval-rules' },
         ],
       },
+      {
+        title: 'sidebar.purchaseDefinitions',
+        titleFallback: 'Satınalma Tanımları',
+        children: [
+          { title: 'sidebar.purchasePaymentTypes', titleFallback: 'Ödeme Tipleri', href: '/purchase/definitions/payment-types' },
+          { title: 'sidebar.purchaseTypes', titleFallback: 'Satınalma Tipleri', href: '/purchase/definitions/purchase-types' },
+          { title: 'sidebar.purchaseDeliveryTypes', titleFallback: 'Teslimat Tipleri', href: '/purchase/definitions/delivery-types' },
+        ],
+      },
     ],
   },
   {

@@ -972,6 +972,7 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   const [editingLineIndex, setEditingLineIndex] = useState<number | null>(null);
   const [lines, setLines] = useState<CreatePurchaseLineDto[]>([]);
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [exchangeRates, setExchangeRates] = useState<PurchaseExchangeRateState[]>([]);
 
   const exchangeRateQuery = useQuery({
@@ -1146,6 +1147,11 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
       grandTotal: net + lineTotals.vat,
     };
   }, [formState.generalDiscountAmount, formState.generalDiscountRate, isCommercial, lines]);
+
+  const filledNoteCount = useMemo(
+    () => purchaseNoteKeys.filter((noteKey) => String(formState[noteKey] ?? '').trim().length > 0).length,
+    [formState],
+  );
 
   function openNewLineDialog(): void {
     setEditingLineIndex(null);
@@ -1944,24 +1950,26 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 <OpsInput value={formState.paymentTerms} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTerms: event.target.value }))} />
               </label>
               <div className="lg:col-span-2">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black">Belge Ek Açıklamaları</h3>
-                    <p className="text-xs font-semibold text-muted-foreground">Netsis belge notu alanları Note1-Note15 olarak saklanır.</p>
-                  </div>
-                  <span className="rounded-full border bg-muted/60 px-3 py-1 text-xs font-black text-muted-foreground">15 alan</span>
-                </div>
-                <div className="grid gap-3 md:grid-cols-3">
-                  {purchaseNoteKeys.map((noteKey, index) => (
-                    <label key={noteKey} className="grid gap-2 text-sm font-semibold">
-                      Belge Notu {index + 1}
-                      <OpsInput
-                        value={formState[noteKey]}
-                        onChange={(event) => setFormState((prev) => ({ ...prev, [noteKey]: event.target.value }))}
-                      />
-                    </label>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  className="flex w-full flex-col gap-4 rounded-2xl border border-dashed border-cyan-300/70 bg-cyan-50/60 p-5 text-left transition hover:border-cyan-500 hover:bg-cyan-50 dark:border-cyan-300/20 dark:bg-cyan-400/10 dark:hover:bg-cyan-400/15 sm:flex-row sm:items-center sm:justify-between"
+                  onClick={() => setNotesDialogOpen(true)}
+                >
+                  <span className="flex min-w-0 items-start gap-3">
+                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
+                      <FileText className="size-5" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-base font-black">Belge Ek Açıklamaları</span>
+                      <span className="mt-1 block text-sm font-semibold text-muted-foreground">
+                        Netsis belge notu alanları Note1-Note15 olarak saklanır. Alanları pencere içinde düzenleyin.
+                      </span>
+                    </span>
+                  </span>
+                  <span className="inline-flex shrink-0 items-center justify-center rounded-full border bg-white px-4 py-2 text-xs font-black text-cyan-700 shadow-sm dark:border-white/10 dark:bg-white/[0.06] dark:text-cyan-200">
+                    {filledNoteCount}/15 dolu
+                  </span>
+                </button>
               </div>
             </>
           ) : null}
@@ -1970,6 +1978,69 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
             <OpsTextarea rows={5} value={formState.description} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
           </label>
         </section>
+
+        <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
+          <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-5xl">
+            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg">
+                    <FileText className="size-5" />
+                  </span>
+                  <div>
+                    <DialogTitle className="text-xl font-black">Belge Ek Açıklamaları</DialogTitle>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Netsis Note1-Note15 alanlarını burada düzenleyin; formda sadece özet görünür.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
+                  onClick={() => setNotesDialogOpen(false)}
+                  aria-label="Kapat"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            </DialogHeader>
+            <div className="max-h-[calc(88vh-11rem)] overflow-y-auto px-6 py-5">
+              <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-200">
+                Bu alanlar ERP belge açıklaması olarak gönderilir. Boş bırakılan notlar kayıtta boş kalır.
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {purchaseNoteKeys.map((noteKey, index) => (
+                  <label key={noteKey} className="grid gap-2 text-sm font-semibold">
+                    Belge Notu {index + 1}
+                    <OpsTextarea
+                      rows={3}
+                      value={formState[noteKey]}
+                      onChange={(event) => setFormState((prev) => ({ ...prev, [noteKey]: event.target.value }))}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4 dark:border-white/10">
+              <span className="text-sm font-bold text-muted-foreground">{filledNoteCount}/15 alan dolu</span>
+              <div className="flex items-center gap-2">
+                <OpsActionButton type="button" variant="secondary" onClick={() => setFormState((prev) => {
+                  const next = { ...prev };
+                  purchaseNoteKeys.forEach((noteKey) => {
+                    next[noteKey] = '';
+                  });
+                  return next;
+                })}>
+                  Temizle
+                </OpsActionButton>
+                <OpsActionButton type="button" variant="primary" onClick={() => setNotesDialogOpen(false)}>
+                  <CheckCircle2 className="size-4" />
+                  Uygula
+                </OpsActionButton>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {isRfq ? (
           <Dialog
