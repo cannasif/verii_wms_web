@@ -8,6 +8,7 @@
     "run": "PDF Aç",
     "downloadXml": "XML İndir",
     "downloadingXml": "XML Hazırlanıyor...",
+    "readXmlFile": "XML/UBL Oku",
     "detail": "Detayı Getir",
     "loadingDetail": "Detay Alınıyor..."
   },
@@ -19,6 +20,7 @@
     "invoiceKind": "Belge Tipi",
     "uuidOrXml": "UUID veya XML",
     "uuidPlaceholder": "Örn: 48EBBD13-F02D-4931-AEEB-BA94B05BD2AF veya <cbc:UUID>...</cbc:UUID>",
+    "uuidFileHint": "Gelen faturanın UBL/XML dosyasını seçerseniz UUID otomatik okunup bu alana yazılır.",
     "resolvedUuid": "Algılanan UUID"
   },
   "invoiceKind": {
@@ -130,6 +132,9 @@
     "downloadFailed": "PDF indirilemedi.",
     "xmlDownloaded": "XML/UBL indirildi.",
     "xmlDownloadFailed": "XML/UBL indirilemedi.",
+    "xmlFileLoaded": "XML içinden UUID okundu: {{uuid}}",
+    "xmlFileNoUuid": "Seçilen dosyada UUID bulunamadı.",
+    "xmlFileReadFailed": "Dosya okunamadı.",
     "detailLoaded": "Fatura detayı getirildi.",
     "detailFailed": "Fatura detayı getirilemedi."
   }

@@ -1,5 +1,5 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Building2, Download, FileSearch, FileText, Search } from 'lucide-react';
+import { type ChangeEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { Building2, Download, FileSearch, FileText, FileUp, Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -65,6 +65,7 @@ export function IncomingInvoiceArchivePage(): ReactElement {
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [lastResult, setLastResult] = useState<{ uuid: string; company?: ELogoPostboxCompany; fileName: string } | null>(null);
   const [invoiceDetail, setInvoiceDetail] = useState<IncomingInvoiceDetail | null>(null);
+  const xmlFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setPageTitle(t('title'));
@@ -167,6 +168,32 @@ export function IncomingInvoiceArchivePage(): ReactElement {
     }
   };
 
+  const handleXmlFileSelected = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const content = await file.text();
+      const uuid = extractUuid(content);
+
+      if (!uuid) {
+        toast.error(t('messages.xmlFileNoUuid'));
+        return;
+      }
+
+      setUuidInput(uuid);
+      setInvoiceDetail(null);
+      setLastResult(null);
+      toast.success(t('messages.xmlFileLoaded', { uuid }));
+    } catch {
+      toast.error(t('messages.xmlFileReadFailed'));
+    }
+  };
+
   return (
     <OpsListPageShell
       className="wms-ops-erp-skin"
@@ -245,6 +272,24 @@ export function IncomingInvoiceArchivePage(): ReactElement {
           </div>
 
           <MasterDataOpsFormField label={t('form.uuidOrXml')} className="mt-4">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-medium text-muted-foreground">{t('form.uuidFileHint')}</p>
+              <input
+                ref={xmlFileInputRef}
+                type="file"
+                accept=".xml,.ubl,.txt,application/xml,text/xml,text/plain"
+                className="hidden"
+                onChange={(event) => void handleXmlFileSelected(event)}
+              />
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                onClick={() => xmlFileInputRef.current?.click()}
+              >
+                <FileUp className="size-4" />
+                {t('actions.readXmlFile')}
+              </OpsActionButton>
+            </div>
             <OpsTextarea
               rows={7}
               value={uuidInput}

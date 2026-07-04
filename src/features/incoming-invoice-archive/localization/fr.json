@@ -8,6 +8,7 @@
     "run": "Open PDF",
     "downloadXml": "Download XML",
     "downloadingXml": "Preparing XML...",
+    "readXmlFile": "Read XML/UBL",
     "detail": "Load Detail",
     "loadingDetail": "Loading Detail..."
   },
@@ -19,6 +20,7 @@
     "invoiceKind": "Document Type",
     "uuidOrXml": "UUID or XML",
     "uuidPlaceholder": "Example: 48EBBD13-F02D-4931-AEEB-BA94B05BD2AF or <cbc:UUID>...</cbc:UUID>",
+    "uuidFileHint": "Select the incoming invoice UBL/XML file and the UUID will be read into this field automatically.",
     "resolvedUuid": "Detected UUID"
   },
   "invoiceKind": {
@@ -130,6 +132,9 @@
     "downloadFailed": "PDF could not be downloaded.",
     "xmlDownloaded": "XML/UBL was downloaded.",
     "xmlDownloadFailed": "XML/UBL could not be downloaded.",
+    "xmlFileLoaded": "UUID was read from XML: {{uuid}}",
+    "xmlFileNoUuid": "No UUID was found in the selected file.",
+    "xmlFileReadFailed": "The file could not be read.",
     "detailLoaded": "Invoice detail was loaded.",
     "detailFailed": "Invoice detail could not be loaded."
   }

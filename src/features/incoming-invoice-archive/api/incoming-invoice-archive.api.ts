@@ -10,6 +10,19 @@ import type {
   PagedResponse,
 } from '../types/incoming-invoice-archive.types';
 
+const invoiceKindApiValueMap: Record<IncomingInvoicePdfRequest['invoiceKind'], 1 | 2 | 3> = {
+  EInvoice: 1,
+  EArchive: 2,
+  Automatic: 3,
+};
+
+function toApiRequest(input: IncomingInvoicePdfRequest): Omit<IncomingInvoicePdfRequest, 'invoiceKind'> & { invoiceKind: 1 | 2 | 3 } {
+  return {
+    ...input,
+    invoiceKind: invoiceKindApiValueMap[input.invoiceKind],
+  };
+}
+
 function extractData<T>(response: ApiResponse<T>): T {
   if (!response.success || response.data === undefined) {
     throw new Error(response.message || response.exceptionMessage || 'Request failed');
@@ -41,7 +54,7 @@ export const incomingInvoiceArchiveApi = {
 
   async downloadInvoicePdf(input: IncomingInvoicePdfRequest): Promise<{ blob: Blob; fileName: string }> {
     try {
-      const response = await api.post<Blob>('/api/incoming-invoice-archive/invoice-pdf', input, {
+      const response = await api.post<Blob>('/api/incoming-invoice-archive/invoice-pdf', toApiRequest(input), {
         responseType: 'blob',
       });
       const blob = response as unknown as Blob;
@@ -57,7 +70,7 @@ export const incomingInvoiceArchiveApi = {
 
   async downloadInvoiceXml(input: IncomingInvoicePdfRequest): Promise<{ blob: Blob; fileName: string }> {
     try {
-      const response = await api.post<Blob>('/api/incoming-invoice-archive/invoice-xml', input, {
+      const response = await api.post<Blob>('/api/incoming-invoice-archive/invoice-xml', toApiRequest(input), {
         responseType: 'blob',
       });
       const blob = response as unknown as Blob;
@@ -72,7 +85,7 @@ export const incomingInvoiceArchiveApi = {
   },
 
   async getInvoiceDetail(input: IncomingInvoicePdfRequest): Promise<IncomingInvoiceDetail> {
-    const response = await api.post<ApiResponse<IncomingInvoiceDetail>>('/api/incoming-invoice-archive/invoice-detail', input);
+    const response = await api.post<ApiResponse<IncomingInvoiceDetail>>('/api/incoming-invoice-archive/invoice-detail', toApiRequest(input));
     return extractData(response as ApiResponse<IncomingInvoiceDetail>);
   },
 
