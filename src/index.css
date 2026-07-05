@@ -1395,6 +1395,88 @@ input:-webkit-autofill:active {
   text-transform: uppercase;
 }
 
+.wms-ops-form input[type='number'].wms-ops-field,
+.wms-ops-lookup-dialog input[type='number'].wms-ops-field {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.wms-ops-form input[type='number'].wms-ops-field::-webkit-outer-spin-button,
+.wms-ops-form input[type='number'].wms-ops-field::-webkit-inner-spin-button,
+.wms-ops-lookup-dialog input[type='number'].wms-ops-field::-webkit-outer-spin-button,
+.wms-ops-lookup-dialog input[type='number'].wms-ops-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.wms-ops-form .wms-ops-number-field {
+  position: relative;
+  width: 100%;
+}
+
+.wms-ops-form .wms-ops-field-shell > .wms-ops-number-field .wms-ops-field--with-spin {
+  padding-right: 1.85rem !important;
+}
+
+.wms-ops-form .wms-ops-number-field__spin {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  z-index: 3;
+  display: flex;
+  width: 1.65rem;
+  height: auto;
+  flex-direction: column;
+  border-left: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 5%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-form .wms-ops-number-field__spin-btn {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: color-mix(in oklab, var(--wms-ops-accent) 78%, hsl(var(--foreground)));
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.wms-ops-form .wms-ops-number-field__spin-btn + .wms-ops-number-field__spin-btn {
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+}
+
+.wms-ops-form .wms-ops-number-field__spin-btn:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-field-bg));
+  color: var(--wms-ops-accent);
+  box-shadow: inset 0 0 10px color-mix(in oklab, var(--wms-ops-accent) 14%, transparent);
+}
+
+.wms-ops-form .wms-ops-number-field__spin-btn:active {
+  background: color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-form .wms-ops-field-shell:focus-within > .wms-ops-number-field .wms-ops-number-field__spin {
+  bottom: 2px;
+}
+
+.wms-ops-form .wms-ops-field-shell--error > .wms-ops-number-field .wms-ops-number-field__spin,
+.wms-ops-form .wms-ops-field-shell[aria-invalid='true'] > .wms-ops-number-field .wms-ops-number-field__spin {
+  bottom: 2px;
+}
+
+.wms-ops-form .wms-ops-field--locked,
+.wms-ops-form .wms-ops-field:read-only {
+  cursor: not-allowed;
+  color: color-mix(in oklab, var(--wms-ops-accent) 62%, hsl(var(--foreground))) !important;
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, var(--wms-ops-field-bg)) !important;
+}
+
 .wms-ops-form .wms-ops-field--placeholder,
 .wms-ops-form button.wms-ops-lookup-trigger.wms-ops-field--placeholder {
   color: var(--wms-ops-field-placeholder-fg) !important;
@@ -1752,6 +1834,32 @@ input:-webkit-autofill:active {
   border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
   background: color-mix(in oklab, var(--wms-ops-field-bg) 72%, transparent);
   box-shadow: inset 0 0 24px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
+}
+
+.wms-ops-lookup-list__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+}
+
+.wms-ops-lookup-list__fetching {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: -0.25rem 0 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--wms-ops-accent) 8%, transparent), transparent 72%),
+    color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 8%, transparent),
+    0 0 18px color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+}
+
+.wms-ops-lookup-list__fetching .wms-ops-loading-state {
+  max-width: none;
 }
 
 .wms-ops-lookup-item {
@@ -5501,6 +5609,61 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+}
+
+.wms-ops-grid-loading-overlay {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--wms-ops-card-bg) 38%, transparent) 0%,
+    color-mix(in oklab, var(--wms-ops-card-bg) 78%, transparent) 42%,
+    color-mix(in oklab, var(--wms-ops-card-bg) 88%, transparent) 100%
+  );
+  backdrop-filter: blur(3px);
+}
+
+.wms-ops-grid-loading-panel {
+  min-width: min(92vw, 20rem);
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 34%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-card-bg) 94%, transparent);
+  padding: 1rem 1.15rem;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 8%, transparent),
+    0 0 28px color-mix(in oklab, var(--wms-ops-accent) 14%, transparent);
+}
+
+.wms-ops-list .wms-ops-grid-skeleton {
+  position: relative;
+  height: 0.72rem;
+  width: min(100%, 6.5rem);
+  overflow: hidden;
+  border-radius: 0;
+  background: color-mix(in oklab, var(--wms-ops-accent) 7%, var(--wms-ops-field-bg));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 18%, transparent);
+}
+
+.wms-ops-list .wms-ops-grid-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -45%;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--wms-ops-accent) 28%, transparent) 45%,
+    color-mix(in oklab, #67e8f9 62%, var(--wms-ops-accent)) 50%,
+    color-mix(in oklab, var(--wms-ops-accent) 28%, transparent) 55%,
+    transparent 100%
+  );
+  animation: wms-ops-loading-scan 1.15s linear infinite;
+}
+
+.wms-ops-list .wms-ops-grid-skeleton--wide {
+  width: min(100%, 9rem);
+}
+
+.wms-ops-list .wms-ops-grid-skeleton--actions {
+  width: 3.5rem;
+  margin-left: auto;
 }
 
 .wms-ops-list .wms-ops-grid-icon-btn {
@@ -9579,13 +9742,22 @@ html:not(.dark) .wms-ops-erp-skin button[class*='bg-sky-'] {
 .wms-ops-form .wms-ops-circuit-toggle__lever,
 .wms-ops-profile-modal .wms-ops-circuit-toggle__lever {
   position: absolute;
+  z-index: 1;
   left: 50%;
   width: 0.72rem;
   height: 3px;
   transform: translateX(-50%);
-  background: color-mix(in oklab, hsl(var(--muted-foreground)) 72%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-circuit-accent) 48%, var(--wms-ops-field-border));
+  box-shadow: none;
   transition: top 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
   top: calc(100% - 0.42rem);
+}
+
+.wms-ops-erp-skin .wms-ops-circuit-toggle:not(.wms-ops-circuit-toggle--on) .wms-ops-circuit-toggle__lever,
+.wms-ops-form .wms-ops-circuit-toggle:not(.wms-ops-circuit-toggle--on) .wms-ops-circuit-toggle__lever,
+.wms-ops-profile-modal .wms-ops-circuit-toggle:not(.wms-ops-circuit-toggle--on) .wms-ops-circuit-toggle__lever {
+  background: color-mix(in oklab, var(--wms-ops-circuit-accent) 48%, var(--wms-ops-field-border));
+  box-shadow: none;
 }
 
 .wms-ops-erp-skin .wms-ops-circuit-toggle--on .wms-ops-circuit-toggle__lever,
@@ -11248,7 +11420,7 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
 }
 
 /* Terminal checkbox — access control / user management / admin / dialogs */
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -11269,14 +11441,14 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
     background 160ms ease;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox:hover:not(:disabled) {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox:hover:not(:disabled) {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 62%, white);
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 12%, transparent),
     0 0 10px color-mix(in oklab, var(--wms-ops-accent) 18%, transparent);
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__fill {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__fill {
   position: absolute;
   inset: 2px;
   border-radius: 0;
@@ -11298,7 +11470,7 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
   pointer-events: none;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 82%, white);
   background: color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-field-bg));
   box-shadow:
@@ -11307,7 +11479,7 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
     0 0 28px color-mix(in oklab, var(--wms-ops-accent) 18%, transparent);
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__fill {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__fill {
   opacity: 1;
   transform: scale(1);
   box-shadow:
@@ -11316,13 +11488,13 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
     0 0 10px color-mix(in oklab, var(--wms-ops-accent) 55%, transparent);
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__corner {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__corner {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 92%, white);
   opacity: 1;
   filter: drop-shadow(0 0 3px color-mix(in oklab, var(--wms-ops-accent) 65%, transparent));
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__corner {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__corner {
   position: absolute;
   width: 0.3rem;
   height: 0.3rem;
@@ -11331,35 +11503,35 @@ html:not(.dark) .wms-ops-access-control-page .wms-ops-access-control-group-label
   transition: border-color 160ms ease, opacity 160ms ease, filter 160ms ease;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__corner--tl {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__corner--tl {
   top: -1px;
   left: -1px;
   border-top: 1px solid;
   border-left: 1px solid;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__corner--tr {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__corner--tr {
   top: -1px;
   right: -1px;
   border-top: 1px solid;
   border-right: 1px solid;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__corner--bl {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__corner--bl {
   bottom: -1px;
   left: -1px;
   border-bottom: 1px solid;
   border-left: 1px solid;
 }
 
-:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__corner--br {
+:is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__corner--br {
   bottom: -1px;
   right: -1px;
   border-bottom: 1px solid;
   border-right: 1px solid;
 }
 
-html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox {
+html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 48%, #94a3b8);
   background: color-mix(in oklab, var(--wms-ops-field-bg) 98%, #fff);
   box-shadow:
@@ -11367,7 +11539,7 @@ html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page,
     0 0 8px color-mix(in oklab, var(--wms-ops-accent) 12%, transparent);
 }
 
-html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox__fill {
+html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox__fill {
   background: radial-gradient(
     circle at 50% 50%,
     color-mix(in oklab, var(--wms-ops-accent) 72%, #0ea5e9) 0%,
@@ -11379,7 +11551,7 @@ html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page,
     inset 0 0 16px color-mix(in oklab, var(--wms-ops-accent) 32%, transparent);
 }
 
-html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked {
+html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 68%, #0284c7);
   background: color-mix(in oklab, var(--wms-ops-accent) 16%, #fff);
   box-shadow:
@@ -11388,14 +11560,14 @@ html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page,
     0 0 24px color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
 }
 
-html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__fill {
+html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__fill {
   box-shadow:
     inset 0 0 10px color-mix(in oklab, var(--wms-ops-accent) 68%, #0ea5e9),
     inset 0 0 20px color-mix(in oklab, var(--wms-ops-accent) 38%, #7dd3fc),
     0 0 8px color-mix(in oklab, var(--wms-ops-accent) 42%, #38bdf8);
 }
 
-html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__corner {
+html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page, .wms-ops-admin-page, .wms-ops-access-control-dialog, .wms-ops-purchase-rfq-dialog, .wms-ops-purchase-create-page) .wms-ops-access-control-terminal-checkbox--checked .wms-ops-access-control-terminal-checkbox__corner {
   border-color: color-mix(in oklab, var(--wms-ops-accent) 78%, #0284c7);
   filter: drop-shadow(0 0 2px color-mix(in oklab, var(--wms-ops-accent) 45%, #38bdf8));
 }
@@ -12790,6 +12962,11 @@ html:not(.dark) .wms-ops-welcome-card__cta:focus-visible {
     inset 0 0 0 1px color-mix(in oklab, var(--wms-brand-primary) 18%, transparent);
 }
 
+.wms-ops-profile-modal .wms-ops-circuit-toggle:not(.wms-ops-circuit-toggle--on) .wms-ops-circuit-toggle__lever {
+  background: color-mix(in oklab, var(--wms-brand-primary) 48%, var(--wms-ops-field-border));
+  box-shadow: none;
+}
+
 .wms-ops-profile-modal .wms-ops-circuit-toggle--on .wms-ops-circuit-toggle__lever {
   background: var(--wms-brand-primary);
   box-shadow: 0 0 8px var(--wms-brand-shadow);
@@ -13873,3 +14050,1301 @@ html:not(.dark) .wms-ops-profile-settings__title {
 html:not(.dark) .wms-ops-profile-settings__panel {
   background: color-mix(in oklab, #fff 92%, transparent);
 }
+
+/* Purchase create — terminal belge formu */
+.wms-ops-purchase-create-page .wms-ops-purchase-create-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wms-ops-purchase-create-page .wms-ops-receiving-area.wms-ops-pt-terminal-section {
+  overflow: hidden;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table {
+  overflow-x: auto;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 78%, transparent);
+  box-shadow: inset 0 0 24px color-mix(in oklab, var(--wms-ops-accent) 4%, transparent);
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  table-layout: fixed;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table thead {
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+  border-bottom: 2px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col {
+  padding: 0.7rem 0.85rem;
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 12%, var(--wms-ops-card-border));
+  vertical-align: middle;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col:last-child {
+  border-right: 0;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table thead .wms-ops-purchase-lines-table__col {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+  white-space: nowrap;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table tbody .wms-ops-purchase-lines-table__col {
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--item {
+  width: 28%;
+  text-align: left;
+  vertical-align: top;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--qty,
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--price,
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--discount,
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--vat,
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--total {
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__col--actions {
+  width: 7.5rem;
+  text-align: center;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table tbody tr:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, transparent);
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-selected-stock {
+  margin-top: 0.15rem;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__meta {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-lines-table__total {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-empty-lines__title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-line-preview__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-line-preview__value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-summary-row {
+  font-size: 0.8125rem;
+}
+
+.wms-ops-purchase-summary-row dt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-summary-row dd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-summary-row--emphasis {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-purchase-summary-row--emphasis dt,
+.wms-ops-purchase-summary-row--emphasis dd {
+  font-size: 0.875rem;
+}
+
+.wms-ops-purchase-summary-row--emphasis dd {
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 90%, transparent);
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.wms-ops-purchase-icon-action:hover {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 48%, transparent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
+}
+
+.wms-ops-purchase-icon-action--success {
+  border-color: color-mix(in oklab, #22c55e 30%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #22c55e 14%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, #4ade80 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-purchase-icon-action--success:hover {
+  border-color: color-mix(in oklab, #22c55e 48%, transparent);
+  background: color-mix(in oklab, #22c55e 20%, var(--wms-ops-field-bg));
+  box-shadow: 0 0 12px color-mix(in oklab, #22c55e 18%, transparent);
+}
+
+.wms-ops-purchase-icon-action--danger {
+  border-color: color-mix(in oklab, #ef4444 30%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #ef4444 14%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, #f87171 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-purchase-icon-action--danger:hover {
+  border-color: color-mix(in oklab, #ef4444 48%, transparent);
+  background: color-mix(in oklab, #ef4444 22%, var(--wms-ops-field-bg));
+  box-shadow: 0 0 12px color-mix(in oklab, #ef4444 18%, transparent);
+}
+
+html:not(.dark) .wms-ops-purchase-icon-action--success {
+  border-color: color-mix(in oklab, #16a34a 34%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #22c55e 16%, #fff);
+  color: color-mix(in oklab, #15803d 88%, hsl(var(--foreground)));
+}
+
+html:not(.dark) .wms-ops-purchase-icon-action--success:hover {
+  background: color-mix(in oklab, #22c55e 24%, #fff);
+}
+
+html:not(.dark) .wms-ops-purchase-icon-action--danger {
+  border-color: color-mix(in oklab, #dc2626 34%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #ef4444 14%, #fff);
+  color: color-mix(in oklab, #b91c1c 88%, hsl(var(--foreground)));
+}
+
+html:not(.dark) .wms-ops-purchase-icon-action--danger:hover {
+  background: color-mix(in oklab, #ef4444 22%, #fff);
+}
+
+.wms-ops-purchase-notes-trigger,
+.wms-ops-purchase-rfq-picker-panel {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.85rem;
+  border: 1px dashed color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 82%, transparent);
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .wms-ops-purchase-notes-trigger,
+  .wms-ops-purchase-rfq-picker-panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+.wms-ops-purchase-rfq-picker-panel__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.wms-ops-purchase-rfq-picker__cta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 42%, var(--wms-ops-card-border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-field-bg)) 0%,
+    color-mix(in oklab, #f97316 12%, var(--wms-ops-field-bg)) 100%
+  );
+  padding: 0.55rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 12%, transparent),
+    0 0 14px color-mix(in oklab, var(--wms-ops-accent) 16%, transparent);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.wms-ops-purchase-rfq-picker__cta:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 62%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--wms-ops-accent) 22%, transparent),
+    0 0 22px color-mix(in oklab, var(--wms-ops-accent) 24%, transparent);
+}
+
+.wms-ops-purchase-rfq-picker__cta:active {
+  transform: translateY(0);
+}
+
+.wms-ops-purchase-notes-trigger {
+  text-align: left;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.wms-ops-purchase-notes-trigger:hover {
+  border-color: color-mix(in oklab, var(--wms-ops-accent) 44%, transparent);
+  background: color-mix(in oklab, var(--wms-ops-accent) 5%, var(--wms-ops-field-bg));
+  box-shadow: 0 0 16px color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+}
+
+.wms-ops-purchase-notes-trigger__title,
+.wms-ops-purchase-rfq-picker__title {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-notes-trigger__description,
+.wms-ops-purchase-rfq-picker__description {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, hsl(var(--foreground)) 56%, transparent);
+}
+
+.wms-ops-purchase-notes-trigger__badge {
+  flex-shrink: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+  padding: 0.45rem 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  padding: 0.35rem 0.65rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: hsl(var(--foreground));
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-chip:hover {
+  border-color: color-mix(in oklab, #ef4444 40%, transparent);
+  background: color-mix(in oklab, #ef4444 10%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, #ef4444 82%, hsl(var(--foreground)));
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 56%, transparent);
+}
+
+.wms-ops-purchase-dialog__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: color-mix(in oklab, var(--wms-ops-accent) 3%, var(--wms-ops-card-bg));
+}
+
+.wms-ops-purchase-line-dialog {
+  width: min(96vw, 64rem) !important;
+  max-width: 96vw !important;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-discount-hint {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.wms-ops-purchase-create-page .wms-ops-purchase-summary-list--bordered {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 14%, var(--wms-ops-card-border));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-approval-layout {
+  align-items: start;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table {
+  overflow-x: auto;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table table,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table thead,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table thead {
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-card-bg));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table th,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table th {
+  padding: 0.65rem 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--foreground)) 68%, transparent);
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table td,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table td {
+  padding: 0.65rem 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+  vertical-align: middle;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table tbody tr,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-nested-table tbody tr:hover,
+.wms-ops-purchase-create-page .wms-ops-purchase-nested-table tbody tr:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, transparent);
+}
+
+.wms-ops-purchase-nested-table__row--selected {
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-purchase-nested-table__code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-nested-table__title {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-nested-table__meta {
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog {
+  width: min(96vw, 90rem) !important;
+  max-width: 96vw !important;
+}
+
+.wms-ops-purchase-rfq-dialog__body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1023px) {
+  .wms-ops-purchase-rfq-dialog__body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wms-ops-purchase-rfq-dialog__body {
+    flex-direction: row;
+    overflow: hidden;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog__main {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow: hidden;
+  padding: 1rem 1.15rem;
+}
+
+@media (max-width: 1023px) {
+  .wms-ops-purchase-rfq-dialog__main {
+    overflow: visible;
+    min-height: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wms-ops-purchase-rfq-dialog__main {
+    padding: 1.15rem 1.25rem;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-toolbar {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.65rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: start;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-toolbar__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-toolbar__btn {
+    width: auto;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-search {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-search__icon {
+  pointer-events: none;
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  z-index: 5;
+  width: 1rem;
+  height: 1rem;
+  transform: translateY(-50%);
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-search__input,
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-search .wms-ops-field {
+  width: 100%;
+  padding-left: 2.35rem !important;
+}
+
+.wms-ops-purchase-rfq-dialog__table-wrap {
+  flex: 1 1 auto;
+  min-height: 14rem;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+}
+
+@media (max-width: 1023px) {
+  .wms-ops-purchase-rfq-dialog__table-wrap {
+    flex: none;
+    max-height: min(48vh, 28rem);
+    min-height: 16rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wms-ops-purchase-rfq-dialog__table-wrap {
+    max-height: none;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__grid {
+  width: 100%;
+  min-width: 52rem;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-purchase-rfq-dialog col.wms-ops-purchase-rfq-table__col-select {
+  width: 3.5rem;
+}
+
+.wms-ops-purchase-rfq-dialog col.wms-ops-purchase-rfq-table__col-code {
+  width: 12rem;
+}
+
+.wms-ops-purchase-rfq-dialog col.wms-ops-purchase-rfq-table__col-name {
+  width: auto;
+}
+
+.wms-ops-purchase-rfq-dialog col.wms-ops-purchase-rfq-table__col-email {
+  width: 14rem;
+}
+
+.wms-ops-purchase-rfq-dialog col.wms-ops-purchase-rfq-table__col-status {
+  width: 7.5rem;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__head {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-card-bg));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  color: color-mix(in oklab, hsl(var(--foreground)) 68%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__head--center {
+  text-align: center;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__cell {
+  padding: 0.65rem 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-card-border));
+  vertical-align: middle;
+  text-align: left;
+  overflow: hidden;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__cell:last-child {
+  border-right: 0;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__cell--center {
+  text-align: center;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__cell--muted {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 56%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__row {
+  transition: background-color 0.12s ease;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__row:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__row--selected {
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__code {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-table__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog__aside {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 3%, var(--wms-ops-card-bg));
+  padding: 1rem 1.15rem;
+}
+
+@media (min-width: 1024px) {
+  .wms-ops-purchase-rfq-dialog__aside {
+    width: min(100%, 22rem);
+    flex-shrink: 0;
+    align-self: stretch;
+    border-top: 0;
+    border-left: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+    padding: 1.15rem 1rem 1.15rem 1.15rem;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog__aside-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.wms-ops-purchase-rfq-dialog__aside-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-rfq-dialog__aside-subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog__aside-list {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-right: 0.2rem;
+}
+
+@media (max-width: 1023px) {
+  .wms-ops-purchase-rfq-dialog__aside-list {
+    flex: none;
+    max-height: min(38vh, 22rem);
+    min-height: 8rem;
+  }
+}
+
+.wms-ops-purchase-rfq-dialog__aside-list .wms-ops-purchase-rfq-selected-card {
+  flex-shrink: 0;
+}
+
+.wms-ops-purchase-rfq-dialog__aside-empty {
+  margin: auto;
+  width: 100%;
+}
+
+.wms-ops-purchase-rfq-dialog__aside-actions {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.55rem;
+  margin-top: auto;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-aside__count {
+  display: inline-flex;
+  min-width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+  padding: 0.35rem 0.65rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 20%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.55rem 0.65rem 0.55rem;
+  padding-right: 0.45rem;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card .wms-ops-entity-card__rail {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: color-mix(in oklab, var(--wms-ops-accent) 72%, transparent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--wms-ops-accent) 35%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card .wms-ops-entity-card__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__name {
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__meta {
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__remove {
+  display: inline-flex;
+  width: 1.85rem;
+  height: 1.85rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  border: 1px solid color-mix(in oklab, #f87171 55%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #ef4444 16%, var(--wms-ops-field-bg));
+  color: #fca5a5;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, #ef4444 12%, transparent),
+    0 0 10px color-mix(in oklab, #ef4444 18%, transparent);
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease,
+    box-shadow 0.12s ease,
+    color 0.12s ease;
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__remove:hover {
+  border-color: color-mix(in oklab, #f87171 72%, transparent);
+  background: color-mix(in oklab, #ef4444 28%, var(--wms-ops-field-bg));
+  color: #fff;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, #ef4444 24%, transparent),
+    0 0 14px color-mix(in oklab, #ef4444 35%, transparent);
+}
+
+.wms-ops-purchase-rfq-dialog .wms-ops-purchase-rfq-selected-card__remove:focus-visible {
+  outline: 2px solid color-mix(in oklab, #f87171 65%, transparent);
+  outline-offset: 2px;
+}
+
+.wms-ops-purchase-rfq-selected-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 20%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+}
+
+.wms-ops-purchase-rfq-selected-card__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.7rem 0.65rem 0.55rem;
+}
+
+.wms-ops-purchase-rfq-selected-card .wms-ops-entity-card__rail {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: color-mix(in oklab, var(--wms-ops-accent) 72%, transparent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--wms-ops-accent) 35%, transparent);
+}
+
+.wms-ops-purchase-rfq-selected-card .wms-ops-entity-card__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-field-bg));
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-rfq-selected-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.wms-ops-purchase-rfq-selected-card__name {
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-rfq-selected-card__meta {
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-rfq-selected-card__remove {
+  display: inline-flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, #ef4444 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #ef4444 8%, var(--wms-ops-field-bg));
+  font-size: 1rem;
+  line-height: 1;
+  color: color-mix(in oklab, #ef4444 82%, hsl(var(--foreground)));
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.wms-ops-purchase-rfq-selected-card__remove:hover {
+  border-color: color-mix(in oklab, #ef4444 44%, transparent);
+  background: color-mix(in oklab, #ef4444 14%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-aside__count,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-aside__count {
+  display: inline-flex;
+  min-width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+  padding: 0.35rem 0.65rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-selected-item,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-selected-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 18%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, var(--wms-ops-field-bg));
+  padding: 0.65rem 0.75rem;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-selected-item__title,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-selected-item__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-selected-item__meta,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-selected-item__meta {
+  margin-top: 0.2rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, hsl(var(--foreground)) 52%, transparent);
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-selected-item__remove,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-selected-item__remove {
+  display: inline-flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, #ef4444 28%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, #ef4444 8%, var(--wms-ops-field-bg));
+  color: color-mix(in oklab, #ef4444 82%, hsl(var(--foreground)));
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-selected-item__remove:hover,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-selected-item__remove:hover {
+  border-color: color-mix(in oklab, #ef4444 44%, transparent);
+  background: color-mix(in oklab, #ef4444 14%, var(--wms-ops-field-bg));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-search,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-search {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-search__icon,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-search__icon {
+  pointer-events: none;
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  z-index: 5;
+  width: 1rem;
+  height: 1rem;
+  transform: translateY(-50%);
+  color: color-mix(in oklab, var(--wms-ops-accent) 72%, hsl(var(--foreground)));
+}
+
+.wms-ops-purchase-page .wms-ops-purchase-rfq-search__input,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-search__input,
+.wms-ops-purchase-page .wms-ops-purchase-rfq-search .wms-ops-field,
+.wms-ops-purchase-create-page .wms-ops-purchase-rfq-search .wms-ops-field {
+  padding-left: 2.35rem !important;
+}
+
+.wms-ops-purchase-exchange-dialog {
+  width: min(96vw, 56rem) !important;
+  max-width: 96vw !important;
+}
+
+.wms-ops-purchase-exchange-dialog__body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wms-ops-purchase-exchange-dialog__stats {
+  display: grid;
+  width: 100%;
+  gap: 0.65rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+  .wms-ops-purchase-exchange-dialog__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.wms-ops-purchase-exchange-dialog__stats .wms-ops-stat-card {
+  min-width: 0;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--wms-ops-accent) 5%, transparent), transparent 72%),
+    color-mix(in oklab, var(--wms-ops-field-bg) 92%, transparent);
+  padding: 0.75rem 0.85rem;
+  text-align: center;
+}
+
+.wms-ops-purchase-exchange-dialog__stats .wms-ops-stat-card__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+}
+
+.wms-ops-purchase-exchange-dialog__table-wrap {
+  flex: 1;
+  min-height: 12rem;
+  max-height: min(52vh, 28rem);
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--wms-ops-accent) 4%, transparent), transparent 28%),
+    color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--wms-ops-accent) 10%, transparent);
+}
+
+.wms-ops-purchase-exchange-dialog__grid {
+  width: 100%;
+  min-width: 36rem;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.wms-ops-purchase-exchange-dialog col.wms-ops-purchase-exchange-dialog__col-type {
+  width: 6.5rem;
+}
+
+.wms-ops-purchase-exchange-dialog col.wms-ops-purchase-exchange-dialog__col-name {
+  width: auto;
+}
+
+.wms-ops-purchase-exchange-dialog col.wms-ops-purchase-exchange-dialog__col-rate {
+  width: 11rem;
+}
+
+.wms-ops-purchase-exchange-dialog col.wms-ops-purchase-exchange-dialog__col-source {
+  width: 7.5rem;
+}
+
+@media (max-width: 639px) {
+  .wms-ops-purchase-exchange-dialog__grid {
+    min-width: 32rem;
+  }
+
+  .wms-ops-purchase-exchange-dialog col.wms-ops-purchase-exchange-dialog__col-rate {
+    width: 9.5rem;
+  }
+}
+
+.wms-ops-purchase-exchange-dialog__head {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 6%, var(--wms-ops-card-bg));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  color: color-mix(in oklab, hsl(var(--foreground)) 68%, transparent);
+}
+
+.wms-ops-purchase-exchange-dialog__head--right {
+  text-align: right;
+}
+
+.wms-ops-purchase-exchange-dialog__head--center {
+  text-align: center;
+}
+
+.wms-ops-purchase-exchange-dialog__cell {
+  padding: 0.7rem 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--wms-ops-accent) 10%, var(--wms-ops-card-border));
+  border-right: 1px solid color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-card-border));
+  vertical-align: middle;
+  text-align: left;
+}
+
+.wms-ops-purchase-exchange-dialog__cell:last-child {
+  border-right: 0;
+}
+
+.wms-ops-purchase-exchange-dialog__cell--rate {
+  text-align: right;
+}
+
+.wms-ops-purchase-exchange-dialog__cell--center {
+  text-align: center;
+}
+
+.wms-ops-purchase-exchange-dialog__row {
+  transition: background-color 0.12s ease;
+}
+
+.wms-ops-purchase-exchange-dialog__row:hover {
+  background: color-mix(in oklab, var(--wms-ops-accent) 4%, transparent);
+}
+
+.wms-ops-purchase-exchange-dialog__type {
+  display: inline-flex;
+  min-width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 24%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-accent) 8%, var(--wms-ops-field-bg));
+  padding: 0.2rem 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--wms-ops-accent);
+}
+
+.wms-ops-purchase-exchange-dialog__name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.wms-ops-purchase-exchange-dialog__cell--rate .wms-ops-field-shell {
+  width: 100%;
+}
+
+.wms-ops-purchase-exchange-dialog__cell--rate .wms-ops-field,
+.wms-ops-purchase-exchange-dialog__cell--rate .wms-ops-number-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.wms-ops-purchase-exchange-dialog__empty {
+  padding: 0.85rem;
+}
+
+.wms-ops-purchase-exchange-dialog__state {
+  border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 16%, var(--wms-ops-card-border));
+  background: color-mix(in oklab, var(--wms-ops-field-bg) 88%, transparent);
+}
+
+.wms-ops-purchase-exchange-dialog__footer {
+  gap: 0.65rem;
+}
+
+@media (max-width: 639px) {
+  .wms-ops-purchase-exchange-dialog__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wms-ops-purchase-exchange-dialog__footer > div {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .wms-ops-purchase-exchange-dialog__footer > div .wms-ops-action-button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .wms-ops-purchase-exchange-dialog__refresh {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

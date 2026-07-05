@@ -1,34 +1,70 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Box, Building2, CalendarDays, Calculator, CheckCircle2, CreditCard, FilePlus2, FileText, Folder, Loader2, Pencil, Plus, RefreshCw, Save, Search, Send, Trash2, Users, X, XCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, CheckCircle2, FilePlus2, Loader2, Pencil, Plus, RefreshCw, Save, Search, Send, Trash2, Users, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
   OpsActionButton,
+  OpsCircuitToggleField,
   OpsFormPageShell,
   OpsInput,
   OpsListPageShell,
   OpsTextarea,
+  OpsLoadingState,
+  OpsScrollArea,
+  OpsSelectItem,
   PagedDataGrid,
   PagedLookupDialog,
   type PagedDataGridColumn,
 } from '@/components/shared';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { CustomerLookup, ExchangeRateLookup, ProjectLookup, SpecialCodeLookup, StockLookup } from '@/features/shared/api/lookup-types';
+import {
+  MasterDataOpsDialogContent,
+  MasterDataOpsEmptyState,
+  MasterDataOpsFormField,
+  MasterDataOpsFlagChip,
+  MasterDataOpsGuidance,
+  MasterDataOpsResultPanel,
+  MasterDataOpsSection,
+  MasterDataOpsSelect,
+  MasterDataOpsStatGrid,
+} from '@/features/shared';
+import {
+  PURCHASE_OPS_SHELL_CLASS,
+  PurchaseOpsDialogFooter,
+  PurchaseOpsEmptyLines,
+  PurchaseOpsIconAction,
+  PurchaseOpsLinePreview,
+  PurchaseOpsListIconButton,
+  PurchaseOpsNotesTrigger,
+  PurchaseOpsRfqSearchField,
+  PurchaseOpsRfqSupplierPicker,
+  PurchaseOpsRfqSelectedSupplier,
+  PurchaseOpsSelectedStock,
+  PurchaseOpsSummaryRow,
+  PurchaseOpsTerminalCheckbox,
+} from './purchase-ops-ui';
 import { documentSeriesManagementApi } from '@/features/document-series-management/api/document-series-management.api';
 import type { WmsDocumentSeriesDefinitionPagedRowDto } from '@/features/document-series-management/types/document-series-management.types';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/ui-store';
 import { purchaseApi, purchaseApprovalRuleApi, purchaseDefinitionApi, type PurchaseEndpoint } from '../api/purchase.api';
 import type { CreatePurchaseApprovalRuleDto, CreatePurchaseDocumentDto, CreatePurchaseLineDto, PurchaseApprovalRuleDto, PurchaseDefinitionDto, PurchaseListRowDto, PurchaseNotesDto } from '../types/purchase.types';
+
+type RfqSupplierSelection = {
+  supplierId: number;
+  label: string;
+  email?: string | null;
+};
 
 type ColumnKey = 'id' | 'documentNo' | 'status' | 'supplier' | 'currencyCode' | 'grandTotal' | 'sourceDocumentNo' | 'documentDate';
 type PurchasePageKind = 'request' | 'rfq' | 'quotation' | 'order';
@@ -424,6 +460,7 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
 
   return (
     <OpsListPageShell
+      className={PURCHASE_OPS_SHELL_CLASS}
       eyebrow="WMS / SATINALMA"
       title={config.title}
       description={config.description}
@@ -464,7 +501,8 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
         onRowDoubleClick={(row) => navigate(`${config.listPath}/${row.id}/edit`)}
         showActionsColumn
         actionsHeaderLabel="İşlemler"
-        actionsCellClassName="text-right"
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
         renderActionsCell={(row) => {
           const isApprovalSupported = kind === 'quotation' || kind === 'order';
           const canSubmitApproval = isApprovalSupported && ['Draft', 'Rejected'].includes(row.status);
@@ -473,79 +511,68 @@ export function PurchaseListPage({ kind }: { kind: PurchasePageKind }): ReactEle
             && !['Converted', 'Cancelled', 'Rejected', 'PendingApproval'].includes(row.status);
 
           return (
-            <div className="flex items-center justify-end gap-2">
+            <div className="wms-ops-row-actions">
               {canSubmitApproval ? (
-                <button
-                  type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-700 transition hover:border-blue-500/60 hover:bg-blue-500/15 dark:text-blue-300"
+                <PurchaseOpsListIconButton
+                  label="Onaya gönder"
+                  tone="start"
                   onClick={(event) => {
                     event.stopPropagation();
                     approvalMutation.mutate({ action: 'submit', id: row.id });
                   }}
                   disabled={approvalMutation.isPending}
-                  aria-label="Onaya gönder"
-                  title="Onaya gönder"
                 >
-                  <Send className="size-4" />
-                </button>
+                  <Send className="size-3" />
+                </PurchaseOpsListIconButton>
               ) : null}
               {canApproveOrReject ? (
                 <>
-                  <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 transition hover:border-emerald-500/60 hover:bg-emerald-500/15 dark:text-emerald-300"
+                  <PurchaseOpsListIconButton
+                    label="Onayla"
+                    tone="approve"
                     onClick={(event) => {
                       event.stopPropagation();
                       approvalMutation.mutate({ action: 'approve', id: row.id });
                     }}
                     disabled={approvalMutation.isPending}
-                    aria-label="Onayla"
-                    title="Onayla"
                   >
-                    <CheckCircle2 className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-700 transition hover:border-rose-500/60 hover:bg-rose-500/15 dark:text-rose-300"
+                    <CheckCircle2 className="size-3" />
+                  </PurchaseOpsListIconButton>
+                  <PurchaseOpsListIconButton
+                    label="Reddet"
+                    tone="danger"
                     onClick={(event) => {
                       event.stopPropagation();
                       approvalMutation.mutate({ action: 'reject', id: row.id });
                     }}
                     disabled={approvalMutation.isPending}
-                    aria-label="Reddet"
-                    title="Reddet"
                   >
-                    <XCircle className="size-4" />
-                  </button>
+                    <XCircle className="size-3" />
+                  </PurchaseOpsListIconButton>
                 </>
               ) : null}
               {canConvertToOrder ? (
-                <button
-                  type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 transition hover:border-emerald-500/60 hover:bg-emerald-500/15 dark:text-emerald-300"
+                <PurchaseOpsListIconButton
+                  label="Siparişe çevir"
+                  tone="approve"
                   onClick={(event) => {
                     event.stopPropagation();
                     convertToOrderMutation.mutate(row.id);
                   }}
                   disabled={convertToOrderMutation.isPending}
-                  aria-label="Siparişe çevir"
-                  title="Siparişe çevir"
                 >
-                  <FilePlus2 className="size-4" />
-                </button>
+                  <FilePlus2 className="size-3" />
+                </PurchaseOpsListIconButton>
               ) : null}
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+              <PurchaseOpsListIconButton
+                label="Düzenle"
                 onClick={(event) => {
                   event.stopPropagation();
                   navigate(`${config.listPath}/${row.id}/edit`);
                 }}
-                aria-label="Düzenle"
-                title="Düzenle"
               >
-                <Pencil className="size-4" />
-              </button>
+                <Pencil className="size-3" />
+              </PurchaseOpsListIconButton>
             </div>
           );
         }}
@@ -728,74 +755,64 @@ export function PurchaseApprovalRulesPage(): ReactElement {
 
   return (
     <OpsListPageShell
+      className={PURCHASE_OPS_SHELL_CLASS}
       eyebrow="WMS / SATINALMA"
       title="Satınalma Onay Kuralları"
       description="Tedarikçi teklifleri ve satınalma siparişleri için tutar, kapsam ve adım bazlı onay akışlarını tanımlayın."
     >
-      <div className="grid gap-5 xl:grid-cols-[420px_1fr]">
-        <section className="rounded-2xl border bg-card/90 p-5 shadow-sm">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold">{editingId ? 'Kuralı Düzenle' : 'Yeni Onay Kuralı'}</h3>
-            <p className="text-sm text-muted-foreground">Belge tipi ve tutar aralığına göre sıralı onay adımları oluşturulur.</p>
-          </div>
+      <div className="wms-ops-purchase-approval-layout grid gap-5 xl:grid-cols-[420px_1fr]">
+        <MasterDataOpsSection
+          title={editingId ? 'Kuralı Düzenle' : 'Yeni Onay Kuralı'}
+          subtitle="Belge tipi ve tutar aralığına göre sıralı onay adımları oluşturulur."
+        >
           <div className="grid gap-3">
-            <label className="grid gap-1 text-sm font-semibold">
-              Kural Adı *
+            <MasterDataOpsFormField label="Kural Adı *">
               <OpsInput value={form.ruleName} onChange={(event) => setForm((prev) => ({ ...prev, ruleName: event.target.value }))} />
-            </label>
-            <label className="grid gap-1 text-sm font-semibold">
-              Belge Tipi *
-              <select
-                className="h-11 rounded-xl border border-input bg-background px-3 text-sm"
+            </MasterDataOpsFormField>
+            <MasterDataOpsFormField label="Belge Tipi *">
+              <MasterDataOpsSelect
                 value={form.documentKind}
-                onChange={(event) => setForm((prev) => ({ ...prev, documentKind: event.target.value }))}
+                onValueChange={(value) => setForm((prev) => ({ ...prev, documentKind: value }))}
               >
-                <option value="SupplierQuotation">Tedarikçi Teklifi</option>
-                <option value="PurchaseOrder">Satınalma Siparişi</option>
-              </select>
-            </label>
+                <OpsSelectItem value="SupplierQuotation">Tedarikçi Teklifi</OpsSelectItem>
+                <OpsSelectItem value="PurchaseOrder">Satınalma Siparişi</OpsSelectItem>
+              </MasterDataOpsSelect>
+            </MasterDataOpsFormField>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1 text-sm font-semibold">
-                Adım *
+              <MasterDataOpsFormField label="Adım *">
                 <OpsInput type="number" min={1} value={form.stepOrder} onChange={(event) => setForm((prev) => ({ ...prev, stepOrder: toNumber(event.target.value, 1) }))} />
-              </label>
-              <label className="grid gap-1 text-sm font-semibold">
-                Onaycı User ID *
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Onaycı User ID *">
                 <OpsInput type="number" min={1} value={form.approverUserId || ''} onChange={(event) => setForm((prev) => ({ ...prev, approverUserId: toNumber(event.target.value) }))} />
-              </label>
+              </MasterDataOpsFormField>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1 text-sm font-semibold">
-                Min Tutar
+              <MasterDataOpsFormField label="Min Tutar">
                 <OpsInput type="number" value={form.minAmount ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, minAmount: event.target.value ? toNumber(event.target.value) : null }))} />
-              </label>
-              <label className="grid gap-1 text-sm font-semibold">
-                Max Tutar
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Max Tutar">
                 <OpsInput type="number" value={form.maxAmount ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, maxAmount: event.target.value ? toNumber(event.target.value) : null }))} />
-              </label>
+              </MasterDataOpsFormField>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1 text-sm font-semibold">
-                Departman
+              <MasterDataOpsFormField label="Departman">
                 <OpsInput value={form.department ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, department: event.target.value }))} />
-              </label>
-              <label className="grid gap-1 text-sm font-semibold">
-                Proje
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Proje">
                 <OpsInput value={form.projectCode ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, projectCode: event.target.value }))} />
-              </label>
+              </MasterDataOpsFormField>
             </div>
-            <label className="grid gap-1 text-sm font-semibold">
-              Para Birimi
+            <MasterDataOpsFormField label="Para Birimi">
               <OpsInput value={form.currencyCode ?? ''} placeholder="Boş ise tüm para birimleri" onChange={(event) => setForm((prev) => ({ ...prev, currencyCode: event.target.value }))} />
-            </label>
-            <label className="grid gap-1 text-sm font-semibold">
-              Açıklama
+            </MasterDataOpsFormField>
+            <MasterDataOpsFormField label="Açıklama">
               <OpsTextarea value={form.description ?? ''} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} />
-            </label>
-            <label className="flex items-center gap-2 text-sm font-semibold">
-              <input type="checkbox" checked={form.isActive} onChange={(event) => setForm((prev) => ({ ...prev, isActive: event.target.checked }))} />
-              Aktif
-            </label>
+            </MasterDataOpsFormField>
+            <OpsCircuitToggleField
+              title="Aktif"
+              checked={form.isActive}
+              onCheckedChange={(checked) => setForm((prev) => ({ ...prev, isActive: checked }))}
+            />
             <div className="flex flex-wrap gap-2 pt-2">
               <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={saveMutation.isPending}>
                 <Save className="size-4" />
@@ -806,7 +823,7 @@ export function PurchaseApprovalRulesPage(): ReactElement {
               </OpsActionButton>
             </div>
           </div>
-        </section>
+        </MasterDataOpsSection>
 
         <PagedDataGrid<PurchaseApprovalRuleDto, ApprovalRuleColumnKey>
           variant="ops"
@@ -823,7 +840,11 @@ export function PurchaseApprovalRulesPage(): ReactElement {
               case 'approverUserId': return `#${row.approverUserId}`;
               case 'amountRange': return `${formatAmountRange(row)} ${row.currencyCode || ''}`.trim();
               case 'scope': return [row.department, row.projectCode].filter(Boolean).join(' / ') || 'Genel';
-              case 'isActive': return row.isActive ? 'Aktif' : 'Pasif';
+              case 'isActive': return (
+                <MasterDataOpsFlagChip tone={row.isActive ? 'success' : 'default'}>
+                  {row.isActive ? 'Aktif' : 'Pasif'}
+                </MasterDataOpsFlagChip>
+              );
               default: return null;
             }
           }}
@@ -836,27 +857,21 @@ export function PurchaseApprovalRulesPage(): ReactElement {
           emptyText="Onay kuralı bulunamadı."
           showActionsColumn
           actionsHeaderLabel="İşlemler"
+          iconOnlyActions
+          actionsCellClassName="wms-ops-table-actions-col"
           renderActionsCell={(row) => (
-            <div className="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-primary"
-                onClick={() => handleEdit(row)}
-                aria-label="Düzenle"
-                title="Düzenle"
-              >
-                <Pencil className="size-4" />
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-700 transition hover:border-rose-500/60 hover:bg-rose-500/15 dark:text-rose-300"
+            <div className="wms-ops-row-actions">
+              <PurchaseOpsListIconButton label="Düzenle" onClick={() => handleEdit(row)}>
+                <Pencil className="size-3" />
+              </PurchaseOpsListIconButton>
+              <PurchaseOpsListIconButton
+                label="Sil"
+                tone="danger"
                 onClick={() => deleteMutation.mutate(row.id)}
                 disabled={deleteMutation.isPending}
-                aria-label="Sil"
-                title="Sil"
               >
-                <Trash2 className="size-4" />
-              </button>
+                <Trash2 className="size-3" />
+              </PurchaseOpsListIconButton>
             </div>
           )}
           pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
@@ -966,7 +981,9 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     message: '',
     description: '',
   });
-  const [rfqSuppliers, setRfqSuppliers] = useState<Array<{ supplierId: number; label: string; email?: string | null }>>([]);
+  const [rfqSuppliers, setRfqSuppliers] = useState<RfqSupplierSelection[]>([]);
+  const [rfqSupplierDraft, setRfqSupplierDraft] = useState<RfqSupplierSelection[]>([]);
+  const rfqSupplierDraftPendingRef = useRef(false);
   const [lineDraft, setLineDraft] = useState<CreatePurchaseLineDto>(createEmptyLine);
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [editingLineIndex, setEditingLineIndex] = useState<number | null>(null);
@@ -1100,11 +1117,14 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     setPurchaseTypeLabel([purchaseTypeDefinitionCode, purchaseTypeDefinitionName].filter(Boolean).join(' - '));
     setPaymentTypeLabel([paymentTypeDefinitionCode, paymentTypeDefinitionName].filter(Boolean).join(' - '));
     setDeliveryTypeLabel([deliveryTypeDefinitionCode, deliveryTypeDefinitionName].filter(Boolean).join(' - '));
-    setRfqSuppliers(detailSuppliers.map((supplier) => ({
+    const nextRfqSuppliers = detailSuppliers.map((supplier) => ({
       supplierId: supplier.supplierId,
       label: `${supplier.supplierErpCode || ''} - ${supplier.supplierNameSnapshot || ''}`.trim(),
       email: supplier.email ?? null,
-    })));
+    }));
+    setRfqSuppliers(nextRfqSuppliers);
+    setRfqSupplierDraft(nextRfqSuppliers);
+    rfqSupplierDraftPendingRef.current = false;
     setSeriesLabel('');
   }, [config.documentDateField, config.documentNoField, detailQuery.data]);
 
@@ -1242,8 +1262,33 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
     setLines((prev) => prev.filter((_, currentIndex) => currentIndex !== index));
   }
 
+  function openRfqSupplierDialog(): void {
+    setRfqSupplierLookupOpen(true);
+  }
+
+  function handleApplyRfqSupplierDraft(): void {
+    setRfqSuppliers(rfqSupplierDraft);
+    rfqSupplierDraftPendingRef.current = false;
+    setRfqSupplierLookupOpen(false);
+    setRfqSupplierSearch('');
+    setRfqSupplierSearchInput('');
+  }
+
+  function handleClearRfqSupplierDraft(): void {
+    setRfqSupplierDraft([]);
+    rfqSupplierDraftPendingRef.current = true;
+  }
+
+  function handleRemoveAppliedRfqSupplier(supplierId: number): void {
+    setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplierId));
+    if (!rfqSupplierDraftPendingRef.current) {
+      setRfqSupplierDraft((prev) => prev.filter((item) => item.supplierId !== supplierId));
+    }
+  }
+
   function handleToggleRfqSupplier(customer: CustomerLookup): void {
-    setRfqSuppliers((prev) => {
+    rfqSupplierDraftPendingRef.current = true;
+    setRfqSupplierDraft((prev) => {
       if (prev.some((item) => item.supplierId === customer.id)) {
         return prev.filter((item) => item.supplierId !== customer.id);
       }
@@ -1252,7 +1297,8 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   }
 
   function handleSelectVisibleRfqSuppliers(): void {
-    setRfqSuppliers((prev) => {
+    rfqSupplierDraftPendingRef.current = true;
+    setRfqSupplierDraft((prev) => {
       const selected = new Map(prev.map((supplier) => [supplier.supplierId, supplier]));
       rfqSupplierLookupItems.forEach((customer) => {
         if (!selected.has(customer.id)) {
@@ -1264,7 +1310,7 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
   }
 
   function isRfqSupplierSelected(customerId: number): boolean {
-    return rfqSuppliers.some((supplier) => supplier.supplierId === customerId);
+    return rfqSupplierDraft.some((supplier) => supplier.supplierId === customerId);
   }
 
   function handleApplyExchangeRates(): void {
@@ -1358,6 +1404,7 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
 
   return (
     <OpsFormPageShell
+      className="wms-ops-erp-skin wms-ops-purchase-create-page"
       eyebrow="WMS / SATINALMA"
       title={config.createTitle}
       description={config.description}
@@ -1368,15 +1415,14 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
         </OpsActionButton>
       }
     >
-      <div className="wms-ops-form space-y-5">
-        <section className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
+      <div className="wms-ops-form wms-ops-purchase-create-content">
+        <MasterDataOpsSection
+          title="Belge Başlığı"
+          subtitle="Tedarikçi, konu ve RFQ hedef listesi"
+        >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
             {isCommercial ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                  <Building2 className="size-4 text-cyan-600" />
-                  Tedarikçi
-                </div>
+              <MasterDataOpsFormField label="Tedarikçi">
                 <PagedLookupDialog<CustomerLookup>
                   variant="ops"
                   open={supplierLookupOpen}
@@ -1402,42 +1448,26 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                     setFormState((prev) => ({ ...prev, supplierId: String(customer.id) }));
                   }}
                 />
-              </div>
+              </MasterDataOpsFormField>
             ) : null}
 
             {isRfq ? (
-              <div className="space-y-2 lg:col-span-2">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                  <Users className="size-4 text-cyan-600" />
-                  RFQ Gönderilecek Tedarikçiler
-                </div>
-                <button
-                  type="button"
-                  className="group flex min-h-[4.5rem] w-full items-center justify-between gap-4 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-left shadow-sm transition hover:border-cyan-400 hover:bg-cyan-50/50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/10"
-                  onClick={() => setRfqSupplierLookupOpen(true)}
-                >
-                  <span className="min-w-0">
-                    <span className="block text-sm font-black text-slate-900 dark:text-white">
-                      {rfqSuppliers.length > 0 ? `${rfqSuppliers.length} tedarikçi seçildi` : 'ERP eşleşmeli tedarikçileri pencereden seç'}
-                    </span>
-                    <span className="mt-1 block text-xs font-semibold text-muted-foreground">
-                      RFQ aynı belge içinden birden fazla tedarikçiye gönderilebilir.
-                    </span>
-                  </span>
-                  <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-cyan-100 px-3 py-2 text-xs font-black text-cyan-700 transition group-hover:bg-cyan-200 dark:bg-cyan-400/15 dark:text-cyan-200">
-                    <Search className="size-4" />
-                    Çoklu Seç
-                  </span>
-                </button>
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="space-y-3 lg:col-span-2">
+                <PurchaseOpsRfqSupplierPicker
+                  title={rfqSuppliers.length > 0 ? `${rfqSuppliers.length} tedarikçi seçildi` : 'ERP eşleşmeli tedarikçileri pencereden seç'}
+                  description="RFQ aynı belge içinden birden fazla tedarikçiye gönderilebilir."
+                  actionLabel="Çoklu Seç"
+                  onClick={openRfqSupplierDialog}
+                />
+                <div className="wms-ops-kkd-result-panel wms-ops-kkd-result-panel--default p-3">
                   {rfqSuppliers.length ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="wms-ops-purchase-rfq-chip-list">
                     {rfqSuppliers.map((supplier) => (
                       <button
                         key={supplier.supplierId}
                         type="button"
-                        className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-black text-cyan-800 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-cyan-300/20 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-rose-300/30 dark:hover:bg-rose-400/10 dark:hover:text-rose-100"
-                        onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
+                        className="wms-ops-purchase-rfq-chip"
+                        onClick={() => handleRemoveAppliedRfqSupplier(supplier.supplierId)}
                         title="Tedarikçiyi listeden çıkar"
                       >
                         <CheckCircle2 className="size-3.5" />
@@ -1447,7 +1477,7 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                     ))}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                    <div className="wms-ops-purchase-rfq-empty">
                       <Users className="size-4" />
                       Henüz RFQ tedarikçisi seçilmedi.
                     </div>
@@ -1456,49 +1486,36 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
               </div>
             ) : null}
 
-            <label className={`grid gap-2 text-sm font-bold ${isCommercial ? '' : 'lg:col-span-2'}`}>
-              <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
-                <FileText className="size-4 text-blue-600" />
-                Konu
-              </span>
+            <MasterDataOpsFormField label="Konu" className={isCommercial ? '' : 'lg:col-span-2'}>
               <OpsInput value={formState.subject} placeholder="Belgenin konusu veya kısa açıklaması" onChange={(event) => setFormState((prev) => ({ ...prev, subject: event.target.value }))} />
-            </label>
+            </MasterDataOpsFormField>
           </div>
-        </section>
+        </MasterDataOpsSection>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,0.88fr)_minmax(0,1fr)]">
-          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
-                <CreditCard className="size-5" />
-              </span>
-              <div>
-                <h3 className="font-black">Finansal</h3>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Para birimi ve ödeme</p>
-              </div>
-            </div>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,0.88fr)_minmax(0,1fr)]">
+          <MasterDataOpsSection
+            title="Finansal"
+            subtitle="Para birimi ve ödeme"
+          >
             <div className="grid gap-4">
-              <label className="grid gap-2 text-sm font-bold">
-                Para Birimi *
+              <MasterDataOpsFormField label="Para Birimi *">
                 <OpsInput value={formState.currencyCode} onChange={(event) => setFormState((prev) => ({ ...prev, currencyCode: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-bold">
-                Kur *
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Kur *">
                 <OpsInput type="number" step="0.0001" value={formState.exchangeRate} onChange={(event) => setFormState((prev) => ({ ...prev, exchangeRate: event.target.value }))} />
-              </label>
+              </MasterDataOpsFormField>
               {isCommercial ? (
-                <button
+                <OpsActionButton
                   type="button"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-400 hover:bg-emerald-100 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200"
+                  variant="secondary"
                   onClick={() => setExchangeRateDialogOpen(true)}
                 >
                   <RefreshCw className="size-4" />
                   Kur Listesi / Düzenle
-                </button>
+                </OpsActionButton>
               ) : null}
               {isCommercial ? (
-                <label className="grid gap-2 text-sm font-bold">
-                  Ödeme Tipi
+                <MasterDataOpsFormField label="Ödeme Tipi">
                   <PagedLookupDialog<PurchaseDefinitionDto>
                     variant="ops"
                     open={paymentTypeLookupOpen}
@@ -1526,25 +1543,18 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                       }));
                     }}
                   />
-                </label>
+                </MasterDataOpsFormField>
               ) : null}
             </div>
-          </div>
+          </MasterDataOpsSection>
 
-          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
-                <CalendarDays className="size-5" />
-              </span>
-              <div>
-                <h3 className="font-black">Tip & Tarihler</h3>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Belge tarihi ve süreç tarihi</p>
-              </div>
-            </div>
+          <MasterDataOpsSection
+            title="Tip & Tarihler"
+            subtitle="Belge tarihi ve süreç tarihi"
+          >
             <div className="grid gap-4">
               {isCommercial ? (
-                <label className="grid gap-2 text-sm font-bold">
-                  Satınalma Tipi
+                <MasterDataOpsFormField label="Satınalma Tipi">
                   <PagedLookupDialog<PurchaseDefinitionDto>
                     variant="ops"
                     open={purchaseTypeLookupOpen}
@@ -1572,14 +1582,12 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                       }));
                     }}
                   />
-                </label>
+                </MasterDataOpsFormField>
               ) : null}
-              <label className="grid gap-2 text-sm font-bold">
-                Belge Tarihi
+              <MasterDataOpsFormField label="Belge Tarihi">
                 <OpsInput type="date" value={formState.documentDate} onChange={(event) => setFormState((prev) => ({ ...prev, documentDate: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-bold">
-                {kind === 'request' ? 'İhtiyaç Tarihi' : kind === 'rfq' ? 'Son Teklif Tarihi' : kind === 'quotation' ? 'Geçerlilik Tarihi' : 'Teslim Tarihi'}
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label={kind === 'request' ? 'İhtiyaç Tarihi' : kind === 'rfq' ? 'Son Teklif Tarihi' : kind === 'quotation' ? 'Geçerlilik Tarihi' : 'Teslim Tarihi'}>
                 <OpsInput
                   type="date"
                   value={kind === 'quotation' ? formState.validUntil : kind === 'order' ? formState.deliveryDate : formState.dueDate}
@@ -1592,24 +1600,17 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                         : { ...prev, dueDate: value });
                   }}
                 />
-              </label>
+              </MasterDataOpsFormField>
             </div>
-          </div>
+          </MasterDataOpsSection>
 
-          <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
-                <FileText className="size-5" />
-              </span>
-              <div>
-                <h3 className="font-black">Belge Açıklaması</h3>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Seri, proje ve özel kodlar</p>
-              </div>
-            </div>
+          <MasterDataOpsSection
+            title="Belge Açıklaması"
+            subtitle="Seri, proje ve özel kodlar"
+          >
             <div className="grid gap-4">
               {isCommercial ? (
-                <label className="grid gap-2 text-sm font-bold">
-                  Belge Seri Tanımı
+                <MasterDataOpsFormField label="Belge Seri Tanımı">
                   <PagedLookupDialog<WmsDocumentSeriesDefinitionPagedRowDto>
                     variant="ops"
                     open={seriesLookupOpen}
@@ -1645,17 +1646,12 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                       }));
                     }}
                   />
-                </label>
+                </MasterDataOpsFormField>
               ) : null}
-              <label className="grid gap-2 text-sm font-bold">
-                {config.documentNoLabel}
+              <MasterDataOpsFormField label={config.documentNoLabel}>
                 <OpsInput value={formState.documentNo} onChange={(event) => setFormState((prev) => ({ ...prev, documentNo: event.target.value }))} />
-              </label>
-              <label className="grid gap-2 text-sm font-bold">
-                <span className="inline-flex items-center gap-2">
-                  <Folder className="size-4 text-sky-600" />
-                  Proje Kodu
-                </span>
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Proje Kodu">
                 <PagedLookupDialog<ProjectLookup>
                   variant="ops"
                   open={projectLookupOpen}
@@ -1682,15 +1678,13 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                     }));
                   }}
                 />
-              </label>
-              <label className="grid gap-2 text-sm font-bold">
-                Departman
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Departman">
                 <OpsInput value={formState.department} onChange={(event) => setFormState((prev) => ({ ...prev, department: event.target.value }))} />
-              </label>
+              </MasterDataOpsFormField>
               {isCommercial ? (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 text-sm font-bold">
-                    Özel Kod 1
+                  <MasterDataOpsFormField label="Özel Kod 1">
                     <PagedLookupDialog<SpecialCodeLookup>
                       variant="ops"
                       open={specialCode1LookupOpen}
@@ -1713,9 +1707,8 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                         setFormState((prev) => ({ ...prev, ozelKod1: specialCode.ozelKod }));
                       }}
                     />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    Özel Kod 2
+                  </MasterDataOpsFormField>
+                  <MasterDataOpsFormField label="Özel Kod 2">
                     <PagedLookupDialog<SpecialCodeLookup>
                       variant="ops"
                       open={specialCode2LookupOpen}
@@ -1738,107 +1731,74 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                         setFormState((prev) => ({ ...prev, ozelKod2: specialCode.ozelKod }));
                       }}
                     />
-                  </label>
+                  </MasterDataOpsFormField>
                 </div>
               ) : null}
             </div>
-          </div>
-        </section>
+          </MasterDataOpsSection>
+        </div>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="overflow-hidden rounded-2xl border border-slate-300/80 bg-white/95 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 bg-slate-50/90 px-5 py-4 dark:border-white/10 dark:bg-white/[0.05]">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg">
-                  <Box className="size-5" />
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-lg font-black tracking-tight">Satınalma Satırları</h3>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {lines.length > 0 ? `${lines.length} kalem eklendi` : 'Henüz stok/kalem satırı eklenmedi'}
-                  </p>
-                </div>
-              </div>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <MasterDataOpsSection
+            title="Satınalma Satırları"
+            subtitle={lines.length > 0 ? `${lines.length} kalem eklendi` : 'Henüz stok/kalem satırı eklenmedi'}
+            actions={(
               <OpsActionButton type="button" variant="primary" onClick={openNewLineDialog}>
                 <Plus className="size-4" />
                 Satır Ekle
               </OpsActionButton>
-            </div>
-
+            )}
+            className="min-w-0"
+          >
             {lines.length === 0 ? (
-              <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 px-6 py-12 text-center">
-                <span className="inline-flex size-20 items-center justify-center rounded-full border border-dashed border-slate-300 bg-slate-50 text-slate-400 dark:border-white/10 dark:bg-white/[0.04]">
-                  <Box className="size-9" />
-                </span>
-                <div>
-                  <h4 className="text-xl font-black">Henüz satır eklenmedi</h4>
-                  <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
-                    Teklif veya siparişe birden fazla stok eklemek için Satır Ekle butonunu kullanın. Her kalem miktar, fiyat, iskonto, KDV ve açıklamalarıyla ayrı izlenir.
-                  </p>
-                </div>
-              </div>
+              <PurchaseOpsEmptyLines
+                title="Henüz satır eklenmedi"
+                description="Teklif veya siparişe birden fazla stok eklemek için Satır Ekle butonunu kullanın. Her kalem miktar, fiyat, iskonto, KDV ve açıklamalarıyla ayrı izlenir."
+              />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-[980px] w-full text-sm">
-                  <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+              <div className="wms-ops-purchase-lines-table">
+                <table>
+                  <thead>
                     <tr>
-                      <th className="px-4 py-3 text-left">Stok / Kalem</th>
-                      <th className="px-4 py-3 text-right">Miktar</th>
-                      <th className="px-4 py-3 text-right">Birim Fiyat</th>
-                      <th className="px-4 py-3 text-right">İskonto</th>
-                      <th className="px-4 py-3 text-right">KDV</th>
-                      <th className="px-4 py-3 text-right">Satır Toplamı</th>
-                      <th className="px-4 py-3 text-center">İşlemler</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--item">Stok / Kalem</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--qty">Miktar</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--price">Birim Fiyat</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--discount">İskonto</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--vat">KDV</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--total">Satır Toplamı</th>
+                      <th className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--actions">İşlemler</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lines.map((line, index) => {
                       const calculated = calculateLineTotals(line);
                       return (
-                        <tr key={`${line.productCode || line.productName}-${index}`} className="border-t border-slate-200/80 transition hover:bg-sky-50/50 dark:border-white/10 dark:hover:bg-white/[0.04]">
-                          <td className="px-4 py-3">
-                            <div className="font-black text-slate-900 dark:text-white">{line.productName}</div>
-                            <div className="mt-1 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
+                        <tr key={`${line.productCode || line.productName}-${index}`}>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--item">
+                            <div className="wms-ops-purchase-lines-table__name">{line.productName}</div>
+                            <div className="wms-ops-purchase-lines-table__meta">
                               <span>{line.productCode || 'Kod yok'}</span>
                               <span>•</span>
                               <span>{line.unit || 'Birim yok'}</span>
                               {line.description1 ? <span>• {line.description1}</span> : null}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-right font-bold tabular-nums">{line.quantity}</td>
-                          <td className="px-4 py-3 text-right font-mono tabular-nums">{formatMoney(line.unitPrice, formState.currencyCode)}</td>
-                          <td className="px-4 py-3 text-right text-xs font-bold text-muted-foreground">{line.discount1}/{line.discount2}/{line.discount3}</td>
-                          <td className="px-4 py-3 text-right font-bold">%{line.vatRate}</td>
-                          <td className="px-4 py-3 text-right font-black text-cyan-700 dark:text-cyan-300">{formatMoney(calculated.total, formState.currencyCode)}</td>
-                          <td className="px-4 py-3">
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--qty">{line.quantity}</td>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--price">{formatMoney(line.unitPrice, formState.currencyCode)}</td>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--discount">{line.discount1}/{line.discount2}/{line.discount3}</td>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--vat">%{line.vatRate}</td>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--total wms-ops-purchase-lines-table__total">{formatMoney(calculated.total, formState.currencyCode)}</td>
+                          <td className="wms-ops-purchase-lines-table__col wms-ops-purchase-lines-table__col--actions">
                             <div className="flex items-center justify-center gap-2">
-                              <button
-                                type="button"
-                                className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-cyan-400 hover:text-cyan-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300"
-                                onClick={() => openEditLineDialog(index)}
-                                aria-label="Satırı düzenle"
-                                title="Satırı düzenle"
-                              >
+                              <PurchaseOpsIconAction label="Satırı düzenle" onClick={() => openEditLineDialog(index)}>
                                 <Pencil className="size-4" />
-                              </button>
-                              <button
-                                type="button"
-                                className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-400 hover:text-blue-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300"
-                                onClick={() => handleCloneLine(index)}
-                                aria-label="Satırı kopyala"
-                                title="Satırı kopyala"
-                              >
+                              </PurchaseOpsIconAction>
+                              <PurchaseOpsIconAction label="Satırı kopyala" tone="success" onClick={() => handleCloneLine(index)}>
                                 <Plus className="size-4" />
-                              </button>
-                              <button
-                                type="button"
-                                className="inline-flex size-8 items-center justify-center rounded-full border border-rose-200 bg-rose-50 text-rose-600 shadow-sm transition hover:border-rose-400 hover:bg-rose-100 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-300"
-                                onClick={() => handleRemoveLine(index)}
-                                aria-label="Satırı sil"
-                                title="Satırı sil"
-                              >
+                              </PurchaseOpsIconAction>
+                              <PurchaseOpsIconAction label="Satırı sil" tone="danger" onClick={() => handleRemoveLine(index)}>
                                 <Trash2 className="size-4" />
-                              </button>
+                              </PurchaseOpsIconAction>
                             </div>
                           </td>
                         </tr>
@@ -1848,75 +1808,55 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                 </table>
               </div>
             )}
-          </div>
+          </MasterDataOpsSection>
 
           <aside className="xl:sticky xl:top-6">
-            <div className="overflow-hidden rounded-2xl border border-slate-300/80 bg-white/95 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-              <div className="flex items-center gap-3 border-b border-slate-200/80 bg-slate-50/90 px-5 py-4 dark:border-white/10 dark:bg-white/[0.05]">
-                <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
-                  <Calculator className="size-5" />
-                </span>
-                <div>
-                  <h3 className="font-black">Özet</h3>
-                  <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Genel toplam analizi</p>
-                </div>
-              </div>
-
-              <div className="space-y-5 p-5">
+            <MasterDataOpsSection
+              title="Özet"
+              subtitle="Genel toplam analizi"
+            >
+              <div className="space-y-5">
                 {isCommercial ? (
                   <div className="grid gap-3">
                     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                      <label className="grid gap-2 text-sm font-semibold">
-                        Genel İskonto %
+                      <MasterDataOpsFormField label="Genel İskonto %">
                         <OpsInput type="number" min={0} max={99.9999} step="0.01" value={formState.generalDiscountRate} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountRate: event.target.value }))} />
-                      </label>
-                      <label className="grid gap-2 text-sm font-semibold">
-                        Genel İskonto Tutarı
+                      </MasterDataOpsFormField>
+                      <MasterDataOpsFormField label="Genel İskonto Tutarı">
                         <OpsInput type="number" min={0} step="0.01" value={formState.generalDiscountAmount} onChange={(event) => setFormState((prev) => ({ ...prev, generalDiscountAmount: event.target.value }))} />
-                      </label>
+                      </MasterDataOpsFormField>
                     </div>
-                    <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-200">
-                      Genel iskonto satırlar toplamına uygulanır; satır iskontoları ayrıca korunur.
-                    </div>
+                    <MasterDataOpsGuidance
+                      title="Genel iskonto"
+                      lines={['Genel iskonto satırlar toplamına uygulanır; satır iskontoları ayrıca korunur.']}
+                    />
                   </div>
                 ) : null}
 
-                <dl className="space-y-3 border-t pt-4 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="font-bold text-muted-foreground">Kalem Sayısı</dt>
-                    <dd className="font-black">{lines.length}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="font-bold text-muted-foreground">Ara Toplam</dt>
-                    <dd className="font-mono font-black tabular-nums">{formatMoney(totals.subTotal, formState.currencyCode)}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="font-bold text-muted-foreground">Toplam KDV</dt>
-                    <dd className="font-mono font-black tabular-nums">{formatMoney(totals.vatTotal, formState.currencyCode)}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4 border-t pt-4 text-base">
-                    <dt className="font-black">Genel Toplam</dt>
-                    <dd className="font-mono text-xl font-black tabular-nums text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-emerald-500">
-                      {formatMoney(totals.grandTotal, formState.currencyCode)}
-                    </dd>
-                  </div>
+                <dl className="wms-ops-purchase-summary-list wms-ops-purchase-summary-list--bordered">
+                  <PurchaseOpsSummaryRow label="Kalem Sayısı" value={lines.length} />
+                  <PurchaseOpsSummaryRow label="Ara Toplam" value={formatMoney(totals.subTotal, formState.currencyCode)} />
+                  <PurchaseOpsSummaryRow label="Toplam KDV" value={formatMoney(totals.vatTotal, formState.currencyCode)} />
+                  <PurchaseOpsSummaryRow label="Genel Toplam" value={formatMoney(totals.grandTotal, formState.currencyCode)} emphasis />
                 </dl>
               </div>
-            </div>
+            </MasterDataOpsSection>
           </aside>
-        </section>
+        </div>
 
-        <section className="grid gap-4 rounded-xl border bg-card/90 p-5 lg:grid-cols-2">
+        <MasterDataOpsSection
+          title="Ek Bilgiler"
+          subtitle="Mesaj, teslimat, notlar ve açıklama"
+        >
+          <div className="grid gap-4 lg:grid-cols-2">
           {isRfq ? (
-            <label className="grid gap-2 text-sm font-semibold lg:col-span-2">
-              Tedarikçilere Gönderilecek Mesaj
+            <MasterDataOpsFormField label="Tedarikçilere Gönderilecek Mesaj" className="lg:col-span-2">
               <OpsTextarea rows={4} value={formState.message} onChange={(event) => setFormState((prev) => ({ ...prev, message: event.target.value }))} />
-            </label>
+            </MasterDataOpsFormField>
           ) : null}
           {isCommercial ? (
             <>
-              <label className="grid gap-2 text-sm font-semibold">
-                Teslimat Tipi / Şekli
+              <MasterDataOpsFormField label="Teslimat Tipi / Şekli">
                 <PagedLookupDialog<PurchaseDefinitionDto>
                   variant="ops"
                   open={deliveryTypeLookupOpen}
@@ -1944,86 +1884,54 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                     }));
                   }}
                 />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Ödeme Şartları
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Ödeme Şartları">
                 <OpsInput value={formState.paymentTerms} onChange={(event) => setFormState((prev) => ({ ...prev, paymentTerms: event.target.value }))} />
-              </label>
+              </MasterDataOpsFormField>
               <div className="lg:col-span-2">
-                <button
-                  type="button"
-                  className="flex w-full flex-col gap-4 rounded-2xl border border-dashed border-cyan-300/70 bg-cyan-50/60 p-5 text-left transition hover:border-cyan-500 hover:bg-cyan-50 dark:border-cyan-300/20 dark:bg-cyan-400/10 dark:hover:bg-cyan-400/15 sm:flex-row sm:items-center sm:justify-between"
+                <PurchaseOpsNotesTrigger
+                  title="Belge Ek Açıklamaları"
+                  description="Netsis belge notu alanları Note1-Note15 olarak saklanır. Alanları pencere içinde düzenleyin."
+                  badge={`${filledNoteCount}/15 dolu`}
                   onClick={() => setNotesDialogOpen(true)}
-                >
-                  <span className="flex min-w-0 items-start gap-3">
-                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
-                      <FileText className="size-5" />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-base font-black">Belge Ek Açıklamaları</span>
-                      <span className="mt-1 block text-sm font-semibold text-muted-foreground">
-                        Netsis belge notu alanları Note1-Note15 olarak saklanır. Alanları pencere içinde düzenleyin.
-                      </span>
-                    </span>
-                  </span>
-                  <span className="inline-flex shrink-0 items-center justify-center rounded-full border bg-white px-4 py-2 text-xs font-black text-cyan-700 shadow-sm dark:border-white/10 dark:bg-white/[0.06] dark:text-cyan-200">
-                    {filledNoteCount}/15 dolu
-                  </span>
-                </button>
+                />
               </div>
             </>
           ) : null}
-          <label className="grid gap-2 text-sm font-semibold lg:col-span-2">
-            Açıklama
+          <MasterDataOpsFormField label="Açıklama" className="lg:col-span-2">
             <OpsTextarea rows={5} value={formState.description} onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))} />
-          </label>
-        </section>
+          </MasterDataOpsFormField>
+          </div>
+        </MasterDataOpsSection>
 
         <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
-          <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-5xl">
-            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg">
-                    <FileText className="size-5" />
-                  </span>
-                  <div>
-                    <DialogTitle className="text-xl font-black">Belge Ek Açıklamaları</DialogTitle>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Netsis Note1-Note15 alanlarını burada düzenleyin; formda sadece özet görünür.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
-                  onClick={() => setNotesDialogOpen(false)}
-                  aria-label="Kapat"
-                >
-                  <X className="size-5" />
-                </button>
-              </div>
+          <MasterDataOpsDialogContent size="xl" className="max-h-[88vh]">
+            <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+              <DialogTitle className="wms-ops-detail-dialog__title">Belge Ek Açıklamaları</DialogTitle>
+              <p className="wms-ops-detail-dialog__description mt-1">
+                Netsis Note1-Note15 alanlarını burada düzenleyin; formda sadece özet görünür.
+              </p>
             </DialogHeader>
-            <div className="max-h-[calc(88vh-11rem)] overflow-y-auto px-6 py-5">
-              <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-200">
-                Bu alanlar ERP belge açıklaması olarak gönderilir. Boş bırakılan notlar kayıtta boş kalır.
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="wms-ops-form max-h-[calc(88vh-11rem)] overflow-y-auto px-5 py-4">
+              <MasterDataOpsGuidance
+                title="ERP not alanları"
+                lines={['Bu alanlar ERP belge açıklaması olarak gönderilir. Boş bırakılan notlar kayıtta boş kalır.']}
+              />
+              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {purchaseNoteKeys.map((noteKey, index) => (
-                  <label key={noteKey} className="grid gap-2 text-sm font-semibold">
-                    Belge Notu {index + 1}
+                  <MasterDataOpsFormField key={noteKey} label={`Belge Notu ${index + 1}`}>
                     <OpsTextarea
                       rows={3}
                       value={formState[noteKey]}
                       onChange={(event) => setFormState((prev) => ({ ...prev, [noteKey]: event.target.value }))}
                     />
-                  </label>
+                  </MasterDataOpsFormField>
                 ))}
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4 dark:border-white/10">
-              <span className="text-sm font-bold text-muted-foreground">{filledNoteCount}/15 alan dolu</span>
-              <div className="flex items-center gap-2">
+            <PurchaseOpsDialogFooter>
+              <span className="wms-ops-detail-dialog__description">{filledNoteCount}/15 alan dolu</span>
+              <div className="flex flex-wrap items-center gap-2">
                 <OpsActionButton type="button" variant="secondary" onClick={() => setFormState((prev) => {
                   const next = { ...prev };
                   purchaseNoteKeys.forEach((noteKey) => {
@@ -2038,14 +1946,17 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                   Uygula
                 </OpsActionButton>
               </div>
-            </div>
-          </DialogContent>
+            </PurchaseOpsDialogFooter>
+          </MasterDataOpsDialogContent>
         </Dialog>
 
         {isRfq ? (
           <Dialog
             open={rfqSupplierLookupOpen}
             onOpenChange={(open) => {
+              if (open && !rfqSupplierDraftPendingRef.current) {
+                setRfqSupplierDraft(rfqSuppliers);
+              }
               setRfqSupplierLookupOpen(open);
               if (!open) {
                 setRfqSupplierSearch('');
@@ -2053,352 +1964,284 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
               }
             }}
           >
-            <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-5xl">
-              <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg">
-                      <Users className="size-5" />
-                    </span>
-                    <div>
-                      <DialogTitle className="text-xl font-black">RFQ Tedarikçi Seçimi</DialogTitle>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        ERP eşleşmeli carileri pencereden çoklu seçin; RFQ aynı anda tüm seçili tedarikçilere hazırlanır.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
-                    onClick={() => setRfqSupplierLookupOpen(false)}
-                    aria-label="Kapat"
-                  >
-                    <X className="size-5" />
-                  </button>
-                </div>
+            <MasterDataOpsDialogContent size="xl" className="wms-ops-purchase-rfq-dialog flex max-h-[92dvh] flex-col">
+              <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-5 py-4">
+                <DialogTitle className="wms-ops-detail-dialog__title">RFQ Tedarikçi Seçimi</DialogTitle>
+                <p className="wms-ops-detail-dialog__description mt-1">
+                  ERP eşleşmeli carileri pencereden çoklu seçin; RFQ aynı anda tüm seçili tedarikçilere hazırlanır.
+                </p>
               </DialogHeader>
 
-              <div className="max-h-[calc(88vh-10rem)] overflow-y-auto px-6 py-5">
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-                  <div className="rounded-2xl border bg-white/95 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <div className="relative flex-1">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <OpsInput
-                          value={rfqSupplierSearchInput}
-                          onChange={(event) => setRfqSupplierSearchInput(event.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                              event.preventDefault();
-                              setRfqSupplierSearch(rfqSupplierSearchInput.trim());
-                            }
-                          }}
-                          placeholder="Cari kodu, unvan veya e-posta ile ara"
-                          className="pl-10"
-                        />
-                      </div>
-                      <OpsActionButton type="button" variant="secondary" onClick={() => setRfqSupplierSearch(rfqSupplierSearchInput.trim())}>
-                        <Search className="size-4" />
-                        Ara
-                      </OpsActionButton>
-                      <OpsActionButton type="button" variant="secondary" onClick={handleSelectVisibleRfqSuppliers} disabled={rfqSupplierLookupItems.length === 0}>
-                        <CheckCircle2 className="size-4" />
-                        Görünenleri Seç
-                      </OpsActionButton>
-                    </div>
-
-                    <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
-                      <table className="w-full min-w-[760px] text-sm">
-                        <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
-                          <tr>
-                            <th className="w-14 px-4 py-3 text-center">Seç</th>
-                            <th className="px-4 py-3 text-left">Cari Kodu</th>
-                            <th className="px-4 py-3 text-left">Cari Ünvan</th>
-                            <th className="px-4 py-3 text-left">E-Posta</th>
-                            <th className="px-4 py-3 text-center">Durum</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rfqSupplierQuery.isLoading ? (
-                            <tr>
-                              <td colSpan={5} className="px-4 py-14 text-center">
-                                <span className="inline-flex items-center gap-2 text-sm font-black text-muted-foreground">
-                                  <Loader2 className="size-5 animate-spin" />
-                                  Tedarikçiler yükleniyor...
-                                </span>
-                              </td>
-                            </tr>
-                          ) : rfqSupplierLookupItems.length === 0 ? (
-                            <tr>
-                              <td colSpan={5} className="px-4 py-14 text-center text-sm font-bold text-muted-foreground">
-                                ERP eşleşmeli tedarikçi bulunamadı.
-                              </td>
-                            </tr>
-                          ) : (
-                            rfqSupplierLookupItems.map((customer) => {
-                              const selected = isRfqSupplierSelected(customer.id);
-                              return (
-                                <tr
-                                  key={customer.id}
-                                  className={`cursor-pointer border-t border-slate-200 transition dark:border-white/10 ${
-                                    selected ? 'bg-cyan-50/90 dark:bg-cyan-400/10' : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
-                                  }`}
-                                  onClick={() => handleToggleRfqSupplier(customer)}
-                                >
-                                  <td className="px-4 py-3 text-center">
-                                    <input
-                                      type="checkbox"
-                                      checked={selected}
-                                      onChange={() => handleToggleRfqSupplier(customer)}
-                                      onClick={(event) => event.stopPropagation()}
-                                      className="size-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
-                                      aria-label={`${buildSupplierLabel(customer)} seç`}
-                                    />
-                                  </td>
-                                  <td className="px-4 py-3 font-mono text-xs font-black text-cyan-700 dark:text-cyan-200">{customer.cariKod}</td>
-                                  <td className="px-4 py-3">
-                                    <div className="font-black text-slate-900 dark:text-white">{customer.cariIsim}</div>
-                                    <div className="text-xs font-semibold text-muted-foreground">ID #{customer.id}</div>
-                                  </td>
-                                  <td className="px-4 py-3 text-sm font-semibold text-muted-foreground">{customer.acik1 || '-'}</td>
-                                  <td className="px-4 py-3 text-center">
-                                    {selected ? (
-                                      <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-black text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
-                                        <CheckCircle2 className="size-3.5" />
-                                        Seçili
-                                      </span>
-                                    ) : (
-                                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-muted-foreground dark:bg-white/[0.06]">
-                                        Seçilebilir
-                                      </span>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {rfqSupplierQuery.hasNextPage ? (
-                      <div className="mt-4 flex justify-center">
-                        <OpsActionButton
-                          type="button"
-                          variant="secondary"
-                          onClick={() => rfqSupplierQuery.fetchNextPage()}
-                          disabled={rfqSupplierQuery.isFetchingNextPage}
-                        >
-                          {rfqSupplierQuery.isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : <ArrowDown className="size-4" />}
-                          Daha Fazla Yükle
-                        </OpsActionButton>
-                      </div>
-                    ) : null}
+              <div className="wms-ops-purchase-rfq-dialog__body wms-ops-scrollbar min-h-0 flex-1">
+                <section className="wms-ops-purchase-rfq-dialog__main">
+                  <div className="wms-ops-purchase-rfq-toolbar">
+                    <PurchaseOpsRfqSearchField
+                      value={rfqSupplierSearchInput}
+                      onChange={(event) => setRfqSupplierSearchInput(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          setRfqSupplierSearch(rfqSupplierSearchInput.trim());
+                        }
+                      }}
+                      placeholder="Cari kodu, unvan veya e-posta ile ara"
+                    />
+                    <OpsActionButton type="button" variant="secondary" className="wms-ops-purchase-rfq-toolbar__btn" onClick={() => setRfqSupplierSearch(rfqSupplierSearchInput.trim())}>
+                      <Search className="size-4" />
+                      Ara
+                    </OpsActionButton>
+                    <OpsActionButton type="button" variant="secondary" className="wms-ops-purchase-rfq-toolbar__btn" onClick={handleSelectVisibleRfqSuppliers} disabled={rfqSupplierLookupItems.length === 0}>
+                      <CheckCircle2 className="size-4" />
+                      Görünenleri Seç
+                    </OpsActionButton>
                   </div>
 
-                  <aside className="rounded-2xl border bg-white/95 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h4 className="font-black">Seçilen Tedarikçiler</h4>
-                        <p className="text-xs font-semibold text-muted-foreground">RFQ gönderim listesi</p>
-                      </div>
-                      <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-black text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200">
-                        {rfqSuppliers.length}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto pr-1">
-                      {rfqSuppliers.length ? (
-                        rfqSuppliers.map((supplier) => (
-                          <div key={supplier.supplierId} className="rounded-2xl border border-cyan-100 bg-cyan-50/70 p-3 dark:border-cyan-300/20 dark:bg-cyan-400/10">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <div className="truncate text-sm font-black text-slate-900 dark:text-white">{supplier.label}</div>
-                                <div className="mt-1 text-xs font-semibold text-muted-foreground">{supplier.email || 'E-posta yok'}</div>
-                              </div>
-                              <button
-                                type="button"
-                                className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-white text-rose-600 transition hover:bg-rose-50 dark:border-rose-300/20 dark:bg-white/[0.06] dark:text-rose-200"
-                                onClick={() => setRfqSuppliers((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId))}
-                                aria-label="Tedarikçiyi çıkar"
+                  <OpsScrollArea className="wms-ops-purchase-rfq-dialog__table-wrap" axis="both">
+                    <table className="wms-ops-purchase-rfq-table__grid">
+                      <colgroup>
+                        <col className="wms-ops-purchase-rfq-table__col-select" />
+                        <col className="wms-ops-purchase-rfq-table__col-code" />
+                        <col className="wms-ops-purchase-rfq-table__col-name" />
+                        <col className="wms-ops-purchase-rfq-table__col-email" />
+                        <col className="wms-ops-purchase-rfq-table__col-status" />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th className="wms-ops-purchase-rfq-table__head wms-ops-purchase-rfq-table__head--center">Seç</th>
+                          <th className="wms-ops-purchase-rfq-table__head">Cari Kodu</th>
+                          <th className="wms-ops-purchase-rfq-table__head">Cari Ünvan</th>
+                          <th className="wms-ops-purchase-rfq-table__head">E-Posta</th>
+                          <th className="wms-ops-purchase-rfq-table__head wms-ops-purchase-rfq-table__head--center">Durum</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rfqSupplierQuery.isLoading ? (
+                          <tr>
+                            <td colSpan={5} className="py-10 text-center">
+                              <OpsLoadingState message="Tedarikçiler yükleniyor..." compact code="FETCH" />
+                            </td>
+                          </tr>
+                        ) : rfqSupplierLookupItems.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="py-10 text-center text-sm font-semibold text-muted-foreground">
+                              ERP eşleşmeli tedarikçi bulunamadı.
+                            </td>
+                          </tr>
+                        ) : (
+                          rfqSupplierLookupItems.map((customer) => {
+                            const selected = isRfqSupplierSelected(customer.id);
+                            return (
+                              <tr
+                                key={customer.id}
+                                className={cn('wms-ops-purchase-rfq-table__row cursor-pointer', selected && 'wms-ops-purchase-rfq-table__row--selected')}
+                                onClick={() => handleToggleRfqSupplier(customer)}
                               >
-                                <X className="size-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="rounded-2xl border border-dashed p-5 text-center text-sm font-semibold text-muted-foreground dark:border-white/10">
-                          Henüz tedarikçi seçilmedi.
-                        </div>
-                      )}
-                    </div>
+                                <td className="wms-ops-purchase-rfq-table__cell wms-ops-purchase-rfq-table__cell--center">
+                                  <PurchaseOpsTerminalCheckbox
+                                    checked={selected}
+                                    onCheckedChange={() => handleToggleRfqSupplier(customer)}
+                                    aria-label={`${buildSupplierLabel(customer)} seç`}
+                                  />
+                                </td>
+                                <td className="wms-ops-purchase-rfq-table__cell">
+                                  <span className="wms-ops-purchase-rfq-table__code">{customer.cariKod}</span>
+                                </td>
+                                <td className="wms-ops-purchase-rfq-table__cell">
+                                  <div className="wms-ops-purchase-rfq-table__title">{customer.cariIsim}</div>
+                                  <div className="wms-ops-purchase-rfq-table__meta">ID #{customer.id}</div>
+                                </td>
+                                <td className="wms-ops-purchase-rfq-table__cell wms-ops-purchase-rfq-table__cell--muted">
+                                  {customer.acik1 || '-'}
+                                </td>
+                                <td className="wms-ops-purchase-rfq-table__cell wms-ops-purchase-rfq-table__cell--center">
+                                  {selected ? (
+                                    <MasterDataOpsFlagChip tone="success">Seçili</MasterDataOpsFlagChip>
+                                  ) : (
+                                    <MasterDataOpsFlagChip>Seçilebilir</MasterDataOpsFlagChip>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </OpsScrollArea>
 
-                    <div className="mt-5 grid gap-2">
-                      <OpsActionButton type="button" variant="primary" onClick={() => setRfqSupplierLookupOpen(false)} disabled={rfqSuppliers.length === 0}>
-                        <CheckCircle2 className="size-4" />
-                        Seçimleri Kullan
-                      </OpsActionButton>
-                      <OpsActionButton type="button" variant="secondary" onClick={() => setRfqSuppliers([])} disabled={rfqSuppliers.length === 0}>
-                        <Trash2 className="size-4" />
-                        Seçimleri Temizle
+                  {rfqSupplierQuery.hasNextPage ? (
+                    <div className="flex justify-center pt-3">
+                      <OpsActionButton
+                        type="button"
+                        variant="secondary"
+                        onClick={() => rfqSupplierQuery.fetchNextPage()}
+                        disabled={rfqSupplierQuery.isFetchingNextPage}
+                      >
+                        {rfqSupplierQuery.isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : <ArrowDown className="size-4" />}
+                        Daha Fazla Yükle
                       </OpsActionButton>
                     </div>
-                  </aside>
-                </div>
+                  ) : null}
+                </section>
+
+                <aside className="wms-ops-purchase-rfq-dialog__aside">
+                  <div className="wms-ops-purchase-rfq-dialog__aside-header">
+                    <div>
+                      <h4 className="wms-ops-purchase-rfq-dialog__aside-title">Seçilen Tedarikçiler</h4>
+                      <p className="wms-ops-purchase-rfq-dialog__aside-subtitle">RFQ gönderim listesi</p>
+                    </div>
+                    <span className="wms-ops-purchase-rfq-aside__count">{rfqSupplierDraft.length}</span>
+                  </div>
+
+                  <OpsScrollArea className="wms-ops-purchase-rfq-dialog__aside-list" axis="y">
+                    {rfqSupplierDraft.length ? (
+                      rfqSupplierDraft.map((supplier) => (
+                        <PurchaseOpsRfqSelectedSupplier
+                          key={supplier.supplierId}
+                          label={supplier.label}
+                          email={supplier.email}
+                          onRemove={() => {
+                            rfqSupplierDraftPendingRef.current = true;
+                            setRfqSupplierDraft((prev) => prev.filter((item) => item.supplierId !== supplier.supplierId));
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <MasterDataOpsEmptyState className="wms-ops-purchase-rfq-dialog__aside-empty py-8 text-sm">
+                        Henüz tedarikçi seçilmedi.
+                      </MasterDataOpsEmptyState>
+                    )}
+                  </OpsScrollArea>
+
+                  <div className="wms-ops-purchase-rfq-dialog__aside-actions">
+                    <OpsActionButton type="button" variant="primary" onClick={handleApplyRfqSupplierDraft}>
+                      <CheckCircle2 className="size-4" />
+                      Seçimleri Kullan
+                    </OpsActionButton>
+                    <OpsActionButton type="button" variant="secondary" onClick={handleClearRfqSupplierDraft} disabled={rfqSupplierDraft.length === 0}>
+                      <Trash2 className="size-4" />
+                      Seçimleri Temizle
+                    </OpsActionButton>
+                  </div>
+                </aside>
               </div>
-            </DialogContent>
+            </MasterDataOpsDialogContent>
           </Dialog>
         ) : null}
 
         <Dialog open={exchangeRateDialogOpen} onOpenChange={setExchangeRateDialogOpen}>
-          <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-4xl">
-            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-400 text-white shadow-lg">
-                    <RefreshCw className="size-5" />
-                  </span>
-                  <div>
-                    <DialogTitle className="text-xl font-black">Kur Listesi</DialogTitle>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Belge tarihine göre Netsis kur fonksiyonundan gelen değerleri kontrol edin; gerekiyorsa belgeye özel düzeltin.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
-                  onClick={() => setExchangeRateDialogOpen(false)}
-                  aria-label="Kapat"
-                >
-                  <X className="size-5" />
-                </button>
-              </div>
+          <MasterDataOpsDialogContent size="xl" className="wms-ops-purchase-exchange-dialog flex max-h-[88dvh] flex-col">
+            <DialogHeader className="wms-ops-detail-dialog__header shrink-0 border-b px-5 py-4">
+              <DialogTitle className="wms-ops-detail-dialog__title">Kur Listesi</DialogTitle>
+              <p className="wms-ops-detail-dialog__description mt-1">
+                Belge tarihine göre Netsis kur fonksiyonundan gelen değerleri kontrol edin; gerekiyorsa belgeye özel düzeltin.
+              </p>
             </DialogHeader>
 
-            <div className="max-h-[calc(88vh-9rem)] overflow-y-auto px-6 py-5">
-              <div className="mb-4 grid gap-3 md:grid-cols-3">
-                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Belge Para Birimi</div>
-                  <div className="mt-2 text-2xl font-black">{formState.currencyCode || 'TL'}</div>
-                </div>
-                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Aktif Kur</div>
-                  <div className="mt-2 text-2xl font-black">{formatRate(toNumber(formState.exchangeRate, 1))}</div>
-                </div>
-                <div className="rounded-2xl border bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">Kur Tarihi</div>
-                  <div className="mt-2 text-2xl font-black">{formState.documentDate || '-'}</div>
-                </div>
-              </div>
+            <div className="wms-ops-purchase-exchange-dialog__body wms-ops-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 sm:px-5">
+              <MasterDataOpsStatGrid
+                className="wms-ops-purchase-exchange-dialog__stats mb-4"
+                items={[
+                  { label: 'Belge Para Birimi', value: formState.currencyCode || 'TL' },
+                  { label: 'Aktif Kur', value: formatRate(toNumber(formState.exchangeRate, 1)) },
+                  { label: 'Kur Tarihi', value: formState.documentDate || '-' },
+                ]}
+              />
 
               {exchangeRateQuery.isLoading ? (
-                <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed bg-muted/30">
-                  <div className="flex items-center gap-3 text-sm font-black text-muted-foreground">
-                    <RefreshCw className="size-5 animate-spin" />
-                    Kur bilgileri Netsis üzerinden alınıyor...
-                  </div>
+                <div className="wms-ops-purchase-exchange-dialog__state flex min-h-[220px] flex-1 items-center justify-center">
+                  <OpsLoadingState message="Kur bilgileri Netsis üzerinden alınıyor..." code="FETCH" />
                 </div>
               ) : exchangeRateQuery.isError ? (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm font-bold text-rose-700 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-200">
+                <MasterDataOpsResultPanel tone="danger" className="wms-ops-purchase-exchange-dialog__state p-4 text-sm font-semibold">
                   Kur bilgileri alınamadı. Manuel kur girip belgeyi kaydedebilirsiniz.
-                </div>
+                </MasterDataOpsResultPanel>
               ) : (
-                <div className="overflow-x-auto rounded-2xl border bg-white/90 dark:border-white/10 dark:bg-white/[0.04]">
-                  <table className="w-full min-w-[720px] text-sm">
-                    <thead className="bg-slate-100/90 text-xs uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+                <OpsScrollArea className="wms-ops-purchase-exchange-dialog__table-wrap" axis="both">
+                  <table className="wms-ops-purchase-exchange-dialog__grid">
+                    <colgroup>
+                      <col className="wms-ops-purchase-exchange-dialog__col-type" />
+                      <col className="wms-ops-purchase-exchange-dialog__col-name" />
+                      <col className="wms-ops-purchase-exchange-dialog__col-rate" />
+                      <col className="wms-ops-purchase-exchange-dialog__col-source" />
+                    </colgroup>
+                    <thead>
                       <tr>
-                        <th className="px-4 py-3 text-left">Döviz Tipi</th>
-                        <th className="px-4 py-3 text-left">Döviz İsmi</th>
-                        <th className="px-4 py-3 text-right">Kur</th>
-                        <th className="px-4 py-3 text-center">Kaynak</th>
+                        <th className="wms-ops-purchase-exchange-dialog__head">Döviz Tipi</th>
+                        <th className="wms-ops-purchase-exchange-dialog__head">Döviz İsmi</th>
+                        <th className="wms-ops-purchase-exchange-dialog__head wms-ops-purchase-exchange-dialog__head--right">Kur</th>
+                        <th className="wms-ops-purchase-exchange-dialog__head wms-ops-purchase-exchange-dialog__head--center">Kaynak</th>
                       </tr>
                     </thead>
                     <tbody>
                       {exchangeRates.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-10 text-center text-sm font-bold text-muted-foreground">
+                          <td colSpan={4} className="wms-ops-purchase-exchange-dialog__empty py-10 text-center text-sm font-semibold text-muted-foreground">
                             Bu tarih için kur bilgisi bulunamadı.
                           </td>
                         </tr>
                       ) : exchangeRates.map((rate, index) => (
-                        <tr key={`${rate.currency}-${rate.dovizTipi ?? index}`} className="border-t border-slate-200/80 dark:border-white/10">
-                          <td className="px-4 py-3 font-black">{rate.dovizTipi ?? rate.currency}</td>
-                          <td className="px-4 py-3 font-semibold text-muted-foreground">{rate.dovizIsmi || rate.currency}</td>
-                          <td className="px-4 py-3 text-right">
+                        <tr key={`${rate.currency}-${rate.dovizTipi ?? index}`} className="wms-ops-purchase-exchange-dialog__row">
+                          <td className="wms-ops-purchase-exchange-dialog__cell">
+                            <span className="wms-ops-purchase-exchange-dialog__type">{rate.dovizTipi ?? rate.currency}</span>
+                          </td>
+                          <td className="wms-ops-purchase-exchange-dialog__cell">
+                            <span className="wms-ops-purchase-exchange-dialog__name">{rate.dovizIsmi || rate.currency}</span>
+                          </td>
+                          <td className="wms-ops-purchase-exchange-dialog__cell wms-ops-purchase-exchange-dialog__cell--rate">
                             <OpsInput
                               type="number"
                               step="0.000001"
                               value={rate.exchangeRate}
                               onChange={(event) => handleExchangeRateValueChange(index, event.target.value)}
-                              className="ml-auto max-w-44 text-right font-mono"
+                              className="wms-ops-purchase-exchange-dialog__rate-input text-right font-mono"
                             />
                           </td>
-                          <td className="px-4 py-3 text-center">
-                            <span className={`rounded-full px-3 py-1 text-xs font-black ${rate.isOfficial ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200' : 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200'}`}>
+                          <td className="wms-ops-purchase-exchange-dialog__cell wms-ops-purchase-exchange-dialog__cell--center">
+                            <MasterDataOpsFlagChip tone={rate.isOfficial ? 'success' : 'warn'}>
                               {rate.isOfficial ? 'Netsis' : 'Manuel'}
-                            </span>
+                            </MasterDataOpsFlagChip>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </OpsScrollArea>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-slate-50/90 px-6 py-4 dark:border-white/10 dark:bg-white/[0.05]">
-              <OpsActionButton type="button" variant="secondary" onClick={() => exchangeRateQuery.refetch()}>
+            <PurchaseOpsDialogFooter className="wms-ops-purchase-exchange-dialog__footer">
+              <OpsActionButton type="button" variant="secondary" className="wms-ops-purchase-exchange-dialog__refresh" onClick={() => exchangeRateQuery.refetch()}>
                 <RefreshCw className="size-4" />
                 Netsis Kurunu Yenile
               </OpsActionButton>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 <OpsActionButton type="button" variant="secondary" onClick={() => setExchangeRateDialogOpen(false)}>
                   İptal
                 </OpsActionButton>
                 <OpsActionButton type="button" variant="primary" onClick={handleApplyExchangeRates}>
-                  <Save className="size-4" />
-                  Kur Snapshot Kaydet
+                  <CheckCircle2 className="size-4" />
+                  Kurları Belgeye Uygula
                 </OpsActionButton>
               </div>
-            </div>
-          </DialogContent>
+            </PurchaseOpsDialogFooter>
+          </MasterDataOpsDialogContent>
         </Dialog>
 
         <Dialog open={lineDialogOpen} onOpenChange={(open) => { if (!open) resetLineDialog(); else setLineDialogOpen(true); }}>
-          <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-5xl">
-            <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg">
-                    {editingLineIndex == null ? <Plus className="size-5" /> : <Pencil className="size-5" />}
-                  </span>
-                  <div>
-                    <DialogTitle className="text-xl font-black">
-                      {editingLineIndex == null ? 'Satır Ekle' : 'Satırı Düzenle'}
-                    </DialogTitle>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Stok, miktar, fiyat, iskonto, KDV ve açıklama bilgilerini tek kalem için girin.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground"
-                  onClick={resetLineDialog}
-                  aria-label="Kapat"
-                >
-                  <X className="size-5" />
-                </button>
-              </div>
+          <MasterDataOpsDialogContent size="xl" className="wms-ops-purchase-line-dialog max-h-[92vh]">
+            <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+              <DialogTitle className="wms-ops-detail-dialog__title">
+                {editingLineIndex == null ? 'Satır Ekle' : 'Satırı Düzenle'}
+              </DialogTitle>
+              <p className="wms-ops-detail-dialog__description mt-1">
+                Stok, miktar, fiyat, iskonto, KDV ve açıklama bilgilerini tek kalem için girin.
+              </p>
             </DialogHeader>
 
-            <div className="max-h-[calc(92vh-9rem)] overflow-y-auto px-6 py-5">
+            <div className="wms-ops-form max-h-[calc(92vh-9rem)] overflow-y-auto px-5 py-4">
               <div className="grid gap-5">
-                <div className="rounded-2xl border bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
-                  <label className="grid gap-2 text-sm font-bold">
-                    Stok *
+                <div className="wms-ops-detail-panel space-y-4 p-4">
+                  <MasterDataOpsFormField label="Stok *">
                     <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
                       <PagedLookupDialog<StockLookup>
                         variant="ops"
@@ -2406,7 +2249,7 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                         onOpenChange={setStockLookupOpen}
                         title="Stok seç"
                         value={stockLabel}
-                        placeholder="RII_STOK içinden stok seç"
+                        placeholder="Stok seç"
                         searchPlaceholder="Stok kodu veya adı ara"
                         emptyText="Stok bulunamadı."
                         queryKey={['purchase', 'stock-lookup']}
@@ -2426,53 +2269,61 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                           }));
                         }}
                       />
-                      <button
-                        type="button"
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 text-sm font-black text-sky-700 transition hover:border-sky-400 hover:bg-sky-100 dark:border-sky-400/20 dark:bg-sky-500/10 dark:text-sky-200"
-                        onClick={() => setStockLookupOpen(true)}
-                      >
+                      <OpsActionButton type="button" variant="secondary" onClick={() => setStockLookupOpen(true)}>
                         <Search className="size-4" />
                         Stok Ara
-                      </button>
+                      </OpsActionButton>
                     </div>
-                  </label>
-                  <div className="mt-3 grid gap-3 md:grid-cols-2">
-                    <label className="grid gap-2 text-sm font-bold">
-                      Stok Kodu
-                      <OpsInput value={lineDraft.productCode ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, productCode: event.target.value }))} />
-                    </label>
-                    <label className="grid gap-2 text-sm font-bold">
-                      Stok Adı / Kalem Adı *
-                      <OpsInput value={lineDraft.productName} onChange={(event) => setLineDraft((prev) => ({ ...prev, productName: event.target.value }))} />
-                    </label>
-                  </div>
+                  </MasterDataOpsFormField>
+                  {lineDraft.stockId != null ? (
+                    <PurchaseOpsSelectedStock
+                      productCode={lineDraft.productCode ?? ''}
+                      productName={lineDraft.productName}
+                      unit={lineDraft.unit}
+                    />
+                  ) : (
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <MasterDataOpsFormField label="Stok Kodu">
+                        <OpsInput
+                          value={lineDraft.productCode ?? ''}
+                          onChange={(event) => setLineDraft((prev) => ({ ...prev, productCode: event.target.value }))}
+                        />
+                      </MasterDataOpsFormField>
+                      <MasterDataOpsFormField label="Stok Adı / Kalem Adı *">
+                        <OpsInput
+                          value={lineDraft.productName}
+                          onChange={(event) => setLineDraft((prev) => ({ ...prev, productName: event.target.value }))}
+                        />
+                      </MasterDataOpsFormField>
+                    </div>
+                  )}
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-4">
-                  <label className="grid gap-2 text-sm font-bold">
-                    Miktar *
+                <div className={lineDraft.stockId != null ? 'grid gap-4 lg:grid-cols-3' : 'grid gap-4 lg:grid-cols-4'}>
+                  <MasterDataOpsFormField label="Miktar *">
                     <OpsInput type="number" step="0.0001" value={lineDraft.quantity} onChange={(event) => setLineDraft((prev) => ({ ...prev, quantity: toNumber(event.target.value, 1) }))} />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    Birim
-                    <OpsInput value={lineDraft.unit ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, unit: event.target.value }))} />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    Birim Fiyat
+                  </MasterDataOpsFormField>
+                  {lineDraft.stockId == null ? (
+                    <MasterDataOpsFormField label="Birim">
+                      <OpsInput
+                        value={lineDraft.unit ?? ''}
+                        onChange={(event) => setLineDraft((prev) => ({ ...prev, unit: event.target.value }))}
+                      />
+                    </MasterDataOpsFormField>
+                  ) : null}
+                  <MasterDataOpsFormField label="Birim Fiyat">
                     <OpsInput type="number" step="0.0001" value={lineDraft.unitPrice} onChange={(event) => setLineDraft((prev) => ({ ...prev, unitPrice: toNumber(event.target.value) }))} />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    KDV %
+                  </MasterDataOpsFormField>
+                  <MasterDataOpsFormField label="KDV %">
                     <OpsInput type="number" step="0.01" value={lineDraft.vatRate} onChange={(event) => setLineDraft((prev) => ({ ...prev, vatRate: toNumber(event.target.value) }))} />
-                  </label>
+                  </MasterDataOpsFormField>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
                   {[1, 2, 3].map((discountIndex) => {
                     const key = `discount${discountIndex}` as 'discount1' | 'discount2' | 'discount3';
                     return (
-                      <label key={key} className="grid gap-2 text-sm font-bold">
-                        {discountIndex}. İskonto %
+                      <MasterDataOpsFormField key={key} label={`${discountIndex}. İskonto %`}>
                         <OpsInput
                           type="number"
                           min={0}
@@ -2481,38 +2332,31 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                           value={lineDraft[key]}
                           onChange={(event) => setLineDraft((prev) => ({ ...prev, [key]: toNumber(event.target.value) }))}
                         />
-                      </label>
+                      </MasterDataOpsFormField>
                     );
                   })}
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
-                  <label className="grid gap-2 text-sm font-bold">
-                    Açıklama 1
+                  <MasterDataOpsFormField label="Açıklama 1">
                     <OpsInput value={lineDraft.description1 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description1: event.target.value }))} />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    Açıklama 2
+                  </MasterDataOpsFormField>
+                  <MasterDataOpsFormField label="Açıklama 2">
                     <OpsInput value={lineDraft.description2 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description2: event.target.value }))} />
-                  </label>
-                  <label className="grid gap-2 text-sm font-bold">
-                    Açıklama 3
+                  </MasterDataOpsFormField>
+                  <MasterDataOpsFormField label="Açıklama 3">
                     <OpsInput value={lineDraft.description3 ?? ''} onChange={(event) => setLineDraft((prev) => ({ ...prev, description3: event.target.value }))} />
-                  </label>
+                  </MasterDataOpsFormField>
                 </div>
 
-                <div className="rounded-2xl border bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                    <span className="font-bold text-muted-foreground">Satır Önizleme</span>
-                    <strong className="font-mono text-lg text-cyan-700 dark:text-cyan-300">
-                      {formatMoney(calculateLineTotals(lineDraft).total, formState.currencyCode)}
-                    </strong>
-                  </div>
-                </div>
+                <PurchaseOpsLinePreview
+                  label="Satır Önizleme"
+                  value={formatMoney(calculateLineTotals(lineDraft).total, formState.currencyCode)}
+                />
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-slate-50/90 px-6 py-4 dark:border-white/10 dark:bg-white/[0.05]">
+            <PurchaseOpsDialogFooter>
               <OpsActionButton type="button" variant="secondary" onClick={resetLineDialog}>
                 İptal
               </OpsActionButton>
@@ -2528,8 +2372,8 @@ export function PurchaseCreatePage({ kind }: { kind: PurchasePageKind }): ReactE
                   {editingLineIndex == null ? 'Satırı Ekle' : 'Satırı Güncelle'}
                 </OpsActionButton>
               </div>
-            </div>
-          </DialogContent>
+            </PurchaseOpsDialogFooter>
+          </MasterDataOpsDialogContent>
         </Dialog>
       </div>
     </OpsFormPageShell>

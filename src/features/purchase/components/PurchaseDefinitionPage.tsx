@@ -1,16 +1,30 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Save, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { DeleteConfirmDialog, OpsActionButton, OpsInput, OpsListPageShell, OpsTextarea, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import {
+  DeleteConfirmDialog,
+  OpsActionButton,
+  OpsCircuitToggleField,
+  OpsInput,
+  OpsListPageShell,
+  OpsTextarea,
+  PagedDataGrid,
+  type PagedDataGridColumn,
+} from '@/components/shared';
+import {
+  MasterDataOpsDialogContent,
+  MasterDataOpsFormField,
+  MasterDataOpsFlagChip,
+  MasterDataOpsGuidance,
+} from '@/features/shared';
+import { PURCHASE_OPS_SHELL_CLASS, PurchaseOpsDialogFooter, PurchaseOpsListIconButton } from './purchase-ops-ui';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
@@ -183,6 +197,7 @@ export function PurchaseDefinitionPage({ category }: { category: PurchaseDefinit
 
   return (
     <OpsListPageShell
+      className={PURCHASE_OPS_SHELL_CLASS}
       eyebrow="WMS / SATINALMA / TANIMLAR"
       title={config.title}
       description={config.description}
@@ -193,49 +208,57 @@ export function PurchaseDefinitionPage({ category }: { category: PurchaseDefinit
         </OpsActionButton>
       )}
     >
-      <div className="rounded-2xl border border-slate-300/80 bg-white/95 p-5 shadow-[0_18px_50px_-36px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#120b1d]/88">
-        <PagedDataGrid<PurchaseDefinitionDto, DefinitionColumnKey>
-          pageKey={config.pageKey}
-          columns={columns}
-          rows={query.data?.data ?? []}
-          rowKey={(row) => row.id}
-          renderCell={(row, columnKey) => {
-            switch (columnKey) {
-              case 'code': return <span className="font-mono text-xs font-black text-cyan-700 dark:text-cyan-200">{row.code}</span>;
-              case 'name': return <span className="font-black">{row.name}</span>;
-              case 'description': return row.description || '-';
-              case 'sortOrder': return row.sortOrder;
-              case 'isActive': return <Badge variant={row.isActive ? 'default' : 'secondary'}>{row.isActive ? 'Aktif' : 'Pasif'}</Badge>;
-              case 'isDefault': return <Badge variant={row.isDefault ? 'default' : 'secondary'}>{row.isDefault ? 'Evet' : 'Hayır'}</Badge>;
-              case 'updatedDate': return formatDate(row.updatedDate ?? row.createdDate);
-              default: return null;
-            }
-          }}
-          sortBy={pagedGrid.sortBy}
-          sortDirection={pagedGrid.sortDirection}
-          onSort={(columnKey) => {
-            if (columnKey === 'actions' || columnKey === 'isActive' || columnKey === 'isDefault') return;
-            pagedGrid.handleSort(columnKey);
-          }}
-          renderSortIcon={renderSortIcon}
-          isLoading={query.isLoading}
-          isError={query.isError}
-          errorText={query.error instanceof Error ? query.error.message : 'Satınalma tanımları alınamadı.'}
-          emptyText="Bu kategori için tanım bulunamadı."
-          showActionsColumn
-          actionsHeaderLabel={t('actions')}
-          renderActionsCell={(row) => (
-            <div className="flex items-center justify-end gap-2">
-              <button type="button" className="wms-ops-action-btn wms-ops-action-btn--secondary" onClick={() => openEditDialog(row)}>
-                <Pencil className="size-4" />
-                Düzenle
-              </button>
-              <button type="button" className="wms-ops-action-btn wms-ops-delete-btn" onClick={() => setDeleteDefinition(row)}>
-                <Trash2 className="size-4" />
-                Sil
-              </button>
-            </div>
-          )}
+      <PagedDataGrid<PurchaseDefinitionDto, DefinitionColumnKey>
+        variant="ops"
+        pageKey={config.pageKey}
+        columns={columns}
+        rows={query.data?.data ?? []}
+        rowKey={(row) => row.id}
+        renderCell={(row, columnKey) => {
+          switch (columnKey) {
+            case 'code': return <span className="font-mono text-xs font-bold text-[var(--wms-ops-accent)]">{row.code}</span>;
+            case 'name': return <span className="font-semibold">{row.name}</span>;
+            case 'description': return row.description || '-';
+            case 'sortOrder': return row.sortOrder;
+            case 'isActive': return (
+              <MasterDataOpsFlagChip tone={row.isActive ? 'success' : 'default'}>
+                {row.isActive ? 'Aktif' : 'Pasif'}
+              </MasterDataOpsFlagChip>
+            );
+            case 'isDefault': return (
+              <MasterDataOpsFlagChip tone={row.isDefault ? 'info' : 'default'}>
+                {row.isDefault ? 'Evet' : 'Hayır'}
+              </MasterDataOpsFlagChip>
+            );
+            case 'updatedDate': return formatDate(row.updatedDate ?? row.createdDate);
+            default: return null;
+          }
+        }}
+        sortBy={pagedGrid.sortBy}
+        sortDirection={pagedGrid.sortDirection}
+        onSort={(columnKey) => {
+          if (columnKey === 'actions' || columnKey === 'isActive' || columnKey === 'isDefault') return;
+          pagedGrid.handleSort(columnKey);
+        }}
+        renderSortIcon={renderSortIcon}
+        isLoading={query.isLoading}
+        isError={query.isError}
+        errorText={query.error instanceof Error ? query.error.message : 'Satınalma tanımları alınamadı.'}
+        emptyText="Bu kategori için tanım bulunamadı."
+        showActionsColumn
+        actionsHeaderLabel={t('actions')}
+        iconOnlyActions
+        actionsCellClassName="wms-ops-table-actions-col"
+        renderActionsCell={(row) => (
+          <div className="wms-ops-row-actions">
+            <PurchaseOpsListIconButton label="Düzenle" onClick={() => openEditDialog(row)}>
+              <Pencil className="size-3" />
+            </PurchaseOpsListIconButton>
+            <PurchaseOpsListIconButton label="Sil" tone="danger" onClick={() => setDeleteDefinition(row)}>
+              <Trash2 className="size-3" />
+            </PurchaseOpsListIconButton>
+          </div>
+        )}
           pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
           pageSizeOptions={pagedGrid.pageSizeOptions}
           onPageSizeChange={pagedGrid.handlePageSizeChange}
@@ -266,53 +289,53 @@ export function PurchaseDefinitionPage({ category }: { category: PurchaseDefinit
             isDefault: row.isDefault ? 'Evet' : 'Hayır',
             updatedDate: formatDate(row.updatedDate ?? row.createdDate),
           }))}
-        />
-      </div>
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[88vh] overflow-hidden p-0 sm:max-w-2xl">
-          <DialogHeader className="border-b bg-slate-50/90 px-6 py-5 dark:border-white/10 dark:bg-white/[0.05]">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <DialogTitle className="text-xl font-black">{editingDefinition ? `${config.singular} Düzenle` : `Yeni ${config.singular}`}</DialogTitle>
-                <p className="mt-1 text-sm font-semibold text-muted-foreground">Bu değerler satınalma teklif ve sipariş formundaki seçim pencerelerinde kullanılır.</p>
-              </div>
-              <button type="button" className="inline-flex size-10 items-center justify-center rounded-xl border bg-background text-muted-foreground shadow-sm transition hover:text-foreground" onClick={() => setDialogOpen(false)} aria-label="Kapat">
-                <X className="size-5" />
-              </button>
-            </div>
+        <MasterDataOpsDialogContent size="lg" className="max-h-[88vh]">
+          <DialogHeader className="wms-ops-detail-dialog__header border-b px-5 py-4">
+            <DialogTitle className="wms-ops-detail-dialog__title">
+              {editingDefinition ? `${config.singular} Düzenle` : `Yeni ${config.singular}`}
+            </DialogTitle>
+            <p className="wms-ops-detail-dialog__description mt-1">
+              Bu değerler satınalma teklif ve sipariş formundaki seçim pencerelerinde kullanılır.
+            </p>
           </DialogHeader>
-          <div className="grid max-h-[calc(88vh-11rem)] gap-4 overflow-y-auto px-6 py-5">
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2 text-sm font-semibold">
-                Kod <span className="text-rose-500">*</span>
+          <div className="wms-ops-form max-h-[calc(88vh-11rem)] overflow-y-auto px-5 py-4">
+            <MasterDataOpsGuidance
+              title="Tanım kullanımı"
+              lines={['Kod ve açıklama alanları lookup pencerelerinde görünür. Varsayılan işaretli tanım form açılışında öncelikli seçilir.']}
+            />
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <MasterDataOpsFormField label="Kod *">
                 <OpsInput value={draft.code} onChange={(event) => setDraft((prev) => ({ ...prev, code: event.target.value }))} placeholder="Örn: CASH" />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Sıra
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Sıra">
                 <OpsInput type="number" value={String(draft.sortOrder)} onChange={(event) => setDraft((prev) => ({ ...prev, sortOrder: Number(event.target.value) || 0 }))} />
-              </label>
+              </MasterDataOpsFormField>
             </div>
-            <label className="grid gap-2 text-sm font-semibold">
-              Açıklama <span className="text-rose-500">*</span>
-              <OpsInput value={draft.name} onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))} placeholder="Örn: Peşin" />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Detay
-              <OpsTextarea rows={3} value={draft.description ?? ''} onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))} />
-            </label>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex items-center justify-between gap-3 rounded-2xl border bg-white/80 px-4 py-3 text-sm font-black dark:border-white/10 dark:bg-white/[0.04]">
-                Aktif
-                <input type="checkbox" checked={draft.isActive} onChange={(event) => setDraft((prev) => ({ ...prev, isActive: event.target.checked }))} className="size-5 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500" />
-              </label>
-              <label className="flex items-center justify-between gap-3 rounded-2xl border bg-white/80 px-4 py-3 text-sm font-black dark:border-white/10 dark:bg-white/[0.04]">
-                Varsayılan
-                <input type="checkbox" checked={draft.isDefault} onChange={(event) => setDraft((prev) => ({ ...prev, isDefault: event.target.checked }))} className="size-5 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500" />
-              </label>
+            <div className="mt-4 grid gap-4">
+              <MasterDataOpsFormField label="Açıklama *">
+                <OpsInput value={draft.name} onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))} placeholder="Örn: Peşin" />
+              </MasterDataOpsFormField>
+              <MasterDataOpsFormField label="Detay">
+                <OpsTextarea rows={3} value={draft.description ?? ''} onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))} />
+              </MasterDataOpsFormField>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <OpsCircuitToggleField
+                title="Aktif"
+                checked={draft.isActive}
+                onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, isActive: checked }))}
+              />
+              <OpsCircuitToggleField
+                title="Varsayılan"
+                checked={draft.isDefault}
+                onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, isDefault: checked }))}
+              />
             </div>
           </div>
-          <div className="flex justify-end gap-2 border-t px-6 py-4 dark:border-white/10">
+          <PurchaseOpsDialogFooter className="justify-end">
             <OpsActionButton type="button" variant="secondary" onClick={() => setDialogOpen(false)} disabled={saveMutation.isPending}>
               İptal
             </OpsActionButton>
@@ -320,8 +343,8 @@ export function PurchaseDefinitionPage({ category }: { category: PurchaseDefinit
               <Save className="size-4" />
               Kaydet
             </OpsActionButton>
-          </div>
-        </DialogContent>
+          </PurchaseOpsDialogFooter>
+        </MasterDataOpsDialogContent>
       </Dialog>
 
       <DeleteConfirmDialog
