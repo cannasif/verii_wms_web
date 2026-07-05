@@ -13,7 +13,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { DataTableActionBar, type DataTableActionBarProps, type DataTableVariant } from './DataTableActionBar';
+import { OpsLoadingState } from './OpsLoadingState';
 import { FieldHelpTooltip } from '@/features/access-control/components/FieldHelpTooltip';
 import { DataTableGridBody } from './data-table-grid/DataTableGridBody';
 import { DataTableGridPagination } from './data-table-grid/DataTableGridPagination';
@@ -229,7 +231,9 @@ export function DataTableGrid<TRow, TKey extends string>({
   variant = 'default',
   headerLayout = 'default',
 }: DataTableGridProps<TRow, TKey>): ReactElement {
+  const { t } = useTranslation('common');
   const isOps = variant === 'ops';
+  const resolvedLoadingText = loadingText === 'Loading...' ? t('common.loading') : loadingText;
   const canResizeColumns = (enableColumnResize ?? isOps) && Boolean(onResizeColumnPair);
   const [localVisibleColumnKeys, setLocalVisibleColumnKeys] = useState<TKey[]>(visibleColumnKeys);
   const lastPropKeysRef = useRef(visibleColumnKeys);
@@ -665,23 +669,22 @@ export function DataTableGrid<TRow, TKey extends string>({
         {isLoading ? (
           <div
             className={cn(
-              'absolute inset-0 z-20 flex items-start justify-center bg-background/35 backdrop-blur-[1px]',
-              isOps ? 'pt-24' : 'pt-20',
+              'absolute inset-0 z-20 flex items-start justify-center',
+              isOps ? 'wms-ops-grid-loading-overlay pt-24' : 'bg-background/35 pt-20 backdrop-blur-[1px]',
             )}
             aria-live="polite"
             aria-busy="true"
           >
-            <div
-              className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-xl',
-                isOps
-                  ? 'border-cyan-300/25 bg-slate-950/85 text-cyan-100'
-                  : 'border-slate-200/80 bg-white/95 text-slate-700 dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-100',
-              )}
-            >
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              <span>{loadingText}</span>
-            </div>
+            {isOps ? (
+              <div className="wms-ops-grid-loading-panel">
+                <OpsLoadingState message={resolvedLoadingText} code="FETCH" compact />
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/95 px-4 py-2 text-sm font-semibold text-slate-700 shadow-xl dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-100">
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <span>{resolvedLoadingText}</span>
+              </div>
+            )}
           </div>
         ) : null}
       </div>

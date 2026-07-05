@@ -270,22 +270,21 @@ export function PagedLookupDialog<T>({
               )}
             >
               {isInitialLoading ? (
-                <div className={cn('py-6', isOps ? 'px-2' : '')}>
+                <div className={cn('py-6', isOps ? 'wms-ops-lookup-list__loading px-2' : 'px-2')}>
                   <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
                 </div>
               ) : (
                 <>
                   {isLookupFetching ? (
-                    <div
-                      className={cn(
-                        'sticky top-0 z-10 mb-2 flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm',
-                        isOps
-                          ? 'border-cyan-300/20 bg-slate-950/85 text-cyan-100'
-                          : 'border-slate-200 bg-white/95 text-slate-600 dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-200',
+                    <div className={cn(isOps ? 'wms-ops-lookup-list__fetching' : 'sticky top-0 z-10 mb-2 flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm border-slate-200 bg-white/95 text-slate-600 dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-200')}>
+                      {isOps ? (
+                        <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
+                      ) : (
+                        <>
+                          <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                          {t('common.loading')}
+                        </>
                       )}
-                    >
-                      <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                      {t('common.loading')}
                     </div>
                   ) : null}
 

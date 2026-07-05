@@ -96,14 +96,31 @@ export function DataTableGridBody<TRow, TKey extends string>({
             {visibleColumnKeys.map((key, index) => {
               const isLast = index === visibleColumnKeys.length - 1 && !showActionsColumn;
               return (
-                <TableCell key={key} className={cn(!isLast && 'border-r border-slate-200/70 dark:border-white/[0.08]')}>
-                  <div className="h-5 w-full max-w-[120px] animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
+                <TableCell
+                  key={key}
+                  className={cn(!isLast && 'border-r border-slate-200/70 dark:border-white/[0.08]')}
+                >
+                  {isOps ? (
+                    <div
+                      className={cn(
+                        'wms-ops-grid-skeleton',
+                        index % 3 === 0 && 'wms-ops-grid-skeleton--wide',
+                      )}
+                      aria-hidden
+                    />
+                  ) : (
+                    <div className="h-5 w-full max-w-[120px] animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
+                  )}
                 </TableCell>
               );
             })}
             {showActionsColumn && (
               <TableCell className={ACTIONS_CELL_BASE} data-wms-action-cell="true">
-                <div className="ml-auto h-8 w-32 animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
+                {isOps ? (
+                  <div className="wms-ops-grid-skeleton wms-ops-grid-skeleton--actions" aria-hidden />
+                ) : (
+                  <div className="ml-auto h-8 w-32 animate-pulse rounded bg-slate-200/60 dark:bg-white/10" />
+                )}
               </TableCell>
             )}
           </TableRow>

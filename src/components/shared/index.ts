@@ -35,5 +35,6 @@ export { OpsSelect, OpsSelectItem } from './OpsSelect';
 export { OpsGridErrorState } from './OpsGridErrorState';
 export { OpsGridEmptyState } from './OpsGridEmptyState';
 export { OpsLoadingState } from './OpsLoadingState';
+export { OpsScrollArea } from './OpsScrollArea';
 export { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS, OPS_SELECT_TRIGGER_CLASS } from './ops-field-styles';
 export { HeaderQuantityPolicyFields } from './HeaderQuantityPolicyFields';
