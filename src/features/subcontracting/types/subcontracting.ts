@@ -16,9 +16,13 @@ import type {
 } from '@/types/detail-models';
 import type { TFunction } from 'i18next';
 
-export const createSubcontractingFormSchema = (t: TFunction) => z.object({
+export const createSubcontractingFormSchema = (t: TFunction, requireDocumentSeries: boolean = true) => z.object({
   transferDate: z.string().min(1, t('subcontracting.validation.transferDateRequired')),
   documentNo: z.string().min(1, t('subcontracting.validation.documentNoRequired')),
+  documentSeriesDefinitionId: requireDocumentSeries
+    ? z.number().min(1, t('documentSeries.messages.definitionRequired'))
+    : z.number().optional(),
+  requiresEDispatch: z.boolean().optional(),
   projectCode: z.string().optional(),
   customerId: z.string().min(1, t('subcontracting.validation.customerRequired')),
   sourceWarehouse: z.string().min(1, t('subcontracting.validation.sourceWarehouseRequired')),
@@ -78,6 +82,8 @@ export interface SelectedSubcontractingStockItem {
 export interface SubcontractingGenerateRequest {
   header: BaseDocumentHeaderRequest & {
     type: number;
+    documentSeriesDefinitionId?: number;
+    requiresEDispatch?: boolean;
   };
   lines: Array<BaseDocumentLineRequest & {
     stockName?: string;

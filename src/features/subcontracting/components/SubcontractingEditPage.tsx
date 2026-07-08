@@ -59,6 +59,8 @@ function toFormValues(header: SubcontractingHeader): SubcontractingFormData {
   return {
     transferDate: toDateInput(header.documentDate || header.plannedDate),
     documentNo: header.documentNo || '',
+    documentSeriesDefinitionId: undefined,
+    requiresEDispatch: false,
     projectCode: header.projectCode || '',
     customerId: header.customerCode || '',
     customerRefId: header.customerId ?? undefined,
@@ -83,12 +85,14 @@ function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }):
   const permission = useCrudPermission(config.permission);
   const headerId = Number(id);
 
-  const schema = useMemo(() => createSubcontractingFormSchema(t), [t]);
+  const schema = useMemo(() => createSubcontractingFormSchema(t, false), [t]);
   const form = useForm<SubcontractingFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
+      documentSeriesDefinitionId: undefined,
+      requiresEDispatch: false,
       projectCode: '',
       customerId: '',
       customerRefId: undefined,
@@ -149,7 +153,13 @@ function SubcontractingEditPageBase({ kind }: { kind: SubcontractingEditKind }):
         {!permission.canUpdate ? <PermissionNotice /> : null}
         <form className="space-y-6">
           <fieldset disabled={isFormDisabled} className={isFormDisabled ? 'pointer-events-none opacity-75' : undefined}>
-            <Step1SubcontractingBasicInfo showOperationUsers={false} permissionCode={`${config.permission}.quantity-policy`} variant="ops" />
+            <Step1SubcontractingBasicInfo
+              showOperationUsers={false}
+              permissionCode={`${config.permission}.quantity-policy`}
+              documentSeriesOperationType={kind === 'issue' ? 'SIT' : 'SRT'}
+              hideDocumentSeries
+              variant="ops"
+            />
             <div className="wms-ops-actions flex justify-between gap-4 border-t pt-6">
               <OpsActionButton type="button" variant="secondary" onClick={() => navigate(config.listPath)}>
                 <ChevronLeft className="size-3.5" aria-hidden />{t('common.cancel')}

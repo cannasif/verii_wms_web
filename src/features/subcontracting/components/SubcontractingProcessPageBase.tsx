@@ -51,6 +51,8 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
+      documentSeriesDefinitionId: undefined,
+      requiresEDispatch: false,
       projectCode: '',
       customerId: '',
       customerRefId: undefined,
@@ -164,7 +166,11 @@ export function SubcontractingProcessPageBase({ mode }: SubcontractingProcessPag
         <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1SubcontractingBasicInfo permissionCode={`wms.subcontracting.${mode}.quantity-policy`} variant="ops" />
+              <Step1SubcontractingBasicInfo
+                permissionCode={`wms.subcontracting.${mode}.quantity-policy`}
+                documentSeriesOperationType={isIssue ? 'SIT' : 'SRT'}
+                variant="ops"
+              />
             ) : (
               <div className="wms-ops-form wms-ops-list">
                 <ProcessStockSelection selectedItems={selectedItems} onToggleItem={handleToggleItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} labels={labels} />

@@ -50,6 +50,8 @@ export function SubcontractingIssueCreatePage(): ReactElement {
     defaultValues: {
       transferDate: new Date().toISOString().split('T')[0],
       documentNo: '',
+      documentSeriesDefinitionId: undefined,
+      requiresEDispatch: false,
       projectCode: '',
       customerId: '',
       customerRefId: undefined,
@@ -176,7 +178,7 @@ export function SubcontractingIssueCreatePage(): ReactElement {
         <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1SubcontractingBasicInfo permissionCode="wms.subcontracting.issue.quantity-policy" variant="ops" />
+              <Step1SubcontractingBasicInfo permissionCode="wms.subcontracting.issue.quantity-policy" documentSeriesOperationType="SIT" variant="ops" />
             ) : createMode === 'order' ? (
               <Step2SubcontractingOrderSelection type="issue" variant="ops" selectedItems={selectedItems} onToggleItem={handleToggleItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} />
             ) : (

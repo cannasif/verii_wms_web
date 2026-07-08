@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from '@/features/goods-receipt/hooks/useProjects';
 import { useActiveUsers } from '@/features/auth/hooks/useActiveUsers';
 import { SearchableSelect, SearchableMultiSelect, getOperationUserDisplayName, getOperationUserSubtitle } from '@/features/shared';
+import { OperationDocumentSeriesSelector } from '@/features/document-series-management/components/OperationDocumentSeriesSelector';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import type { Customer, Project, Warehouse } from '@/features/shared';
 import type { UserDto } from '@/features/auth/types/auth';
@@ -25,12 +26,16 @@ import { cn } from '@/lib/utils';
 interface Step1SubcontractingBasicInfoProps {
   showOperationUsers?: boolean;
   permissionCode?: string;
+  documentSeriesOperationType?: 'SIT' | 'SRT';
+  hideDocumentSeries?: boolean;
   variant?: 'default' | 'ops';
 }
 
 export function Step1SubcontractingBasicInfo({
   showOperationUsers = true,
   permissionCode = 'wms.subcontracting.receipt.quantity-policy',
+  documentSeriesOperationType = 'SRT',
+  hideDocumentSeries = false,
   variant = 'default',
 }: Step1SubcontractingBasicInfoProps): ReactElement {
   const { t } = useTranslation(['subcontracting', 'common']);
@@ -51,7 +56,7 @@ export function Step1SubcontractingBasicInfo({
 
   return (
     <div className={cn('space-y-6', isOps && 'wms-ops-form')}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <FormField
           control={form.control}
           name="transferDate"
@@ -83,6 +88,17 @@ export function Step1SubcontractingBasicInfo({
             </FormItem>
           )}
         />
+
+        {!hideDocumentSeries ? (
+          <div className={formItemClass}>
+            <OperationDocumentSeriesSelector
+              operationType={documentSeriesOperationType}
+              warehouseId={form.watch('targetWarehouseId')}
+              customerId={form.watch('customerRefId')}
+              variant={isOps ? 'ops' : 'default'}
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
