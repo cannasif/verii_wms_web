@@ -36,6 +36,14 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedSubcontractingOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedSubcontractingStockItem[]>([]);
+  const validSelectedItems = useMemo(
+    () => selectedItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedItems],
+  );
+  const validSelectedStockItems = useMemo(
+    () => selectedStockItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedStockItems],
+  );
 
   useEffect(() => {
     setPageTitle(t('subcontracting.receipt.create.title'));
@@ -67,8 +75,8 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
   const createMutation = useMutation({
     mutationFn: async (formData: SubcontractingFormData) =>
       createMode === 'order'
-        ? subcontractingApi.createSubcontractingReceipt(formData, selectedItems)
-        : subcontractingApi.createStockBasedSubcontractingReceipt(formData, selectedStockItems),
+        ? subcontractingApi.createSubcontractingReceipt(formData, validSelectedItems)
+        : subcontractingApi.createStockBasedSubcontractingReceipt(formData, validSelectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-orders'] });
       queryClient.invalidateQueries({ queryKey: ['subcontracting-receipt-order-items'] });
@@ -86,11 +94,11 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && validSelectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
+    if (currentStep === 2 && createMode === 'stock' && validSelectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -194,7 +202,7 @@ export function SubcontractingReceiptCreatePage(): ReactElement {
                     {t('common.next')}<ChevronRight className="size-3.5" aria-hidden />
                   </OpsActionButton>
                 ) : (
-                  <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)}>
+                  <OpsActionButton type="button" variant="primary" onClick={handleSave} disabled={!permission.canCreate || createMutation.isPending || (createMode === 'order' ? validSelectedItems.length === 0 : validSelectedStockItems.length === 0)}>
                     {createMutation.isPending ? t('common.saving') : t('common.save')}<ChevronRight className="size-3.5" aria-hidden />
                   </OpsActionButton>
                 )}
