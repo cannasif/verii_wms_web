@@ -241,6 +241,7 @@ export function GoodsReceiptPreReceiptLabelsPage(): ReactElement {
       sourceModule: 'goods-receipt-pre-label',
       sourceHeaderId: String(batch.id),
       printMode: 'document-all',
+      returnTo: '/goods-receipt/pre-labels',
     });
     navigate(`/erp/barcode-designer/0/print?${params.toString()}`);
   };

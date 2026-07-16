@@ -1,8 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, Printer, RefreshCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PagedDataGrid, OpsActionButton, OpsFieldShell, type PagedDataGridColumn } from '@/components/shared';
 import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
@@ -77,9 +77,14 @@ function formatDate(value?: string | null): string {
 
 export function BarcodePrintPage(): ReactElement {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
   const { reportScreenReady } = useRouteScreenReady();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const requestedReturnTo = searchParams.get('returnTo');
+  const returnTo = requestedReturnTo?.startsWith('/') && !requestedReturnTo.startsWith('//')
+    ? requestedReturnTo
+    : null;
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.print-management');
   const initialTemplateId = id ? Number(id) : null;
@@ -425,8 +430,16 @@ export function BarcodePrintPage(): ReactElement {
   return (
     <div className="wms-ops-form wms-ops-erp-skin wms-ops-list wms-ops-barcode-print space-y-5">
       <header className="wms-ops-header">
-        <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
-          {t('sidebar.erp', { defaultValue: 'ERP' })} / {t('barcodePrint.badge', { defaultValue: 'WMS Print' })}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+            {t('sidebar.erp', { defaultValue: 'ERP' })} / {t('barcodePrint.badge', { defaultValue: 'WMS Print' })}
+          </div>
+          {returnTo ? (
+            <OpsActionButton type="button" variant="secondary" onClick={() => navigate(returnTo)}>
+              <ArrowLeft className="size-3.5" aria-hidden />
+              {t('back')}
+            </OpsActionButton>
+          ) : null}
         </div>
       </header>
 
