@@ -262,7 +262,7 @@ export function DataTableActionBar({
         {(!isOps || !shouldRenderSearch) && leftSlot ? leftSlot : null}
       </div>
       <div className={cn('flex flex-wrap items-center gap-2', isOps && 'wms-ops-data-grid-toolbar__end')}>
-        <Popover open={showFilters} onOpenChange={setShowFilters}>
+        {filterColumns.length > 0 ? <Popover open={showFilters} onOpenChange={setShowFilters}>
           <PopoverTrigger asChild>
             {isOps ? (
               <OpsActionButton
@@ -345,7 +345,7 @@ export function DataTableActionBar({
               />
             </div>
           </PopoverContent>
-        </Popover>
+        </Popover> : null}
 
         {definitionExcel ? (
           <DefinitionExcelActions

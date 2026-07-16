@@ -10,6 +10,7 @@ import { MasterDataOpsErpEyebrow, MasterDataOpsFormField, MasterDataOpsSelect, m
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
@@ -17,6 +18,15 @@ import type { ShelfDefinitionDto, ShelfUpsertRequest } from '../types/shelf-mana
 import { shelfManagementApi } from '../api/shelf-management.api';
 
 type ShelfColumnKey = 'warehouse' | 'code' | 'name' | 'type' | 'barcode' | 'status' | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'warehouseId', type: 'number', labelKey: 'shelfManagement.colWarehouse' },
+  { value: 'code', type: 'string', labelKey: 'shelfManagement.colCode' },
+  { value: 'name', type: 'string', labelKey: 'shelfManagement.colName' },
+  { value: 'locationType', type: 'string', labelKey: 'shelfManagement.colType' },
+  { value: 'barcode', type: 'string', labelKey: 'shelfManagement.colBarcode' },
+  { value: 'isActive', type: 'boolean', labelKey: 'shelfManagement.colStatus' },
+];
 
 const SHELF_DEFAULT_WIDTHS = {
   warehouse: 18,
@@ -543,15 +553,15 @@ export function ShelfManagementPage(): ReactElement {
                   barcode: item.barcode ?? '',
                   status: item.isActive ? t('shelfManagement.active') : t('shelfManagement.inactive'),
                 })),
-                filterColumns: [],
-                defaultFilterColumn: '',
-                draftFilterRows: [],
-                onDraftFilterRowsChange: () => undefined,
-                filterLogic: 'and',
-                onFilterLogicChange: () => undefined,
-                onApplyFilters: () => undefined,
-                onClearFilters: () => undefined,
-                appliedFilterCount: 0,
+                filterColumns,
+                defaultFilterColumn: 'code',
+                draftFilterRows: pagedGrid.draftFilterRows,
+                onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+                filterLogic: pagedGrid.filterLogic,
+                onFilterLogicChange: pagedGrid.setFilterLogic,
+                onApplyFilters: pagedGrid.applyAdvancedFilters,
+                onClearFilters: pagedGrid.clearAdvancedFilters,
+                appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
                 variant: 'ops',
                 search: {
                   value: pagedGrid.searchInput,

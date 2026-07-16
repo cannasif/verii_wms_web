@@ -28,6 +28,7 @@ import type { UserDto } from '@/features/user-management/types/user-types';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { documentSeriesManagementApi } from '../api/document-series-management.api';
 import type {
@@ -45,6 +46,17 @@ import {
 } from './document-series/shared';
 
 type ColumnKey = 'definition' | 'operationType' | 'warehouse' | 'customer' | 'user' | 'requiresEDispatch' | 'priority' | 'isActive' | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'operationType', type: 'string', labelKey: 'documentSeries.columns.operationType' },
+  { value: 'companyCode', type: 'string', labelKey: 'documentSeries.columns.companyCode' },
+  { value: 'warehouseId', type: 'number', labelKey: 'documentSeries.columns.warehouse' },
+  { value: 'customerId', type: 'number', labelKey: 'documentSeries.columns.customer' },
+  { value: 'userId', type: 'number', labelKey: 'documentSeries.columns.user' },
+  { value: 'requiresEDispatch', type: 'boolean', labelKey: 'documentSeries.columns.eDispatch' },
+  { value: 'priority', type: 'number', labelKey: 'documentSeries.columns.priority' },
+  { value: 'isActive', type: 'boolean', labelKey: 'documentSeries.columns.isActive' },
+];
 
 const emptyForm: CreateWmsDocumentSeriesRuleDto = {
   branchCode: '0',
@@ -308,15 +320,15 @@ export function DocumentSeriesRuleManagementPage(): ReactElement {
           exportFileName: 'document-series-rules',
           exportColumns,
           exportRows,
-          filterColumns: [],
-          defaultFilterColumn: '',
-          draftFilterRows: [],
-          onDraftFilterRowsChange: () => undefined,
-          filterLogic: 'and',
-          onFilterLogicChange: () => undefined,
-          onApplyFilters: () => undefined,
-          onClearFilters: () => undefined,
-          appliedFilterCount: 0,
+          filterColumns,
+          defaultFilterColumn: 'operationType',
+          draftFilterRows: pagedGrid.draftFilterRows,
+          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+          filterLogic: pagedGrid.filterLogic,
+          onFilterLogicChange: pagedGrid.setFilterLogic,
+          onApplyFilters: pagedGrid.applyAdvancedFilters,
+          onClearFilters: pagedGrid.clearAdvancedFilters,
+          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
           search: {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,

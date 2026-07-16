@@ -8,6 +8,7 @@ import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, ty
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { ocrGoodsReceiptMatchApi } from '../api/ocr-goods-receipt-match.api';
 import type { OcrGoodsReceiptCustomerStockMatchPagedRowDto } from '../types/ocr-goods-receipt-match.types';
@@ -23,6 +24,16 @@ type ColumnKey =
   | 'isActive'
   | 'description'
   | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'customerId', type: 'number', labelKey: 'ocrGoodsReceiptMatch.list.columns.customer' },
+  { value: 'customerStockCode', type: 'string', labelKey: 'ocrGoodsReceiptMatch.list.columns.customerStockCode' },
+  { value: 'customerStockName', type: 'string', labelKey: 'ocrGoodsReceiptMatch.list.columns.customerStockName' },
+  { value: 'customerBarcode', type: 'string', labelKey: 'ocrGoodsReceiptMatch.list.columns.customerBarcode' },
+  { value: 'ourStockCode', type: 'string', labelKey: 'ocrGoodsReceiptMatch.list.columns.ourStockCode' },
+  { value: 'ourStockName', type: 'string', labelKey: 'ocrGoodsReceiptMatch.list.columns.ourStockName' },
+  { value: 'isActive', type: 'boolean', labelKey: 'ocrGoodsReceiptMatch.list.columns.isActive' },
+];
 
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
@@ -235,15 +246,15 @@ export function OcrGoodsReceiptMatchListPage(): ReactElement {
           exportFileName: 'ocr-goods-receipt-match-list',
           exportColumns,
           exportRows,
-          filterColumns: [],
-          defaultFilterColumn: '',
-          draftFilterRows: [],
-          onDraftFilterRowsChange: () => undefined,
-          filterLogic: 'and',
-          onFilterLogicChange: () => undefined,
-          onApplyFilters: () => undefined,
-          onClearFilters: () => undefined,
-          appliedFilterCount: 0,
+          filterColumns,
+          defaultFilterColumn: 'customerStockCode',
+          draftFilterRows: pagedGrid.draftFilterRows,
+          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+          filterLogic: pagedGrid.filterLogic,
+          onFilterLogicChange: pagedGrid.setFilterLogic,
+          onApplyFilters: pagedGrid.applyAdvancedFilters,
+          onClearFilters: pagedGrid.clearAdvancedFilters,
+          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
           search: {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,

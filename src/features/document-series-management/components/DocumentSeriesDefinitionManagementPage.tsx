@@ -26,6 +26,7 @@ import type { WarehouseReferenceDto } from '@/features/erp-reference/types/erpRe
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { documentSeriesManagementApi } from '../api/document-series-management.api';
 import type {
@@ -42,6 +43,18 @@ import {
 } from './document-series/shared';
 
 type ColumnKey = 'code' | 'name' | 'operationType' | 'documentFlow' | 'warehouse' | 'seriesPrefix' | 'currentNumber' | 'isEDispatchSeries' | 'isDefault' | 'isActive' | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'code', type: 'string', labelKey: 'documentSeries.columns.code' },
+  { value: 'name', type: 'string', labelKey: 'documentSeries.columns.name' },
+  { value: 'operationType', type: 'string', labelKey: 'documentSeries.columns.operationType' },
+  { value: 'documentFlow', type: 'string', labelKey: 'documentSeries.columns.documentFlow' },
+  { value: 'warehouseId', type: 'number', labelKey: 'documentSeries.columns.warehouse' },
+  { value: 'seriesPrefix', type: 'string', labelKey: 'documentSeries.columns.seriesPrefix' },
+  { value: 'isEDispatchSeries', type: 'boolean', labelKey: 'documentSeries.columns.eDispatch' },
+  { value: 'isDefault', type: 'boolean', labelKey: 'documentSeries.columns.isDefault' },
+  { value: 'isActive', type: 'boolean', labelKey: 'documentSeries.columns.isActive' },
+];
 
 const emptyForm: CreateWmsDocumentSeriesDefinitionDto = {
   branchCode: '0',
@@ -320,15 +333,15 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
           exportFileName: 'document-series-definitions',
           exportColumns,
           exportRows,
-          filterColumns: [],
-          defaultFilterColumn: '',
-          draftFilterRows: [],
-          onDraftFilterRowsChange: () => undefined,
-          filterLogic: 'and',
-          onFilterLogicChange: () => undefined,
-          onApplyFilters: () => undefined,
-          onClearFilters: () => undefined,
-          appliedFilterCount: 0,
+          filterColumns,
+          defaultFilterColumn: 'code',
+          draftFilterRows: pagedGrid.draftFilterRows,
+          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+          filterLogic: pagedGrid.filterLogic,
+          onFilterLogicChange: pagedGrid.setFilterLogic,
+          onApplyFilters: pagedGrid.applyAdvancedFilters,
+          onClearFilters: pagedGrid.clearAdvancedFilters,
+          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
           search: {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,

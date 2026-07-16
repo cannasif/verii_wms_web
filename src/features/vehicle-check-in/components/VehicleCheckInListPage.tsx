@@ -10,6 +10,7 @@ import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { vehicleCheckInApi } from '../api/vehicle-check-in.api';
 import type { VehicleCheckInPagedRowDto } from '../types/vehicle-check-in.types';
@@ -23,6 +24,15 @@ type VehicleCheckInColumnKey =
   | 'customer'
   | 'imageCount'
   | 'actions';
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'plateNo', type: 'string', labelKey: 'vehicleCheckIn.list.columns.plate' },
+  { value: 'entryDate', type: 'date', labelKey: 'vehicleCheckIn.list.columns.entryDate' },
+  { value: 'firstName', type: 'string', labelKey: 'vehicleCheckIn.list.columns.firstName' },
+  { value: 'lastName', type: 'string', labelKey: 'vehicleCheckIn.list.columns.lastName' },
+  { value: 'customerCode', type: 'string', labelKey: 'vehicleCheckIn.list.columns.customer' },
+  { value: 'customerName', type: 'string', labelKey: 'vehicleCheckIn.list.columns.customer' },
+];
 
 function mapSortBy(value: VehicleCheckInColumnKey): string {
   switch (value) {
@@ -244,15 +254,15 @@ export function VehicleCheckInListPage(): ReactElement {
           exportFileName: 'vehicle-check-in-list',
           exportColumns,
           exportRows,
-          filterColumns: [],
-          defaultFilterColumn: '',
-          draftFilterRows: [],
-          onDraftFilterRowsChange: () => undefined,
-          filterLogic: 'and',
-          onFilterLogicChange: () => undefined,
-          onApplyFilters: () => undefined,
-          onClearFilters: () => undefined,
-          appliedFilterCount: 0,
+          filterColumns,
+          defaultFilterColumn: 'plateNo',
+          draftFilterRows: pagedGrid.draftFilterRows,
+          onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+          filterLogic: pagedGrid.filterLogic,
+          onFilterLogicChange: pagedGrid.setFilterLogic,
+          onApplyFilters: pagedGrid.applyAdvancedFilters,
+          onClearFilters: pagedGrid.clearAdvancedFilters,
+          appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
           search: {
             value: pagedGrid.searchInput,
             onValueChange: pagedGrid.searchConfig.onValueChange,
