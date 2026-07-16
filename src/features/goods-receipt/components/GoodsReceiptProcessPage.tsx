@@ -188,10 +188,7 @@ export function GoodsReceiptProcessPage(): ReactElement {
         actions={
           <Tabs
             value={processMode}
-            onValueChange={(value) => {
-              setProcessMode(value as 'order' | 'stock');
-              setCurrentStep(1);
-            }}
+            onValueChange={(value) => setProcessMode(value as 'order' | 'stock')}
             className="w-full sm:w-auto"
           >
             <TabsList
