@@ -150,7 +150,10 @@ function ImportLineDetailDialog({
   const warehouses = Array.from(
     new Set(importLine.routes.map((route) => route.targetWarehouse).filter((wh): wh is number => wh !== null)),
   );
-  const stockName = importLine.routes.find((route) => route.stockName)?.stockName || importLine.description1 || importLine.stockCode;
+  const stockName = importLine.routes.find((route) => route.stockName)?.stockName
+    || importLine.stockName
+    || importLine.description1
+    || importLine.stockCode;
   const joinRouteValues = (selector: (route: GrImportLine['routes'][number]) => string | number | null | undefined): string => {
     const values = importLine.routes
       .map(selector)
@@ -325,7 +328,7 @@ export function GoodsReceiptDetailDialog({
 
   const getImportLineStockName = (importLine: GrImportLine): string => {
     const routeWithStockName = importLine.routes.find((route) => route.stockName);
-    return routeWithStockName?.stockName || importLine.description1 || importLine.stockCode;
+    return routeWithStockName?.stockName || importLine.stockName || importLine.description1 || importLine.stockCode;
   };
 
   const getImportLineMessage = (importLine: GrImportLine, orderLine: GrLine | null): string => {
@@ -349,7 +352,7 @@ export function GoodsReceiptDetailDialog({
     return grImportLines.filter((importLine) => {
       const stockCode = importLine.stockCode.toLowerCase();
       const routeWithStockName = importLine.routes.find((route) => route.stockName);
-      const stockName = (routeWithStockName?.stockName || importLine.description1 || importLine.stockCode).toLowerCase();
+      const stockName = (routeWithStockName?.stockName || importLine.stockName || importLine.description1 || importLine.stockCode).toLowerCase();
       return stockCode.includes(query) || stockName.includes(query);
     });
   }, [grImportLines, searchQuery]);
