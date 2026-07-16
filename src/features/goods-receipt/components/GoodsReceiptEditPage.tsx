@@ -29,7 +29,10 @@ function toDateInput(value?: string | null): string {
 }
 
 function toFormValues(header: GrHeader): GoodsReceiptFormData {
-  const documentNo = header.documentNo || header.orderId || '';
+  const legacyDocumentNo = !header.documentNo && /^\d{15,16}$/.test(header.description1?.trim() || '')
+    ? header.description1!.trim()
+    : '';
+  const documentNo = header.documentNo || legacyDocumentNo || header.orderId || '';
 
   return {
     receiptDate: toDateInput(header.documentDate || header.plannedDate),
@@ -38,7 +41,7 @@ function toFormValues(header: GrHeader): GoodsReceiptFormData {
     isInvoice: documentNo.replace(/\D/g, '').length === 16,
     customerId: header.customerCode || '',
     customerRefId: header.customerId ?? undefined,
-    notes: header.description1 || '',
+    notes: legacyDocumentNo ? (header.description2 || '') : (header.description1 || ''),
     allowLessQuantityBasedOnOrder: header.allowLessQuantityBasedOnOrder ?? false,
     allowMoreQuantityBasedOnOrder: header.allowMoreQuantityBasedOnOrder ?? false,
   };
