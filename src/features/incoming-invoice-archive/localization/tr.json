@@ -37,6 +37,7 @@
   "connections": {
     "title": "eLogo Bağlantıları",
     "description": "Gelen fatura/e-Arşiv sorgularında kullanılacak firma bağlantılarını SQL üzerinden yönetin.",
+    "searchPlaceholder": "Firma, anahtar, VKN veya şirket kodu ara...",
     "empty": "Bağlantı tanımı bulunamadı.",
     "actions": {
       "create": "Bağlantı Ekle"
@@ -70,6 +71,13 @@
       "active": "Aktif",
       "default": "Varsayılan",
       "description": "Açıklama"
+    },
+    "formHelp": {
+      "key": "Bu bağlantıyı sistem içinde ayırt eden benzersiz kısa kod. Örnek: FIRMA01.",
+      "vkn": "eLogo hesabının bağlı olduğu firmanın 10 haneli vergi kimlik numarası.",
+      "username": "eLogo web servisleri için tanımlanan kullanıcı adı.",
+      "source": "eLogo tarafından firmaya verilen şirket veya kaynak kodu.",
+      "endpointUrl": "Yalnızca özel bir servis adresi kullanılıyorsa girin; aksi halde boş bırakın."
     },
     "messages": {
       "created": "eLogo bağlantısı oluşturuldu.",

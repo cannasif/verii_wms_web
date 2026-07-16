@@ -276,6 +276,12 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
         previousLabel={t('common:previous')}
         nextLabel={t('common:next')}
         paginationInfoText={paginationInfoText}
+        search={{
+          value: pagedGrid.searchConfig.value,
+          onValueChange: pagedGrid.searchConfig.onValueChange,
+          onSearchChange: pagedGrid.searchConfig.onSearchChange,
+          placeholder: t('connections.searchPlaceholder'),
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
@@ -294,15 +300,18 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
                   disabled={Boolean(editing)}
                   onChange={(event) => setFormState((prev) => ({ ...prev, key: event.target.value }))}
                 />
+                <p className="text-xs text-muted-foreground">{t('connections.formHelp.key')}</p>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={`${t('connections.form.displayName')} *`}>
                 <OpsInput value={formState.displayName} onChange={(event) => setFormState((prev) => ({ ...prev, displayName: event.target.value }))} />
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={`${t('connections.form.vkn')} *`}>
                 <OpsInput value={formState.vkn} onChange={(event) => setFormState((prev) => ({ ...prev, vkn: event.target.value }))} />
+                <p className="text-xs text-muted-foreground">{t('connections.formHelp.vkn')}</p>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={`${t('connections.form.username')} *`}>
                 <OpsInput value={formState.username} onChange={(event) => setFormState((prev) => ({ ...prev, username: event.target.value }))} />
+                <p className="text-xs text-muted-foreground">{t('connections.formHelp.username')}</p>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.password')}>
                 <OpsInput
@@ -314,9 +323,11 @@ export function IncomingInvoiceConnectionsPage(): ReactElement {
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={`${t('connections.form.source')} *`}>
                 <OpsInput value={formState.source} onChange={(event) => setFormState((prev) => ({ ...prev, source: event.target.value }))} />
+                <p className="text-xs text-muted-foreground">{t('connections.formHelp.source')}</p>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.endpointUrl')}>
                 <OpsInput value={formState.endpointUrl ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, endpointUrl: event.target.value }))} />
+                <p className="text-xs text-muted-foreground">{t('connections.formHelp.endpointUrl')}</p>
               </MasterDataOpsFormField>
               <MasterDataOpsFormField label={t('connections.form.applicationName')}>
                 <OpsInput value={formState.applicationName ?? ''} onChange={(event) => setFormState((prev) => ({ ...prev, applicationName: event.target.value }))} />

@@ -37,6 +37,7 @@
   "connections": {
     "title": "eLogo Connections",
     "description": "Manage company connections used for incoming invoice and e-Archive lookups from SQL.",
+    "searchPlaceholder": "Search company, key, tax number, or source...",
     "empty": "No connection definition found.",
     "actions": {
       "create": "Add Connection"
@@ -70,6 +71,13 @@
       "active": "Active",
       "default": "Default",
       "description": "Description"
+    },
+    "formHelp": {
+      "key": "A unique short code used to identify this connection in the system. Example: COMPANY01.",
+      "vkn": "The 10-digit tax number of the company linked to the eLogo account.",
+      "username": "The username defined for eLogo web services.",
+      "source": "The company or source code assigned by eLogo.",
+      "endpointUrl": "Enter only when a custom service address is required; otherwise leave blank."
     },
     "messages": {
       "created": "eLogo connection was created.",
