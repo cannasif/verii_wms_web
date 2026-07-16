@@ -2826,7 +2826,9 @@
     "changePhoto": "Profil resmini seç veya değiştir",
     "settingsModalSubtitle": "Profil bilgilerinizi ve güvenlik ayarlarınızı buradan yönetebilirsiniz.",
     "tabPersonal": "Kişisel Bilgiler",
-    "tabSecurity": "Güvenlik"
+    "tabSecurity": "Güvenlik",
+    "wmsOverview": "WMS Genel Bakış",
+    "wmsOverviewHint": "Yetkiniz dahilindeki güncel depo operasyonlarına hızlı erişin."
   },
   "language_choice": "Dil",
   "appearance": "Görünüm",

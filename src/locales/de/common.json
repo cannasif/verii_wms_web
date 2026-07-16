@@ -2719,7 +2719,9 @@
     "changePhoto": "Profilfoto auswählen oder ändern",
     "settingsModalSubtitle": "Verwalten Sie hier Ihre Profilinformationen und Sicherheitseinstellungen.",
     "tabPersonal": "Persönliche Informationen",
-    "tabSecurity": "Sicherheit"
+    "tabSecurity": "Sicherheit",
+    "wmsOverview": "WMS-Übersicht",
+    "wmsOverviewHint": "Greifen Sie schnell auf aktuelle Lagervorgänge innerhalb Ihrer Berechtigungen zu."
   },
   "language_choice": "Sprache",
   "warehouse": {

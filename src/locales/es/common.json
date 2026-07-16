@@ -2025,7 +2025,9 @@
     "changePhoto": "Choose or change profile photo",
     "settingsModalSubtitle": "Manage your profile information and security settings here.",
     "tabPersonal": "Personal information",
-    "tabSecurity": "Security"
+    "tabSecurity": "Seguridad",
+    "wmsOverview": "Resumen de WMS",
+    "wmsOverviewHint": "Acceda rápidamente a las operaciones actuales del almacén según sus permisos."
   },
   "language_choice": "Language",
   "appearance": "Appearance",

@@ -2810,7 +2810,9 @@
     "changePhoto": "Choose or change profile photo",
     "settingsModalSubtitle": "Manage your profile information and security settings here.",
     "tabPersonal": "Personal information",
-    "tabSecurity": "Security"
+    "tabSecurity": "Security",
+    "wmsOverview": "WMS overview",
+    "wmsOverviewHint": "Quickly access current warehouse operations within your permissions."
   },
   "language_choice": "Language",
   "appearance": "Appearance",

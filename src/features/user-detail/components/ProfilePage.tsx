@@ -1,10 +1,13 @@
 import { type ReactElement, type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Building2, Camera, Loader2, Mail, Settings } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Boxes, Building2, Camera, ClipboardList, Loader2, Mail, Settings, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { OpsActionButton } from '@/components/shared/OpsActionButton';
+import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
+import { useDashboardMetrics } from '@/features/dashboard/hooks/useDashboardMetrics';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { useUploadProfilePicture } from '../hooks/useUploadProfilePicture';
 import { getFullProfileImageUrl } from '../utils/profile-image';
@@ -19,6 +22,8 @@ export function ProfilePage(): ReactElement {
   const { user, branch } = useAuthStore();
   const { setPageTitle } = useUIStore();
   const { data: userDetail, isLoading: isLoadingUserDetail } = useUserDetail();
+  const permissionAccess = usePermissionAccess();
+  const { metrics, isLoading: isLoadingMetrics } = useDashboardMetrics();
   const uploadPictureMutation = useUploadProfilePicture();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
@@ -46,6 +51,49 @@ export function ProfilePage(): ReactElement {
           .filter((part): part is string => Boolean(part?.trim()))
           .join(' · ') || '—'
       : '—';
+
+  const wmsCards = [
+    {
+      key: 'assignments',
+      visible: permissionAccess.can('wms.goods-receipt.view') || permissionAccess.can('wms.shipment.view'),
+      label: t('dashboard.terminal.myAssignments'),
+      description: t('dashboard.terminal.myAssignmentsHint'),
+      value: metrics.myTasksCount,
+      href: permissionAccess.can('wms.goods-receipt.view') ? '/goods-receipt/assigned' : '/shipment/assigned',
+      icon: ClipboardList,
+      iconClassName: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-600 dark:text-cyan-300',
+    },
+    {
+      key: 'approvals',
+      visible: permissionAccess.can('wms.goods-receipt.update'),
+      label: t('dashboard.terminal.pendingApproval'),
+      description: t('dashboard.terminal.pendingApprovalHint'),
+      value: metrics.pendingApprovalCount,
+      href: '/goods-receipt/approval',
+      icon: ShieldCheck,
+      iconClassName: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    },
+    {
+      key: 'stock',
+      visible: permissionAccess.can('wms.warehouse-balance.view'),
+      label: t('dashboard.terminal.stockSkuCount'),
+      description: t('dashboard.terminal.stockSkuHint'),
+      value: metrics.stockSkuCount,
+      href: '/erp/warehouse-stock-balance',
+      icon: Boxes,
+      iconClassName: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    },
+    {
+      key: 'transfers',
+      visible: permissionAccess.can('wms.transfer.view'),
+      label: t('dashboard.terminal.transferCount'),
+      description: t('dashboard.terminal.transferHint'),
+      value: metrics.transferCount,
+      href: '/transfer/list',
+      icon: ArrowLeftRight,
+      iconClassName: 'border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300',
+    },
+  ].filter((card) => card.visible);
 
   const handleAvatarPickClick = (): void => {
     if (uploadPictureMutation.isPending) return;
@@ -176,9 +224,46 @@ export function ProfilePage(): ReactElement {
         )}
       </section>
 
-      <ProfileSettingsModal open={profileSettingsOpen} onOpenChange={setProfileSettingsOpen} />
+      {wmsCards.length > 0 ? (
+        <section className="mt-6" aria-labelledby="profile-wms-overview-title">
+          <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="profile-wms-overview-title" className="text-base font-bold text-slate-900 dark:text-slate-100">
+                {t('profile.wmsOverview')}
+              </h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t('profile.wmsOverviewHint')}</p>
+            </div>
+            <span className="wms-ops-code-badge w-fit" aria-hidden>WMS / LIVE</span>
+          </div>
 
-      <div className="min-h-[min(42vh,360px)] w-full" aria-hidden />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {wmsCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <Link
+                  key={card.key}
+                  to={card.href}
+                  className="group min-h-36 rounded border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-cyan-500/50 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-400/40 dark:hover:bg-white/[0.07]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded border ${card.iconClassName}`}>
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <ArrowRight className="size-4 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-cyan-600 dark:group-hover:text-cyan-300" aria-hidden />
+                  </div>
+                  <p className="mt-3 text-2xl font-bold text-slate-950 dark:text-white" aria-busy={isLoadingMetrics}>
+                    {isLoadingMetrics ? '...' : card.value.toLocaleString()}
+                  </p>
+                  <h3 className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200">{card.label}</h3>
+                  <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{card.description}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+      <ProfileSettingsModal open={profileSettingsOpen} onOpenChange={setProfileSettingsOpen} />
     </div>
   );
 }
