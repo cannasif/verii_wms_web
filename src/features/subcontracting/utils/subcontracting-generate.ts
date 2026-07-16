@@ -186,6 +186,79 @@ function buildSubcontractingProcessRequest(
   documentType: DocumentType,
 ): SubcontractingProcessRequest {
   const now = new Date().toISOString();
+  const positiveItems = selectedItems.filter(
+    (item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0,
+  );
+  const sourceWarehouse = Number(formData.sourceWarehouse);
+  const targetWarehouse = Number(formData.targetWarehouse);
+  const lines: SubcontractingProcessRequest['lines'] = [];
+  const lineSerials: SubcontractingProcessRequest['lineSerials'] = [];
+  const importLines: SubcontractingProcessRequest['importLines'] = [];
+  const routes: SubcontractingProcessRequest['routes'] = [];
+
+  positiveItems.forEach((item) => {
+    const lineClientKey = crypto.randomUUID();
+    const lineGroupGuid = crypto.randomUUID();
+    const importLineClientKey = crypto.randomUUID();
+    const importLineGroupGuid = crypto.randomUUID();
+    const yapKod = item.configCode || '';
+
+    lines.push({
+      clientKey: lineClientKey,
+      clientGuid: lineGroupGuid,
+      stockId: item.stockId,
+      stockCode: item.stockCode,
+      yapKodId: item.yapKodId,
+      yapKod,
+      quantity: item.transferQuantity,
+      unit: item.unit,
+      description: '',
+    });
+
+    lineSerials.push({
+      quantity: item.transferQuantity,
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      serialNo3: item.lotNo || '',
+      serialNo4: item.batchNo || '',
+      sourceWarehouseId: formData.sourceWarehouseId,
+      targetWarehouseId: formData.targetWarehouseId,
+      sourceCellCode: item.sourceCellCode || '',
+      targetCellCode: item.targetCellCode || '',
+      lineClientKey,
+      lineGroupGuid,
+    });
+
+    importLines.push({
+      clientKey: importLineClientKey,
+      clientGroupGuid: importLineGroupGuid,
+      lineClientKey,
+      lineGroupGuid,
+      stockId: item.stockId,
+      stockCode: item.stockCode,
+      yapKodId: item.yapKodId,
+      yapKod,
+    });
+
+    routes.push({
+      importLineClientKey,
+      importLineGroupGuid,
+      stockCode: item.stockCode,
+      yapKod,
+      quantity: item.transferQuantity,
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      serialNo3: item.lotNo || '',
+      serialNo4: item.batchNo || '',
+      scannedBarcode: item.stockCode,
+      sourceWarehouseId: formData.sourceWarehouseId,
+      targetWarehouseId: formData.targetWarehouseId,
+      sourceWarehouse: Number.isFinite(sourceWarehouse) ? sourceWarehouse : undefined,
+      targetWarehouse: Number.isFinite(targetWarehouse) ? targetWarehouse : undefined,
+      sourceCellCode: item.sourceCellCode || '',
+      targetCellCode: item.targetCellCode || '',
+    });
+  });
 
   return {
     header: {
@@ -217,24 +290,10 @@ function buildSubcontractingProcessRequest(
       allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
       allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
-    routes: selectedItems
-      .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)
-      .map((item) => ({
-        stockId: item.stockId,
-        stockCode: item.stockCode,
-        yapKodId: item.yapKodId,
-        yapKod: item.configCode || undefined,
-        quantity: item.transferQuantity,
-        serialNo: item.serialNo || '',
-        serialNo2: item.serialNo2 || '',
-        serialNo3: item.lotNo || '',
-        serialNo4: item.batchNo || '',
-        scannedBarcode: item.stockCode,
-        sourceWarehouse: formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined,
-        targetWarehouse: formData.targetWarehouse ? Number(formData.targetWarehouse) : undefined,
-        sourceCellCode: item.sourceCellCode || '',
-        targetCellCode: item.targetCellCode || '',
-      })),
+    lines,
+    lineSerials,
+    importLines,
+    routes,
   };
 }
 

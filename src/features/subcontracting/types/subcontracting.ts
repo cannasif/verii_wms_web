@@ -99,10 +99,22 @@ export interface SubcontractingGenerateRequest {
 
 export interface SubcontractingProcessRequest {
   header: SubcontractingGenerateRequest['header'];
-  routes: Array<{
+  lines: SubcontractingGenerateRequest['lines'];
+  lineSerials: SubcontractingGenerateRequest['lineSerials'];
+  importLines: Array<{
+    clientKey: string;
+    clientGroupGuid: string;
+    lineClientKey: string;
+    lineGroupGuid: string;
     stockId?: number;
     stockCode: string;
     yapKodId?: number;
+    yapKod?: string;
+  }>;
+  routes: Array<{
+    importLineClientKey: string;
+    importLineGroupGuid: string;
+    stockCode: string;
     yapKod?: string;
     quantity: number;
     serialNo?: string;
@@ -110,6 +122,8 @@ export interface SubcontractingProcessRequest {
     serialNo3?: string;
     serialNo4?: string;
     scannedBarcode?: string;
+    sourceWarehouseId?: number;
+    targetWarehouseId?: number;
     sourceWarehouse?: number;
     targetWarehouse?: number;
     sourceCellCode?: string;
