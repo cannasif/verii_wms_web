@@ -266,11 +266,6 @@ export function SearchableMultiSelect<T>({
                         key={optionValue}
                         value={optionValue}
                         className={cn(optionLayout === 'user' && 'items-center gap-2 py-2.5')}
-                        onMouseDown={(event) => {
-                          event.preventDefault();
-                          handleToggle(optionValue);
-                          setSearchQuery('');
-                        }}
                         onSelect={() => {
                           handleToggle(optionValue);
                           setSearchQuery('');
