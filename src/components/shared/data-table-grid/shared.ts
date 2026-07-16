@@ -1,7 +1,7 @@
 import type { DataTableGridColumn } from '../DataTableGrid';
 
 export function isInteractiveTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
+  if (!(target instanceof Element)) return false;
   return Boolean(
     target.closest('button, a, input, select, textarea, label, [role="button"], [data-no-drag-scroll="true"]')
   );
