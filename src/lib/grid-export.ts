@@ -1,3 +1,5 @@
+import { registerPdfExportFont } from './pdf-export-font';
+
 export interface GridExportColumn {
   key: string;
   label: string;
@@ -11,10 +13,6 @@ interface GridExportParams {
   rows: GridExportRow[];
 }
 
-const dynamicImport = <TModule>(moduleName: string): Promise<TModule> => {
-  return new Function('m', 'return import(m)')(moduleName) as Promise<TModule>;
-};
-
 type XlsxModule = {
   utils: {
     json_to_sheet: (rows: Record<string, string | number>[]) => unknown;
@@ -22,27 +20,6 @@ type XlsxModule = {
     book_append_sheet: (workbook: unknown, worksheet: unknown, sheetName: string) => void;
   };
   writeFile: (workbook: unknown, fileName: string) => void;
-};
-
-type JsPdfConstructor = new (options?: { orientation?: 'portrait' | 'landscape' }) => {
-  save: (fileName: string) => void;
-};
-
-type JsPdfModule = {
-  jsPDF: JsPdfConstructor;
-};
-
-type AutoTableModule = {
-  default: (
-    doc: InstanceType<JsPdfConstructor>,
-    options: {
-      head: string[][];
-      body: Array<Array<string | number>>;
-      styles: { fontSize: number; cellPadding: number };
-      headStyles: { fillColor: [number, number, number] };
-      margin: { top: number };
-    }
-  ) => void;
 };
 
 const normalizeCellValue = (value: unknown): string | number => {
@@ -99,32 +76,10 @@ const fallbackExportExcel = (params: GridExportParams): void => {
   downloadBlob(blob, `${fileName}.xls`);
 };
 
-const fallbackExportPdf = (params: GridExportParams): void => {
-  const { fileName, columns, rows } = params;
-  const headers = columns.map((column) => `<th>${escapeHtml(column.label)}</th>`).join('');
-  const body = rows
-    .map((row) => {
-      const cells = columns
-        .map((column) => `<td>${escapeHtml(String(normalizeCellValue(row[column.key])))}</td>`)
-        .join('');
-      return `<tr>${cells}</tr>`;
-    })
-    .join('');
-
-  const html = `<!doctype html><html><head><meta charset="utf-8" /><title>${escapeHtml(fileName)}</title><style>body{font-family:Arial,sans-serif;padding:16px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:6px;text-align:left;font-size:12px;}th{background:#f2f2f2;}</style></head><body><h2>${escapeHtml(fileName)}</h2><table><thead><tr>${headers}</tr></thead><tbody>${body}</tbody></table></body></html>`;
-  const popup = window.open('', '_blank', 'noopener,noreferrer,width=1100,height=760');
-  if (!popup) return;
-  popup.document.open();
-  popup.document.write(html);
-  popup.document.close();
-  popup.focus();
-  popup.print();
-};
-
 export async function exportGridToExcel(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const XLSX = await dynamicImport<XlsxModule>('xlsx');
+    const XLSX = await import('xlsx') as XlsxModule;
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -136,26 +91,39 @@ export async function exportGridToExcel(params: GridExportParams): Promise<void>
 
 export async function exportGridToPdf(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
-  try {
-    const [{ jsPDF: JsPDF }, { default: autoTable }] = await Promise.all([
-      dynamicImport<JsPdfModule>('jspdf'),
-      dynamicImport<AutoTableModule>('jspdf-autotable'),
-    ]);
+  const [{ jsPDF }, { autoTable }] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+  ]);
 
-    const doc = new JsPDF({ orientation: 'landscape' });
-    const head = [params.columns.map((column) => column.label)];
-    const body = exportRows.map((row) => params.columns.map((column) => row[column.label] ?? ''));
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const pdfFont = await registerPdfExportFont(doc);
+  const head = [params.columns.map((column) => column.label)];
+  const body = exportRows.map((row) => params.columns.map((column) => row[column.label] ?? ''));
 
-    autoTable(doc, {
-      head,
-      body,
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [27, 39, 66] },
-      margin: { top: 20 },
-    });
+  autoTable(doc, {
+    head,
+    body,
+    theme: 'grid',
+    styles: {
+      font: pdfFont,
+      fontStyle: 'normal',
+      fontSize: 8,
+      cellPadding: 3,
+      overflow: 'linebreak',
+      textColor: [30, 41, 59],
+      lineColor: [180, 188, 200],
+      lineWidth: 0.35,
+    },
+    headStyles: {
+      font: pdfFont,
+      fontStyle: 'bold',
+      fillColor: [27, 39, 66],
+      textColor: 255,
+    },
+    margin: { top: 24, left: 12, right: 12 },
+    tableWidth: 'auto',
+  });
 
-    doc.save(`${params.fileName}.pdf`);
-  } catch {
-    fallbackExportPdf(params);
-  }
+  downloadBlob(doc.output('blob'), `${params.fileName}.pdf`);
 }

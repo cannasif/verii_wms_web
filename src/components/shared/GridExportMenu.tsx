@@ -80,7 +80,7 @@ export function GridExportMenu({ fileName, columns, rows, getExportData, variant
       >
         <DropdownMenuItem
           onClick={handleExcelExport}
-          disabled={isExporting || rows.length === 0}
+          disabled={isExporting || (!getExportData && rows.length === 0)}
           className="cursor-pointer"
         >
           <FileSpreadsheet className="mr-2 h-4 w-4" />
@@ -88,7 +88,7 @@ export function GridExportMenu({ fileName, columns, rows, getExportData, variant
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={handlePdfExport}
-          disabled={isExporting || rows.length === 0}
+          disabled={isExporting || (!getExportData && rows.length === 0)}
           className="cursor-pointer"
         >
           <FileText className="mr-2 h-4 w-4" />
