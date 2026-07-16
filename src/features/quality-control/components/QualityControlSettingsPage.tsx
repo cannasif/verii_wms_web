@@ -100,15 +100,15 @@ export function QualityControlSettingsPage(): ReactElement {
   });
 
   const currentWarehouseLabel = useMemo(
-    () => buildWarehouseLabel(query.data?.defaultQuarantineWarehouseCode, query.data?.defaultQuarantineWarehouseName) || warehouseLabel,
+    () => warehouseLabel || buildWarehouseLabel(query.data?.defaultQuarantineWarehouseCode, query.data?.defaultQuarantineWarehouseName),
     [query.data?.defaultQuarantineWarehouseCode, query.data?.defaultQuarantineWarehouseName, warehouseLabel],
   );
   const currentApprovedWarehouseLabel = useMemo(
-    () => buildWarehouseLabel(query.data?.defaultApprovedWarehouseCode, query.data?.defaultApprovedWarehouseName) || approvedWarehouseLabel,
+    () => approvedWarehouseLabel || buildWarehouseLabel(query.data?.defaultApprovedWarehouseCode, query.data?.defaultApprovedWarehouseName),
     [approvedWarehouseLabel, query.data?.defaultApprovedWarehouseCode, query.data?.defaultApprovedWarehouseName],
   );
   const currentRejectWarehouseLabel = useMemo(
-    () => buildWarehouseLabel(query.data?.defaultRejectWarehouseCode, query.data?.defaultRejectWarehouseName) || rejectWarehouseLabel,
+    () => rejectWarehouseLabel || buildWarehouseLabel(query.data?.defaultRejectWarehouseCode, query.data?.defaultRejectWarehouseName),
     [query.data?.defaultRejectWarehouseCode, query.data?.defaultRejectWarehouseName, rejectWarehouseLabel],
   );
 
