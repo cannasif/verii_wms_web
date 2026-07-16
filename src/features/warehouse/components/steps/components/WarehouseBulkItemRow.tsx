@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { OpsActionButton, OpsInput, PagedLookupDialog } from '@/components/shared';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -55,10 +55,14 @@ export function WarehouseBulkItemRow({
       } else {
         onUpdateItem(itemId, { transferQuantity: quantity });
       }
-    } else if (newValue === '' || quantity === 0) {
-      if (selectedItem) {
-        onRemoveItem(itemId);
-      }
+    } else if (quantity === 0 && newValue !== '' && selectedItem) {
+      onUpdateItem(itemId, { transferQuantity: 0 });
+    }
+  };
+
+  const handleQuantityBlur = (): void => {
+    if (value === '' && selectedItem) {
+      setValue(selectedItem.transferQuantity?.toString() || '0');
     }
   };
 
@@ -108,6 +112,7 @@ export function WarehouseBulkItemRow({
                 min="0"
                 value={value}
                 onChange={(event) => handleChange(event.target.value)}
+                onBlur={handleQuantityBlur}
                 className="w-full text-right font-mono sm:w-24 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 placeholder={t('common.numericPlaceholder')}
               />
@@ -117,6 +122,7 @@ export function WarehouseBulkItemRow({
                 min="0"
                 value={value}
                 onChange={(e) => handleChange(e.target.value)}
+                onBlur={handleQuantityBlur}
                 className="h-8 w-full text-right font-mono text-sm sm:w-24 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 placeholder={t('common.numericPlaceholder')}
               />
@@ -124,24 +130,57 @@ export function WarehouseBulkItemRow({
             <span className="whitespace-nowrap text-xs text-muted-foreground">{item.unit || ''}</span>
           </div>
           {isOps ? (
-            <OpsActionButton
-              type="button"
-              variant="secondary"
-              className="h-8 w-8 shrink-0 p-0"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </OpsActionButton>
+            <div className="flex shrink-0 items-center gap-1">
+              <OpsActionButton
+                type="button"
+                variant="secondary"
+                className="h-8 w-8 shrink-0 p-0"
+                onClick={() => setIsExpanded(!isExpanded)}
+                aria-label={t('common:details')}
+                title={t('common:details')}
+              >
+                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </OpsActionButton>
+              {selectedItem ? (
+                <OpsActionButton
+                  type="button"
+                  variant="secondary"
+                  className="h-8 w-8 shrink-0 p-0 text-destructive"
+                  onClick={() => onRemoveItem(item.id)}
+                  aria-label={t('common:delete')}
+                  title={t('common:delete')}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </OpsActionButton>
+              ) : null}
+            </div>
           ) : (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 shrink-0 p-0"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
+            <div className="flex shrink-0 items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0"
+                onClick={() => setIsExpanded(!isExpanded)}
+                aria-label={t('common:details')}
+                title={t('common:details')}
+              >
+                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+              {selectedItem ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0 text-destructive"
+                  onClick={() => onRemoveItem(item.id)}
+                  aria-label={t('common:delete')}
+                  title={t('common:delete')}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              ) : null}
+            </div>
           )}
         </div>
       </div>

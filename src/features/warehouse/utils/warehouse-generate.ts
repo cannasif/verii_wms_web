@@ -202,7 +202,7 @@ export function buildWarehouseOutboundProcessRequest(
   const routes: WarehouseProcessRequest['routes'] = [];
 
   positiveItems.forEach((item) => {
-    const normalizedYapKod = sanitizeText(item.yapKod || '', 50);
+    const normalizedYapKod = sanitizeText(item.yapKod || item.configCode || '', 50);
 
     routes.push({
       stockCode: item.stockCode,
@@ -264,7 +264,7 @@ export function buildWarehouseInboundProcessRequest(
   const routes: WarehouseProcessRequest['routes'] = [];
 
   positiveItems.forEach((item) => {
-    const normalizedYapKod = sanitizeText(item.yapKod || '', 50);
+    const normalizedYapKod = sanitizeText(item.yapKod || item.configCode || '', 50);
 
     routes.push({
       stockCode: item.stockCode,
