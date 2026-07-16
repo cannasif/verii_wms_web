@@ -166,6 +166,8 @@ export interface GrImportLine extends BaseWorkflowImportLineDetail {
 export interface BulkCreateRequest {
   header: {
     branchCode: string;
+    documentNo: string;
+    documentDate: string;
     projectCode?: string;
     orderId?: string;
     documentType: string;
