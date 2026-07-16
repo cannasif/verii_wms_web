@@ -12,6 +12,7 @@ import type {
   GrHeader,
   GrLine,
   GrImportLine,
+  CollectedBarcodeItem,
   AssignedGrOrderLinesResponse,
   StokBarcodeResponse,
   AddBarcodeRequest,
@@ -130,9 +131,12 @@ export const goodsReceiptApi = {
   },
 
   getGrImportLinesWithRoutes: async (headerId: number, options?: ApiRequestOptions): Promise<GrImportLine[]> => {
-    const response = await api.get<ApiResponse<GrImportLine[]>>(`/api/GrImportLine/by-header-with-routes/${headerId}`, options);
+    const response = await api.get<ApiResponse<CollectedBarcodeItem[]>>(`/api/GrImportLine/by-header-with-routes/${headerId}`, options);
     if (response.success && response.data) {
-      return response.data;
+      return response.data.map(({ importLine, routes }) => ({
+        ...importLine,
+        routes,
+      }));
     }
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptImportLinesLoadFailed'));
   },

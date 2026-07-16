@@ -151,6 +151,13 @@ function ImportLineDetailDialog({
     new Set(importLine.routes.map((route) => route.targetWarehouse).filter((wh): wh is number => wh !== null)),
   );
   const stockName = importLine.routes.find((route) => route.stockName)?.stockName || importLine.description1 || importLine.stockCode;
+  const joinRouteValues = (selector: (route: GrImportLine['routes'][number]) => string | number | null | undefined): string => {
+    const values = importLine.routes
+      .map(selector)
+      .filter((value): value is string | number => value !== null && value !== undefined && String(value).trim() !== '')
+      .map(String);
+    return Array.from(new Set(values)).join(', ') || '-';
+  };
 
   const orderRows = orderLine
     ? [
@@ -180,6 +187,12 @@ function ImportLineDetailDialog({
         : String(totalImportQuantity),
       strong: true,
     },
+    { label: t('barcodeManagement.barcode'), value: joinRouteValues((route) => route.scannedBarcode) },
+    { label: t('goodsReceipt.details.serialNo'), value: joinRouteValues((route) => route.serialNo) },
+    { label: t('goodsReceipt.details.lotNo'), value: joinRouteValues((route) => route.serialNo2) },
+    { label: t('goodsReceipt.details.batchNo'), value: joinRouteValues((route) => route.serialNo3) },
+    { label: t('goodsReceipt.details.configCode'), value: joinRouteValues((route) => route.serialNo4) },
+    { label: t('warehouse.details.targetCellCode'), value: joinRouteValues((route) => route.targetCellCode) },
     { label: t('goodsReceipt.report.createdDate'), value: formatDateTime(importLine.createdDate) },
   ];
 
