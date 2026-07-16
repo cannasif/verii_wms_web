@@ -1,4 +1,5 @@
 import { type ReactElement, type ReactNode, useMemo } from 'react';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
 import { DataTableGrid, type DataTableGridColumn, type DataTableSortDirection } from './DataTableGrid';
 import type { DataTableActionBarProps, DataTableDefinitionExcelConfig, DataTableVariant } from './DataTableActionBar';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
@@ -222,9 +223,22 @@ export function PagedDataGrid<TRow, TKey extends string>({
   const resolvedOnClearFilters = onClearFilters ?? noopVoid;
   const resolvedExportColumns = exportColumns ?? [];
   const resolvedExportRows = exportRows ?? [];
+  const queryClient = useQueryClient();
+  const activeQueryCount = useIsFetching();
+  const defaultRefresh = useMemo<NonNullable<DataTableActionBarProps['refresh']>>(
+    () => ({
+      onRefresh: () => {
+        void queryClient.refetchQueries({ type: 'active' });
+      },
+      isLoading: activeQueryCount > 0,
+      cooldownSeconds: 0,
+    }),
+    [activeQueryCount, queryClient],
+  );
+  const resolvedRefresh = refresh ?? defaultRefresh;
 
   const resolvedActionBar = useMemo<DataTableActionBarProps | undefined>(
-    () => actionBar ?? {
+    () => actionBar ? { ...actionBar, refresh: actionBar.refresh ?? resolvedRefresh } : {
       pageKey: resolvedPageKey,
       userId,
       columns: preferenceColumns,
@@ -250,7 +264,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       search,
       leftSlot,
       afterRefreshSlot,
-      refresh,
+      refresh: resolvedRefresh,
       definitionExcel,
     },
     [
@@ -267,7 +281,7 @@ export function PagedDataGrid<TRow, TKey extends string>({
       onClearFilters,
       onFilterLogicChange,
       preferenceColumns,
-      refresh,
+      resolvedRefresh,
       resolvedDefaultFilterColumn,
       resolvedDraftFilterRows,
       resolvedExportColumns,
