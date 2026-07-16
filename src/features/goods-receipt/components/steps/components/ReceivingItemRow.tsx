@@ -45,6 +45,10 @@ export function ReceivingItemRow({
 
     const handleChange = (newValue: string) => {
         setValue(newValue);
+        if (newValue === '') {
+            return;
+        }
+
         const quantity = parseFloat(newValue);
         const itemId = item.id || '';
 
@@ -55,10 +59,8 @@ export function ReceivingItemRow({
             } else {
                 onUpdateItem(itemId, { receiptQuantity: quantity });
             }
-        } else if (newValue === '' || quantity === 0) {
-            if (selectedItem) {
-                onRemoveItem(itemId);
-            }
+        } else if (quantity === 0 && selectedItem) {
+            onUpdateItem(itemId, { receiptQuantity: 0 });
         }
     };
 
@@ -82,6 +84,12 @@ export function ReceivingItemRow({
 
     const handleQuantityFocus = (event: FocusEvent<HTMLInputElement>): void => {
         event.currentTarget.select();
+    };
+
+    const handleQuantityBlur = (): void => {
+        if (value === '') {
+            setValue(selectedItem?.receiptQuantity?.toString() || '');
+        }
     };
 
     return (
@@ -218,6 +226,7 @@ export function ReceivingItemRow({
                                     value={value}
                                     onChange={(e) => handleChange(e.target.value)}
                                     onFocus={handleQuantityFocus}
+                                    onBlur={handleQuantityBlur}
                                     className={cn(
                                         'h-8 w-full text-right font-mono text-sm sm:w-20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
                                         isOver && 'border-destructive focus-visible:ring-destructive',
@@ -231,6 +240,7 @@ export function ReceivingItemRow({
                                     value={value}
                                     onChange={(e) => handleChange(e.target.value)}
                                     onFocus={handleQuantityFocus}
+                                    onBlur={handleQuantityBlur}
                                     className={cn(
                                         'w-full sm:w-20 text-right font-mono h-8 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                                         isOver && 'border-destructive focus-visible:ring-destructive'
