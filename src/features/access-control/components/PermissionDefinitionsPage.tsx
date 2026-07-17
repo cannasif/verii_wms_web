@@ -271,7 +271,7 @@ export function PermissionDefinitionsPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('common.errors.loadFailed', { defaultValue: t('common.errors.permissionDefinitionListLoadFailed', { defaultValue: 'Missing translation' }) })}
           emptyText={t('common.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
+          showActionsColumn={canUpdate || canDelete}
           actionsHeaderLabel={t('common.actions')}
           iconOnlyActions
           actionsCellClassName="wms-ops-table-actions-col"
@@ -328,6 +328,7 @@ export function PermissionDefinitionsPage(): ReactElement {
             pageKey,
             userId,
             columns: columns.map(({ key, label }) => ({ key, label })),
+            lockedKeys: ['code', 'actions'],
             visibleColumns,
             columnOrder,
             onVisibleColumnsChange: setVisibleColumns,

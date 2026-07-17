@@ -126,7 +126,7 @@ export function PermissionDefinitionForm({
                       <span className="inline-flex items-center">
                       {t('permissionDefinitions.form.code')}
                       {isZodFieldRequired(createPermissionDefinitionSchema, 'code') && <span className="text-red-500">*</span>}
-                      <FieldHelpTooltip text={t('help.permissionDefinition.code')} variant="ops" />
+                      <FieldHelpTooltip text={t('help.permissionDefinition.code')} variant="ops" focusable={false} />
                       </span>
                     )}>
                     <FormControl>
