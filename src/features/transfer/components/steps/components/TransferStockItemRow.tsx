@@ -1,6 +1,6 @@
 import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -32,14 +32,17 @@ export function TransferStockItemRow({
   const [yapKodLookupOpen, setYapKodLookupOpen] = useState(false);
   const itemId = selectedItem?.id || `stock-${product.stokKodu}`;
   const quantity = selectedItem?.transferQuantity || 0;
+  const [quantityInput, setQuantityInput] = useState(selectedItem ? String(selectedItem.transferQuantity ?? 0) : '');
 
   useEffect(() => {
     if (!selectedItem) {
       setIsExpanded(false);
     }
-  }, [selectedItem]);
+    setQuantityInput(selectedItem ? String(selectedItem.transferQuantity ?? 0) : '');
+  }, [selectedItem, selectedItem?.transferQuantity]);
 
   const handleQuantityChange = (newValue: string): void => {
+    setQuantityInput(newValue);
     const qty = parseFloat(newValue);
     if (!isNaN(qty) && qty > 0) {
       if (!selectedItem) {
@@ -51,11 +54,14 @@ export function TransferStockItemRow({
       } else {
         onUpdateItem(itemId, { transferQuantity: qty });
       }
-    } else if (newValue === '' || qty === 0) {
-      if (selectedItem) {
-        onRemoveItem(itemId);
-        setIsExpanded(false);
-      }
+    } else if (qty === 0 && newValue !== '' && selectedItem) {
+      onUpdateItem(itemId, { transferQuantity: 0 });
+    }
+  };
+
+  const handleQuantityBlur = (): void => {
+    if (quantityInput === '' && selectedItem) {
+      setQuantityInput(String(selectedItem.transferQuantity ?? 0));
     }
   };
 
@@ -95,8 +101,9 @@ export function TransferStockItemRow({
             <Input
               type="number"
               min="0"
-              value={quantity || ''}
+              value={quantityInput}
               onChange={(e) => handleQuantityChange(e.target.value)}
+              onBlur={handleQuantityBlur}
               className={cn(
                 'w-full sm:w-20 text-right font-mono h-8 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
               )}
@@ -106,22 +113,39 @@ export function TransferStockItemRow({
               {product.olcuBr1}
             </span>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 shrink-0"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (selectedItem) {
-                setIsExpanded(!isExpanded);
-              }
-            }}
-            disabled={!selectedItem}
-          >
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (selectedItem) {
+                  setIsExpanded(!isExpanded);
+                }
+              }}
+              disabled={!selectedItem}
+              aria-label={t('common.details')}
+              title={t('common.details')}
+            >
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+            {selectedItem ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 text-destructive"
+                onClick={() => onRemoveItem(itemId)}
+                aria-label={t('common.delete')}
+                title={t('common.delete')}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
       {isExpanded && selectedItem && (
