@@ -7,6 +7,7 @@ import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridC
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdValidationLogDto } from '../types/kkd.types';
@@ -98,6 +99,16 @@ export function KkdValidationLogPage(): ReactElement {
     ],
     [t],
   );
+  const filterColumns = useMemo<readonly FilterColumnConfig[]>(() => [
+    { value: 'CreatedDate', type: 'date', labelKey: 'createdDate', label: t('kkd.operational.validationLog.time') },
+    { value: 'EmployeeCode', type: 'string', labelKey: 'employeeCode', label: t('kkd.operational.validationLog.employee') },
+    { value: 'CustomerCode', type: 'string', labelKey: 'customerCode', label: t('kkd.operational.validationLog.account') },
+    { value: 'StockCode', type: 'string', labelKey: 'stockCode', label: t('kkd.operational.validationLog.stock') },
+    { value: 'GroupCode', type: 'string', labelKey: 'groupCode', label: t('kkd.operational.validationLog.group') },
+    { value: 'AttemptedQuantity', type: 'number', labelKey: 'attemptedQuantity', label: t('kkd.operational.validationLog.qty') },
+    { value: 'ReasonCode', type: 'string', labelKey: 'reasonCode', label: t('kkd.operational.validationLog.code') },
+    { value: 'ReasonMessage', type: 'string', labelKey: 'reasonMessage', label: t('kkd.operational.validationLog.desc') },
+  ], [t]);
 
   return (
     <OpsListPageShell
@@ -106,8 +117,8 @@ export function KkdValidationLogPage(): ReactElement {
       title={t('kkd.operational.validationLog.pageTitle')}
       description={t('kkd.operational.validationLog.breadcrumb')}
     >
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <KkdOpsSection title={t('kkd.operational.validationLog.gridTitle')}>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <KkdOpsSection className="min-w-0" title={t('kkd.operational.validationLog.gridTitle')}>
           <PagedDataGrid<KkdValidationLogDto, ValidationColumnKey>
             variant="ops"
             pageKey="kkd-validation-log"
@@ -186,10 +197,19 @@ export function KkdValidationLogPage(): ReactElement {
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('kkd.operational.validationLog.searchPh'),
             }}
+            filterColumns={filterColumns}
+            defaultFilterColumn="CreatedDate"
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
           />
         </KkdOpsSection>
 
-        <KkdOpsSection title={t('kkd.operational.validationLog.detailTitle')}>
+        <KkdOpsSection className="min-w-0" title={t('kkd.operational.validationLog.detailTitle')}>
           {selectedRow ? (
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
