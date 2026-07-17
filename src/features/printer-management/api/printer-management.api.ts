@@ -1,6 +1,8 @@
 import { api } from '@/lib/axios';
 import type { ApiRequestOptions } from '@/lib/request-utils';
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse, PagedResponse } from '@/types/api';
+import { buildPagedRequest } from '@/lib/paged';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import type {
   BarcodeTemplatePrinterProfileMap,
   BarcodeTemplatePrinterProfileMapUpsertRequest,
@@ -12,9 +14,35 @@ import type {
   PrintJobCreateRequest,
 } from '../types/printer-management.types';
 
+async function getAllPaged<T>(
+  url: string,
+  options?: ApiRequestOptions,
+  params?: Record<string, number>,
+  sortBy = 'Id',
+  sortDirection: 'asc' | 'desc' = 'desc',
+): Promise<ApiResponse<T[]>> {
+  let firstResponse: ApiResponse<PagedResponse<T>> | undefined;
+  const data = await fetchAllPagedData({
+    fetchPage: async (pageNumber, pageSize) => {
+      const response = await api.post<ApiResponse<PagedResponse<T>>>(
+        url,
+        buildPagedRequest({ pageNumber, pageSize, sortBy, sortDirection }),
+        { ...options, params },
+      );
+      if (!response.success || !response.data) {
+        throw new Error(response.message);
+      }
+      firstResponse ??= response;
+      return response.data;
+    },
+  });
+
+  return { ...firstResponse!, data };
+}
+
 export const printerManagementApi = {
   async getPrinters(options?: ApiRequestOptions): Promise<ApiResponse<PrinterDefinition[]>> {
-    return await api.get<ApiResponse<PrinterDefinition[]>>('/api/PrinterManagement/printers', options);
+    return getAllPaged<PrinterDefinition>('/api/PrinterManagement/printers/paged', options, undefined, 'DisplayName', 'asc');
   },
 
   async createPrinter(payload: PrinterDefinitionUpsertRequest, options?: ApiRequestOptions): Promise<ApiResponse<PrinterDefinition>> {
@@ -30,10 +58,13 @@ export const printerManagementApi = {
   },
 
   async getProfiles(printerDefinitionId?: number, options?: ApiRequestOptions): Promise<ApiResponse<PrinterProfile[]>> {
-    return await api.get<ApiResponse<PrinterProfile[]>>('/api/PrinterManagement/profiles', {
-      ...options,
-      params: printerDefinitionId ? { printerDefinitionId } : undefined,
-    });
+    return getAllPaged<PrinterProfile>(
+      '/api/PrinterManagement/profiles/paged',
+      options,
+      printerDefinitionId ? { printerDefinitionId } : undefined,
+      'DisplayName',
+      'asc',
+    );
   },
 
   async createProfile(payload: PrinterProfileUpsertRequest, options?: ApiRequestOptions): Promise<ApiResponse<PrinterProfile>> {
@@ -49,7 +80,7 @@ export const printerManagementApi = {
   },
 
   async getTemplatePrinterProfiles(templateId: number, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeTemplatePrinterProfileMap[]>> {
-    return await api.get<ApiResponse<BarcodeTemplatePrinterProfileMap[]>>(`/api/PrinterManagement/template-printer-profiles/${templateId}`, options);
+    return getAllPaged<BarcodeTemplatePrinterProfileMap>(`/api/PrinterManagement/template-printer-profiles/${templateId}/paged`, options);
   },
 
   async upsertTemplatePrinterProfile(payload: BarcodeTemplatePrinterProfileMapUpsertRequest, options?: ApiRequestOptions): Promise<ApiResponse<BarcodeTemplatePrinterProfileMap>> {
@@ -57,10 +88,8 @@ export const printerManagementApi = {
   },
 
   async getPrintJobs(take = 100, options?: ApiRequestOptions): Promise<ApiResponse<PrintJob[]>> {
-    return await api.get<ApiResponse<PrintJob[]>>('/api/PrinterManagement/jobs', {
-      ...options,
-      params: { take },
-    });
+    const response = await getAllPaged<PrintJob>('/api/PrinterManagement/jobs/paged', options, undefined, 'RequestedAt', 'desc');
+    return { ...response, data: response.data.slice(0, Math.max(1, take)) };
   },
 
   async createPrintJob(payload: PrintJobCreateRequest, options?: ApiRequestOptions): Promise<ApiResponse<PrintJob>> {

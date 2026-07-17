@@ -16,7 +16,7 @@ export function buildPagedRequest(
 ): Required<PagedParams> {
   return {
     pageNumber: params.pageNumber ?? defaults.pageNumber ?? 1,
-    pageSize: params.pageSize ?? defaults.pageSize ?? 10,
+    pageSize: params.pageSize ?? defaults.pageSize ?? 20,
     sortBy: params.sortBy ?? defaults.sortBy ?? 'Id',
     sortDirection: params.sortDirection ?? defaults.sortDirection ?? 'desc',
     search: params.search ?? defaults.search ?? '',

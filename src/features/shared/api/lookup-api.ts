@@ -14,13 +14,22 @@ import type {
 } from './lookup-types';
 import type { ApiRequestOptions } from '@/lib/request-utils';
 import { buildPagedRequest } from '@/lib/paged';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 async function getServerPagedFirstPageData<T>(url: string, options?: ApiRequestOptions): Promise<T[]> {
-  const response = await api.post<ApiResponse<PagedResponse<T>>>(url, buildPagedRequest({ pageNumber: 1, pageSize: 1000 }), options);
-  if (response.success && response.data) {
-    return response.data.data;
-  }
-  throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+  return fetchAllPagedData({
+    fetchPage: async (pageNumber, pageSize) => {
+      const response = await api.post<ApiResponse<PagedResponse<T>>>(
+        url,
+        buildPagedRequest({ pageNumber, pageSize }),
+        options,
+      );
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || getLocalizedText('common.errors.unknown'));
+    },
+  });
 }
 
 async function getServerPagedResponse<T>(url: string, params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<T>> {

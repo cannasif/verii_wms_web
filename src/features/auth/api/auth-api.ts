@@ -1,7 +1,9 @@
 import { api } from '@/lib/axios';
-import type { LoginRequest, LoginResponse, ActiveUsersResponse } from '../types/auth';
-import type { ApiResponse } from '@/types/api';
+import type { LoginRequest, LoginResponse, UserDto } from '../types/auth';
+import type { ApiResponse, PagedResponse } from '@/types/api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
+import { buildPagedRequest } from '@/lib/paged';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
@@ -22,9 +24,24 @@ export const authApi = {
     });
     return response;
   },
-  getActiveUsers: async (options?: ApiRequestOptions): Promise<ActiveUsersResponse> => {
-    const response = await api.get<ActiveUsersResponse>('/api/auth/users/active', options);
-    return response;
+  getActiveUsers: async (options?: ApiRequestOptions): Promise<UserDto[]> => {
+    return fetchAllPagedData({
+      fetchPage: async (pageNumber, pageSize) => {
+        const response = await api.post<ApiResponse<PagedResponse<UserDto>>>(
+          '/api/User/paged',
+          buildPagedRequest({
+            pageNumber,
+            pageSize,
+            filters: [{ column: 'IsActive', operator: 'Equals', value: 'true' }],
+          }),
+          options,
+        );
+        if (!response.success || !response.data) {
+          throw new Error(response.message);
+        }
+        return response.data;
+      },
+    });
   },
   requestPasswordReset: async (email: string): Promise<ApiResponse<string>> => {
     const response = await api.post<ApiResponse<string>>('/api/auth/forgot-password', {
