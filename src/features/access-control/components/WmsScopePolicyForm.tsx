@@ -134,7 +134,7 @@ export function WmsScopePolicyForm({
                     <AccessControlOpsFormField label={(
                       <span className="inline-flex items-center gap-1">
                         {t('wmsScopePolicies.form.code')}
-                        <FieldHelpTooltip text={t('help.wmsScopePolicy.code')} variant="ops" />
+                        <FieldHelpTooltip text={t('help.wmsScopePolicy.code')} variant="ops" focusable={false} />
                       </span>
                     )}>
                       <FormControl>

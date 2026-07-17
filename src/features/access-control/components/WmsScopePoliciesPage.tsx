@@ -230,7 +230,7 @@ export function WmsScopePoliciesPage(): ReactElement {
         isError={!!error}
         errorText={error instanceof Error ? error.message : undefined}
         emptyText={t('common.noData')}
-        showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
+        showActionsColumn={canUpdate || canDelete}
         actionsHeaderLabel={t('common.actions')}
         iconOnlyActions
         actionsCellClassName="wms-ops-table-actions-col"
@@ -281,6 +281,7 @@ export function WmsScopePoliciesPage(): ReactElement {
           pageKey,
           userId,
           columns: columns.map(({ key, label }) => ({ key, label })),
+          lockedKeys: ['code', 'actions'],
           visibleColumns,
           columnOrder,
           onVisibleColumnsChange: setVisibleColumns,
