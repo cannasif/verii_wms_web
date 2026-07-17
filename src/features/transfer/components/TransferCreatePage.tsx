@@ -36,6 +36,14 @@ export function TransferCreatePage(): ReactElement {
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedTransferOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedTransferStockItem[]>([]);
+  const validSelectedItems = useMemo(
+    () => selectedItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedItems],
+  );
+  const validSelectedStockItems = useMemo(
+    () => selectedStockItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedStockItems],
+  );
 
   useEffect(() => {
     setPageTitle(t('transfer.create.title'));
@@ -68,8 +76,8 @@ export function TransferCreatePage(): ReactElement {
   const createMutation = useMutation({
     mutationFn: async (formData: TransferFormData) =>
       createMode === 'order'
-        ? transferApi.createTransferOrder(formData, selectedItems)
-        : transferApi.createStockBasedTransferOrder(formData, selectedStockItems),
+        ? transferApi.createTransferOrder(formData, validSelectedItems)
+        : transferApi.createStockBasedTransferOrder(formData, validSelectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transferHeaders'] });
       toast.success(t('transfer.create.success'));
@@ -85,11 +93,11 @@ export function TransferCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && validSelectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
+    if (currentStep === 2 && createMode === 'stock' && validSelectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -255,7 +263,7 @@ export function TransferCreatePage(): ReactElement {
                     disabled={
                       !permission.canCreate
                       || createMutation.isPending
-                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                      || (createMode === 'order' ? validSelectedItems.length === 0 : validSelectedStockItems.length === 0)
                     }
                   >
                     {createMutation.isPending ? t('common.saving') : t('common.save')}
