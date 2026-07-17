@@ -8,6 +8,7 @@ import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/componen
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { getLocaleForFormatting } from '@/lib/i18n';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDistributionHeaderDto, KkdDistributionListItemDto } from '../types/kkd.types';
@@ -166,7 +167,7 @@ export function KkdDistributionListPage(): ReactElement {
     retry: false,
   });
 
-  const rows = query.data?.data ?? [];
+  const rows = useMemo(() => query.data?.data ?? [], [query.data?.data]);
   const range = getPagedRange(query.data);
 
   const columns = useMemo<PagedDataGridColumn<DistributionColumnKey>[]>(
@@ -184,6 +185,30 @@ export function KkdDistributionListPage(): ReactElement {
     ],
     [t],
   );
+  const filterColumns = useMemo<readonly FilterColumnConfig[]>(() => [
+    { value: 'DocumentNo', type: 'string', labelKey: 'documentNo', label: t('kkd.operational.distributionList.colDocNo') },
+    { value: 'DocumentDate', type: 'date', labelKey: 'documentDate', label: t('kkd.operational.distributionList.colDocDate') },
+    { value: 'WarehouseId', type: 'number', labelKey: 'warehouseId', label: t('kkd.operational.distributionList.colWarehouse') },
+    { value: 'Status', type: 'string', labelKey: 'status', label: t('kkd.operational.distributionList.colStatus') },
+    { value: 'SourceChannel', type: 'string', labelKey: 'sourceChannel', label: t('kkd.operational.distributionList.colSource') },
+    { value: 'ERPIntegrationStatus', type: 'string', labelKey: 'erpStatus', label: t('kkd.operational.distributionList.colErpStatus') },
+  ], [t]);
+  const exportColumns = useMemo(
+    () => columns.map(({ key, label }) => ({ key, label })),
+    [columns],
+  );
+  const exportRows = useMemo<Record<string, unknown>[]>(() => rows.map((row) => ({
+    documentNo: row.documentNo || '-',
+    documentDate: formatDate(row.documentDate, dateLocale),
+    customerCode: resolveCustomerText(row),
+    employee: resolveEmployeeText(null, row),
+    warehouseId: resolveWarehouseText(row),
+    status: row.status,
+    sourceChannel: row.sourceChannel,
+    lineCount: row.lineCount,
+    totalQuantity: row.totalQuantity,
+    erpStatus: row.erpIntegrationStatus || '-',
+  })), [dateLocale, rows]);
 
   const detail = detailQuery.data ?? selectedHeader;
 
@@ -810,6 +835,18 @@ export function KkdDistributionListPage(): ReactElement {
                 onSearchChange: pagedGrid.searchConfig.onSearchChange,
                 placeholder: t('kkd.operational.distributionList.searchPh'),
               }}
+              filterColumns={filterColumns}
+              defaultFilterColumn="DocumentNo"
+              draftFilterRows={pagedGrid.draftFilterRows}
+              onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+              filterLogic={pagedGrid.filterLogic}
+              onFilterLogicChange={pagedGrid.setFilterLogic}
+              onApplyFilters={pagedGrid.applyAdvancedFilters}
+              onClearFilters={pagedGrid.clearAdvancedFilters}
+              appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+              exportFileName="kkd-dagitim-listesi"
+              exportColumns={exportColumns}
+              exportRows={exportRows}
             />
         </KkdOpsSection>
       </div>
