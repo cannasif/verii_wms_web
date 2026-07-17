@@ -5,9 +5,9 @@ import type { PagedRequest } from '../types/access-control.types';
 
 const STALE_TIME_MS = 30_000;
 
-export const usePermissionGroupsQuery = (params: PagedRequest) =>
+export const usePermissionGroupsQuery = (params: PagedRequest, loadAll = false) =>
   useQuery({
-    queryKey: ACCESS_CONTROL_QUERY_KEYS.PERMISSION_GROUPS(params),
-    queryFn: () => permissionGroupApi.getList(params),
+    queryKey: [...ACCESS_CONTROL_QUERY_KEYS.PERMISSION_GROUPS(params), { loadAll }],
+    queryFn: () => loadAll ? permissionGroupApi.getAll(params) : permissionGroupApi.getList(params),
     staleTime: STALE_TIME_MS,
   });

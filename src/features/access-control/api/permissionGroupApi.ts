@@ -11,6 +11,7 @@ import type {
   UpdatePermissionGroupDto,
   SetPermissionGroupPermissionsDto,
 } from '../types/access-control.types';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 export const permissionGroupApi = {
   getList: async (params: PagedRequest): Promise<PagedResponse<PermissionGroupDto>> => {
@@ -29,6 +30,21 @@ export const permissionGroupApi = {
       return { ...data, data: rawData.items };
     }
     return data;
+  },
+
+  getAll: async (params: PagedRequest): Promise<PagedResponse<PermissionGroupDto>> => {
+    const data = await fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => permissionGroupApi.getList({ ...params, pageNumber, pageSize }),
+    });
+    return {
+      data,
+      totalCount: data.length,
+      pageNumber: 1,
+      pageSize: data.length || 1,
+      totalPages: 1,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
   },
 
   getById: async (id: number): Promise<PermissionGroupDto> => {

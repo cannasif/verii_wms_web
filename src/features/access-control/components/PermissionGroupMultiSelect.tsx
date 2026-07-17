@@ -21,10 +21,10 @@ export function PermissionGroupMultiSelect({
   const { t } = useTranslation(['access-control', 'common']);
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber: 1,
-    pageSize: 1000,
+    pageSize: 20,
     sortBy: 'name',
     sortDirection: 'asc',
-  });
+  }, true);
 
   const items = (data?.data ?? []).filter((d) => d.isActive);
 

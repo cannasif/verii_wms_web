@@ -11,6 +11,7 @@ import type {
   ParameterType,
 } from '../types/parameter';
 import { PARAMETER_TYPES } from '../types/parameter';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 type ParameterApiErrorPayload = {
   exceptionMessage?: string;
@@ -56,7 +57,7 @@ export const parameterApi = {
     options?: ApiRequestOptions,
   ): Promise<PagedResponse<Parameter>> => {
     const endpoint = getEndpoint(type);
-    const requestBody = buildPagedRequest(params, { pageNumber: 1, pageSize: 1000 });
+    const requestBody = buildPagedRequest(params, { pageNumber: 1, pageSize: 20 });
 
     const response = await api.post<ApiResponse<PagedResponse<Parameter>>>(`/api/${endpoint}/paged`, requestBody, options);
     if (response.success && response.data) {
@@ -67,8 +68,9 @@ export const parameterApi = {
   },
 
   getAll: async (type: ParameterType, options?: ApiRequestOptions): Promise<Parameter[]> => {
-    const paged = await parameterApi.getPaged(type, { pageNumber: 1, pageSize: 1000 }, options);
-    return paged.data ?? [];
+    return fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => parameterApi.getPaged(type, { pageNumber, pageSize }, options),
+    });
   },
 
   getFirst: async (type: ParameterType, options?: ApiRequestOptions): Promise<Parameter | null> => {

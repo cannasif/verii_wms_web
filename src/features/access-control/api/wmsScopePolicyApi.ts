@@ -13,6 +13,7 @@ import type {
   WmsScopePolicyDto,
   WmsScopePolicyResolutionDto,
 } from '../types/access-control.types';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 export const wmsScopePolicyApi = {
   getList: async (params: PagedRequest): Promise<PagedResponse<WmsScopePolicyDto>> => {
@@ -31,6 +32,12 @@ export const wmsScopePolicyApi = {
       return { ...data, data: rawData.items };
     }
     return data;
+  },
+
+  getAll: async (params: PagedRequest): Promise<WmsScopePolicyDto[]> => {
+    return fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => wmsScopePolicyApi.getList({ ...params, pageNumber, pageSize }),
+    });
   },
 
   getById: async (id: number): Promise<WmsScopePolicyDto> => {

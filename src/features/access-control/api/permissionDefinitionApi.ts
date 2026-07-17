@@ -12,6 +12,7 @@ import type {
   SyncPermissionDefinitionsDto,
   PermissionDefinitionSyncResultDto,
 } from '../types/access-control.types';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 export const permissionDefinitionApi = {
   getList: async (params: PagedRequest): Promise<PagedResponse<PermissionDefinitionDto>> => {
@@ -30,6 +31,21 @@ export const permissionDefinitionApi = {
       return { ...data, data: rawData.items };
     }
     return data;
+  },
+
+  getAll: async (params: PagedRequest): Promise<PagedResponse<PermissionDefinitionDto>> => {
+    const data = await fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => permissionDefinitionApi.getList({ ...params, pageNumber, pageSize }),
+    });
+    return {
+      data,
+      totalCount: data.length,
+      pageNumber: 1,
+      pageSize: data.length || 1,
+      totalPages: 1,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
   },
 
   getById: async (id: number): Promise<PermissionDefinitionDto> => {

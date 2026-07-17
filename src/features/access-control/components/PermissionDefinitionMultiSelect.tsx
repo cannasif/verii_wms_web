@@ -157,10 +157,10 @@ export function PermissionDefinitionMultiSelect({
   const { t } = useTranslation(['access-control', 'common']);
   const { data, isLoading } = usePermissionDefinitionsQuery({
     pageNumber: 1,
-    pageSize: 1000,
+    pageSize: 20,
     sortBy: 'code',
     sortDirection: 'asc',
-  });
+  }, true);
 
   const items = (data?.data ?? []).filter((d) => d.isActive && isLeafPermissionCode(d.code));
   const [search, setSearch] = useState('');
