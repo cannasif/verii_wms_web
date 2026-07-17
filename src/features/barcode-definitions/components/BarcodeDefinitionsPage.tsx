@@ -124,7 +124,7 @@ export function BarcodeDefinitionsPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const queryClient = useQueryClient();
-  const permission = useCrudPermission('wms.barcode-management');
+  const permission = useCrudPermission('wms.print-management');
   const [selectedModuleKey, setSelectedModuleKey] = useState<string>('goods-receipt');
   const [barcodeInput, setBarcodeInput] = useState('');
   const [resolveResult, setResolveResult] = useState<ResolvedBarcode | null>(null);
@@ -139,7 +139,10 @@ export function BarcodeDefinitionsPage(): ReactElement {
     queryFn: ({ signal }) => barcodeApi.getDefinitions({ signal }),
   });
 
-  const definitions = definitionsQuery.data?.data ?? [];
+  const definitions = useMemo(
+    () => definitionsQuery.data?.data ?? [],
+    [definitionsQuery.data?.data],
+  );
 
   const moduleOptions = useMemo<ModuleOption[]>(
     () =>
