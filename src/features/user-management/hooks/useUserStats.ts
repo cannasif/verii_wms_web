@@ -14,16 +14,11 @@ export const useUserStats = (): ReturnType<typeof useQuery<UserStats>> => {
   return useQuery({
     queryKey: queryKeys.stats(),
     queryFn: async (): Promise<UserStats> => {
-      const allUsersResponse = await userApi.getList({
-        pageNumber: 1,
-        pageSize: 1000,
-      });
-
-      const allUsers = allUsersResponse.data || [];
+      const allUsers = await userApi.getAll();
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const totalUsers = allUsersResponse.totalCount || 0;
+      const totalUsers = allUsers.length;
       const activeUsers = allUsers.filter((user: UserDto) => user.isActive).length;
       const newThisMonth = allUsers.filter(
         (user: UserDto) => user.creationTime && new Date(user.creationTime) >= startOfMonth

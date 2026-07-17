@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import type {
   CreateStockDetailDto,
@@ -206,6 +207,12 @@ export const erpReferenceApi = {
       buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'WarehouseCode', sortDirection: 'asc' }),
     );
     return normalizePaged(response, normalizeWarehouse);
+  },
+
+  async getAllWarehouses(params: PagedParams = {}): Promise<WarehouseReferenceDto[]> {
+    return fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => erpReferenceApi.getWarehouses({ ...params, pageNumber, pageSize }),
+    });
   },
 
   async getYapKodlar(params: PagedParams = {}): Promise<PagedResponse<YapKodReferenceDto>> {

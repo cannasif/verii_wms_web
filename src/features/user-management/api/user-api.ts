@@ -3,6 +3,7 @@ import { buildPagedRequest } from '@/lib/paged';
 import type { ApiResponse, PagedResponse, PagedParams } from '@/types/api';
 import { getLocalizedText } from '@/lib/localized-error';
 import type { UserDto, CreateUserDto, UpdateUserDto } from '../types/user-types';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
 export const userApi = {
   getList: async (params: PagedParams): Promise<PagedResponse<UserDto>> => {
@@ -30,6 +31,12 @@ export const userApi = {
       return pagedData;
     }
     throw new Error(response.message || getLocalizedText('common.errors.userListLoadFailed'));
+  },
+
+  getAll: async (params: PagedParams = {}): Promise<UserDto[]> => {
+    return fetchAllPagedData({
+      fetchPage: (pageNumber, pageSize) => userApi.getList({ ...params, pageNumber, pageSize }),
+    });
   },
 
   getById: async (id: number): Promise<UserDto> => {

@@ -180,7 +180,7 @@ export function OutsideWarehousePage(): ReactElement {
 
   const warehousesQuery = useQuery({
     queryKey: ['outside-warehouse', 'warehouses'],
-    queryFn: () => erpReferenceApi.getWarehouses({ pageNumber: 1, pageSize: 500 }),
+    queryFn: () => erpReferenceApi.getAllWarehouses(),
   });
 
   const visualizationQuery = useQuery({
@@ -189,7 +189,7 @@ export function OutsideWarehousePage(): ReactElement {
     enabled: selectedWarehouseId > 0,
   });
 
-  const warehouses = useMemo(() => warehousesQuery.data?.data ?? [], [warehousesQuery.data]);
+  const warehouses = useMemo(() => warehousesQuery.data ?? [], [warehousesQuery.data]);
   const visualization = visualizationQuery.data;
   const locations = useMemo(() => visualization?.locations ?? [], [visualization]);
 
