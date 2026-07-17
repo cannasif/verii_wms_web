@@ -18,13 +18,14 @@ export const userPermissionGroupApi = {
   setByUserId: async (
     userId: number,
     dto: SetUserPermissionGroupsDto
-  ): Promise<void> => {
-    const response = await api.put<ApiResponse<object>>(
+  ): Promise<UserPermissionGroupDto> => {
+    const response = await api.post<ApiResponse<UserPermissionGroupDto>>(
       `/api/user-permission-groups/${userId}`,
       dto
     );
-    if (!(response as ApiResponse<object>).success) {
-      throw new Error((response as ApiResponse<object>).message || getLocalizedText('common.errors.userGroupSetFailed'));
+    if (!response.success || !response.data) {
+      throw new Error(response.message || getLocalizedText('common.errors.userGroupSetFailed'));
     }
+    return response.data;
   },
 };
