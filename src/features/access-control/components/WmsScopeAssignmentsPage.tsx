@@ -66,10 +66,10 @@ export function WmsScopeAssignmentsPage(): ReactElement {
     setAssignmentRows(nextRows);
     setHasChanges(false);
 
-    if (!selectedEntityType && userAssignments && userAssignments.length > 0) {
-      setSelectedEntityType(userAssignments[0].entityType);
+    if (userAssignments && userAssignments.length > 0) {
+      setSelectedEntityType((current) => current ?? userAssignments[0].entityType);
     }
-  }, [selectedEntityType, userAssignments]);
+  }, [userAssignments]);
 
   const userOptions = useMemo(() => users.map((u) => ({
     value: u.id.toString(),
