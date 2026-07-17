@@ -1372,6 +1372,10 @@
   "documentSeries": {
     "badge": "Document Series",
     "searchPlaceholder": "Search by code, name, operation type, or series prefix",
+    "actions": {
+      "openDefinitions": "Open document series definitions",
+      "openRules": "Open document series rules"
+    },
     "messages": {
       "definitionCreated": "Document series definition created.",
       "definitionUpdated": "Document series definition updated.",

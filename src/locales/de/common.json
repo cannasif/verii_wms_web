@@ -1302,6 +1302,10 @@
   "documentSeries": {
     "badge": "Belegserie",
     "searchPlaceholder": "Suche nach Code, Name, Vorgangsart oder Serienpräfix",
+    "actions": {
+      "openDefinitions": "Dokumentenserien-Definitionen öffnen",
+      "openRules": "Dokumentenserien-Regeln öffnen"
+    },
     "messages": {
       "definitionCreated": "Dokumentenserien-Definition erstellt.",
       "definitionUpdated": "Dokumentenserien-Definition aktualisiert.",

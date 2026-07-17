@@ -2,7 +2,9 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { ListTree, Settings2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   FormControl,
   FormDescription,
@@ -19,6 +21,7 @@ import type {
   WmsDocumentSeriesDefinitionPagedRowDto,
 } from '../types/document-series-management.types';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 
 type OperationDocumentSeriesFormValues = {
   documentNo: string;
@@ -72,6 +75,7 @@ export function OperationDocumentSeriesSelector({
 }: OperationDocumentSeriesSelectorProps): ReactElement {
   const { t } = useTranslation();
   const form = useFormContext<OperationDocumentSeriesFormValues>();
+  const permissionAccess = usePermissionAccess();
   const isOps = variant === 'ops';
   const formItemClass = isOps ? 'wms-ops-form-item' : undefined;
   const fieldMessage = isOps ? <OpsFormMessage /> : <FormMessage />;
@@ -201,6 +205,34 @@ export function OperationDocumentSeriesSelector({
                 {buildMatchLabel(t, resolutionMeta.matchedBy)}
               </Badge>
             ) : null}
+            <span className="ml-auto flex items-center gap-1">
+              {permissionAccess.can('wms.document-series.definition') ? (
+                <Button asChild variant="ghost" size="icon" className="size-7">
+                  <a
+                    href="/erp/document-series/definitions"
+                    target="_blank"
+                    rel="noreferrer"
+                    title={t('documentSeries.actions.openDefinitions')}
+                    aria-label={t('documentSeries.actions.openDefinitions')}
+                  >
+                    <Settings2 className="size-3.5" aria-hidden />
+                  </a>
+                </Button>
+              ) : null}
+              {permissionAccess.can('wms.document-series.rule') ? (
+                <Button asChild variant="ghost" size="icon" className="size-7">
+                  <a
+                    href="/erp/document-series/rules"
+                    target="_blank"
+                    rel="noreferrer"
+                    title={t('documentSeries.actions.openRules')}
+                    aria-label={t('documentSeries.actions.openRules')}
+                  >
+                    <ListTree className="size-3.5" aria-hidden />
+                  </a>
+                </Button>
+              ) : null}
+            </span>
           </div>
           <FormControl>
             {isOps ? (

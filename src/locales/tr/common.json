@@ -1372,6 +1372,10 @@
   "documentSeries": {
     "badge": "Belge Seri",
     "searchPlaceholder": "Kod, ad, işlem tipi veya seri prefix ile ara",
+    "actions": {
+      "openDefinitions": "Belge seri tanımlarını aç",
+      "openRules": "Belge seri kurallarını aç"
+    },
     "messages": {
       "definitionCreated": "Belge seri tanımı oluşturuldu.",
       "definitionUpdated": "Belge seri tanımı güncellendi.",
