@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -17,6 +17,7 @@ import { OcrGoodsReceiptMatchFormSection } from './ocr-goods-receipt-match/OcrGo
 export function OcrGoodsReceiptMatchPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
@@ -67,6 +68,7 @@ export function OcrGoodsReceiptMatchPage(): ReactElement {
     onSuccess: (data) => {
       hydrateForm(data);
       setSearchParams({ id: String(data.id) }, { replace: true });
+      void queryClient.invalidateQueries({ queryKey: ['ocr-goods-receipt-match', 'list'] });
       toast.success(isEdit ? t('ocrGoodsReceiptMatch.messages.updated') : t('ocrGoodsReceiptMatch.messages.created'));
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
@@ -132,11 +134,11 @@ export function OcrGoodsReceiptMatchPage(): ReactElement {
   }
 
   const customerSummary = useMemo(
-    () => buildCustomerLabel(currentRecord?.customerCode, currentRecord?.customerName) || selectedCustomerLabel,
+    () => selectedCustomerLabel || buildCustomerLabel(currentRecord?.customerCode, currentRecord?.customerName),
     [currentRecord?.customerCode, currentRecord?.customerName, selectedCustomerLabel],
   );
   const stockSummary = useMemo(
-    () => buildStockLabel(currentRecord?.ourStockCode, currentRecord?.ourStockName) || selectedStockLabel,
+    () => selectedStockLabel || buildStockLabel(currentRecord?.ourStockCode, currentRecord?.ourStockName),
     [currentRecord?.ourStockCode, currentRecord?.ourStockName, selectedStockLabel],
   );
 
