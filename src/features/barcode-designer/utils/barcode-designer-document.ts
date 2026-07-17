@@ -253,35 +253,52 @@ export function getSuggestedElementLayout(
     image: { width: cmToPx(3.2), height: cmToPx(2.1) },
   } as const;
 
-  const preset = presets[target];
   const canvasWidth = mmToPx(document.canvas.width);
   const canvasHeight = mmToPx(document.canvas.height);
   const margin = cmToPx(0.4);
+  const sourcePreset = presets[target];
+  const preset = {
+    ...sourcePreset,
+    width: Math.min(sourcePreset.width, Math.max(24, canvasWidth - (margin * 2))),
+    height: Math.min(sourcePreset.height, Math.max(16, canvasHeight - (margin * 2))),
+  };
   const maxX = Math.max(margin, canvasWidth - preset.width - margin);
   const maxY = Math.max(margin, canvasHeight - preset.height - margin);
 
   const desiredClampedX = desiredX != null ? Math.min(Math.max(desiredX, margin), maxX) : null;
   const desiredClampedY = desiredY != null ? Math.min(Math.max(desiredY, margin), maxY) : null;
 
-  if (desiredClampedX != null && desiredClampedY != null) {
+  const startX = margin;
+  const startY = margin;
+  const overlapsAt = (x: number, y: number): boolean => document.elements.some((element) => {
+    const { width, height } = getElementDimensions(element);
+    const horizontal = x < element.x + width + margin && x + preset.width + margin > element.x;
+    const vertical = y < element.y + height + margin && y + preset.height + margin > element.y;
+    return horizontal && vertical;
+  });
+
+  if (desiredClampedX != null && desiredClampedY != null && !overlapsAt(desiredClampedX, desiredClampedY)) {
     return { x: desiredClampedX, y: desiredClampedY, ...preset };
   }
 
-  const stepY = cmToPx(1.05);
-  const startX = margin;
-  const startY = margin;
+  const step = Math.max(getGridSizePx(), cmToPx(0.5));
+  const candidates: Array<{ x: number; y: number }> = [];
 
-  for (let row = 0; row < 24; row += 1) {
-    const candidateY = Math.min(startY + (row * stepY), maxY);
-    const overlaps = document.elements.some((element) => {
-      const { width, height } = getElementDimensions(element);
-      const horizontal = startX < element.x + width + margin && startX + preset.width + margin > element.x;
-      const vertical = candidateY < element.y + height + margin && candidateY + preset.height + margin > element.y;
-      return horizontal && vertical;
-    });
+  for (let y = startY; y <= maxY; y += step) {
+    for (let x = startX; x <= maxX; x += step) {
+      candidates.push({ x: Math.min(x, maxX), y: Math.min(y, maxY) });
+    }
+  }
 
-    if (!overlaps) {
-      return { x: startX, y: candidateY, ...preset };
+  if (desiredClampedX != null && desiredClampedY != null) {
+    candidates.sort((left, right) =>
+      Math.hypot(left.x - desiredClampedX, left.y - desiredClampedY)
+      - Math.hypot(right.x - desiredClampedX, right.y - desiredClampedY));
+  }
+
+  for (const candidate of candidates) {
+    if (!overlapsAt(candidate.x, candidate.y)) {
+      return { ...candidate, ...preset };
     }
   }
 
