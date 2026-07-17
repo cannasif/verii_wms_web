@@ -1,4 +1,4 @@
-import { type Dispatch, type ReactElement, type SetStateAction, useMemo, useState } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { OpsInput, OpsToggleField } from '@/components/shared';
@@ -69,13 +69,17 @@ const ROUTINE_PERIOD_TYPES = ['Year', 'Month', 'Day'] as const;
 function KkdEntitlementMatrixForm({
   formState,
   setFormState,
+  editingItem,
 }: {
   formState: CreateKkdEntitlementMatrixRowDto;
   setFormState: Dispatch<SetStateAction<CreateKkdEntitlementMatrixRowDto>>;
+  editingItem: KkdEntitlementMatrixRowDto | null;
 }): ReactElement {
   const { t } = useTranslation(['kkd', 'common']);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
+  const [departmentLabel, setDepartmentLabel] = useState<string | null>(null);
+  const [roleLabel, setRoleLabel] = useState<string | null>(null);
   const stockGroupsQuery = useQuery({
     queryKey: ['kkd', 'matrix-form', 'stock-groups'],
     queryFn: () => kkdApi.getStockGroups(),
@@ -84,10 +88,23 @@ function KkdEntitlementMatrixForm({
 
   const stockGroups = stockGroupsQuery.data ?? [];
 
-  const labelWithHelp = (label: string, helpKey: string): ReactElement => (
+  useEffect(() => {
+    setDepartmentLabel(
+      editingItem
+        ? [editingItem.departmentCode, editingItem.departmentName].filter(Boolean).join(' - ')
+        : null,
+    );
+    setRoleLabel(
+      editingItem
+        ? [editingItem.roleCode, editingItem.roleName].filter(Boolean).join(' - ')
+        : null,
+    );
+  }, [editingItem]);
+
+  const labelWithHelp = (label: string, helpKey: string, focusable = true): ReactElement => (
     <span className="wms-ops-kkd-matrix-label">
       <span className="wms-ops-kkd-matrix-label__text">{label}</span>
-      <FieldHelpTooltip text={t(helpKey, { ns: 'common' })} variant="ops" />
+      <FieldHelpTooltip text={t(helpKey, { ns: 'common' })} variant="ops" focusable={focusable} />
     </span>
   );
 
@@ -107,13 +124,13 @@ function KkdEntitlementMatrixForm({
 
       <KkdOpsSection title={t('kkd.operational.matrix.sectionBase')}>
         <div className="wms-ops-kkd-matrix-field-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblDepartment'), 'help.kkd.matrix.department')}>
+          <KkdOpsFormField label={labelWithHelp(t('kkd.operational.matrix.lblDepartment'), 'help.kkd.matrix.department', false)}>
             <PagedLookupDialog<KkdEmployeeDepartmentDto>
               variant="ops"
               open={departmentDialogOpen}
               onOpenChange={setDepartmentDialogOpen}
               title={t('kkd.operational.matrix.departmentTitle')}
-              value={formState.departmentId ? `#${formState.departmentId}` : null}
+              value={formState.departmentId ? departmentLabel ?? `#${formState.departmentId}` : null}
               placeholder={t('kkd.operational.matrix.departmentPh')}
               queryKey={['kkd', 'matrix-form', 'departments']}
               fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -121,12 +138,16 @@ function KkdEntitlementMatrixForm({
               }
               getKey={(item) => String(item.id)}
               getLabel={(item) => `${item.departmentCode} - ${item.departmentName}`}
-              onSelect={(item) => setFormState((prev) => ({
-                ...prev,
-                departmentId: item.id,
-                roleId: 0,
-                ...buildMatrixDefaults(item.id, 0),
-              }))}
+              onSelect={(item) => {
+                setDepartmentLabel(`${item.departmentCode} - ${item.departmentName}`);
+                setRoleLabel(null);
+                setFormState((prev) => ({
+                  ...prev,
+                  departmentId: item.id,
+                  roleId: 0,
+                  ...buildMatrixDefaults(item.id, 0),
+                }));
+              }}
             />
           </KkdOpsFormField>
 
@@ -136,7 +157,7 @@ function KkdEntitlementMatrixForm({
               open={roleDialogOpen}
               onOpenChange={setRoleDialogOpen}
               title={t('kkd.operational.matrix.roleTitle')}
-              value={formState.roleId ? `#${formState.roleId}` : null}
+              value={formState.roleId ? roleLabel ?? `#${formState.roleId}` : null}
               placeholder={formState.departmentId ? t('kkd.operational.matrix.rolePh') : t('kkd.operational.matrix.departmentPhNeedDept')}
               queryKey={['kkd', 'matrix-form', 'roles', formState.departmentId || 0]}
               fetchPage={({ pageNumber, pageSize, search, signal }) =>
@@ -152,11 +173,14 @@ function KkdEntitlementMatrixForm({
               getKey={(item) => String(item.id)}
               getLabel={(item) => `${item.roleCode} - ${item.roleName}`}
               disabled={!formState.departmentId}
-              onSelect={(item) => setFormState((prev) => ({
-                ...prev,
-                roleId: item.id,
-                ...buildMatrixDefaults(prev.departmentId, item.id),
-              }))}
+              onSelect={(item) => {
+                setRoleLabel(`${item.roleCode} - ${item.roleName}`);
+                setFormState((prev) => ({
+                  ...prev,
+                  roleId: item.id,
+                  ...buildMatrixDefaults(prev.departmentId, item.id),
+                }));
+              }}
             />
           </KkdOpsFormField>
 
@@ -481,8 +505,8 @@ export function KkdEntitlementMatrixPage(): ReactElement {
       gridMinWidthClassName={KKD_MATRIX_TABLE_MIN_WIDTH_CLASS}
       dialogSize="full"
       dialogClassName="wms-ops-kkd-matrix-dialog"
-      renderForm={({ formState, setFormState }) => (
-        <KkdEntitlementMatrixForm formState={formState} setFormState={setFormState} />
+      renderForm={({ formState, setFormState, editingItem }) => (
+        <KkdEntitlementMatrixForm formState={formState} setFormState={setFormState} editingItem={editingItem} />
       )}
     />
   );
