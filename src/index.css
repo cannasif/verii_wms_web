@@ -9492,6 +9492,9 @@ html:not(.dark) .wms-ops-erp-skin button[class*='bg-sky-'] {
 }
 
 .wms-ops-production-line-table-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
 }
 

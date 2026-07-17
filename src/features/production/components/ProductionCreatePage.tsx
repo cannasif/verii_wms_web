@@ -2099,8 +2099,8 @@ export function ProductionCreatePage(): ReactElement {
                 </CardContent>
               </Card>
 
-              <div className="grid gap-4 xl:grid-cols-2">
-                <Card className="gap-4 py-4">
+              <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+                <Card className="min-w-0 gap-4 py-4">
                   <CardHeader>
                     <SectionHeader
                       title={t('production.create.outputs.title')}
@@ -2200,7 +2200,7 @@ export function ProductionCreatePage(): ReactElement {
                   </CardContent>
                 </Card>
 
-                <Card className="gap-4 py-4">
+                <Card className="min-w-0 gap-4 py-4">
                   <CardHeader>
                     <SectionHeader
                       title={t('production.create.consumptions.title')}
