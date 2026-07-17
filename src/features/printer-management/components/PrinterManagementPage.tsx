@@ -1,6 +1,6 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { RefreshCcw, Save, SendToBack } from 'lucide-react';
+import { Pencil, Power, RefreshCcw, Save, SendToBack } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +57,8 @@ export function PrinterManagementPage(): ReactElement {
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [selectedMappingProfileId, setSelectedMappingProfileId] = useState<string>('');
+  const printerFormRef = useRef<HTMLDivElement>(null);
+  const profileFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setPageTitle(t('sidebar.printerManagement'));
@@ -110,8 +112,12 @@ export function PrinterManagementPage(): ReactElement {
 
   const toggleMutation = useMutation({
     mutationFn: async (payload: { id: number; isActive: boolean }) => await printerManagementApi.setPrinterActive(payload.id, payload.isActive),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      toast.success(response.message);
       void printersQuery.refetch();
+    },
+    onError: (error: unknown) => {
+      toast.error(error instanceof Error ? error.message : t('printerManagement.messages.printerSaveError'));
     },
   });
 
@@ -135,8 +141,12 @@ export function PrinterManagementPage(): ReactElement {
 
   const toggleProfileMutation = useMutation({
     mutationFn: async (payload: { id: number; isActive: boolean }) => await printerManagementApi.setProfileActive(payload.id, payload.isActive),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      toast.success(response.message);
       void profilesQuery.refetch();
+    },
+    onError: (error: unknown) => {
+      toast.error(error instanceof Error ? error.message : t('printerManagement.messages.profileSaveError'));
     },
   });
 
@@ -214,14 +224,14 @@ export function PrinterManagementPage(): ReactElement {
         </div>
       }
     >
-      <div className="wms-ops-form wms-ops-erp-skin grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
-        <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+      <div className="wms-ops-form wms-ops-erp-skin grid min-w-0 gap-6 xl:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)]">
+        <div className="min-w-0 space-y-6">
+          <Card ref={printerFormRef} className="min-w-0 scroll-mt-6 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.printerForm.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <fieldset disabled={printerFormReadOnly} className={printerFormReadOnly ? 'pointer-events-none opacity-75' : undefined}>
+              <fieldset disabled={printerFormReadOnly} className={`space-y-4 ${printerFormReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>{t('printerManagement.printerForm.code')}</Label>
@@ -309,12 +319,12 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card ref={profileFormRef} className="min-w-0 scroll-mt-6 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.profileForm.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <fieldset disabled={profileFormReadOnly} className={profileFormReadOnly ? 'pointer-events-none opacity-75' : undefined}>
+              <fieldset disabled={profileFormReadOnly} className={`space-y-4 ${profileFormReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
               <div className="space-y-2">
                 <Label>{t('printerManagement.profileForm.printer')}</Label>
                 <Select
@@ -417,8 +427,8 @@ export function PrinterManagementPage(): ReactElement {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+        <div className="min-w-0 space-y-6">
+          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.printers')}</CardTitle>
             </CardHeader>
@@ -446,10 +456,15 @@ export function PrinterManagementPage(): ReactElement {
                         <Badge variant={printer.isActive ? 'secondary' : 'outline'}>{printer.isActive ? t('common.active') : t('common.passive')}</Badge>
                         {printer.isDefault ? <Badge variant="outline">{t('common.default')}</Badge> : null}
                       </TableCell>
-                      <TableCell className="space-x-2">
+                      <TableCell>
+                        <div className="flex items-center gap-1 whitespace-nowrap">
                         <Button
-                          variant="outline"
-                          size="sm"
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="wms-ops-grid-icon-btn"
+                          aria-label={t('common.edit')}
+                          title={t('common.edit')}
                           onClick={() => {
                             setSelectedPrinterId(printer.id ?? null);
                             setForm({
@@ -464,21 +479,27 @@ export function PrinterManagementPage(): ReactElement {
                               isDefault: printer.isDefault,
                               supportsRawCommands: printer.supportsRawCommands,
                             });
+                            requestAnimationFrame(() => printerFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
                           }}
                           disabled={!permission.canUpdate}
                         >
-                          {t('common.edit')}
+                          <Pencil className="size-3" aria-hidden />
                         </Button>
                         {printer.id ? (
                           <Button
-                            variant="outline"
-                            size="sm"
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="wms-ops-grid-icon-btn"
+                            aria-label={printer.isActive ? t('common.deactivate') : t('common.activate')}
+                            title={printer.isActive ? t('common.deactivate') : t('common.activate')}
                             onClick={() => toggleMutation.mutate({ id: printer.id!, isActive: !printer.isActive })}
-                            disabled={!permission.canUpdate}
+                            disabled={!permission.canUpdate || toggleMutation.isPending}
                           >
-                            {printer.isActive ? t('common.deactivate') : t('common.activate')}
+                            <Power className="size-3" aria-hidden />
                           </Button>
                         ) : null}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -488,7 +509,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.profiles')}</CardTitle>
             </CardHeader>
@@ -519,10 +540,15 @@ export function PrinterManagementPage(): ReactElement {
                         <Badge variant={profile.isActive ? 'secondary' : 'outline'}>{profile.isActive ? t('common.active') : t('common.passive')}</Badge>
                         {profile.isDefault ? <Badge variant="outline">{t('common.default')}</Badge> : null}
                       </TableCell>
-                      <TableCell className="space-x-2">
+                      <TableCell>
+                        <div className="flex items-center gap-1 whitespace-nowrap">
                         <Button
-                          variant="outline"
-                          size="sm"
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="wms-ops-grid-icon-btn"
+                          aria-label={t('common.edit')}
+                          title={t('common.edit')}
                           onClick={() => {
                             setSelectedProfileId(profile.id ?? null);
                             setProfileForm({
@@ -538,21 +564,27 @@ export function PrinterManagementPage(): ReactElement {
                               isDefault: profile.isDefault,
                               description: profile.description ?? '',
                             });
+                            requestAnimationFrame(() => profileFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
                           }}
                           disabled={!permission.canUpdate}
                         >
-                          {t('common.edit')}
+                          <Pencil className="size-3" aria-hidden />
                         </Button>
                         {profile.id ? (
                           <Button
-                            variant="outline"
-                            size="sm"
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="wms-ops-grid-icon-btn"
+                            aria-label={profile.isActive ? t('common.deactivate') : t('common.activate')}
+                            title={profile.isActive ? t('common.deactivate') : t('common.activate')}
                             onClick={() => toggleProfileMutation.mutate({ id: profile.id!, isActive: !profile.isActive })}
-                            disabled={!permission.canUpdate}
+                            disabled={!permission.canUpdate || toggleProfileMutation.isPending}
                           >
-                            {profile.isActive ? t('common.deactivate') : t('common.activate')}
+                            <Power className="size-3" aria-hidden />
                           </Button>
                         ) : null}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -562,7 +594,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.mappings')}</CardTitle>
             </CardHeader>
@@ -664,7 +696,7 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
             <CardHeader>
               <CardTitle>{t('printerManagement.tables.jobs')}</CardTitle>
             </CardHeader>
