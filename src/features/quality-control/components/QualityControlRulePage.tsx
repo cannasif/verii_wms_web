@@ -89,7 +89,7 @@ export function QualityControlRulePage(): ReactElement {
   });
 
   const stockSummary = useMemo(
-    () => buildStockLabel(currentRecord?.stockCode, currentRecord?.stockName) || selectedStockLabel,
+    () => selectedStockLabel || buildStockLabel(currentRecord?.stockCode, currentRecord?.stockName),
     [currentRecord?.stockCode, currentRecord?.stockName, selectedStockLabel],
   );
 

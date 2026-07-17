@@ -178,12 +178,12 @@ export function QualityControlInspectionPage(): ReactElement {
   }
 
   const currentWarehouseLabel = useMemo(
-    () => buildWarehouseLabel(currentRecord?.warehouseCode, currentRecord?.warehouseName) || warehouseLabel,
+    () => warehouseLabel || buildWarehouseLabel(currentRecord?.warehouseCode, currentRecord?.warehouseName),
     [currentRecord?.warehouseCode, currentRecord?.warehouseName, warehouseLabel],
   );
 
   const currentSupplierLabel = useMemo(
-    () => buildCustomerLabel(currentRecord?.supplierCode, currentRecord?.supplierName) || supplierLabel,
+    () => supplierLabel || buildCustomerLabel(currentRecord?.supplierCode, currentRecord?.supplierName),
     [currentRecord?.supplierCode, currentRecord?.supplierName, supplierLabel],
   );
 
