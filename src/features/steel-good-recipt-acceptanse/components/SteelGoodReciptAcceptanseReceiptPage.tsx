@@ -1,6 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow, OpsTextarea } from '@/components/shared';
 import {
@@ -11,14 +12,19 @@ import {
   MasterDataOpsStatGrid,
 } from '@/features/shared';
 import { localizeStatus } from '@/lib/localize-status';
+import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { steelGoodReciptAcceptanseApi } from '../api/steel-good-recipt-acceptanse.api';
 
 export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search')?.trim() ?? '';
+  const pageParam = Number(searchParams.get('page'));
+  const pageNumber = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
+  const [searchInput, setSearchInput] = useState(initialSearch);
+  const [search, setSearch] = useState(initialSearch);
   const [selectedLineIds, setSelectedLineIds] = useState<number[]>([]);
   const [note, setNote] = useState('');
 
@@ -28,8 +34,8 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const candidatesQuery = useQuery({
-    queryKey: ['sgra', 'receipt', 'candidates', search],
-    queryFn: () => steelGoodReciptAcceptanseApi.getReceiptCandidatesPaged({ pageNumber: 1, pageSize: 100, search }),
+    queryKey: ['sgra', 'receipt', 'candidates', pageNumber, search],
+    queryFn: () => steelGoodReciptAcceptanseApi.getReceiptCandidatesPaged({ pageNumber, pageSize: 20, search }),
   });
 
   const headersQuery = useQuery({
@@ -37,8 +43,9 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
     queryFn: () => steelGoodReciptAcceptanseApi.getReceiptHeadersPaged({ pageNumber: 1, pageSize: 20 }),
   });
 
-  const candidateRows = candidatesQuery.data?.data ?? [];
-  const receiptHeaders = headersQuery.data?.data ?? [];
+  const candidateRows = useMemo(() => candidatesQuery.data?.data ?? [], [candidatesQuery.data?.data]);
+  const receiptHeaders = useMemo(() => headersQuery.data?.data ?? [], [headersQuery.data?.data]);
+  const candidateRange = getPagedRange(candidatesQuery.data, 1);
 
   useEffect(() => {
     setSelectedLineIds((current) => current.filter((id) => candidateRows.some((row) => row.id === id)));
@@ -71,6 +78,22 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
     setSelectedLineIds((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   }
 
+  function updateCandidateQuery(nextPage: number, nextSearch = search): void {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.set('page', String(Math.max(1, nextPage)));
+      if (nextSearch) next.set('search', nextSearch);
+      else next.delete('search');
+      return next;
+    }, { replace: true });
+  }
+
+  function handleSearch(): void {
+    const nextSearch = searchInput.trim();
+    setSearch(nextSearch);
+    updateCandidateQuery(1, nextSearch);
+  }
+
   return (
     <OpsFormPageShell
       className="wms-ops-sac-mal-page"
@@ -85,7 +108,7 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
               <div className="min-w-0 flex-1">
                 <OpsInput value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder={t('steelGoodReceiptAcceptance.receipt.searchPh')} />
               </div>
-              <OpsActionButton type="button" variant="secondary" onClick={() => setSearch(searchInput.trim())}>{t('common.search')}</OpsActionButton>
+              <OpsActionButton type="button" variant="secondary" onClick={handleSearch}>{t('common.search')}</OpsActionButton>
             </div>
           </MasterDataOpsFormField>
 
@@ -113,6 +136,34 @@ export function SteelGoodReciptAcceptanseReceiptPage(): ReactElement {
             {!candidatesQuery.isLoading && candidateRows.length === 0 ? (
               <MasterDataOpsEmptyState>{t('steelGoodReceiptAcceptance.receipt.noLines')}</MasterDataOpsEmptyState>
             ) : null}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-sm">
+              <span>
+                {t('common.paginationInfo', {
+                  current: candidateRange.from,
+                  total: candidateRange.to,
+                  totalCount: candidateRange.total,
+                  defaultValue: `${candidateRange.from}-${candidateRange.to} / ${candidateRange.total}`,
+                })}
+              </span>
+              <div className="flex gap-2">
+                <OpsActionButton
+                  type="button"
+                  variant="secondary"
+                  disabled={!candidatesQuery.data?.hasPreviousPage || candidatesQuery.isFetching}
+                  onClick={() => updateCandidateQuery(pageNumber - 1)}
+                >
+                  {t('common.previous')}
+                </OpsActionButton>
+                <OpsActionButton
+                  type="button"
+                  variant="secondary"
+                  disabled={!candidatesQuery.data?.hasNextPage || candidatesQuery.isFetching}
+                  onClick={() => updateCandidateQuery(pageNumber + 1)}
+                >
+                  {t('common.next')}
+                </OpsActionButton>
+              </div>
+            </div>
           </div>
         </MasterDataOpsSection>
 
