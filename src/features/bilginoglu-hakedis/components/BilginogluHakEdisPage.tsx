@@ -280,7 +280,7 @@ export function BilginogluHakEdisPage(): ReactElement {
         decision,
         lineSummary: buildPreviewLineSummary(order.lines, 'shipment'),
       };
-    });
+    }).filter((preview) => preview.shippableQty > 0.0001);
   }, [bulkShipmentPreviewQuery.data]);
   const bulkShipmentPreviewTotals = useMemo(() => {
     return bulkShipmentPreviewOrders.reduce(
