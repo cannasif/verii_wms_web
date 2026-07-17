@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface OpsListPageShellProps {
-  eyebrow: ReactNode;
+  eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
@@ -21,11 +21,13 @@ export function OpsListPageShell({
 }: OpsListPageShellProps): ReactElement {
   return (
     <div className={cn('wms-ops-list wms-ops-form space-y-5', className)}>
-      <header className="wms-ops-header">
-        <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
-          {eyebrow}
-        </div>
-      </header>
+      {eyebrow ? (
+        <header className="wms-ops-header">
+          <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+            {eyebrow}
+          </div>
+        </header>
+      ) : null}
 
       <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
         <div className="wms-ops-card-toolbar flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">

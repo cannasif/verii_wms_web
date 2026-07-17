@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { OpsListPageShell, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
-import { MasterDataOpsErpEyebrow } from '@/features/shared';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
 import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
@@ -370,7 +369,6 @@ export function ErpReferenceListPage({ kind }: { kind: ErpReferenceKind }): Reac
   return (
     <>
       <OpsListPageShell
-        eyebrow={<MasterDataOpsErpEyebrow page={config.breadcrumb} />}
         title={config.title}
         description={config.description}
       >
