@@ -32,6 +32,13 @@ function appendPathSegment(url: string | undefined, segment: string): string | u
   return query ? `${nextPath}?${query}` : nextPath;
 }
 
+function hasNumericTailSegment(url: string | undefined): boolean {
+  if (!url) return false;
+  const path = url.split('?')[0].replace(/\/$/, '');
+  const tail = path.slice(path.lastIndexOf('/') + 1);
+  return /^\d+$/.test(tail);
+}
+
 function shouldSkipBranchInjection(payload: unknown): boolean {
   return payload == null
     || typeof payload !== 'object'
@@ -161,11 +168,19 @@ api.interceptors.request.use((config) => {
   config.headers['X-Language'] = getLanguageForHttpHeader();
 
   const originalMethod = (config.method ?? 'get').toLowerCase();
-  if (originalMethod === 'put' || originalMethod === 'patch') {
-    config.method = 'post';
-  } else if (originalMethod === 'delete') {
-    config.method = 'post';
-    config.url = appendPathSegment(config.url, 'delete');
+  const useNativeHttpMethod = config.useNativeHttpMethod === true;
+  if (!useNativeHttpMethod) {
+    if (originalMethod === 'put') {
+      config.method = 'post';
+      if (hasNumericTailSegment(config.url)) {
+        config.url = appendPathSegment(config.url, 'update');
+      }
+    } else if (originalMethod === 'patch') {
+      config.method = 'post';
+    } else if (originalMethod === 'delete') {
+      config.method = 'post';
+      config.url = appendPathSegment(config.url, 'delete');
+    }
   }
 
   const method = config.method?.toLowerCase();
@@ -259,6 +274,7 @@ declare module 'axios' {
   export interface AxiosRequestConfig {
     skipAuth?: boolean;
     skipSessionExpiredOn401?: boolean;
+    useNativeHttpMethod?: boolean;
   }
 
   export interface AxiosInstance {
