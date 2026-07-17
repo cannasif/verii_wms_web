@@ -7,6 +7,7 @@ import { OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridC
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getLocaleForFormatting } from '@/lib/i18n';
 import { getPagedRange } from '@/lib/paged';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { kkdApi } from '../api/kkd.api';
 import type { KkdDepartmentUsageReportDto } from '../types/kkd.types';
@@ -64,7 +65,7 @@ export function KkdDepartmentReportPage(): ReactElement {
     retry: false,
   });
 
-  const rows = query.data?.data ?? [];
+  const rows = useMemo(() => query.data?.data ?? [], [query.data?.data]);
   const range = getPagedRange(query.data);
 
   const columns = useMemo<PagedDataGridColumn<ColumnKey>[]>(
@@ -78,6 +79,23 @@ export function KkdDepartmentReportPage(): ReactElement {
     ],
     [t],
   );
+  const filterColumns = useMemo<readonly FilterColumnConfig[]>(() => [
+    { value: 'DepartmentCode', type: 'string', labelKey: 'departmentCode', label: t('kkd.operational.reports.colDeptCode') },
+    { value: 'DepartmentName', type: 'string', labelKey: 'departmentName', label: t('kkd.operational.reports.colDeptName') },
+    { value: 'EmployeeCount', type: 'number', labelKey: 'employeeCount', label: t('kkd.operational.reports.colEmployees') },
+    { value: 'DistributionCount', type: 'number', labelKey: 'distributionCount', label: t('kkd.operational.reports.colDocs') },
+    { value: 'TotalQuantity', type: 'number', labelKey: 'totalQuantity', label: t('kkd.operational.reports.colQty') },
+    { value: 'LastUsageDate', type: 'date', labelKey: 'lastUsageDate', label: t('kkd.operational.reports.colLast') },
+  ], [t]);
+  const exportColumns = useMemo(() => columns.map(({ key, label }) => ({ key, label })), [columns]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => rows.map((row) => ({
+    departmentCode: row.departmentCode || '-',
+    departmentName: row.departmentName || '-',
+    employeeCount: row.employeeCount,
+    distributionCount: row.distributionCount,
+    totalQuantity: row.totalQuantity,
+    lastUsageDate: formatDate(row.lastUsageDate),
+  })), [formatDate, rows]);
 
   const undefinedName = t('kkd.operational.common.undefinedName');
 
@@ -88,8 +106,8 @@ export function KkdDepartmentReportPage(): ReactElement {
       title={t('kkd.operational.departmentReport.pageTitle')}
       description={t('kkd.operational.departmentReport.breadcrumb')}
     >
-      <div className="grid min-w-0 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <KkdOpsSection title={t('kkd.operational.reports.summaryDept')}>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <KkdOpsSection className="min-w-0" title={t('kkd.operational.reports.summaryDept')}>
           <PagedDataGrid<KkdDepartmentUsageReportDto, ColumnKey>
             variant="ops"
             pageKey="kkd-department-report"
@@ -160,6 +178,18 @@ export function KkdDepartmentReportPage(): ReactElement {
               onSearchChange: pagedGrid.searchConfig.onSearchChange,
               placeholder: t('kkd.operational.reports.deptSearchPh'),
             }}
+            filterColumns={filterColumns}
+            defaultFilterColumn="DepartmentCode"
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
+            exportFileName="kkd-bolum-raporu"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
           />
         </KkdOpsSection>
 
