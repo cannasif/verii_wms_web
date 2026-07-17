@@ -53,7 +53,7 @@ export const userApi = {
   },
 
   update: async (id: number, data: UpdateUserDto): Promise<UserDto> => {
-    const response = await api.post<ApiResponse<UserDto>>(`/api/User/${id}`, data);
+    const response = await api.put<ApiResponse<UserDto>>(`/api/User/${id}`, data);
     if (response.success && response.data) {
       return response.data;
     }

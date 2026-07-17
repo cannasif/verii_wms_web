@@ -114,7 +114,7 @@ export const parameterApi = {
   update: async (type: ParameterType, id: number, data: UpdateParameterRequest): Promise<void> => {
     const endpoint = getEndpoint(type);
     try {
-      const response = await api.post<ApiResponse<unknown>>(`/api/${endpoint}/${id}`, data);
+      const response = await api.put<ApiResponse<unknown>>(`/api/${endpoint}/${id}`, data);
       if (!response.success) {
         const errorMessage = response.exceptionMessage || response.message || 'Parametre güncellenemedi';
         throw new Error(errorMessage);

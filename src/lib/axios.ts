@@ -24,6 +24,14 @@ export const api = axios.create({
   },
 });
 
+function appendPathSegment(url: string | undefined, segment: string): string | undefined {
+  if (!url) return url;
+
+  const [path, query] = url.split('?');
+  const nextPath = path.endsWith(`/${segment}`) ? path : `${path.replace(/\/$/, '')}/${segment}`;
+  return query ? `${nextPath}?${query}` : nextPath;
+}
+
 function shouldSkipBranchInjection(payload: unknown): boolean {
   return payload == null
     || typeof payload !== 'object'
@@ -151,6 +159,14 @@ api.interceptors.request.use((config) => {
   // instead of awaiting config.json again through loadConfig() on every call.
   config.baseURL = getApiBaseUrl() || api.defaults.baseURL || config.baseURL;
   config.headers['X-Language'] = getLanguageForHttpHeader();
+
+  const originalMethod = (config.method ?? 'get').toLowerCase();
+  if (originalMethod === 'put' || originalMethod === 'patch') {
+    config.method = 'post';
+  } else if (originalMethod === 'delete') {
+    config.method = 'post';
+    config.url = appendPathSegment(config.url, 'delete');
+  }
 
   const method = config.method?.toLowerCase();
   const hasBody = config.data !== undefined && config.data !== null && config.data !== '';

@@ -19,7 +19,7 @@ export const userPermissionGroupApi = {
     userId: number,
     dto: SetUserPermissionGroupsDto
   ): Promise<UserPermissionGroupDto> => {
-    const response = await api.post<ApiResponse<UserPermissionGroupDto>>(
+    const response = await api.put<ApiResponse<UserPermissionGroupDto>>(
       `/api/user-permission-groups/${userId}`,
       dto
     );
