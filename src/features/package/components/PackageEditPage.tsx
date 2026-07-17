@@ -534,7 +534,7 @@ export function PackageEditPage(): ReactElement {
               <OpsActionButton
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/package/detail/${headerId}`)}
+                onClick={() => navigate('/package/list')}
               >
                 <ChevronLeft className="size-3.5" aria-hidden />
                 {t('common.cancel')}

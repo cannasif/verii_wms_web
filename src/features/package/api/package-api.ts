@@ -81,10 +81,7 @@ export const packageApi = {
   },
 
   updatePHeader: async (id: number, data: UpdatePHeaderDto): Promise<void> => {
-    const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([key]) => key !== 'sourceType' && key !== 'sourceHeaderId')
-    ) as Omit<UpdatePHeaderDto, 'sourceType' | 'sourceHeaderId'>;
-    const response = await api.put<ApiResponse<unknown>>(`/api/PHeader/${id}`, cleanData);
+    const response = await api.put<ApiResponse<unknown>>(`/api/PHeader/${id}`, data);
     if (!response.success) {
       throw new Error(response.message || getLocalizedText('common.errors.packageHeaderUpdateFailed'));
     }
