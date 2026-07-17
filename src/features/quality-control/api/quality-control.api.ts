@@ -26,26 +26,6 @@ function extractData<T>(response: ApiResponse<T>): T {
   throw new Error(response.message || response.exceptionMessage || getLocalizedText('common.errors.unknown'));
 }
 
-function buildPagedQueryParams(params: PagedParams = {}): URLSearchParams {
-  const request = buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' });
-  const searchParams = new URLSearchParams();
-
-  searchParams.set('pageNumber', String(request.pageNumber));
-  searchParams.set('pageSize', String(request.pageSize));
-  searchParams.set('sortBy', request.sortBy);
-  searchParams.set('sortDirection', request.sortDirection);
-  searchParams.set('search', request.search);
-  searchParams.set('filterLogic', request.filterLogic);
-
-  request.filters.forEach((filter, index) => {
-    searchParams.set(`filters[${index}].column`, filter.column);
-    searchParams.set(`filters[${index}].operator`, filter.operator);
-    searchParams.set(`filters[${index}].value`, filter.value);
-  });
-
-  return searchParams;
-}
-
 export const qualityControlApi = {
   async createRule(dto: CreateInventoryQualityRuleDto): Promise<InventoryQualityRuleDto> {
     const response = await api.post<ApiResponse<InventoryQualityRuleDto>>('/api/QualityControl/rules', dto);
@@ -63,9 +43,10 @@ export const qualityControlApi = {
   },
 
   async getRulesPaged(params: PagedParams = {}): Promise<PagedResponse<InventoryQualityRulePagedRowDto>> {
-    const response = await api.get<ApiResponse<PagedResponse<InventoryQualityRulePagedRowDto>>>('/api/QualityControl/rules/paged', {
-      params: buildPagedQueryParams(params),
-    });
+    const response = await api.post<ApiResponse<PagedResponse<InventoryQualityRulePagedRowDto>>>(
+      '/api/QualityControl/rules/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     return extractData(response);
   },
 
@@ -109,16 +90,18 @@ export const qualityControlApi = {
   },
 
   async getInspectionsPaged(params: PagedParams = {}): Promise<PagedResponse<InventoryQualityInspectionPagedRowDto>> {
-    const response = await api.get<ApiResponse<PagedResponse<InventoryQualityInspectionPagedRowDto>>>('/api/QualityControl/inspections/paged', {
-      params: buildPagedQueryParams(params),
-    });
+    const response = await api.post<ApiResponse<PagedResponse<InventoryQualityInspectionPagedRowDto>>>(
+      '/api/QualityControl/inspections/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     return extractData(response);
   },
 
   async getQuarantinePaged(params: PagedParams = {}): Promise<PagedResponse<InventoryQualityQuarantinePagedRowDto>> {
-    const response = await api.get<ApiResponse<PagedResponse<InventoryQualityQuarantinePagedRowDto>>>('/api/QualityControl/quarantine/paged', {
-      params: buildPagedQueryParams(params),
-    });
+    const response = await api.post<ApiResponse<PagedResponse<InventoryQualityQuarantinePagedRowDto>>>(
+      '/api/QualityControl/quarantine/paged',
+      buildPagedRequest(params, { pageNumber: 1, pageSize: 20, sortBy: 'Id', sortDirection: 'desc' }),
+    );
     return extractData(response);
   },
 
