@@ -44,7 +44,7 @@ export function ParameterFormPage(): ReactElement {
   const parameterConfig = PARAMETER_TYPES[parameterType];
 
   const { data: parameter, isLoading: isLoadingParameter } = useParameterFirst(parameterType);
-  const upsertMutation = useUpsertParameter(parameterType);
+  const upsertMutation = useUpsertParameter(parameterType, parameter?.id);
 
   const form = useForm<ParameterFormData>({
     resolver: zodResolver(parameterFormSchema(t)),

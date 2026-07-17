@@ -3,12 +3,12 @@ import { parameterApi } from '../api/parameter-api';
 import { PARAMETER_QUERY_KEYS } from '../utils/query-keys';
 import type { ParameterType, CreateParameterRequest, UpdateParameterRequest } from '../types/parameter';
 
-export function useUpsertParameter(type: ParameterType) {
+export function useUpsertParameter(type: ParameterType, existingId?: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateParameterRequest | UpdateParameterRequest) =>
-      parameterApi.upsert(type, data),
+      parameterApi.upsert(type, data, existingId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [PARAMETER_QUERY_KEYS.LIST(type)] });
     },

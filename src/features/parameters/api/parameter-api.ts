@@ -114,7 +114,7 @@ export const parameterApi = {
   update: async (type: ParameterType, id: number, data: UpdateParameterRequest): Promise<void> => {
     const endpoint = getEndpoint(type);
     try {
-      const response = await api.put<ApiResponse<unknown>>(`/api/${endpoint}/${id}`, data);
+      const response = await api.post<ApiResponse<unknown>>(`/api/${endpoint}/${id}`, data);
       if (!response.success) {
         const errorMessage = response.exceptionMessage || response.message || 'Parametre güncellenemedi';
         throw new Error(errorMessage);
@@ -124,11 +124,9 @@ export const parameterApi = {
     }
   },
 
-  upsert: async (type: ParameterType, data: CreateParameterRequest | UpdateParameterRequest): Promise<void> => {
-    const existing = await parameterApi.getFirst(type);
-    
-    if (existing) {
-      await parameterApi.update(type, existing.id, data);
+  upsert: async (type: ParameterType, data: CreateParameterRequest | UpdateParameterRequest, existingId?: number): Promise<void> => {
+    if (existingId) {
+      await parameterApi.update(type, existingId, data);
     } else {
       await parameterApi.create(type, data);
     }
