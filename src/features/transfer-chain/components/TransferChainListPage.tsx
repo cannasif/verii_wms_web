@@ -560,7 +560,7 @@ export function TransferChainListPage(): ReactElement {
       </Dialog>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="max-h-[88vh] max-w-5xl overflow-y-auto">
+        <DialogContent className="max-h-[88dvh] w-[95vw] max-w-[calc(100vw-1rem)] overflow-y-auto sm:max-w-[95vw] lg:max-w-5xl">
           <DialogHeader>
             <DialogTitle>{detail?.name ?? t('detail.fallbackTitle')}</DialogTitle>
             <DialogDescription>{detail ? `${detail.code} - ${labelStatus(detail.status)}` : t('detail.loading')}</DialogDescription>
