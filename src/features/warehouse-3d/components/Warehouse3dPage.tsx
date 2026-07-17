@@ -116,7 +116,11 @@ export function Warehouse3dPage(): ReactElement {
           </Warehouse3dOpsField>
         </div>
 
-        <Warehouse3dOpsViewport scene={isSceneReady} centered={!isSceneReady}>
+        <Warehouse3dOpsViewport
+          scene={isSceneReady}
+          centered={!isSceneReady}
+          className="wms-ops-warehouse-3d-viewport--tall"
+        >
           {!selectedDepoKodu ? (
             <Warehouse3dOpsEmpty
               icon={(
