@@ -84,7 +84,7 @@ function resolvePermissionCategory(scope: string): PermissionCategoryKey {
   if (scope === 'dashboard' || scope === 'wms.reports') return 'system';
   if (scope.startsWith('access-control.')) return 'access-control';
   if (scope.startsWith('wms.parameters.')) return 'parameters';
-  if (scope.startsWith('wms.warehouse-balance') || scope.startsWith('wms.print-management')) return 'erp';
+  if (scope.startsWith('wms.warehouse-balance') || scope.startsWith('wms.shelf') || scope.startsWith('wms.print-management')) return 'erp';
   if (
     scope.startsWith('wms.production') ||
     scope.startsWith('wms.package') ||

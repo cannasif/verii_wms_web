@@ -91,7 +91,7 @@ function getLocationTypeLabel(
 export function ShelfManagementPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
-  const permission = useCrudPermission('wms.print-management');
+  const permission = useCrudPermission('wms.shelf');
   const [form, setForm] = useState<ShelfUpsertRequest>(EMPTY_FORM);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [warehousePickerOpen, setWarehousePickerOpen] = useState(false);
