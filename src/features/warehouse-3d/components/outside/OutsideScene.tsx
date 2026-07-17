@@ -12,6 +12,8 @@ import {
 } from '@react-three/drei';
 import { Vector3, PerspectiveCamera as ThreePerspectiveCamera, FogExp2 } from 'three';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
+import { useTheme } from '@/components/theme-provider';
+import { getWarehouse3dSceneTheme } from '../../utils/warehouse-3d-scene-theme';
 import type {
   SteelPlacementVisualizationItemDto,
   SteelPlacementVisualizationLocationDto,
@@ -228,6 +230,11 @@ export function OutsideScene({
   selectedRackKey,
   onSelectRack,
 }: OutsideSceneProps): ReactElement {
+  const { resolvedTheme } = useTheme();
+  const sceneTheme = useMemo(
+    () => getWarehouse3dSceneTheme(resolvedTheme === 'light' ? 'light' : 'dark'),
+    [resolvedTheme],
+  );
   const cameraRef = useRef<ThreePerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControlsType | null>(null);
   const [contextLost, setContextLost] = useState(false);
@@ -247,7 +254,7 @@ export function OutsideScene({
     [bounds.depth, bounds.width],
   );
   const defaultTarget = useMemo(() => new Vector3(0, 0.6, 0), []);
-  const fog = useMemo(() => new FogExp2('#06080f', 0.018), []);
+  const fog = useMemo(() => new FogExp2(sceneTheme.clearColor, 0.018), [sceneTheme.clearColor]);
 
   const reflectorSize = useMemo<[number, number]>(
     () => [Math.max(bounds.width, 14) + 18, Math.max(bounds.depth, 12) + 16],
@@ -256,7 +263,7 @@ export function OutsideScene({
 
   if (contextLost) {
     return (
-      <div className="flex h-full min-h-[420px] items-center justify-center rounded-2xl border border-white/10 bg-slate-950/60 text-sm text-slate-300">
+      <div className="flex h-full min-h-[420px] items-center justify-center border border-[color:var(--wms-ops-card-border)] bg-[color:var(--wms-ops-card-bg)] text-sm text-[color:hsl(var(--foreground))]">
         <span>Grafik bağlamı kayboldu, sahne yeniden yükleniyor...</span>
       </div>
     );
@@ -264,11 +271,13 @@ export function OutsideScene({
 
   return (
     <Canvas
+      key={resolvedTheme}
       shadows
       dpr={[Math.max(dpr - 0.4, 0.6), dpr]}
       gl={{ antialias: true, powerPreference: 'high-performance', alpha: false, stencil: false }}
       onCreated={({ gl, scene }) => {
         scene.fog = fog;
+        gl.setClearColor(sceneTheme.clearColor);
         gl.domElement.addEventListener('webglcontextlost', (event) => {
           event.preventDefault();
           setContextLost(true);
@@ -276,7 +285,7 @@ export function OutsideScene({
         });
       }}
       onPointerMissed={() => onSelectRack(null, [])}
-      style={{ background: 'radial-gradient(circle at 50% 0%, #0f1d33 0%, #06080f 70%)' }}
+      style={{ background: sceneTheme.clearColor }}
     >
       <PerformanceMonitor
         onIncline={() => setDpr((prev) => Math.min(prev + 0.15, 1.75))}
@@ -333,12 +342,16 @@ export function OutsideScene({
         defaultTarget={defaultTarget}
       />
 
-      <ambientLight intensity={0.42} color="#cbd5f5" />
-      <hemisphereLight intensity={0.5} color="#9bb7ff" groundColor="#020617" />
+      <ambientLight intensity={sceneTheme.ambient.intensity} color={sceneTheme.ambient.color} />
+      <hemisphereLight
+        intensity={sceneTheme.hemisphere.intensity}
+        color={sceneTheme.hemisphere.sky}
+        groundColor={sceneTheme.hemisphere.ground}
+      />
       <directionalLight
         position={[bounds.width * 0.7 + 3, 16, bounds.depth * 0.6 + 5]}
-        intensity={1.15}
-        color="#ffffff"
+        intensity={sceneTheme.directionalMain.intensity}
+        color={sceneTheme.directionalMain.color}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -352,21 +365,25 @@ export function OutsideScene({
       />
       <directionalLight
         position={[-bounds.width * 0.6 - 2, 9, -bounds.depth * 0.4 - 3]}
-        intensity={0.45}
-        color="#7dd3fc"
+        intensity={sceneTheme.directionalFill.intensity}
+        color={sceneTheme.directionalFill.color}
       />
-      <directionalLight position={[0, 6, -bounds.depth * 0.9 - 4]} intensity={0.55} color="#fde68a" />
+      <directionalLight
+        position={[0, 6, -bounds.depth * 0.9 - 4]}
+        intensity={sceneTheme.directionalFill.intensity}
+        color={sceneTheme.directionalMain.color}
+      />
       <pointLight
         position={[-bounds.width / 2, 4.5, -bounds.depth / 2]}
         intensity={0.55}
-        color="#38bdf8"
+        color={sceneTheme.point.color}
         distance={bounds.width + 12}
         decay={2}
       />
       <pointLight
         position={[bounds.width / 2, 4.5, bounds.depth / 2]}
         intensity={0.45}
-        color="#a5f3fc"
+        color={sceneTheme.point.color}
         distance={bounds.width + 12}
         decay={2}
       />
@@ -388,18 +405,22 @@ export function OutsideScene({
             depthScale={1.05}
             minDepthThreshold={0.4}
             maxDepthThreshold={1.4}
-            color="#0b1220"
-            metalness={0.55}
+            color={sceneTheme.floorPlane}
+            metalness={resolvedTheme === 'light' ? 0.18 : 0.55}
             mirror={0}
           />
         ) : (
-          <meshStandardMaterial color="#0b1220" metalness={0.4} roughness={0.85} />
+          <meshStandardMaterial
+            color={sceneTheme.floorPlane}
+            metalness={resolvedTheme === 'light' ? 0.12 : 0.4}
+            roughness={0.85}
+          />
         )}
       </mesh>
 
       <ContactShadows
         position={[0, 0.012, 0]}
-        opacity={0.6}
+        opacity={resolvedTheme === 'light' ? 0.32 : 0.6}
         scale={Math.max(bounds.width, bounds.depth) + 6}
         blur={2.4}
         far={6}
@@ -407,7 +428,12 @@ export function OutsideScene({
         color="#000000"
       />
 
-      <LocationPad width={bounds.width} depth={bounds.depth} label={padLabel} />
+      <LocationPad
+        width={bounds.width}
+        depth={bounds.depth}
+        label={padLabel}
+        sceneTheme={sceneTheme}
+      />
 
       <Suspense fallback={null}>
         {groups.map((group) => (
