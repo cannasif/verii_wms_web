@@ -28,6 +28,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { documentSeriesManagementApi } from '../api/document-series-management.api';
 import type {
   CreateWmsDocumentSeriesDefinitionDto,
@@ -96,6 +97,8 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
   const { t } = useTranslation('common');
   const { setPageTitle } = useUIStore();
   const pageKey = 'document-series-definition-management';
+  const permission = useCrudPermission('wms.document-series.definition');
+  const showActionsColumn = permission.canUpdate || permission.canDelete;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [warehouseDialogOpen, setWarehouseDialogOpen] = useState(false);
   const [editing, setEditing] = useState<WmsDocumentSeriesDefinitionDto | null>(null);
@@ -135,6 +138,7 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
     pageKey,
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'code',
+    includeActionsColumn: showActionsColumn,
   });
 
   const query = useQuery({
@@ -259,7 +263,7 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
       title={t('documentSeries.definitions.pageTitle')}
       description={t('documentSeries.definitions.pageDescription', { defaultValue: t('documentSeries.badge') })}
       actions={
-        <OpsActionButton type="button" variant="primary" onClick={startCreate}>
+        <OpsActionButton type="button" variant="primary" onClick={startCreate} disabled={!permission.canCreate}>
           {t('common.add')}
         </OpsActionButton>
       }
@@ -302,12 +306,22 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
         isError={Boolean(query.error)}
         errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
         emptyText={t('documentSeries.definitions.empty')}
-        showActionsColumn={orderedVisibleColumns.includes('actions')}
+        showActionsColumn={showActionsColumn}
         actionsHeaderLabel={t('common.actions')}
+        actionsCellClassName="wms-ops-table-actions-col"
+        iconOnlyActions
         renderActionsCell={(row) => (
-          <div className="flex gap-2 justify-end">
-            <Button type="button" size="sm" variant="outline" onClick={() => startEdit(row)}><Pencil className="size-4" /><span className="ml-2">{t('common.update')}</span></Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => deleteMutation.mutate(row.id)}><Trash2 className="size-4" /><span className="ml-2">{t('common.delete')}</span></Button>
+          <div className="wms-ops-row-actions">
+            {permission.canUpdate ? (
+              <Button type="button" size="icon" variant="ghost" className="wms-ops-grid-icon-btn" aria-label={t('common.update')} title={t('common.update')} onClick={() => startEdit(row)}>
+                <Pencil className="size-3" aria-hidden />
+              </Button>
+            ) : null}
+            {permission.canDelete ? (
+              <Button type="button" size="icon" variant="ghost" className="wms-ops-grid-icon-btn wms-ops-grid-icon-btn--danger" aria-label={t('common.delete')} title={t('common.delete')} disabled={deleteMutation.isPending} onClick={() => deleteMutation.mutate(row.id)}>
+                <Trash2 className="size-3" aria-hidden />
+              </Button>
+            ) : null}
           </div>
         )}
         pageSize={query.data?.pageSize ?? pagedGrid.pageSize}
@@ -330,6 +344,7 @@ export function DocumentSeriesDefinitionManagementPage(): ReactElement {
           columnOrder,
           onVisibleColumnsChange: setVisibleColumns,
           onColumnOrderChange: setColumnOrder,
+          lockedKeys: ['code', 'actions'],
           exportFileName: 'document-series-definitions',
           exportColumns,
           exportRows,
