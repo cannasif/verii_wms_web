@@ -24,12 +24,48 @@ import type {
 const normalizeHeader = (value: string): string =>
   value
     .toLowerCase()
+    .replace(/ı/g, 'i')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/\n/g, ' ')
-    .replace(/\./g, '')
-    .trim();
+    .replace(/[^a-z0-9]/g, '');
+
+const headerCandidates = {
+  netsisOrderNo: ['Netsis Sip. No', 'Netsis Sipariş No', 'FISNO'],
+  netsisOrderLineNo: ['Netsis Sip. Sıra No', 'Netsis Sipariş Sıra No', 'SIRA'],
+  netsisLineSequenceNo: ['SIRA NO', 'SIRA NO.'],
+  stockCode: ['Stok Kodu', 'STOK_KODU'],
+  stockName: ['Stok Adı', 'Stok Adi', 'STOK_ADI'],
+  combinedSize: ['Kombine Size', 'KOMBINE_SIZE'],
+  serialNo: ['Seri No (Levha No)', 'SERI_NO_LEVHA'],
+  serialNo2: ['Seri-2 (Poz No)', 'SERI2_POZNO'],
+  expectedQuantity: ['Miktar(Kg)', 'Miktar (Kg)', 'MIKTAR'],
+  depotCode: ['Depo Kodu', 'DEPO_KODU', 'DEPO_KOD'],
+  materialQuality: ['Material Quality Malzeme Kalitesi', 'Material Quality', 'Malzeme Kalitesi'],
+  heatNumber: ['Heat Number Döküm/Şarj No', 'Heat Number', 'Döküm/Şarj No'],
+  certificateNumber: ['Certificate Number Sertifika No', 'Certificate Number', 'Sertifika No'],
+  exportRefNo: ['Export Ref No', 'EXPORT_REF_NO'],
+} as const;
+
+const knownHeaders = new Set(Object.values(headerCandidates).flat().map(normalizeHeader));
+
+const findHeaderRowIndex = (sheet: XLSX.WorkSheet): number => {
+  const sheetRows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: '', blankrows: false });
+  let bestIndex = 0;
+  let bestScore = 0;
+
+  sheetRows.slice(0, 25).forEach((row, index) => {
+    const score = row.reduce<number>(
+      (total, cell) => total + (knownHeaders.has(normalizeHeader(String(cell ?? ''))) ? 1 : 0),
+      0,
+    );
+    if (score > bestScore) {
+      bestIndex = index;
+      bestScore = score;
+    }
+  });
+
+  return bestScore >= 2 ? bestIndex : 0;
+};
 
 const findValue = (row: Record<string, unknown>, candidates: string[]): string => {
   const entries = Object.entries(row);
@@ -136,31 +172,39 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
       const workbook = XLSX.read(buffer, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[firstSheetName];
-      const jsonRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' });
+      if (!sheet) throw new Error(t('steelGoodReceiptAcceptance.import.readErr'));
+
+      const headerRowIndex = findHeaderRowIndex(sheet);
+      const jsonRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '', range: headerRowIndex });
 
       const mappedRows = jsonRows.map((row, index) => ({
-        rowNumber: index + 2,
-        netsisOrderNo: findValue(row, ['Netsis Sip. No', 'FISNO']),
-        netsisOrderLineNo: findValue(row, ['Netsis Sip. Sıra No', 'Netsis Sip. Sira No', 'SIRA']),
-        netsisLineSequenceNo: findValue(row, ['SIRA NO', 'SIRA NO.']) || null,
-        stockCode: findValue(row, ['Stok Kodu', 'STOK_KODU']),
-        stockName: findValue(row, ['Stok Adi', 'STOK_ADI']) || null,
-        combinedSize: findValue(row, ['Kombine Size', 'KOMBINE_SIZE']) || null,
-        serialNo: findValue(row, ['Seri No (Levha No)', 'SERI_NO_LEVHA']),
-        serialNo2: findValue(row, ['Seri-2 (Poz No)', 'SERI2_POZNO']) || null,
-        expectedQuantity: toDecimal(findValue(row, ['Miktar(Kg)', 'MIKTAR'])),
+        rowNumber: headerRowIndex + index + 2,
+        netsisOrderNo: findValue(row, [...headerCandidates.netsisOrderNo]),
+        netsisOrderLineNo: findValue(row, [...headerCandidates.netsisOrderLineNo]),
+        netsisLineSequenceNo: findValue(row, [...headerCandidates.netsisLineSequenceNo]) || null,
+        stockCode: findValue(row, [...headerCandidates.stockCode]),
+        stockName: findValue(row, [...headerCandidates.stockName]) || null,
+        combinedSize: findValue(row, [...headerCandidates.combinedSize]) || null,
+        serialNo: findValue(row, [...headerCandidates.serialNo]),
+        serialNo2: findValue(row, [...headerCandidates.serialNo2]) || null,
+        expectedQuantity: toDecimal(findValue(row, [...headerCandidates.expectedQuantity])),
         unit: 'KG',
-        depotCode: findValue(row, ['Depo Kodu', 'DEPO_KODU', 'DEPO_KOD']) || null,
-        materialQuality: findValue(row, ['Material Quality Malzeme Kalitesi', 'Material Quality', 'Malzeme Kalitesi']) || null,
-        heatNumber: findValue(row, ['Heat Number Döküm/Şarj No', 'Heat Number', 'Döküm/Şarj No']) || null,
-        certificateNumber: findValue(row, ['Certificate Number Sertifika No', 'Certificate Number', 'Sertifika No']) || null,
-        exportRefNo: findValue(row, ['Export Ref No', 'EXPORT_REF_NO']) || exportRefNo.trim() || null,
+        depotCode: findValue(row, [...headerCandidates.depotCode]) || null,
+        materialQuality: findValue(row, [...headerCandidates.materialQuality]) || null,
+        heatNumber: findValue(row, [...headerCandidates.heatNumber]) || null,
+        certificateNumber: findValue(row, [...headerCandidates.certificateNumber]) || null,
+        exportRefNo: findValue(row, [...headerCandidates.exportRefNo]) || exportRefNo.trim() || null,
       })) satisfies SteelGoodReciptAcceptanseExcelRowDto[];
 
-      setRows(mappedRows.filter((row) => row.stockCode || row.serialNo || row.netsisOrderNo));
+      const dataRows = mappedRows.filter((row) => row.stockCode || row.serialNo || row.netsisOrderNo);
+      setRows(dataRows);
       setFileName(file.name);
       setPreview(null);
-      toast.success(t('steelGoodReceiptAcceptance.import.readOk', { n: mappedRows.length }));
+      if (dataRows.length === 0) {
+        toast.error(t('steelGoodReceiptAcceptance.import.readErr'));
+      } else {
+        toast.success(t('steelGoodReceiptAcceptance.import.readOk', { n: dataRows.length }));
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('steelGoodReceiptAcceptance.import.readErr'));
     }
