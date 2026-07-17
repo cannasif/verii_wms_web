@@ -28,18 +28,29 @@ import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
 import { barcodeApi, toLegacyBarcodeStock } from '@/features/shared/api/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
-function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+function toLegacyCollectionResponse<T>(data: PagedResponse<T> | T[], message: string): ApiResponse<T[]> {
   return {
     success: true,
     message,
     exceptionMessage: '',
-    data: data.data,
+    data: Array.isArray(data) ? data : data.data,
     errors: [],
     timestamp: new Date().toISOString(),
     statusCode: 200,
     className: 'ApiResponse',
   };
+}
+
+async function getAllPagedData<T>(url: string, options: ApiRequestOptions | undefined, errorKey: string): Promise<T[]> {
+  return fetchAllPagedData({
+    fetchPage: async (pageNumber, pageSize) => {
+      const response = await api.post<ApiResponse<PagedResponse<T>>>(url, buildPagedRequest({ pageNumber, pageSize, sortBy: 'Id', sortDirection: 'asc' }), options);
+      if (response.success && response.data) return response.data;
+      throw new Error(response.message || getLocalizedText(errorKey));
+    },
+  });
 }
 
 export const subcontractingApi = {
@@ -264,35 +275,23 @@ export const subcontractingApi = {
   },
 
   getReceiptLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SrtLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş satırları yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptLinesLoadFailed'));
+    const data = await getAllPagedData<SubcontractingLine>(`/api/SrtLine/header/${headerId}/paged`, options, 'common.errors.subcontractingReceiptLinesLoadFailed');
+    return toLegacyCollectionResponse(data, 'Fason giriş satırları yüklendi');
   },
 
   getIssueLines: async (headerId: number, options?: ApiRequestOptions): Promise<SubcontractingLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLine>>>(`/api/SitLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış satırları yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueLinesLoadFailed'));
+    const data = await getAllPagedData<SubcontractingLine>(`/api/SitLine/header/${headerId}/paged`, options, 'common.errors.subcontractingIssueLinesLoadFailed');
+    return toLegacyCollectionResponse(data, 'Fason çıkış satırları yüklendi');
   },
 
   getReceiptLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SrtLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Fason giriş seri listesi yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.subcontractingReceiptSerialsLoadFailed'));
+    const data = await getAllPagedData<SubcontractingLineSerial>(`/api/SrtLineSerial/line/${lineId}/paged`, options, 'common.errors.subcontractingReceiptSerialsLoadFailed');
+    return toLegacyCollectionResponse(data, 'Fason giriş seri listesi yüklendi');
   },
 
   getIssueLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<SubcontractingLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<SubcontractingLineSerial>>>(`/api/SitLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Fason çıkış seri listesi yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.subcontractingIssueSerialsLoadFailed'));
+    const data = await getAllPagedData<SubcontractingLineSerial>(`/api/SitLineSerial/line/${lineId}/paged`, options, 'common.errors.subcontractingIssueSerialsLoadFailed');
+    return toLegacyCollectionResponse(data, 'Fason çıkış seri listesi yüklendi');
   },
 
   getAwaitingApprovalSitHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<SubcontractingHeader>> => {

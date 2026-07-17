@@ -22,18 +22,29 @@ import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
 import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
 import type { ApiRequestOptions } from '@/lib/request-utils';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
-function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+function toLegacyCollectionResponse<T>(data: PagedResponse<T> | T[], message: string): ApiResponse<T[]> {
   return {
     success: true,
     message,
     exceptionMessage: '',
-    data: data.data,
+    data: Array.isArray(data) ? data : data.data,
     errors: [],
     timestamp: new Date().toISOString(),
     statusCode: 200,
     className: 'ApiResponse',
   };
+}
+
+async function getAllPagedData<T>(url: string, options: ApiRequestOptions | undefined, errorKey: string): Promise<T[]> {
+  return fetchAllPagedData({
+    fetchPage: async (pageNumber, pageSize) => {
+      const response = await api.post<ApiResponse<PagedResponse<T>>>(url, buildPagedRequest({ pageNumber, pageSize, sortBy: 'Id', sortDirection: 'asc' }), options);
+      if (response.success && response.data) return response.data;
+      throw new Error(response.message || getLocalizedText(errorKey));
+    },
+  });
 }
 
 export const warehouseApi = {
@@ -222,19 +233,13 @@ export const warehouseApi = {
   },
 
   getInboundLines: async (headerId: number, options?: ApiRequestOptions): Promise<WarehouseLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WiLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş satırları yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundLinesLoadFailed'));
+    const data = await getAllPagedData<WarehouseLine>(`/api/WiLine/header/${headerId}/paged`, options, 'common.errors.warehouseInboundLinesLoadFailed');
+    return toLegacyCollectionResponse(data, 'Depo giriş satırları yüklendi');
   },
 
   getOutboundLines: async (headerId: number, options?: ApiRequestOptions): Promise<WarehouseLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<WarehouseLine>>>(`/api/WoLine/header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış satırları yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundLinesLoadFailed'));
+    const data = await getAllPagedData<WarehouseLine>(`/api/WoLine/header/${headerId}/paged`, options, 'common.errors.warehouseOutboundLinesLoadFailed');
+    return toLegacyCollectionResponse(data, 'Depo çıkış satırları yüklendi');
   },
 
   getAssignedInboundLines: async (headerId: number, options?: ApiRequestOptions): Promise<WarehouseLinesResponse> => {
@@ -246,19 +251,13 @@ export const warehouseApi = {
   },
 
   getInboundLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<WarehouseLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WiLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Depo giriş seri listesi yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.warehouseInboundSerialsLoadFailed'));
+    const data = await getAllPagedData<WarehouseLineSerial>(`/api/WiLineSerial/line/${lineId}/paged`, options, 'common.errors.warehouseInboundSerialsLoadFailed');
+    return toLegacyCollectionResponse(data, 'Depo giriş seri listesi yüklendi');
   },
 
   getOutboundLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<WarehouseLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<WarehouseLineSerial>>>(`/api/WoLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || 'Depo çıkış seri listesi yüklendi');
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.warehouseOutboundSerialsLoadFailed'));
+    const data = await getAllPagedData<WarehouseLineSerial>(`/api/WoLineSerial/line/${lineId}/paged`, options, 'common.errors.warehouseOutboundSerialsLoadFailed');
+    return toLegacyCollectionResponse(data, 'Depo çıkış seri listesi yüklendi');
   },
 
   getAwaitingApprovalWiHeaders: async (params: PagedParams = {}, options?: ApiRequestOptions): Promise<PagedResponse<WarehouseHeader>> => {

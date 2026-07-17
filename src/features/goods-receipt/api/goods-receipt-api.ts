@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import { buildPagedRequest } from '@/lib/paged';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import { getLocalizedText } from '@/lib/localized-error';
 import { barcodeApi, toLegacyBarcodeStock } from '@/features/shared/api/barcode-api';
 import type { ApiResponse, PagedParams, PagedResponse } from '@/types/api';
@@ -123,11 +124,17 @@ export const goodsReceiptApi = {
   },
 
   getGrLines: async (headerId: number, options?: ApiRequestOptions): Promise<GrLine[]> => {
-    const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(`/api/GrLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data?.data) {
-      return response.data.data;
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
+    return fetchAllPagedData({
+      fetchPage: async (pageNumber, pageSize) => {
+        const response = await api.post<ApiResponse<PagedResponse<GrLine>>>(
+          `/api/GrLine/by-header/${headerId}/paged`,
+          buildPagedRequest({ pageNumber, pageSize, sortBy: 'Id', sortDirection: 'asc' }),
+          options,
+        );
+        if (response.success && response.data) return response.data;
+        throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptLinesLoadFailed'));
+      },
+    });
   },
 
   getGrImportLinesWithRoutes: async (headerId: number, options?: ApiRequestOptions): Promise<GrImportLine[]> => {

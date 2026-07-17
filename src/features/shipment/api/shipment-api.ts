@@ -24,13 +24,14 @@ import { buildPagedRequest } from '@/lib/paged';
 import { getLocalizedText } from '@/lib/localized-error';
 import { barcodeApi, toLegacyBarcodeStock } from '@/features/shared/api/barcode-api';
 import type { ApiRequestOptions } from '@/lib/request-utils';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 
-function toLegacyCollectionResponse<T>(data: PagedResponse<T>, message: string): ApiResponse<T[]> {
+function toLegacyCollectionResponse<T>(data: PagedResponse<T> | T[], message: string): ApiResponse<T[]> {
   return {
     success: true,
     message,
     exceptionMessage: '',
-    data: data.data,
+    data: Array.isArray(data) ? data : data.data,
     errors: [],
     timestamp: new Date().toISOString(),
     statusCode: 200,
@@ -109,19 +110,25 @@ export const shipmentApi = {
   },
 
   getLines: async (headerId: number, options?: ApiRequestOptions): Promise<ShipmentLinesResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.linesLoaded'));
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.shipmentLinesLoadFailed'));
+    const data = await fetchAllPagedData({
+      fetchPage: async (pageNumber, pageSize) => {
+        const response = await api.post<ApiResponse<PagedResponse<ShipmentLine>>>(`/api/ShLine/by-header/${headerId}/paged`, buildPagedRequest({ pageNumber, pageSize, sortBy: 'Id', sortDirection: 'asc' }), options);
+        if (response.success && response.data) return response.data;
+        throw new Error(response.message || getLocalizedText('common.errors.shipmentLinesLoadFailed'));
+      },
+    });
+    return toLegacyCollectionResponse(data, getLocalizedText('shipment.api.linesLoaded'));
   },
 
   getLineSerials: async (lineId: number, options?: ApiRequestOptions): Promise<ShipmentLineSerialsResponse> => {
-    const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber: 1, pageSize: 1000, sortBy: 'Id', sortDirection: 'asc' }), options);
-    if (response.success && response.data) {
-      return toLegacyCollectionResponse(response.data, response.message || getLocalizedText('shipment.api.serialsLoaded'));
-    }
-    throw new Error(response.message || getLocalizedText('common.errors.shipmentSerialsLoadFailed'));
+    const data = await fetchAllPagedData({
+      fetchPage: async (pageNumber, pageSize) => {
+        const response = await api.post<ApiResponse<PagedResponse<ShipmentLineSerial>>>(`/api/ShLineSerial/line/${lineId}/paged`, buildPagedRequest({ pageNumber, pageSize, sortBy: 'Id', sortDirection: 'asc' }), options);
+        if (response.success && response.data) return response.data;
+        throw new Error(response.message || getLocalizedText('common.errors.shipmentSerialsLoadFailed'));
+      },
+    });
+    return toLegacyCollectionResponse(data, getLocalizedText('shipment.api.serialsLoaded'));
   },
 
   getStokBarcode: async (barcode: string, options?: ApiRequestOptions): Promise<StokBarcodeResponse> => {
