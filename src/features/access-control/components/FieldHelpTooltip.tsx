@@ -8,6 +8,7 @@ interface FieldHelpTooltipProps {
   side?: 'top' | 'right' | 'bottom' | 'left';
   className?: string;
   variant?: 'default' | 'ops';
+  focusable?: boolean;
 }
 
 export function FieldHelpTooltip({
@@ -15,6 +16,7 @@ export function FieldHelpTooltip({
   side = 'top',
   className,
   variant = 'default',
+  focusable = true,
 }: FieldHelpTooltipProps): ReactElement {
   const isOps = variant === 'ops';
 
@@ -25,7 +27,7 @@ export function FieldHelpTooltip({
           <span
             role="img"
             aria-label={text}
-            tabIndex={0}
+            tabIndex={focusable ? 0 : -1}
             data-no-drag-scroll="true"
             className={cn(
               'inline-flex shrink-0 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 cursor-help',

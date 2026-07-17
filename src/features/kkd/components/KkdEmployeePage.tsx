@@ -39,17 +39,17 @@ function EmployeeForm({
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
 
-  const labelWithHelp = (label: string, helpKey: string): ReactElement => (
+  const labelWithHelp = (label: string, helpKey: string, focusable = true): ReactElement => (
     <div className="flex items-center">
       {label}
-      <FieldHelpTooltip text={t(helpKey)} />
+      <FieldHelpTooltip text={t(helpKey)} focusable={focusable} />
     </div>
   );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <KkdOpsFormField
-        label={labelWithHelp(t('kkd.employeeForm.systemUser'), 'help.kkd.employee.user')}
+        label={labelWithHelp(t('kkd.employeeForm.systemUser'), 'help.kkd.employee.user', false)}
         className="md:col-span-2"
       >
         <PagedLookupDialog<UserDto>
