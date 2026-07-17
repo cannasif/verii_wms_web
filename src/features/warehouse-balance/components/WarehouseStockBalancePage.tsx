@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DatabaseZap, Package, RefreshCcw, Warehouse } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import type { WarehouseBalanceConsistencyIssueDto, WarehouseStockBalanceDto } from '../types/warehouse-balance.types';
 import { warehouseBalanceApi } from '../api/warehouse-balance.api';
 
@@ -143,9 +144,12 @@ export function WarehouseStockBalancePage(): ReactElement {
     queryFn: ({ signal }) => warehouseBalanceApi.getConsistencyIssuesPaged(consistencyGrid.queryParams, { signal }),
   });
 
-  const rows = query.data?.data?.data ?? [];
+  const rows = useMemo(() => query.data?.data?.data ?? [], [query.data?.data?.data]);
   const range = getPagedRange(query.data?.data);
-  const consistencyRows = consistencyIssuesQuery.data?.data?.data ?? [];
+  const consistencyRows = useMemo(
+    () => consistencyIssuesQuery.data?.data?.data ?? [],
+    [consistencyIssuesQuery.data?.data?.data],
+  );
   const consistencyRange = getPagedRange(consistencyIssuesQuery.data?.data);
 
   const rebuildAllMutation = useMutation({
@@ -196,8 +200,57 @@ export function WarehouseStockBalancePage(): ReactElement {
     [t],
   );
 
+  const stockFilterColumns = useMemo<FilterColumnConfig[]>(
+    () => [
+      { value: 'warehouseName', type: 'string', labelKey: 'warehouseBalance.stock.columns.warehouse' },
+      { value: 'stockCode', type: 'string', labelKey: 'warehouseBalance.stock.columns.stock' },
+      { value: 'stockName', type: 'string', labelKey: 'warehouseBalance.stock.columns.stock' },
+      { value: 'yapKodCode', type: 'string', labelKey: 'warehouseBalance.stock.columns.yapKod' },
+      { value: 'quantity', type: 'number', labelKey: 'warehouseBalance.stock.columns.quantity' },
+      { value: 'availableQuantity', type: 'number', labelKey: 'warehouseBalance.stock.columns.available' },
+      { value: 'distinctSerialCount', type: 'number', labelKey: 'warehouseBalance.stock.columns.serialCount' },
+      { value: 'distinctShelfCount', type: 'number', labelKey: 'warehouseBalance.stock.columns.shelfCount' },
+      { value: 'lastRecalculatedAt', type: 'date', labelKey: 'warehouseBalance.stock.columns.updatedAt' },
+    ],
+    [],
+  );
+
+  const stockExportColumns = useMemo(
+    () => columns
+      .filter((column) => column.key !== 'actions')
+      .map((column) => ({ key: column.key, label: column.label })),
+    [columns],
+  );
+
+  const stockExportRows = useMemo<Record<string, unknown>[]>(
+    () => rows.map((row) => ({
+      warehouse: `${row.warehouseCode ?? '-'} - ${row.warehouseName ?? '-'}`,
+      stock: `${row.stockCode ?? '-'} - ${row.stockName ?? '-'}`,
+      yapKod: row.yapKodCode || row.yapKodName ? `${row.yapKodCode ?? '-'} - ${row.yapKodName ?? '-'}` : '-',
+      quantity: row.quantity,
+      available: row.availableQuantity,
+      serialCount: row.distinctSerialCount,
+      shelfCount: row.distinctShelfCount,
+      updatedAt: formatDate(row.lastRecalculatedAt ?? row.lastTransactionDate),
+    })),
+    [rows],
+  );
+
   const totalQuantity = useMemo(() => rows.reduce((sum, row) => sum + row.quantity, 0), [rows]);
   const totalSerials = useMemo(() => rows.reduce((sum, row) => sum + row.distinctSerialCount, 0), [rows]);
+  const renderConsistencyIssueType = useCallback((issueType: string): string => {
+    switch (issueType) {
+      case 'MissingSummary':
+        return t('warehouseBalance.consistency.issueTypes.missingSummary', { defaultValue: 'Missing translation' });
+      case 'ExtraSummary':
+        return t('warehouseBalance.consistency.issueTypes.extraSummary', { defaultValue: 'Missing translation' });
+      case 'MetricMismatch':
+        return t('warehouseBalance.consistency.issueTypes.metricMismatch', { defaultValue: 'Missing translation' });
+      default:
+        return issueType;
+    }
+  }, [t]);
+
   const consistencyColumns = useMemo<PagedDataGridColumn<ConsistencyColumnKey>[]>(
     () => [
       masterDataOpsGridColumn('issueType', t('warehouseBalance.consistency.columns.issueType', { defaultValue: 'Missing translation' })),
@@ -211,20 +264,39 @@ export function WarehouseStockBalancePage(): ReactElement {
     [t],
   );
 
-  const consistencySummary = consistencySummaryQuery.data?.data;
+  const consistencyFilterColumns = useMemo<FilterColumnConfig[]>(
+    () => [
+      { value: 'issueType', type: 'string', labelKey: 'warehouseBalance.consistency.columns.issueType' },
+      { value: 'warehouseName', type: 'string', labelKey: 'warehouseBalance.consistency.columns.warehouse' },
+      { value: 'stockCode', type: 'string', labelKey: 'warehouseBalance.consistency.columns.stock' },
+      { value: 'stockName', type: 'string', labelKey: 'warehouseBalance.consistency.columns.stock' },
+      { value: 'yapKodCode', type: 'string', labelKey: 'warehouseBalance.consistency.columns.yapKod' },
+      { value: 'detailQuantity', type: 'number', labelKey: 'warehouseBalance.consistency.columns.quantityDelta' },
+      { value: 'detailAvailableQuantity', type: 'number', labelKey: 'warehouseBalance.consistency.columns.availableDelta' },
+      { value: 'detailDistinctSerialCount', type: 'number', labelKey: 'warehouseBalance.consistency.columns.serialDelta' },
+    ],
+    [],
+  );
 
-  const renderConsistencyIssueType = (issueType: string): string => {
-    switch (issueType) {
-      case 'MissingSummary':
-        return t('warehouseBalance.consistency.issueTypes.missingSummary', { defaultValue: 'Missing translation' });
-      case 'ExtraSummary':
-        return t('warehouseBalance.consistency.issueTypes.extraSummary', { defaultValue: 'Missing translation' });
-      case 'MetricMismatch':
-        return t('warehouseBalance.consistency.issueTypes.metricMismatch', { defaultValue: 'Missing translation' });
-      default:
-        return issueType;
-    }
-  };
+  const consistencyExportColumns = useMemo(
+    () => consistencyColumns.map((column) => ({ key: column.key, label: column.label })),
+    [consistencyColumns],
+  );
+
+  const consistencyExportRows = useMemo<Record<string, unknown>[]>(
+    () => consistencyRows.map((row) => ({
+      issueType: renderConsistencyIssueType(row.issueType),
+      warehouse: `${row.warehouseCode ?? '-'} - ${row.warehouseName ?? '-'}`,
+      stock: `${row.stockCode ?? '-'} - ${row.stockName ?? '-'}`,
+      yapKod: row.yapKodCode || row.yapKodName ? `${row.yapKodCode ?? '-'} - ${row.yapKodName ?? '-'}` : '-',
+      quantityDelta: row.detailQuantity - row.summaryQuantity,
+      availableDelta: row.detailAvailableQuantity - row.summaryAvailableQuantity,
+      serialDelta: row.detailDistinctSerialCount - row.summaryDistinctSerialCount,
+    })),
+    [consistencyRows, renderConsistencyIssueType],
+  );
+
+  const consistencySummary = consistencySummaryQuery.data?.data;
 
   const renderQuantityDelta = (row: WarehouseBalanceConsistencyIssueDto): string =>
     formatNumber(row.detailQuantity - row.summaryQuantity);
@@ -349,6 +421,18 @@ export function WarehouseStockBalancePage(): ReactElement {
               isLoading: query.isLoading,
               label: t('common.refresh'),
             }}
+            exportFileName="warehouse-stock-balance"
+            exportColumns={stockExportColumns}
+            exportRows={stockExportRows}
+            filterColumns={stockFilterColumns}
+            defaultFilterColumn="warehouseName"
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
             showActionsColumn={permission.canUpdate}
             actionsHeaderLabel={t('common.actions')}
             actionsCellClassName="wms-ops-table-actions-col"
@@ -502,6 +586,18 @@ export function WarehouseStockBalancePage(): ReactElement {
                 isLoading: consistencyIssuesQuery.isLoading,
                 label: t('common.refresh'),
               }}
+              exportFileName="warehouse-balance-consistency"
+              exportColumns={consistencyExportColumns}
+              exportRows={consistencyExportRows}
+              filterColumns={consistencyFilterColumns}
+              defaultFilterColumn="issueType"
+              draftFilterRows={consistencyGrid.draftFilterRows}
+              onDraftFilterRowsChange={consistencyGrid.setDraftFilterRows}
+              filterLogic={consistencyGrid.filterLogic}
+              onFilterLogicChange={consistencyGrid.setFilterLogic}
+              onApplyFilters={consistencyGrid.applyAdvancedFilters}
+              onClearFilters={consistencyGrid.clearAdvancedFilters}
+              appliedFilterCount={consistencyGrid.appliedAdvancedFilters.length}
             />
       </MasterDataOpsSection>
     </OpsListPageShell>

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
 import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import type { WarehouseStockSerialBalanceDto } from '../types/warehouse-balance.types';
 import { warehouseBalanceApi } from '../api/warehouse-balance.api';
 
@@ -92,7 +93,7 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
     queryFn: ({ signal }) => warehouseBalanceApi.getSerialPaged(pagedGrid.queryParams, { signal }),
   });
 
-  const rows = query.data?.data?.data ?? [];
+  const rows = useMemo(() => query.data?.data?.data ?? [], [query.data?.data?.data]);
   const range = getPagedRange(query.data?.data);
 
   const columns = useMemo<PagedDataGridColumn<SerialColumnKey>[]>(
@@ -107,6 +108,40 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
       masterDataOpsGridColumn('transactionDate', t('warehouseBalance.serial.columns.transactionDate', { defaultValue: 'Missing translation' })),
     ],
     [t],
+  );
+
+  const filterColumns = useMemo<FilterColumnConfig[]>(
+    () => [
+      { value: 'warehouseName', type: 'string', labelKey: 'warehouseBalance.serial.columns.warehouse' },
+      { value: 'shelfCode', type: 'string', labelKey: 'warehouseBalance.serial.columns.shelf' },
+      { value: 'stockCode', type: 'string', labelKey: 'warehouseBalance.serial.columns.stock' },
+      { value: 'stockName', type: 'string', labelKey: 'warehouseBalance.serial.columns.stock' },
+      { value: 'yapKodCode', type: 'string', labelKey: 'warehouseBalance.serial.columns.yapKod' },
+      { value: 'serialNo', type: 'string', labelKey: 'warehouseBalance.serial.columns.serials' },
+      { value: 'quantity', type: 'number', labelKey: 'warehouseBalance.serial.columns.quantity' },
+      { value: 'stockStatus', type: 'string', labelKey: 'warehouseBalance.serial.columns.status' },
+      { value: 'lastTransactionDate', type: 'date', labelKey: 'warehouseBalance.serial.columns.transactionDate' },
+    ],
+    [],
+  );
+
+  const exportColumns = useMemo(
+    () => columns.map((column) => ({ key: column.key, label: column.label })),
+    [columns],
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(
+    () => rows.map((row) => ({
+      warehouse: `${row.warehouseCode ?? '-'} - ${row.warehouseName ?? '-'}`,
+      shelf: row.shelfCode || row.shelfName ? `${row.shelfCode ?? '-'} - ${row.shelfName ?? '-'}` : '-',
+      stock: `${row.stockCode ?? '-'} - ${row.stockName ?? '-'}`,
+      yapKod: row.yapKodCode || row.yapKodName ? `${row.yapKodCode ?? '-'} - ${row.yapKodName ?? '-'}` : '-',
+      serials: [row.serialNo, row.serialNo2, row.serialNo3].filter(Boolean).join(' / ') || '-',
+      quantity: row.quantity,
+      status: row.stockStatus ?? '-',
+      transactionDate: formatDate(row.lastTransactionDate),
+    })),
+    [rows],
   );
 
   const totalQuantity = useMemo(() => rows.reduce((sum, row) => sum + row.quantity, 0), [rows]);
@@ -227,6 +262,18 @@ export function WarehouseStockSerialBalancePage(): ReactElement {
               isLoading: query.isLoading,
               label: t('common.refresh'),
             }}
+            exportFileName="warehouse-serial-balance"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            filterColumns={filterColumns}
+            defaultFilterColumn="warehouseName"
+            draftFilterRows={pagedGrid.draftFilterRows}
+            onDraftFilterRowsChange={pagedGrid.setDraftFilterRows}
+            filterLogic={pagedGrid.filterLogic}
+            onFilterLogicChange={pagedGrid.setFilterLogic}
+            onApplyFilters={pagedGrid.applyAdvancedFilters}
+            onClearFilters={pagedGrid.clearAdvancedFilters}
+            appliedFilterCount={pagedGrid.appliedAdvancedFilters.length}
           />
           </TooltipProvider>
         </div>
