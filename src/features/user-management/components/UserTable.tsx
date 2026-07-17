@@ -230,7 +230,7 @@ export function UserTable({
         isError={Boolean(error)}
         errorText={t('common.errors.userListLoadFailed', { ns: 'common' })}
         emptyText={t('userManagement.table.noData')}
-        showActionsColumn={orderedVisibleColumns.includes('actions') && Boolean(onEdit) && canUpdate}
+        showActionsColumn={Boolean(onEdit) && canUpdate}
         actionsHeaderLabel={t('common.actions')}
         iconOnlyActions
         actionsCellClassName="wms-ops-table-actions-col"
@@ -270,6 +270,7 @@ export function UserTable({
           columnOrder,
           onVisibleColumnsChange: setVisibleColumns,
           onColumnOrderChange: setColumnOrder,
+          lockedKeys: ['id', 'actions'],
           exportFileName: pageKey,
           exportColumns,
           exportRows,

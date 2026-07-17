@@ -98,7 +98,7 @@ export function UserManagementPage(): ReactElement {
     >
       <UserStats />
 
-      <section className="wms-ops-receiving-area mt-6 border">
+      <section className="wms-ops-receiving-area mt-6 overflow-hidden rounded-lg border bg-white/70 dark:bg-white/3">
         <UserTable
           canUpdate={canUpdate}
           onEdit={canUpdate ? (u) => {
