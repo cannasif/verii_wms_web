@@ -86,7 +86,7 @@ export function ServiceReportsPage(): ReactElement {
       ) : isError ? (
         <PageState tone="error" title={t('serviceAllocation.reports.loadError')} />
       ) : (
-        <div className="wms-ops-service-reports space-y-6">
+        <div className="wms-ops-service-reports min-w-0 max-w-full space-y-6">
           <div className="wms-ops-service-reports__kpi-grid">
             <ServiceReportKpiCard
               label={t('serviceAllocation.reports.totalCases')}
@@ -122,7 +122,7 @@ export function ServiceReportsPage(): ReactElement {
             />
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+          <div className="grid min-w-0 max-w-full gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
             <ServiceReportPanel
               title={t('serviceAllocation.reports.criticalQueue')}
               actions={<ServiceReportPanelLink to="/service-allocation/allocation-queue" label={t('serviceAllocation.reports.openQueue')} />}
@@ -174,7 +174,7 @@ export function ServiceReportsPage(): ReactElement {
               </div>
             </ServiceReportPanel>
 
-            <div className="space-y-6">
+            <div className="min-w-0 space-y-6">
               <ServiceReportDistributionPanel
                 title={t('serviceAllocation.reports.caseDistribution')}
                 emptyText={t('serviceAllocation.reports.noDistribution')}

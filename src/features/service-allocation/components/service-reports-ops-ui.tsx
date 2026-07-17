@@ -54,7 +54,7 @@ interface ServiceReportPanelProps {
 
 export function ServiceReportPanel({ title, children, actions, className }: ServiceReportPanelProps): ReactElement {
   return (
-    <section className={cn('wms-ops-prelabel-panel', className)}>
+    <section className={cn('wms-ops-prelabel-panel min-w-0 max-w-full', className)}>
       <div className="wms-ops-prelabel-panel__header flex flex-wrap items-center justify-between gap-3">
         <div className="wms-ops-prelabel-panel__title">{title}</div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -90,14 +90,14 @@ export function ServiceReportTable<T>({
   renderRow,
 }: ServiceReportTableProps<T>): ReactElement {
   return (
-    <div className="wms-ops-prelabel-lines">
+    <div className="wms-ops-prelabel-lines min-w-0 max-w-full">
       {title || badge ? (
         <div className="wms-ops-prelabel-lines__head">
           {title ? <div className="wms-ops-prelabel-panel__title text-[0.68rem]">{title}</div> : <span />}
           {badge ? <div className="flex flex-wrap items-center gap-2">{badge}</div> : null}
         </div>
       ) : null}
-      <div className="wms-ops-prelabel-lines__table-wrap">
+      <div className="wms-ops-prelabel-lines__table-wrap min-w-0 max-w-full">
         <table>
           <thead>
             <tr>
