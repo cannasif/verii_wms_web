@@ -5596,6 +5596,12 @@ html:not(.dark) .wms-ops-list .wms-ops-data-grid tbody tr:hover .wms-ops-table-i
   padding-inline: 0.5rem !important;
 }
 
+.wms-ops-list.wms-ops-production-list .wms-ops-table-actions-col {
+  width: 12rem;
+  min-width: 12rem;
+  max-width: 12rem;
+}
+
 :is(.wms-ops-access-control-page, .wms-ops-user-management-page) .wms-ops-list .wms-ops-table-actions-col {
   width: 4.25rem !important;
   min-width: 4.25rem !important;

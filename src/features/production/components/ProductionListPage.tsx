@@ -157,6 +157,7 @@ export function ProductionListPage(): ReactElement {
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'documentNo',
     defaultWidths: DEFAULT_COLUMN_WIDTHS,
+    actionsColumnWeight: 16,
     includeActionsColumn: showActionsColumn,
   });
 
@@ -242,6 +243,7 @@ export function ProductionListPage(): ReactElement {
   return (
     <>
       <OpsListPageShell
+        className="wms-ops-production-list"
         eyebrow={
           <>
             <span>{t('production.breadcrumb.parent')}</span>
