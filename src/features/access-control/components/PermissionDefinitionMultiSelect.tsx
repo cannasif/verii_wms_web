@@ -358,7 +358,7 @@ export function PermissionDefinitionMultiSelect({
       ) : null}
 
       <AccessControlOpsScrollList
-        className="wms-ops-access-control-permission-picker__list min-h-[14rem] max-h-[min(52dvh,30rem)] border p-0"
+        className="wms-ops-access-control-permission-picker__list min-h-[14rem] max-h-[min(52dvh,30rem)] overflow-x-auto border p-0"
         isEmpty={isSearchActive ? searchResultRows.length === 0 : activeRows.length === 0}
         emptyText={t('permissionGroups.noDefinitions')}
       >

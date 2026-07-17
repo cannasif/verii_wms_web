@@ -167,7 +167,7 @@ export function GroupPermissionsPanel({
               label={(
                 <span className="inline-flex items-center">
                   {t('permissionGroups.form.permissions')}
-                  <FieldHelpTooltip text={t('help.permissionGroup.permissions')} variant="ops" />
+                  <FieldHelpTooltip text={t('help.permissionGroup.permissions')} variant="ops" focusable={false} />
                 </span>
               )}
             >

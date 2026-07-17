@@ -247,7 +247,7 @@ export function PermissionGroupsPage(): ReactElement {
           isError={Boolean(error)}
           errorText={t('common.errors.loadFailed', { defaultValue: 'Missing translation' })}
           emptyText={t('common.noData')}
-          showActionsColumn={orderedVisibleColumns.includes('actions') && (canUpdate || canDelete)}
+          showActionsColumn={canUpdate || canDelete}
           actionsHeaderLabel={t('common.actions')}
           iconOnlyActions
           actionsCellClassName="wms-ops-table-actions-col"
@@ -330,6 +330,7 @@ export function PermissionGroupsPage(): ReactElement {
             pageKey,
             userId,
             columns: columns.map(({ key, label }) => ({ key, label })),
+            lockedKeys: ['name', 'actions'],
             visibleColumns,
             columnOrder,
             onVisibleColumnsChange: setVisibleColumns,

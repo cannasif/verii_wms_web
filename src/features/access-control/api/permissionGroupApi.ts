@@ -58,12 +58,12 @@ export const permissionGroupApi = {
     id: number,
     dto: SetPermissionGroupPermissionsDto
   ): Promise<void> => {
-    const response = await api.put<ApiResponse<object>>(
+    const response = await api.put<ApiResponse<PermissionGroupDto>>(
       `/api/permission-groups/${id}/permissions`,
       dto
     );
-    if (!(response as ApiResponse<object>).success) {
-      throw new Error((response as ApiResponse<object>).message || getLocalizedText('common.errors.permissionGroupSetPermissionsFailed'));
+    if (!(response as ApiResponse<PermissionGroupDto>).success) {
+      throw new Error((response as ApiResponse<PermissionGroupDto>).message || getLocalizedText('common.errors.permissionGroupSetPermissionsFailed'));
     }
   },
 

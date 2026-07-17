@@ -11751,6 +11751,7 @@ html:not(.dark) :is(.wms-ops-access-control-page, .wms-ops-user-management-page,
 
 @media (max-width: 767px) {
   .wms-ops-access-control-permission-matrix {
+    min-width: 34rem;
     table-layout: auto;
   }
 
