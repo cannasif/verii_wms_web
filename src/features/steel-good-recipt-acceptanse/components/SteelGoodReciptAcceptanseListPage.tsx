@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OpsActionButton, OpsListPageShell, OpsServiceEyebrow, PagedDataGrid, type PagedDataGridColumn } from '@/components/shared';
+import { useColumnPreferences } from '@/hooks/useColumnPreferences';
 import { usePagedDataGrid } from '@/hooks/usePagedDataGrid';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
 import { getPagedRange } from '@/lib/paged';
 import { localizeStatus } from '@/lib/localize-status';
 import { useUIStore } from '@/stores/ui-store';
@@ -41,6 +43,23 @@ const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   rejectedQuantity: 8,
   status: 9,
 };
+
+const filterColumns: readonly FilterColumnConfig[] = [
+  { value: 'excelRecordNo', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colRecNo' },
+  { value: 'dCode', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colD' },
+  { value: 'supplierCode', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colSup' },
+  { value: 'supplierName', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colSup' },
+  { value: 'netsisOrderNo', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colOrd' },
+  { value: 'stockCode', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colSt' },
+  { value: 'description', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colStockName' },
+  { value: 'combinedSize', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colCombinedSize' },
+  { value: 'serialNo', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colPlate' },
+  { value: 'expectedQuantity', type: 'number', labelKey: 'steelGoodReceiptAcceptance.list.colExp' },
+  { value: 'arrivedQuantity', type: 'number', labelKey: 'steelGoodReceiptAcceptance.list.colArr' },
+  { value: 'approvedQuantity', type: 'number', labelKey: 'steelGoodReceiptAcceptance.list.colAp' },
+  { value: 'rejectedQuantity', type: 'number', labelKey: 'steelGoodReceiptAcceptance.list.colRejected' },
+  { value: 'status', type: 'string', labelKey: 'steelGoodReceiptAcceptance.list.colStat' },
+];
 
 function mapSortBy(value: ColumnKey): string {
   switch (value) {
@@ -97,10 +116,47 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
     { key: 'status', label: t('steelGoodReceiptAcceptance.list.colStat') },
   ], [t]);
 
+  const { userId, columnOrder, visibleColumns, orderedVisibleColumns, setColumnOrder, setVisibleColumns } = useColumnPreferences({
+    pageKey,
+    columns: columns.map(({ key, label }) => ({ key, label })),
+    idColumnKey: 'dCode',
+  });
+
   const query = useQuery({
     queryKey: ['sgra-lines', pagedGrid.queryParams],
     queryFn: () => steelGoodReciptAcceptanseApi.getLinesPaged(pagedGrid.queryParams),
   });
+
+  const visibleColumnKeys = useMemo(
+    () => orderedVisibleColumns as ColumnKey[],
+    [orderedVisibleColumns],
+  );
+
+  const exportColumns = useMemo(
+    () => orderedVisibleColumns.map((key) => ({
+      key,
+      label: columns.find((column) => column.key === key)?.label ?? key,
+    })),
+    [columns, orderedVisibleColumns],
+  );
+
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (
+    (query.data?.data ?? []).map((row) => ({
+      excelRecordNo: row.excelRecordNo || '-',
+      dCode: row.dCode,
+      supplier: `${row.supplierCode} - ${row.supplierName}`,
+      netsisOrderNo: row.netsisOrderNo || '-',
+      stockCode: row.stockCode || '-',
+      description: row.description || '-',
+      combinedSize: row.combinedSize || '-',
+      serialNo: row.serialNo || '-',
+      expectedQuantity: row.expectedQuantity,
+      arrivedQuantity: row.arrivedQuantity,
+      approvedQuantity: row.approvedQuantity,
+      rejectedQuantity: row.rejectedQuantity,
+      status: localizeStatus(row.status, t),
+    }))
+  ), [query.data?.data, t]);
 
   const range = getPagedRange(query.data, 1);
   const paginationInfoText = t('common.paginationInfo', {
@@ -132,6 +188,7 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
           variant="ops"
           pageKey={pageKey}
           columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
           rows={query.data?.data ?? []}
           rowKey={(row) => row.id}
           defaultColumnWidths={DEFAULT_COLUMN_WIDTHS}
@@ -173,11 +230,38 @@ export function SteelGoodReciptAcceptanseListPage(): ReactElement {
           isError={Boolean(query.error)}
           errorText={query.error instanceof Error ? query.error.message : t('common.generalError')}
           emptyText={t('steelGoodReceiptAcceptance.list.empty')}
-          search={{
-            value: pagedGrid.searchInput,
-            onValueChange: pagedGrid.searchConfig.onValueChange,
-            onSearchChange: pagedGrid.searchConfig.onSearchChange,
-            placeholder: t('steelGoodReceiptAcceptance.list.searchPh'),
+          actionBar={{
+            pageKey,
+            userId,
+            columns: columns.map(({ key, label }) => ({ key, label })),
+            visibleColumns,
+            columnOrder,
+            onVisibleColumnsChange: setVisibleColumns,
+            onColumnOrderChange: setColumnOrder,
+            exportFileName: 'sac-mal-kabul-listesi',
+            exportColumns,
+            exportRows,
+            filterColumns,
+            defaultFilterColumn: 'dCode',
+            draftFilterRows: pagedGrid.draftFilterRows,
+            onDraftFilterRowsChange: pagedGrid.setDraftFilterRows,
+            filterLogic: pagedGrid.filterLogic,
+            onFilterLogicChange: pagedGrid.setFilterLogic,
+            onApplyFilters: pagedGrid.applyAdvancedFilters,
+            onClearFilters: pagedGrid.clearAdvancedFilters,
+            appliedFilterCount: pagedGrid.appliedAdvancedFilters.length,
+            search: {
+              value: pagedGrid.searchInput,
+              onValueChange: pagedGrid.searchConfig.onValueChange,
+              onSearchChange: pagedGrid.searchConfig.onSearchChange,
+              placeholder: t('steelGoodReceiptAcceptance.list.searchPh'),
+            },
+            refresh: {
+              onRefresh: () => void query.refetch(),
+              isLoading: query.isLoading,
+              label: t('steelGoodReceiptAcceptance.list.refresh'),
+            },
+            variant: 'ops',
           }}
         />
       </MasterDataOpsSection>
