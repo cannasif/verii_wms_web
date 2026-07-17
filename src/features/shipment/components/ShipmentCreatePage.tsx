@@ -36,6 +36,14 @@ export function ShipmentCreatePage(): ReactElement {
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedShipmentOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedShipmentStockItem[]>([]);
+  const validSelectedItems = useMemo(
+    () => selectedItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedItems],
+  );
+  const validSelectedStockItems = useMemo(
+    () => selectedStockItems.filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0),
+    [selectedStockItems],
+  );
 
   useEffect(() => {
     setPageTitle(t('shipment.create.title'));
@@ -66,8 +74,8 @@ export function ShipmentCreatePage(): ReactElement {
   const createMutation = useMutation({
     mutationFn: async (formData: ShipmentFormData) =>
       createMode === 'order'
-        ? shipmentApi.createShipment(formData, selectedItems)
-        : shipmentApi.createStockBasedShipment(formData, selectedStockItems),
+        ? shipmentApi.createShipment(formData, validSelectedItems)
+        : shipmentApi.createStockBasedShipment(formData, validSelectedStockItems),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shipment-orders'] });
       queryClient.invalidateQueries({ queryKey: ['shipment-order-items'] });
@@ -84,11 +92,11 @@ export function ShipmentCreatePage(): ReactElement {
       const isValid = await form.trigger();
       if (!isValid) return;
     }
-    if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
+    if (currentStep === 2 && createMode === 'order' && validSelectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
-    if (currentStep === 2 && createMode === 'stock' && selectedStockItems.length === 0) {
+    if (currentStep === 2 && createMode === 'stock' && validSelectedStockItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
       return;
     }
@@ -278,7 +286,7 @@ export function ShipmentCreatePage(): ReactElement {
                     disabled={
                       !permission.canCreate
                       || createMutation.isPending
-                      || (createMode === 'order' ? selectedItems.length === 0 : selectedStockItems.length === 0)
+                      || (createMode === 'order' ? validSelectedItems.length === 0 : validSelectedStockItems.length === 0)
                     }
                   >
                     {createMutation.isPending ? t('common.saving') : t('common.save')}

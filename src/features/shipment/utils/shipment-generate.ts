@@ -97,6 +97,13 @@ export function buildShipmentProcessRequest(
   selectedItems: SelectedShipmentStockItem[],
 ): ShipmentProcessRequest {
   const now = new Date().toISOString();
+  const validItems = selectedItems.filter(
+    (item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0,
+  );
+  const keyedItems = validItems.map((item) => ({
+    item,
+    importLineClientKey: crypto.randomUUID(),
+  }));
 
   return {
     header: {
@@ -125,23 +132,30 @@ export function buildShipmentProcessRequest(
       allowLessQuantityBasedOnOrder: formData.allowLessQuantityBasedOnOrder,
       allowMoreQuantityBasedOnOrder: formData.allowMoreQuantityBasedOnOrder,
     },
-    routes: selectedItems
-      .filter((item) => Number.isFinite(item.transferQuantity) && item.transferQuantity > 0)
-      .map((item) => ({
-        stockId: item.stockId,
-        stockCode: item.stockCode,
-        yapKodId: item.yapKodId,
-        yapKod: item.configCode || undefined,
-        quantity: item.transferQuantity,
-        serialNo: item.serialNo || '',
-        serialNo2: item.serialNo2 || '',
-        serialNo3: item.lotNo || '',
-        serialNo4: item.batchNo || '',
-        scannedBarcode: item.stockCode,
-        sourceWarehouse: formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined,
-        targetWarehouse: undefined,
-        sourceCellCode: item.sourceCellCode || '',
-        targetCellCode: item.targetCellCode || '',
-      })),
+    importLines: keyedItems.map(({ item, importLineClientKey }) => ({
+      clientKey: importLineClientKey,
+      stockId: item.stockId,
+      stockCode: item.stockCode,
+      yapKodId: item.yapKodId,
+      yapKod: item.configCode || undefined,
+    })),
+    routes: keyedItems.map(({ item, importLineClientKey }) => ({
+      importLineClientKey,
+      stockId: item.stockId,
+      stockCode: item.stockCode,
+      yapKodId: item.yapKodId,
+      yapKod: item.configCode || undefined,
+      quantity: item.transferQuantity,
+      serialNo: item.serialNo || '',
+      serialNo2: item.serialNo2 || '',
+      serialNo3: item.lotNo || '',
+      serialNo4: item.batchNo || '',
+      scannedBarcode: item.stockCode,
+      sourceWarehouse: formData.sourceWarehouse ? Number(formData.sourceWarehouse) : undefined,
+      targetWarehouse: undefined,
+      sourceCellCode: item.sourceCellCode || '',
+      targetCellCode: item.targetCellCode || '',
+    })),
+    terminalLines: formData.userIds?.map((id) => ({ terminalUserId: Number(id) })) ?? [],
   };
 }

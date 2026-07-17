@@ -158,7 +158,15 @@ export interface ShipmentGenerateRequest {
 
 export interface ShipmentProcessRequest {
   header: ShipmentGenerateRequest['header'];
+  importLines: Array<{
+    clientKey: string;
+    stockId?: number;
+    stockCode: string;
+    yapKodId?: number;
+    yapKod?: string;
+  }>;
   routes: Array<{
+    importLineClientKey: string;
     stockId?: number;
     stockCode: string;
     yapKodId?: number;
@@ -173,6 +181,9 @@ export interface ShipmentProcessRequest {
     targetWarehouse?: number;
     sourceCellCode?: string;
     targetCellCode?: string;
+  }>;
+  terminalLines: Array<{
+    terminalUserId: number;
   }>;
 }
 
