@@ -20,7 +20,7 @@ export function ServiceCaseFormPanel({ title, children }: ServiceCaseFormPanelPr
   return (
     <section className="wms-ops-order-step overflow-hidden">
       <div className="border-b px-4 py-3">
-        <h3 className="font-mono text-xs font-semibold uppercase tracking-wide">{title}</h3>
+        <h3 className="wms-ops-surface-title text-sm">{title}</h3>
       </div>
       <div className="grid gap-4 p-4 md:grid-cols-2">{children}</div>
     </section>
@@ -51,7 +51,7 @@ export function ServiceCaseOpsDataTable({
   return (
     <section className="wms-ops-detail-panel wms-ops-detail-lines-panel flex min-h-0 flex-col overflow-hidden">
       {title ? <h3 className="wms-ops-detail-section-title">{title}</h3> : null}
-      <div className="wms-ops-transfer-detail__table-wrap flex-1 rounded-none border-0">
+      <div className="wms-ops-transfer-detail__table-wrap flex-1 border-0">
         <table className="wms-ops-transfer-detail__table">
           <thead>
             <tr>

@@ -1,8 +1,11 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/components/theme-provider';
 
 export function RouteErrorPage() {
   const { t } = useTranslation();
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
   const error = useRouteError();
 
   let title = t('routeError.title');
@@ -18,21 +21,26 @@ export function RouteErrorPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
-        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-        <p className="mt-3 text-sm text-muted-foreground">{description}</p>
-        <div className="mt-6 flex items-center justify-center gap-3">
+    <div className="wms-ops-route-error">
+      <div className="wms-ops-route-error__card">
+        <p className="wms-ops-route-error__code">
+          {isPremium
+            ? t('routeError.premiumLabel', { defaultValue: 'Bir sorun oluştu' })
+            : '// SYS_ERR'}
+        </p>
+        <h1 className="wms-ops-route-error__title">{title}</h1>
+        <p className="wms-ops-route-error__description">{description}</p>
+        <div className="wms-ops-route-error__actions">
           <button
             type="button"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="wms-ops-route-error__btn wms-ops-route-error__btn--primary"
             onClick={() => window.location.reload()}
           >
             {t('routeError.refresh')}
           </button>
           <button
             type="button"
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground"
+            className="wms-ops-route-error__btn wms-ops-route-error__btn--secondary"
             onClick={() => window.location.assign('/')}
           >
             {t('routeError.home')}

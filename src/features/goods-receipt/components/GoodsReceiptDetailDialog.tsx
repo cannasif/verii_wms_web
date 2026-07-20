@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search } from 'lucide-react';
+import { PackageOpen, Search } from 'lucide-react';
 import { PageState } from '@/components/shared';
 import { OpsActionButton } from '@/components/shared/OpsActionButton';
 import { OpsFieldShell } from '@/components/shared/OpsFieldShell';
@@ -315,6 +315,8 @@ export function GoodsReceiptDetailDialog({
   const [selectedImportLine, setSelectedImportLine] = useState<GrImportLine | null>(null);
   const [isImportLineDialogOpen, setIsImportLineDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mainTab, setMainTab] = useState<'info' | 'content'>('info');
+  const [infoSubTab, setInfoSubTab] = useState<'status' | 'erp' | 'additional' | 'audit'>('status');
 
   const handleImportLineClick = (importLine: GrImportLine): void => {
     setSelectedImportLine(importLine);
@@ -536,8 +538,19 @@ export function GoodsReceiptDetailDialog({
   );
 
   const renderSubTabs = (): ReactElement => (
-    <Tabs defaultValue="status" className="w-full">
-      <TabsList className={cn('w-full', isOps ? 'wms-ops-detail-subtabs' : undefined)}>
+    <Tabs
+      value={infoSubTab}
+      onValueChange={(value) => setInfoSubTab(value as 'status' | 'erp' | 'additional' | 'audit')}
+      className="w-full"
+    >
+      <TabsList
+        className={cn(
+          'w-full',
+          isOps && 'wms-ops-detail-subtabs',
+          isOps && `wms-ops-detail-subtabs--${infoSubTab}`,
+        )}
+      >
+        {isOps ? <span className="wms-ops-detail-tab-indicator" aria-hidden /> : null}
         <TabsTrigger value="status" className={isOps ? 'wms-ops-detail-subtab' : undefined}>
           {t('goodsReceipt.report.statusInfo')}
         </TabsTrigger>
@@ -886,9 +899,20 @@ export function GoodsReceiptDetailDialog({
         </Accordion>
       ) : (
         <div className={isOps ? 'wms-ops-detail-empty' : 'flex items-center justify-center py-12'}>
-          <p className={isOps ? undefined : 'text-muted-foreground'}>
-            {searchQuery ? t('goodsReceipt.report.noSearchResults') : t('goodsReceipt.report.noImportLines')}
-          </p>
+          {isOps ? (
+            <>
+              <div className="wms-ops-detail-empty__icon" aria-hidden>
+                <PackageOpen className="size-6" />
+              </div>
+              <p className="wms-ops-detail-empty__title">
+                {searchQuery ? t('goodsReceipt.report.noSearchResults') : t('goodsReceipt.report.noImportLines')}
+              </p>
+            </>
+          ) : (
+            <p className="text-muted-foreground">
+              {searchQuery ? t('goodsReceipt.report.noSearchResults') : t('goodsReceipt.report.noImportLines')}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -937,9 +961,20 @@ export function GoodsReceiptDetailDialog({
 
           {data ? (
             <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <Tabs defaultValue="info" className="flex h-full min-h-0 w-full flex-col gap-0">
+              <Tabs
+                value={mainTab}
+                onValueChange={(value) => setMainTab(value as 'info' | 'content')}
+                className="flex h-full min-h-0 w-full flex-col gap-0"
+              >
                 <div className="shrink-0 px-6 pt-4">
-                  <TabsList className={cn('w-full', isOps && 'wms-ops-detail-main-tabs')}>
+                  <TabsList
+                    className={cn(
+                      'w-full',
+                      isOps && 'wms-ops-detail-main-tabs',
+                      isOps && `wms-ops-detail-main-tabs--${mainTab}`,
+                    )}
+                  >
+                    {isOps ? <span className="wms-ops-detail-tab-indicator" aria-hidden /> : null}
                     <TabsTrigger value="info" className={isOps ? 'wms-ops-detail-main-tab' : undefined}>
                       {t('goodsReceipt.report.info')}
                     </TabsTrigger>

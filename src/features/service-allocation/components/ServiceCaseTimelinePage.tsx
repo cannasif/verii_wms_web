@@ -371,8 +371,8 @@ export function ServiceCaseTimelinePage(): ReactElement {
               <div className="p-4 text-sm text-destructive">{t('serviceAllocation.disposition.loadError')}</div>
             ) : (
               <div className="grid gap-4 p-4 lg:grid-cols-[1.15fr_0.85fr]">
-                <div className="rounded-2xl border bg-background/80 p-4">
-                  <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.nextAction')}</div>
+                <div className="wms-ops-surface-card p-4">
+                  <div className="mb-3 wms-ops-surface-label">{t('serviceAllocation.disposition.nextAction')}</div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <ServiceCaseDetailRow label={t('serviceAllocation.disposition.requiredAction')}>
                       {t(`serviceAllocation.disposition.actions.${dispositionPlan.requiredAction}`, {
@@ -399,12 +399,12 @@ export function ServiceCaseTimelinePage(): ReactElement {
                       {dispositionPlan.existingLinks.length}
                     </ServiceCaseDetailRow>
                   </div>
-                  <p className="mt-4 rounded-2xl border bg-muted/50 p-3 text-sm text-muted-foreground">
+                  <p className="mt-4 wms-ops-surface-inset p-3 text-sm text-muted-foreground">
                     {dispositionPlan.message}
                   </p>
                   {permission.canUpdate && dispositionPlan.isReadyForDisposition && !dispositionPlan.hasDispositionDocument ? (
-                    <div className="mt-4 rounded-2xl border bg-muted/20 p-3">
-                      <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.generateFormTitle')}</div>
+                    <div className="mt-4 wms-ops-surface-inset p-3">
+                      <div className="mb-3 wms-ops-surface-label">{t('serviceAllocation.disposition.generateFormTitle')}</div>
                       <OpsTextarea
                         value={dispositionDocumentNote}
                         onChange={(event) => setDispositionDocumentNote(event.target.value)}
@@ -429,7 +429,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
                       </div>
 
                       <div className="my-4 border-t" />
-                      <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.linkFormTitle')}</div>
+                      <div className="mb-3 wms-ops-surface-label">{t('serviceAllocation.disposition.linkFormTitle')}</div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <OpsInput
                           type="number"
@@ -466,8 +466,8 @@ export function ServiceCaseTimelinePage(): ReactElement {
                   ) : null}
                 </div>
 
-                <div className="rounded-2xl border bg-background/80 p-4">
-                  <div className="mb-3 text-sm font-semibold">{t('serviceAllocation.disposition.qualityGate')}</div>
+                <div className="wms-ops-surface-card p-4">
+                  <div className="mb-3 wms-ops-surface-label">{t('serviceAllocation.disposition.qualityGate')}</div>
                   <div className="space-y-2 text-sm">
                     {[
                       { key: 'decision', passed: dispositionPlan.decisionType !== 0 },
@@ -475,7 +475,7 @@ export function ServiceCaseTimelinePage(): ReactElement {
                       { key: 'completionVideo', passed: dispositionPlan.hasCompletionVideo },
                       { key: 'documentLink', passed: dispositionPlan.hasDispositionDocument },
                     ].map((gate) => (
-                      <div key={gate.key} className="flex items-center justify-between rounded-xl border bg-muted/30 px-3 py-2">
+                      <div key={gate.key} className="flex items-center justify-between wms-ops-surface-inset flex items-center justify-between px-3 py-2">
                         <span>{t(`serviceAllocation.disposition.gates.${gate.key}`)}</span>
                         <span className={gate.passed ? 'font-semibold text-emerald-600' : 'font-semibold text-amber-600'}>
                           {gate.passed ? t('serviceAllocation.disposition.pass') : t('serviceAllocation.disposition.pending')}
@@ -492,9 +492,9 @@ export function ServiceCaseTimelinePage(): ReactElement {
             <section className="wms-ops-detail-panel overflow-hidden">
               <h3 className="wms-ops-detail-section-title">{t('serviceAllocation.technicalService.title')}</h3>
               <div className="grid gap-4 p-4 lg:grid-cols-3">
-                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                <div className="wms-ops-surface-card p-4">
                   <div className="mb-3">
-                    <div className="font-semibold">{t('serviceAllocation.technicalService.assignTitle')}</div>
+                    <div className="wms-ops-surface-label">{t('serviceAllocation.technicalService.assignTitle')}</div>
                     <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.assignDescription')}</p>
                   </div>
                   <div className="space-y-3">
@@ -512,9 +512,9 @@ export function ServiceCaseTimelinePage(): ReactElement {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                <div className="wms-ops-surface-card p-4">
                   <div className="mb-3">
-                    <div className="font-semibold">{t('serviceAllocation.technicalService.startTitle')}</div>
+                    <div className="wms-ops-surface-label">{t('serviceAllocation.technicalService.startTitle')}</div>
                     <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.startDescription')}</p>
                   </div>
                   <div className="space-y-3">
@@ -546,9 +546,9 @@ export function ServiceCaseTimelinePage(): ReactElement {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+                <div className="wms-ops-surface-card p-4">
                   <div className="mb-3">
-                    <div className="font-semibold">{t('serviceAllocation.technicalService.completeTitle')}</div>
+                    <div className="wms-ops-surface-label">{t('serviceAllocation.technicalService.completeTitle')}</div>
                     <p className="mt-1 text-xs text-muted-foreground">{t('serviceAllocation.technicalService.completeDescription')}</p>
                   </div>
                   <div className="space-y-3">

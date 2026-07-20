@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { OpsFormPageShell } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell } from '@/components/shared';
 import { MasterDataOpsErpEyebrow } from '@/features/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { loadJsPdfModule } from '@/lib/lazy-vendors';
@@ -313,7 +313,7 @@ function SchemaFieldNode({
           event.dataTransfer.effectAllowed = 'copy';
         }}
         onDoubleClick={() => onCreateField(node.field!)}
-        className="rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 text-sm transition hover:border-slate-300 dark:border-white/10 dark:bg-slate-900/30"
+        className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2 text-sm transition hover:border-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]"
         style={{ marginLeft: `${level * 16}px` }}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -347,7 +347,7 @@ function SchemaFieldNode({
     <div style={{ marginLeft: `${level * 12}px` }}>
       <button
         type="button"
-        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/[0.04]"
+        className="flex w-full items-center gap-2 rounded-none px-2 py-2 text-left text-sm text-slate-700 transition hover:bg-[color-mix(in_oklab,var(--wms-ops-accent)_8%,transparent)] dark:text-slate-200"
         onClick={() => onToggleNode(node.key)}
       >
         {hasChildren ? (isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />) : <Package2 className="size-4" />}
@@ -1727,11 +1727,11 @@ export function BarcodeDesignerFormPage(): ReactElement {
     >
       <div className="wms-ops-form wms-ops-erp-skin space-y-6">
       <section className="wms-ops-receiving-area wms-ops-pt-terminal-section border p-4 sm:p-5 space-y-4">
-              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/4">
-                <div className="mb-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+              <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+                <div className="mb-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <div className="text-sm font-medium text-slate-900 dark:text-white">{t('barcodeDesigner.form.smartPresetTitle')}</div>
+                      <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">{t('barcodeDesigner.form.smartPresetTitle')}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeDesigner.form.smartPresetDescription')}</div>
                     </div>
                     <Badge variant="outline">{t('barcodeDesigner.form.recommendationLayer')}</Badge>
@@ -1781,7 +1781,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">{t('barcodeDesigner.form.templateGalleryTitle')}</div>
+                    <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">{t('barcodeDesigner.form.templateGalleryTitle')}</div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">{t('barcodeDesigner.form.templateGalleryDescription')}</div>
                   </div>
                   <Badge variant="secondary">3 Adimli Wizard</Badge>
@@ -1812,10 +1812,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       key={preset.id}
                       type="button"
                       onClick={() => setSelectedPresetId(preset.id)}
-                      className={`rounded-2xl border p-4 text-left transition ${
+                      className={`rounded-none border p-4 text-left transition ${
                         selectedPresetId === preset.id
-                          ? 'border-sky-400 bg-sky-50/80 shadow-sm dark:border-sky-500 dark:bg-sky-500/10'
-                          : 'border-slate-200/80 bg-white/80 hover:border-slate-300 dark:border-white/10 dark:bg-white/3'
+                          ? 'border-[color-mix(in_oklab,var(--wms-ops-accent)_60%,transparent)] bg-[color-mix(in_oklab,var(--wms-ops-accent)_12%,transparent)]'
+                          : 'border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] hover:border-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]'
                       }`}
                     >
                       <div className="mb-3">
@@ -1835,7 +1835,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   ))}
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-slate-200/80 px-4 py-3 dark:border-white/10">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-none border border-dashed border-[color-mix(in_oklab,var(--wms-ops-accent)_40%,transparent)] px-4 py-3">
                   <div className="text-sm text-slate-600 dark:text-slate-300">
                     <span className="font-medium text-slate-900 dark:text-white">{activePreset?.displayName ?? 'Preset'}</span>
                     {' · '}
@@ -1847,10 +1847,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
 
                 {(selectedPresetCategory === 'carton' || selectedPresetCategory === 'pallet' || selectedPresetCategory === 'logistic') ? (
-                  <div className="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-900/40">
+                  <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <div className="text-sm font-medium text-slate-900 dark:text-white">GS1 Logistic Label Wizard</div>
+                        <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">GS1 Logistic Label Wizard</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">Preset'e uygun temel alanlari doldur, sonra GS1 payload uret.</div>
                       </div>
                       <Badge variant="secondary">{selectedPresetCategory === 'pallet' ? 'SSCC / Palet' : selectedPresetCategory === 'carton' ? 'Koli' : 'Lojistik'}</Badge>
@@ -1881,10 +1881,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                       </Button>
                     </div>
                     {previewMutation.data?.data?.outputFormat === 'svg' && previewMutation.data.data.previewPayload ? (
-                      <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/80 p-3 dark:border-white/10 dark:bg-white/3">
-                        <div className="mb-2 text-sm font-medium text-slate-900 dark:text-white">GS1 Logistic Label Preview</div>
+                      <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
+                        <div className="mb-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">GS1 Logistic Label Preview</div>
                         <div
-                          className="overflow-hidden rounded-xl border border-slate-200/80 bg-white p-2 dark:border-white/10 dark:bg-slate-950"
+                          className="overflow-hidden rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-white p-2 dark:bg-slate-950"
                           dangerouslySetInnerHTML={{ __html: previewMutation.data.data.previewPayload }}
                         />
                       </div>
@@ -1893,32 +1893,32 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 ) : null}
               </div>
         <div className="flex flex-wrap gap-2 border-t border-[color:var(--wms-ops-card-border)] pt-4">
-              <Button variant="outline" onClick={() => handleAddElement('text')} disabled={!canManageTemplate}>
-                <Plus className="mr-2 size-4" />
+              <OpsActionButton variant="secondary" onClick={() => handleAddElement('text')} disabled={!canManageTemplate}>
+                <Plus className="size-3.5" aria-hidden />
                 Text
-            </Button>
-            <Button variant="outline" onClick={() => handleAddElement('barcode')} disabled={!canManageTemplate}>
-              <Barcode className="mr-2 size-4" />
+            </OpsActionButton>
+            <OpsActionButton variant="secondary" onClick={() => handleAddElement('barcode')} disabled={!canManageTemplate}>
+              <Barcode className="size-3.5" aria-hidden />
               Barcode
-            </Button>
-            <Button variant="outline" onClick={() => handleAddElement('rect')} disabled={!canManageTemplate}>
-              <Layers3 className="mr-2 size-4" />
+            </OpsActionButton>
+            <OpsActionButton variant="secondary" onClick={() => handleAddElement('rect')} disabled={!canManageTemplate}>
+              <Layers3 className="size-3.5" aria-hidden />
               Frame
-            </Button>
-            <Button variant="outline" onClick={() => handleAddElement('qrcode')} disabled={!canManageTemplate}>
+            </OpsActionButton>
+            <OpsActionButton variant="secondary" onClick={() => handleAddElement('qrcode')} disabled={!canManageTemplate}>
               QR
-            </Button>
-            <Button variant="outline" onClick={() => handleAddElement('datamatrix')} disabled={!canManageTemplate}>
+            </OpsActionButton>
+            <OpsActionButton variant="secondary" onClick={() => handleAddElement('datamatrix')} disabled={!canManageTemplate}>
               DataMatrix
-            </Button>
-            <Button variant="outline" onClick={() => handleAddElement('image')} disabled={!canManageTemplate}>
+            </OpsActionButton>
+            <OpsActionButton variant="secondary" onClick={() => handleAddElement('image')} disabled={!canManageTemplate}>
               Logo
-            </Button>
+            </OpsActionButton>
         </div>
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.34fr_0.66fr]">
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+        <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
           <CardHeader>
             <CardTitle>{t('barcodeDesigner.form.templateInfoTitle')}</CardTitle>
           </CardHeader>
@@ -1954,23 +1954,23 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
             <div className="grid gap-2 sm:grid-cols-2">
               {!isEditMode ? (
-                <Button onClick={() => createTemplateMutation.mutate()} disabled={!permission.canCreate || createTemplateMutation.isPending}>
-                  <Plus className="mr-2 size-4" />
+                <OpsActionButton onClick={() => createTemplateMutation.mutate()} disabled={!permission.canCreate || createTemplateMutation.isPending}>
+                  <Plus className="size-3.5" aria-hidden />
                   Template Olustur
-                </Button>
+                </OpsActionButton>
               ) : (
-                <Button onClick={() => updateTemplateMutation.mutate()} disabled={!permission.canUpdate || updateTemplateMutation.isPending}>
-                  <Save className="mr-2 size-4" />
+                <OpsActionButton onClick={() => updateTemplateMutation.mutate()} disabled={!permission.canUpdate || updateTemplateMutation.isPending}>
+                  <Save className="size-3.5" aria-hidden />
                   Template Guncelle
-                </Button>
+                </OpsActionButton>
               )}
-              <Button variant="outline" onClick={() => navigate('/erp/barcode-designer')}>
+              <OpsActionButton variant="secondary" onClick={() => navigate('/erp/barcode-designer')}>
                 Listeye Don
-              </Button>
+              </OpsActionButton>
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">Secili Eleman</div>
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4 text-sm">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Secili Eleman</div>
               <div className="mt-2 text-slate-600 dark:text-slate-300">{describeElement(selectedElement)}</div>
               {selectedElement ? (
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -1982,10 +1982,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
               ) : null}
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="font-medium text-slate-900 dark:text-white">Eleman Listesi</div>
+                  <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Eleman Listesi</div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">Koordinat vermeden once elemani buradan da secebilirsin.</div>
                 </div>
                 <Badge variant="secondary">{documentState.elements.length} eleman</Badge>
@@ -1996,10 +1996,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     key={element.id}
                     type="button"
                     onClick={() => handleSelectElement(element.id)}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between rounded-none border px-3 py-2 text-left text-sm transition ${
                       selectedElementId === element.id
-                        ? 'border-sky-400 bg-sky-50/80 dark:border-sky-500 dark:bg-sky-500/10'
-                        : 'border-slate-200/80 bg-white/70 hover:border-slate-300 dark:border-white/10 dark:bg-white/3'
+                        ? 'border-[color-mix(in_oklab,var(--wms-ops-accent)_60%,transparent)] bg-[color-mix(in_oklab,var(--wms-ops-accent)_12%,transparent)]'
+                        : 'border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] hover:border-[color-mix(in_oklab,var(--wms-ops-accent)_55%,transparent)]'
                     }`}
                   >
                     <div>
@@ -2014,9 +2014,9 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="font-medium text-slate-900 dark:text-white">Baski Kalite Kontrolu</div>
+                <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Baski Kalite Kontrolu</div>
                 <Badge variant={validationIssues.some((item) => item.level === 'error') ? 'destructive' : validationIssues.length ? 'secondary' : 'default'}>
                   {validationIssues.length === 0 ? 'Temiz' : `${validationIssues.length} Uyari`}
                 </Badge>
@@ -2030,7 +2030,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   {validationIssues.map((issue) => (
                     <div
                       key={`${issue.elementId}-${issue.title}`}
-                      className={`rounded-xl border px-3 py-3 text-sm ${
+                      className={`rounded-none border px-3 py-3 text-sm ${
                         issue.level === 'error'
                           ? 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200'
                           : 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200'
@@ -2044,12 +2044,12 @@ export function BarcodeDesignerFormPage(): ReactElement {
               )}
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">Hazir Binding Alani</div>
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Hazir Binding Alani</div>
               <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 Stok kodu, stok adi, ana gorsel, musteri/firma kodu ve adini secili elemana tek tikla baglayabilirsin.
               </div>
-              <div className="mt-4 rounded-2xl border border-dashed border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
+              <div className="mt-4 rounded-none border border-dashed border-[color-mix(in_oklab,var(--wms-ops-accent)_40%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
                 <div className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Belge Baglami ile Zenginlestir</div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   <Select value={bindingContext.sourceModule} onValueChange={(value) => setBindingContext((current) => ({ ...current, sourceModule: value as BarcodePrintSourceModule }))} disabled={!canManageTemplate}>
@@ -2095,10 +2095,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   Header/line girilirse katalog ilgili belge satirinin ornek degerleriyle zenginlesir.
                 </div>
               </div>
-              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
+              <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">Schema Explorer</div>
+                    <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Schema Explorer</div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">
                       {selectedElementTarget
                         ? `${fieldTargetHint} Cift tikla yeni eleman olustur veya secili elemana bagla.`
@@ -2120,10 +2120,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
               </div>
               {frequentFields.length > 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
+                <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <div className="text-sm font-medium text-slate-900 dark:text-white">Sik Kullanilan Alanlar</div>
+                      <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Sik Kullanilan Alanlar</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">En sik kullanilan veya operasyonel olarak en degerli alanlara hizli erisim.</div>
                     </div>
                     <Badge variant="secondary">Quick Access</Badge>
@@ -2145,11 +2145,11 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
               ) : null}
               {schemaEntities.length > 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
-                  <div className="mb-3 text-sm font-medium text-slate-900 dark:text-white">Process / Entity Ayrimi</div>
+                <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
+                  <div className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Process / Entity Ayrimi</div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {schemaEntities.map((entity) => (
-                      <div key={entity.entityKey} className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-900/30">
+                      <div key={entity.entityKey} className="flex items-center gap-2 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2 text-sm">
                         {renderSchemaEntityIcon(entity.iconKey)}
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-slate-900 dark:text-white">{entity.entityLabel}</div>
@@ -2163,10 +2163,10 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="mt-4 text-[11px] text-slate-500 dark:text-slate-400">
                 Tree node seviyesinde ac/kapa kullanabilir, leaf alanlari cift tiklayabilir veya dogrudan canvas'a surukleyebilirsin.
               </div>
-              <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
+              <div className="mt-4 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">Hizli Alan Yerlestir</div>
+                    <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Hizli Alan Yerlestir</div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">
                       Suruklemeden de kullan. Tikladiginda alan canvas'a eklenir ve otomatik secilir.
                     </div>
@@ -2175,9 +2175,9 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 </div>
                 <div className="mt-3 space-y-2">
                   {QUICK_INSERT_FIELDS.map((field) => (
-                    <div key={`quick-${field.key}`} className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-slate-900/30">
+                    <div key={`quick-${field.key}`} className="flex flex-wrap items-center gap-2 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-slate-900 dark:text-white">{field.label}</div>
+                        <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">{field.label}</div>
                         <div className="text-[11px] text-slate-500 dark:text-slate-400">{field.path}</div>
                       </div>
                       <Button type="button" variant="outline" size="sm" onClick={() => handleCreateFieldElement(field, 'text')} disabled={!canManageTemplate}>
@@ -2194,7 +2194,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                 {bindingExplorerTrees.map((group) => {
                   const expanded = expandedBindingGroups[group.groupKey] ?? true;
                   return (
-                    <div key={group.groupKey} className="rounded-2xl border border-slate-200/80 bg-white/80 dark:border-white/10 dark:bg-white/3">
+                    <div key={group.groupKey} className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)]">
                       <button
                         type="button"
                         className="flex w-full items-center justify-between px-4 py-3 text-left"
@@ -2226,8 +2226,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">Element Property Panel</div>
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Element Property Panel</div>
               {selectedElement ? (
                 <div className="mt-4 space-y-4">
                   <div className="grid gap-2 sm:grid-cols-2">
@@ -2241,8 +2241,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     </Button>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/3">
-                    <div className="mb-2 text-sm font-medium text-slate-900 dark:text-white">Hizli Konumlandirma</div>
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3">
+                    <div className="mb-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Hizli Konumlandirma</div>
                     <div className="grid gap-2 sm:grid-cols-3">
                       <Button type="button" variant="outline" size="sm" onClick={() => handleNudgeSelectedElement(0, -0.1)} disabled={!canManageTemplate}>Yukari</Button>
                       <Button type="button" variant="outline" size="sm" onClick={() => handleCenterSelectedElement('horizontal')} disabled={!canManageTemplate}>Yatay Ortala</Button>
@@ -2416,8 +2416,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
               )}
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 text-sm dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">Teknik Karar</div>
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4 text-sm">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Teknik Karar</div>
               <ul className="mt-2 space-y-2 text-slate-600 dark:text-slate-300">
                 {STACK_OPTIONS.slice(0, 2).map((item) => (
                   <li key={item.name}>{item.name}: {item.reason}</li>
@@ -2425,8 +2425,8 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
-              <div className="font-medium text-slate-900 dark:text-white">GS1 AI Builder</div>
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">GS1 AI Builder</div>
               <div className="mt-3 space-y-3">
                 {gs1Elements.map((item, index) => (
                   <div key={`${item.applicationIdentifier}-${index}`} className="grid gap-3 sm:grid-cols-[96px_1fr]">
@@ -2450,7 +2450,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                     GS1 Uret ve Binding'e Yaz
                   </Button>
                 </div>
-                <div className="rounded-xl border border-slate-200/80 bg-white/80 p-3 text-xs dark:border-white/10 dark:bg-white/4">
+                <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] p-3 text-xs">
                   <div><span className="font-medium">gs1.value:</span> {documentState.bindings['gs1.value'] ?? '-'}</div>
                   <div className="mt-2"><span className="font-medium">gs1.hri:</span> {documentState.bindings['gs1.hri'] ?? '-'}</div>
                   {gs1BuildMutation.data?.data?.warnings?.length ? (
@@ -2468,13 +2468,13 @@ export function BarcodeDesignerFormPage(): ReactElement {
             </div>
 
             {isEditMode ? (
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+              <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                 <button
                   type="button"
                   className="flex w-full items-center justify-between gap-3 text-left"
                   onClick={() => setPrinterProfilesExpanded((current) => !current)}
                 >
-                  <div className="font-medium text-slate-900 dark:text-white">Printer Profile Esleme</div>
+                  <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Printer Profile Esleme</div>
                   <Badge variant="outline">{printerProfilesExpanded ? 'Acik' : 'Yukle'}</Badge>
                 </button>
                 {printerProfilesExpanded ? (
@@ -2509,7 +2509,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   </div>
                   <div className="space-y-2">
                     {(templatePrinterProfilesQuery.data?.data ?? []).map((mapping) => (
-                      <div key={mapping.id ?? `${mapping.barcodeTemplateId}-${mapping.printerProfileId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 text-sm dark:border-white/10 dark:bg-white/4">
+                      <div key={mapping.id ?? `${mapping.barcodeTemplateId}-${mapping.printerProfileId}`} className="flex items-center justify-between gap-3 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-3 text-sm">
                         <div>
                           <div className="font-medium text-slate-900 dark:text-white">{mapping.printerProfileDisplayName}</div>
                           <div className="text-slate-500 dark:text-slate-400">{mapping.printerCode} · {mapping.printerProfileCode}</div>
@@ -2549,35 +2549,35 @@ export function BarcodeDesignerFormPage(): ReactElement {
         </Card>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="designer">Designer</TabsTrigger>
-            <TabsTrigger value="json">JSON</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="plan">Plan</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 rounded-none">
+            <TabsTrigger value="designer" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">Designer</TabsTrigger>
+            <TabsTrigger value="json" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">JSON</TabsTrigger>
+            <TabsTrigger value="preview" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">Preview</TabsTrigger>
+            <TabsTrigger value="plan" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">Plan</TabsTrigger>
           </TabsList>
 
           <TabsContent value="designer" className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => saveDraftMutation.mutate()} disabled={!permission.canUpdate || !activeTemplateId || saveDraftMutation.isPending}>
-                <Save className="mr-2 size-4" />
+              <OpsActionButton onClick={() => saveDraftMutation.mutate()} disabled={!permission.canUpdate || !activeTemplateId || saveDraftMutation.isPending}>
+                <Save className="size-3.5" aria-hidden />
                 Draft Kaydet
-              </Button>
-              <Button variant="outline" onClick={() => previewMutation.mutate()} disabled={previewMutation.isPending}>
-                <Sparkles className="mr-2 size-4" />
+              </OpsActionButton>
+              <OpsActionButton variant="secondary" onClick={() => previewMutation.mutate()} disabled={previewMutation.isPending}>
+                <Sparkles className="size-3.5" aria-hidden />
                 Preview Hazirla
-              </Button>
-              <Button variant="outline" onClick={handleExportPdf}>
-                <Download className="mr-2 size-4" />
+              </OpsActionButton>
+              <OpsActionButton variant="secondary" onClick={handleExportPdf}>
+                <Download className="size-3.5" aria-hidden />
                 PDF Export
-              </Button>
+              </OpsActionButton>
               {activeTemplateId ? (
-                <Button variant="outline" onClick={() => navigate(`/erp/barcode-designer/${activeTemplateId}/print`)}>
+                <OpsActionButton variant="secondary" onClick={() => navigate(`/erp/barcode-designer/${activeTemplateId}/print`)}>
                   Etiket Bas
-                </Button>
+                </OpsActionButton>
               ) : null}
             </div>
 
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+            <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
                 <div>
                   <div className="font-medium text-slate-900 dark:text-white">
@@ -2591,7 +2591,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+            <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
               <CardContent className="flex flex-wrap items-center gap-2 p-4">
                 <Badge variant="secondary">{selectedElementIds.length} secili</Badge>
                 <Button variant="outline" size="sm" disabled={selectedElementIds.length < 2} onClick={() => handleAlignHorizontalSelection('left')}>
@@ -2641,7 +2641,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
             <Suspense
               fallback={(
-                <div className="flex min-h-[520px] items-center justify-center rounded-2xl border border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+                <div className="flex min-h-[520px] items-center justify-center rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)]">
                   <div className="text-center">
                     <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
                     <p className="text-sm text-slate-500 dark:text-slate-400">Designer canvas yukleniyor...</p>
@@ -2670,14 +2670,14 @@ export function BarcodeDesignerFormPage(): ReactElement {
           </TabsContent>
 
           <TabsContent value="json" className="space-y-4">
-            <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+            <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
               <CardHeader>
                 <div className="flex items-center justify-between gap-3">
                   <CardTitle>Template JSON</CardTitle>
-                  <Button variant="outline" onClick={handleJsonApply} disabled={!canManageTemplate}>
-                    <FileJson2 className="mr-2 size-4" />
+                  <OpsActionButton variant="secondary" onClick={handleJsonApply} disabled={!canManageTemplate}>
+                    <FileJson2 className="size-3.5" aria-hidden />
                     JSON Uygula
-                  </Button>
+                  </OpsActionButton>
                 </div>
               </CardHeader>
               <CardContent>
@@ -2688,23 +2688,23 @@ export function BarcodeDesignerFormPage(): ReactElement {
 
           <TabsContent value="preview" className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
-              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+              <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
                 <CardHeader><CardTitle>Preview Servis Cevabi</CardTitle></CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <div><span className="font-medium">Engine:</span> {previewMutation.data?.data?.engineType ?? 'client-bwip-js'}</div>
                   <div><span className="font-medium">Format:</span> {previewMutation.data?.data?.outputFormat ?? 'json'}</div>
                   <div><span className="font-medium">Mesaj:</span> {previewMutation.data?.data?.debugMessage ?? 'Sample data ile local preview aktif.'}</div>
-                  <pre className="overflow-x-auto rounded-2xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100">
+                  <pre className="overflow-x-auto rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-slate-950 p-4 font-mono text-xs leading-6 text-slate-100">
                     <code>{previewMutation.data?.data?.previewPayload ?? jsonValue}</code>
                   </pre>
                 </CardContent>
               </Card>
 
-              <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+              <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
                 <CardHeader><CardTitle>Aktif Fazlar</CardTitle></CardHeader>
                 <CardContent className="grid gap-3">
                   {DELIVERY_PHASES.map((phase) => (
-                    <div key={phase.title} className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+                    <div key={phase.title} className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                       <div className="font-medium text-slate-900 dark:text-white">{phase.title}</div>
                       <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-slate-300">
                         {phase.items.map((item) => <li key={item}>{item}</li>)}
@@ -2719,7 +2719,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
           <TabsContent value="plan" className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
               {ARCHITECTURE_GROUPS.map((group) => (
-                <Card key={group.title} className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+                <Card key={group.title} className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
                   <CardHeader><CardTitle>{group.title}</CardTitle></CardHeader>
                   <CardContent>
                     <p className="text-sm text-slate-600 dark:text-slate-300">{group.description}</p>
@@ -2735,7 +2735,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
       </div>
 
       {isEditMode ? (
-        <Card className="border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+        <Card className="rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
           <CardHeader>
             <button
               type="button"
@@ -2755,7 +2755,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
             {versioningExpanded ? (
             <>
             {(versionsQuery.data?.data ?? []).map((version) => (
-              <div key={version.id ?? version.versionNo} className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30 md:flex-row md:items-center md:justify-between">
+              <div key={version.id ?? version.versionNo} className="flex flex-col gap-3 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-1 text-sm">
                   <div className="font-medium text-slate-900 dark:text-white">Versiyon {version.versionNo}</div>
                   <div className="text-slate-600 dark:text-slate-300">{version.notes || 'Not yok'}</div>
@@ -2784,7 +2784,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
               </div>
             ))}
             {hasBlockingValidationIssue ? (
-              <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+              <div className="rounded-none border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
                 Publish kapali. Once Baski Kalite Kontrolu alanindaki hata seviyesindeki maddeleri duzelt.
               </div>
             ) : null}
@@ -2792,35 +2792,35 @@ export function BarcodeDesignerFormPage(): ReactElement {
               <div className="text-sm text-slate-500">Henüz kaydedilmiş versiyon yok. Önce draft kaydet.</div>
             ) : null}
             {lastComplianceReport ? (
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+              <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="font-medium text-slate-900 dark:text-white">Otomatik Uyum Raporu</div>
+                  <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">Otomatik Uyum Raporu</div>
                   <Badge variant={lastComplianceReport.canPublish ? 'default' : 'destructive'}>
                     {lastComplianceReport.canPublish ? 'Uygun' : 'Kritik Sorun Var'}
                   </Badge>
                 </div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{lastComplianceReport.summary}</div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm">
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">
                     Kalite: {lastComplianceReport.qualityScore ?? 0}/100 ({lastComplianceReport.qualityGrade || 'NotEvaluated'})
                   </div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">
                     Hata/Uyari: {lastComplianceReport.errorCount ?? 0}/{lastComplianceReport.warningCount ?? 0}
                   </div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">
                     Printer: {lastComplianceReport.printerProfileCode || 'Genel'}
                   </div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Label: {lastComplianceReport.labelType || templateRequest.labelType}</div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">Barkod: {lastComplianceReport.barcodeCount}</div>
-                  <div className="rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 dark:border-white/10 dark:bg-white/3">GS1 HRI: {lastComplianceReport.hasGs1HumanReadableText ? 'Var' : 'Yok'}</div>
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">Label: {lastComplianceReport.labelType || templateRequest.labelType}</div>
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">Barkod: {lastComplianceReport.barcodeCount}</div>
+                  <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">GS1 HRI: {lastComplianceReport.hasGs1HumanReadableText ? 'Var' : 'Yok'}</div>
                 </div>
                 {lastComplianceReport.printerProfileCode ? (
-                  <div className="mt-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
+                  <div className="mt-3 rounded-none border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
                     Printer profile uyumu: {lastComplianceReport.printProfileCompatible ? 'Uyumlu' : 'Uyumsuz'} · {lastComplianceReport.printerProfileDpi ?? '-'} DPI · {lastComplianceReport.printerProfileWidth ?? '-'}x{lastComplianceReport.printerProfileHeight ?? '-'} mm · {lastComplianceReport.printerProfileOutputType ?? '-'}
                   </div>
                 ) : null}
                 {lastComplianceReport.missingBindings?.length ? (
-                  <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                  <div className="mt-3 rounded-none border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                     Eksik sample binding: {lastComplianceReport.missingBindings.join(', ')}
                   </div>
                 ) : null}
@@ -2828,7 +2828,7 @@ export function BarcodeDesignerFormPage(): ReactElement {
                   {lastComplianceReport.issues.map((issue) => (
                     <div
                       key={`${issue.elementId}-${issue.code}`}
-                      className={`rounded-xl border px-3 py-2 text-sm ${
+                      className={`rounded-none border px-3 py-2 text-sm ${
                         issue.level === 'error'
                           ? 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200'
                           : 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200'

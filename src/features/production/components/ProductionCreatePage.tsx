@@ -7,7 +7,6 @@ import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { OpsActionButton, OpsFormPageShell, OpsInput, OpsSelect, OpsSelectItem, OpsTextarea, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -988,12 +987,12 @@ export function ProductionCreatePage(): ReactElement {
                     currentStep={plannerStep}
                   />
                   <div className="flex flex-wrap justify-between gap-2">
-                    <Button type="button" size="sm" variant="outline" onClick={() => setPlannerStep((prev) => Math.max(prev - 1, 1))} disabled={plannerStep === 1}>
+                    <OpsActionButton type="button" variant="secondary" onClick={() => setPlannerStep((prev) => Math.max(prev - 1, 1))} disabled={plannerStep === 1}>
                       {t('common.back', { defaultValue: 'Missing translation' })}
-                    </Button>
-                    <Button type="button" size="sm" variant="outline" onClick={() => setPlannerStep((prev) => Math.min(prev + 1, plannerSteps.length))} disabled={plannerStep === plannerSteps.length}>
+                    </OpsActionButton>
+                    <OpsActionButton type="button" variant="secondary" onClick={() => setPlannerStep((prev) => Math.min(prev + 1, plannerSteps.length))} disabled={plannerStep === plannerSteps.length}>
                       {t('common.next', { defaultValue: 'Missing translation' })}
-                    </Button>
+                    </OpsActionButton>
                   </div>
                 </CardContent>
               </Card>
@@ -1140,9 +1139,9 @@ export function ProductionCreatePage(): ReactElement {
                       <CardDescription>{t('production.create.planner.stageTemplates.subtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-2 md:grid-cols-3">
-                      <Button type="button" size="sm" variant="outline" onClick={seedSingleStagePlan}>{t('production.create.planner.stageTemplates.single', { defaultValue: 'Missing translation' })}</Button>
-                      <Button type="button" size="sm" variant="outline" onClick={seedSerialFlowPlan}>{t('production.create.planner.stageTemplates.serial', { defaultValue: 'Missing translation' })}</Button>
-                      <Button type="button" size="sm" variant="outline" onClick={seedParallelFlowPlan}>{t('production.create.planner.stageTemplates.parallel', { defaultValue: 'Missing translation' })}</Button>
+                      <OpsActionButton type="button" variant="secondary" onClick={seedSingleStagePlan}>{t('production.create.planner.stageTemplates.single', { defaultValue: 'Missing translation' })}</OpsActionButton>
+                      <OpsActionButton type="button" variant="secondary" onClick={seedSerialFlowPlan}>{t('production.create.planner.stageTemplates.serial', { defaultValue: 'Missing translation' })}</OpsActionButton>
+                      <OpsActionButton type="button" variant="secondary" onClick={seedParallelFlowPlan}>{t('production.create.planner.stageTemplates.parallel', { defaultValue: 'Missing translation' })}</OpsActionButton>
                     </CardContent>
                   </Card>
 
@@ -1151,7 +1150,7 @@ export function ProductionCreatePage(): ReactElement {
                       <SectionHeader
                         title={t('production.create.orders.title')}
                         description={t('production.create.planner.ordersGuide', { defaultValue: 'Missing translation' })}
-                        action={<Button type="button" size="sm" variant="outline" onClick={addOrder}>{t('production.create.addOrder')}</Button>}
+                        action={<OpsActionButton type="button" variant="secondary" onClick={addOrder}>{t('production.create.addOrder')}</OpsActionButton>}
                       />
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1165,7 +1164,7 @@ export function ProductionCreatePage(): ReactElement {
                           <div
                             key={order.localId}
                             className={cn(
-                              'rounded-xl transition-[opacity,box-shadow]',
+                              'rounded-none transition-[opacity,box-shadow]',
                               plannerDropTargetIndex === index && plannerDragOrderIndex !== index && 'ring-2 ring-primary/45 ring-offset-2 ring-offset-background',
                               plannerDragOrderIndex === index && 'opacity-50',
                             )}
@@ -1192,9 +1191,9 @@ export function ProductionCreatePage(): ReactElement {
                             <Card className="gap-3 py-3 shadow-none">
                               <CardHeader className="pb-2">
                                 <div className="flex gap-2">
-                                  <button
+                                  <OpsActionButton
                                     type="button"
-                                    className="mt-0.5 shrink-0 cursor-grab touch-none rounded-md p-1.5 text-muted-foreground hover:bg-muted/80 active:cursor-grabbing"
+                                    className="mt-0.5 shrink-0 cursor-grab touch-none rounded-none p-1.5 text-muted-foreground hover:bg-muted/80 active:cursor-grabbing"
                                     aria-label={t('production.create.planner.dragHandleAria')}
                                     draggable
                                     onDragStart={(e) => {
@@ -1208,7 +1207,7 @@ export function ProductionCreatePage(): ReactElement {
                                     }}
                                   >
                                     <GripVertical className="h-4 w-4" />
-                                  </button>
+                                  </OpsActionButton>
                                   <div className="min-w-0 flex-1 space-y-2">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                       <div className="min-w-0 space-y-0.5">
@@ -1221,10 +1220,9 @@ export function ProductionCreatePage(): ReactElement {
                                           {t('production.create.planner.flowBadge', { defaultValue: 'Missing translation' })}: {order.sequenceNo ?? index + 1}
                                           {order.parallelGroupNo ? ` / P${order.parallelGroupNo}` : ''}
                                         </ProductionOpsBadge>
-                                        <Button
+                                        <OpsActionButton
                                           type="button"
-                                          size="sm"
-                                          variant="ghost"
+                                          variant="secondary"
                                           className="h-8 px-2"
                                           onClick={() => toggleStagePanel(order.localId)}
                                         >
@@ -1232,8 +1230,8 @@ export function ProductionCreatePage(): ReactElement {
                                           <span className="sr-only">
                                             {isStagePanelExpanded(order.localId) ? t('production.create.planner.collapseStage') : t('production.create.planner.expandStage')}
                                           </span>
-                                        </Button>
-                                        <Button type="button" size="sm" variant="ghost" onClick={() => removeOrder(order.localId)} disabled={draft.orders.length === 1}>{t('common.delete')}</Button>
+                                        </OpsActionButton>
+                                        <OpsActionButton type="button" variant="secondary" onClick={() => removeOrder(order.localId)} disabled={draft.orders.length === 1}>{t('common.delete')}</OpsActionButton>
                                       </div>
                                     </div>
                                   </div>
@@ -1266,15 +1264,15 @@ export function ProductionCreatePage(): ReactElement {
                               </Field>
                                 <Field label={t('production.create.planner.flowChoice', { defaultValue: 'Missing translation' })}>
                                 <div className="flex flex-wrap gap-1.5">
-                                  <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'first')}>
+                                  <OpsActionButton type="button" variant="secondary" onClick={() => setStagePlacement(order.localId, 'first')}>
                                     {t('production.create.planner.firstStage', { defaultValue: 'Missing translation' })}
-                                  </Button>
-                                  <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'parallel')} disabled={index === 0}>
+                                  </OpsActionButton>
+                                  <OpsActionButton type="button" variant="secondary" onClick={() => setStagePlacement(order.localId, 'parallel')} disabled={index === 0}>
                                     {t('production.create.planner.parallelStage', { defaultValue: 'Missing translation' })}
-                                  </Button>
-                                  <Button type="button" size="sm" variant="outline" onClick={() => setStagePlacement(order.localId, 'after')} disabled={index === 0}>
+                                  </OpsActionButton>
+                                  <OpsActionButton type="button" variant="secondary" onClick={() => setStagePlacement(order.localId, 'after')} disabled={index === 0}>
                                     {t('production.create.planner.afterStage', { defaultValue: 'Missing translation' })}
-                                  </Button>
+                                  </OpsActionButton>
                                 </div>
                               </Field>
                               <Field label={<>{t('production.create.plannedQuantity')}<RequiredMark /></>}>
@@ -1450,7 +1448,7 @@ export function ProductionCreatePage(): ReactElement {
                               <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
                               <div className="text-xs text-muted-foreground">{order.producedStockCode || '-'}</div>
                             </div>
-                            <Button type="button" size="sm" variant="outline" onClick={() => addOutputForOrder(order.localId)}>{t('production.create.addOutput')}</Button>
+                            <OpsActionButton type="button" variant="secondary" onClick={() => addOutputForOrder(order.localId)}>{t('production.create.addOutput')}</OpsActionButton>
                           </div>
                           <div className="wms-ops-production-line-table-wrap">
                             <ProductionPlanLineGrid variant="planner-output">
@@ -1566,7 +1564,7 @@ export function ProductionCreatePage(): ReactElement {
                               <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
                               <div className="text-xs text-muted-foreground">{t('production.create.planner.consumptionForStage', { defaultValue: 'Missing translation' })}</div>
                             </div>
-                            <Button type="button" size="sm" variant="outline" onClick={() => addConsumptionForOrder(order.localId)}>{t('production.create.addConsumption')}</Button>
+                            <OpsActionButton type="button" variant="secondary" onClick={() => addConsumptionForOrder(order.localId)}>{t('production.create.addConsumption')}</OpsActionButton>
                           </div>
                           <div className="wms-ops-production-line-table-wrap">
                             <ProductionPlanLineGrid variant="planner-consumption">
@@ -1676,7 +1674,7 @@ export function ProductionCreatePage(): ReactElement {
                       <SectionHeader
                         title={t('production.create.dependencies.title')}
                         description={t('production.create.planner.flowGuide', { defaultValue: 'Missing translation' })}
-                        action={<Button type="button" size="sm" variant="outline" onClick={applyFlowTemplate}>{t('production.create.planner.applyFlow', { defaultValue: 'Missing translation' })}</Button>}
+                        action={<OpsActionButton type="button" variant="secondary" onClick={applyFlowTemplate}>{t('production.create.planner.applyFlow', { defaultValue: 'Missing translation' })}</OpsActionButton>}
                       />
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1725,7 +1723,7 @@ export function ProductionCreatePage(): ReactElement {
                         <SectionHeader
                           title={t('production.create.headerAssignments.title')}
                           description={t('production.create.planner.headerAssignmentGuide', { defaultValue: 'Missing translation' })}
-                          action={<Button type="button" size="sm" variant="outline" onClick={addHeaderAssignment}>{t('production.create.addHeaderAssignment')}</Button>}
+                          action={<OpsActionButton type="button" variant="secondary" onClick={addHeaderAssignment}>{t('production.create.addHeaderAssignment')}</OpsActionButton>}
                         />
                       </CardHeader>
                       <CardContent className="space-y-2">
@@ -1752,7 +1750,7 @@ export function ProductionCreatePage(): ReactElement {
                               searchPlaceholder={t('production.create.roleSearch', { defaultValue: 'Missing translation' })}
                               emptyText={t('production.create.roleEmpty', { defaultValue: 'Missing translation' })}
                             />
-                            <Button type="button" size="sm" variant="ghost" onClick={() => removeHeaderAssignment(assignment.localId)}>{t('common.delete')}</Button>
+                            <OpsActionButton type="button" variant="secondary" onClick={() => removeHeaderAssignment(assignment.localId)}>{t('common.delete')}</OpsActionButton>
                           </div>
                         ))}
                         {draft.header.assignments.length === 0 ? (
@@ -1771,7 +1769,7 @@ export function ProductionCreatePage(): ReactElement {
                           <div key={order.localId} className="wms-ops-production-panel">
                             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                               <div className="wms-ops-production-panel__title">{order.orderNo || order.producedStockCode || t('production.create.orderPlaceholder')}</div>
-                              <Button type="button" size="sm" variant="outline" onClick={() => addOrderAssignment(order.localId)}>{t('production.create.addOrderAssignment')}</Button>
+                              <OpsActionButton type="button" variant="secondary" onClick={() => addOrderAssignment(order.localId)}>{t('production.create.addOrderAssignment')}</OpsActionButton>
                             </div>
                             <div className="space-y-2">
                               {order.assignments.map((assignment) => (
@@ -1789,7 +1787,7 @@ export function ProductionCreatePage(): ReactElement {
                                     emptyText={t('production.create.userEmpty', { defaultValue: 'Missing translation' })}
                                   />
                                   <OpsInput placeholder={t('production.create.assignmentNote')} value={assignment.note} onChange={(e) => updateOrderAssignment(order.localId, assignment.localId, (row) => ({ ...row, note: e.target.value }))} />
-                                  <Button type="button" size="sm" variant="ghost" onClick={() => removeOrderAssignment(order.localId, assignment.localId)}>{t('common.delete')}</Button>
+                                  <OpsActionButton type="button" variant="secondary" onClick={() => removeOrderAssignment(order.localId, assignment.localId)}>{t('common.delete')}</OpsActionButton>
                                 </div>
                               ))}
                               {order.assignments.length === 0 ? (
@@ -1947,7 +1945,7 @@ export function ProductionCreatePage(): ReactElement {
                   <SectionHeader
                     title={t('production.create.orders.title')}
                     description={t('production.create.orders.subtitle')}
-                    action={<Button type="button" size="sm" variant="outline" onClick={addOrder}>{t('production.create.addOrder')}</Button>}
+                    action={<OpsActionButton type="button" variant="secondary" onClick={addOrder}>{t('production.create.addOrder')}</OpsActionButton>}
                   />
                 </CardHeader>
                 <CardContent>
@@ -2089,7 +2087,7 @@ export function ProductionCreatePage(): ReactElement {
                               description={t('production.create.autoStartHint')}
                             />
                             <div className="flex items-center justify-end">
-                              <Button type="button" size="sm" variant="ghost" onClick={() => removeOrder(order.localId)} disabled={draft.orders.length === 1}>{t('common.delete')}</Button>
+                              <OpsActionButton type="button" variant="secondary" onClick={() => removeOrder(order.localId)} disabled={draft.orders.length === 1}>{t('common.delete')}</OpsActionButton>
                             </div>
                           </div>
                         </AccordionContent>
@@ -2105,7 +2103,7 @@ export function ProductionCreatePage(): ReactElement {
                     <SectionHeader
                       title={t('production.create.outputs.title')}
                       description={t('production.create.outputs.subtitle')}
-                      action={<Button type="button" size="sm" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, outputs: [...prev.outputs, createEmptyOutputDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addOutput')}</Button>}
+                      action={<OpsActionButton type="button" variant="secondary" onClick={() => setDraft((prev) => ({ ...prev, outputs: [...prev.outputs, createEmptyOutputDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addOutput')}</OpsActionButton>}
                     />
                   </CardHeader>
                   <CardContent className="wms-ops-production-line-table-wrap">
@@ -2205,7 +2203,7 @@ export function ProductionCreatePage(): ReactElement {
                     <SectionHeader
                       title={t('production.create.consumptions.title')}
                       description={t('production.create.consumptions.subtitle')}
-                      action={<Button type="button" size="sm" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, consumptions: [...prev.consumptions, createEmptyConsumptionDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addConsumption')}</Button>}
+                      action={<OpsActionButton type="button" variant="secondary" onClick={() => setDraft((prev) => ({ ...prev, consumptions: [...prev.consumptions, createEmptyConsumptionDraft(orderOptions[0]?.value ?? '')] }))}>{t('production.create.addConsumption')}</OpsActionButton>}
                     />
                   </CardHeader>
                   <CardContent className="wms-ops-production-line-table-wrap">
@@ -2306,7 +2304,7 @@ export function ProductionCreatePage(): ReactElement {
                   <SectionHeader
                     title={t('production.create.dependencies.title')}
                     description={t('production.create.dependencies.subtitle')}
-                    action={<Button type="button" size="sm" variant="outline" onClick={() => setDraft((prev) => ({ ...prev, dependencies: [...prev.dependencies, createEmptyDependencyDraft()] }))}>{t('production.create.addDependency')}</Button>}
+                    action={<OpsActionButton type="button" variant="secondary" onClick={() => setDraft((prev) => ({ ...prev, dependencies: [...prev.dependencies, createEmptyDependencyDraft()] }))}>{t('production.create.addDependency')}</OpsActionButton>}
                   />
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -2322,7 +2320,7 @@ export function ProductionCreatePage(): ReactElement {
 </OpsSelect>
                       <Combobox variant="ops" options={orderComboboxOptions} value={dependency.successorOrderLocalId} onValueChange={(value) => updateDependency(dependency.localId, (current) => ({ ...current, successorOrderLocalId: value }))} placeholder={t('production.create.successor')} />
                       <OpsInput type="number" value={dependency.lagMinutes} onChange={(e) => updateDependency(dependency.localId, (current) => ({ ...current, lagMinutes: Number(e.target.value) || 0 }))} placeholder={t('production.create.lagMinutes')} />
-                      <Button type="button" size="sm" variant="ghost" onClick={() => removeDependency(dependency.localId)}>{t('common.delete')}</Button>
+                      <OpsActionButton type="button" variant="secondary" onClick={() => removeDependency(dependency.localId)}>{t('common.delete')}</OpsActionButton>
                     </div>
                   ))}
                 </CardContent>

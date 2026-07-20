@@ -396,14 +396,14 @@ export function IncomingInvoiceArchivePage(): ReactElement {
             />
 
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('detail.supplier')}</div>
+              <div className="wms-ops-surface-card p-4">
+                <div className="wms-ops-surface-label text-muted-foreground">{t('detail.supplier')}</div>
                 <div className="mt-2 text-base font-semibold">{invoiceDetail.supplier.name || '-'}</div>
                 <div className="mt-1 font-mono text-xs text-muted-foreground">{invoiceDetail.supplier.vknOrTckn || '-'}</div>
                 <div className="mt-2 text-sm text-muted-foreground">{invoiceDetail.supplier.addressLine || '-'}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('detail.customer')}</div>
+              <div className="wms-ops-surface-card p-4">
+                <div className="wms-ops-surface-label text-muted-foreground">{t('detail.customer')}</div>
                 <div className="mt-2 text-base font-semibold">{invoiceDetail.customer.name || '-'}</div>
                 <div className="mt-1 font-mono text-xs text-muted-foreground">{invoiceDetail.customer.vknOrTckn || '-'}</div>
                 <div className="mt-2 text-sm text-muted-foreground">{invoiceDetail.customer.addressLine || '-'}</div>
@@ -415,9 +415,9 @@ export function IncomingInvoiceArchivePage(): ReactElement {
             title={t('lines.title')}
             subtitle={t('lines.description')}
           >
-            <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-white/10">
-              <table className="min-w-full divide-y divide-slate-200/80 text-sm dark:divide-white/10">
-                <thead className="bg-slate-50/80 text-xs uppercase tracking-[0.14em] text-muted-foreground dark:bg-white/5">
+            <div className="wms-ops-surface-table-wrap overflow-x-auto">
+              <table className="min-w-full divide-y divide-[color-mix(in_oklab,var(--wms-ops-accent)_18%,transparent)] text-sm">
+                <thead className="wms-ops-surface-table-head bg-[var(--wms-ops-card-bg)] text-muted-foreground">
                   <tr>
                     <th className="px-3 py-3 text-left">{t('lines.stock')}</th>
                     <th className="px-3 py-3 text-left">{t('lines.descriptionColumn')}</th>
@@ -427,7 +427,7 @@ export function IncomingInvoiceArchivePage(): ReactElement {
                     <th className="px-3 py-3 text-right">{t('lines.total')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/80 dark:divide-white/10">
+                <tbody className="divide-y divide-[color-mix(in_oklab,var(--wms-ops-accent)_18%,transparent)]">
                   {invoiceDetail.lines.map((line, index) => (
                     <tr key={`${line.lineId}-${index}`}>
                       <td className="px-3 py-3">
@@ -457,8 +457,8 @@ export function IncomingInvoiceArchivePage(): ReactElement {
           >
             <div className="grid gap-3 md:grid-cols-3">
               {invoiceDetail.taxes.map((tax, index) => (
-                <div key={`${tax.taxName}-${index}`} className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                  <div className="text-sm font-semibold">{tax.taxName || t('taxes.tax')}</div>
+                <div key={`${tax.taxName}-${index}`} className="wms-ops-surface-card p-4">
+                  <div className="wms-ops-surface-label">{tax.taxName || t('taxes.tax')}</div>
                   <div className="mt-2 font-mono text-xs text-muted-foreground">
                     {t('taxes.rate')}: %{tax.percent ?? '-'}
                   </div>
@@ -471,7 +471,7 @@ export function IncomingInvoiceArchivePage(): ReactElement {
                 </div>
               ))}
               {invoiceDetail.taxes.length === 0 ? (
-                <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+                <div className="wms-ops-surface-card p-4 text-sm text-muted-foreground">
                   {t('taxes.empty')}
                 </div>
               ) : null}

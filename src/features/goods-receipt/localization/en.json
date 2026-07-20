@@ -350,6 +350,7 @@
       "projectCode": "Project Code",
       "receiptDate": "Receipt Date",
       "selectCustomer": "Select customer",
+      "clickToSelectCustomer": "Click to select a customer",
       "selectProjectCode": "Select project code",
       "selectWarehouse": "Select warehouse",
       "selectedCustomer": "Selected Customer",

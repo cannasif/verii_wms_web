@@ -15,7 +15,6 @@ import {
   PageState,
 } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { useUIStore } from '@/stores/ui-store';
@@ -36,6 +35,7 @@ import {
   InventoryCountOpsDeleteButton,
   InventoryCountOpsField,
   InventoryCountOpsScopePanel,
+  InventoryCountOpsSectionCard,
   InventoryCountOpsSectionHeader,
 } from './inventory-count-ops-ui';
 
@@ -506,14 +506,15 @@ export function InventoryCountCreatePage(): ReactElement {
 
         <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
+            <InventoryCountOpsSectionCard
+              header={(
                 <InventoryCountOpsSectionHeader
                   title={t('inventoryCount.create.whatToCountTitle')}
                   description={t('inventoryCount.create.whatToCountDescription')}
                 />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              )}
+              contentClassName="space-y-4"
+            >
                 <div className="grid gap-4 md:grid-cols-2">
                   <InventoryCountOpsField label={t('inventoryCount.fields.countType')}>
                     <OpsSelect
@@ -549,17 +550,17 @@ export function InventoryCountCreatePage(): ReactElement {
                   title={countTypeOptions.find((item) => item.value === draft.countType)?.label ?? ''}
                   body={getCountTypeDescription(t, draft.countType)}
                 />
-              </CardContent>
-            </Card>
+            </InventoryCountOpsSectionCard>
 
-            <Card>
-              <CardHeader>
+            <InventoryCountOpsSectionCard
+              header={(
                 <InventoryCountOpsSectionHeader
                   title={t('inventoryCount.create.headerInfoTitle')}
                   description={t('inventoryCount.create.headerInfoDescription')}
                 />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              )}
+              contentClassName="space-y-4"
+            >
                 <div className="grid gap-4 md:grid-cols-2">
                   <InventoryCountOpsField label={t('common.documentNo')}>
                     <OpsInput value={draft.documentNo} onChange={(event) => setDraft((prev) => ({ ...prev, documentNo: event.target.value }))} />
@@ -605,18 +606,18 @@ export function InventoryCountCreatePage(): ReactElement {
                     className="h-full min-h-[2.625rem]"
                   />
                 </div>
-              </CardContent>
-            </Card>
+            </InventoryCountOpsSectionCard>
 
             {draft.countType !== 'Combined' ? (
-              <Card>
-                <CardHeader>
+              <InventoryCountOpsSectionCard
+                header={(
                   <InventoryCountOpsSectionHeader
                     title={t('inventoryCount.create.scopeTitle')}
                     description={t('inventoryCount.create.scopeDescription')}
                   />
-                </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
+                )}
+                contentClassName="grid gap-4 md:grid-cols-2"
+              >
                   <InventoryCountOpsField label={t('inventoryCount.fields.warehouse')}>
                     <PagedLookupDialog
                       variant="ops"
@@ -675,11 +676,10 @@ export function InventoryCountCreatePage(): ReactElement {
                   <InventoryCountOpsField label={t('inventoryCount.fields.cell')}>
                     <OpsInput value={draft.cellCode} onChange={(event) => setDraft((prev) => ({ ...prev, cellCode: event.target.value }))} placeholder={t('inventoryCount.placeholders.enterCell')} />
                   </InventoryCountOpsField>
-                </CardContent>
-              </Card>
+              </InventoryCountOpsSectionCard>
             ) : (
-              <Card>
-                <CardHeader>
+              <InventoryCountOpsSectionCard
+                header={(
                   <InventoryCountOpsSectionHeader
                     title={t('inventoryCount.create.combinedScopeTitle')}
                     description={t('inventoryCount.create.combinedScopeDescription')}
@@ -690,8 +690,9 @@ export function InventoryCountCreatePage(): ReactElement {
                       </OpsActionButton>
                     )}
                   />
-                </CardHeader>
-                <CardContent className="space-y-4">
+                )}
+                contentClassName="space-y-4"
+              >
                   {draft.scopes.map((scope, index) => (
                     <InventoryCountOpsScopePanel
                       key={index}
@@ -772,20 +773,20 @@ export function InventoryCountCreatePage(): ReactElement {
                       </div>
                     </InventoryCountOpsScopePanel>
                   ))}
-                </CardContent>
-              </Card>
+              </InventoryCountOpsSectionCard>
             )}
           </div>
 
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
+            <InventoryCountOpsSectionCard
+              header={(
                 <InventoryCountOpsSectionHeader
                   title={t('inventoryCount.create.readyTitle')}
                   description={t('inventoryCount.create.readyDescription')}
                 />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              )}
+              contentClassName="space-y-4"
+            >
                 <InventoryCountOpsCallout
                   tone="success"
                   title={t('inventoryCount.create.summaryTitle')}
@@ -814,8 +815,7 @@ export function InventoryCountCreatePage(): ReactElement {
                     </ol>
                   )}
                 />
-              </CardContent>
-            </Card>
+            </InventoryCountOpsSectionCard>
           </div>
         </div>
       </div>

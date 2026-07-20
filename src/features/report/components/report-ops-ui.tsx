@@ -1,6 +1,7 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, type LucideIcon } from 'lucide-react';
+import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
+import { WmsIcon, type WmsIconData } from '@/components/shared';
 import { cn } from '@/lib/utils';
 
 export function ReportsOpsStatusBar({
@@ -75,7 +76,7 @@ export function ReportsOpsModuleCard({
   description,
   badge,
   href,
-  icon: Icon,
+  icon,
   openLabel,
   routePrefix,
 }: {
@@ -85,7 +86,7 @@ export function ReportsOpsModuleCard({
   description: string;
   badge: string;
   href: string;
-  icon: LucideIcon;
+  icon: WmsIconData;
   openLabel: string;
   routePrefix: string;
 }): ReactElement {
@@ -106,7 +107,7 @@ export function ReportsOpsModuleCard({
 
       <div className="wms-ops-reports-module__body">
         <span className="wms-ops-reports-module__icon wms-ops-reports-module__glitch" aria-hidden>
-          <Icon className="size-5" />
+          <WmsIcon icon={icon} size={20} />
         </span>
         <div className="min-w-0">
           <h3 className="wms-ops-reports-module__title wms-ops-reports-module__glitch">{title}</h3>
@@ -121,7 +122,7 @@ export function ReportsOpsModuleCard({
 
       <div className="wms-ops-reports-module__action">
         <span>{openLabel}</span>
-        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        <WmsIcon icon={ArrowRight02Icon} size={16} className="transition-transform group-hover:translate-x-0.5" />
       </div>
     </Link>
   );

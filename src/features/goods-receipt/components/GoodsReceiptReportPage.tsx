@@ -38,14 +38,14 @@ const ELECTRONIC_DISPATCH_DOCUMENT_TYPE = 'E-IRSALIYE';
 const ELECTRONIC_DISPATCH_DOCUMENT_TYPE_ALTERNATE = 'E-INVOICE';
 
 const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  id: 9,
-  orderId: 14,
-  customerCode: 16,
-  projectCode: 12,
-  documentType: 12,
-  plannedDate: 14,
-  status: 12,
-  createdDate: 16,
+  id: 5,
+  orderId: 13,
+  customerCode: 11,
+  projectCode: 9,
+  documentType: 9,
+  plannedDate: 9,
+  status: 8,
+  createdDate: 10,
 };
 
 const normalizeDocumentType = (value: string | null | undefined): string =>
@@ -145,7 +145,7 @@ export function GoodsReceiptReportPage(): ReactElement {
     setVisibleColumns,
     resizeColumnPair,
   } = useColumnPreferences({
-    pageKey: 'goods-receipt-report',
+    pageKey: 'goods-receipt-list-v2',
     columns: columns.map(({ key, label }) => ({ key, label })),
     idColumnKey: 'id',
     defaultWidths: DEFAULT_COLUMN_WIDTHS,

@@ -1,18 +1,19 @@
 import { type ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Activity,
-  AlertTriangle,
-  BarChart3,
-  Boxes,
-  ClipboardCheck,
-  PackageCheck,
-  Route,
-  Search,
-  Truck,
-  Warehouse,
-} from 'lucide-react';
-import { OpsListPageShell } from '@/components/shared';
+  Activity01Icon,
+  Alert02Icon,
+  ClipboardCheckIcon,
+  ContainerTruckIcon,
+  DeliveryBox01Icon,
+  DeliveryTruck01Icon,
+  PackageDelivered01Icon,
+  PackageIcon,
+  Route01Icon,
+  SearchList01Icon,
+  WarehouseIcon,
+} from '@hugeicons/core-free-icons';
+import { OpsListPageShell, type WmsIconData } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import {
   ReportsOpsModuleCard,
@@ -24,7 +25,7 @@ interface ReportCard {
   titleKey: string;
   descriptionKey: string;
   href: string;
-  icon: typeof BarChart3;
+  icon: WmsIconData;
   badgeKey: string;
   moduleCode: string;
 }
@@ -34,7 +35,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.stockBalance.title',
     descriptionKey: 'cards.stockBalance.description',
     href: '/erp/warehouse-stock-balance',
-    icon: Warehouse,
+    icon: WarehouseIcon,
     badgeKey: 'badges.inventory',
     moduleCode: 'INV-STK-BAL',
   },
@@ -42,7 +43,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.serialBalance.title',
     descriptionKey: 'cards.serialBalance.description',
     href: '/erp/warehouse-serial-balance',
-    icon: Search,
+    icon: SearchList01Icon,
     badgeKey: 'badges.traceability',
     moduleCode: 'INV-SRL-BAL',
   },
@@ -50,7 +51,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.packageStation.title',
     descriptionKey: 'cards.packageStation.description',
     href: '/package/station',
-    icon: PackageCheck,
+    icon: PackageDelivered01Icon,
     badgeKey: 'badges.packaging',
     moduleCode: 'PKG-STATION',
   },
@@ -58,7 +59,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.packageSettings.title',
     descriptionKey: 'cards.packageSettings.description',
     href: '/package/settings',
-    icon: Boxes,
+    icon: DeliveryBox01Icon,
     badgeKey: 'badges.configuration',
     moduleCode: 'PKG-CFG',
   },
@@ -66,7 +67,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.shipmentApproval.title',
     descriptionKey: 'cards.shipmentApproval.description',
     href: '/shipment/approval',
-    icon: Truck,
+    icon: DeliveryTruck01Icon,
     badgeKey: 'badges.erpApproval',
     moduleCode: 'SHP-ERP-APR',
   },
@@ -74,7 +75,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.shipmentLoading.title',
     descriptionKey: 'cards.shipmentLoading.description',
     href: '/shipment/loading',
-    icon: Truck,
+    icon: ContainerTruckIcon,
     badgeKey: 'badges.loading',
     moduleCode: 'SHP-LOAD',
   },
@@ -82,7 +83,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.transferChains.title',
     descriptionKey: 'cards.transferChains.description',
     href: '/transfer/chains',
-    icon: Route,
+    icon: Route01Icon,
     badgeKey: 'badges.chain',
     moduleCode: 'TRF-CHAIN',
   },
@@ -90,7 +91,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.traceExplorer.title',
     descriptionKey: 'cards.traceExplorer.description',
     href: '/trace-explorer',
-    icon: Activity,
+    icon: Activity01Icon,
     badgeKey: 'badges.support',
     moduleCode: 'SUP-TRACE',
   },
@@ -98,7 +99,7 @@ const operationalCards: ReportCard[] = [
     titleKey: 'cards.qualityQueue.title',
     descriptionKey: 'cards.qualityQueue.description',
     href: '/quality-control/quarantine',
-    icon: AlertTriangle,
+    icon: Alert02Icon,
     badgeKey: 'badges.quality',
     moduleCode: 'QC-QUAR',
   },
@@ -109,7 +110,7 @@ const workflowCards: ReportCard[] = [
     titleKey: 'workflows.goodsReceipt.title',
     descriptionKey: 'workflows.goodsReceipt.description',
     href: '/goods-receipt/list',
-    icon: ClipboardCheck,
+    icon: ClipboardCheckIcon,
     badgeKey: 'badges.workflow',
     moduleCode: 'WF-GR-LIST',
   },
@@ -117,7 +118,7 @@ const workflowCards: ReportCard[] = [
     titleKey: 'workflows.transfer.title',
     descriptionKey: 'workflows.transfer.description',
     href: '/transfer/list',
-    icon: Route,
+    icon: Route01Icon,
     badgeKey: 'badges.workflow',
     moduleCode: 'WF-TR-LIST',
   },
@@ -125,7 +126,7 @@ const workflowCards: ReportCard[] = [
     titleKey: 'workflows.shipment.title',
     descriptionKey: 'workflows.shipment.description',
     href: '/shipment/list',
-    icon: Truck,
+    icon: DeliveryTruck01Icon,
     badgeKey: 'badges.workflow',
     moduleCode: 'WF-SH-LIST',
   },
@@ -133,7 +134,7 @@ const workflowCards: ReportCard[] = [
     titleKey: 'workflows.package.title',
     descriptionKey: 'workflows.package.description',
     href: '/package/list',
-    icon: PackageCheck,
+    icon: PackageIcon,
     badgeKey: 'badges.workflow',
     moduleCode: 'WF-PK-LIST',
   },

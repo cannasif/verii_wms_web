@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Boxes, ClipboardList, Link2, Wrench } from 'lucide-react';
+import { ClipboardIcon, DeliveryBox01Icon, Link01Icon, Wrench01Icon } from '@hugeicons/core-free-icons';
 import { OpsListPageShell, OpsServiceEyebrow, PageState } from '@/components/shared';
 import { useUIStore } from '@/stores/ui-store';
 import { useAllocationQueueQuery } from '../hooks/useAllocationQueueQuery';
@@ -93,7 +93,7 @@ export function ServiceReportsPage(): ReactElement {
               value={cases.length}
               href="/service-allocation/cases"
               actionLabel={t('serviceAllocation.reports.openCases')}
-              icon={Wrench}
+              icon={Wrench01Icon}
               tone="default"
             />
             <ServiceReportKpiCard
@@ -101,7 +101,7 @@ export function ServiceReportsPage(): ReactElement {
               value={waitingCases.length}
               href="/service-allocation/cases"
               actionLabel={t('serviceAllocation.reports.reviewWaitingCases')}
-              icon={Boxes}
+              icon={DeliveryBox01Icon}
               tone="warn"
             />
             <ServiceReportKpiCard
@@ -109,7 +109,7 @@ export function ServiceReportsPage(): ReactElement {
               value={partialAllocations.length}
               href="/service-allocation/allocation-queue"
               actionLabel={t('serviceAllocation.reports.openPartialAllocations')}
-              icon={ClipboardList}
+              icon={ClipboardIcon}
               tone="info"
             />
             <ServiceReportKpiCard
@@ -117,7 +117,7 @@ export function ServiceReportsPage(): ReactElement {
               value={links.length}
               href="/service-allocation/document-links"
               actionLabel={t('serviceAllocation.reports.openDocumentLinks')}
-              icon={Link2}
+              icon={Link01Icon}
               tone="success"
             />
           </div>

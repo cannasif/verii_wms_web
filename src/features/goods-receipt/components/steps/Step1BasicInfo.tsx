@@ -4,15 +4,10 @@ import { useFormContext } from 'react-hook-form';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { HeaderQuantityPolicyFields, OpsFieldShell, OpsFormMessage, OpsInput, OpsSelectedEntityCard, OpsTextarea, OpsToggleField } from '@/components/shared';
 import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { lookupApi } from '@/features/shared/api/lookup-api';
 import { cn } from '@/lib/utils';
 import type { GoodsReceiptFormData, Customer, Project } from '../../types/goods-receipt';
@@ -115,43 +110,59 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
         <FormField
           control={control}
           name="customerId"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem className={formItemClass}>
-              <FormLabel>
+              <FormLabel title={t('goodsReceipt.step1.clickToSelectCustomer')}>
                 {t('goodsReceipt.step1.customer')}
                 {requiredMark}
               </FormLabel>
               <FormControl>
                 {isOps ? (
-                  <OpsFieldShell className={customerLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
-                    <PagedLookupDialog<Customer>
-                      variant="ops"
-                      autoSearchMinLength={3}
-                      open={customerLookupOpen}
-                      onOpenChange={setCustomerLookupOpen}
-                      title={t('goodsReceipt.step1.selectCustomer')}
-                      value={selectedCustomerText}
-                      placeholder={t('goodsReceipt.step1.selectCustomer')}
-                      searchPlaceholder={t('common.search')}
-                      emptyText={t('common.notFound')}
-                      triggerClassName={OPS_FIELD_CLASS}
-                      queryKey={['goods-receipt', 'customers']}
-                      fetchPage={({ pageNumber, pageSize, search, signal }) =>
-                        lookupApi.getCustomersPaged(
-                          { pageNumber, pageSize, search },
-                          { signal },
-                        )
-                      }
-                      getKey={(customer) => customer.id.toString()}
-                      getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
-                      onSelect={(customer) => {
-                        field.onChange(customer.cariKod);
-                        form.setValue('customerRefId', customer.id);
-                        form.clearErrors('customerId');
-                        setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
-                      }}
-                    />
-                  </OpsFieldShell>
+                  <TooltipProvider delayDuration={250}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {/* Tooltip sarmalayıcı FormControl'ün aria-invalid aktarımını kırdığı için hata durumu elle bağlanıyor */}
+                        <OpsFieldShell
+                          aria-invalid={fieldState.invalid}
+                          className={cn(
+                            'cursor-pointer',
+                            customerLookupOpen && 'wms-ops-field-shell--active',
+                          )}
+                        >
+                          <PagedLookupDialog<Customer>
+                            variant="ops"
+                            autoSearchMinLength={3}
+                            open={customerLookupOpen}
+                            onOpenChange={setCustomerLookupOpen}
+                            title={t('goodsReceipt.step1.selectCustomer')}
+                            value={selectedCustomerText}
+                            placeholder={t('goodsReceipt.step1.selectCustomer')}
+                            searchPlaceholder={t('common.search')}
+                            emptyText={t('common.notFound')}
+                            triggerClassName={OPS_FIELD_CLASS}
+                            queryKey={['goods-receipt', 'customers']}
+                            fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                              lookupApi.getCustomersPaged(
+                                { pageNumber, pageSize, search },
+                                { signal },
+                              )
+                            }
+                            getKey={(customer) => customer.id.toString()}
+                            getLabel={(customer) => `${customer.cariIsim} (${customer.cariKod})`}
+                            onSelect={(customer) => {
+                              field.onChange(customer.cariKod);
+                              form.setValue('customerRefId', customer.id);
+                              form.clearErrors('customerId');
+                              setSelectedCustomerLabel(`${customer.cariIsim} (${customer.cariKod})`);
+                            }}
+                          />
+                        </OpsFieldShell>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        {t('goodsReceipt.step1.clickToSelectCustomer')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ) : (
                   <PagedLookupDialog<Customer>
                     open={customerLookupOpen}
