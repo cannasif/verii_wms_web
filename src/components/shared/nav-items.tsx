@@ -11,6 +11,8 @@ import {
 export interface NavItem {
   title: string;
   titleFallback?: string;
+  /** i18n key veya düz metin — hızlı aramada ekstra eşleşme için */
+  searchAliases?: string[];
   href?: string;
   icon?: ReactElement;
   children?: NavItem[];
@@ -42,8 +44,18 @@ export const WMS_NAV_ITEMS: NavItem[] = [
                 children: [
                   { title: 'sidebar.goodsReceiptAssigned', titleFallback: 'Mal Kabul Atananlar', href: '/goods-receipt/assigned' },
                   { title: 'sidebar.goodsReceiptApproval', titleFallback: 'Mal Kabul Onay', href: '/goods-receipt/approval' },
-                  { title: 'sidebar.goodsReceiptCreate', titleFallback: 'Mal Kabul Oluştur', href: '/goods-receipt/create' },
-                  { title: 'sidebar.goodsReceiptProcess', titleFallback: 'Mal Kabul İşlem', href: '/goods-receipt/process' },
+                  {
+                    title: 'sidebar.goodsReceiptCreate',
+                    titleFallback: 'Mal Kabul Oluştur',
+                    href: '/goods-receipt/create',
+                    searchAliases: ['goodsReceipt.create.title'],
+                  },
+                  {
+                    title: 'sidebar.goodsReceiptProcess',
+                    titleFallback: 'Mal Kabul İşlem',
+                    href: '/goods-receipt/process',
+                    searchAliases: ['goodsReceipt.process.title'],
+                  },
                   { title: 'sidebar.goodsReceiptList', titleFallback: 'Mal Kabul Listesi', href: '/goods-receipt/list' },
                   { title: 'sidebar.goodsReceiptPreLabels', titleFallback: 'Mal Kabul Ön Barkod Etiketleri', href: '/goods-receipt/pre-labels' },
                   { title: 'sidebar.goodsReceiptPreLabelReceiving', titleFallback: 'Etiketten Mal Kabul', href: '/goods-receipt/pre-label-receiving' },

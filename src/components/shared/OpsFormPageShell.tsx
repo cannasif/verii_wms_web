@@ -1,6 +1,8 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTheme } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
+import { PremiumEyebrow } from './PremiumEyebrow';
 
 interface OpsFormPageShellProps {
   eyebrow: ReactNode;
@@ -21,6 +23,8 @@ export function OpsFormPageShell({
   children,
   className,
 }: OpsFormPageShellProps): ReactElement {
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
   const toolbarLeading =
     actionsLeading ??
     (title || description ? (
@@ -44,12 +48,16 @@ export function OpsFormPageShell({
   return (
     <div className={cn('wms-ops-form space-y-5', className)}>
       <header className="wms-ops-header">
-        <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
-          {eyebrow}
-        </div>
+        {isPremium ? (
+          <PremiumEyebrow eyebrow={eyebrow} />
+        ) : (
+          <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+            {eyebrow}
+          </div>
+        )}
       </header>
 
-      <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+      <Card className="wms-ops-form-card overflow-hidden rounded-none border py-0 shadow-none">
         {toolbarLeading || actions ? (
           <div className="wms-ops-card-toolbar flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
             <div className="min-w-0 flex-1">{toolbarLeading}</div>

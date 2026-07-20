@@ -37,7 +37,7 @@ function getLevelItemClassName(level: number, hasChildren: boolean): string {
     return 'px-2.5 py-2.5';
   }
   if (level === 1 && hasChildren) {
-    return 'px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500';
+    return 'px-2 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500';
   }
   if (level === 1) {
     return 'px-2 py-1.5';
@@ -53,7 +53,7 @@ function getLevelTextClassName(level: number, hasChildren: boolean): string {
     return 'text-sm font-semibold';
   }
   if (level === 1 && hasChildren) {
-    return 'text-[11px] font-semibold uppercase tracking-wide';
+    return 'font-mono text-[10px] font-semibold uppercase tracking-[0.14em]';
   }
   if (level === 1) {
     return 'text-[13px] font-medium';
@@ -66,9 +66,9 @@ function getLevelTextClassName(level: number, hasChildren: boolean): string {
 
 function getChildrenContainerClassName(level: number): string {
   if (level === 0) {
-    return 'ms-7 space-y-0.5 border-s border-slate-200/80 ps-2 dark:border-white/10';
+    return 'ms-7 space-y-0.5 border-s border-[color-mix(in_oklab,var(--wms-brand-primary)_18%,transparent)] ps-2';
   }
-  return 'ms-2 space-y-0.5 border-s border-slate-200/60 ps-2 dark:border-white/5';
+  return 'ms-2 space-y-0.5 border-s border-[color-mix(in_oklab,var(--wms-brand-primary)_10%,transparent)] ps-2';
 }
 
 function SidebarNavLabel({
@@ -153,7 +153,7 @@ export function SidebarNavItem({
             }
           }}
           className={cn(
-            'flex w-full items-center gap-2.5 rounded-lg transition-colors duration-200',
+            'flex w-full items-center gap-2.5 rounded-sm transition-colors duration-200',
             getLevelItemClassName(level, hasChildren),
             !isSectionHeader && sidebarItemHoverClassName,
             !isSectionHeader && (isParentActive ? sidebarActiveParentClassName : 'text-slate-600 dark:text-slate-300'),
@@ -213,7 +213,7 @@ export function SidebarNavItem({
     <Link
       to={item.href}
       className={cn(
-        'flex items-center gap-2.5 rounded-lg transition-colors duration-200',
+        'flex items-center gap-2.5 rounded-sm transition-colors duration-200',
         getLevelItemClassName(level, false),
         sidebarItemHoverClassName,
         isActive ? sidebarActiveLeafClassName : 'text-slate-600 dark:text-slate-300',

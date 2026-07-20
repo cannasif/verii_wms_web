@@ -10,6 +10,8 @@ import {
 } from '@hugeicons/core-free-icons';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useTheme } from '@/components/theme-provider';
+import v3riiWmsLogo from '@/assets/v3riiwms.png';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
 import { NavbarGradientIcon, NavbarIconGradientDefs, navbarIconButtonClassName } from '@/components/shared/NavbarGradientIcon';
 import { cn } from '@/lib/utils';
@@ -26,6 +28,7 @@ interface SearchTarget {
   title: string;
   subtitle: string;
   href: string;
+  haystack: string;
 }
 
 interface NavbarProps {
@@ -44,38 +47,56 @@ const normalizeText = (text: string): string =>
     .replace(/ö/g, 'o')
     .replace(/ç/g, 'c');
 
-const flattenSearchTargets = (items: NavItem[], resolveTitle: (item: NavItem) => string): SearchTarget[] => {
+const matchesSearchQuery = (haystack: string, query: string): boolean => {
+  const normalizedHaystack = normalizeText(haystack);
+  const normalizedQuery = normalizeText(query.trim());
+  if (!normalizedQuery) return false;
+  if (normalizedHaystack.includes(normalizedQuery)) return true;
+  const tokens = normalizedQuery.split(/\s+/).filter(Boolean);
+  return tokens.length > 0 && tokens.every((token) => normalizedHaystack.includes(token));
+};
+
+const flattenSearchTargets = (
+  items: NavItem[],
+  resolveTitle: (item: NavItem) => string,
+  resolveAlias: (alias: string) => string,
+): SearchTarget[] => {
   const targets: SearchTarget[] = [];
-  for (const item of items) {
-    if (item.href) {
+  const seenHrefs = new Set<string>();
+  const walk = (nodes: NavItem[], trail: string[]): void => {
+    for (const item of nodes) {
       const title = resolveTitle(item);
-      targets.push({ title, subtitle: title, href: item.href });
-    }
-    if (item.children?.length) {
-      for (const child of item.children) {
-        if (!child.href) continue;
-        const parentTitle = resolveTitle(item);
-        const childTitle = resolveTitle(child);
+      if (item.href && !seenHrefs.has(item.href)) {
+        seenHrefs.add(item.href);
+        const aliases = (item.searchAliases ?? []).map(resolveAlias).filter(Boolean);
+        const subtitle = [...trail, title].join(' / ');
         targets.push({
-          title: childTitle,
-          subtitle: `${parentTitle} / ${childTitle}`,
-          href: child.href,
+          title,
+          subtitle,
+          href: item.href,
+          haystack: [title, item.titleFallback ?? '', subtitle, ...aliases].join(' '),
         });
       }
+      if (item.children?.length) {
+        walk(item.children, [...trail, title]);
+      }
     }
-  }
+  };
+  walk(items, []);
   return targets;
 };
 
 const searchInputClassName = (isFocused: boolean): string =>
   cn(
-    'w-full rounded-2xl border py-2.5 pl-11 pr-20 text-sm font-medium outline-none transition-all duration-300',
+    'w-full rounded-md border py-2.5 pl-11 pr-20 text-sm font-medium outline-none transition-all duration-300',
     'border-slate-200 bg-slate-100/60 text-slate-900 placeholder:text-slate-500',
     isFocused
-      ? 'border-[var(--wms-brand-ring)] bg-white ring-4 ring-[var(--wms-brand-ring)] shadow-[0_4px_24px_var(--wms-brand-shadow)]'
+      ? 'border-[var(--wms-brand-ring)] bg-white shadow-[0_0_0_1px_var(--wms-brand-ring),0_4px_18px_var(--wms-brand-shadow)]'
       : '',
     'dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500',
-    isFocused ? 'dark:border-[var(--wms-brand-ring)] dark:bg-[var(--wms-app-panel-strong)] dark:ring-[var(--wms-brand-ring)]' : '',
+    isFocused
+      ? 'dark:border-[var(--wms-brand-ring)] dark:bg-[var(--wms-app-panel-strong)] dark:shadow-[0_0_0_1px_var(--wms-brand-ring),0_0_18px_var(--wms-brand-shadow)]'
+      : '',
   );
 
 export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
@@ -84,10 +105,17 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, branch } = useAuthStore();
   const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const [isSearchFocus, setIsSearchFocus] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const resolveTitle = useMemo(
     () => (item: NavItem): string => t(item.title, { defaultValue: item.titleFallback ?? item.title }),
+    [t],
+  );
+  const resolveAlias = useMemo(
+    () => (alias: string): string => t(alias, { defaultValue: alias }),
     [t],
   );
 
@@ -95,48 +123,79 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     onResult: (text) => {
       setSearchQuery(text);
       if (text.trim().length > 0) {
-        setSidebarOpen(true);
-        setIsSearchFocus(true);
+        if (isPremium) {
+          setIsSearchExpanded(true);
+          setIsSearchFocus(true);
+        } else {
+          setSidebarOpen(true);
+          setIsSearchFocus(true);
+        }
       }
     },
   });
 
-  const searchTargets = useMemo(() => flattenSearchTargets(navItems, resolveTitle), [navItems, resolveTitle]);
+  const searchTargets = useMemo(
+    () => flattenSearchTargets(navItems, resolveTitle, resolveAlias),
+    [navItems, resolveTitle, resolveAlias],
+  );
   const quickResults = useMemo(() => {
-    const q = normalizeText(searchQuery.trim());
-    if (!q) return [] as SearchTarget[];
-    return searchTargets
-      .filter((item) => normalizeText(item.subtitle).includes(q))
-      .slice(0, 5);
+    if (!searchQuery.trim()) return [] as SearchTarget[];
+    return searchTargets.filter((item) => matchesSearchQuery(item.haystack, searchQuery)).slice(0, 8);
   }, [searchQuery, searchTargets]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setSidebarOpen(true);
+        if (isPremium) {
+          setIsSearchExpanded(true);
+        } else {
+          setSidebarOpen(true);
+        }
         requestAnimationFrame(() => {
           searchInputRef.current?.focus();
           searchInputRef.current?.select();
         });
       }
+      if (e.key === 'Escape' && isPremium && isSearchExpanded) {
+        setSearchQuery('');
+        setIsSearchExpanded(false);
+        setIsSearchFocus(false);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [setSidebarOpen]);
+  }, [setSidebarOpen, isPremium, isSearchExpanded]);
+
+  useEffect(() => {
+    if (isPremium && isSearchExpanded) {
+      setIsSearchFocus(true);
+      requestAnimationFrame(() => searchInputRef.current?.focus());
+    }
+  }, [isPremium, isSearchExpanded]);
+
+  const openPremiumSearch = (): void => {
+    setIsSearchExpanded(true);
+    setIsSearchFocus(true);
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const val = e.target.value;
     setSearchQuery(val);
-    if (val.trim().length > 0) {
+    if (!isPremium && val.trim().length > 0) {
       setSidebarOpen(true);
     }
   };
 
   const handleSearchNavigate = (target: SearchTarget): void => {
     setSearchQuery(target.title);
-    setSidebarOpen(true);
+    if (!isPremium) {
+      setSidebarOpen(true);
+    }
     setIsSearchFocus(false);
+    if (isPremium) {
+      setIsSearchExpanded(false);
+    }
     navigate(target.href);
   };
 
@@ -159,7 +218,14 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     if (!isSearchFocus || !searchQuery.trim().length) return null;
 
     return (
-      <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#130822]/95">
+      <div
+        className={cn(
+          'absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden p-2 shadow-xl backdrop-blur-xl',
+          isPremium
+            ? 'wms-premium-navbar-search__results rounded-xl border border-[color-mix(in_oklab,var(--wms-brand-primary)_28%,transparent)]'
+            : 'rounded-md border border-[color-mix(in_oklab,var(--wms-brand-primary)_28%,transparent)] bg-white/95 dark:bg-[#0a121a]/95',
+        )}
+      >
         {quickResults.length > 0 ? (
           quickResults.map((item) => (
             <button
@@ -167,10 +233,22 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleSearchNavigate(item)}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-white/10"
+              className={cn(
+                'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition hover:bg-[var(--wms-brand-soft)]',
+                isPremium && 'wms-premium-navbar-search__result-item',
+              )}
             >
-              <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">{item.title}</span>
-              <span className="ml-3 truncate text-xs text-slate-400">{item.subtitle}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-100">
+                {item.title}
+              </span>
+              <span
+                className={cn(
+                  'ml-3 max-w-[48%] truncate text-[11px] text-slate-400',
+                  isPremium ? 'font-medium tracking-wide' : 'font-mono',
+                )}
+              >
+                {item.subtitle}
+              </span>
             </button>
           ))
         ) : (
@@ -180,54 +258,72 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     );
   };
 
-  return (
-    <>
-      <header className="sticky top-0 z-40 border-b border-[var(--wms-app-border)] bg-[color-mix(in_srgb,var(--wms-app-panel)_82%,transparent)] px-3 pt-[max(0.5rem,env(safe-area-inset-top))] shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:px-6">
-        <NavbarIconGradientDefs />
-        <div className="flex h-20 items-center justify-between gap-3 sm:gap-4">
-          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className={navbarIconButtonClassName}
-              aria-label={t('navbar.toggleSidebar', { defaultValue: 'Toggle sidebar' })}
-            >
-              <NavbarGradientIcon icon={SidebarLeft01Icon} size={24} />
-            </button>
+  const closePremiumSearch = (): void => {
+    setSearchQuery('');
+    setIsSearchExpanded(false);
+    setIsSearchFocus(false);
+  };
 
-            <div className="relative hidden w-[min(100%,20rem)] shrink-0 md:block lg:w-80">
-              {isSearchFocus && (
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -inset-1 -z-10 rounded-[1.25rem] bg-[image:var(--wms-brand-gradient-soft)] opacity-80 blur-2xl transition-opacity duration-300"
-                />
-              )}
+  const renderPremiumSearch = (): ReactElement => (
+    <>
+      {!isSearchExpanded ? (
+        <button
+          type="button"
+          onClick={openPremiumSearch}
+          className={cn(navbarIconButtonClassName, 'wms-premium-navbar-search__trigger')}
+          aria-label={t('navbar.search_placeholder')}
+          title={t('navbar.search_placeholder')}
+        >
+          <NavbarGradientIcon icon={Search01Icon} size={22} />
+        </button>
+      ) : (
+        <div
+          className="wms-premium-navbar-search-layer"
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            type="button"
+            className="wms-premium-navbar-search-layer__backdrop"
+            aria-label={t('common.close')}
+            onClick={closePremiumSearch}
+          />
+          <div className="wms-premium-navbar-search-layer__sheet">
+            <div className="wms-premium-navbar-search__field relative w-full">
+              <div aria-hidden className="wms-premium-navbar-search__glow" />
               <HugeiconsIcon
                 icon={Search01Icon}
                 size={18}
                 strokeWidth={1.75}
-                className={cn(
-                  'pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300',
-                  isSearchFocus ? 'text-[var(--wms-brand-primary)]' : 'text-slate-400',
-                )}
+                className="pointer-events-none absolute left-3.5 top-1/2 z-[1] -translate-y-1/2 text-[var(--wms-brand-primary)]"
               />
               <input
                 ref={searchInputRef}
                 type="text"
+                inputMode="search"
+                autoComplete="off"
                 value={searchQuery}
                 onChange={handleSearch}
                 onKeyDown={handleSearchKeyDown}
                 onFocus={() => setIsSearchFocus(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocus(false), 120)}
+                onBlur={() => {
+                  // Desktop: boşsa blur'da kapat; mobilde backdrop kapatır
+                  if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+                    setTimeout(() => {
+                      if (!searchQuery.trim()) closePremiumSearch();
+                      else setIsSearchFocus(false);
+                    }, 140);
+                  }
+                }}
                 placeholder={t('navbar.search_placeholder')}
-                className={searchInputClassName(isSearchFocus)}
+                className="wms-premium-navbar-search__input"
               />
-              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+              <div className="absolute right-2 top-1/2 z-[1] flex -translate-y-1/2 items-center gap-0.5">
                 {isSupported && (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
                       setIsSearchFocus(true);
                       startListening();
                     }}
@@ -242,35 +338,130 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                     <HugeiconsIcon icon={Mic01Icon} size={16} strokeWidth={1.75} />
                   </button>
                 )}
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="rounded-full p-1 text-slate-400 transition-colors duration-300 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
-                  >
-                    <HugeiconsIcon icon={Cancel01Icon} size={13} strokeWidth={1.75} />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={closePremiumSearch}
+                  className="rounded-full p-1.5 text-slate-400 transition-colors duration-300 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
+                  aria-label={t('common.close')}
+                >
+                  <HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={1.75} />
+                </button>
               </div>
-
               {renderSearchResults()}
             </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 
-            {isSupported && (
+  const renderTerminalSearch = (): ReactElement => (
+    <>
+      <div className="relative hidden w-[min(100%,20rem)] shrink-0 md:block lg:w-80">
+        {isSearchFocus && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-1 -z-10 rounded-md bg-[image:var(--wms-brand-gradient-soft)] opacity-80 blur-2xl transition-opacity duration-300"
+          />
+        )}
+        <HugeiconsIcon
+          icon={Search01Icon}
+          size={18}
+          strokeWidth={1.75}
+          className={cn(
+            'pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-300',
+            isSearchFocus ? 'text-[var(--wms-brand-primary)]' : 'text-slate-400',
+          )}
+        />
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={searchQuery}
+          onChange={handleSearch}
+          onKeyDown={handleSearchKeyDown}
+          onFocus={() => setIsSearchFocus(true)}
+          onBlur={() => setTimeout(() => setIsSearchFocus(false), 120)}
+          placeholder={t('navbar.search_placeholder')}
+          className={searchInputClassName(isSearchFocus)}
+        />
+        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+          {isSupported && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsSearchFocus(true);
+                startListening();
+              }}
+              className={cn(
+                'rounded-xl p-1.5 transition-all duration-300',
+                isListening
+                  ? 'animate-pulse bg-[var(--wms-brand-soft)] text-[var(--wms-brand-primary)]'
+                  : 'text-slate-400 hover:bg-[var(--wms-brand-soft)] hover:text-[var(--wms-brand-primary)]',
+              )}
+              title={t('voiceSearch.start')}
+            >
+              <HugeiconsIcon icon={Mic01Icon} size={16} strokeWidth={1.75} />
+            </button>
+          )}
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="rounded-full p-1 text-slate-400 transition-colors duration-300 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-white/20 dark:hover:text-white"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} size={13} strokeWidth={1.75} />
+            </button>
+          )}
+        </div>
+        {renderSearchResults()}
+      </div>
+
+      {isSupported && (
+        <button
+          type="button"
+          onClick={() => startListening()}
+          className={cn(
+            navbarIconButtonClassName,
+            'md:hidden',
+            isListening && 'shadow-[0_0_18px_var(--wms-brand-shadow)]',
+          )}
+          title={t('voiceSearch.start')}
+          aria-label={t('voiceSearch.start')}
+        >
+          <NavbarGradientIcon icon={Mic01Icon} size={22} className={isListening ? 'animate-pulse' : undefined} />
+        </button>
+      )}
+    </>
+  );
+
+  return (
+    <>
+      <header className="app-navbar-panel sticky top-0 z-40 border-b border-[var(--wms-app-border)] bg-[color-mix(in_srgb,var(--wms-app-panel)_88%,transparent)] px-3 pt-[max(0.5rem,env(safe-area-inset-top))] shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:px-6">
+        <NavbarIconGradientDefs />
+        <div className="flex h-20 items-center justify-between gap-3 sm:gap-4">
+          <div className="relative flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            {isPremium ? (
+              <img
+                src={v3riiWmsLogo}
+                alt="V3RII WMS"
+                decoding="async"
+                fetchPriority="high"
+                className="wms-premium-navbar-logo h-11 w-auto shrink-0 object-contain sm:h-12"
+              />
+            ) : (
               <button
                 type="button"
-                onClick={() => startListening()}
-                className={cn(
-                  navbarIconButtonClassName,
-                  'md:hidden',
-                  isListening && 'shadow-[0_0_18px_var(--wms-brand-shadow)]',
-                )}
-                title={t('voiceSearch.start')}
-                aria-label={t('voiceSearch.start')}
+                onClick={toggleSidebar}
+                className={navbarIconButtonClassName}
+                aria-label={t('navbar.toggleSidebar', { defaultValue: 'Toggle sidebar' })}
               >
-                <NavbarGradientIcon icon={Mic01Icon} size={22} className={isListening ? 'animate-pulse' : undefined} />
+                <NavbarGradientIcon icon={SidebarLeft01Icon} size={24} />
               </button>
             )}
+
+            {isPremium ? renderPremiumSearch() : renderTerminalSearch()}
           </div>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-4">
@@ -285,11 +476,21 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 className="group flex items-center gap-3 rounded-xl transition-all duration-300"
               >
                 <div className="hidden text-right lg:block">
-                  <p className="max-w-[190px] truncate text-sm font-semibold text-slate-700 dark:text-slate-100">
+                  <p
+                    className={cn(
+                      'max-w-[190px] truncate text-sm font-semibold text-slate-700 dark:text-slate-100',
+                      isPremium && 'wms-premium-navbar-user__name',
+                    )}
+                  >
                     {navbarBranchCodePrefix}
                     {displayName}
                   </p>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                  <p
+                    className={cn(
+                      'text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400',
+                      isPremium ? 'wms-premium-navbar-user__branch' : 'font-mono',
+                    )}
+                  >
                     {branch?.name || t('roles.admin')}
                   </p>
                 </div>

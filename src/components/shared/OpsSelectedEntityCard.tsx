@@ -1,5 +1,6 @@
 import { type ReactElement } from 'react';
 import { UserRound } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 
 interface OpsSelectedEntityCardProps {
@@ -26,7 +27,10 @@ export function OpsSelectedEntityCard({
   value,
   className,
 }: OpsSelectedEntityCardProps): ReactElement {
+  const { skin } = useTheme();
   const { primary, secondary } = parseEntityDisplay(value);
+  // Premium'da terminal tarzı eyebrow (CARI_REF) yerine okunaklı tam ad gösterilir.
+  const eyebrowText = skin === 'premium' ? label : (eyebrow ?? label);
 
   return (
     <div className={cn('wms-ops-entity-card', className)} role="status" aria-label={label}>
@@ -37,7 +41,7 @@ export function OpsSelectedEntityCard({
         </div>
         <div className="wms-ops-entity-card__meta">
           <div className="wms-ops-entity-card__header">
-            <span className="wms-ops-entity-card__eyebrow">{eyebrow ?? label}</span>
+            <span className="wms-ops-entity-card__eyebrow">{eyebrowText}</span>
             {status ? <span className="wms-ops-entity-card__status">{status}</span> : null}
           </div>
           <div className="wms-ops-entity-card__code">{primary}</div>
