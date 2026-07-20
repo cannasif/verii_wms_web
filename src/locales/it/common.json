@@ -463,7 +463,24 @@
     "shipmentNumber": "Shipment #{{number}}",
     "inventoryUpdate": "Inventory Update",
     "hoursAgo": "{{hours}} hours ago",
-    "user": "User"
+    "user": "User",
+    "premium": {
+      "eyebrow": "Centro operazioni",
+      "welcome": "Benvenuto, {{name}}",
+      "subtitle": "Gestisci le operazioni di magazzino a colpo d'occhio.",
+      "goodMorning": "Buongiorno",
+      "goodAfternoon": "Buon pomeriggio",
+      "goodEvening": "Buonasera",
+      "systemClock": "Ora di sistema",
+      "operator": "Operatore",
+      "branch": "Filiale",
+      "systemPulse": "Stato del sistema",
+      "online": "Online",
+      "syncing": "Sincronizzazione",
+      "myTasks": "I miei compiti",
+      "statusHint": "Metriche live, attività recenti e accesso rapido qui sotto.",
+      "metricsPanel": "Metriche operative"
+    }
   },
   "goodsReceipt": {
     "create": {
@@ -2015,6 +2032,12 @@
     "settingsLanguage": "Language option",
     "settingsAppearance": "Appearance mode",
     "settingsAppearanceDisabledHint": "Light/dark mode is unavailable while a custom theme is active",
+    "settingsSkin": "Interface style",
+    "settingsSkinHint": "Choose the Terminal or Premium look",
+    "skinTerminal": "Terminal",
+    "skinTerminalHint": "Classic operations terminal look",
+    "skinPremium": "Premium",
+    "skinPremiumHint": "Modern premium corporate look",
     "settingsUseCustomBrandThemes": "Use custom themes",
     "settingsUseCustomBrandThemesHint": "Choose from preset corporate themes when enabled",
     "settingsBrandTheme": "Corporate theme",
@@ -2572,7 +2595,8 @@
     "title": "An unexpected error occurred",
     "description": "The app may have moved to a newer version. Refresh the page and try again.",
     "refresh": "Refresh page",
-    "home": "Home"
+    "home": "Home",
+    "premiumLabel": "Something went wrong"
   },
   "productionTransfer": {
     "detail": {

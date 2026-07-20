@@ -12,6 +12,11 @@
         const theme = localStorage.getItem('vite-ui-theme') || 'system';
         const root = document.documentElement;
 
+        if (localStorage.getItem('vite-ui-wms-skin') === 'premium') {
+          root.classList.add('skin-premium');
+          root.dataset.skin = 'premium';
+        }
+
         if (useCustomBrandThemes) {
           const brandTheme = localStorage.getItem('vite-ui-wms-brand-theme') || 'v3rii';
           const lightThemes = new Set(['cleanLight', 'flatNavy', 'flatSlate', 'flatWhite']);

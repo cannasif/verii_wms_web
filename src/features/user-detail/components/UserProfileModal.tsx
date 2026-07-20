@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Palette, ShieldCheck, X } from 'lucide-react';
+import { ChevronRight, MonitorCog, Palette, ShieldCheck, Sparkles, TerminalSquare, X } from 'lucide-react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Building03Icon,
@@ -72,7 +72,7 @@ export function UserProfileModal({
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { resolvedTheme, brandTheme, useCustomBrandThemes, setTheme, setBrandTheme, setUseCustomBrandThemes } = useTheme();
+  const { resolvedTheme, brandTheme, useCustomBrandThemes, skin, setTheme, setBrandTheme, setUseCustomBrandThemes, setSkin } = useTheme();
   const { user, logout } = useAuthStore();
   const { data: userDetail } = useUserDetail();
 
@@ -293,6 +293,55 @@ export function UserProfileModal({
                   offLabel={t('profile.terminal.switchOff', { defaultValue: 'OFF' })}
                   aria-label={t('profile.settingsAppearance')}
                 />
+              </div>
+            </div>
+
+            <div className={settingsRowBaseClass}>
+              <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                <span className={cn(settingsIconClass, 'bg-slate-700 text-white dark:bg-white/10')}>
+                  <MonitorCog className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <span className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
+                    {t('profile.settingsSkin')}
+                  </span>
+                  <p className="mt-0.5 text-xs leading-snug text-slate-500 sm:text-sm dark:text-slate-400">
+                    {t('profile.settingsSkinHint')}
+                  </p>
+                </div>
+              </div>
+              <div
+                className="wms-skin-switch shrink-0 self-center"
+                role="radiogroup"
+                aria-label={t('profile.settingsSkin')}
+              >
+                <span
+                  className="wms-skin-switch__glider"
+                  data-skin={skin}
+                  aria-hidden
+                />
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={skin === 'terminal'}
+                  title={t('profile.skinTerminalHint')}
+                  onClick={() => setSkin('terminal')}
+                  className={cn('wms-skin-switch__option', skin === 'terminal' && 'wms-skin-switch__option--active')}
+                >
+                  <TerminalSquare className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden />
+                  {t('profile.skinTerminal')}
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={skin === 'premium'}
+                  title={t('profile.skinPremiumHint')}
+                  onClick={() => setSkin('premium')}
+                  className={cn('wms-skin-switch__option', skin === 'premium' && 'wms-skin-switch__option--active')}
+                >
+                  <Sparkles className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden />
+                  {t('profile.skinPremium')}
+                </button>
               </div>
             </div>
 
