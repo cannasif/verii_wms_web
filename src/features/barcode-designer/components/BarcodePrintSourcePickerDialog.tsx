@@ -2,8 +2,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { OpsActionButton } from '@/components/shared';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -95,10 +95,10 @@ export function BarcodePrintSourcePickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl">
+      <DialogContent className="wms-ops-form wms-ops-erp-skin wms-ops-lookup-dialog max-w-7xl">
         <DialogHeader>
-          <DialogTitle>Kaynak Belge Sec</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="wms-ops-lookup-dialog__title">Kaynak Belge Sec</DialogTitle>
+          <DialogDescription className="wms-ops-lookup-dialog__description">
             {printMode === 'document-all'
               ? 'Tum belge kalemlerini baski akisina eklemek icin bir header secin.'
               : 'Belge satiri veya paket secerek baski verisini dogrudan operasyon kaynagindan alin.'}
@@ -107,7 +107,7 @@ export function BarcodePrintSourcePickerDialog({
 
         <div className="grid gap-4 xl:grid-cols-[0.44fr_0.56fr]">
           <section className="space-y-3">
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-3 py-2 dark:border-white/10 dark:bg-slate-900/30">
+            <div className="flex items-center gap-2 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2">
               <Search className="size-4 text-slate-500" />
               <Input
                 value={search}
@@ -117,7 +117,7 @@ export function BarcodePrintSourcePickerDialog({
               />
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10">
+            <div className="wms-ops-data-grid overflow-hidden rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)]">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -158,9 +158,9 @@ export function BarcodePrintSourcePickerDialog({
           </section>
 
           <section className="space-y-3">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-slate-900/30">
+            <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="font-medium text-slate-900 dark:text-white">
+                <div className="font-mono text-sm font-semibold uppercase tracking-[0.08em] text-slate-900 dark:text-white">
                   {selectedHeader ? selectedHeader.title : 'Belge secilmedi'}
                 </div>
                 {selectedHeader?.status ? <Badge variant="outline">{selectedHeader.status}</Badge> : null}
@@ -169,20 +169,20 @@ export function BarcodePrintSourcePickerDialog({
             </div>
 
             {printMode === 'document-all' ? (
-              <div className="rounded-2xl border border-dashed border-emerald-300/70 bg-emerald-50/70 p-6 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-100">
+              <div className="rounded-none border border-dashed border-emerald-300/70 bg-emerald-50/70 p-6 text-sm text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-100">
                 Bu secim, header altindaki tum satirlari batch baski hazirligina alir.
               </div>
             ) : (
               <Tabs value={isPackageModule ? packageTab : 'lines'} onValueChange={(value) => setPackageTab(value as 'lines' | 'packages')} className="space-y-3">
                 {isPackageModule ? (
-                  <TabsList>
-                    <TabsTrigger value="lines">Satirlar</TabsTrigger>
-                    <TabsTrigger value="packages">Paketler</TabsTrigger>
+                  <TabsList className="rounded-none">
+                    <TabsTrigger value="lines" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">Satirlar</TabsTrigger>
+                    <TabsTrigger value="packages" className="rounded-none font-mono text-xs uppercase tracking-[0.08em]">Paketler</TabsTrigger>
                   </TabsList>
                 ) : null}
 
                 <TabsContent value="lines" className="space-y-0">
-                  <div className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10">
+                  <div className="wms-ops-data-grid overflow-hidden rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)]">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -223,7 +223,7 @@ export function BarcodePrintSourcePickerDialog({
 
                 {isPackageModule ? (
                   <TabsContent value="packages" className="space-y-0">
-                    <div className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10">
+                    <div className="wms-ops-data-grid overflow-hidden rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)]">
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -268,10 +268,10 @@ export function BarcodePrintSourcePickerDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <OpsActionButton variant="secondary" onClick={() => onOpenChange(false)}>
             Vazgec
-          </Button>
-          <Button
+          </OpsActionButton>
+          <OpsActionButton
             onClick={() => {
               if (!selectedHeader) {
                 return;
@@ -286,7 +286,7 @@ export function BarcodePrintSourcePickerDialog({
             disabled={confirmDisabled}
           >
             Secimi Kullan
-          </Button>
+          </OpsActionButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -11,6 +11,12 @@ import {
   isBrandTheme,
   readUseCustomBrandThemes,
 } from "@/lib/brand-themes"
+import {
+  WMS_SKIN_CLASS_MAP,
+  WMS_SKIN_STORAGE_KEY,
+  type WmsSkin,
+  readStoredWmsSkin,
+} from "@/lib/skins"
 
 type Theme = "dark" | "light" | "system"
 type ResolvedTheme = Exclude<Theme, "system">
@@ -21,6 +27,7 @@ type ThemeProviderProps = {
   storageKey?: string
   brandThemeStorageKey?: string
   useCustomBrandThemesStorageKey?: string
+  skinStorageKey?: string
 }
 
 type ThemeProviderState = {
@@ -28,9 +35,11 @@ type ThemeProviderState = {
   resolvedTheme: ResolvedTheme
   brandTheme: BrandTheme
   useCustomBrandThemes: boolean
+  skin: WmsSkin
   setTheme: (theme: Theme) => void
   setBrandTheme: (theme: BrandTheme) => void
   setUseCustomBrandThemes: (enabled: boolean) => void
+  setSkin: (skin: WmsSkin) => void
 }
 
 const initialState: ThemeProviderState = {
@@ -38,9 +47,11 @@ const initialState: ThemeProviderState = {
   resolvedTheme: "light",
   brandTheme: "v3rii",
   useCustomBrandThemes: false,
+  skin: "terminal",
   setTheme: () => null,
   setBrandTheme: () => null,
   setUseCustomBrandThemes: () => null,
+  setSkin: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -72,12 +83,23 @@ function applyBrandThemeClass(brandTheme: BrandTheme): void {
   root.dataset.brandTheme = brandTheme
 }
 
+function applySkinClass(skin: WmsSkin): void {
+  const root = window.document.documentElement
+  for (const className of Object.values(WMS_SKIN_CLASS_MAP)) {
+    if (className) root.classList.remove(className)
+  }
+  const skinClass = WMS_SKIN_CLASS_MAP[skin]
+  if (skinClass) root.classList.add(skinClass)
+  root.dataset.skin = skin
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
   brandThemeStorageKey = BRAND_THEME_STORAGE_KEY,
   useCustomBrandThemesStorageKey = USE_CUSTOM_BRAND_THEMES_STORAGE_KEY,
+  skinStorageKey = WMS_SKIN_STORAGE_KEY,
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
@@ -90,6 +112,7 @@ export function ThemeProvider({
     const stored = localStorage.getItem(brandThemeStorageKey)
     return isBrandTheme(stored) ? stored : "v3rii"
   })
+  const [skin, setSkin] = useState<WmsSkin>(() => readStoredWmsSkin(skinStorageKey))
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => {
     if (readUseCustomBrandThemes(useCustomBrandThemesStorageKey)) {
       const storedBrandTheme = localStorage.getItem(brandThemeStorageKey)
@@ -126,6 +149,10 @@ export function ThemeProvider({
 
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [theme, brandTheme, useCustomBrandThemes])
+
+  useEffect(() => {
+    applySkinClass(skin)
+  }, [skin])
 
   const setThemeAndStore = useCallback((nextTheme: Theme) => {
     if (useCustomBrandThemes) return
@@ -164,22 +191,31 @@ export function ThemeProvider({
     clearBrandThemeClasses()
   }, [brandTheme, brandThemeStorageKey, useCustomBrandThemesStorageKey])
 
+  const setSkinAndStore = useCallback((nextSkin: WmsSkin) => {
+    localStorage.setItem(skinStorageKey, nextSkin)
+    setSkin(nextSkin)
+  }, [skinStorageKey])
+
   const value = useMemo(() => ({
     theme,
     resolvedTheme,
     brandTheme,
     useCustomBrandThemes,
+    skin,
     setTheme: setThemeAndStore,
     setBrandTheme: setBrandThemeAndStore,
     setUseCustomBrandThemes: setUseCustomBrandThemesAndStore,
+    setSkin: setSkinAndStore,
   }), [
     theme,
     resolvedTheme,
     brandTheme,
     useCustomBrandThemes,
+    skin,
     setThemeAndStore,
     setBrandThemeAndStore,
     setUseCustomBrandThemesAndStore,
+    setSkinAndStore,
   ])
 
   return (

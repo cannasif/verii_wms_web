@@ -694,7 +694,24 @@
     "shipmentNumber": "Versand #{{number}}",
     "inventoryUpdate": "Bestands-IoT-Update",
     "hoursAgo": "Vor {hours} Stunden",
-    "user": "Benutzer"
+    "user": "Benutzer",
+    "premium": {
+      "eyebrow": "Operationszentrale",
+      "welcome": "Willkommen, {{name}}",
+      "subtitle": "Verwalten Sie Lageroperationen auf einen Blick.",
+      "goodMorning": "Guten Morgen",
+      "goodAfternoon": "Guten Tag",
+      "goodEvening": "Guten Abend",
+      "systemClock": "Systemzeit",
+      "operator": "Bediener",
+      "branch": "Filiale",
+      "systemPulse": "Systemstatus",
+      "online": "Online",
+      "syncing": "Wird synchronisiert",
+      "myTasks": "Meine Aufgaben",
+      "statusHint": "Aktuelle Kennzahlen, letzte Aktivitäten und Schnellzugriff finden Sie unten.",
+      "metricsPanel": "Operationskennzahlen"
+    }
   },
   "goodsReceipt": {
     "create": {
@@ -2713,6 +2730,12 @@
     "settingsLanguage": "Sprache",
     "settingsAppearance": "Erscheinungsbild",
     "settingsAppearanceDisabledHint": "Hell/Dunkel-Modus ist bei aktivem Sonderthema nicht verfügbar",
+    "settingsSkin": "Oberflächenstil",
+    "settingsSkinHint": "Wählen Sie den Terminal- oder Premium-Look",
+    "skinTerminal": "Terminal",
+    "skinTerminalHint": "Klassischer Betriebsterminal-Look",
+    "skinPremium": "Premium",
+    "skinPremiumHint": "Moderner Premium-Unternehmenslook",
     "settingsUseCustomBrandThemes": "Sonderthemen verwenden",
     "settingsUseCustomBrandThemesHint": "Wählen Sie bei Aktivierung ein voreingestelltes Unternehmensthema",
     "settingsBrandTheme": "Unternehmensthema",
@@ -5024,7 +5047,8 @@
     "title": "An unexpected error occurred",
     "description": "The app may have moved to a newer version. Refresh the page and try again.",
     "refresh": "Refresh page",
-    "home": "Home"
+    "home": "Home",
+    "premiumLabel": "Something went wrong"
   },
   "permissionGroups": {
     "permissionsPanel": {

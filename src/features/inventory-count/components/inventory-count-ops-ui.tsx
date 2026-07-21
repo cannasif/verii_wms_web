@@ -39,6 +39,32 @@ export function getInventoryCountStatusLabel(t: TFunction, value?: string | null
   return t(`inventoryCount.status.${key}`, { defaultValue: key });
 }
 
+export function InventoryCountOpsSectionCard({
+  header,
+  children,
+  className,
+  contentClassName,
+}: {
+  header: ReactNode;
+  children: ReactNode;
+  className?: string;
+  contentClassName?: string;
+}): ReactElement {
+  return (
+    <section
+      className={cn(
+        'wms-ops-surface-card flex flex-col',
+        className,
+      )}
+    >
+      <div className="border-b border-[color-mix(in_oklab,var(--wms-ops-accent)_16%,transparent)] px-4 pb-3 pt-4 md:px-5">
+        {header}
+      </div>
+      <div className={cn('px-4 py-4 md:px-5', contentClassName)}>{children}</div>
+    </section>
+  );
+}
+
 export function InventoryCountOpsSectionHeader({
   title,
   description,

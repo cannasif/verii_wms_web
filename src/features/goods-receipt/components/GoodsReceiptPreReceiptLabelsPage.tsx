@@ -505,7 +505,7 @@ export function GoodsReceiptPreReceiptLabelsPage(): ReactElement {
                             <td>
                               <input
                                 type="checkbox"
-                                className="h-4 w-4 rounded-none border-slate-300 accent-cyan-600"
+                                className="wms-ops-prelabel-lines__checkbox h-4 w-4 border-slate-300 accent-cyan-600"
                                 checked={selectedLineKeys.has(key)}
                                 disabled={disabled}
                                 onChange={() => toggleLine(line)}

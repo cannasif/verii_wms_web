@@ -1,6 +1,8 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTheme } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
+import { PremiumEyebrow } from './PremiumEyebrow';
 
 interface OpsListPageShellProps {
   eyebrow?: ReactNode;
@@ -19,17 +21,24 @@ export function OpsListPageShell({
   children,
   className,
 }: OpsListPageShellProps): ReactElement {
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
+
   return (
     <div className={cn('wms-ops-list wms-ops-form space-y-5', className)}>
       {eyebrow ? (
         <header className="wms-ops-header">
-          <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
-            {eyebrow}
-          </div>
+          {isPremium ? (
+            <PremiumEyebrow eyebrow={eyebrow} />
+          ) : (
+            <div className="wms-ops-eyebrow font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+              {eyebrow}
+            </div>
+          )}
         </header>
       ) : null}
 
-      <Card className="wms-ops-form-card overflow-hidden rounded-2xl border py-0 shadow-none">
+      <Card className="wms-ops-form-card overflow-hidden rounded-none border py-0 shadow-none">
         <div className="wms-ops-card-toolbar flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
           <div className="wms-ops-card-heading min-w-0 space-y-1">
             <h1 className="wms-ops-title">

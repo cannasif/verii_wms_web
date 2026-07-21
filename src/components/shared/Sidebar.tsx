@@ -84,7 +84,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       <aside
         data-sidebar-open={isSidebarOpen ? 'true' : 'false'}
         className={cn(
-          'app-sidebar-panel custom-scrollbar fixed bottom-0 left-0 top-0 z-50 flex h-dvh flex-col border-r',
+          'app-sidebar-panel fixed bottom-0 left-0 top-0 z-50 flex h-dvh flex-col border-r',
           sidebarShellClassName,
           sidebarMotionClassName,
           'w-72',
@@ -143,7 +143,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
         <TooltipProvider delayDuration={400}>
           <nav className={cn('flex flex-1 flex-col gap-0.5 p-3', !isSidebarOpen && 'lg:overflow-hidden')}>
             {isSidebarOpen && searchQuery.trim().length > 0 ? (
-              <div className="mb-1 rounded-xl border border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] px-3 py-2 text-xs text-[var(--wms-brand-primary)]">
+              <div className="mb-1 rounded-sm border border-[var(--wms-brand-ring)] bg-[var(--wms-brand-soft)] px-3 py-2 font-mono text-[11px] uppercase tracking-wide text-[var(--wms-brand-primary)]">
                 {t('sidebar.filterLabel')}: {searchQuery}
               </div>
             ) : null}

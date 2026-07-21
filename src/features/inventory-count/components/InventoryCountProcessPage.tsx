@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { OpsActionButton, OpsFormPageShell, OpsInput, OpsTextarea, PageState } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -19,6 +18,7 @@ import {
   InventoryCountOpsEmpty,
   InventoryCountOpsField,
   InventoryCountOpsLineCard,
+  InventoryCountOpsSectionCard,
   InventoryCountOpsSectionHeader,
   InventoryCountOpsStat,
   InventoryCountOpsStatGrid,
@@ -253,14 +253,15 @@ export function InventoryCountProcessPage(): ReactElement {
 
         <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
+            <InventoryCountOpsSectionCard
+              header={(
                 <InventoryCountOpsSectionHeader
                   title={t('inventoryCount.process.pickHeaderTitle')}
                   description={t('inventoryCount.process.pickHeaderDescription')}
                 />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              )}
+              contentClassName="space-y-4"
+            >
                 <InventoryCountOpsField label={t('inventoryCount.fields.header')}>
                   <PagedLookupDialog<InventoryCountHeader>
                     variant="ops"
@@ -312,17 +313,17 @@ export function InventoryCountProcessPage(): ReactElement {
                     />
                   </InventoryCountOpsStatGrid>
                 ) : null}
-              </CardContent>
-            </Card>
+            </InventoryCountOpsSectionCard>
 
-            <Card>
-              <CardHeader>
+            <InventoryCountOpsSectionCard
+              header={(
                 <InventoryCountOpsSectionHeader
                   title={t('inventoryCount.process.entryTitle')}
                   description={t('inventoryCount.process.entryDescription')}
                 />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              )}
+              contentClassName="space-y-4"
+            >
                 <InventoryCountOpsField label={t('inventoryCount.fields.line')}>
                   <PagedLookupDialog<InventoryCountLine>
                     variant="ops"
@@ -402,18 +403,18 @@ export function InventoryCountProcessPage(): ReactElement {
                 >
                   {saveEntryMutation.isPending ? t('common.saving') : t('inventoryCount.process.saveEntry')}
                 </OpsActionButton>
-              </CardContent>
-            </Card>
+            </InventoryCountOpsSectionCard>
           </div>
 
-          <Card>
-            <CardHeader>
+          <InventoryCountOpsSectionCard
+            header={(
               <InventoryCountOpsSectionHeader
                 title={t('inventoryCount.process.lineListTitle')}
                 description={t('inventoryCount.process.lineListDescription')}
               />
-            </CardHeader>
-            <CardContent className="space-y-3">
+            )}
+            contentClassName="space-y-3"
+          >
               {linesQuery.isPending && lineRows.length === 0 ? (
                 <InventoryCountOpsEmpty>{t('common.loading')}</InventoryCountOpsEmpty>
               ) : lineRows.length === 0 ? (
@@ -467,8 +468,7 @@ export function InventoryCountProcessPage(): ReactElement {
                 })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+          </InventoryCountOpsSectionCard>
         </div>
       </div>
     </OpsFormPageShell>

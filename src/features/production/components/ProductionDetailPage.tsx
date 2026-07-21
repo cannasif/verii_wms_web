@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
-import { OpsFormPageShell, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, PageState } from '@/components/shared';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,12 @@ import { productionTransferApi } from '@/features/production-transfer/api/produc
 import {
   ProductionOpsBadge,
   ProductionOpsCallout,
+  ProductionOpsSummaryStat,
 } from './production-ops-ui';
+
+const opsPanelCardClass = 'wms-ops-surface-card';
+
+const opsCardTitleClass = 'wms-ops-surface-label';
 
 function InfoCallout({ title, body }: { title: string; body: string }): ReactElement {
   return <ProductionOpsCallout title={title} body={body} />;
@@ -111,11 +116,12 @@ export function ProductionDetailPage(): ReactElement {
         title={t('production.detail.title', { defaultValue: 'Missing translation' })}
         description={t('production.detail.subtitle', { defaultValue: 'Missing translation' })}
         actions={(
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Missing translation' })}</Button>
+          <div className="wms-ops-actions flex flex-wrap gap-2">
+            <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/production/list')}>{t('common.back', { defaultValue: 'Missing translation' })}</OpsActionButton>
             {canDeleteCurrentPlan ? (
               <Button
                 variant="destructive"
+                className="wms-ops-surface-danger-btn"
                 onClick={() => setDeleteDialogOpen(true)}
                 disabled={deleteMutation.isPending}
               >
@@ -123,7 +129,7 @@ export function ProductionDetailPage(): ReactElement {
               </Button>
             ) : null}
             {headerId > 0 ? (
-              <Button onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Missing translation' })}</Button>
+              <OpsActionButton type="button" onClick={() => navigate(`/production/process/${headerId}`)}>{t('production.detail.openProcess', { defaultValue: 'Missing translation' })}</OpsActionButton>
             ) : null}
           </div>
         )}
@@ -154,16 +160,16 @@ export function ProductionDetailPage(): ReactElement {
                 : (detailQuery.data.header.deleteBlockedReason || t('production.detail.statusInfoLocked', { defaultValue: 'Missing translation' }))
             }
           />
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card><CardHeader><CardDescription>{t('common.documentNo')}</CardDescription><CardTitle>{detailQuery.data.header.documentNo}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('common.status', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.status || '-'}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('production.create.executionMode', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.executionMode || '-'}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>{t('production.create.mainStockCode', { defaultValue: 'Missing translation' })}</CardDescription><CardTitle>{detailQuery.data.header.mainStockCode || '-'}</CardTitle></CardHeader></Card>
+          <div className="wms-ops-stat-grid grid gap-2 md:grid-cols-4">
+            <ProductionOpsSummaryStat label={t('common.documentNo')} value={detailQuery.data.header.documentNo} />
+            <ProductionOpsSummaryStat label={t('common.status', { defaultValue: 'Missing translation' })} value={detailQuery.data.header.status || '-'} />
+            <ProductionOpsSummaryStat label={t('production.create.executionMode', { defaultValue: 'Missing translation' })} value={detailQuery.data.header.executionMode || '-'} />
+            <ProductionOpsSummaryStat label={t('production.create.mainStockCode', { defaultValue: 'Missing translation' })} value={detailQuery.data.header.mainStockCode || '-'} />
           </div>
 
-          <Card>
+          <Card className={opsPanelCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.detail.headerAssignments', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle className={opsCardTitleClass}>{t('production.detail.headerAssignments', { defaultValue: 'Missing translation' })}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               {detailQuery.data.headerAssignments.length === 0 ? <span className="text-muted-foreground">-</span> : null}
@@ -175,13 +181,13 @@ export function ProductionDetailPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className={opsPanelCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.detail.orders', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle className={opsCardTitleClass}>{t('production.detail.orders', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('production.detail.ordersSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
+              <Table className="wms-ops-production-line-table wms-ops-production-line-table--compact">
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t('production.detail.columns.order')}</TableHead>
@@ -215,9 +221,9 @@ export function ProductionDetailPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className={opsPanelCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.detail.orderVariance', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle className={opsCardTitleClass}>{t('production.detail.orderVariance', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('production.detail.orderVarianceSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -242,9 +248,9 @@ export function ProductionDetailPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className={opsPanelCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.detail.orderTransferBreakdown', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle className={opsCardTitleClass}>{t('production.detail.orderTransferBreakdown', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('production.detail.orderTransferBreakdownSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -293,9 +299,9 @@ export function ProductionDetailPage(): ReactElement {
           </Card>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <Card>
+            <Card className={opsPanelCardClass}>
               <CardHeader>
-                <CardTitle>{t('production.detail.dependencies', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardTitle className={opsCardTitleClass}>{t('production.detail.dependencies', { defaultValue: 'Missing translation' })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -328,9 +334,9 @@ export function ProductionDetailPage(): ReactElement {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className={opsPanelCardClass}>
               <CardHeader>
-                <CardTitle>{t('production.detail.transferLinks', { defaultValue: 'Missing translation' })}</CardTitle>
+                <CardTitle className={opsCardTitleClass}>{t('production.detail.transferLinks', { defaultValue: 'Missing translation' })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>

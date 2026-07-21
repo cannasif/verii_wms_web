@@ -1,7 +1,7 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, type LucideIcon } from 'lucide-react';
-import { OpsActionButton } from '@/components/shared';
+import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
+import { OpsActionButton, WmsIcon, type WmsIconData } from '@/components/shared';
 import { cn } from '@/lib/utils';
 
 interface ServiceReportKpiCardProps {
@@ -9,7 +9,7 @@ interface ServiceReportKpiCardProps {
   value: number;
   href: string;
   actionLabel: string;
-  icon: LucideIcon;
+  icon: WmsIconData;
   tone?: 'default' | 'warn' | 'info' | 'success';
 }
 
@@ -25,20 +25,20 @@ export function ServiceReportKpiCard({
   value,
   href,
   actionLabel,
-  icon: Icon,
+  icon,
   tone = 'default',
 }: ServiceReportKpiCardProps): ReactElement {
   return (
     <article className={cn('wms-ops-prelabel-panel wms-ops-service-reports__kpi', KPI_TONE_CLASS[tone])}>
       <div className="wms-ops-prelabel-panel__header flex items-center justify-between gap-3 py-3">
         <div className="wms-ops-prelabel-panel__title">{label}</div>
-        <Icon className="size-4 shrink-0 opacity-70" aria-hidden />
+        <WmsIcon icon={icon} size={16} className="opacity-70" />
       </div>
       <div className="wms-ops-prelabel-panel__body space-y-3 pt-0">
         <div className="wms-ops-service-reports__kpi-value">{value}</div>
         <Link to={href} className="wms-ops-service-reports__kpi-link">
           {actionLabel}
-          <ArrowRight className="size-3.5" aria-hidden />
+          <WmsIcon icon={ArrowRight02Icon} size={14} />
         </Link>
       </div>
     </article>
@@ -177,7 +177,7 @@ export function ServiceReportFooterStat({ label, value, href, actionLabel }: Ser
       <div className="wms-ops-stat-card__label">{label}</div>
       <Link to={href} className="wms-ops-service-reports__kpi-link mt-2">
         {actionLabel}
-        <ArrowRight className="size-3.5" aria-hidden />
+        <WmsIcon icon={ArrowRight02Icon} size={14} />
       </Link>
     </article>
   );
@@ -194,7 +194,7 @@ export function ServiceReportPanelLink({
     <OpsActionButton asChild type="button" variant="secondary">
       <Link to={to}>
         {label}
-        <ArrowRight className="ml-2 size-4" aria-hidden />
+        <WmsIcon icon={ArrowRight02Icon} size={16} className="ml-2" />
       </Link>
     </OpsActionButton>
   );

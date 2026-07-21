@@ -1,4 +1,5 @@
 import { type ReactElement } from 'react';
+import { useTheme } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 
 interface OpsLoadingStateProps {
@@ -14,6 +15,30 @@ export function OpsLoadingState({
   code = 'SYNC',
   className,
 }: OpsLoadingStateProps): ReactElement {
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
+
+  if (isPremium) {
+    return (
+      <div
+        className={cn(
+          'wms-premium-loading',
+          compact && 'wms-premium-loading--compact',
+          className,
+        )}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <div className="wms-premium-loading__orbit" aria-hidden>
+          <span className="wms-premium-loading__ring" />
+          <span className="wms-premium-loading__core" />
+        </div>
+        <div className="wms-premium-loading__message">{message}</div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn('wms-ops-loading-state', compact && 'wms-ops-loading-state--compact', className)}

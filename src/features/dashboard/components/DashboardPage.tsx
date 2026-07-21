@@ -1,14 +1,16 @@
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeftRight,
-  ClipboardCheck,
-  PackageSearch,
-  Truck,
-  UserCheck,
-  Warehouse,
-} from 'lucide-react';
+  ArrowDataTransferHorizontalIcon,
+  ClipboardIcon,
+  DeliveryTruck01Icon,
+  PackageSearchIcon,
+  UserCheck01Icon,
+  WarehouseIcon,
+} from '@hugeicons/core-free-icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/components/theme-provider';
 import { useUIStore } from '@/stores/ui-store';
+import type { WmsIconData } from '@/components/shared';
 import { usePermissionAccess } from '@/features/access-control/hooks/usePermissionAccess';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import {
@@ -27,7 +29,7 @@ interface QuickLinkConfig {
   titleKey: string;
   descriptionKey: string;
   href: string;
-  icon: typeof ClipboardCheck;
+  icon: WmsIconData;
 }
 
 const QUICK_LINKS: QuickLinkConfig[] = [
@@ -37,7 +39,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.newGoodsReceipt',
     descriptionKey: 'dashboard.terminal.quickGrDescription',
     href: '/goods-receipt/create',
-    icon: ClipboardCheck,
+    icon: ClipboardIcon,
   },
   {
     permission: 'wms.goods-receipt.view',
@@ -45,7 +47,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.terminal.assignedGoodsReceipt',
     descriptionKey: 'dashboard.terminal.quickAssignedDescription',
     href: '/goods-receipt/assigned',
-    icon: UserCheck,
+    icon: UserCheck01Icon,
   },
   {
     permission: 'wms.shipment.create',
@@ -53,7 +55,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.newShipment',
     descriptionKey: 'dashboard.terminal.quickShipmentDescription',
     href: '/shipment/create',
-    icon: Truck,
+    icon: DeliveryTruck01Icon,
   },
   {
     permission: 'wms.transfer.view',
@@ -61,7 +63,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.terminal.transferList',
     descriptionKey: 'dashboard.terminal.quickTransferDescription',
     href: '/transfer/list',
-    icon: ArrowLeftRight,
+    icon: ArrowDataTransferHorizontalIcon,
   },
   {
     permission: 'wms.warehouse-balance.view',
@@ -69,7 +71,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.stockQuery',
     descriptionKey: 'dashboard.terminal.quickStockDescription',
     href: '/erp/warehouse-stock-balance',
-    icon: Warehouse,
+    icon: WarehouseIcon,
   },
   {
     permission: 'wms.reports.view',
@@ -77,7 +79,7 @@ const QUICK_LINKS: QuickLinkConfig[] = [
     titleKey: 'dashboard.terminal.reportsHub',
     descriptionKey: 'dashboard.terminal.quickReportsDescription',
     href: '/reports',
-    icon: PackageSearch,
+    icon: PackageSearchIcon,
   },
 ];
 
@@ -99,24 +101,53 @@ function formatRelativeTimestamp(value: string, language: string, t: (key: strin
   return date.toLocaleString(language);
 }
 
+function getDaypartGreetingKey(date: Date): 'goodMorning' | 'goodAfternoon' | 'goodEvening' {
+  const hour = date.getHours();
+  if (hour < 12) return 'goodMorning';
+  if (hour < 18) return 'goodAfternoon';
+  return 'goodEvening';
+}
+
 export function DashboardPage(): ReactElement {
   const { t, i18n } = useTranslation();
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
   const { setPageTitle } = useUIStore();
   const permissionAccess = usePermissionAccess();
   const { user, branch, metrics, isLoading } = useDashboardMetrics();
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     setPageTitle(t('dashboard.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  useEffect(() => {
+    if (!isPremium) return;
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, [isPremium]);
+
   const displayName = user?.name || user?.email || t('dashboard.user');
   const branchLabel = branch?.name || branch?.code || t('dashboard.terminal.branchFallback');
+  const greetingKey = getDaypartGreetingKey(now);
 
   const visibleQuickLinks = useMemo(
     () => QUICK_LINKS.filter((link) => permissionAccess.can(link.permission)),
     [permissionAccess],
   );
+
+  const clockTime = now.toLocaleTimeString(i18n.language, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  const clockDate = now.toLocaleDateString(i18n.language, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div className="wms-ops-dashboard-page wms-ops-erp-skin">
@@ -124,29 +155,97 @@ export function DashboardPage(): ReactElement {
         <div className="wms-ops-dashboard-terminal__scanlines" aria-hidden />
 
         <DashboardOpsHero
-          eyebrow={t('dashboard.terminal.eyebrow', { defaultValue: 'WMS / KOMUT MERKEZİ' })}
-          title={t('dashboard.terminal.welcome', { defaultValue: 'Hoş geldin, {{name}}', name: displayName })}
-          subtitle={t('dashboard.subtitle')}
-          operatorLabel={t('dashboard.terminal.operator', { defaultValue: 'OPERATÖR' })}
+          eyebrow={
+            isPremium
+              ? t('dashboard.premium.eyebrow', { defaultValue: 'Operasyon Merkezi' })
+              : t('dashboard.terminal.eyebrow', { defaultValue: 'WMS / KOMUT MERKEZİ' })
+          }
+          greeting={
+            isPremium
+              ? t(`dashboard.premium.${greetingKey}`, {
+                  defaultValue:
+                    greetingKey === 'goodMorning'
+                      ? 'Günaydın'
+                      : greetingKey === 'goodAfternoon'
+                        ? 'İyi günler'
+                        : 'İyi akşamlar',
+                })
+              : undefined
+          }
+          title={
+            isPremium
+              ? t('dashboard.premium.welcome', { defaultValue: 'Hoş geldiniz, {{name}}', name: displayName })
+              : t('dashboard.terminal.welcome', { defaultValue: 'Hoş geldin, {{name}}', name: displayName })
+          }
+          subtitle={
+            isPremium
+              ? t('dashboard.premium.subtitle', { defaultValue: 'Depo operasyonlarınızı tek bakışta yönetin.' })
+              : t('dashboard.subtitle')
+          }
+          operatorLabel={
+            isPremium
+              ? t('dashboard.premium.operator', { defaultValue: 'Operatör' })
+              : t('dashboard.terminal.operator', { defaultValue: 'OPERATÖR' })
+          }
           operatorValue={displayName}
-          branchLabel={t('dashboard.terminal.branch', { defaultValue: 'ŞUBE' })}
+          branchLabel={
+            isPremium
+              ? t('dashboard.premium.branch', { defaultValue: 'Şube' })
+              : t('dashboard.terminal.branch', { defaultValue: 'ŞUBE' })
+          }
           branchValue={branchLabel}
+          clockLabel={
+            isPremium
+              ? t('dashboard.premium.systemClock', { defaultValue: 'Sistem saati' })
+              : undefined
+          }
+          clockTime={isPremium ? clockTime : undefined}
+          clockDate={isPremium ? clockDate : undefined}
+          clockDateTime={isPremium ? now.toISOString() : undefined}
         />
 
         <DashboardOpsPanel>
           <DashboardOpsStatusBar
-            pulseLabel={t('dashboard.terminal.systemPulse', { defaultValue: 'SİSTEM DURUMU' })}
-            pulseValue={isLoading ? t('dashboard.terminal.syncing', { defaultValue: 'SENKRONİZE' }) : t('dashboard.terminal.online', { defaultValue: 'ÇEVRİMİÇİ' })}
-            tasksLabel={t('dashboard.terminal.myTasks', { defaultValue: 'GÖREVLERİM' })}
+            pulseLabel={
+              isPremium
+                ? t('dashboard.premium.systemPulse', { defaultValue: 'Sistem durumu' })
+                : t('dashboard.terminal.systemPulse', { defaultValue: 'SİSTEM DURUMU' })
+            }
+            pulseValue={
+              isLoading
+                ? t(isPremium ? 'dashboard.premium.syncing' : 'dashboard.terminal.syncing', {
+                    defaultValue: isPremium ? 'Senkronize ediliyor' : 'SENKRONİZE',
+                  })
+                : t(isPremium ? 'dashboard.premium.online' : 'dashboard.terminal.online', {
+                    defaultValue: isPremium ? 'Çevrimiçi' : 'ÇEVRİMİÇİ',
+                  })
+            }
+            tasksLabel={
+              isPremium
+                ? t('dashboard.premium.myTasks', { defaultValue: 'Görevlerim' })
+                : t('dashboard.terminal.myTasks', { defaultValue: 'GÖREVLERİM' })
+            }
             tasksValue={String(metrics.myTasksCount).padStart(2, '0')}
-            hint={t('dashboard.terminal.statusHint', { defaultValue: 'Canlı operasyon metrikleri ve son hareketler aşağıda.' })}
+            hint={
+              isPremium
+                ? t('dashboard.premium.statusHint', {
+                    defaultValue: 'Güncel metrikler, son hareketler ve hızlı erişim aşağıda.',
+                  })
+                : t('dashboard.terminal.statusHint', {
+                    defaultValue: 'Canlı operasyon metrikleri ve son hareketler aşağıda.',
+                  })
+            }
           />
         </DashboardOpsPanel>
 
         <DashboardOpsPanel className="wms-ops-dashboard-panel--metrics">
           <div className="wms-ops-dashboard-panel__heading">
             <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
-            <span>{t('dashboard.terminal.metricsPanel', { defaultValue: 'OPERASYON METRİKLERİ' })}</span>
+            <span>
+              {isPremium
+                ? t('dashboard.premium.metricsPanel', { defaultValue: 'Operasyon metrikleri' })
+                : t('dashboard.terminal.metricsPanel', { defaultValue: 'OPERASYON METRİKLERİ' })}
+            </span>
           </div>
           <div className="wms-ops-dashboard-metrics">
           <DashboardOpsMetricTile
@@ -232,7 +331,11 @@ export function DashboardPage(): ReactElement {
                   description={t(link.descriptionKey, { defaultValue: link.titleKey })}
                   href={link.href}
                   icon={link.icon}
-                  openLabel={t('dashboard.terminal.launch', { defaultValue: 'Başlat' })}
+                  openLabel={
+                    isPremium
+                      ? t('dashboard.premium.launch', { defaultValue: 'Devam et' })
+                      : t('dashboard.terminal.launch', { defaultValue: 'Başlat' })
+                  }
                 />
               ))}
             </div>

@@ -38,3 +38,5 @@ export { OpsLoadingState } from './OpsLoadingState';
 export { OpsScrollArea } from './OpsScrollArea';
 export { OPS_FIELD_CLASS, OPS_SELECT_CONTENT_CLASS, OPS_SELECT_TRIGGER_CLASS } from './ops-field-styles';
 export { HeaderQuantityPolicyFields } from './HeaderQuantityPolicyFields';
+export { WmsIcon } from './WmsIcon';
+export type { WmsIconData } from './WmsIcon';

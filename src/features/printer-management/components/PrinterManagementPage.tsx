@@ -226,9 +226,9 @@ export function PrinterManagementPage(): ReactElement {
     >
       <div className="wms-ops-form wms-ops-erp-skin grid min-w-0 gap-6 xl:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)]">
         <div className="min-w-0 space-y-6">
-          <Card ref={printerFormRef} className="min-w-0 scroll-mt-6 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card ref={printerFormRef} className="min-w-0 scroll-mt-6 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.printerForm.title')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.printerForm.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <fieldset disabled={printerFormReadOnly} className={`space-y-4 ${printerFormReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
@@ -300,12 +300,12 @@ export function PrinterManagementPage(): ReactElement {
                 />
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
-                <Button onClick={() => saveMutation.mutate()} disabled={printerFormReadOnly}>
-                  <Save className="mr-2 size-4" />
+                <OpsActionButton onClick={() => saveMutation.mutate()} disabled={printerFormReadOnly}>
+                  <Save className="size-3.5" aria-hidden />
                   {selectedPrinterId ? t('printerManagement.printerForm.update') : t('printerManagement.printerForm.create')}
-                </Button>
-                <Button
-                  variant="outline"
+                </OpsActionButton>
+                <OpsActionButton
+                  variant="secondary"
                   onClick={() => {
                     setSelectedPrinterId(null);
                     setForm(EMPTY_FORM);
@@ -313,15 +313,15 @@ export function PrinterManagementPage(): ReactElement {
                   disabled={!permission.canCreate}
                 >
                   {t('common.clearForm')}
-                </Button>
+                </OpsActionButton>
               </div>
               </fieldset>
             </CardContent>
           </Card>
 
-          <Card ref={profileFormRef} className="min-w-0 scroll-mt-6 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card ref={profileFormRef} className="min-w-0 scroll-mt-6 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.profileForm.title')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.profileForm.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <fieldset disabled={profileFormReadOnly} className={`space-y-4 ${profileFormReadOnly ? 'pointer-events-none opacity-75' : ''}`}>
@@ -407,12 +407,12 @@ export function PrinterManagementPage(): ReactElement {
                 />
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
-                <Button onClick={() => saveProfileMutation.mutate()} disabled={profileFormReadOnly || profileForm.printerDefinitionId <= 0}>
-                  <Save className="mr-2 size-4" />
+                <OpsActionButton onClick={() => saveProfileMutation.mutate()} disabled={profileFormReadOnly || profileForm.printerDefinitionId <= 0}>
+                  <Save className="size-3.5" aria-hidden />
                   {selectedProfileId ? t('printerManagement.profileForm.update') : t('printerManagement.profileForm.create')}
-                </Button>
-                <Button
-                  variant="outline"
+                </OpsActionButton>
+                <OpsActionButton
+                  variant="secondary"
                   onClick={() => {
                     setSelectedProfileId(null);
                     setProfileForm(EMPTY_PROFILE_FORM);
@@ -420,7 +420,7 @@ export function PrinterManagementPage(): ReactElement {
                   disabled={!permission.canCreate}
                 >
                   {t('printerManagement.profileForm.clear')}
-                </Button>
+                </OpsActionButton>
               </div>
               </fieldset>
             </CardContent>
@@ -428,9 +428,9 @@ export function PrinterManagementPage(): ReactElement {
         </div>
 
         <div className="min-w-0 space-y-6">
-          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.tables.printers')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.tables.printers')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="wms-ops-data-grid overflow-x-auto">
@@ -509,9 +509,9 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.tables.profiles')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.tables.profiles')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="wms-ops-data-grid overflow-x-auto">
@@ -594,9 +594,9 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.tables.mappings')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.tables.mappings')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-3 xl:grid-cols-[0.42fr_0.58fr]">
@@ -631,19 +631,19 @@ export function PrinterManagementPage(): ReactElement {
                 </div>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
-                <Button
-                  variant="outline"
+                <OpsActionButton
+                  variant="secondary"
                   disabled={!canManageMappings || !selectedTemplateId || !selectedMappingProfileId}
                   onClick={() => saveTemplateMappingMutation.mutate({ printerProfileId: Number(selectedMappingProfileId), isDefault: false })}
                 >
                   {t('printerManagement.mappingForm.add')}
-                </Button>
-                <Button
+                </OpsActionButton>
+                <OpsActionButton
                   disabled={!canManageMappings || !selectedTemplateId || !selectedMappingProfileId}
                   onClick={() => saveTemplateMappingMutation.mutate({ printerProfileId: Number(selectedMappingProfileId), isDefault: true })}
                 >
                   {t('printerManagement.mappingForm.addDefault')}
-                </Button>
+                </OpsActionButton>
               </div>
               <div className="wms-ops-data-grid overflow-x-auto">
               <Table>
@@ -696,9 +696,9 @@ export function PrinterManagementPage(): ReactElement {
             </CardContent>
           </Card>
 
-          <Card className="min-w-0 border-slate-200/80 bg-white/85 dark:border-white/10 dark:bg-white/3">
+          <Card className="min-w-0 rounded-none border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] shadow-none backdrop-blur-none">
             <CardHeader>
-              <CardTitle>{t('printerManagement.tables.jobs')}</CardTitle>
+              <CardTitle className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">{t('printerManagement.tables.jobs')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="wms-ops-data-grid overflow-x-auto">

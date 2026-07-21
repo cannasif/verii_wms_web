@@ -691,6 +691,12 @@
     "terminal": {
       "eyebrow": "WMS / TERMİNAL",
       "accessGranted": "ERİŞİM ONAYLANDI"
+    },
+    "premium": {
+      "eyebrow": "Operasyon Merkezi",
+      "accessGranted": "Giriş başarılı",
+      "subtitle": "Depo operasyonlarınıza kaldığınız yerden devam edin.",
+      "goToDashboard": "Panele devam et"
     }
   },
   "dashboard": {
@@ -754,6 +760,24 @@
       "quickTransferDescription": "Transfer emirlerini listele",
       "quickStockDescription": "Depo stok bakiyesini sorgula",
       "quickReportsDescription": "Operasyon raporlarına geç"
+    },
+    "premium": {
+      "eyebrow": "Operasyon Merkezi",
+      "welcome": "Hoş geldiniz, {{name}}",
+      "subtitle": "Depo operasyonlarınızı tek bakışta yönetin.",
+      "goodMorning": "Günaydın",
+      "goodAfternoon": "İyi günler",
+      "goodEvening": "İyi akşamlar",
+      "systemClock": "Sistem saati",
+      "operator": "Operatör",
+      "branch": "Şube",
+      "systemPulse": "Sistem durumu",
+      "online": "Çevrimiçi",
+      "syncing": "Senkronize ediliyor",
+      "myTasks": "Görevlerim",
+      "statusHint": "Güncel metrikler, son hareketler ve hızlı erişim aşağıda.",
+      "metricsPanel": "Operasyon metrikleri",
+      "launch": "Devam et"
     }
   },
   "goodsReceipt": {
@@ -2815,6 +2839,12 @@
     "settingsLanguage": "Dil Seçeneği",
     "settingsAppearance": "Görünüm Modu",
     "settingsAppearanceDisabledHint": "Özel tema aktifken aydınlık/koyu modu kullanılamaz",
+    "settingsSkin": "Arayüz Stili",
+    "settingsSkinHint": "Terminal veya Premium görünüm dilini seçin",
+    "skinTerminal": "Terminal",
+    "skinTerminalHint": "Klasik operasyon terminali görünümü",
+    "skinPremium": "Premium",
+    "skinPremiumHint": "Modern premium kurumsal görünüm",
     "settingsUseCustomBrandThemes": "Özel temaları kullan",
     "settingsUseCustomBrandThemesHint": "Açıldığında hazır kurumsal temalardan birini seçebilirsiniz",
     "settingsBrandTheme": "Kurumsal Tema",
@@ -4327,7 +4357,8 @@
     "title": "Beklenmeyen bir hata oluştu",
     "description": "Uygulama yeni sürüme geçmiş olabilir. Sayfayı yenileyip tekrar deneyin.",
     "refresh": "Sayfayı yenile",
-    "home": "Anasayfa"
+    "home": "Anasayfa",
+    "premiumLabel": "Bir sorun oluştu"
   },
   "permissionGroups": {
     "permissionsPanel": {

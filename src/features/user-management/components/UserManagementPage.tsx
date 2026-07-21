@@ -98,7 +98,7 @@ export function UserManagementPage(): ReactElement {
     >
       <UserStats />
 
-      <section className="wms-ops-receiving-area mt-6 overflow-hidden rounded-lg border bg-white/70 dark:bg-white/3">
+      <section className="wms-ops-receiving-area mt-6 overflow-hidden rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)]">
         <UserTable
           canUpdate={canUpdate}
           onEdit={canUpdate ? (u) => {

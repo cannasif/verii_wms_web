@@ -190,7 +190,7 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                 ) : (
                   <div className="space-y-3">
                     {assignmentRows.map((row) => (
-                      <div key={row.localId} className="grid gap-3 rounded-2xl border p-4 lg:grid-cols-[minmax(0,1.4fr)_140px_180px_auto]">
+                      <div key={row.localId} className="grid gap-3 rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4 lg:grid-cols-[minmax(0,1.4fr)_140px_180px_auto]">
                         <Combobox
                           options={policyOptions}
                           value={row.wmsScopePolicyId?.toString() ?? ''}
@@ -259,7 +259,7 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                   <div className="wms-ops-form-hint py-8 text-center">{t('common.loading')}</div>
                 ) : resolutionQuery.data ? (
                   <div className="space-y-3">
-                    <div className="rounded-2xl border p-4">
+                    <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
                       <div className="flex flex-wrap gap-2">
                         {(resolutionQuery.data.scopeTypes ?? []).length === 0 ? (
                           <MasterDataOpsFlagChip>{t('wmsScopeAssignments.noExplicitPolicy')}</MasterDataOpsFlagChip>
@@ -276,8 +276,8 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border p-4">
-                      <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewBranches')}</p>
+                    <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+                      <p className="font-mono text-xs uppercase tracking-[0.08em] opacity-75">{t('wmsScopeAssignments.previewBranches')}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {(resolutionQuery.data.branchCodes ?? []).length === 0
                           ? <MasterDataOpsFlagChip>-</MasterDataOpsFlagChip>
@@ -285,8 +285,8 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border p-4">
-                      <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewWarehouses')}</p>
+                    <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+                      <p className="font-mono text-xs uppercase tracking-[0.08em] opacity-75">{t('wmsScopeAssignments.previewWarehouses')}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {(resolutionQuery.data.warehouseIds ?? []).length === 0
                           ? <MasterDataOpsFlagChip>-</MasterDataOpsFlagChip>
@@ -295,11 +295,11 @@ export function WmsScopeAssignmentsPage(): ReactElement {
                     </div>
 
                     {selectedAssignments.length > 0 ? (
-                      <div className="rounded-2xl border p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] opacity-75">{t('wmsScopeAssignments.previewAssignments')}</p>
+                      <div className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-card-bg)] p-4">
+                        <p className="font-mono text-xs uppercase tracking-[0.08em] opacity-75">{t('wmsScopeAssignments.previewAssignments')}</p>
                         <div className="mt-3 space-y-2">
                           {selectedAssignments.map((item) => (
-                            <div key={item.id} className="rounded-xl border px-3 py-2 text-sm">
+                            <div key={item.id} className="rounded-none border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)] px-3 py-2 text-sm">
                               <div className="font-semibold">{item.policyName}</div>
                               <div className="opacity-80">
                                 {item.branchCode || '-'} / {item.warehouseId ? `#${item.warehouseId}` : '-'}

@@ -350,6 +350,7 @@
       "projectCode": "Proje Kodu",
       "receiptDate": "Kabul Tarihi",
       "selectCustomer": "Müşteri seçin...",
+      "clickToSelectCustomer": "Müşteri seçmek için tıklayın",
       "selectProjectCode": "Proje kodu seçin",
       "selectWarehouse": "Depo seçin",
       "selectedCustomer": "Seçilen Müşteri",

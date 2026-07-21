@@ -691,6 +691,12 @@
     "terminal": {
       "eyebrow": "WMS / TERMINAL",
       "accessGranted": "ACCESS GRANTED"
+    },
+    "premium": {
+      "eyebrow": "Operations Hub",
+      "accessGranted": "Signed in successfully",
+      "subtitle": "Continue your warehouse operations from where you left off.",
+      "goToDashboard": "Continue to dashboard"
     }
   },
   "dashboard": {
@@ -754,6 +760,24 @@
       "quickTransferDescription": "List transfer orders",
       "quickStockDescription": "Query warehouse stock balance",
       "quickReportsDescription": "Go to operation reports"
+    },
+    "premium": {
+      "eyebrow": "Operations Hub",
+      "welcome": "Welcome, {{name}}",
+      "subtitle": "Manage warehouse operations at a glance.",
+      "goodMorning": "Good morning",
+      "goodAfternoon": "Good afternoon",
+      "goodEvening": "Good evening",
+      "systemClock": "System time",
+      "operator": "Operator",
+      "branch": "Branch",
+      "systemPulse": "System status",
+      "online": "Online",
+      "syncing": "Syncing",
+      "myTasks": "My tasks",
+      "statusHint": "Live metrics, recent activity, and quick access are below.",
+      "metricsPanel": "Operation metrics",
+      "launch": "Continue"
     }
   },
   "goodsReceipt": {
@@ -2799,6 +2823,12 @@
     "settingsLanguage": "Language option",
     "settingsAppearance": "Appearance mode",
     "settingsAppearanceDisabledHint": "Light/dark mode is unavailable while a custom theme is active",
+    "settingsSkin": "Interface style",
+    "settingsSkinHint": "Choose the Terminal or Premium look",
+    "skinTerminal": "Terminal",
+    "skinTerminalHint": "Classic operations terminal look",
+    "skinPremium": "Premium",
+    "skinPremiumHint": "Modern premium corporate look",
     "settingsUseCustomBrandThemes": "Use custom themes",
     "settingsUseCustomBrandThemesHint": "Choose from preset corporate themes when enabled",
     "settingsBrandTheme": "Corporate theme",
@@ -4306,7 +4336,8 @@
     "title": "An unexpected error occurred",
     "description": "The app may have moved to a newer version. Refresh the page and try again.",
     "refresh": "Refresh page",
-    "home": "Home"
+    "home": "Home",
+    "premiumLabel": "Something went wrong"
   },
   "permissionGroups": {
     "permissionsPanel": {

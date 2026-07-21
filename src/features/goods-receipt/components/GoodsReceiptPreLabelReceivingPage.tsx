@@ -778,39 +778,39 @@ function PreReceiptBatchScanDialog({ batch, open, onOpenChange }: PreReceiptBatc
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-5xl">
-        <DialogHeader className="border-b border-border/70 bg-linear-to-r from-cyan-50 via-white to-emerald-50 px-6 py-5 dark:from-cyan-950/20 dark:via-background dark:to-emerald-950/20">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <ScanLine className="size-5 text-cyan-600" aria-hidden />
+      <DialogContent className="wms-ops-detail-dialog wms-ops-prelabel-scan max-h-[92vh] overflow-hidden p-0 sm:max-w-5xl">
+        <DialogHeader className="wms-ops-detail-dialog__header border-b px-6 py-5">
+          <DialogTitle className="wms-ops-detail-dialog__title flex items-center gap-2">
+            <ScanLine className="wms-ops-prelabel-scan__title-icon size-5" aria-hidden />
             {t('preLabelReceiving.multiScanTitle')}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="wms-ops-detail-dialog__description">
             {t('preLabelReceiving.multiScanDescription', { batchNo: batch?.batchNo ?? '-' })}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid max-h-[calc(92vh-9rem)] gap-5 overflow-y-auto px-6 py-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="space-y-4">
-            <div className="rounded-2xl border border-border/70 bg-card/80 p-4">
-              <div className="grid gap-3 text-sm sm:grid-cols-3">
+        <div className="wms-ops-prelabel-scan__body grid max-h-[calc(92vh-9rem)] gap-5 overflow-y-auto px-6 py-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <section className="wms-ops-prelabel-scan__col space-y-4">
+            <div className="wms-ops-prelabel-scan__card">
+              <div className="wms-ops-prelabel-scan__meta-grid">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t('preLabelReceiving.orderNo')}</div>
-                  <div className="mt-1 font-mono font-semibold">{batch?.siparisNo ?? '-'}</div>
+                  <div className="wms-ops-prelabel-scan__meta-label">{t('preLabelReceiving.orderNo')}</div>
+                  <div className="wms-ops-prelabel-scan__meta-value wms-ops-prelabel-scan__meta-value--mono">{batch?.siparisNo ?? '-'}</div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t('preLabelReceiving.customer')}</div>
-                  <div className="mt-1 font-semibold">{[batch?.customerCodeSnapshot, batch?.customerNameSnapshot].filter(Boolean).join(' - ') || '-'}</div>
+                  <div className="wms-ops-prelabel-scan__meta-label">{t('preLabelReceiving.customer')}</div>
+                  <div className="wms-ops-prelabel-scan__meta-value">{[batch?.customerCodeSnapshot, batch?.customerNameSnapshot].filter(Boolean).join(' - ') || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t('preLabelReceiving.remainingLabels')}</div>
-                  <div className="mt-1 font-mono font-semibold">{remainingCount}</div>
+                  <div className="wms-ops-prelabel-scan__meta-label">{t('preLabelReceiving.remainingLabels')}</div>
+                  <div className="wms-ops-prelabel-scan__meta-value wms-ops-prelabel-scan__meta-value--mono">{remainingCount}</div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-card/80 p-4">
-              <div className="mb-3 flex items-center gap-2 font-semibold">
-                <ScanLine className="size-4 text-cyan-600" aria-hidden />
+            <div className="wms-ops-prelabel-scan__card">
+              <div className="wms-ops-prelabel-scan__section-title">
+                <ScanLine className="size-4" aria-hidden />
                 {t('preLabelReceiving.singleScan')}
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
@@ -825,57 +825,58 @@ function PreReceiptBatchScanDialog({ batch, open, onOpenChange }: PreReceiptBatc
                   }}
                   placeholder={t('preLabelReceiving.singleScanPlaceholder')}
                   autoComplete="off"
+                  className="wms-ops-prelabel-scan__input"
                 />
-                <Button type="button" onClick={handleSingleAdd} disabled={!singleBarcode.trim() || labelsQuery.isLoading}>
+                <OpsActionButton type="button" variant="primary" onClick={handleSingleAdd} disabled={!singleBarcode.trim() || labelsQuery.isLoading}>
                   <Plus className="mr-2 size-4" aria-hidden />
                   {t('preLabelReceiving.addScan')}
-                </Button>
+                </OpsActionButton>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-card/80 p-4">
-              <div className="mb-3 flex items-center gap-2 font-semibold">
-                <Upload className="size-4 text-cyan-600" aria-hidden />
+            <div className="wms-ops-prelabel-scan__card">
+              <div className="wms-ops-prelabel-scan__section-title">
+                <Upload className="size-4" aria-hidden />
                 {t('preLabelReceiving.bulkScan')}
               </div>
               <Textarea
                 value={bulkBarcodes}
                 onChange={(event) => setBulkBarcodes(event.target.value)}
                 placeholder={t('preLabelReceiving.bulkScanPlaceholder')}
-                className="min-h-28"
+                className="wms-ops-prelabel-scan__textarea min-h-28"
               />
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                <Button type="button" variant="secondary" onClick={handleBulkAdd} disabled={!bulkBarcodes.trim() || labelsQuery.isLoading}>
+                <OpsActionButton type="button" variant="secondary" onClick={handleBulkAdd} disabled={!bulkBarcodes.trim() || labelsQuery.isLoading}>
                   {t('preLabelReceiving.addBulkScan')}
-                </Button>
-                <label className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-cyan-400/50 px-4 py-2 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-50 dark:text-cyan-200 dark:hover:bg-cyan-950/30">
-                  <Camera className="mr-2 size-4" aria-hidden />
+                </OpsActionButton>
+                <label className="wms-ops-prelabel-scan__photo-btn">
+                  <Camera className="size-4" aria-hidden />
                   {t('preLabelReceiving.scanFromPhoto')}
                   <input className="sr-only" type="file" accept="image/*" onChange={(event) => void handleImageUpload(event)} />
                 </label>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{t('preLabelReceiving.photoHint')}</p>
+              <p className="wms-ops-prelabel-scan__hint">{t('preLabelReceiving.photoHint')}</p>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border/70 bg-card/80 p-4">
+          <section className="wms-ops-prelabel-scan__card wms-ops-prelabel-scan__pool">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h3 className="font-semibold">{t('preLabelReceiving.scannedPool')}</h3>
-                <p className="text-xs text-muted-foreground">{t('preLabelReceiving.scannedPoolDescription')}</p>
+                <h3 className="wms-ops-prelabel-scan__section-title">{t('preLabelReceiving.scannedPool')}</h3>
+                <p className="wms-ops-prelabel-scan__hint">{t('preLabelReceiving.scannedPoolDescription')}</p>
               </div>
-              <Badge variant="outline">{selectedLabels.length}</Badge>
+              <Badge variant="outline" className="wms-ops-prelabel-scan__count">{selectedLabels.length}</Badge>
             </div>
 
             {labelsQuery.isLoading ? (
-              <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">{t('common.loading')}</div>
+              <div className="wms-ops-prelabel-scan__empty">{t('common.loading')}</div>
             ) : selectedLabels.length === 0 ? (
-              <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">{t('preLabelReceiving.noScannedLabels')}</div>
+              <div className="wms-ops-prelabel-scan__empty">{t('preLabelReceiving.noScannedLabels')}</div>
             ) : (
-              <div className="overflow-hidden rounded-xl border">
+              <div className="wms-ops-prelabel-scan__table-wrap">
                 <div className="max-h-[24rem] overflow-y-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="sticky top-0 bg-muted/80 text-xs uppercase tracking-wide text-muted-foreground backdrop-blur">
+                  <table className="wms-ops-prelabel-scan__table w-full text-left text-sm">
+                    <thead>
                       <tr>
                         <th className="px-3 py-2">{t('preLabels.barcode')}</th>
                         <th className="px-3 py-2">{t('preLabels.stock')}</th>
@@ -886,7 +887,7 @@ function PreReceiptBatchScanDialog({ batch, open, onOpenChange }: PreReceiptBatc
                     </thead>
                     <tbody>
                       {selectedLabels.map((label) => (
-                        <tr key={label.id} className="border-t">
+                        <tr key={label.id}>
                           <td className="px-3 py-2 font-mono text-xs">{label.barcodeValue}</td>
                           <td className="px-3 py-2">
                             <div className="font-semibold">{label.stockCodeSnapshot}</div>
@@ -909,18 +910,19 @@ function PreReceiptBatchScanDialog({ batch, open, onOpenChange }: PreReceiptBatc
           </section>
         </div>
 
-        <DialogFooter className="border-t border-border/70 bg-muted/30 px-6 py-4">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="wms-ops-actions wms-ops-prelabel-scan__footer border-t px-6 py-4">
+          <OpsActionButton type="button" variant="secondary" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
-          </Button>
-          <Button
+          </OpsActionButton>
+          <OpsActionButton
             type="button"
+            variant="primary"
             onClick={() => scanStartMutation.mutate()}
             disabled={selectedLabelIds.length === 0 || scanStartMutation.isPending}
           >
             <PackageCheck className="mr-2 size-4" aria-hidden />
             {scanStartMutation.isPending ? t('common.saving') : t('preLabelReceiving.startSelectedScans', { count: selectedLabelIds.length })}
-          </Button>
+          </OpsActionButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1013,13 +1015,13 @@ function OrderBasedReceivingPanel(): ReactElement {
     <Form {...form}>
       <div className="space-y-6">
         {!permission.canCreate ? <PermissionNotice /> : null}
-        <div className="rounded-2xl border border-[color-mix(in_oklab,var(--wms-ops-accent)_18%,transparent)] bg-[color-mix(in_oklab,var(--wms-ops-card)_92%,transparent)] p-4 shadow-sm">
+        <div className="wms-ops-prelabel-scan__card wms-ops-prelabel-order-banner">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h3 className="text-base font-semibold text-foreground">{t('preLabelReceiving.orderModeTitle')}</h3>
-              <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('preLabelReceiving.orderModeDescription')}</p>
+              <h3 className="wms-ops-prelabel-scan__section-title mb-0">{t('preLabelReceiving.orderModeTitle')}</h3>
+              <p className="wms-ops-prelabel-scan__hint mt-1 max-w-3xl normal-case tracking-normal">{t('preLabelReceiving.orderModeDescription')}</p>
             </div>
-            <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+            <span className="wms-ops-prelabel-order-banner__badge">
               {t('preLabelReceiving.noPreLabelRequired')}
             </span>
           </div>

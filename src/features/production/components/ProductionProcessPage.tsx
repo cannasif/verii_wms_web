@@ -17,15 +17,13 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
-import { OpsFormPageShell, OpsSelect, OpsSelectItem, PageState } from '@/components/shared';
+import { OpsActionButton, OpsFormPageShell, OpsInput, OpsSelect, OpsSelectItem, OpsTextarea, PageState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ShelfLookupCombobox } from '@/features/shelf-management';
 import { productionApi } from '../api/production-api';
@@ -37,6 +35,12 @@ import type {
   ProductionOrderOutputItem,
   ProductionOperationEventRequest,
 } from '../types/production';
+
+const opsBadgeClass = 'wms-ops-surface-chip';
+const opsHeadingClass = 'wms-ops-surface-label';
+const opsLabelClass = 'wms-ops-surface-label text-muted-foreground';
+const opsValueClass = 'font-semibold text-foreground tabular-nums';
+const opsCardClass = 'wms-ops-surface-card';
 
 function buildEmptyLine(): AddProductionOperationLineRequest {
   return {
@@ -433,7 +437,7 @@ export function ProductionProcessPage(): ReactElement {
           : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200';
 
     return (
-      <Badge variant="outline" className={className}>
+      <Badge variant="outline" className={`${opsBadgeClass} ${className}`}>
         {orderStatusLabel(normalized)}
       </Badge>
     );
@@ -449,7 +453,7 @@ export function ProductionProcessPage(): ReactElement {
           : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200';
 
     return (
-      <Badge variant="outline" className={className}>
+      <Badge variant="outline" className={`${opsBadgeClass} ${className}`}>
         {operationEventTypeLabel(type)}
       </Badge>
     );
@@ -464,7 +468,7 @@ export function ProductionProcessPage(): ReactElement {
         : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200';
 
     return (
-      <Badge variant="outline" className={className}>
+      <Badge variant="outline" className={`${opsBadgeClass} ${className}`}>
         {trackingModeLabel(normalized)}
       </Badge>
     );
@@ -477,7 +481,7 @@ export function ProductionProcessPage(): ReactElement {
       : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200';
 
     return (
-      <Badge variant="outline" className={className}>
+      <Badge variant="outline" className={`${opsBadgeClass} ${className}`}>
         {serialModeLabel(normalized)}
       </Badge>
     );
@@ -594,6 +598,7 @@ export function ProductionProcessPage(): ReactElement {
 
   return (
     <OpsFormPageShell
+      className="wms-ops-erp-skin wms-ops-production-page"
       eyebrow={
         <>
           <span>{t('production.breadcrumb.parent')}</span>
@@ -606,19 +611,19 @@ export function ProductionProcessPage(): ReactElement {
       title={t('production.process.title')}
       description={t('production.process.subtitle')}
       actions={(
-        <div className="flex gap-2">
-          <Button variant={isKioskMode ? 'outline' : 'default'} onClick={() => switchDisplayMode('web')}>
+        <div className="wms-ops-actions flex flex-wrap gap-2">
+          <OpsActionButton type="button" variant={isKioskMode ? 'secondary' : 'primary'} onClick={() => switchDisplayMode('web')}>
             {t('production.process.webMode', { defaultValue: 'Missing translation' })}
-          </Button>
-          <Button variant={isKioskMode ? 'default' : 'outline'} onClick={() => switchDisplayMode('kiosk')}>
+          </OpsActionButton>
+          <OpsActionButton type="button" variant={isKioskMode ? 'primary' : 'secondary'} onClick={() => switchDisplayMode('kiosk')}>
             {t('production.process.kioskMode', { defaultValue: 'Missing translation' })}
-          </Button>
+          </OpsActionButton>
           {headerId > 0 ? (
-            <Button variant="outline" onClick={() => navigate(`/production/detail/${headerId}`)}>
+            <OpsActionButton type="button" variant="secondary" onClick={() => navigate(`/production/detail/${headerId}`)}>
               {t('production.process.openDetail')}
-            </Button>
+            </OpsActionButton>
           ) : null}
-          <Button variant="outline" onClick={() => navigate('/production/list')}>{t('common.back')}</Button>
+          <OpsActionButton type="button" variant="secondary" onClick={() => navigate('/production/list')}>{t('common.back')}</OpsActionButton>
         </div>
       )}
     >
@@ -636,26 +641,26 @@ export function ProductionProcessPage(): ReactElement {
       ) : null}
 
       {detailQuery.data && !detailQuery.isLoading && !detailQuery.isError ? (
-        <div className={isKioskMode ? 'space-y-6 pb-32' : 'space-y-6'}>
+        <div className={isKioskMode ? 'wms-ops-production-content space-y-6 pb-32' : 'wms-ops-production-content space-y-6'}>
           <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
-            <Card className="overflow-hidden border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_36%),linear-gradient(135deg,_#0f172a,_#1e293b_58%,_#334155)] text-white dark:border-white/10">
+            <Card className={`${opsCardClass} overflow-hidden shadow-[0_0_18px_color-mix(in_oklab,var(--wms-ops-accent)_8%,transparent)]`}>
               <CardHeader className="space-y-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-2">
-                    <CardDescription className="text-slate-200">{t('production.process.title')}</CardDescription>
-                    <CardTitle className="text-2xl font-semibold tracking-tight">{detailQuery.data.header.documentNo}</CardTitle>
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
+                    <CardDescription>{t('production.process.title')}</CardDescription>
+                    <div className="font-mono text-2xl font-semibold tracking-tight text-foreground">{detailQuery.data.header.documentNo}</div>
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                       <span>{t('production.process.orders')}: {detailQuery.data.orders.length}</span>
-                      <span className="text-slate-400">•</span>
+                      <span className="opacity-60">•</span>
                       <span>{t('common.status')}: {detailQuery.data.header.status ? orderStatusLabel(detailQuery.data.header.status) : t('production.process.defaultDraft')}</span>
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
-                    <div className="text-xs uppercase tracking-[0.2em] text-slate-300">{t('production.process.operation')}</div>
-                    <div className="mt-2 text-lg font-semibold">
+                  <div className="wms-ops-production-panel px-4 py-3">
+                    <div className={opsLabelClass}>{t('production.process.operation')}</div>
+                    <div className={`mt-2 text-lg ${opsValueClass}`}>
                       {activeOperation?.status ? orderStatusLabel(activeOperation.status) : t('production.process.operationNone')}
                     </div>
-                    <div className="mt-2 text-xs text-slate-300">
+                    <div className="mt-2 text-xs text-muted-foreground">
                       {recentEvent
                         ? `${operationEventTypeLabel(recentEvent.eventType)} • ${formatDateTime(recentEvent.eventAt)}`
                         : t('production.process.timelineEmpty')}
@@ -664,68 +669,68 @@ export function ProductionProcessPage(): ReactElement {
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs uppercase tracking-wide text-slate-300">{t('production.process.orders')}</div>
-                    <div className="mt-2 text-3xl font-semibold">{detailQuery.data.orders.length}</div>
-                    <div className="mt-1 text-xs text-slate-300">{t('production.process.pickOrder')}</div>
+                  <div className="wms-ops-production-panel p-4">
+                    <div className={opsLabelClass}>{t('production.process.orders')}</div>
+                    <div className={`mt-2 text-3xl ${opsValueClass}`}>{detailQuery.data.orders.length}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{t('production.process.pickOrder')}</div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs uppercase tracking-wide text-slate-300">{t('production.process.lineHistory')}</div>
-                    <div className="mt-2 text-3xl font-semibold">{movementSummary.total}</div>
-                    <div className="mt-1 text-xs text-slate-300">
+                  <div className="wms-ops-production-panel p-4">
+                    <div className={opsLabelClass}>{t('production.process.lineHistory')}</div>
+                    <div className={`mt-2 text-3xl ${opsValueClass}`}>{movementSummary.total}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
                       {t('production.process.lineRoleConsumption')}: {movementSummary.consumptionCount} / {t('production.process.lineRoleOutput')}: {movementSummary.outputCount}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs uppercase tracking-wide text-slate-300">{t('production.process.operation')}</div>
-                    <div className="mt-2 text-3xl font-semibold">{activeOperation?.actualDurationMinutes ?? 0}</div>
-                    <div className="mt-1 text-xs text-slate-300">{t('production.process.minutesShort', { count: activeOperation?.actualDurationMinutes ?? 0 })}</div>
+                  <div className="wms-ops-production-panel p-4">
+                    <div className={opsLabelClass}>{t('production.process.operation')}</div>
+                    <div className={`mt-2 text-3xl ${opsValueClass}`}>{activeOperation?.actualDurationMinutes ?? 0}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{t('production.process.minutesShort', { count: activeOperation?.actualDurationMinutes ?? 0 })}</div>
                   </div>
                 </div>
               </CardHeader>
             </Card>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader className="pb-3">
                   <CardDescription>{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</CardDescription>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Factory className="size-4 text-slate-500" />
+                  <CardTitle className={`flex items-center gap-2 ${opsHeadingClass}`}>
+                    <Factory className="size-4 text-[color:var(--wms-ops-accent)] opacity-80" />
                     {selectedOrder?.orderNo ?? '-'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    {selectedOrder ? renderStatusBadge(selectedOrder.status) : <Badge variant="outline">-</Badge>}
+                    {selectedOrder ? renderStatusBadge(selectedOrder.status) : <Badge variant="outline" className={opsBadgeClass}>-</Badge>}
                     {hasDependencyBlocker ? (
-                      <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+                      <Badge variant="outline" className={`${opsBadgeClass} border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200`}>
                         <AlertTriangle className="mr-1 size-3" />
                         {t('production.process.dependencyBlocked')}
                       </Badge>
                     ) : null}
                   </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder?.producedStockCode || t('production.process.pickOrder')}</div>
+                  <div className="text-sm text-muted-foreground">{selectedOrder?.producedStockCode || t('production.process.pickOrder')}</div>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</span>
                       <span>{formatQuantity(selectedOrder?.completedQuantity)} / {formatQuantity(selectedOrder?.plannedQuantity)}</span>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-100 dark:bg-white/10">
-                      <div className="h-2 rounded-full bg-gradient-to-r from-sky-500 to-emerald-500" style={{ width: `${selectedOrderProgress}%` }} />
+                    <div className="h-2 rounded-none bg-[color-mix(in_oklab,var(--wms-ops-accent)_14%,transparent)]">
+                      <div className="h-2 rounded-none bg-[var(--wms-ops-accent)]" style={{ width: `${selectedOrderProgress}%` }} />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader className="pb-3">
                   <CardDescription>{t('production.process.lastOperation', { defaultValue: 'Missing translation' })}</CardDescription>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <TimerReset className="size-4 text-slate-500" />
+                  <CardTitle className={`flex items-center gap-2 ${opsHeadingClass}`}>
+                    <TimerReset className="size-4 text-[color:var(--wms-ops-accent)] opacity-80" />
                     {recentEvent ? operationEventTypeLabel(recentEvent.eventType) : t('production.process.operationNone')}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <div>{formatDateTime(recentEvent?.eventAt)}</div>
                   <div>{recentEvent?.eventNote || t('production.process.timelineEmpty')}</div>
                 </CardContent>
@@ -734,32 +739,32 @@ export function ProductionProcessPage(): ReactElement {
           </div>
 
           {selectedOrder ? (
-            <Card className="overflow-hidden border-slate-200/80 bg-gradient-to-r from-white via-slate-50 to-sky-50/70 dark:border-white/10 dark:from-slate-950 dark:via-slate-950 dark:to-sky-950/20">
+            <Card className={`${opsCardClass} overflow-hidden`}>
               <CardContent className="grid gap-4 p-6 md:grid-cols-4">
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
-                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{selectedOrder.orderNo}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder.producedStockCode}</div>
+                  <div className={opsLabelClass}>{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
+                  <div className={`text-lg ${opsValueClass}`}>{selectedOrder.orderNo}</div>
+                  <div className="text-sm text-muted-foreground">{selectedOrder.producedStockCode}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
-                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(selectedOrder.completedQuantity)} / {formatQuantity(selectedOrder.plannedQuantity)}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-300">{t('production.process.gap.output', { value: selectedOrderGaps.outputGap })}</div>
+                  <div className={opsLabelClass}>{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
+                  <div className={`text-lg ${opsValueClass}`}>{formatQuantity(selectedOrder.completedQuantity)} / {formatQuantity(selectedOrder.plannedQuantity)}</div>
+                  <div className="text-sm text-muted-foreground">{t('production.process.gap.output', { value: selectedOrderGaps.outputGap })}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{t('production.process.materialProgress', { defaultValue: 'Missing translation' })}</div>
-                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('production.process.gap.consumption', { value: selectedOrderGaps.consumptionGap })}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-300">{selectedOrder.consumptions.length} {t('production.process.consumptions').toLowerCase()}</div>
+                  <div className={opsLabelClass}>{t('production.process.materialProgress', { defaultValue: 'Missing translation' })}</div>
+                  <div className={`text-lg ${opsValueClass}`}>{t('production.process.gap.consumption', { value: selectedOrderGaps.consumptionGap })}</div>
+                  <div className="text-sm text-muted-foreground">{selectedOrder.consumptions.length} {t('production.process.consumptions').toLowerCase()}</div>
                 </div>
                 <div className="flex items-center justify-start md:justify-end">
                   <div className="flex flex-wrap gap-2">
                     {renderStatusBadge(selectedOrder.status)}
                     {hasDependencyBlocker ? (
-                      <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+                      <Badge variant="outline" className={`${opsBadgeClass} border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200`}>
                         {t('production.process.startBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                      <Badge variant="outline" className={`${opsBadgeClass} border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200`}>
                         <CheckCircle2 className="mr-1 size-3" />
                         {t('production.process.dependenciesReady')}
                       </Badge>
@@ -770,79 +775,79 @@ export function ProductionProcessPage(): ReactElement {
             </Card>
           ) : null}
 
-          <Card className="border-slate-200/80 bg-white/90 dark:border-white/10 dark:bg-slate-950/70">
+          <Card className={opsCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.process.operatorFlow', { defaultValue: 'Missing translation' })}</CardTitle>
+              <CardTitle className={opsHeadingClass}>{t('production.process.operatorFlow', { defaultValue: 'Missing translation' })}</CardTitle>
               <CardDescription>{t('production.process.operatorFlowSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 xl:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">01</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{selectedOrder?.orderNo || t('production.process.pickOrder')}</div>
+              <div className="wms-ops-production-panel p-4">
+                <div className={opsLabelClass}>01</div>
+                <div className={`mt-2 text-base ${opsValueClass}`}>{t('production.process.selectedOrder', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{selectedOrder?.orderNo || t('production.process.pickOrder')}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">02</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.dependencies', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <div className="wms-ops-production-panel p-4">
+                <div className={opsLabelClass}>02</div>
+                <div className={`mt-2 text-base ${opsValueClass}`}>{t('production.process.dependencies', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-2 text-sm text-muted-foreground">
                   {hasDependencyBlocker
                     ? t('production.process.startBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })
                     : t('production.process.dependenciesReady')}
                 </div>
               </div>
-              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">03</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">{currentActionSummary.title}</div>
-                <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{currentActionSummary.description}</div>
+              <div className="wms-ops-production-panel p-4">
+                <div className={opsLabelClass}>03</div>
+                <div className={`mt-2 text-base ${opsValueClass}`}>{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-2 text-sm font-medium text-foreground">{currentActionSummary.title}</div>
+                <div className="mt-1 text-sm text-muted-foreground">{currentActionSummary.description}</div>
               </div>
-              <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">04</div>
-                <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{t('production.process.lineHistory', { defaultValue: 'Missing translation' })}</div>
-                <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <div className="wms-ops-production-panel p-4">
+                <div className={opsLabelClass}>04</div>
+                <div className={`mt-2 text-base ${opsValueClass}`}>{t('production.process.lineHistory', { defaultValue: 'Missing translation' })}</div>
+                <div className="mt-2 text-sm text-muted-foreground">
                   {t('production.process.lineRoleConsumption')}: {movementSummary.consumptionCount} / {t('production.process.lineRoleOutput')}: {movementSummary.outputCount}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={isKioskMode ? 'border-slate-200/80 bg-gradient-to-r from-white to-amber-50/70 dark:border-white/10 dark:from-slate-950 dark:to-amber-950/10' : 'border-slate-200/80 bg-white/90 dark:border-white/10 dark:bg-slate-950/70'}>
+          <Card className={opsCardClass}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ScanLine className="size-4 text-slate-500" />
+              <CardTitle className={`flex items-center gap-2 ${opsHeadingClass}`}>
+                <ScanLine className="size-4 text-[color:var(--wms-ops-accent)] opacity-80" />
                 {t('production.process.quickEntryTitle', { defaultValue: 'Missing translation' })}
               </CardTitle>
               <CardDescription>{t('production.process.quickEntrySubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <Button type="button" variant={quickEntryMode === 'Consumption' ? 'default' : 'outline'} onClick={() => setQuickEntryMode('Consumption')}>
+                <OpsActionButton type="button" variant={quickEntryMode === 'Consumption' ? 'primary' : 'secondary'} onClick={() => setQuickEntryMode('Consumption')}>
                   {t('production.process.lineRoleConsumption')}
-                </Button>
-                <Button type="button" variant={quickEntryMode === 'Output' ? 'default' : 'outline'} onClick={() => setQuickEntryMode('Output')}>
+                </OpsActionButton>
+                <OpsActionButton type="button" variant={quickEntryMode === 'Output' ? 'primary' : 'secondary'} onClick={() => setQuickEntryMode('Output')}>
                   {t('production.process.lineRoleOutput')}
-                </Button>
+                </OpsActionButton>
               </div>
 
               <div className={isKioskMode ? 'grid gap-3 xl:grid-cols-[1fr_auto]' : 'grid gap-3 md:grid-cols-[1fr_auto]'}>
-                <Input
+                <OpsInput
                   value={quickEntryValue}
                   onChange={(e) => setQuickEntryValue(e.target.value)}
                   placeholder={t('production.process.quickEntryPlaceholder', { defaultValue: 'Missing translation' })}
                   className={isKioskMode ? 'h-14 text-lg' : undefined}
                 />
-                <Button type="button" size="lg" onClick={applyQuickEntryMatch} disabled={!quickEntryPrimaryMatch}>
+                <OpsActionButton type="button" onClick={applyQuickEntryMatch} disabled={!quickEntryPrimaryMatch}>
                   <ScanLine className="mr-2 size-4" />
                   {t('production.process.quickEntryApply', { defaultValue: 'Missing translation' })}
-                </Button>
+                </OpsActionButton>
               </div>
 
               {quickEntryPrimaryMatch ? (
-                <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+                <div className="wms-ops-production-panel p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{quickEntryPrimaryMatch.stockCode}</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">{quickEntryPrimaryMatch.yapKod || '-'} • {quickEntryMode === 'Consumption' ? ('sourceWarehouseCode' in quickEntryPrimaryMatch ? quickEntryPrimaryMatch.sourceWarehouseCode : '-') : ('targetWarehouseCode' in quickEntryPrimaryMatch ? quickEntryPrimaryMatch.targetWarehouseCode : '-')}</div>
+                      <div className={`text-sm ${opsValueClass}`}>{quickEntryPrimaryMatch.stockCode}</div>
+                      <div className="text-sm text-muted-foreground">{quickEntryPrimaryMatch.yapKod || '-'} • {quickEntryMode === 'Consumption' ? ('sourceWarehouseCode' in quickEntryPrimaryMatch ? quickEntryPrimaryMatch.sourceWarehouseCode : '-') : ('targetWarehouseCode' in quickEntryPrimaryMatch ? quickEntryPrimaryMatch.targetWarehouseCode : '-')}</div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {renderTrackingBadge(quickEntryPrimaryMatch.trackingMode)}
@@ -850,26 +855,26 @@ export function ProductionProcessPage(): ReactElement {
                     </div>
                   </div>
                   <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.plannedQuantity')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(quickEntryPrimaryMatch.plannedQuantity)} {quickEntryPrimaryMatch.unit || ''}</div>
+                    <div className="wms-ops-production-panel px-3 py-2">
+                      <div className={opsLabelClass}>{t('production.create.plannedQuantity')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(quickEntryPrimaryMatch.plannedQuantity)} {quickEntryPrimaryMatch.unit || ''}</div>
                     </div>
-                    <div className="rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.list.completedQuantity')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">
+                    <div className="wms-ops-production-panel px-3 py-2">
+                      <div className={opsLabelClass}>{t('production.list.completedQuantity')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>
                         {formatQuantity(getQuickEntryCompletedQuantity(quickEntryPrimaryMatch))}
                       </div>
                     </div>
-                    <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
-                      <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
-                      <div className="mt-1 font-semibold text-sky-900 dark:text-sky-100">
+                    <div className="rounded-none border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
+                      <div className={`${opsLabelClass} text-sky-700 dark:text-sky-200`}>{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
+                      <div className="mt-1 font-semibold tabular-nums text-sky-900 dark:text-sky-100">
                         {formatQuantity(getQuickEntryRemainingQuantity(quickEntryPrimaryMatch))}
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                <div className="wms-ops-production-empty">
                   {t('production.process.quickEntryNoMatch', { defaultValue: 'Missing translation' })}
                 </div>
               )}
@@ -878,55 +883,55 @@ export function ProductionProcessPage(): ReactElement {
 
           {selectedOrder ? (
             <div className="grid gap-6 xl:grid-cols-2">
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader>
-                  <CardTitle>{t('production.process.requiredConsumptions', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardTitle className={opsHeadingClass}>{t('production.process.requiredConsumptions', { defaultValue: 'Missing translation' })}</CardTitle>
                   <CardDescription>{t('production.process.requiredConsumptionsSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {selectedOrder.consumptions.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    <div className="wms-ops-production-empty">
                       {t('production.process.lookupEmpty')}
                     </div>
                   ) : selectedOrder.consumptions.map((row) => {
                     const remaining = Math.max(row.plannedQuantity - (row.consumedQuantity ?? 0), 0);
                     return (
-                      <div key={row.id} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                      <div key={row.id} className="wms-ops-production-panel p-4">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="space-y-1">
-                            <div className="text-base font-semibold text-slate-900 dark:text-slate-100">{row.stockCode}</div>
-                            <div className="text-sm text-slate-500 dark:text-slate-400">{row.yapKod || '-'} • {row.sourceWarehouseCode || '-'} / {row.sourceCellCode || '-'}</div>
+                            <div className={`text-base ${opsValueClass}`}>{row.stockCode}</div>
+                            <div className="text-sm text-muted-foreground">{row.yapKod || '-'} • {row.sourceWarehouseCode || '-'} / {row.sourceCellCode || '-'}</div>
                           </div>
-                          <Button type="button" size="sm" variant="outline" onClick={() => prefillConsumptionFromPlan(String(row.id))}>
+                          <OpsActionButton type="button" variant="secondary" onClick={() => prefillConsumptionFromPlan(String(row.id))}>
                             {t('production.process.prefillFromPlan')}
-                          </Button>
+                          </OpsActionButton>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">
                           {renderTrackingBadge(row.trackingMode)}
                           {renderSerialModeBadge(row.serialEntryMode)}
                           {row.isMandatory ? (
-                            <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                            <Badge variant="outline" className={`${opsBadgeClass} border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200`}>
                               {t('production.process.materialMandatory', { defaultValue: 'Missing translation' })}
                             </Badge>
                           ) : null}
                           {row.isBackflush ? (
-                            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                            <Badge variant="outline" className={`${opsBadgeClass} border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200`}>
                               {t('production.process.materialBackflush', { defaultValue: 'Missing translation' })}
                             </Badge>
                           ) : null}
                         </div>
                         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.plannedQuantity')}</div>
-                            <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.plannedQuantity)} {row.unit || ''}</div>
+                          <div className="wms-ops-production-panel px-3 py-2">
+                            <div className={opsLabelClass}>{t('production.create.plannedQuantity')}</div>
+                            <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(row.plannedQuantity)} {row.unit || ''}</div>
                           </div>
-                          <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.list.completedQuantity')}</div>
-                            <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.consumedQuantity)} {row.unit || ''}</div>
+                          <div className="wms-ops-production-panel px-3 py-2">
+                            <div className={opsLabelClass}>{t('production.list.completedQuantity')}</div>
+                            <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(row.consumedQuantity)} {row.unit || ''}</div>
                           </div>
-                          <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
-                            <div className="text-xs text-sky-700 dark:text-sky-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
-                            <div className="mt-1 font-semibold text-sky-900 dark:text-sky-100">{formatQuantity(remaining)} {row.unit || ''}</div>
+                          <div className="rounded-none border border-sky-200/70 bg-sky-50/70 px-3 py-2 dark:border-sky-500/20 dark:bg-sky-500/10">
+                            <div className={`${opsLabelClass} text-sky-700 dark:text-sky-200`}>{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
+                            <div className="mt-1 font-semibold tabular-nums text-sky-900 dark:text-sky-100">{formatQuantity(remaining)} {row.unit || ''}</div>
                           </div>
                         </div>
                       </div>
@@ -935,48 +940,48 @@ export function ProductionProcessPage(): ReactElement {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader>
-                  <CardTitle>{t('production.process.expectedOutputs', { defaultValue: 'Missing translation' })}</CardTitle>
+                  <CardTitle className={opsHeadingClass}>{t('production.process.expectedOutputs', { defaultValue: 'Missing translation' })}</CardTitle>
                   <CardDescription>{t('production.process.expectedOutputsSubtitle', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {selectedOrder.outputs.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    <div className="wms-ops-production-empty">
                       {t('production.process.lookupEmpty')}
                     </div>
                   ) : selectedOrder.outputs.map((row) => {
                     const remaining = Math.max(row.plannedQuantity - (row.producedQuantity ?? 0), 0);
                     return (
-                      <div key={row.id} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                      <div key={row.id} className="wms-ops-production-panel p-4">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="space-y-1">
-                            <div className="text-base font-semibold text-slate-900 dark:text-slate-100">{row.stockCode}</div>
-                            <div className="text-sm text-slate-500 dark:text-slate-400">{row.yapKod || '-'} • {row.targetWarehouseCode || '-'} / {row.targetCellCode || '-'}</div>
+                            <div className={`text-base ${opsValueClass}`}>{row.stockCode}</div>
+                            <div className="text-sm text-muted-foreground">{row.yapKod || '-'} • {row.targetWarehouseCode || '-'} / {row.targetCellCode || '-'}</div>
                           </div>
-                          <Button type="button" size="sm" variant="outline" onClick={() => prefillOutputFromPlan(String(row.id))}>
+                          <OpsActionButton type="button" variant="secondary" onClick={() => prefillOutputFromPlan(String(row.id))}>
                             {t('production.process.prefillFromPlan')}
-                          </Button>
+                          </OpsActionButton>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">
                           {renderTrackingBadge(row.trackingMode)}
                           {renderSerialModeBadge(row.serialEntryMode)}
-                          <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                          <Badge variant="outline" className={`${opsBadgeClass} border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200`}>
                             {t('production.process.outputReadyTarget', { defaultValue: 'Missing translation' })}
                           </Badge>
                         </div>
                         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.plannedQuantity')}</div>
-                            <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.plannedQuantity)} {row.unit || ''}</div>
+                          <div className="wms-ops-production-panel px-3 py-2">
+                            <div className={opsLabelClass}>{t('production.create.plannedQuantity')}</div>
+                            <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(row.plannedQuantity)} {row.unit || ''}</div>
                           </div>
-                          <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/10 dark:bg-white/5">
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.list.completedQuantity')}</div>
-                            <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(row.producedQuantity)} {row.unit || ''}</div>
+                          <div className="wms-ops-production-panel px-3 py-2">
+                            <div className={opsLabelClass}>{t('production.list.completedQuantity')}</div>
+                            <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(row.producedQuantity)} {row.unit || ''}</div>
                           </div>
-                          <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/70 px-3 py-2 dark:border-emerald-500/20 dark:bg-emerald-500/10">
-                            <div className="text-xs text-emerald-700 dark:text-emerald-200">{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
-                            <div className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{formatQuantity(remaining)} {row.unit || ''}</div>
+                          <div className="rounded-none border border-emerald-200/70 bg-emerald-50/70 px-3 py-2 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                            <div className={`${opsLabelClass} text-emerald-700 dark:text-emerald-200`}>{t('production.process.remainingQuantity', { defaultValue: 'Missing translation' })}</div>
+                            <div className="mt-1 font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">{formatQuantity(remaining)} {row.unit || ''}</div>
                           </div>
                         </div>
                       </div>
@@ -988,27 +993,27 @@ export function ProductionProcessPage(): ReactElement {
           ) : null}
 
           {!isKioskMode ? (
-          <Card>
+          <Card className={opsCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.process.timeline')}</CardTitle>
+              <CardTitle className={opsHeadingClass}>{t('production.process.timeline')}</CardTitle>
               <CardDescription>{t('production.process.timelineSubtitle')}</CardDescription>
             </CardHeader>
             <CardContent>
               {!activeOperation || activeOperation.events.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                <div className="wms-ops-production-empty">
                   {t('production.process.timelineEmpty')}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {activeOperation.events.map((event) => (
-                    <div key={event.id} className="rounded-2xl border border-slate-200/70 p-4 dark:border-white/10">
+                    <div key={event.id} className="wms-ops-production-panel p-4">
                       <div className="flex flex-wrap items-center gap-2">
                         {renderEventBadge(event.eventType)}
-                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatDateTime(event.eventAt)}</span>
-                        {event.durationMinutes ? <span className="text-xs text-slate-500">{t('production.process.minutesShort', { count: event.durationMinutes })}</span> : null}
+                        <span className="text-sm font-medium text-foreground">{formatDateTime(event.eventAt)}</span>
+                        {event.durationMinutes ? <span className="text-xs text-muted-foreground">{t('production.process.minutesShort', { count: event.durationMinutes })}</span> : null}
                       </div>
                       {(event.eventReasonCode || event.eventNote) ? (
-                        <div className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                        <div className="mt-2 space-y-1 text-sm text-muted-foreground">
                           {event.eventReasonCode ? <div>{t('production.process.reasonCode')}: {event.eventReasonCode}</div> : null}
                           {event.eventNote ? <div>{event.eventNote}</div> : null}
                         </div>
@@ -1022,15 +1027,15 @@ export function ProductionProcessPage(): ReactElement {
           ) : null}
 
           {!isKioskMode ? (
-          <Card>
+          <Card className={opsCardClass}>
             <CardHeader>
-              <CardTitle>{t('production.process.planDetail')}</CardTitle>
+              <CardTitle className={opsHeadingClass}>{t('production.process.planDetail')}</CardTitle>
               <CardDescription>{t('production.process.planDetailSubtitle')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div className="space-y-2">
-                  <Label>{t('common.status')}</Label>
+                  <Label className={opsLabelClass}>{t('common.status')}</Label>
                   <OpsSelect value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
                     <OpsSelectItem value="all">{t('production.process.filterAllOrders')}</OpsSelectItem>
                     <OpsSelectItem value="Draft">{orderStatusLabel('Draft')}</OpsSelectItem>
@@ -1041,36 +1046,36 @@ export function ProductionProcessPage(): ReactElement {
                   </OpsSelect>
                 </div>
                 <div className="space-y-2 xl:col-span-2">
-                  <Label>{t('production.process.orderSearchLabel')}</Label>
-                  <Input value={orderStockFilter} onChange={(e) => setOrderStockFilter(e.target.value)} placeholder={t('production.process.orderSearchPlaceholder')} />
+                  <Label className={opsLabelClass}>{t('production.process.orderSearchLabel')}</Label>
+                  <OpsInput value={orderStockFilter} onChange={(e) => setOrderStockFilter(e.target.value)} placeholder={t('production.process.orderSearchPlaceholder')} />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('production.process.assignmentScope', { defaultValue: 'Missing translation' })}</Label>
+                  <Label className={opsLabelClass}>{t('production.process.assignmentScope', { defaultValue: 'Missing translation' })}</Label>
                   <div className="flex flex-wrap gap-2">
-                    <Button type="button" size="sm" variant={onlyAssignedOrders ? 'default' : 'outline'} onClick={() => setOnlyAssignedOrders(true)}>
+                    <OpsActionButton type="button" variant={onlyAssignedOrders ? 'primary' : 'secondary'} onClick={() => setOnlyAssignedOrders(true)}>
                       {t('production.process.onlyAssignedOrders', { defaultValue: 'Missing translation' })}
-                    </Button>
-                    <Button type="button" size="sm" variant={!onlyAssignedOrders ? 'default' : 'outline'} onClick={() => setOnlyAssignedOrders(false)}>
+                    </OpsActionButton>
+                    <OpsActionButton type="button" variant={!onlyAssignedOrders ? 'primary' : 'secondary'} onClick={() => setOnlyAssignedOrders(false)}>
                       {t('production.process.allOrders', { defaultValue: 'Missing translation' })}
-                    </Button>
+                    </OpsActionButton>
                   </div>
                 </div>
-                <Card className="gap-2 border-amber-200/80 bg-amber-50/60 dark:border-amber-500/20 dark:bg-amber-500/10">
+                <Card className="gap-2 rounded-none border-amber-200/80 bg-amber-50/60 shadow-none dark:border-amber-500/20 dark:bg-amber-500/10">
                   <CardHeader className="pb-2">
                     <CardDescription>{t('production.process.gap.summary')}</CardDescription>
-                    <CardTitle className="text-base">{selectedOrder ? selectedOrder.orderNo : '-'}</CardTitle>
+                    <CardTitle className={opsHeadingClass}>{selectedOrder ? selectedOrder.orderNo : '-'}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-wrap gap-2 text-sm">
-                    <Badge variant={selectedOrderGaps.outputGap > 0 ? 'secondary' : 'default'}>{t('production.process.gap.output', { value: selectedOrderGaps.outputGap })}</Badge>
-                    <Badge variant={selectedOrderGaps.consumptionGap > 0 ? 'secondary' : 'default'}>{t('production.process.gap.consumption', { value: selectedOrderGaps.consumptionGap })}</Badge>
+                    <Badge className={opsBadgeClass} variant={selectedOrderGaps.outputGap > 0 ? 'secondary' : 'default'}>{t('production.process.gap.output', { value: selectedOrderGaps.outputGap })}</Badge>
+                    <Badge className={opsBadgeClass} variant={selectedOrderGaps.consumptionGap > 0 ? 'secondary' : 'default'}>{t('production.process.gap.consumption', { value: selectedOrderGaps.consumptionGap })}</Badge>
                   </CardContent>
                 </Card>
               </div>
 
               {selectedOrder ? (
-                <Card className="border-slate-200/70 dark:border-white/10">
+                <Card className={opsCardClass}>
                   <CardHeader>
-                    <CardTitle>{t('production.process.dependencies')}</CardTitle>
+                    <CardTitle className={opsHeadingClass}>{t('production.process.dependencies')}</CardTitle>
                     <CardDescription>
                       {selectedOrderDependencies.waitingFor.length > 0
                         ? t('production.process.dependenciesBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })
@@ -1079,29 +1084,29 @@ export function ProductionProcessPage(): ReactElement {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {selectedOrderDependencies.blockers.length === 0 ? (
-                      <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                      <div className="wms-ops-production-empty">
                         {t('production.process.dependenciesEmpty')}
                       </div>
                     ) : (
                       selectedOrderDependencies.blockers.map((dependency) => (
-                        <div key={dependency.id} className="rounded-2xl border border-slate-200/70 p-4 dark:border-white/10">
+                        <div key={dependency.id} className="wms-ops-production-panel p-4">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant={dependency.isBlocking ? 'secondary' : 'default'}>
+                            <Badge className={opsBadgeClass} variant={dependency.isBlocking ? 'secondary' : 'default'}>
                               {dependency.isBlocking ? t('production.process.dependencyBlocked') : t('production.process.dependencyReady')}
                             </Badge>
                             <span className="font-medium">{dependency.predecessorOrderNo}</span>
-                            <span className="text-sm text-slate-500">{dependencyTypeLabel(dependency.dependencyType)}</span>
-                            <span className="text-sm text-slate-500">{t('production.process.predecessorStatus', { status: orderStatusLabel(dependency.predecessorStatus) })}</span>
+                            <span className="text-sm text-muted-foreground">{dependencyTypeLabel(dependency.dependencyType)}</span>
+                            <span className="text-sm text-muted-foreground">{t('production.process.predecessorStatus', { status: orderStatusLabel(dependency.predecessorStatus) })}</span>
                           </div>
-                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                             {dependency.requiredTransferCompleted ? (
-                              <Badge variant="outline">
+                              <Badge variant="outline" className={opsBadgeClass}>
                                 <ArrowRightLeft className="mr-1 size-3" />
                                 {t('production.process.badgeTransferRequired')}
                               </Badge>
                             ) : null}
-                            {dependency.requiredOutputAvailable ? <Badge variant="outline">{t('production.process.badgeOutputRequired')}</Badge> : null}
-                            {dependency.lagMinutes > 0 ? <Badge variant="outline">{t('production.process.lagMinutes', { minutes: dependency.lagMinutes })}</Badge> : null}
+                            {dependency.requiredOutputAvailable ? <Badge variant="outline" className={opsBadgeClass}>{t('production.process.badgeOutputRequired')}</Badge> : null}
+                            {dependency.lagMinutes > 0 ? <Badge variant="outline" className={opsBadgeClass}>{t('production.process.lagMinutes', { minutes: dependency.lagMinutes })}</Badge> : null}
                           </div>
                         </div>
                       ))
@@ -1112,7 +1117,7 @@ export function ProductionProcessPage(): ReactElement {
 
               <div className="flex flex-wrap gap-2">
                 {detailQuery.data.headerAssignments.map((assignment) => (
-                  <Badge key={assignment.id} variant="secondary">
+                  <Badge key={assignment.id} variant="secondary" className={opsBadgeClass}>
                     {t('production.process.assignmentBadge', {
                       type: assignment.assignmentType,
                       user: String(assignment.assignedUserId ?? '-'),
@@ -1124,7 +1129,7 @@ export function ProductionProcessPage(): ReactElement {
 
               <Accordion type="multiple" className="space-y-4">
                 {filteredOrders.map((order) => (
-                  <AccordionItem key={order.id} value={`order-${order.id}`} className="rounded-2xl border border-slate-200/70 px-4 dark:border-white/10">
+                  <AccordionItem key={order.id} value={`order-${order.id}`} className="wms-ops-surface-inset px-4">
                     <AccordionTrigger className="hover:no-underline">
                       <div className="flex flex-1 flex-wrap items-center gap-3 text-left">
                         {renderStatusBadge(order.status)}
@@ -1135,37 +1140,37 @@ export function ProductionProcessPage(): ReactElement {
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4">
                       <div className="flex flex-wrap gap-2">
-                        <Button type="button" variant={selectedOrder?.id === order.id ? 'default' : 'outline'} onClick={() => setSelectedOrder(order)}>
+                        <OpsActionButton type="button" variant={selectedOrder?.id === order.id ? 'primary' : 'secondary'} onClick={() => setSelectedOrder(order)}>
                           {t('production.process.selectOrder')}
-                        </Button>
-                        <Button
+                        </OpsActionButton>
+                        <OpsActionButton
                           type="button"
-                          variant="outline"
+                          variant="secondary"
                           onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(detailQuery.data.header.documentNo || '')}&productionOrderNo=${encodeURIComponent(order.orderNo)}`)}
                           disabled={!canCreateTransfer}
                         >
                           {t('production.process.openTransfer', { defaultValue: 'Missing translation' })}
-                        </Button>
+                        </OpsActionButton>
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-3">
-                        <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
-                          <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
-                          <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(order.completedQuantity)} / {formatQuantity(order.plannedQuantity)}</div>
+                        <div className="wms-ops-production-panel p-3">
+                          <div className={opsLabelClass}>{t('production.process.outputProgress', { defaultValue: 'Missing translation' })}</div>
+                          <div className={`mt-1 text-lg ${opsValueClass}`}>{formatQuantity(order.completedQuantity)} / {formatQuantity(order.plannedQuantity)}</div>
                         </div>
-                        <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
-                          <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.consumptions')}</div>
-                          <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{order.consumptions.length}</div>
+                        <div className="wms-ops-production-panel p-3">
+                          <div className={opsLabelClass}>{t('production.process.consumptions')}</div>
+                          <div className={`mt-1 text-lg ${opsValueClass}`}>{order.consumptions.length}</div>
                         </div>
-                        <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
-                          <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.outputs')}</div>
-                          <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{order.outputs.length}</div>
+                        <div className="wms-ops-production-panel p-3">
+                          <div className={opsLabelClass}>{t('production.process.outputs')}</div>
+                          <div className={`mt-1 text-lg ${opsValueClass}`}>{order.outputs.length}</div>
                         </div>
                       </div>
 
                       <div className="grid gap-4 xl:grid-cols-2">
-                        <Card>
-                          <CardHeader><CardTitle>{t('production.process.outputs')}</CardTitle></CardHeader>
+                        <Card className={opsCardClass}>
+                          <CardHeader><CardTitle className={opsHeadingClass}>{t('production.process.outputs')}</CardTitle></CardHeader>
                           <CardContent>
                             <Table>
                               <TableHeader>
@@ -1185,10 +1190,10 @@ export function ProductionProcessPage(): ReactElement {
                                       <TableCell>
                                         <div className="flex flex-wrap items-center gap-2">
                                           {row.producedQuantity ?? 0}
-                                          {gap > 0 ? <Badge variant="secondary">{t('production.process.gapBadge', { value: gap })}</Badge> : <Badge variant="default">{t('production.process.completeBadge')}</Badge>}
-                                          <Button type="button" variant="ghost" size="sm" onClick={() => prefillOutputFromPlan(String(row.id))}>
+                                          {gap > 0 ? <Badge className={opsBadgeClass} variant="secondary">{t('production.process.gapBadge', { value: gap })}</Badge> : <Badge className={opsBadgeClass} variant="default">{t('production.process.completeBadge')}</Badge>}
+                                          <OpsActionButton type="button" variant="secondary" onClick={() => prefillOutputFromPlan(String(row.id))}>
                                             {t('production.process.prefillFromPlan')}
-                                          </Button>
+                                          </OpsActionButton>
                                         </div>
                                       </TableCell>
                                     </TableRow>
@@ -1199,8 +1204,8 @@ export function ProductionProcessPage(): ReactElement {
                           </CardContent>
                         </Card>
 
-                        <Card>
-                          <CardHeader><CardTitle>{t('production.process.consumptions')}</CardTitle></CardHeader>
+                        <Card className={opsCardClass}>
+                          <CardHeader><CardTitle className={opsHeadingClass}>{t('production.process.consumptions')}</CardTitle></CardHeader>
                           <CardContent>
                             <Table>
                               <TableHeader>
@@ -1220,10 +1225,10 @@ export function ProductionProcessPage(): ReactElement {
                                       <TableCell>
                                         <div className="flex flex-wrap items-center gap-2">
                                           {row.consumedQuantity ?? 0}
-                                          {gap > 0 ? <Badge variant="secondary">{t('production.process.gapBadge', { value: gap })}</Badge> : <Badge variant="default">{t('production.process.completeBadge')}</Badge>}
-                                          <Button type="button" variant="ghost" size="sm" onClick={() => prefillConsumptionFromPlan(String(row.id))}>
+                                          {gap > 0 ? <Badge className={opsBadgeClass} variant="secondary">{t('production.process.gapBadge', { value: gap })}</Badge> : <Badge className={opsBadgeClass} variant="default">{t('production.process.completeBadge')}</Badge>}
+                                          <OpsActionButton type="button" variant="secondary" onClick={() => prefillConsumptionFromPlan(String(row.id))}>
                                             {t('production.process.prefillFromPlan')}
-                                          </Button>
+                                          </OpsActionButton>
                                         </div>
                                       </TableCell>
                                     </TableRow>
@@ -1243,9 +1248,9 @@ export function ProductionProcessPage(): ReactElement {
           ) : null}
 
           <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-            <Card>
+            <Card className={opsCardClass}>
               <CardHeader>
-                <CardTitle>{t('production.process.controls')}</CardTitle>
+                <CardTitle className={opsHeadingClass}>{t('production.process.controls')}</CardTitle>
                 <CardDescription>
                   {selectedOrder
                     ? hasDependencyBlocker
@@ -1256,65 +1261,65 @@ export function ProductionProcessPage(): ReactElement {
               </CardHeader>
               <CardContent className="space-y-4">
                 {selectedOrder ? (
-                  <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/10 dark:bg-white/5">
+                  <div className="wms-ops-production-panel p-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div className="space-y-1">
-                        <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                        <div className="text-sm font-medium text-foreground">
                           {t('production.process.quickTransferTitle', { defaultValue: 'Missing translation' })}
                         </div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                        <div className="text-sm text-muted-foreground">
                           {t('production.process.quickTransferDescription', {
                             defaultValue: 'Missing translation',
                             orderNo: selectedOrder.orderNo,
                           })}
                         </div>
                       </div>
-                      <Button
+                      <OpsActionButton
                         type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => navigate(`/production-transfer/create?productionDocumentNo=${encodeURIComponent(detailQuery.data.header.documentNo || '')}&productionOrderNo=${encodeURIComponent(selectedOrder.orderNo)}`)}
                         disabled={!canCreateTransfer}
                       >
                         {t('production.process.openTransfer', { defaultValue: 'Missing translation' })}
-                      </Button>
+                      </OpsActionButton>
                     </div>
                   </div>
                 ) : null}
 
                 {hasDependencyBlocker ? (
-                  <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+                  <div className="rounded-none border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
                     {t('production.process.startBlocked', { orders: selectedOrderDependencies.waitingFor.join(', ') })}
                   </div>
                 ) : null}
 
                 {!permission.canMutate ? <PermissionNotice /> : null}
                 {!canUpdateProduction ? (
-                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                  <div className="rounded-none border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
                     {t('production.process.permissionInfo')}
                   </div>
                 ) : null}
 
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{t('production.process.reasonCode')}</Label>
-                    <Input value={eventPayload.reasonCode ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, reasonCode: e.target.value }))} />
+                    <Label className={opsLabelClass}>{t('production.process.reasonCode')}</Label>
+                    <OpsInput value={eventPayload.reasonCode ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, reasonCode: e.target.value }))} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('production.process.duration')}</Label>
-                    <Input type="number" value={eventPayload.durationMinutes ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, durationMinutes: e.target.value === '' ? undefined : Number(e.target.value) }))} />
+                    <Label className={opsLabelClass}>{t('production.process.duration')}</Label>
+                    <OpsInput type="number" value={eventPayload.durationMinutes ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, durationMinutes: e.target.value === '' ? undefined : Number(e.target.value) }))} />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.description')}</Label>
-                  <Textarea rows={3} value={eventPayload.note ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, note: e.target.value }))} />
+                  <Label className={opsLabelClass}>{t('common.description')}</Label>
+                  <OpsTextarea rows={3} value={eventPayload.note ?? ''} onChange={(e) => setEventPayload((prev) => ({ ...prev, note: e.target.value }))} />
                 </div>
 
                 <div className={isKioskMode ? 'grid gap-4 md:grid-cols-2' : 'grid gap-3 md:grid-cols-2'}>
                   {canShowStart ? (
                     <Button
                       type="button"
-                      className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'}
+                      className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 rounded-none p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 rounded-none p-4 text-left'}
                       variant={hasDependencyBlocker ? 'destructive' : 'default'}
                       onClick={() => selectedOrder && startMutation.mutate(selectedOrder.id)}
                       disabled={!canUpdateProduction || !readyToRun || hasDependencyBlocker || startMutation.isPending}
@@ -1329,21 +1334,21 @@ export function ProductionProcessPage(): ReactElement {
                   ) : null}
 
                   {canShowPause ? (
-                    <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => pauseMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || pauseMutation.isPending}>
+                    <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 rounded-none p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 rounded-none p-4 text-left'} onClick={() => pauseMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || pauseMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><PauseCircle className="size-4" />{t('production.process.pause')}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.pauseCardHint', { defaultValue: 'Missing translation' })}</span>
+                      <span className="text-xs text-muted-foreground">{t('production.process.pauseCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
                   ) : null}
 
                   {canShowResume ? (
-                    <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => resumeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || resumeMutation.isPending}>
+                    <Button type="button" variant="outline" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 rounded-none p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 rounded-none p-4 text-left'} onClick={() => resumeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || resumeMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><TimerReset className="size-4" />{t('production.process.resume')}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.resumeCardHint', { defaultValue: 'Missing translation' })}</span>
+                      <span className="text-xs text-muted-foreground">{t('production.process.resumeCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
                   ) : null}
 
                   {canShowComplete ? (
-                    <Button type="button" variant="destructive" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 p-4 text-left'} onClick={() => completeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || completeMutation.isPending}>
+                    <Button type="button" variant="destructive" className={isKioskMode ? 'h-auto min-h-32 flex-col items-start justify-start gap-3 rounded-none p-6 text-left text-lg' : 'h-auto min-h-24 flex-col items-start justify-start gap-2 rounded-none p-4 text-left'} onClick={() => completeMutation.mutate()} disabled={!canUpdateProduction || !activeOperation || completeMutation.isPending}>
                       <span className="flex items-center gap-2 text-base font-semibold"><CheckCircle2 className="size-4" />{t('production.process.complete')}</span>
                       <span className="text-xs opacity-80">{t('production.process.completeCardHint', { defaultValue: 'Missing translation' })}</span>
                     </Button>
@@ -1354,15 +1359,15 @@ export function ProductionProcessPage(): ReactElement {
 
             <div className="space-y-6">
               {!isKioskMode ? (
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader>
-                  <CardTitle>{t('production.process.lineHistory')}</CardTitle>
+                  <CardTitle className={opsHeadingClass}>{t('production.process.lineHistory')}</CardTitle>
                   <CardDescription>{t('production.process.lineHistorySubtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>{t('production.process.lineHistoryRole')}</Label>
+                      <Label className={opsLabelClass}>{t('production.process.lineHistoryRole')}</Label>
                       <OpsSelect value={historyRoleFilter} onValueChange={setHistoryRoleFilter}>
                         <OpsSelectItem value="all">{t('production.process.lineHistoryFilterAll')}</OpsSelectItem>
                         <OpsSelectItem value="Consumption">{t('production.process.lineRoleConsumption')}</OpsSelectItem>
@@ -1370,17 +1375,17 @@ export function ProductionProcessPage(): ReactElement {
                       </OpsSelect>
                     </div>
                     <div className="space-y-2">
-                      <Label>{t('production.process.lineHistoryStock')}</Label>
-                      <Input value={historyStockFilter} onChange={(e) => setHistoryStockFilter(e.target.value)} placeholder={t('production.process.lineHistoryStockPlaceholder')} />
+                      <Label className={opsLabelClass}>{t('production.process.lineHistoryStock')}</Label>
+                      <OpsInput value={historyStockFilter} onChange={(e) => setHistoryStockFilter(e.target.value)} placeholder={t('production.process.lineHistoryStockPlaceholder')} />
                     </div>
                   </div>
 
                   {!activeOperation || filteredOperationLines.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    <div className="wms-ops-production-empty">
                       {t('production.process.lineHistoryEmpty')}
                     </div>
                   ) : (
-                    <Table>
+                    <Table className="wms-ops-production-line-table wms-ops-production-line-table--compact">
                       <TableHeader>
                         <TableRow>
                           <TableHead>{t('production.process.lineHistoryColTime')}</TableHead>
@@ -1395,7 +1400,7 @@ export function ProductionProcessPage(): ReactElement {
                         {filteredOperationLines.map((line) => (
                           <TableRow key={line.id}>
                             <TableCell>{formatDateTime(line.createdDate)}</TableCell>
-                            <TableCell><Badge variant="secondary">{lineRoleLabel(line.lineRole)}</Badge></TableCell>
+                            <TableCell><Badge variant="secondary" className={opsBadgeClass}>{lineRoleLabel(line.lineRole)}</Badge></TableCell>
                             <TableCell>{line.stockCode}</TableCell>
                             <TableCell>{line.quantity} {line.unit || ''}</TableCell>
                             <TableCell>{line.serialNo1 || line.lotNo || line.batchNo || '-'}</TableCell>
@@ -1409,24 +1414,24 @@ export function ProductionProcessPage(): ReactElement {
               </Card>
               ) : null}
 
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader>
-                  <CardTitle>{t('production.process.addConsumption')}</CardTitle>
+                  <CardTitle className={opsHeadingClass}>{t('production.process.addConsumption')}</CardTitle>
                   <CardDescription>{t('production.process.consumptionSimpleHint', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.lineRoleConsumption')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{selectedConsumptionPlan?.stockCode || '-'}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.process.lineRoleConsumption')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{selectedConsumptionPlan?.stockCode || '-'}</div>
                     </div>
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.plannedQuantity')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(selectedConsumptionPlan?.plannedQuantity)}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.create.plannedQuantity')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(selectedConsumptionPlan?.plannedQuantity)}</div>
                     </div>
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.gap.summary')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{selectedConsumptionPlan ? formatQuantity(Math.max(selectedConsumptionPlan.plannedQuantity - (selectedConsumptionPlan.consumedQuantity ?? 0), 0)) : '-'}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.process.gap.summary')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{selectedConsumptionPlan ? formatQuantity(Math.max(selectedConsumptionPlan.plannedQuantity - (selectedConsumptionPlan.consumedQuantity ?? 0), 0)) : '-'}</div>
                     </div>
                   </div>
                   {selectedConsumptionPlan ? (
@@ -1434,25 +1439,26 @@ export function ProductionProcessPage(): ReactElement {
                       {renderTrackingBadge(selectedConsumptionPlan.trackingMode)}
                       {renderSerialModeBadge(selectedConsumptionPlan.serialEntryMode)}
                       {selectedConsumptionPlan.isMandatory ? (
-                        <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                        <Badge variant="outline" className={`${opsBadgeClass} border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200`}>
                           {t('production.process.materialMandatory', { defaultValue: 'Missing translation' })}
                         </Badge>
                       ) : null}
                     </div>
                   ) : null}
                   {consumptionGuardMessage ? (
-                    <div className="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                    <div className="md:col-span-2 rounded-none border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
                       {consumptionGuardMessage}
                     </div>
                   ) : null}
 
                   {!selectedOrder ? (
-                    <div className="md:col-span-2 rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    <div className="md:col-span-2 wms-ops-production-empty">
                       {t('production.process.pickAssignedOrderFirst', { defaultValue: 'Missing translation' })}
                     </div>
                   ) : null}
 
                   <Combobox
+                    variant="ops"
                     options={consumptionStockOptions}
                     value={selectedConsumptionPlan ? String(selectedConsumptionPlan.id) : ''}
                     onValueChange={(value) => prefillConsumptionFromPlan(value)}
@@ -1461,11 +1467,11 @@ export function ProductionProcessPage(): ReactElement {
                     emptyText={t('production.process.lookupEmpty')}
                     disabled={!selectedOrder}
                   />
-                  <Input type="number" placeholder={t('production.create.plannedQuantity')} value={consumptionLine.quantity} onChange={(e) => setConsumptionLine((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} disabled={!selectedOrder} />
-                  <Input placeholder={t('production.process.serial')} value={consumptionLine.serialNo1 ?? ''} onChange={(e) => setConsumptionLine((prev) => ({ ...prev, serialNo1: e.target.value }))} disabled={!selectedOrder} />
+                  <OpsInput type="number" placeholder={t('production.create.plannedQuantity')} value={consumptionLine.quantity} onChange={(e) => setConsumptionLine((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} disabled={!selectedOrder} />
+                  <OpsInput placeholder={t('production.process.serial')} value={consumptionLine.serialNo1 ?? ''} onChange={(e) => setConsumptionLine((prev) => ({ ...prev, serialNo1: e.target.value }))} disabled={!selectedOrder} />
 
-                  <div className="rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
-                    <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.sourceWarehouse')}</div>
+                  <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                    <div className={opsLabelClass}>{t('production.create.sourceWarehouse')}</div>
                     <div className="font-medium">{consumptionLine.sourceWarehouseCode || '-'}</div>
                   </div>
 
@@ -1481,7 +1487,7 @@ export function ProductionProcessPage(): ReactElement {
 
                   <div className="md:col-span-2">
                     {selectedConsumptionPlan ? (
-                      <div className="mb-3 rounded-xl border border-sky-200/70 bg-sky-50/70 p-3 text-sm text-sky-900 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100">
+                      <div className="mb-3 rounded-none border border-sky-200/70 bg-sky-50/70 p-3 text-sm text-sky-900 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100">
                         {t('production.process.selectedConsumptionInfo', {
                           defaultValue: 'Missing translation',
                           stock: selectedConsumptionPlan.stockCode,
@@ -1490,31 +1496,31 @@ export function ProductionProcessPage(): ReactElement {
                         })}
                       </div>
                     ) : null}
-                    <Button type="button" onClick={handleRecordConsumption} disabled={!canRecordConsumption || consumptionMutation.isPending}>
+                    <OpsActionButton type="button" onClick={handleRecordConsumption} disabled={!canRecordConsumption || consumptionMutation.isPending}>
                       {t('production.process.recordConsumption')}
-                    </Button>
+                    </OpsActionButton>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className={opsCardClass}>
                 <CardHeader>
-                  <CardTitle>{t('production.process.addOutput')}</CardTitle>
+                  <CardTitle className={opsHeadingClass}>{t('production.process.addOutput')}</CardTitle>
                   <CardDescription>{t('production.process.outputSimpleHint', { defaultValue: 'Missing translation' })}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.lineRoleOutput')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{selectedOutputPlan?.stockCode || '-'}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.process.lineRoleOutput')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{selectedOutputPlan?.stockCode || '-'}</div>
                     </div>
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.plannedQuantity')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatQuantity(selectedOutputPlan?.plannedQuantity)}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.create.plannedQuantity')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{formatQuantity(selectedOutputPlan?.plannedQuantity)}</div>
                     </div>
-                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.process.gap.summary')}</div>
-                      <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{selectedOutputPlan ? formatQuantity(Math.max(selectedOutputPlan.plannedQuantity - (selectedOutputPlan.producedQuantity ?? 0), 0)) : '-'}</div>
+                    <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                      <div className={opsLabelClass}>{t('production.process.gap.summary')}</div>
+                      <div className={`mt-1 ${opsValueClass}`}>{selectedOutputPlan ? formatQuantity(Math.max(selectedOutputPlan.plannedQuantity - (selectedOutputPlan.producedQuantity ?? 0), 0)) : '-'}</div>
                     </div>
                   </div>
                   {selectedOutputPlan ? (
@@ -1524,18 +1530,19 @@ export function ProductionProcessPage(): ReactElement {
                     </div>
                   ) : null}
                   {outputGuardMessage ? (
-                    <div className="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                    <div className="md:col-span-2 rounded-none border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
                       {outputGuardMessage}
                     </div>
                   ) : null}
 
                   {!selectedOrder ? (
-                    <div className="md:col-span-2 rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+                    <div className="md:col-span-2 wms-ops-production-empty">
                       {t('production.process.pickAssignedOrderFirstOutput', { defaultValue: 'Missing translation' })}
                     </div>
                   ) : null}
 
                   <Combobox
+                    variant="ops"
                     options={outputStockOptions}
                     value={selectedOutputPlan ? String(selectedOutputPlan.id) : ''}
                     onValueChange={(value) => prefillOutputFromPlan(value)}
@@ -1544,11 +1551,11 @@ export function ProductionProcessPage(): ReactElement {
                     emptyText={t('production.process.lookupEmpty')}
                     disabled={!selectedOrder}
                   />
-                  <Input type="number" placeholder={t('production.create.plannedQuantity')} value={outputLine.quantity} onChange={(e) => setOutputLine((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} disabled={!selectedOrder} />
-                  <Input placeholder={t('production.process.serial')} value={outputLine.serialNo1 ?? ''} onChange={(e) => setOutputLine((prev) => ({ ...prev, serialNo1: e.target.value }))} disabled={!selectedOrder} />
+                  <OpsInput type="number" placeholder={t('production.create.plannedQuantity')} value={outputLine.quantity} onChange={(e) => setOutputLine((prev) => ({ ...prev, quantity: Number(e.target.value) || 0 }))} disabled={!selectedOrder} />
+                  <OpsInput placeholder={t('production.process.serial')} value={outputLine.serialNo1 ?? ''} onChange={(e) => setOutputLine((prev) => ({ ...prev, serialNo1: e.target.value }))} disabled={!selectedOrder} />
 
-                  <div className="rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
-                    <div className="text-xs text-slate-500 dark:text-slate-400">{t('production.create.targetWarehouse')}</div>
+                  <div className="wms-ops-production-panel px-3 py-2 text-sm">
+                    <div className={opsLabelClass}>{t('production.create.targetWarehouse')}</div>
                     <div className="font-medium">{outputLine.targetWarehouseCode || '-'}</div>
                   </div>
 
@@ -1564,7 +1571,7 @@ export function ProductionProcessPage(): ReactElement {
 
                   <div className="md:col-span-2">
                     {selectedOutputPlan ? (
-                      <div className="mb-3 rounded-xl border border-emerald-200/70 bg-emerald-50/70 p-3 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100">
+                      <div className="mb-3 rounded-none border border-emerald-200/70 bg-emerald-50/70 p-3 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100">
                         {t('production.process.selectedOutputInfo', {
                           defaultValue: 'Missing translation',
                           stock: selectedOutputPlan.stockCode,
@@ -1573,9 +1580,9 @@ export function ProductionProcessPage(): ReactElement {
                         })}
                       </div>
                     ) : null}
-                    <Button type="button" onClick={handleRecordOutput} disabled={!canRecordOutput || outputMutation.isPending}>
+                    <OpsActionButton type="button" onClick={handleRecordOutput} disabled={!canRecordOutput || outputMutation.isPending}>
                       {t('production.process.recordOutput')}
-                    </Button>
+                    </OpsActionButton>
                   </div>
                 </CardContent>
               </Card>
@@ -1583,13 +1590,13 @@ export function ProductionProcessPage(): ReactElement {
           </div>
 
           <div className={isKioskMode
-            ? 'sticky bottom-0 z-20 -mx-2 rounded-t-3xl border border-slate-200/80 bg-white/98 px-4 py-5 shadow-[0_-16px_48px_rgba(15,23,42,0.18)] backdrop-blur dark:border-white/10 dark:bg-slate-950/98 sm:mx-0'
-            : 'sticky bottom-0 z-20 -mx-2 rounded-t-3xl border border-slate-200/80 bg-white/95 px-4 py-4 shadow-[0_-12px_40px_rgba(15,23,42,0.12)] backdrop-blur dark:border-white/10 dark:bg-slate-950/95 sm:mx-0'}>
+            ? 'wms-ops-surface-card sticky bottom-0 z-20 -mx-2 bg-[color-mix(in_oklab,var(--wms-ops-card-bg)_96%,transparent)] px-4 py-5 backdrop-blur sm:mx-0'
+            : 'wms-ops-surface-card sticky bottom-0 z-20 -mx-2 bg-[color-mix(in_oklab,var(--wms-ops-card-bg)_94%,transparent)] px-4 py-4 backdrop-blur sm:mx-0'}>
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="space-y-1">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
-                <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{currentActionSummary.title}</div>
-                <div className="text-sm text-slate-600 dark:text-slate-300">{currentActionSummary.description}</div>
+                <div className={`${opsLabelClass} tracking-[0.2em]`}>{t('production.process.currentAction', { defaultValue: 'Missing translation' })}</div>
+                <div className={`text-lg ${opsValueClass}`}>{currentActionSummary.title}</div>
+                <div className="text-sm text-muted-foreground">{currentActionSummary.description}</div>
               </div>
 
               <div className={isKioskMode ? 'grid gap-3 sm:grid-cols-2 xl:flex' : 'grid gap-3 sm:grid-cols-2 xl:flex'}>
@@ -1597,7 +1604,7 @@ export function ProductionProcessPage(): ReactElement {
                   <Button
                     type="button"
                     size="lg"
-                    className={isKioskMode ? 'min-h-16 min-w-48 text-lg' : 'min-h-14 min-w-40 text-base'}
+                    className={isKioskMode ? 'min-h-16 min-w-48 rounded-none text-lg' : 'min-h-14 min-w-40 rounded-none text-base'}
                     variant={hasDependencyBlocker ? 'destructive' : 'default'}
                     onClick={() => selectedOrder && startMutation.mutate(selectedOrder.id)}
                     disabled={!canUpdateProduction || !readyToRun || hasDependencyBlocker || startMutation.isPending}
@@ -1612,7 +1619,7 @@ export function ProductionProcessPage(): ReactElement {
                     type="button"
                     size="lg"
                     variant="outline"
-                    className={isKioskMode ? 'min-h-16 min-w-48 text-lg' : 'min-h-14 min-w-40 text-base'}
+                    className={isKioskMode ? 'min-h-16 min-w-48 rounded-none text-lg' : 'min-h-14 min-w-40 rounded-none text-base'}
                     onClick={() => pauseMutation.mutate()}
                     disabled={!canUpdateProduction || !activeOperation || pauseMutation.isPending}
                   >
@@ -1626,7 +1633,7 @@ export function ProductionProcessPage(): ReactElement {
                     type="button"
                     size="lg"
                     variant="outline"
-                    className={isKioskMode ? 'min-h-16 min-w-48 text-lg' : 'min-h-14 min-w-40 text-base'}
+                    className={isKioskMode ? 'min-h-16 min-w-48 rounded-none text-lg' : 'min-h-14 min-w-40 rounded-none text-base'}
                     onClick={() => resumeMutation.mutate()}
                     disabled={!canUpdateProduction || !activeOperation || resumeMutation.isPending}
                   >
@@ -1640,7 +1647,7 @@ export function ProductionProcessPage(): ReactElement {
                     type="button"
                     size="lg"
                     variant="destructive"
-                    className={isKioskMode ? 'min-h-16 min-w-48 text-lg' : 'min-h-14 min-w-40 text-base'}
+                    className={isKioskMode ? 'min-h-16 min-w-48 rounded-none text-lg' : 'min-h-14 min-w-40 rounded-none text-base'}
                     onClick={() => completeMutation.mutate()}
                     disabled={!canUpdateProduction || !activeOperation || completeMutation.isPending}
                   >

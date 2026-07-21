@@ -1,8 +1,7 @@
 import { type ReactElement } from 'react';
 import { AlertCircle, Inbox } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { OpsActionButton } from './OpsActionButton';
 import { OpsLoadingState } from './OpsLoadingState';
 
 type PageStateTone = 'loading' | 'error' | 'empty';
@@ -49,41 +48,39 @@ export function PageState({
   const { icon: Icon, iconClassName } = stateConfig[tone];
 
   return (
-    <Card
+    <div
       className={cn(
-        'border-dashed bg-muted/20 shadow-none',
-        compact ? 'rounded-lg' : 'rounded-xl',
-        className
+        'wms-ops-form wms-ops-page-state text-center',
+        compact && 'wms-ops-page-state--compact',
+        tone === 'error' &&
+          'border-[color-mix(in_oklab,hsl(var(--destructive))_32%,var(--wms-ops-card-border))]',
+        className,
       )}
     >
-      <CardContent
+      <div
         className={cn(
-          'flex flex-col items-center justify-center text-center',
-          compact ? 'gap-3 px-6 py-8' : 'gap-4 px-8 py-12'
+          'wms-ops-page-state__icon flex items-center justify-center border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,transparent)] bg-[var(--wms-ops-field-bg)]',
+          compact ? 'h-9 w-9' : 'h-11 w-11',
         )}
       >
-        <div
+        <Icon className={cn(compact ? 'h-4 w-4' : 'h-5 w-5', iconClassName)} />
+      </div>
+      <div className="space-y-1.5">
+        <p
           className={cn(
-            'flex items-center justify-center rounded-full bg-background shadow-sm',
-            compact ? 'h-10 w-10' : 'h-12 w-12'
+            'wms-ops-page-state__title font-semibold text-foreground',
+            compact ? 'text-xs' : 'text-sm',
           )}
         >
-          <Icon className={cn(compact ? 'h-5 w-5' : 'h-6 w-6', iconClassName)} />
-        </div>
-        <div className="space-y-1.5">
-          <p className={cn('font-semibold text-foreground', compact ? 'text-sm' : 'text-base')}>
-            {title}
-          </p>
-          {description ? (
-            <p className={cn('text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>{description}</p>
-          ) : null}
-        </div>
-        {actionLabel && onAction ? (
-          <Button type="button" variant={tone === 'error' ? 'default' : 'outline'} onClick={onAction}>
-            {actionLabel}
-          </Button>
-        ) : null}
-      </CardContent>
-    </Card>
+          {title}
+        </p>
+        {description ? <p className="wms-ops-page-state__description">{description}</p> : null}
+      </div>
+      {actionLabel && onAction ? (
+        <OpsActionButton variant={tone === 'error' ? 'primary' : 'secondary'} onClick={onAction}>
+          {actionLabel}
+        </OpsActionButton>
+      ) : null}
+    </div>
   );
 }

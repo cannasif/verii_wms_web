@@ -1,27 +1,40 @@
 import { type ReactElement, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, type LucideIcon } from 'lucide-react';
+import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
+import { WmsIcon, type WmsIconData } from '@/components/shared';
 import { cn } from '@/lib/utils';
 import { MasterDataOpsFlagChip } from '@/features/shared';
 import type { DashboardActivityItem } from '../hooks/useDashboardMetrics';
 
 export function DashboardOpsHero({
   eyebrow,
+  greeting,
   title,
   subtitle,
   operatorLabel,
   operatorValue,
   branchLabel,
   branchValue,
+  clockLabel,
+  clockTime,
+  clockDate,
+  clockDateTime,
 }: {
   eyebrow: string;
+  greeting?: string;
   title: string;
   subtitle: string;
   operatorLabel: string;
   operatorValue: string;
   branchLabel: string;
   branchValue: string;
+  clockLabel?: string;
+  clockTime?: string;
+  clockDate?: string;
+  clockDateTime?: string;
 }): ReactElement {
+  const showClock = Boolean(clockTime);
+
   return (
     <header className="wms-ops-dashboard-hero">
       <span className="wms-ops-dashboard-hero__frame" aria-hidden>
@@ -32,18 +45,32 @@ export function DashboardOpsHero({
         <span className="wms-ops-dashboard-hero__glow" />
       </span>
       <div className="wms-ops-dashboard-hero__content">
-        <p className="wms-ops-dashboard-hero__eyebrow">{eyebrow}</p>
-        <h1 className="wms-ops-dashboard-hero__title">{title}</h1>
-        <p className="wms-ops-dashboard-hero__subtitle">{subtitle}</p>
-        <div className="wms-ops-dashboard-hero__meta">
-          <div className="wms-ops-dashboard-hero__meta-item">
-            <span className="wms-ops-dashboard-hero__meta-label">{operatorLabel}</span>
-            <span className="wms-ops-dashboard-hero__meta-value">{operatorValue}</span>
+        <div className={cn('wms-ops-dashboard-hero__main', showClock && 'wms-ops-dashboard-hero__main--with-clock')}>
+          <div className="wms-ops-dashboard-hero__intro">
+            <p className="wms-ops-dashboard-hero__eyebrow">{eyebrow}</p>
+            {greeting ? <p className="wms-ops-dashboard-hero__greeting">{greeting}</p> : null}
+            <h1 className="wms-ops-dashboard-hero__title">{title}</h1>
+            <p className="wms-ops-dashboard-hero__subtitle">{subtitle}</p>
+            <div className="wms-ops-dashboard-hero__meta">
+              <div className="wms-ops-dashboard-hero__meta-item">
+                <span className="wms-ops-dashboard-hero__meta-label">{operatorLabel}</span>
+                <span className="wms-ops-dashboard-hero__meta-value">{operatorValue}</span>
+              </div>
+              <div className="wms-ops-dashboard-hero__meta-item">
+                <span className="wms-ops-dashboard-hero__meta-label">{branchLabel}</span>
+                <span className="wms-ops-dashboard-hero__meta-value">{branchValue}</span>
+              </div>
+            </div>
           </div>
-          <div className="wms-ops-dashboard-hero__meta-item">
-            <span className="wms-ops-dashboard-hero__meta-label">{branchLabel}</span>
-            <span className="wms-ops-dashboard-hero__meta-value">{branchValue}</span>
-          </div>
+          {showClock ? (
+            <aside className="wms-ops-dashboard-hero__clock" aria-live="polite">
+              {clockLabel ? <span className="wms-ops-dashboard-hero__clock-label">{clockLabel}</span> : null}
+              <time className="wms-ops-dashboard-hero__clock-time" dateTime={clockDateTime ?? clockTime}>
+                {clockTime}
+              </time>
+              {clockDate ? <span className="wms-ops-dashboard-hero__clock-date">{clockDate}</span> : null}
+            </aside>
+          ) : null}
         </div>
       </div>
     </header>
@@ -147,13 +174,15 @@ export function DashboardOpsSection({
         <span className="wms-ops-dashboard-section__corner wms-ops-dashboard-section__corner--br" />
       </span>
       <header className="wms-ops-dashboard-section__header">
-        <div className="wms-ops-pt-terminal__prompt">
-          <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
-          <h2 className="wms-ops-pt-terminal__title text-sm">{title}</h2>
+        <div className="wms-ops-dashboard-section__heading">
+          <div className="wms-ops-pt-terminal__prompt">
+            <span className="wms-ops-subtitle-prefix" aria-hidden>{'> '}</span>
+            <h2 className="wms-ops-pt-terminal__title wms-ops-dashboard-section__title text-sm">{title}</h2>
+          </div>
+          <p className="wms-ops-dashboard-section__description wms-ops-pt-terminal__meta text-xs">{description}</p>
         </div>
         <div className="wms-ops-dashboard-section__meta">
-          <span className="wms-ops-code-badge">{sectionCode}</span>
-          <p className="wms-ops-pt-terminal__meta text-xs">{description}</p>
+          <span className="wms-ops-code-badge wms-ops-dashboard-section__code">{sectionCode}</span>
         </div>
       </header>
       <div className="wms-ops-dashboard-section__body">{children}</div>
@@ -208,7 +237,7 @@ export function DashboardOpsQuickLink({
   title,
   description,
   href,
-  icon: Icon,
+  icon,
   openLabel,
 }: {
   index: number;
@@ -216,7 +245,7 @@ export function DashboardOpsQuickLink({
   title: string;
   description: string;
   href: string;
-  icon: LucideIcon;
+  icon: WmsIconData;
   openLabel: string;
 }): ReactElement {
   return (
@@ -228,22 +257,23 @@ export function DashboardOpsQuickLink({
         <span className="wms-ops-dashboard-module__corner wms-ops-dashboard-module__corner--br" />
         <span className="wms-ops-dashboard-module__scan" />
       </span>
+      <span className="wms-ops-dashboard-module__sheen" aria-hidden />
       <div className="wms-ops-dashboard-module__head">
         <span className="wms-ops-dashboard-module__index">{String(index).padStart(2, '0')}</span>
-        <span className="wms-ops-code-badge">{moduleCode}</span>
+        <span className="wms-ops-code-badge wms-ops-dashboard-module__code">{moduleCode}</span>
       </div>
       <div className="wms-ops-dashboard-module__body">
         <span className="wms-ops-dashboard-module__icon" aria-hidden>
-          <Icon className="size-5" />
+          <WmsIcon icon={icon} size={22} />
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="wms-ops-dashboard-module__title">{title}</h3>
           <p className="wms-ops-dashboard-module__desc">{description}</p>
         </div>
       </div>
       <div className="wms-ops-dashboard-module__action">
         <span>{openLabel}</span>
-        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        <WmsIcon icon={ArrowRight02Icon} size={16} className="wms-ops-dashboard-module__action-icon" />
       </div>
     </Link>
   );
