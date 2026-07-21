@@ -22,17 +22,44 @@ function downloadBlob(blob: Blob, fileName: string): void {
   const link = document.createElement('a');
   link.href = url;
   link.download = fileName;
+  link.rel = 'noopener noreferrer';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+
+  // Safari can cancel the download if the object URL is revoked immediately
+  // after a programmatic click. Keep it alive briefly and clean it up later.
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
-function openPdf(blob: Blob): void {
+async function ensurePdfBlob(blob: Blob): Promise<void> {
+  const contentType = blob.type.toLowerCase();
+  if (contentType.includes('application/pdf')) {
+    return;
+  }
+
+  const signature = await blob.slice(0, 5).text();
+  if (signature === '%PDF-') {
+    return;
+  }
+
+  const text = await blob.text();
+  try {
+    const parsed = JSON.parse(text) as { message?: string; exceptionMessage?: string };
+    throw new Error(parsed.message || parsed.exceptionMessage || text);
+  } catch (error) {
+    if (error instanceof Error && !(error instanceof SyntaxError)) {
+      throw error;
+    }
+    throw new Error(text || 'PDF indirilemedi.');
+  }
+}
+
+function openPdf(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
   const popup = window.open(url, '_blank', 'noopener,noreferrer');
   if (!popup) {
-    downloadBlob(blob, 'incoming-invoice.pdf');
+    downloadBlob(blob, fileName);
   }
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
@@ -105,7 +132,8 @@ export function IncomingInvoiceArchivePage(): ReactElement {
         invoiceKind,
       });
       const fileName = result.fileName || `${resolvedUuid}.pdf`;
-      openPdf(result.blob);
+      await ensurePdfBlob(result.blob);
+      openPdf(result.blob, fileName);
       downloadBlob(result.blob, fileName);
       setLastResult({ uuid: resolvedUuid, company: selectedCompany, fileName });
       toast.success(t('messages.downloaded'));
