@@ -100,7 +100,7 @@ export const incomingInvoiceArchiveApi = {
   },
 
   async updateConnection(id: number, input: ELogoConnectionUpsert): Promise<ELogoConnection> {
-    const response = await api.put<ApiResponse<ELogoConnection>>(`/api/incoming-invoice-archive/connections/${id}`, input);
+    const response = await api.post<ApiResponse<ELogoConnection>>(`/api/incoming-invoice-archive/connections/${id}/update`, input);
     return extractData(response as ApiResponse<ELogoConnection>);
   },
 
