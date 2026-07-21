@@ -15,7 +15,7 @@ import type {
 import type { TFunction } from 'i18next';
 import type { Customer, Project } from '@/features/shared/types/operation-reference.types';
 
-const normalizeDocumentNo = (value: string) => value.replace(/\D/g, '');
+const normalizeDocumentNo = (value: string) => value.trim();
 
 export type { Customer, Product, Project, Warehouse } from '@/features/shared/types/operation-reference.types';
 
@@ -33,6 +33,12 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   const documentNo = normalizeDocumentNo(data.documentNo);
 
   if (documentNo.length === 0) {
+    return;
+  }
+
+  // Mal kabul belge numarası manuel girilebilir ve seri içerebilir. Uzunluk
+  // kontrolünü sadece tamamen numerik Netsis/e-belge numaralarında uygula.
+  if (!/^\d+$/.test(documentNo)) {
     return;
   }
 

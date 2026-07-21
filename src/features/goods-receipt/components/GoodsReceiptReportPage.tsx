@@ -74,6 +74,11 @@ function mapSortBy(value: ColumnKey): string {
   }
 }
 
+function formatCustomer(row: GrHeader): string {
+  if (row.customerName && row.customerCode) return `${row.customerName} (${row.customerCode})`;
+  return row.customerName || row.customerCode || '-';
+}
+
 export function GoodsReceiptReportPage(): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
@@ -181,7 +186,7 @@ export function GoodsReceiptReportPage(): ReactElement {
       case 'orderId':
         return row.orderId || '-';
       case 'customerCode':
-        return row.customerCode || '-';
+        return formatCustomer(row);
       case 'projectCode':
         return row.projectCode || '-';
       case 'documentType':
@@ -222,7 +227,7 @@ export function GoodsReceiptReportPage(): ReactElement {
     return pagedGrid.sortDirection === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />;
   };
   const exportColumns = useMemo(() => orderedVisibleColumns.filter((key) => key !== 'actions').map((key) => ({ key, label: columns.find((column) => column.key === key)?.label ?? key })), [columns, orderedVisibleColumns]);
-  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, orderId: item.orderId || '-', customerCode: item.customerCode || '-', projectCode: item.projectCode || '-', documentType: item.documentType || '-', plannedDate: formatDate(item.plannedDate), status: statusLabel(item), createdDate: formatDateTime(item.createdDate) })), [data?.data, t]);
+  const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({ id: item.id, orderId: item.orderId || '-', customerCode: formatCustomer(item), projectCode: item.projectCode || '-', documentType: item.documentType || '-', plannedDate: formatDate(item.plannedDate), status: statusLabel(item), createdDate: formatDateTime(item.createdDate) })), [data?.data, t]);
   const range = getPagedRange(data, 1);
   const paginationInfoText = t('goodsReceipt.report.paginationInfo', { current: range.from, total: range.to, totalCount: range.total });
 
@@ -254,7 +259,14 @@ export function GoodsReceiptReportPage(): ReactElement {
           renderCell={(row, key) => ({
             id: <span className="wms-ops-table-id-value">{row.id}</span>,
             orderId: <span className="font-medium font-mono text-xs">{row.orderId || '-'}</span>,
-            customerCode: row.customerCode || '-',
+            customerCode: (
+              <div className="min-w-0 text-left">
+                <div className="truncate font-medium">{row.customerName || row.customerCode || '-'}</div>
+                {row.customerName && row.customerCode ? (
+                  <div className="truncate font-mono text-[0.65rem] opacity-70">{row.customerCode}</div>
+                ) : null}
+              </div>
+            ),
             projectCode: row.projectCode || '-',
             documentType: (
               <Badge

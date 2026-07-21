@@ -357,11 +357,27 @@ export function GoodsReceiptDetailDialog({
     });
   }, [grImportLines, searchQuery]);
 
+  const filteredOrderLines = useMemo(() => {
+    if (!grLines) return [];
+    if (!searchQuery.trim()) return grLines;
+
+    const query = searchQuery.toLowerCase();
+    return grLines.filter((line) => {
+      const stockCode = (line.stockCode || '').toLowerCase();
+      const description = (line.description || '').toLowerCase();
+      const erpOrderNo = (line.erpOrderNo || '').toLowerCase();
+      return stockCode.includes(query) || description.includes(query) || erpOrderNo.includes(query);
+    });
+  }, [grLines, searchQuery]);
+
   const renderHeaderInfoOps = (): ReactElement => (
     <div className="wms-ops-detail-panel">
       <div className="wms-ops-detail-grid">
         <OpsDetailField label={t('goodsReceipt.report.orderId')}>{data?.orderId || '-'}</OpsDetailField>
-        <OpsDetailField label={t('goodsReceipt.report.customerCode')}>{data?.customerCode || '-'}</OpsDetailField>
+        <OpsDetailField label={t('goodsReceipt.report.documentNo')}>{data?.documentNo || '-'}</OpsDetailField>
+        <OpsDetailField label={t('goodsReceipt.report.customerCode')}>
+          {data?.customerName && data?.customerCode ? `${data.customerName} (${data.customerCode})` : data?.customerName || data?.customerCode || '-'}
+        </OpsDetailField>
         <OpsDetailField label={t('goodsReceipt.report.projectCode')}>{data?.projectCode || '-'}</OpsDetailField>
         <OpsDetailField label={t('goodsReceipt.report.documentType')}>
           <Badge
@@ -405,7 +421,13 @@ export function GoodsReceiptDetailDialog({
           </div>
           <div>
             <span className="text-muted-foreground">{t('goodsReceipt.report.customerCode')}: </span>
-            <span className="font-semibold">{data?.customerCode || '-'}</span>
+            <span className="font-semibold">
+              {data?.customerName && data?.customerCode ? `${data.customerName} (${data.customerCode})` : data?.customerName || data?.customerCode || '-'}
+            </span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">{t('goodsReceipt.report.documentNo')}: </span>
+            <span className="font-semibold">{data?.documentNo || '-'}</span>
           </div>
           <div>
             <span className="text-muted-foreground">{t('goodsReceipt.report.projectCode')}: </span>
@@ -885,11 +907,59 @@ export function GoodsReceiptDetailDialog({
           })}
         </Accordion>
       ) : (
-        <div className={isOps ? 'wms-ops-detail-empty' : 'flex items-center justify-center py-12'}>
-          <p className={isOps ? undefined : 'text-muted-foreground'}>
-            {searchQuery ? t('goodsReceipt.report.noSearchResults') : t('goodsReceipt.report.noImportLines')}
-          </p>
-        </div>
+        filteredOrderLines.length > 0 ? (
+          <Accordion
+            type="single"
+            collapsible
+            className={cn('w-full', isOps && 'wms-ops-detail-accordion')}
+          >
+            {filteredOrderLines.map((line) => (
+              <AccordionItem key={line.id} value={`line-${line.id}`}>
+                <AccordionTrigger className="hover:no-underline">
+                  {isOps ? (
+                    <div className="wms-ops-detail-accordion__head">
+                      <span className="wms-ops-code-badge">{line.stockCode || '-'}</span>
+                      <span className="wms-ops-detail-accordion__title">{line.description || '-'}</span>
+                      <span className="wms-ops-code-badge">{line.quantity} {line.unit || ''}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 text-left">
+                      <Badge>{line.stockCode || '-'}</Badge>
+                      <span className="font-medium">{line.description || '-'}</span>
+                      <Badge variant="outline" className="text-xs">{line.quantity} {line.unit || ''}</Badge>
+                    </div>
+                  )}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className={cn('grid gap-3 text-sm', isOps ? 'wms-ops-detail-panel wms-ops-detail-panel--rows' : 'grid-cols-2')}>
+                    {isOps ? (
+                      <>
+                        <OpsDetailRow label={t('goodsReceipt.report.stockCode')}>{line.stockCode || '-'}</OpsDetailRow>
+                        <OpsDetailRow label={t('goodsReceipt.report.description')}>{line.description || '-'}</OpsDetailRow>
+                        <OpsDetailRow label={t('goodsReceipt.report.quantity')}>{line.quantity} {line.unit || ''}</OpsDetailRow>
+                        <OpsDetailRow label={t('goodsReceipt.report.erpOrderNo')}>{line.erpOrderNo || '-'}</OpsDetailRow>
+                        <OpsDetailRow label={t('goodsReceipt.report.erpOrderId')}>{line.erpOrderId || '-'}</OpsDetailRow>
+                      </>
+                    ) : (
+                      <>
+                        <div>{t('goodsReceipt.report.stockCode')}: {line.stockCode || '-'}</div>
+                        <div>{t('goodsReceipt.report.quantity')}: {line.quantity} {line.unit || ''}</div>
+                        <div>{t('goodsReceipt.report.erpOrderNo')}: {line.erpOrderNo || '-'}</div>
+                        <div>{t('goodsReceipt.report.erpOrderId')}: {line.erpOrderId || '-'}</div>
+                      </>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        ) : (
+          <div className={isOps ? 'wms-ops-detail-empty' : 'flex items-center justify-center py-12'}>
+            <p className={isOps ? undefined : 'text-muted-foreground'}>
+              {searchQuery ? t('goodsReceipt.report.noSearchResults') : t('goodsReceipt.report.noImportLines')}
+            </p>
+          </div>
+        )
       )}
     </div>
   );

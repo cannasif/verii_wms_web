@@ -48,6 +48,11 @@ function mapSortBy(value: ColumnKey): string {
   }
 }
 
+function formatCustomer(row: GrHeader): string {
+  if (row.customerName && row.customerCode) return `${row.customerName} (${row.customerCode})`;
+  return row.customerName || row.customerCode || '-';
+}
+
 export function GoodsReceiptApprovalPage(): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const { setPageTitle } = useUIStore();
@@ -110,7 +115,7 @@ export function GoodsReceiptApprovalPage(): ReactElement {
       case 'id': return String(row.id);
       case 'documentNo': return row.documentNo || '-';
       case 'documentDate': return formatDate(row.documentDate);
-      case 'customerCode': return row.customerCode || '-';
+      case 'customerCode': return formatCustomer(row);
       case 'customerName': return row.customerName || '-';
       case 'plannedDate': return formatDate(row.plannedDate);
       default: return undefined;
@@ -129,7 +134,7 @@ export function GoodsReceiptApprovalPage(): ReactElement {
     id: item.id,
     documentNo: item.documentNo || '-',
     documentDate: formatDate(item.documentDate),
-    customerCode: item.customerCode || '-',
+    customerCode: formatCustomer(item),
     customerName: item.customerName || '-',
     plannedDate: formatDate(item.plannedDate),
   })), [data?.data]);
@@ -182,7 +187,14 @@ export function GoodsReceiptApprovalPage(): ReactElement {
             id: <span className="wms-ops-table-id-value">{row.id}</span>,
             documentNo: <span className="font-medium font-mono text-xs">{row.documentNo || '-'}</span>,
             documentDate: <span className="font-mono text-xs">{formatDate(row.documentDate)}</span>,
-            customerCode: row.customerCode || '-',
+            customerCode: (
+              <div className="min-w-0 text-left">
+                <div className="truncate font-medium">{row.customerName || row.customerCode || '-'}</div>
+                {row.customerName && row.customerCode ? (
+                  <div className="truncate font-mono text-[0.65rem] opacity-70">{row.customerCode}</div>
+                ) : null}
+              </div>
+            ),
             customerName: row.customerName || '-',
             plannedDate: <span className="font-mono text-xs">{formatDate(row.plannedDate)}</span>,
           } as Record<Exclude<ColumnKey, 'actions'>, React.ReactNode>)[key as Exclude<ColumnKey, 'actions'>] ?? null}

@@ -102,9 +102,10 @@ export const parameterApi = {
   create: async (type: ParameterType, data: CreateParameterRequest): Promise<number> => {
     const endpoint = getEndpoint(type);
     try {
-      const response = await api.post<ApiResponse<number>>(`/api/${endpoint}`, data);
+      const response = await api.post<ApiResponse<number | Parameter>>(`/api/${endpoint}`, data);
       if (response.success) {
-        return response.data || 0;
+        if (typeof response.data === 'number') return response.data;
+        return response.data?.id || 0;
       }
       const errorMessage = response.exceptionMessage || response.message || 'Parametre oluşturulamadı';
       throw new Error(errorMessage);

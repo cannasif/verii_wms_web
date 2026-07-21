@@ -10,6 +10,8 @@ export function useApproveGrHeader() {
       goodsReceiptApi.approveGoodsReceipt(id, approved),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [GOODS_RECEIPT_QUERY_KEYS.AWAITING_APPROVAL_HEADERS] });
+      queryClient.invalidateQueries({ queryKey: [GOODS_RECEIPT_QUERY_KEYS.HEADERS] });
+      queryClient.invalidateQueries({ queryKey: [GOODS_RECEIPT_QUERY_KEYS.ASSIGNED_HEADERS] });
     },
   });
 }

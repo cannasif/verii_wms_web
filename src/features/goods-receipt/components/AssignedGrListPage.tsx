@@ -91,6 +91,11 @@ function formatDateTime(dateString: string | null): string {
   });
 }
 
+function formatCustomer(row: GrHeader): string {
+  if (row.customerName && row.customerCode) return `${row.customerName} (${row.customerCode})`;
+  return row.customerName || row.customerCode || '-';
+}
+
 export function AssignedGrListPage(): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const navigate = useNavigate();
@@ -180,7 +185,7 @@ export function AssignedGrListPage(): ReactElement {
     switch (key) {
       case 'id': return String(row.id);
       case 'orderId': return row.orderId || '-';
-      case 'customerCode': return row.customerCode || '-';
+      case 'customerCode': return formatCustomer(row);
       case 'projectCode': return row.projectCode || '-';
       case 'documentType': return row.documentType || '-';
       case 'plannedDate': return formatDate(row.plannedDate);
@@ -201,7 +206,7 @@ export function AssignedGrListPage(): ReactElement {
   const exportRows = useMemo<Record<string, unknown>[]>(() => (data?.data ?? []).map((item) => ({
     id: item.id,
     orderId: item.orderId || '-',
-    customerCode: item.customerCode || '-',
+    customerCode: formatCustomer(item),
     projectCode: item.projectCode || '-',
     documentType: item.documentType || '-',
     plannedDate: formatDate(item.plannedDate),
@@ -251,7 +256,14 @@ export function AssignedGrListPage(): ReactElement {
           renderCell={(item, columnKey) => ({
             id: <span className="wms-ops-table-id-value">{item.id}</span>,
             orderId: <span className="font-medium font-mono text-xs">{item.orderId || '-'}</span>,
-            customerCode: item.customerCode || '-',
+            customerCode: (
+              <div className="min-w-0 text-left">
+                <div className="truncate font-medium">{item.customerName || item.customerCode || '-'}</div>
+                {item.customerName && item.customerCode ? (
+                  <div className="truncate font-mono text-[0.65rem] opacity-70">{item.customerCode}</div>
+                ) : null}
+              </div>
+            ),
             projectCode: item.projectCode || '-',
             documentType: <Badge variant="outline" className="wms-ops-code-badge mx-auto rounded-none text-[0.625rem]">{item.documentType || '-'}</Badge>,
             plannedDate: formatDate(item.plannedDate),
