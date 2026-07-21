@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { Download } from 'lucide-react';
 import { OpsActionButton, OpsFormPageShell, OpsInput, OpsServiceEyebrow } from '@/components/shared';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import {
@@ -30,23 +31,74 @@ const normalizeHeader = (value: string): string =>
     .replace(/[^a-z0-9]/g, '');
 
 const headerCandidates = {
-  netsisOrderNo: ['Netsis Sip. No', 'Netsis Sipariş No', 'FISNO'],
-  netsisOrderLineNo: ['Netsis Sip. Sıra No', 'Netsis Sipariş Sıra No', 'SIRA'],
-  netsisLineSequenceNo: ['SIRA NO', 'SIRA NO.'],
-  stockCode: ['Stok Kodu', 'STOK_KODU'],
-  stockName: ['Stok Adı', 'Stok Adi', 'STOK_ADI'],
-  combinedSize: ['Kombine Size', 'KOMBINE_SIZE'],
-  serialNo: ['Seri No (Levha No)', 'SERI_NO_LEVHA'],
-  serialNo2: ['Seri-2 (Poz No)', 'SERI2_POZNO'],
-  expectedQuantity: ['Miktar(Kg)', 'Miktar (Kg)', 'MIKTAR'],
-  depotCode: ['Depo Kodu', 'DEPO_KODU', 'DEPO_KOD'],
-  materialQuality: ['Material Quality Malzeme Kalitesi', 'Material Quality', 'Malzeme Kalitesi'],
-  heatNumber: ['Heat Number Döküm/Şarj No', 'Heat Number', 'Döküm/Şarj No'],
-  certificateNumber: ['Certificate Number Sertifika No', 'Certificate Number', 'Sertifika No'],
-  exportRefNo: ['Export Ref No', 'EXPORT_REF_NO'],
+  netsisOrderNo: ['Netsis Sip. No', 'Netsis Sipariş No', 'Netsis Siparis No', 'Sipariş No', 'Siparis No', 'FISNO'],
+  netsisOrderLineNo: ['Netsis Sip. Sıra No', 'Netsis Sipariş Sıra No', 'Netsis Siparis Sira No', 'Sipariş Sıra No', 'Siparis Sira No', 'SIRA'],
+  netsisLineSequenceNo: ['SIRA NO', 'SIRA NO.', 'Sıra No', 'Sira No', 'Kalem Sıra No', 'Kalem Sira No'],
+  stockCode: ['Stok Kodu', 'Stok Kod', 'STOK_KODU', 'STOK KODU'],
+  stockName: ['Stok Adı', 'Stok Adi', 'Stok İsmi', 'Stok Ismi', 'STOK_ADI', 'STOK ADI'],
+  combinedSize: ['Kombine Size', 'Kombine Ölçü', 'Kombine Olcu', 'KOMBINE_SIZE'],
+  serialNo: ['Seri No (Levha No)', 'Seri No', 'Levha No', 'SERI_NO_LEVHA', 'SERI NO LEVHA'],
+  serialNo2: ['Seri-2 (Poz No)', 'Seri 2', 'Poz No', 'SERI2_POZNO', 'SERI 2 POZ NO'],
+  expectedQuantity: ['Miktar(Kg)', 'Miktar (Kg)', 'Miktar Kg', 'Miktar', 'Beklenen Miktar', 'MIKTAR'],
+  depotCode: ['Depo Kodu', 'Depo Kod', 'DEPO_KODU', 'DEPO_KOD', 'DEPO KODU'],
+  materialQuality: ['Material Quality Malzeme Kalitesi', 'Material Quality', 'Malzeme Kalitesi', 'Kalite'],
+  heatNumber: ['Heat Number Döküm/Şarj No', 'Heat Number', 'Döküm/Şarj No', 'Dokum Sarj No', 'Şarj No', 'Sarj No'],
+  certificateNumber: ['Certificate Number Sertifika No', 'Certificate Number', 'Sertifika No', 'Sertifika'],
+  exportRefNo: ['Export Ref No', 'Export Ref', 'EXPORT_REF_NO', 'EXPORT REF NO'],
 } as const;
 
 const knownHeaders = new Set(Object.values(headerCandidates).flat().map(normalizeHeader));
+const templateColumns = [
+  'Netsis Sip. No',
+  'Netsis Sip. Sıra No',
+  'SIRA NO',
+  'Stok Kodu',
+  'Stok Adı',
+  'Kombine Size',
+  'Seri No (Levha No)',
+  'Seri-2 (Poz No)',
+  'Miktar(Kg)',
+  'Depo Kodu',
+  'Material Quality',
+  'Heat Number',
+  'Certificate Number',
+  'Export Ref No',
+] as const;
+
+const templateRows = [
+  {
+    'Netsis Sip. No': 'SIP202600001',
+    'Netsis Sip. Sıra No': '1',
+    'SIRA NO': '10',
+    'Stok Kodu': 'SAC-304-10MM',
+    'Stok Adı': '304 Kalite Sac Levha 10MM',
+    'Kombine Size': '1500x3000x10',
+    'Seri No (Levha No)': 'LVH-2026-0001',
+    'Seri-2 (Poz No)': 'POZ-001',
+    'Miktar(Kg)': 1250.5,
+    'Depo Kodu': '01',
+    'Material Quality': '304',
+    'Heat Number': 'HEAT-7788',
+    'Certificate Number': 'CERT-2026-001',
+    'Export Ref No': 'EXP-2026-0001',
+  },
+  {
+    'Netsis Sip. No': 'SIP202600001',
+    'Netsis Sip. Sıra No': '2',
+    'SIRA NO': '20',
+    'Stok Kodu': 'SAC-S235-8MM',
+    'Stok Adı': 'S235 Sac Levha 8MM',
+    'Kombine Size': '1200x2400x8',
+    'Seri No (Levha No)': 'LVH-2026-0002',
+    'Seri-2 (Poz No)': 'POZ-002',
+    'Miktar(Kg)': 820,
+    'Depo Kodu': '01',
+    'Material Quality': 'S235',
+    'Heat Number': 'HEAT-7789',
+    'Certificate Number': 'CERT-2026-002',
+    'Export Ref No': 'EXP-2026-0001',
+  },
+];
 
 const findHeaderRowIndex = (sheet: XLSX.WorkSheet): number => {
   const sheetRows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: '', blankrows: false });
@@ -84,6 +136,42 @@ const toDecimal = (value: string): number => {
   const normalized = value.replace(/\./g, '').replace(',', '.');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const downloadWorkbook = (workbook: XLSX.WorkBook, fileName: string): void => {
+  const output = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([output], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+};
+
+const downloadTemplate = (): void => {
+  const workbook = XLSX.utils.book_new();
+  const templateSheet = XLSX.utils.json_to_sheet(templateRows, { header: [...templateColumns] });
+  templateSheet['!cols'] = templateColumns.map((column) => ({ wch: Math.max(16, column.length + 4) }));
+  XLSX.utils.book_append_sheet(workbook, templateSheet, 'Sac Mal Kabul');
+
+  const guideSheet = XLSX.utils.aoa_to_sheet([
+    ['Alan', 'Zorunlu', 'Açıklama'],
+    ['Tedarikçi', 'Evet', 'Ekrandan seçilir, Excel içine yazılmaz.'],
+    ['Excel Kayıt No veya Export Ref No', 'Evet', 'Ekrandan girilebilir; Export Ref No Excel satırlarında da bulunabilir.'],
+    ['Netsis Sip. No', 'Evet', 'Netsis sipariş numarası. Örnek: SIP202600001'],
+    ['Netsis Sip. Sıra No', 'Evet', 'Netsis sipariş kalem/sıra bilgisi.'],
+    ['Stok Kodu', 'Evet', 'WMS/Netsis stok kodu.'],
+    ['Seri No (Levha No)', 'Evet', 'Levha/seri benzersiz bilgisidir.'],
+    ['Miktar(Kg)', 'Evet', 'Sayı giriniz. Virgül veya nokta desteklenir.'],
+    ['Diğer alanlar', 'Hayır', 'Stok adı, kalite, heat, sertifika, depo ve poz no takip/rapor için kullanılır.'],
+  ]);
+  guideSheet['!cols'] = [{ wch: 34 }, { wch: 12 }, { wch: 86 }];
+  XLSX.utils.book_append_sheet(workbook, guideSheet, 'Kullanım Notları');
+
+  downloadWorkbook(workbook, `sac-mal-kabul-sablon-${new Date().toISOString().slice(0, 10)}.xlsx`);
 };
 
 export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
@@ -219,6 +307,21 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
     >
       <div className="space-y-6">
         <MasterDataOpsSection title={t('steelGoodReceiptAcceptance.import.title')}>
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-3 rounded-none border border-dashed border-cyan-300/40 bg-cyan-500/5 p-4">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-500">
+                {t('steelGoodReceiptAcceptance.import.templateTitle')}
+              </p>
+              <p className="max-w-3xl text-sm text-muted-foreground">
+                {t('steelGoodReceiptAcceptance.import.templateDescription')}
+              </p>
+            </div>
+            <OpsActionButton type="button" variant="secondary" onClick={downloadTemplate}>
+              <Download className="h-4 w-4" />
+              {t('steelGoodReceiptAcceptance.import.templateBtn')}
+            </OpsActionButton>
+          </div>
+
           <div className="grid gap-5 md:grid-cols-2">
             <MasterDataOpsFormField label={t('steelGoodReceiptAcceptance.import.supplier')}>
               <PagedLookupDialog<CustomerLookup>
