@@ -133,7 +133,19 @@ const findValue = (row: Record<string, unknown>, candidates: string[]): string =
 
 const toDecimal = (value: string): number => {
   if (!value) return 0;
-  const normalized = value.replace(/\./g, '').replace(',', '.');
+  const compact = value.trim().replace(/\s/g, '');
+  const hasComma = compact.includes(',');
+  const hasDot = compact.includes('.');
+
+  const normalized =
+    hasComma && hasDot
+      ? compact.lastIndexOf(',') > compact.lastIndexOf('.')
+        ? compact.replace(/\./g, '').replace(',', '.')
+        : compact.replace(/,/g, '')
+      : hasComma
+        ? compact.replace(',', '.')
+        : compact;
+
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
 };
