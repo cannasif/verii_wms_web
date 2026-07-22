@@ -21,6 +21,7 @@ import type { GrHeader } from '../types/goods-receipt';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 import { goodsReceiptApi } from '../api/goods-receipt-api';
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import { isGoodsReceiptQualityPending } from '../utils/quality-status';
 
 type ColumnKey = 'id' | 'orderId' | 'customerCode' | 'projectCode' | 'documentType' | 'plannedDate' | 'status' | 'createdDate' | 'actions';
 
@@ -175,7 +176,7 @@ export function GoodsReceiptReportPage(): ReactElement {
   const formatDate = (value: string | null): string => value ? new Date(value).toLocaleDateString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
   const statusLabel = (item: GrHeader): string => {
-    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+    if (isGoodsReceiptQualityPending(item.qualityStatus)) {
       return t('goodsReceipt.report.pendingQualityApproval');
     }
     if (item.isCompleted) return t('goodsReceipt.report.completed');
@@ -205,9 +206,9 @@ export function GoodsReceiptReportPage(): ReactElement {
     }
   };
   const statusBadge = (item: GrHeader): ReactElement => {
-    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+    if (isGoodsReceiptQualityPending(item.qualityStatus)) {
       return (
-        <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">
+        <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--quality mx-auto">
           {t('goodsReceipt.report.pendingQualityApproval')}
         </Badge>
       );

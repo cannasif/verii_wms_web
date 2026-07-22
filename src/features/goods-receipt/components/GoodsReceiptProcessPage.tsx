@@ -121,6 +121,7 @@ export function GoodsReceiptProcessPage(): ReactElement {
           receiptQuantity: item.quantity || 0,
           isSelected: true,
           targetCellCode: 'yer1',
+          warehouseId: item.targetWh || undefined,
         } as SelectedOrderItem,
       ];
     });
@@ -195,10 +196,19 @@ export function GoodsReceiptProcessPage(): ReactElement {
     const headerId = await createMutation.mutateAsync(formData);
     toast.success(t('goodsReceipt.process.success'));
 
+    let qualityStatus: string | null = null;
+    try {
+      const header = await goodsReceiptApi.getGrHeaderById(headerId);
+      qualityStatus = header.qualityStatus ?? null;
+    } catch {
+      qualityStatus = null;
+    }
+
     const seed = buildGoodsReceiptContinueSeed({
       headerId,
       formData,
       items: processMode === 'order' ? selectedOrderItems : selectedStockItems,
+      qualityStatus,
     });
 
     if (seed) {

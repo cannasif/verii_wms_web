@@ -117,6 +117,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
           receiptQuantity: item.quantity || 0,
           isSelected: true,
           targetCellCode: 'yer1',
+          warehouseId: item.targetWh || undefined,
         } as SelectedOrderItem,
       ];
     });
@@ -149,13 +150,14 @@ export function GoodsReceiptCreatePage(): ReactElement {
     }
 
     const formData = form.getValues();
-    const headerId = await createMutation.mutateAsync(formData);
+    const created = await createMutation.mutateAsync(formData);
     toast.success(t('goodsReceipt.create.success'));
 
     const seed = buildGoodsReceiptContinueSeed({
-      headerId,
+      headerId: created.id,
       formData,
       items: createMode === 'order' ? selectedItems : selectedStockItems,
+      qualityStatus: created.qualityStatus,
     });
 
     if (seed) {

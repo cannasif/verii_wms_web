@@ -30,6 +30,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
+import { isGoodsReceiptQualityPending } from '../utils/quality-status';
 
 interface GoodsReceiptDetailDialogProps {
   grHeaderId: number;
@@ -483,30 +484,53 @@ export function GoodsReceiptDetailDialog({
     </Card>
   );
 
-  const renderStatusPanelOps = (): ReactElement => (
-    <div className="wms-ops-detail-panel wms-ops-detail-panel--rows">
-      <OpsDetailRow label={t('goodsReceipt.report.isCompleted')}>
-        <OpsFlagBadge value={Boolean(data?.isCompleted)} />
-      </OpsDetailRow>
-      <OpsDetailRow label={t('goodsReceipt.report.completionDate')}>
-        {formatDate(data?.completionDate ?? null)}
-      </OpsDetailRow>
-      <OpsDetailRow label={t('goodsReceipt.report.isPendingApproval')}>
-        <OpsFlagBadge value={Boolean(data?.isPendingApproval)} tone="warn" />
-      </OpsDetailRow>
-      <OpsDetailRow label={t('goodsReceipt.report.approvalStatus')}>
-        {data?.approvalStatus !== null && data?.approvalStatus !== undefined ? (
-          <span className={cn('wms-ops-flag-badge', data.approvalStatus ? 'wms-ops-flag-badge--on' : 'wms-ops-flag-badge--danger')}>
-            {data.approvalStatus ? t('goodsReceipt.report.approved') : t('goodsReceipt.report.rejected')}
-          </span>
-        ) : (
-          '-'
-        )}
-      </OpsDetailRow>
-      <OpsDetailRow label={t('goodsReceipt.report.approvedBy')}>{data?.approvedByUserId || '-'}</OpsDetailRow>
-      <OpsDetailRow label={t('goodsReceipt.report.approvalDate')}>{formatDateTime(data?.approvalDate ?? null)}</OpsDetailRow>
-    </div>
-  );
+  const renderStatusPanelOps = (): ReactElement => {
+    const qualityPending = isGoodsReceiptQualityPending(data?.qualityStatus);
+    const qualityLabel = qualityPending
+      ? t('goodsReceipt.report.pendingQualityApproval')
+      : (data?.qualityStatus?.trim() || '-');
+
+    return (
+      <div className="wms-ops-detail-panel wms-ops-detail-panel--rows">
+        <OpsDetailRow label={t('goodsReceipt.report.qualityStatus')}>
+          {qualityPending ? (
+            <span className="wms-ops-flag-badge wms-ops-flag-badge--warn">{qualityLabel}</span>
+          ) : (
+            qualityLabel
+          )}
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.qualityInspectionId')}>
+          {data?.qualityInspectionId ?? '-'}
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.quarantineApplied')}>
+          <OpsFlagBadge value={Boolean(data?.quarantineApplied)} tone="warn" />
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.qualityProcessedDate')}>
+          {formatDateTime(data?.qualityProcessedDate ?? null)}
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.isCompleted')}>
+          <OpsFlagBadge value={Boolean(data?.isCompleted)} />
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.completionDate')}>
+          {formatDate(data?.completionDate ?? null)}
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.isPendingApproval')}>
+          <OpsFlagBadge value={Boolean(data?.isPendingApproval)} tone="warn" />
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.approvalStatus')}>
+          {data?.approvalStatus !== null && data?.approvalStatus !== undefined ? (
+            <span className={cn('wms-ops-flag-badge', data.approvalStatus ? 'wms-ops-flag-badge--on' : 'wms-ops-flag-badge--danger')}>
+              {data.approvalStatus ? t('goodsReceipt.report.approved') : t('goodsReceipt.report.rejected')}
+            </span>
+          ) : (
+            '-'
+          )}
+        </OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.approvedBy')}>{data?.approvedByUserId || '-'}</OpsDetailRow>
+        <OpsDetailRow label={t('goodsReceipt.report.approvalDate')}>{formatDateTime(data?.approvalDate ?? null)}</OpsDetailRow>
+      </div>
+    );
+  };
 
   const renderErpPanelOps = (): ReactElement => (
     <div className="wms-ops-detail-panel wms-ops-detail-panel--rows">
@@ -594,7 +618,33 @@ export function GoodsReceiptDetailDialog({
               <Table>
                 <TableBody>
                   <TableRow>
-                    <TableHead className="w-1/3 md:w-1/4">{t('goodsReceipt.report.isCompleted')}</TableHead>
+                    <TableHead className="w-1/3 md:w-1/4">{t('goodsReceipt.report.qualityStatus')}</TableHead>
+                    <TableCell>
+                      {isGoodsReceiptQualityPending(data?.qualityStatus) ? (
+                        <Badge variant="secondary">{t('goodsReceipt.report.pendingQualityApproval')}</Badge>
+                      ) : (
+                        data?.qualityStatus?.trim() || '-'
+                      )}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>{t('goodsReceipt.report.qualityInspectionId')}</TableHead>
+                    <TableCell>{data?.qualityInspectionId ?? '-'}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>{t('goodsReceipt.report.quarantineApplied')}</TableHead>
+                    <TableCell>
+                      <Badge variant={data?.quarantineApplied ? 'secondary' : 'outline'}>
+                        {data?.quarantineApplied ? t('common.yes') : t('common.no')}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>{t('goodsReceipt.report.qualityProcessedDate')}</TableHead>
+                    <TableCell>{formatDateTime(data?.qualityProcessedDate ?? null)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>{t('goodsReceipt.report.isCompleted')}</TableHead>
                     <TableCell>
                       <Badge variant={data?.isCompleted ? 'default' : 'outline'}>
                         {data?.isCompleted ? t('common.yes') : t('common.no')}

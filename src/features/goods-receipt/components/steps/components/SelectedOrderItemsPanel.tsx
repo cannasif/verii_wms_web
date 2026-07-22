@@ -2,10 +2,23 @@ import { type FocusEvent, type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import { PackageOpen, Trash2 } from 'lucide-react';
-import { OpsActionButton, OpsFormMessage, OpsInput } from '@/components/shared';
+import {
+  OpsActionButton,
+  OpsFieldShell,
+  OpsFormMessage,
+  OpsInput,
+} from '@/components/shared';
+import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
+import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { lookupApi } from '@/features/shared/api/lookup-api';
 import { cn } from '@/lib/utils';
-import type { GoodsReceiptFormData, SelectedOrderItem } from '../../../types/goods-receipt';
+import { useWarehouses } from '../../../hooks/useWarehouses';
+import type {
+  GoodsReceiptFormData,
+  SelectedOrderItem,
+  Warehouse,
+} from '../../../types/goods-receipt';
 
 const DEFAULT_SHELF_CODE = 'yer1';
 
@@ -25,6 +38,7 @@ export function SelectedOrderItemsPanel({
   const { t } = useTranslation(['goods-receipt', 'common']);
   const form = useFormContext<GoodsReceiptFormData>();
   const { control } = form;
+  const { data: warehouses = [] } = useWarehouses();
   const isOps = variant === 'ops';
   const formItemClass = isOps ? 'wms-ops-form-item' : undefined;
   const fieldMessage = isOps ? <OpsFormMessage /> : <FormMessage />;
@@ -97,6 +111,7 @@ export function SelectedOrderItemsPanel({
               <SelectedReceiptEntryRow
                 key={item.id}
                 item={item}
+                warehouses={warehouses}
                 onUpdateItem={onUpdateItem}
                 onRemoveItem={onRemoveItem}
               />
@@ -110,19 +125,28 @@ export function SelectedOrderItemsPanel({
 
 interface SelectedReceiptEntryRowProps {
   item: SelectedOrderItem;
+  warehouses: Warehouse[];
   onUpdateItem: (itemId: string, updates: Partial<SelectedOrderItem>) => void;
   onRemoveItem: (itemId: string) => void;
 }
 
 function SelectedReceiptEntryRow({
   item,
+  warehouses,
   onUpdateItem,
   onRemoveItem,
 }: SelectedReceiptEntryRowProps): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const itemId = item.id || '';
   const [quantityValue, setQuantityValue] = useState(item.receiptQuantity?.toString() || '');
+  const [warehouseLookupOpen, setWarehouseLookupOpen] = useState(false);
   const hasSerial = Boolean(item.serialNo?.trim());
+  const warehouseName = warehouses.find((warehouse) => warehouse.depoKodu === item.warehouseId)?.depoIsmi;
+  const selectedWarehouseLabel = item.warehouseId
+    ? warehouseName
+      ? `${warehouseName} (${item.warehouseId})`
+      : String(item.warehouseId)
+    : '';
 
   useEffect(() => {
     setQuantityValue(item.receiptQuantity?.toString() || '');
@@ -168,7 +192,39 @@ function SelectedReceiptEntryRow({
           </div>
         </div>
 
-        <div className="grid flex-1 gap-2 sm:grid-cols-3">
+        <div className="grid flex-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="space-y-1 sm:col-span-2 xl:col-span-1">
+            <label className="text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground">
+              {t('goodsReceipt.report.targetWarehouse')}
+            </label>
+            <OpsFieldShell className={warehouseLookupOpen ? 'wms-ops-field-shell--active' : undefined}>
+              <PagedLookupDialog<Warehouse>
+                variant="ops"
+                open={warehouseLookupOpen}
+                onOpenChange={setWarehouseLookupOpen}
+                title={t('goodsReceipt.step1.selectWarehouse')}
+                value={selectedWarehouseLabel}
+                placeholder={t('goodsReceipt.step1.selectWarehouse')}
+                searchPlaceholder={t('common.search')}
+                emptyText={t('common.notFound')}
+                triggerClassName={cn(OPS_FIELD_CLASS, 'h-9')}
+                queryKey={['goods-receipt', 'warehouses', itemId || 'new']}
+                fetchPage={({ pageNumber, pageSize, search, signal }) =>
+                  lookupApi.getWarehousesPaged(
+                    { pageNumber, pageSize, search },
+                    undefined,
+                    { signal },
+                  )
+                }
+                getKey={(warehouse) => warehouse.id.toString()}
+                getLabel={(warehouse) => `${warehouse.depoIsmi} (${warehouse.depoKodu})`}
+                onSelect={(warehouse) => {
+                  onUpdateItem(itemId, { warehouseId: warehouse.depoKodu });
+                }}
+              />
+            </OpsFieldShell>
+          </div>
+
           <div className="space-y-1">
             <label className="text-[0.65rem] font-bold uppercase tracking-wide text-muted-foreground">
               {t('goodsReceipt.step2.quantity')}

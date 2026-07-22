@@ -55,20 +55,32 @@ export const goodsReceiptApi = {
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptOrderItemsLoadFailed'));
   },
 
-  createGoodsReceiptOrder: async (formData: GoodsReceiptFormData, selectedItems: SelectedOrderItem[]): Promise<number> => {
+  createGoodsReceiptOrder: async (
+    formData: GoodsReceiptFormData,
+    selectedItems: SelectedOrderItem[],
+  ): Promise<{ id: number; qualityStatus: string | null }> => {
     const request = buildGoodsReceiptGenerateOrderRequest(formData, selectedItems);
     const response = await api.post<ApiResponse<GrHeader>>('/api/GrHeader/generate', request);
     if (response.success) {
-      return response.data?.id || 0;
+      return {
+        id: response.data?.id || 0,
+        qualityStatus: response.data?.qualityStatus ?? null,
+      };
     }
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
   },
 
-  createStockBasedGoodsReceiptOrder: async (formData: GoodsReceiptFormData, selectedItems: SelectedStockItem[]): Promise<number> => {
+  createStockBasedGoodsReceiptOrder: async (
+    formData: GoodsReceiptFormData,
+    selectedItems: SelectedStockItem[],
+  ): Promise<{ id: number; qualityStatus: string | null }> => {
     const request = buildGoodsReceiptGenerateOrderRequest(formData, selectedItems, true);
     const response = await api.post<ApiResponse<GrHeader>>('/api/GrHeader/generate', request);
     if (response.success) {
-      return response.data?.id || 0;
+      return {
+        id: response.data?.id || 0,
+        qualityStatus: response.data?.qualityStatus ?? null,
+      };
     }
     throw new Error(response.message || getLocalizedText('common.errors.goodsReceiptCreateFailed'));
   },

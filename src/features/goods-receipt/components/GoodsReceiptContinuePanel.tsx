@@ -1,13 +1,14 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRightLeft, CheckCircle2, ListChecks, PackageMinus } from 'lucide-react';
+import { ArrowRightLeft, CheckCircle2, ListChecks, PackageMinus, ShieldAlert } from 'lucide-react';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import {
   GOODS_RECEIPT_CONTINUE_SEED_STATE_KEY,
   type GoodsReceiptContinueSeed,
 } from '@/features/shared';
 import { cn } from '@/lib/utils';
+import { isGoodsReceiptQualityPending } from '../utils/quality-status';
 
 interface GoodsReceiptContinuePanelProps {
   seed: GoodsReceiptContinueSeed;
@@ -23,17 +24,22 @@ export function GoodsReceiptContinuePanel({
   const transferPermission = useCrudPermission('wms.transfer');
   const outboundPermission = useCrudPermission('wms.warehouse.outbound');
   const isOps = variant === 'ops';
+  const qualityPending = isGoodsReceiptQualityPending(seed.qualityStatus);
 
   const lineCount = seed.lines.length;
   const totalQty = seed.lines.reduce((sum, line) => sum + (line.quantity || 0), 0);
+  const canTransfer = transferPermission.canCreate && !qualityPending;
+  const canOutbound = outboundPermission.canCreate && !qualityPending;
 
   const goTransfer = (): void => {
+    if (!canTransfer) return;
     navigate('/transfer/create', {
       state: { [GOODS_RECEIPT_CONTINUE_SEED_STATE_KEY]: seed },
     });
   };
 
   const goOutbound = (): void => {
+    if (!canOutbound) return;
     navigate('/warehouse/outbound/create', {
       state: { [GOODS_RECEIPT_CONTINUE_SEED_STATE_KEY]: seed },
     });
@@ -43,15 +49,40 @@ export function GoodsReceiptContinuePanel({
     navigate('/goods-receipt/list');
   };
 
+  const transferHint = qualityPending
+    ? t('goodsReceipt.continue.qualityBlocksContinue')
+    : transferPermission.canCreate
+      ? t('goodsReceipt.continue.transferHint')
+      : t('goodsReceipt.continue.noPermission');
+
+  const outboundHint = qualityPending
+    ? t('goodsReceipt.continue.qualityBlocksContinue')
+    : outboundPermission.canCreate
+      ? t('goodsReceipt.continue.outboundHint')
+      : t('goodsReceipt.continue.noPermission');
+
   return (
     <div className={cn('space-y-5', isOps && 'wms-ops-gr-continue')}>
-      <div className="wms-ops-gr-continue__hero">
+      <div
+        className={cn(
+          'wms-ops-gr-continue__hero',
+          qualityPending && 'wms-ops-gr-continue__hero--quality',
+        )}
+      >
         <span className="wms-ops-gr-continue__hero-icon" aria-hidden>
-          <CheckCircle2 className="size-6" />
+          {qualityPending ? <ShieldAlert className="size-6" /> : <CheckCircle2 className="size-6" />}
         </span>
         <div className="min-w-0 space-y-1">
-          <h2 className="wms-ops-gr-continue__hero-title">{t('goodsReceipt.continue.title')}</h2>
-          <p className="wms-ops-gr-continue__hero-subtitle">{t('goodsReceipt.continue.subtitle')}</p>
+          <h2 className="wms-ops-gr-continue__hero-title">
+            {qualityPending
+              ? t('goodsReceipt.continue.qualityTitle')
+              : t('goodsReceipt.continue.title')}
+          </h2>
+          <p className="wms-ops-gr-continue__hero-subtitle">
+            {qualityPending
+              ? t('goodsReceipt.continue.qualitySubtitle')
+              : t('goodsReceipt.continue.subtitle')}
+          </p>
         </div>
       </div>
 
@@ -70,7 +101,11 @@ export function GoodsReceiptContinuePanel({
         </div>
       </div>
 
-      <p className="wms-ops-gr-continue__hint">{t('goodsReceipt.continue.softLinkHint')}</p>
+      <p className="wms-ops-gr-continue__hint">
+        {qualityPending
+          ? t('goodsReceipt.continue.qualityHint')
+          : t('goodsReceipt.continue.softLinkHint')}
+      </p>
 
       <div className="wms-ops-gr-continue__actions">
         <button
@@ -91,18 +126,14 @@ export function GoodsReceiptContinuePanel({
           type="button"
           className="wms-ops-gr-continue__action wms-ops-gr-continue__action--transfer"
           onClick={goTransfer}
-          disabled={!transferPermission.canCreate}
+          disabled={!canTransfer}
         >
           <span className="wms-ops-gr-continue__action-icon" aria-hidden>
             <ArrowRightLeft className="size-4" />
           </span>
           <span className="wms-ops-gr-continue__action-copy">
             <span className="wms-ops-gr-continue__action-title">{t('goodsReceipt.continue.transfer')}</span>
-            <span className="wms-ops-gr-continue__action-desc">
-              {transferPermission.canCreate
-                ? t('goodsReceipt.continue.transferHint')
-                : t('goodsReceipt.continue.noPermission')}
-            </span>
+            <span className="wms-ops-gr-continue__action-desc">{transferHint}</span>
           </span>
         </button>
 
@@ -110,18 +141,14 @@ export function GoodsReceiptContinuePanel({
           type="button"
           className="wms-ops-gr-continue__action wms-ops-gr-continue__action--outbound"
           onClick={goOutbound}
-          disabled={!outboundPermission.canCreate}
+          disabled={!canOutbound}
         >
           <span className="wms-ops-gr-continue__action-icon" aria-hidden>
             <PackageMinus className="size-4" />
           </span>
           <span className="wms-ops-gr-continue__action-copy">
             <span className="wms-ops-gr-continue__action-title">{t('goodsReceipt.continue.outbound')}</span>
-            <span className="wms-ops-gr-continue__action-desc">
-              {outboundPermission.canCreate
-                ? t('goodsReceipt.continue.outboundHint')
-                : t('goodsReceipt.continue.noPermission')}
-            </span>
+            <span className="wms-ops-gr-continue__action-desc">{outboundHint}</span>
           </span>
         </button>
       </div>

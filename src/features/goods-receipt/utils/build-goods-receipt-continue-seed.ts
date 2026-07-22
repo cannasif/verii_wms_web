@@ -5,8 +5,9 @@ export function buildGoodsReceiptContinueSeed(params: {
   headerId: number;
   formData: GoodsReceiptFormData;
   items: Array<SelectedOrderItem | SelectedStockItem>;
+  qualityStatus?: string | null;
 }): GoodsReceiptContinueSeed | null {
-  const { headerId, formData, items } = params;
+  const { headerId, formData, items, qualityStatus } = params;
   const documentNo = formData.documentNo?.trim() || '';
   if (!documentNo) return null;
 
@@ -34,6 +35,7 @@ export function buildGoodsReceiptContinueSeed(params: {
     customerId: formData.customerId || undefined,
     customerRefId: formData.customerRefId,
     projectCode: formData.projectCode || undefined,
+    qualityStatus: qualityStatus ?? null,
     lines,
   };
 }

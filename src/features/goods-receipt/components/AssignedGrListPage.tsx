@@ -20,6 +20,7 @@ import { useAssignedGrHeaders } from '../hooks/useAssignedGrHeaders';
 import { GoodsReceiptDetailDialog } from './GoodsReceiptDetailDialog';
 import type { GrHeader } from '../types/goods-receipt';
 import { goodsReceiptApi } from '../api/goods-receipt-api';
+import { isGoodsReceiptQualityPending } from '../utils/quality-status';
 
 type AssignedGrColumnKey =
   | 'id'
@@ -166,7 +167,7 @@ export function AssignedGrListPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const statusLabel = (item: GrHeader): string => {
-    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+    if (isGoodsReceiptQualityPending(item.qualityStatus)) {
       return t('goodsReceipt.report.pendingQualityApproval');
     }
     if (item.isCompleted) return t('goodsReceipt.report.completed');
@@ -175,8 +176,8 @@ export function AssignedGrListPage(): ReactElement {
   };
 
   const statusBadge = (item: GrHeader): ReactElement => {
-    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
-      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{t('goodsReceipt.report.pendingQualityApproval')}</Badge>;
+    if (isGoodsReceiptQualityPending(item.qualityStatus)) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--quality mx-auto">{t('goodsReceipt.report.pendingQualityApproval')}</Badge>;
     }
     if (item.isCompleted) {
       return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{t('goodsReceipt.report.completed')}</Badge>;

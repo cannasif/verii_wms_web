@@ -21,6 +21,8 @@ export interface GoodsReceiptContinueSeed {
   customerId?: string;
   customerRefId?: number;
   projectCode?: string;
+  /** From create/process response; used to gate DAT/outbound when QC is pending. */
+  qualityStatus?: string | null;
   lines: GoodsReceiptContinueLineSeed[];
 }
 
