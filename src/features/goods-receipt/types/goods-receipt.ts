@@ -23,7 +23,6 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
   receiptDate: z.string().min(1, t('goodsReceipt.validation.receiptDateRequired')),
   documentNo: z.string().min(1, t('goodsReceipt.validation.documentNoRequired')),
   projectCode: z.string().optional(),
-  isInvoice: z.boolean(),
   customerId: z.string().min(1, t('goodsReceipt.validation.customerRequired')),
   notes: z.string().optional(),
   customerRefId: z.number().optional(),
@@ -38,19 +37,16 @@ export const createGoodsReceiptFormSchema = (t: TFunction) => z.object({
 
   // Mal kabul belge numarası manuel girilebilir ve seri içerebilir. Uzunluk
   // kontrolünü sadece tamamen numerik Netsis/e-belge numaralarında uygula.
+  // 15 hane = irsaliye, 16 hane = fatura (otomatik ayırım).
   if (!/^\d+$/.test(documentNo)) {
     return;
   }
 
-  const expectedLength = data.isInvoice ? 16 : 15;
-
-  if (documentNo.length !== expectedLength) {
+  if (documentNo.length !== 15 && documentNo.length !== 16) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['documentNo'],
-      message: data.isInvoice
-        ? t('goodsReceipt.validation.documentNoInvoiceLength')
-        : t('goodsReceipt.validation.documentNoLength'),
+      message: t('goodsReceipt.validation.documentNoLength'),
     });
   }
 });
@@ -85,6 +81,7 @@ export interface SelectedOrderItem extends OrderItem {
   batchNo?: string;
   configCode?: string;
   warehouseId?: number;
+  targetCellCode?: string;
 }
 
 export interface SelectedStockItem extends BaseSelectedStockItem {
@@ -95,6 +92,7 @@ export interface SelectedStockItem extends BaseSelectedStockItem {
   batchNo?: string;
   configCode?: string;
   warehouseId?: number;
+  targetCellCode?: string;
 }
 
 export interface GoodsReceiptItem {

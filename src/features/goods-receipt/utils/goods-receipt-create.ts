@@ -64,7 +64,7 @@ export function buildGoodsReceiptBulkCreateRequest(
 
   const serialLines = selectedItems
     .map((item, index) => {
-      if (!item.serialNo && !item.lotNo && !item.batchNo && !item.configCode) {
+      if (!item.serialNo && !item.lotNo && !item.batchNo && !item.configCode && !item.targetCellCode) {
         return null;
       }
       const importLine = importLines[index];
@@ -78,7 +78,7 @@ export function buildGoodsReceiptBulkCreateRequest(
         sourceWarehouseId: undefined,
         targetWarehouseId: item.warehouseId,
         sourceCellCode: undefined,
-        targetCellCode: undefined,
+        targetCellCode: item.targetCellCode || undefined,
         serialNo2: item.lotNo,
         serialNo3: item.batchNo,
         serialNo4: item.configCode,
@@ -105,7 +105,7 @@ export function buildGoodsReceiptBulkCreateRequest(
         sourceWarehouse: undefined,
         targetWarehouse: item.warehouseId,
         sourceCellCode: undefined,
-        targetCellCode: undefined,
+        targetCellCode: item.targetCellCode || undefined,
       };
     })
     .filter((route): route is NonNullable<typeof route> => route !== null);
@@ -174,7 +174,7 @@ export function buildGoodsReceiptGenerateOrderRequest(
 
   const lineSerials = selectedItems
     .map((item, index) => {
-      if (!item.serialNo && !item.lotNo && !item.batchNo && !item.configCode) {
+      if (!item.serialNo && !item.lotNo && !item.batchNo && !item.configCode && !item.targetCellCode) {
         return null;
       }
 
@@ -187,7 +187,7 @@ export function buildGoodsReceiptGenerateOrderRequest(
         sourceWarehouseId: undefined,
         targetWarehouseId: item.warehouseId,
         sourceCellCode: undefined,
-        targetCellCode: undefined,
+        targetCellCode: item.targetCellCode || undefined,
         serialNo2: item.lotNo,
         serialNo3: item.batchNo,
         serialNo4: item.configCode,
@@ -253,7 +253,7 @@ export function buildGoodsReceiptProcessRequest(
         sourceWarehouse: undefined,
         targetWarehouse: item.warehouseId,
         sourceCellCode: undefined,
-        targetCellCode: undefined,
+        targetCellCode: item.targetCellCode || undefined,
       };
     })
     .filter((route): route is NonNullable<typeof route> => route !== null);

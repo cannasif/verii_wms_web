@@ -944,7 +944,6 @@ function OrderBasedReceivingPanel(): ReactElement {
       receiptDate: new Date().toISOString().split('T')[0],
       documentNo: '',
       projectCode: '',
-      isInvoice: false,
       customerId: '',
       customerRefId: undefined,
       notes: '',

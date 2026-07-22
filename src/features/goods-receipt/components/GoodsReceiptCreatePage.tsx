@@ -20,8 +20,12 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Form } from '@/components/ui/form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
-import { Step2OrderSelection } from './steps/Step2OrderSelection';
 import { Step2StockSelection } from './steps/Step2StockSelection';
+import { OrderFetchSelectionPanel } from './steps/components/OrderFetchSelectionPanel';
+import { SelectedOrderItemsPanel } from './steps/components/SelectedOrderItemsPanel';
+import { GoodsReceiptContinuePanel } from './GoodsReceiptContinuePanel';
+import { buildGoodsReceiptContinueSeed } from '../utils/build-goods-receipt-continue-seed';
+import type { GoodsReceiptContinueSeed } from '@/features/shared';
 import type { SelectedStockItem, Product } from '../types/goods-receipt';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 
@@ -34,6 +38,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedStockItem[]>([]);
+  const [continueSeed, setContinueSeed] = useState<GoodsReceiptContinueSeed | null>(null);
 
   useEffect(() => {
     setPageTitle(t('goodsReceipt.create.title'));
@@ -51,7 +56,6 @@ export function GoodsReceiptCreatePage(): ReactElement {
       receiptDate: new Date().toISOString().split('T')[0],
       documentNo: '',
       projectCode: '',
-      isInvoice: false,
       customerId: '',
       customerRefId: undefined,
       notes: '',
@@ -64,10 +68,6 @@ export function GoodsReceiptCreatePage(): ReactElement {
         ? goodsReceiptApi.createGoodsReceiptOrder(formData, selectedItems)
         : goodsReceiptApi.createStockBasedGoodsReceiptOrder(formData, selectedStockItems);
     },
-    onSuccess: () => {
-      toast.success(t('goodsReceipt.create.success'));
-      navigate('/goods-receipt/list');
-    },
     onError: (error: Error) => {
       toast.error(error.message || t('goodsReceipt.create.error'));
     },
@@ -75,8 +75,17 @@ export function GoodsReceiptCreatePage(): ReactElement {
 
   const handleNext = async (): Promise<void> => {
     if (currentStep === 1) {
-      const isValid = await form.trigger();
-      if (!isValid) return;
+      if (createMode === 'order') {
+        const isValid = await form.trigger(['customerId']);
+        if (!isValid) return;
+        if (selectedItems.length === 0) {
+          toast.error(t('common.validation.selectAtLeastOneItem'));
+          return;
+        }
+      } else {
+        const isValid = await form.trigger();
+        if (!isValid) return;
+      }
     }
     if (currentStep === 2 && createMode === 'order' && selectedItems.length === 0) {
       toast.error(t('common.validation.selectAtLeastOneItem'));
@@ -107,6 +116,7 @@ export function GoodsReceiptCreatePage(): ReactElement {
           ...item,
           receiptQuantity: item.quantity || 0,
           isSelected: true,
+          targetCellCode: 'yer1',
         } as SelectedOrderItem,
       ];
     });
@@ -121,8 +131,39 @@ export function GoodsReceiptCreatePage(): ReactElement {
   };
 
   const handleSave = async (): Promise<void> => {
+    const isValid = await form.trigger();
+    if (!isValid) return;
+
+    if (createMode === 'order') {
+      if (selectedItems.length === 0) {
+        toast.error(t('common.validation.selectAtLeastOneItem'));
+        return;
+      }
+      if (selectedItems.some((item) => !item.receiptQuantity || item.receiptQuantity <= 0)) {
+        toast.error(t('goodsReceipt.validation.quantityRequired'));
+        return;
+      }
+    } else if (selectedStockItems.some((item) => !item.receiptQuantity || item.receiptQuantity <= 0)) {
+      toast.error(t('goodsReceipt.validation.quantityRequired'));
+      return;
+    }
+
     const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    const headerId = await createMutation.mutateAsync(formData);
+    toast.success(t('goodsReceipt.create.success'));
+
+    const seed = buildGoodsReceiptContinueSeed({
+      headerId,
+      formData,
+      items: createMode === 'order' ? selectedItems : selectedStockItems,
+    });
+
+    if (seed) {
+      setContinueSeed(seed);
+      return;
+    }
+
+    navigate('/goods-receipt/list');
   };
 
   const handleToggleStockItem = (item: Product): void => {
@@ -179,9 +220,10 @@ export function GoodsReceiptCreatePage(): ReactElement {
             <span>{t('goodsReceipt.create.breadcrumb.module')}</span>
           </>
         }
-        title={t('goodsReceipt.create.title')}
-        description={t('goodsReceipt.create.subtitle')}
+        title={continueSeed ? t('goodsReceipt.continue.pageTitle') : t('goodsReceipt.create.title')}
+        description={continueSeed ? t('goodsReceipt.continue.pageSubtitle') : t('goodsReceipt.create.subtitle')}
         actions={
+          continueSeed ? undefined : (
           <Tabs
             value={createMode}
             onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}
@@ -204,8 +246,13 @@ export function GoodsReceiptCreatePage(): ReactElement {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+          )
       }
     >
+      {continueSeed ? (
+        <GoodsReceiptContinuePanel seed={continueSeed} variant="ops" />
+      ) : (
+        <>
       <Breadcrumb
         items={steps.map((step, index) => ({
           label: step.label,
@@ -217,12 +264,20 @@ export function GoodsReceiptCreatePage(): ReactElement {
       <form className="space-y-6">
         <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
           {currentStep === 1 ? (
-            <Step1BasicInfo variant="ops" />
+            <div className="space-y-6">
+              <Step1BasicInfo variant="ops" hideDocumentFields={createMode === 'order'} />
+              {createMode === 'order' ? (
+                <OrderFetchSelectionPanel
+                  variant="ops"
+                  selectedItems={selectedItems}
+                  onToggleItem={handleToggleItem}
+                />
+              ) : null}
+            </div>
           ) : createMode === 'order' ? (
-            <Step2OrderSelection
+            <SelectedOrderItemsPanel
               variant="ops"
               selectedItems={selectedItems}
-              onToggleItem={handleToggleItem}
               onUpdateItem={handleUpdateItem}
               onRemoveItem={handleRemoveItem}
             />
@@ -278,6 +333,8 @@ export function GoodsReceiptCreatePage(): ReactElement {
           </div>
         </fieldset>
       </form>
+        </>
+      )}
     </OpsFormPageShell>
     </Form>
   );

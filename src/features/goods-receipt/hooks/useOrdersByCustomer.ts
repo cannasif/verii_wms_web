@@ -4,13 +4,17 @@ import { goodsReceiptApi } from '../api/goods-receipt-api';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
-export const useOrdersByCustomer = (customerCode: string | null) => {
+export const useOrdersByCustomer = (
+  customerCode: string | null,
+  options?: { enabled?: boolean },
+) => {
   const { t } = useTranslation(['goods-receipt', 'common']);
+  const enabled = !!customerCode && (options?.enabled ?? true);
 
   const query = useQuery({
     queryKey: ['orders', customerCode],
     queryFn: ({ signal }) => goodsReceiptApi.getOrdersByCustomer(customerCode!, { signal }),
-    enabled: !!customerCode,
+    enabled,
     staleTime: 5 * 60 * 1000,
   });
 

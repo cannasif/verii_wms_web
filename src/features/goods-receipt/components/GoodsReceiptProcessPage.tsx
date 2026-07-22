@@ -24,8 +24,12 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
 import { PermissionNotice } from '@/features/access-control/components/PermissionNotice';
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
-import { Step2OrderSelection } from './steps/Step2OrderSelection';
 import { Step2StockSelection } from './steps/Step2StockSelection';
+import { OrderFetchSelectionPanel } from './steps/components/OrderFetchSelectionPanel';
+import { SelectedOrderItemsPanel } from './steps/components/SelectedOrderItemsPanel';
+import { GoodsReceiptContinuePanel } from './GoodsReceiptContinuePanel';
+import { buildGoodsReceiptContinueSeed } from '../utils/build-goods-receipt-continue-seed';
+import type { GoodsReceiptContinueSeed } from '@/features/shared';
 
 export function GoodsReceiptProcessPage(): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
@@ -36,6 +40,7 @@ export function GoodsReceiptProcessPage(): ReactElement {
   const [processMode, setProcessMode] = useState<'order' | 'stock'>('order');
   const [selectedOrderItems, setSelectedOrderItems] = useState<SelectedOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedStockItem[]>([]);
+  const [continueSeed, setContinueSeed] = useState<GoodsReceiptContinueSeed | null>(null);
 
   useEffect(() => {
     setPageTitle(t('goodsReceipt.process.title'));
@@ -53,7 +58,6 @@ export function GoodsReceiptProcessPage(): ReactElement {
       receiptDate: new Date().toISOString().split('T')[0],
       documentNo: '',
       projectCode: '',
-      isInvoice: false,
       customerId: '',
       customerRefId: undefined,
       notes: '',
@@ -66,10 +70,6 @@ export function GoodsReceiptProcessPage(): ReactElement {
         ? goodsReceiptApi.processGoodsReceipt(formData, selectedOrderItems, false)
         : goodsReceiptApi.processGoodsReceipt(formData, selectedStockItems, true);
     },
-    onSuccess: () => {
-      toast.success(t('goodsReceipt.process.success'));
-      navigate('/goods-receipt/list');
-    },
     onError: (error: Error) => {
       toast.error(error.message || t('goodsReceipt.process.error'));
     },
@@ -77,8 +77,17 @@ export function GoodsReceiptProcessPage(): ReactElement {
 
   const handleNext = async (): Promise<void> => {
     if (currentStep === 1) {
-      const isValid = await form.trigger();
-      if (!isValid) return;
+      if (processMode === 'order') {
+        const isValid = await form.trigger(['customerId']);
+        if (!isValid) return;
+        if (selectedOrderItems.length === 0) {
+          toast.error(t('common.validation.selectAtLeastOneItem'));
+          return;
+        }
+      } else {
+        const isValid = await form.trigger();
+        if (!isValid) return;
+      }
     }
 
     if (currentStep === 2 && processMode === 'order' && selectedOrderItems.length === 0) {
@@ -111,6 +120,7 @@ export function GoodsReceiptProcessPage(): ReactElement {
           ...item,
           receiptQuantity: item.quantity || 0,
           isSelected: true,
+          targetCellCode: 'yer1',
         } as SelectedOrderItem,
       ];
     });
@@ -164,8 +174,39 @@ export function GoodsReceiptProcessPage(): ReactElement {
   };
 
   const handleSave = async (): Promise<void> => {
+    const isValid = await form.trigger();
+    if (!isValid) return;
+
+    if (processMode === 'order') {
+      if (selectedOrderItems.length === 0) {
+        toast.error(t('common.validation.selectAtLeastOneItem'));
+        return;
+      }
+      if (selectedOrderItems.some((item) => !item.receiptQuantity || item.receiptQuantity <= 0)) {
+        toast.error(t('goodsReceipt.validation.quantityRequired'));
+        return;
+      }
+    } else if (selectedStockItems.some((item) => !item.receiptQuantity || item.receiptQuantity <= 0)) {
+      toast.error(t('goodsReceipt.validation.quantityRequired'));
+      return;
+    }
+
     const formData = form.getValues();
-    await createMutation.mutateAsync(formData);
+    const headerId = await createMutation.mutateAsync(formData);
+    toast.success(t('goodsReceipt.process.success'));
+
+    const seed = buildGoodsReceiptContinueSeed({
+      headerId,
+      formData,
+      items: processMode === 'order' ? selectedOrderItems : selectedStockItems,
+    });
+
+    if (seed) {
+      setContinueSeed(seed);
+      return;
+    }
+
+    navigate('/goods-receipt/list');
   };
 
   const steps = [
@@ -183,9 +224,10 @@ export function GoodsReceiptProcessPage(): ReactElement {
             <span>{t('goodsReceipt.create.breadcrumb.module')}</span>
           </>
         }
-        title={t('goodsReceipt.process.title')}
-        description={t('goodsReceipt.create.subtitle')}
+        title={continueSeed ? t('goodsReceipt.continue.pageTitle') : t('goodsReceipt.process.title')}
+        description={continueSeed ? t('goodsReceipt.continue.pageSubtitle') : t('goodsReceipt.create.subtitle')}
         actions={
+          continueSeed ? undefined : (
           <Tabs
             value={processMode}
             onValueChange={(value) => setProcessMode(value as 'order' | 'stock')}
@@ -208,8 +250,13 @@ export function GoodsReceiptProcessPage(): ReactElement {
               </TabsTrigger>
             </TabsList>
           </Tabs>
+          )
         }
       >
+        {continueSeed ? (
+          <GoodsReceiptContinuePanel seed={continueSeed} variant="ops" />
+        ) : (
+          <>
         {!permission.canCreate ? <PermissionNotice /> : null}
 
         <Breadcrumb
@@ -223,12 +270,20 @@ export function GoodsReceiptProcessPage(): ReactElement {
         <form className="space-y-6">
           <fieldset disabled={!permission.canCreate} className={!permission.canCreate ? 'pointer-events-none opacity-75' : undefined}>
             {currentStep === 1 ? (
-              <Step1BasicInfo variant="ops" />
+              <div className="space-y-6">
+                <Step1BasicInfo variant="ops" hideDocumentFields={processMode === 'order'} />
+                {processMode === 'order' ? (
+                  <OrderFetchSelectionPanel
+                    variant="ops"
+                    selectedItems={selectedOrderItems}
+                    onToggleItem={handleToggleOrderItem}
+                  />
+                ) : null}
+              </div>
             ) : processMode === 'order' ? (
-              <Step2OrderSelection
+              <SelectedOrderItemsPanel
                 variant="ops"
                 selectedItems={selectedOrderItems}
-                onToggleItem={handleToggleOrderItem}
                 onUpdateItem={handleUpdateOrderItem}
                 onRemoveItem={handleRemoveOrderItem}
               />
@@ -284,6 +339,8 @@ export function GoodsReceiptProcessPage(): ReactElement {
             </div>
           </fieldset>
         </form>
+          </>
+        )}
       </OpsFormPageShell>
     </Form>
   );

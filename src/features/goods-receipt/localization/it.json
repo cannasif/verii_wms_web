@@ -339,26 +339,25 @@
       "yearCode": "Year"
     },
     "step1": {
-      "customer": "Customer",
-      "documentNo": "Document No",
-      "documentNoPlaceholder": "Document number",
-      "isInvoice": "Is Invoice",
-      "isInvoiceDescription": "Mark whether there is an invoice",
+      "customer": "Supplier Account",
+      "documentNo": "Waybill No / Invoice No",
+      "documentNoPlaceholder": "Enter waybill or invoice number...",
+      "documentNoHint": "For fully numeric numbers, 15 digits are treated as waybill and 16 digits as invoice.",
       "notes": "Notes",
       "notesPlaceholder": "Notes",
       "projectCode": "Project Code",
       "receiptDate": "Receipt Date",
-      "selectCustomer": "Select customer",
-      "clickToSelectCustomer": "Fai clic per selezionare un cliente",
+      "selectCustomer": "Select supplier account...",
+      "clickToSelectCustomer": "Fai clic per selezionare un conto fornitore",
       "selectProjectCode": "Select project code",
       "selectWarehouse": "Select warehouse",
-      "selectedCustomer": "Selected Customer",
+      "selectedCustomer": "Selected Supplier Account",
       "selectedCustomerEyebrow": "CUST_REF",
       "selectedCustomerStatus": "LINKED"
     },
     "step2": {
       "completed": "Completed",
-      "customerPrompt": "Select a customer first",
+      "customerPrompt": "Select a supplier account first",
       "itemsCount": "{{count}} selected",
       "noOrderSelected": "No order selected",
       "noSelectedItems": "No items selected",
@@ -368,17 +367,16 @@
       "remaining": "Remaining",
       "searchItems": "Search items",
       "searchStocks": "Search stocks",
-      "selectCustomerFirst": "Select customer first",
+      "selectCustomerFirst": "Select supplier account first",
       "selectOrderPrompt": "Select an order from the list",
       "selectedItems": "Selected Items",
       "started": "Started",
       "stocks": "Stocks"
     },
     "validation": {
-      "customerRequired": "Customer is required",
-      "documentNoInvoiceLength": "Invoice document number must be 15 characters",
-      "documentNoLength": "Document number must be 11 characters",
-      "documentNoRequired": "Document number is required",
+      "customerRequired": "Supplier account is required",
+      "documentNoLength": "Waybill number must be 15 characters, invoice number must be 16 characters",
+      "documentNoRequired": "Waybill / invoice number is required",
       "receiptDateRequired": "Receipt date is required"
     }
   }

@@ -2,7 +2,7 @@ import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import { PagedLookupDialog } from '@/components/shared/PagedLookupDialog';
-import { HeaderQuantityPolicyFields, OpsFieldShell, OpsFormMessage, OpsInput, OpsSelectedEntityCard, OpsTextarea, OpsToggleField } from '@/components/shared';
+import { OpsFieldShell, OpsFormMessage, OpsInput, OpsSelectedEntityCard, OpsTextarea } from '@/components/shared';
 import { OPS_FIELD_CLASS } from '@/components/shared/ops-field-styles';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,13 @@ import { SearchableSelect } from './components/SearchableSelect';
 
 interface Step1BasicInfoProps {
   variant?: 'default' | 'ops';
+  hideDocumentFields?: boolean;
 }
 
-export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): ReactElement {
+export function Step1BasicInfo({
+  variant = 'default',
+  hideDocumentFields = false,
+}: Step1BasicInfoProps): ReactElement {
   const { t } = useTranslation(['goods-receipt', 'common']);
   const form = useFormContext<GoodsReceiptFormData>();
   const { control, watch } = form;
@@ -36,6 +40,7 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
 
   return (
     <div className="space-y-6">
+      {hideDocumentFields ? null : (
       <div className="grid gap-6 md:grid-cols-2">
         <FormField
           control={control}
@@ -70,9 +75,10 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
               <FormControl>
                 {isOps ? (
                   <OpsInput
+                    title={t('goodsReceipt.step1.documentNoHint')}
                     placeholder={t('goodsReceipt.step1.documentNoPlaceholder')}
                     inputMode="numeric"
-                    maxLength={watch('isInvoice') ? 16 : 15}
+                    maxLength={16}
                     {...field}
                     value={field.value ?? ''}
                     onChange={(event) => {
@@ -85,9 +91,10 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
                   />
                 ) : (
                   <Input
+                    title={t('goodsReceipt.step1.documentNoHint')}
                     placeholder={t('goodsReceipt.step1.documentNoPlaceholder')}
                     inputMode="numeric"
-                    maxLength={watch('isInvoice') ? 16 : 15}
+                    maxLength={16}
                     {...field}
                     value={field.value ?? ''}
                     onChange={(event) => {
@@ -105,6 +112,7 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
           )}
         />
       </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <FormField
@@ -245,46 +253,6 @@ export function Step1BasicInfo({ variant = 'default' }: Step1BasicInfoProps): Re
           )}
         />
       </div>
-
-      <FormField
-        control={control}
-        name="isInvoice"
-        render={({ field }) => (
-          <FormItem className={formItemClass}>
-            {isOps ? (
-              <OpsToggleField
-                checked={Boolean(field.value)}
-                onCheckedChange={field.onChange}
-                title={t('goodsReceipt.step1.isInvoice')}
-                description={t('goodsReceipt.step1.isInvoiceDescription')}
-              />
-            ) : (
-              <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <input
-                    type="checkbox"
-                    checked={field.value}
-                    onChange={field.onChange}
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>{t('goodsReceipt.step1.isInvoice')}</FormLabel>
-                  <p className="text-sm text-muted-foreground">
-                    {t('goodsReceipt.step1.isInvoiceDescription')}
-                  </p>
-                </div>
-              </div>
-            )}
-            {fieldMessage}
-          </FormItem>
-        )}
-      />
-
-      <HeaderQuantityPolicyFields
-        permissionCode="wms.goods-receipt.quantity-policy"
-        variant={isOps ? 'ops' : 'default'}
-      />
 
       {selectedCustomerId ? (
         isOps ? (
