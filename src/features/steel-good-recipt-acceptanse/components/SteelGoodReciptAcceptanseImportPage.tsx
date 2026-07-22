@@ -372,18 +372,26 @@ export function SteelGoodReciptAcceptanseImportPage(): ReactElement {
           </div>
 
           <div className="wms-ops-actions mt-5 flex flex-wrap gap-3">
-            <OpsActionButton type="button" variant="secondary" onClick={() => void previewMutation.mutateAsync()} disabled={!requestPayload || previewMutation.isPending}>
+            <OpsActionButton type="button" variant="secondary" onClick={() => previewMutation.mutate()} disabled={!requestPayload || previewMutation.isPending}>
               {previewMutation.isPending ? t('steelGoodReceiptAcceptance.import.previewP') : t('steelGoodReceiptAcceptance.import.previewBtn')}
             </OpsActionButton>
             <OpsActionButton
               type="button"
               variant="primary"
-              onClick={() => void commitMutation.mutateAsync()}
+              onClick={() => commitMutation.mutate()}
               disabled={!requestPayload || !preview || preview.errorRowCount > 0 || commitMutation.isPending}
             >
               {commitMutation.isPending ? t('steelGoodReceiptAcceptance.import.commitP') : t('steelGoodReceiptAcceptance.import.commitBtn')}
             </OpsActionButton>
           </div>
+
+          {commitMutation.isError ? (
+            <div role="alert" className="mt-4 border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
+              {commitMutation.error instanceof Error
+                ? commitMutation.error.message
+                : t('steelGoodReceiptAcceptance.import.errPayload')}
+            </div>
+          ) : null}
         </MasterDataOpsSection>
 
         {preview ? (
