@@ -275,6 +275,7 @@
       "auditInfo": "Denetim Bilgisi",
       "branchCode": "Şube",
       "completed": "Tamamlandı",
+      "pendingQualityApproval": "Kalite Onayı Bekliyor",
       "completionDate": "Tamamlanma Tarihi",
       "content": "İçerik",
       "createdBy": "Oluşturan",

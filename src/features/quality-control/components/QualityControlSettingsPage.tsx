@@ -72,7 +72,7 @@ export function QualityControlSettingsPage(): ReactElement {
       autoCreateInspectionOnReceipt: query.data.autoCreateInspectionOnReceipt,
       defaultInspectionMode: query.data.defaultInspectionMode,
       defaultOnFailAction: query.data.defaultOnFailAction,
-      useQuarantineWarehouse: query.data.useQuarantineWarehouse,
+      useQuarantineWarehouse: query.data.autoCreateInspectionOnReceipt,
       defaultQuarantineWarehouseId: query.data.defaultQuarantineWarehouseId ?? null,
       defaultApprovedWarehouseId: query.data.defaultApprovedWarehouseId ?? null,
       defaultRejectWarehouseId: query.data.defaultRejectWarehouseId ?? null,
@@ -113,12 +113,15 @@ export function QualityControlSettingsPage(): ReactElement {
   );
 
   function handleSave(): void {
-    if (formState.useQuarantineWarehouse && !formState.defaultQuarantineWarehouseId) {
+    if (formState.autoCreateInspectionOnReceipt && !formState.defaultQuarantineWarehouseId) {
       toast.error(t('qualityControl.messages.settingsQuarantineWarehouseRequired'));
       return;
     }
 
-    saveMutation.mutate(formState);
+    saveMutation.mutate({
+      ...formState,
+      useQuarantineWarehouse: formState.autoCreateInspectionOnReceipt,
+    });
   }
 
   return (
@@ -204,7 +207,7 @@ export function QualityControlSettingsPage(): ReactElement {
                     setFormState((prev) => ({ ...prev, defaultQuarantineWarehouseId: item.id }));
                     setWarehouseLabel(`${item.depoKodu} - ${item.depoIsmi}`);
                   }}
-                  disabled={!formState.useQuarantineWarehouse}
+                  disabled={!formState.autoCreateInspectionOnReceipt}
                 />
               </OpsFieldShell>
             </QcOpsField>
@@ -269,7 +272,6 @@ export function QualityControlSettingsPage(): ReactElement {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {([
               ['autoCreateInspectionOnReceipt', 'qualityControl.settings.fields.autoCreateInspectionOnReceipt'],
-              ['useQuarantineWarehouse', 'qualityControl.settings.fields.useQuarantineWarehouse'],
               ['allowDirectReceiptWhenNoRule', 'qualityControl.settings.fields.allowDirectReceiptWhenNoRule'],
               ['blockReceiptWhenLotMissing', 'qualityControl.settings.fields.blockReceiptWhenLotMissing'],
               ['blockReceiptWhenSerialMissing', 'qualityControl.settings.fields.blockReceiptWhenSerialMissing'],
@@ -281,7 +283,11 @@ export function QualityControlSettingsPage(): ReactElement {
               <OpsToggleField
                 key={field}
                 checked={Boolean(formState[field])}
-                onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, [field]: checked }))}
+                onCheckedChange={(checked) => setFormState((prev) => ({
+                  ...prev,
+                  [field]: checked,
+                  ...(field === 'autoCreateInspectionOnReceipt' ? { useQuarantineWarehouse: checked } : {}),
+                }))}
                 title={t(labelKey)}
               />
             ))}

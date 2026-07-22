@@ -124,6 +124,12 @@ export interface GrHeader extends Omit<
   erpErrorMessage: string | null;
   returnCode: boolean;
   ocrSource: boolean;
+  qualityInspectionId: number | null;
+  qualityStatus: string;
+  qualityDecisionSource: string | null;
+  quarantineApplied: boolean;
+  quarantineWarehouseId: number | null;
+  qualityProcessedDate: string | null;
   description3: string | null;
   description4: string | null;
   description5: string | null;

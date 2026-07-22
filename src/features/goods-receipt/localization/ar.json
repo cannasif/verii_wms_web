@@ -275,6 +275,7 @@
       "auditInfo": "Audit Info",
       "branchCode": "Branch",
       "completed": "Completed",
+      "pendingQualityApproval": "بانتظار موافقة الجودة",
       "completionDate": "Completion Date",
       "content": "Content",
       "createdBy": "Created By",

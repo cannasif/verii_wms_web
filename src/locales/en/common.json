@@ -1262,7 +1262,7 @@
         "defaultRejectWarehousePlaceholder": "Select reject warehouse",
         "defaultReturnOutboundType": "Default Return Outbound Type",
         "defaultReturnOutboundTypePlaceholder": "Example: QRETURN",
-        "autoCreateInspectionOnReceipt": "Auto Create Inspection on Goods Receipt",
+        "autoCreateInspectionOnReceipt": "Require Quality Approval on Goods Receipt",
         "useQuarantineWarehouse": "Use Quarantine Warehouse",
         "allowDirectReceiptWhenNoRule": "Allow Direct Receipt When No Rule Exists",
         "blockReceiptWhenLotMissing": "Block Receipt When Lot Is Missing",

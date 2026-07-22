@@ -1262,7 +1262,7 @@
         "defaultRejectWarehousePlaceholder": "Red deposu seçiniz",
         "defaultReturnOutboundType": "Varsayılan İade Çıkış Tipi",
         "defaultReturnOutboundTypePlaceholder": "Örn: QRETURN",
-        "autoCreateInspectionOnReceipt": "Mal Kabulde Otomatik İnceleme Kaydı Aç",
+        "autoCreateInspectionOnReceipt": "Mal Kabulde Kalite Onayı Zorunlu",
         "useQuarantineWarehouse": "Karantina Deposu Kullan",
         "allowDirectReceiptWhenNoRule": "Kural Yoksa Direkt Kabul Et",
         "blockReceiptWhenLotMissing": "Lot Eksikse Mal Kabulü Blokla",

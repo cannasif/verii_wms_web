@@ -175,6 +175,9 @@ export function GoodsReceiptReportPage(): ReactElement {
   const formatDate = (value: string | null): string => value ? new Date(value).toLocaleDateString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
   const formatDateTime = (value: string | null): string => value ? new Date(value).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
   const statusLabel = (item: GrHeader): string => {
+    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+      return t('goodsReceipt.report.pendingQualityApproval');
+    }
     if (item.isCompleted) return t('goodsReceipt.report.completed');
     if (item.isPendingApproval) return t('goodsReceipt.report.pendingApproval');
     return t('goodsReceipt.report.inProgress');
@@ -202,6 +205,13 @@ export function GoodsReceiptReportPage(): ReactElement {
     }
   };
   const statusBadge = (item: GrHeader): ReactElement => {
+    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+      return (
+        <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">
+          {t('goodsReceipt.report.pendingQualityApproval')}
+        </Badge>
+      );
+    }
     if (item.isCompleted) {
       return (
         <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">

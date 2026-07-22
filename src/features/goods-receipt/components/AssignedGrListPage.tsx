@@ -166,12 +166,18 @@ export function AssignedGrListPage(): ReactElement {
   }, [setPageTitle, t]);
 
   const statusLabel = (item: GrHeader): string => {
+    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+      return t('goodsReceipt.report.pendingQualityApproval');
+    }
     if (item.isCompleted) return t('goodsReceipt.report.completed');
     if (item.isPendingApproval) return t('goodsReceipt.report.pendingApproval');
     return t('goodsReceipt.report.inProgress');
   };
 
   const statusBadge = (item: GrHeader): ReactElement => {
+    if (['pendinginspection', 'quarantined'].includes((item.qualityStatus || '').toLowerCase())) {
+      return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--pending mx-auto">{t('goodsReceipt.report.pendingQualityApproval')}</Badge>;
+    }
     if (item.isCompleted) {
       return <Badge variant="outline" className="wms-ops-status-badge wms-ops-status-badge--done mx-auto">{t('goodsReceipt.report.completed')}</Badge>;
     }
