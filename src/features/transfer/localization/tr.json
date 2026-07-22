@@ -99,7 +99,9 @@
       },
       "subtitle": "Sistem kaydı başlatılıyor...",
       "success": "Transfer emri oluşturuldu",
-      "title": "Yeni Transfer Emri Oluşturma"
+      "title": "Yeni Transfer Emri Oluşturma",
+      "fromGoodsReceiptBanner": "Mal kabul irsaliyesi {{documentNo}} satırlarından dolduruldu ({{count}} kalem). Depoları seçip kaydedin. Belge bağı not alanında soft referanstır.",
+      "fromGoodsReceiptNotes": "Kaynak mal kabul irsaliye no: {{documentNo}}"
     },
     "details": {
       "batchNo": "Parti No",

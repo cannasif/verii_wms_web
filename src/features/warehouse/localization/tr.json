@@ -163,7 +163,9 @@
         "error": "Depo çıkış emri oluşturulamadı",
         "subtitle": "Sistem kaydı başlatılıyor...",
         "success": "Depo çıkış emri oluşturuldu",
-        "title": "Yeni Depo Çıkış Emri Oluşturma"
+        "title": "Yeni Depo Çıkış Emri Oluşturma",
+        "fromGoodsReceiptBanner": "Mal kabul irsaliyesi {{documentNo}} satırlarından dolduruldu ({{count}} kalem). Kaynak depoyu seçip kaydedin. Belge bağı not alanında soft referanstır.",
+        "fromGoodsReceiptNotes": "Kaynak mal kabul irsaliye no: {{documentNo}}"
       },
       "edit": {
         "error": "Depo çıkış kaydedilemedi",

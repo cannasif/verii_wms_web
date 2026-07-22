@@ -163,7 +163,9 @@
         "error": "Error",
         "subtitle": "Initializing system record...",
         "success": "Success",
-        "title": "Title"
+        "title": "Title",
+        "fromGoodsReceiptBanner": "Prefilled from goods receipt {{documentNo}} ({{count}} lines). Select source warehouse and save. Link is a soft reference in notes.",
+        "fromGoodsReceiptNotes": "Source goods receipt document no: {{documentNo}}"
       },
       "edit": {
         "error": "Error",

@@ -1,9 +1,9 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, FileText, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
@@ -24,10 +24,16 @@ import { Step2WarehouseOrderSelection } from './steps/Step2WarehouseOrderSelecti
 import { Step2WarehouseStockSelection } from './steps/Step2WarehouseStockSelection';
 import type { SelectedWarehouseStockItem, WarehouseStockItem } from '../types/warehouse';
 import { useCrudPermission } from '@/features/access-control/hooks/useCrudPermission';
+import {
+  GOODS_RECEIPT_CONTINUE_SEED_STATE_KEY,
+  isGoodsReceiptContinueSeed,
+  type GoodsReceiptContinueSeed,
+} from '@/features/shared';
 
 export function WarehouseOutboundCreatePage(): ReactElement {
   const { t } = useTranslation(['warehouse', 'common']);
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const permission = useCrudPermission('wms.warehouse.outbound');
@@ -35,6 +41,8 @@ export function WarehouseOutboundCreatePage(): ReactElement {
   const [createMode, setCreateMode] = useState<'order' | 'stock'>('order');
   const [selectedItems, setSelectedItems] = useState<SelectedWarehouseOrderItem[]>([]);
   const [selectedStockItems, setSelectedStockItems] = useState<SelectedWarehouseStockItem[]>([]);
+  const [grSeed, setGrSeed] = useState<GoodsReceiptContinueSeed | null>(null);
+  const grSeedAppliedRef = useRef(false);
 
   useEffect(() => {
     setPageTitle(t('warehouse.outbound.create.title'));
@@ -64,6 +72,40 @@ export function WarehouseOutboundCreatePage(): ReactElement {
       userIds: [],
     },
   });
+
+  useEffect(() => {
+    if (grSeedAppliedRef.current) return;
+    const raw = (location.state as Record<string, unknown> | null)?.[GOODS_RECEIPT_CONTINUE_SEED_STATE_KEY];
+    if (!isGoodsReceiptContinueSeed(raw)) return;
+
+    grSeedAppliedRef.current = true;
+    setGrSeed(raw);
+    setCreateMode('stock');
+    setCurrentStep(1);
+    form.reset({
+      ...form.getValues(),
+      projectCode: raw.projectCode || '',
+      customerId: raw.customerId || '',
+      customerRefId: raw.customerRefId,
+      notes: t('warehouse.outbound.create.fromGoodsReceiptNotes', { documentNo: raw.documentNo }),
+    });
+    setSelectedStockItems(
+      raw.lines.map((line) => ({
+        id: `gr-seed-${line.stockCode}-${crypto.randomUUID()}`,
+        stockId: line.stockId,
+        stockCode: line.stockCode,
+        stockName: line.stockName,
+        unit: line.unit || '',
+        transferQuantity: line.quantity,
+        isSelected: true,
+        serialNo: line.serialNo,
+        configCode: line.configCode,
+        yapKodId: line.yapKodId,
+        targetCellCode: line.targetCellCode,
+      })),
+    );
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [form, location.pathname, location.state, navigate, t]);
 
   const createMutation = useMutation({
     mutationFn: async (formData: WarehouseFormData) =>
@@ -167,7 +209,10 @@ export function WarehouseOutboundCreatePage(): ReactElement {
         actions={
           <Tabs
             value={createMode}
-            onValueChange={(value) => setCreateMode(value as 'order' | 'stock')}
+            onValueChange={(value) => {
+              if (grSeed) return;
+              setCreateMode(value as 'order' | 'stock');
+            }}
             className="w-full sm:w-auto"
           >
             <TabsList
@@ -177,7 +222,7 @@ export function WarehouseOutboundCreatePage(): ReactElement {
               )}
             >
               <span className="wms-ops-tab-indicator" aria-hidden />
-              <TabsTrigger value="order" className="wms-ops-tab gap-1.5">
+              <TabsTrigger value="order" className="wms-ops-tab gap-1.5" disabled={Boolean(grSeed)}>
                 <FileText className="size-3.5" />
                 {t('warehouse.create.mode.order')}
               </TabsTrigger>
@@ -189,6 +234,14 @@ export function WarehouseOutboundCreatePage(): ReactElement {
           </Tabs>
         }
       >
+        {grSeed ? (
+          <div className="mb-4 border border-[color-mix(in_oklab,var(--wms-ops-accent)_28%,var(--wms-ops-card-border))] bg-[color-mix(in_oklab,var(--wms-ops-accent)_8%,transparent)] px-4 py-3 text-sm">
+            {t('warehouse.outbound.create.fromGoodsReceiptBanner', {
+              documentNo: grSeed.documentNo,
+              count: grSeed.lines.length,
+            })}
+          </div>
+        ) : null}
         <Breadcrumb
           items={steps.map((step, index) => ({
             label: step.label,

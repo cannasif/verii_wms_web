@@ -99,7 +99,9 @@
       },
       "subtitle": "Initializing system record...",
       "success": "Transfer order created",
-      "title": "Create New Transfer Order"
+      "title": "Create New Transfer Order",
+      "fromGoodsReceiptBanner": "Prefilled from goods receipt {{documentNo}} ({{count}} lines). Select warehouses and save. Link is a soft reference in notes.",
+      "fromGoodsReceiptNotes": "Source goods receipt document no: {{documentNo}}"
     },
     "details": {
       "batchNo": "Batch No",
