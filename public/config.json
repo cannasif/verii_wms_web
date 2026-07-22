@@ -1,5 +1,5 @@
 {
   "baseUrl": "/",
-  "apiUrl": "https//api.v3rii.com",
+  "apiUrl": "https://api.v3rii.com",
   "realtimeNotificationsEnabled": false
 }
