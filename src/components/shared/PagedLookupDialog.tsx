@@ -263,14 +263,14 @@ export function PagedLookupDialog<T>({
               ref={listRef}
               onScroll={handleScroll}
               className={cn(
-                'max-h-[min(360px,50vh)] space-y-2 overflow-y-auto p-3',
+                'h-[min(360px,50vh)] space-y-2 overflow-y-auto p-3',
                 isOps
                   ? 'wms-ops-lookup-list'
                   : 'rounded-2xl border border-slate-200/70 bg-slate-50/80 dark:border-white/10 dark:bg-white/3',
               )}
             >
               {isInitialLoading ? (
-                <div className={cn('py-6', isOps ? 'wms-ops-lookup-list__loading px-2' : 'px-2')}>
+                <div className={cn('flex h-full items-center justify-center', isOps ? 'wms-ops-lookup-list__loading px-2' : 'px-2')}>
                   <OpsLoadingState message={t('common.loading')} compact code="FETCH" />
                 </div>
               ) : (
@@ -291,7 +291,7 @@ export function PagedLookupDialog<T>({
                   {items.length === 0 ? (
                     <div
                       className={cn(
-                        'py-8 text-center text-sm',
+                        'flex h-full items-center justify-center text-center text-sm',
                         isOps ? 'wms-ops-lookup-empty' : 'text-slate-500',
                       )}
                     >

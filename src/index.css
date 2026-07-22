@@ -1922,6 +1922,8 @@ html[dir='rtl'] .app-navbar-panel::after {
 }
 
 .wms-ops-lookup-list {
+  height: min(360px, 50vh);
+  min-height: min(360px, 50vh);
   border: 1px solid color-mix(in oklab, var(--wms-ops-accent) 22%, var(--wms-ops-card-border));
   background: color-mix(in oklab, var(--wms-ops-field-bg) 72%, transparent);
   box-shadow: inset 0 0 24px color-mix(in oklab, var(--wms-ops-accent) 6%, transparent);
@@ -1931,7 +1933,7 @@ html[dir='rtl'] .app-navbar-panel::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 8rem;
+  min-height: 100%;
 }
 
 .wms-ops-lookup-list__fetching {
