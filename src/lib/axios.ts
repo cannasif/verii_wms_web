@@ -32,13 +32,6 @@ function appendPathSegment(url: string | undefined, segment: string): string | u
   return query ? `${nextPath}?${query}` : nextPath;
 }
 
-function hasNumericTailSegment(url: string | undefined): boolean {
-  if (!url) return false;
-  const path = url.split('?')[0].replace(/\/$/, '');
-  const tail = path.slice(path.lastIndexOf('/') + 1);
-  return /^\d+$/.test(tail);
-}
-
 function shouldSkipBranchInjection(payload: unknown): boolean {
   return payload == null
     || typeof payload !== 'object'
@@ -169,13 +162,9 @@ api.interceptors.request.use((config) => {
 
   const originalMethod = (config.method ?? 'get').toLowerCase();
   const useNativeHttpMethod = config.useNativeHttpMethod === true;
+  // IIS-safe aliases: PUT/PATCH -> POST same path; DELETE -> POST .../delete
   if (!useNativeHttpMethod) {
-    if (originalMethod === 'put') {
-      config.method = 'post';
-      if (hasNumericTailSegment(config.url)) {
-        config.url = appendPathSegment(config.url, 'update');
-      }
-    } else if (originalMethod === 'patch') {
+    if (originalMethod === 'put' || originalMethod === 'patch') {
       config.method = 'post';
     } else if (originalMethod === 'delete') {
       config.method = 'post';

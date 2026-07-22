@@ -4,6 +4,7 @@ import { OpsActionButton } from '@/components/shared';
 import { MasterDataOpsEmptyState, MasterDataOpsSection } from '@/features/shared';
 import type { SteelGoodReciptAcceptansePhotoDto } from '../../types/steel-good-recipt-acceptanse.types';
 import { SteelGoodReciptAcceptansePhotoUpload } from '../SteelGoodReciptAcceptansePhotoUpload';
+import { InspectionPhotoThumb } from './InspectionPhotoThumb';
 
 interface InspectionPhotosCardProps {
   lineId: number;
@@ -27,7 +28,11 @@ export function InspectionPhotosCard({
       <div className="mt-4 space-y-3">
         {photos.map((photo) => (
           <div key={photo.id} className="flex items-start gap-3 border border-[color-mix(in_oklab,var(--wms-ops-accent)_14%,var(--wms-ops-card-border))] p-3">
-            <img src={photo.imageUrl} alt={photo.caption ?? photo.id.toString()} className="h-20 w-20 object-cover" />
+            <InspectionPhotoThumb
+              photoId={photo.id}
+              alt={photo.caption ?? photo.id.toString()}
+              className="h-20 w-20 object-cover"
+            />
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium">{photo.caption || t('steelGoodReceiptAcceptance.inspection.photo')}</div>
               <div className="text-xs opacity-70">{photo.createdDate ?? '-'}</div>

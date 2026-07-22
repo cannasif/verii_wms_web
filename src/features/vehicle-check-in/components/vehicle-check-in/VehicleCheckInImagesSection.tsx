@@ -9,6 +9,7 @@ import {
 } from '@/features/shared';
 import type { VehicleCheckInHeaderDto } from '../../types/vehicle-check-in.types';
 import { formatDateTime } from './shared';
+import { VehicleCheckInAuthImage } from './VehicleCheckInAuthImage';
 
 interface VehicleCheckInImagesSectionProps {
   currentRecord: VehicleCheckInHeaderDto | null;
@@ -67,7 +68,11 @@ export function VehicleCheckInImagesSection({
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {currentRecord.images.map((image) => (
               <article key={image.id} className="wms-ops-kkd-employee-panel overflow-hidden">
-                <img src={image.fileUrl} alt={image.fileName || image.fileUrl} className="h-48 w-full object-cover" />
+                <VehicleCheckInAuthImage
+                  imageId={image.id}
+                  alt={image.fileName || image.fileUrl}
+                  className="h-48 w-full object-cover"
+                />
                 <div className="space-y-3 p-3">
                   <div className="text-sm font-medium">{image.fileName || t('vehicleCheckIn.images.image')}</div>
                   <div className="text-xs opacity-70">{formatDateTime(image.createdDate)}</div>
