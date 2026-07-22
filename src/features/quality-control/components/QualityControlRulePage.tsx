@@ -15,6 +15,7 @@ import { qualityControlApi } from '../api/quality-control.api';
 import type { CreateInventoryQualityRuleDto, InventoryQualityRuleDto } from '../types/quality-control.types';
 import { buildStockLabel, createEmptyQualityRule } from './quality-control/shared';
 import { QcOpsField, QcOpsGuidance } from './quality-control/ops-form-ui';
+import { buildGkkRuleDescription, parseGkkRuleDescription, type GkkRuleMeta } from '../utils/gkk-rule-meta';
 
 interface LookupPageArgs {
   pageNumber: number;
@@ -31,6 +32,7 @@ export function QualityControlRulePage(): ReactElement {
   const [selectedStockLabel, setSelectedStockLabel] = useState('');
   const [currentRecord, setCurrentRecord] = useState<InventoryQualityRuleDto | null>(null);
   const [formState, setFormState] = useState<CreateInventoryQualityRuleDto>(createEmptyQualityRule);
+  const [gkkMeta, setGkkMeta] = useState<GkkRuleMeta>({ projectCode: '', samplingPercent: null });
 
   const isEdit = Boolean(currentRecord?.id);
 
@@ -42,6 +44,7 @@ export function QualityControlRulePage(): ReactElement {
   const getByIdMutation = useMutation({
     mutationFn: (id: number) => qualityControlApi.getRuleById(id),
     onSuccess: (data) => {
+      const parsed = parseGkkRuleDescription(data.description);
       setCurrentRecord(data);
       setFormState({
         branchCode: data.branchCode || '0',
@@ -58,7 +61,11 @@ export function QualityControlRulePage(): ReactElement {
         nearExpiryWarningDays: data.nearExpiryWarningDays ?? null,
         onFailAction: data.onFailAction,
         isActive: data.isActive,
-        description: data.description || '',
+        description: parsed.text,
+      });
+      setGkkMeta({
+        projectCode: parsed.meta.projectCode || '',
+        samplingPercent: parsed.meta.samplingPercent ?? null,
       });
       setSelectedStockLabel(buildStockLabel(data.stockCode, data.stockName));
     },
@@ -98,6 +105,7 @@ export function QualityControlRulePage(): ReactElement {
     setSelectedStockLabel('');
     setSearchParams({}, { replace: true });
     setFormState(createEmptyQualityRule());
+    setGkkMeta({ projectCode: '', samplingPercent: null });
   }
 
   function handleSave(): void {
@@ -121,11 +129,17 @@ export function QualityControlRulePage(): ReactElement {
       return;
     }
 
+    const sampling = gkkMeta.samplingPercent;
+    if (sampling !== null && sampling !== undefined && (sampling < 0 || sampling > 100)) {
+      toast.error(t('qualityControl.messages.ruleSamplingPercentInvalid'));
+      return;
+    }
+
     saveMutation.mutate({
       ...formState,
       stockGroupCode: formState.scopeType === 'StockGroup' ? formState.stockGroupCode?.trim() || null : null,
       stockGroupName: formState.scopeType === 'StockGroup' ? formState.stockGroupName?.trim() || null : null,
-      description: formState.description?.trim() || null,
+      description: buildGkkRuleDescription(formState.description || '', gkkMeta) || null,
       minRemainingShelfLifeDays: formState.minRemainingShelfLifeDays || null,
       nearExpiryWarningDays: formState.nearExpiryWarningDays || null,
       stockId: formState.scopeType === 'Stock' ? formState.stockId || null : null,
@@ -147,7 +161,11 @@ export function QualityControlRulePage(): ReactElement {
       <div className="wms-ops-form space-y-6">
         <QcOpsGuidance
           title={t('qualityControl.rules.guidanceTitle')}
-          lines={[t('qualityControl.rules.guidance1'), t('qualityControl.rules.guidance2')]}
+          lines={[
+            t('qualityControl.rules.guidance1'),
+            t('qualityControl.rules.guidance2'),
+            t('qualityControl.rules.guidance3'),
+          ]}
         />
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -172,6 +190,30 @@ export function QualityControlRulePage(): ReactElement {
                 </SelectContent>
               </Select>
             </OpsFieldShell>
+          </QcOpsField>
+
+          <QcOpsField label={t('qualityControl.rules.fields.projectCode')}>
+            <OpsInput
+              id="gkkProjectCode"
+              value={gkkMeta.projectCode || ''}
+              onChange={(event) => setGkkMeta((prev) => ({ ...prev, projectCode: event.target.value }))}
+              placeholder={t('qualityControl.rules.fields.projectCodePlaceholder')}
+            />
+          </QcOpsField>
+
+          <QcOpsField label={t('qualityControl.rules.fields.samplingPercent')}>
+            <OpsInput
+              id="gkkSamplingPercent"
+              type="number"
+              min={0}
+              max={100}
+              value={gkkMeta.samplingPercent ?? ''}
+              onChange={(event) => setGkkMeta((prev) => ({
+                ...prev,
+                samplingPercent: event.target.value === '' ? null : Number(event.target.value),
+              }))}
+              placeholder={t('qualityControl.rules.fields.samplingPercentPlaceholder')}
+            />
           </QcOpsField>
 
           {formState.scopeType === 'Stock' ? (

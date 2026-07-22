@@ -12,6 +12,7 @@ import { getPagedRange } from '@/lib/paged';
 import { useUIStore } from '@/stores/ui-store';
 import { qualityControlApi } from '../api/quality-control.api';
 import type { InventoryQualityRulePagedRowDto } from '../types/quality-control.types';
+import { createGkkTestRule } from '../utils/create-gkk-test-records';
 
 type ColumnKey =
   | 'scopeType'
@@ -104,6 +105,16 @@ export function QualityControlRuleListPage(): ReactElement {
     onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
   });
 
+  const createTestMutation = useMutation({
+    mutationFn: () => createGkkTestRule(),
+    onSuccess: async (data) => {
+      toast.success(t('qualityControl.messages.testRuleCreated'));
+      await query.refetch();
+      navigate(`/quality-control/rules?id=${data.id}`);
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : t('common.generalError')),
+  });
+
   const exportColumns = useMemo(() => columns
     .filter((column) => column.key !== 'actions')
     .map((column) => ({ key: column.key, label: column.label })), [columns]);
@@ -172,10 +183,22 @@ export function QualityControlRuleListPage(): ReactElement {
       }
       title={t('qualityControl.rules.list.pageTitle')}
       actions={
-        <OpsActionButton type="button" variant="primary" onClick={() => navigate('/quality-control/rules')}>
-          <Plus className="size-3.5" aria-hidden />
-          {t('common.add')}
-        </OpsActionButton>
+        <div className="flex flex-wrap items-center gap-2">
+          <OpsActionButton
+            type="button"
+            variant="secondary"
+            onClick={() => createTestMutation.mutate()}
+            disabled={createTestMutation.isPending}
+          >
+            {createTestMutation.isPending
+              ? t('common.saving')
+              : t('qualityControl.rules.list.createTest')}
+          </OpsActionButton>
+          <OpsActionButton type="button" variant="primary" onClick={() => navigate('/quality-control/rules')}>
+            <Plus className="size-3.5" aria-hidden />
+            {t('common.add')}
+          </OpsActionButton>
+        </div>
       }
     >
       <PagedDataGrid<InventoryQualityRulePagedRowDto, ColumnKey>

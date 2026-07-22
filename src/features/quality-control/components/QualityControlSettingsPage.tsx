@@ -153,7 +153,11 @@ export function QualityControlSettingsPage(): ReactElement {
         <div className="wms-ops-form space-y-6">
           <QcOpsGuidance
             title={t('qualityControl.settings.guidanceTitle')}
-            lines={[t('qualityControl.settings.guidance1'), t('qualityControl.settings.guidance2')]}
+            lines={[
+              t('qualityControl.settings.guidance1'),
+              t('qualityControl.settings.guidance2'),
+              t('qualityControl.settings.guidance3'),
+            ]}
           />
 
           <div className="grid gap-4 lg:grid-cols-2">
